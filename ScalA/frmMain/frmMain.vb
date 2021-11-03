@@ -7,12 +7,12 @@
 #Region " Alt Dropdown "
     Private Sub PopDropDown()
 
-        Dim current As AstoniaProcess = cboAlt.SelectedItem
+        Dim current As AstoniaProcess = CType(cboAlt.SelectedItem, AstoniaProcess)
         cboAlt.BeginUpdate()
         updatingCombobox = True
 
         cboAlt.Items.Clear()
-        cboAlt.Items.Add(New AstoniaProcess(Nothing))
+        cboAlt.Items.Add(New AstoniaProcess) 'Someone
         cboAlt.Items.AddRange(AstoniaProcess.Enumerate.ToArray)
 
         If current IsNot Nothing AndAlso cboAlt.Items.Contains(current) Then
@@ -32,6 +32,7 @@
     Private Sub CmbResolution_DropDown(sender As ComboBox, e As EventArgs) Handles cmbResolution.DropDown
         pbZoom.Visible = False
     End Sub
+
     Private Async Sub ComboBoxes_DropDownClosed(sender As ComboBox, e As EventArgs) Handles cboAlt.DropDownClosed, cmbResolution.DropDownClosed
         Await Task.Delay(200)
         pbZoom.Visible = True
