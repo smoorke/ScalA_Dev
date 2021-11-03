@@ -147,6 +147,7 @@ Partial Public Class FrmMain
         End Try
         Return bm
     End Function
+    Private ReadOnly nsSorter As IComparer(Of String) = New CustomStringSorter
     Private Function ParseDir(pth As String) As List(Of ToolStripItem)
         Dim menuItems As New List(Of ToolStripItem)
         Dim hasNoDirs As Boolean = True
@@ -232,7 +233,6 @@ Partial Public Class FrmMain
             End If
         Next
 
-        Static nsSorter As IComparer(Of String) = New CustomStringSorter
         menuItems = Dirs.OrderBy(Function(d) d.Text, nsSorter).ThenBy(Function(d) d.Text.Length).Concat(
                    Files.OrderBy(Function(f) f.Text, nsSorter).ThenBy(Function(f) f.Text.Length)).ToList
 
@@ -252,7 +252,8 @@ Partial Public Class FrmMain
         End If
 
         If watch.ElapsedMilliseconds >= ICONTIMEOUT Then
-            defferedIconLoading(Dirs, Files)
+            defferedIconLoading(Dirs.Where(Function(item As ToolStripMenuItem) item.Image Is Nothing),
+                                Files.Where(Function(item As ToolStripMenuItem) item.Image Is Nothing))
         End If
 
         Debug.Print($"parsing ""{pth}"" took {watch.ElapsedMilliseconds} ms")
@@ -260,15 +261,20 @@ Partial Public Class FrmMain
         Return menuItems
     End Function
 
-    Private Sub defferedIconLoading(dirs As List(Of ToolStripItem), fils As List(Of ToolStripItem))
-        Task.Run(Sub() Parallel.ForEach(dirs,
-                                        Sub(item As ToolStripMenuItem)
-                                            If item.Image Is Nothing Then Me.BeginInvoke(updateImage, {item, GetIcon(item.Tag.ToString, True)})
-                                        End Sub))
-        Task.Run(Sub() Parallel.ForEach(fils,
+    Private Async Sub defferedIconLoading(dirs As IEnumerable(Of ToolStripItem), fils As IEnumerable(Of ToolStripItem))
+        cmsQuickLaunch.Update()
+        Try
+            Await Task.Run(Sub() Parallel.ForEach(dirs,
+                                   Sub(item As ToolStripMenuItem)
+                                       If item.Image Is Nothing Then Me.BeginInvoke(updateImage, {item, GetIcon(item.Tag.ToString, True)})
+                                   End Sub), cantok)
+            Await Task.Run(Sub() Parallel.ForEach(fils,
                                         Sub(item As ToolStripMenuItem)
                                             If item.Image Is Nothing Then Me.BeginInvoke(updateImage, {item, GetIcon(item.Tag.ToString, False)})
-                                        End Sub))
+                                        End Sub), cantok)
+        Catch ex As System.Threading.Tasks.TaskCanceledException
+            Debug.Print("defferedIconLoading Task canceled")
+        End Try
     End Sub
     Private Sub ParseSubDir(sender As ToolStripMenuItem, e As EventArgs) 'handles dir.DropDownOpening
         sender.DropDownItems.Clear()
@@ -426,13 +432,14 @@ Partial Public Class FrmMain
     End Sub
     Private closeAllAtBottom As Boolean = True
     Private selectFolderItem As ToolStripMenuItem
-    Private Sub CmsQuickLaunch_Closing(sender As ToolStripMenuItem, e As ToolStripDropDownClosingEventArgs) 'Handles cmsQuickLaunch.Closing
-        'causes unwanted behaviour
-        If e.CloseReason = ToolStripDropDownCloseReason.Keyboard AndAlso My.Computer.Keyboard.AltKeyDown Then
-            e.Cancel = True
-        End If
-    End Sub
+
+    Dim cts As New Threading.CancellationTokenSource
+    Dim cantok As Threading.CancellationToken = cts.Token
     Private Sub CmsQuickLaunch_Closed(sender As ContextMenuStrip, e As ToolStripDropDownClosedEventArgs) Handles cmsQuickLaunch.Closed
+        cts.Cancel()
+        cts.Dispose()
+        cts = New Threading.CancellationTokenSource
+        cantok = cts.Token
         'sender.Items.Clear() 'this couses menu to stutter opening
         Debug.Print("cmsQuickLaunch closed reason:" & e.CloseReason.ToString)
         If AltPP IsNot Nothing AndAlso e.CloseReason <> ToolStripDropDownCloseReason.AppClicked AndAlso e.CloseReason <> ToolStripDropDownCloseReason.ItemClicked Then
