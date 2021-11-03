@@ -114,14 +114,16 @@
     Public Overrides Function Equals(obj As Object) As Boolean
         Dim proc2 As AstoniaProcess = TryCast(obj, AstoniaProcess)
         Debug.Print($"obj {proc2?._proc?.Id} eqals _proc {_proc?.Id}")
-        Return proc2?._proc IsNot Nothing AndAlso _proc IsNot Nothing AndAlso proc2._proc.Id = _proc.Id
+        Return proc2?._proc IsNot Nothing AndAlso Me._proc IsNot Nothing AndAlso proc2._proc.Id = Me._proc.Id
     End Function
-    Public Shared Operator =(left As AstoniaProcess, right As AstoniaProcess) As Boolean
-        Return left.Equals(right)
-    End Operator
-    Public Shared Operator <>(left As AstoniaProcess, right As AstoniaProcess) As Boolean
-        Return Not left.Equals(right)
-    End Operator
+    'Public Shared Operator =(left As AstoniaProcess, right As AstoniaProcess) As Boolean
+    '    Debug.Print("AP ==")
+    '    Return left.Equals(right)
+    'End Operator
+    'Public Shared Operator <>(left As AstoniaProcess, right As AstoniaProcess) As Boolean
+    '    Debug.Print("AP <>")
+    '    Return Not left.Equals(right)
+    'End Operator
 
     Private Shared Function enumProcessesByNameArray(strings() As String) As IEnumerable(Of Process)
         Dim IEnum As IEnumerable(Of Process) = {}
