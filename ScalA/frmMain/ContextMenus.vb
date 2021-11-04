@@ -415,9 +415,9 @@ Partial Public Class FrmMain
 
         sender.Items.AddRange(ParseDir(My.Settings.links).ToArray)
 
-        If sender.SourceControl IsNot Nothing OrElse My.Computer.Keyboard.CtrlKeyDown Then 'don't show when called from trayicon except when ctrl is pressed
+        If My.Computer.Keyboard.CtrlKeyDown Then 'don't show when called from trayicon except when ctrl is pressed
             sender.Items.Add(New ToolStripSeparator())
-            selectFolderItem = sender.Items.Add("Select Folder", My.Resources.gear_wheel, AddressOf ChangeLinksDir)
+            sender.Items.Add("Select Folder", My.Resources.gear_wheel, AddressOf ChangeLinksDir)
         End If
 
         If AstoniaProcess.Enumerate(True).Any(Function(pp As AstoniaProcess) pp.Name = "Someone") Then
@@ -437,12 +437,14 @@ Partial Public Class FrmMain
 
     End Sub
     Private closeAllAtBottom As Boolean = True
-    Private selectFolderItem As ToolStripMenuItem
+
+
+
 
     Dim cts As New Threading.CancellationTokenSource
     Dim cantok As Threading.CancellationToken = cts.Token
     Private Sub CmsQuickLaunch_Closed(sender As ContextMenuStrip, e As ToolStripDropDownClosedEventArgs) Handles cmsQuickLaunch.Closed
-        cts.Cancel()
+        cts.Cancel() 'cancel deferred icon loading
         'sender.Items.Clear() 'this couses menu to stutter opening
         Debug.Print("cmsQuickLaunch closed reason:" & e.CloseReason.ToString)
         If AltPP IsNot Nothing AndAlso e.CloseReason <> ToolStripDropDownCloseReason.AppClicked AndAlso e.CloseReason <> ToolStripDropDownCloseReason.ItemClicked Then
@@ -563,8 +565,6 @@ Partial Public Class FrmMain
     Private Sub ChangeLinksDir()
         Debug.Print("changeLinksDir")
         Me.TopMost = False
-
-
         'Using fb As New FolderBrowserDialog
         Try
             Using fb As New Ookii.Dialogs.WinForms.VistaFolderBrowserDialog
@@ -573,7 +573,6 @@ Partial Public Class FrmMain
                 'fb.ShowNewFolderButton = False
                 fb.RootFolder = Environment.SpecialFolder.Desktop
                 fb.SelectedPath = My.Settings.links
-
                 If fb.ShowDialog() = DialogResult.OK Then
                     ' Warning for Root folder with throw for dialog cancel
                     If fb.SelectedPath = System.IO.Path.GetPathRoot(fb.SelectedPath) AndAlso
@@ -593,8 +592,7 @@ Partial Public Class FrmMain
     End Sub
 
     ReadOnly watchers As New List(Of System.IO.FileSystemWatcher)
-
-    Private Sub UpdateWatchers(newPath As String)
+    Public Sub UpdateWatchers(newPath As String)
         Debug.Print("updateWatchers")
         For Each w As System.IO.FileSystemWatcher In watchers
             w.Path = newPath
