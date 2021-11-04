@@ -27,8 +27,11 @@ Partial Class FrmSettings
         Dim Label1 As System.Windows.Forms.Label
         Dim GroupBox1 As System.Windows.Forms.GroupBox
         Dim Label3 As System.Windows.Forms.Label
+        Dim GroupBox2 As System.Windows.Forms.GroupBox
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmSettings))
         Me.txtResolutions = New System.Windows.Forms.TextBox()
+        Me.btnOpenFolderDialog = New System.Windows.Forms.Button()
+        Me.txtQuickLaunchPath = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.grpAlign = New System.Windows.Forms.GroupBox()
         Me.btnResetAlign = New System.Windows.Forms.Button()
@@ -44,7 +47,9 @@ Partial Class FrmSettings
         Label1 = New System.Windows.Forms.Label()
         GroupBox1 = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
+        GroupBox2 = New System.Windows.Forms.GroupBox()
         GroupBox1.SuspendLayout()
+        GroupBox2.SuspendLayout()
         Me.grpAlign.SuspendLayout()
         CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.numXoffset, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -71,9 +76,9 @@ Partial Class FrmSettings
         'GroupBox1
         '
         GroupBox1.Controls.Add(Me.txtResolutions)
-        GroupBox1.Location = New System.Drawing.Point(115, 9)
+        GroupBox1.Location = New System.Drawing.Point(115, 60)
         GroupBox1.Name = "GroupBox1"
-        GroupBox1.Size = New System.Drawing.Size(107, 148)
+        GroupBox1.Size = New System.Drawing.Size(107, 138)
         GroupBox1.TabIndex = 9
         GroupBox1.TabStop = False
         GroupBox1.Text = "Resolutions"
@@ -84,7 +89,7 @@ Partial Class FrmSettings
         Me.txtResolutions.Multiline = True
         Me.txtResolutions.Name = "txtResolutions"
         Me.txtResolutions.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.txtResolutions.Size = New System.Drawing.Size(97, 121)
+        Me.txtResolutions.Size = New System.Drawing.Size(97, 116)
         Me.txtResolutions.TabIndex = 0
         Me.txtResolutions.Text = "800x600" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "1200x900" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "1600x1200" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2000x1500" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2400x1800" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2800x2100" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "3200x2400" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "3600x27" &
     "00" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "4000x3000" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "4400x3300"
@@ -92,16 +97,47 @@ Partial Class FrmSettings
         'Label3
         '
         Label3.AutoSize = True
-        Label3.Location = New System.Drawing.Point(76, 35)
+        Label3.Location = New System.Drawing.Point(80, 86)
         Label3.Name = "Label3"
         Label3.Size = New System.Drawing.Size(27, 13)
         Label3.TabIndex = 11
         Label3.Text = ".exe"
         '
+        'GroupBox2
+        '
+        GroupBox2.Controls.Add(Me.btnOpenFolderDialog)
+        GroupBox2.Controls.Add(Me.txtQuickLaunchPath)
+        GroupBox2.Location = New System.Drawing.Point(9, 12)
+        GroupBox2.Name = "GroupBox2"
+        GroupBox2.Size = New System.Drawing.Size(213, 42)
+        GroupBox2.TabIndex = 1
+        GroupBox2.TabStop = False
+        GroupBox2.Text = "QuickLaunch Path"
+        '
+        'btnOpenFolderDialog
+        '
+        Me.btnOpenFolderDialog.FlatAppearance.BorderSize = 0
+        Me.btnOpenFolderDialog.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnOpenFolderDialog.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.btnOpenFolderDialog.Location = New System.Drawing.Point(185, 15)
+        Me.btnOpenFolderDialog.Name = "btnOpenFolderDialog"
+        Me.btnOpenFolderDialog.Size = New System.Drawing.Size(21, 20)
+        Me.btnOpenFolderDialog.TabIndex = 13
+        Me.btnOpenFolderDialog.Text = ".."
+        Me.btnOpenFolderDialog.UseVisualStyleBackColor = True
+        '
+        'txtQuickLaunchPath
+        '
+        Me.txtQuickLaunchPath.Location = New System.Drawing.Point(3, 16)
+        Me.txtQuickLaunchPath.Name = "txtQuickLaunchPath"
+        Me.txtQuickLaunchPath.Size = New System.Drawing.Size(181, 20)
+        Me.txtQuickLaunchPath.TabIndex = 0
+        Me.txtQuickLaunchPath.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
         'chkTopMost
         '
         Me.chkTopMost.AutoSize = True
-        Me.chkTopMost.Location = New System.Drawing.Point(9, 9)
+        Me.chkTopMost.Location = New System.Drawing.Point(9, 60)
         Me.chkTopMost.Name = "chkTopMost"
         Me.chkTopMost.Size = New System.Drawing.Size(98, 17)
         Me.chkTopMost.TabIndex = 0
@@ -116,7 +152,7 @@ Partial Class FrmSettings
         Me.grpAlign.Controls.Add(Label2)
         Me.grpAlign.Controls.Add(Label1)
         Me.grpAlign.Enabled = False
-        Me.grpAlign.Location = New System.Drawing.Point(9, 95)
+        Me.grpAlign.Location = New System.Drawing.Point(9, 136)
         Me.grpAlign.Name = "grpAlign"
         Me.grpAlign.Size = New System.Drawing.Size(100, 62)
         Me.grpAlign.TabIndex = 1
@@ -156,7 +192,7 @@ Partial Class FrmSettings
         '
         'btnOK
         '
-        Me.btnOK.Location = New System.Drawing.Point(62, 160)
+        Me.btnOK.Location = New System.Drawing.Point(62, 207)
         Me.btnOK.Name = "btnOK"
         Me.btnOK.Size = New System.Drawing.Size(77, 23)
         Me.btnOK.TabIndex = 2
@@ -166,7 +202,7 @@ Partial Class FrmSettings
         'btnCancel
         '
         Me.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnCancel.Location = New System.Drawing.Point(145, 160)
+        Me.btnCancel.Location = New System.Drawing.Point(145, 207)
         Me.btnCancel.Name = "btnCancel"
         Me.btnCancel.Size = New System.Drawing.Size(77, 23)
         Me.btnCancel.TabIndex = 3
@@ -177,7 +213,7 @@ Partial Class FrmSettings
         '
         Me.chkDoAlign.AutoSize = True
         Me.chkDoAlign.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkDoAlign.Location = New System.Drawing.Point(9, 95)
+        Me.chkDoAlign.Location = New System.Drawing.Point(9, 136)
         Me.chkDoAlign.Name = "chkDoAlign"
         Me.chkDoAlign.Size = New System.Drawing.Size(66, 16)
         Me.chkDoAlign.TabIndex = 5
@@ -190,7 +226,7 @@ Partial Class FrmSettings
         'txtExe
         '
         Me.txtExe.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtExe.Location = New System.Drawing.Point(9, 32)
+        Me.txtExe.Location = New System.Drawing.Point(9, 83)
         Me.txtExe.Name = "txtExe"
         Me.txtExe.Size = New System.Drawing.Size(66, 20)
         Me.txtExe.TabIndex = 1
@@ -199,7 +235,7 @@ Partial Class FrmSettings
         'txtClass
         '
         Me.txtClass.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtClass.Location = New System.Drawing.Point(9, 58)
+        Me.txtClass.Location = New System.Drawing.Point(9, 109)
         Me.txtClass.Name = "txtClass"
         Me.txtClass.Size = New System.Drawing.Size(100, 20)
         Me.txtClass.TabIndex = 10
@@ -210,7 +246,8 @@ Partial Class FrmSettings
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.btnCancel
-        Me.ClientSize = New System.Drawing.Size(228, 190)
+        Me.ClientSize = New System.Drawing.Size(228, 236)
+        Me.Controls.Add(GroupBox2)
         Me.Controls.Add(Label3)
         Me.Controls.Add(Me.txtClass)
         Me.Controls.Add(Me.txtExe)
@@ -229,6 +266,8 @@ Partial Class FrmSettings
         Me.TopMost = True
         GroupBox1.ResumeLayout(False)
         GroupBox1.PerformLayout()
+        GroupBox2.ResumeLayout(False)
+        GroupBox2.PerformLayout()
         Me.grpAlign.ResumeLayout(False)
         Me.grpAlign.PerformLayout()
         CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).EndInit()
@@ -250,4 +289,6 @@ Partial Class FrmSettings
     Friend WithEvents btnResetAlign As Button
     Friend WithEvents txtExe As TextBox
     Friend WithEvents txtClass As TextBox
+    Friend WithEvents txtQuickLaunchPath As TextBox
+    Friend WithEvents btnOpenFolderDialog As Button
 End Class
