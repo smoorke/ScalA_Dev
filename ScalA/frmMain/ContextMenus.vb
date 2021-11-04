@@ -184,7 +184,7 @@ Partial Public Class FrmMain
                 AddHandler smenu.MouseUp, AddressOf OpenProps
                 AddHandler smenu.DoubleClick, AddressOf DblClickDir
                 AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
-                'AddHandler smenu.DropDown.Closing, AddressOf cmsQuickLaunch_Closing
+                AddHandler smenu.DropDown.Closing, AddressOf cmsQuickLaunchDropDown_Closing
 
                 Dirs.Add(smenu)
                 hasNoDirs = False
@@ -252,8 +252,10 @@ Partial Public Class FrmMain
         End If
 
         If watch.ElapsedMilliseconds >= ICONTIMEOUT Then
-            defferedIconLoading(Dirs.Where(Function(item As ToolStripMenuItem) item.Image Is Nothing),
-                                Files.Where(Function(item As ToolStripMenuItem) item.Image Is Nothing))
+            cts?.Dispose()
+            cts = New Threading.CancellationTokenSource
+            cantok = cts.Token
+            defferedIconLoading(Dirs, Files, cantok)
         End If
 
         Debug.Print($"parsing ""{pth}"" took {watch.ElapsedMilliseconds} ms")
@@ -261,17 +263,21 @@ Partial Public Class FrmMain
         Return menuItems
     End Function
 
-    Private Async Sub defferedIconLoading(dirs As IEnumerable(Of ToolStripItem), fils As IEnumerable(Of ToolStripItem))
+    Private Sub cmsQuickLaunchDropDown_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs)
+        cts.Cancel()
+    End Sub
+
+    Private Sub defferedIconLoading(dirs As IEnumerable(Of ToolStripItem), fils As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
         cmsQuickLaunch.Update()
         Try
-            Await Task.Run(Sub() Parallel.ForEach(dirs,
+            Task.Run(Sub() Parallel.ForEach(dirs.Where(Function(item As ToolStripItem) item.Image Is Nothing),
                                    Sub(item As ToolStripMenuItem)
-                                       If item.Image Is Nothing Then Me.BeginInvoke(updateImage, {item, GetIcon(item.Tag.ToString, True)})
-                                   End Sub), cantok)
-            Await Task.Run(Sub() Parallel.ForEach(fils,
+                                       Me.BeginInvoke(updateImage, {item, GetIcon(item.Tag.ToString, True)})
+                                   End Sub), ct)
+            Task.Run(Sub() Parallel.ForEach(fils.Where(Function(item As ToolStripItem) item.Image Is Nothing),
                                         Sub(item As ToolStripMenuItem)
-                                            If item.Image Is Nothing Then Me.BeginInvoke(updateImage, {item, GetIcon(item.Tag.ToString, False)})
-                                        End Sub), cantok)
+                                            Me.BeginInvoke(updateImage, {item, GetIcon(item.Tag.ToString, False)})
+                                        End Sub), ct)
         Catch ex As System.Threading.Tasks.TaskCanceledException
             Debug.Print("defferedIconLoading Task canceled")
         End Try
@@ -437,9 +443,6 @@ Partial Public Class FrmMain
     Dim cantok As Threading.CancellationToken = cts.Token
     Private Sub CmsQuickLaunch_Closed(sender As ContextMenuStrip, e As ToolStripDropDownClosedEventArgs) Handles cmsQuickLaunch.Closed
         cts.Cancel()
-        cts.Dispose()
-        cts = New Threading.CancellationTokenSource
-        cantok = cts.Token
         'sender.Items.Clear() 'this couses menu to stutter opening
         Debug.Print("cmsQuickLaunch closed reason:" & e.CloseReason.ToString)
         If AltPP IsNot Nothing AndAlso e.CloseReason <> ToolStripDropDownCloseReason.AppClicked AndAlso e.CloseReason <> ToolStripDropDownCloseReason.ItemClicked Then
