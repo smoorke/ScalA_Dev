@@ -119,18 +119,18 @@ Partial Class FrmSettings
         Me.btnOpenFolderDialog.FlatAppearance.BorderSize = 0
         Me.btnOpenFolderDialog.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnOpenFolderDialog.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-        Me.btnOpenFolderDialog.Location = New System.Drawing.Point(185, 15)
+        Me.btnOpenFolderDialog.Location = New System.Drawing.Point(187, 16)
         Me.btnOpenFolderDialog.Name = "btnOpenFolderDialog"
-        Me.btnOpenFolderDialog.Size = New System.Drawing.Size(21, 20)
+        Me.btnOpenFolderDialog.Size = New System.Drawing.Size(22, 20)
         Me.btnOpenFolderDialog.TabIndex = 13
         Me.btnOpenFolderDialog.Text = ".."
         Me.btnOpenFolderDialog.UseVisualStyleBackColor = True
         '
         'txtQuickLaunchPath
         '
-        Me.txtQuickLaunchPath.Location = New System.Drawing.Point(3, 16)
+        Me.txtQuickLaunchPath.Location = New System.Drawing.Point(5, 16)
         Me.txtQuickLaunchPath.Name = "txtQuickLaunchPath"
-        Me.txtQuickLaunchPath.Size = New System.Drawing.Size(181, 20)
+        Me.txtQuickLaunchPath.Size = New System.Drawing.Size(182, 20)
         Me.txtQuickLaunchPath.TabIndex = 0
         Me.txtQuickLaunchPath.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         '
