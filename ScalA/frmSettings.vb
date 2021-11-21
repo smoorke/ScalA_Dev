@@ -79,8 +79,8 @@
         FrmMain.UpdateThumb(If(sender.Checked, 122, 255))
 
         If sender.Checked Then
-            FrmMain.SetWindowPos(FrmMain.AltPP.MainWindowHandle, FrmMain.Handle, FrmMain.newX, FrmMain.newY, -1, -1, FrmMain.SetWindowPosFlags.IgnoreResize + FrmMain.SetWindowPosFlags.DoNotActivate)
-            FrmMain.GetWindowRect(FrmMain.AltPP.MainWindowHandle, rcAstOffsetBase)
+            SetWindowPos(FrmMain.AltPP.MainWindowHandle, FrmMain.Handle, FrmMain.newX, FrmMain.newY, -1, -1, SetWindowPosFlags.IgnoreResize + SetWindowPosFlags.DoNotActivate)
+            GetWindowRect(FrmMain.AltPP.MainWindowHandle, rcAstOffsetBase)
             Debug.Print(rcAstOffsetBase.ToString)
         End If
         tmrAlign.Enabled = sender.Checked
@@ -163,7 +163,7 @@
     Public ScalaMoved As Point
     Dim rcAstOffsetNew As Rectangle
     Private Sub TmrAlign_Tick(sender As Object, e As EventArgs) Handles tmrAlign.Tick
-        FrmMain.GetWindowRect(FrmMain.AltPP.MainWindowHandle, rcAstOffsetNew)
+        GetWindowRect(FrmMain.AltPP.MainWindowHandle, rcAstOffsetNew)
         manualNumUpdate = False
         numXoffset.Value = My.Settings.offset.X + ScalaMoved.X - rcAstOffsetNew.Left + rcAstOffsetBase.Left
         numYoffset.Value = My.Settings.offset.Y + ScalaMoved.Y - rcAstOffsetNew.Top + rcAstOffsetBase.Top
@@ -182,7 +182,7 @@
                 ptMove.X += sender.Text - sender.Value
             End If
 
-            FrmMain.SetWindowPos(FrmMain.AltPP.MainWindowHandle, FrmMain.Handle, rcAstOffsetNew.Left + ptMove.X, rcAstOffsetNew.Top + ptMove.Y, -1, -1, FrmMain.SetWindowPosFlags.IgnoreResize + FrmMain.SetWindowPosFlags.DoNotActivate)
+            SetWindowPos(FrmMain.AltPP.MainWindowHandle, FrmMain.Handle, rcAstOffsetNew.Left + ptMove.X, rcAstOffsetNew.Top + ptMove.Y, -1, -1, SetWindowPosFlags.IgnoreResize + SetWindowPosFlags.DoNotActivate)
 
         End If
 
@@ -248,5 +248,15 @@
     Private Sub txtQuickLaunchPath_DoubleClick(sender As Object, e As EventArgs) Handles txtQuickLaunchPath.DoubleClick
         txtQuickLaunchPath.SelectionStart = 0
         txtQuickLaunchPath.SelectionLength = txtQuickLaunchPath.TextLength
+    End Sub
+
+    Private Sub OpenInFileExplorerToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenInExplorerToolStripMenuItem.Click
+        Dim pp As New Process With {.StartInfo = New ProcessStartInfo With {.FileName = txtQuickLaunchPath.Text}}
+
+        Try
+            pp.Start()
+        Catch
+
+        End Try
     End Sub
 End Class

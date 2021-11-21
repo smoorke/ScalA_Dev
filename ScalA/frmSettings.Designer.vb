@@ -43,6 +43,8 @@ Partial Class FrmSettings
         Me.tmrAlign = New System.Windows.Forms.Timer(Me.components)
         Me.txtExe = New System.Windows.Forms.TextBox()
         Me.txtClass = New System.Windows.Forms.TextBox()
+        Me.cmsQLFolder = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.OpenInExplorerToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Label2 = New System.Windows.Forms.Label()
         Label1 = New System.Windows.Forms.Label()
         GroupBox1 = New System.Windows.Forms.GroupBox()
@@ -53,6 +55,7 @@ Partial Class FrmSettings
         Me.grpAlign.SuspendLayout()
         CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.numXoffset, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.cmsQLFolder.SuspendLayout()
         Me.SuspendLayout()
         '
         'Label2
@@ -116,6 +119,7 @@ Partial Class FrmSettings
         '
         'btnOpenFolderDialog
         '
+        Me.btnOpenFolderDialog.ContextMenuStrip = Me.cmsQLFolder
         Me.btnOpenFolderDialog.FlatAppearance.BorderSize = 0
         Me.btnOpenFolderDialog.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnOpenFolderDialog.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
@@ -241,6 +245,18 @@ Partial Class FrmSettings
         Me.txtClass.TabIndex = 10
         Me.txtClass.Text = "MAINWNDMOAC | 䅍义乗䵄䅏C"
         '
+        'cmsQLFolder
+        '
+        Me.cmsQLFolder.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenInExplorerToolStripMenuItem})
+        Me.cmsQLFolder.Name = "cmsQLFolder"
+        Me.cmsQLFolder.Size = New System.Drawing.Size(184, 26)
+        '
+        'OpenInExplorerToolStripMenuItem
+        '
+        Me.OpenInExplorerToolStripMenuItem.Name = "OpenInExplorerToolStripMenuItem"
+        Me.OpenInExplorerToolStripMenuItem.Size = New System.Drawing.Size(183, 22)
+        Me.OpenInExplorerToolStripMenuItem.Text = "Open in File Explorer"
+        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -272,6 +288,7 @@ Partial Class FrmSettings
         Me.grpAlign.PerformLayout()
         CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.numXoffset, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.cmsQLFolder.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -291,4 +308,6 @@ Partial Class FrmSettings
     Friend WithEvents txtClass As TextBox
     Friend WithEvents txtQuickLaunchPath As TextBox
     Friend WithEvents btnOpenFolderDialog As Button
+    Friend WithEvents cmsQLFolder As ContextMenuStrip
+    Friend WithEvents OpenInExplorerToolStripMenuItem As ToolStripMenuItem
 End Class

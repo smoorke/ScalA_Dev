@@ -69,37 +69,11 @@ Partial Public Class FrmMain
 
     End Sub
 
-    Private Const SHGFI_ICON As Integer = &H100
-    Private Const SHGFI_LARGEICON As Integer = &H0
-    Private Const SHGFI_SMALLICON As Integer = &H1
-    Private Const SHGFI_SYSICONINDEX As Integer = &H4000
 
-    <System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, CharSet:=System.Runtime.InteropServices.CharSet.[Unicode])>
-    Public Structure SHFILEINFOW
-        Public hIcon As IntPtr
-        Public iIcon As Integer
-        Public dwAttributes As Integer
-        <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=260)> Public szDisplayName As String
-        <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=80)> Public szTypeName As String
-    End Structure
-
-    <System.Runtime.InteropServices.DllImport("shell32.dll", EntryPoint:="SHGetFileInfoW", SetLastError:=True)>
-    Private Shared Function SHGetFileInfoW(<System.Runtime.InteropServices.InAttribute(), System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPTStr)> ByVal pszPath As String, ByVal dwFileAttributes As Integer, ByRef psfi As SHFILEINFOW, ByVal cbFileInfo As Integer, ByVal uFlags As Integer) As Integer
-    End Function
-
-    <System.Runtime.InteropServices.DllImport("user32.dll", EntryPoint:="DestroyIcon")>
-    Private Shared Function DestroyIcon(ByVal hIcon As System.IntPtr) As <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)> Boolean
-    End Function
-
-    <System.Runtime.InteropServices.DllImport("comctl32.dll", SetLastError:=True)>
-    Private Shared Function ImageList_GetIcon(hIml As IntPtr, index As Integer, flags As UInteger) As IntPtr 'this tends to fail in MTA
-    End Function
     'BOOL ImageList_Destroy(
     '[in, optional] HIMAGELIST himl
     ');
-    <System.Runtime.InteropServices.DllImport("comctl32.dll", SetLastError:=True)>
-    Private Shared Function ImageList_Destroy(hIml As IntPtr) As Boolean
-    End Function
+
 
     Private ReadOnly iconCache As New Dictionary(Of String, Bitmap)
 
@@ -119,7 +93,7 @@ Partial Public Class FrmMain
         Dim ico As Icon
 
         If isFolder Then
-            SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_ICON Or SHGFI_SMALLICON)
+            NativeMethods.SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_ICON Or SHGFI_SMALLICON)
             If fi.iIcon = IntPtr.Zero Then
                 Debug.Print("iIcon empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
                 'Return Nothing
@@ -381,8 +355,11 @@ Partial Public Class FrmMain
         End Try
 
     End Sub
-
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
+        'If AltPP IsNot Nothing AndAlso AltPP?.Id <> 0 Then
+        '    SendMessage(AltPP.MainWindowHandle, &H205, 0, 0) 'does not fix right click drag bug, does fix right click stuck after drag bug
+
+        'End If
         pbZoom.Visible = False
         If My.Computer.Keyboard.ShiftKeyDown Then
             'show sysmenu
@@ -457,11 +434,7 @@ Partial Public Class FrmMain
         'tmrTick.Interval = 50
         pbZoom.Visible = True
     End Sub
-    <Runtime.InteropServices.DllImport("user32.dll", SetLastError:=True, CharSet:=Runtime.InteropServices.CharSet.Auto)>
-    Private Shared Function FindWindow(
-     ByVal lpClassName As String,
-     ByVal lpWindowName As String) As IntPtr
-    End Function
+
     Private Sub OpenProps(ByVal sender As ToolStripMenuItem, ByVal e As System.Windows.Forms.MouseEventArgs) 'Handles smenu.MouseUp, item.MouseUp
         Debug.Print($"click {sender.Tag}")
         If e.Button = MouseButtons.Right Then
@@ -535,33 +508,7 @@ Partial Public Class FrmMain
         'btnStart.PerformClick()
 
     End Sub
-    Public Structure SHELLEXECUTEINFO
-        Public cbSize As Integer
-        Public fMask As Integer
-        Public hwnd As IntPtr
-        <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPTStr)> Public lpVerb As String
-        <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPTStr)> Public lpFile As String
-        <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPTStr)> Public lpParameters As String
-        <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPTStr)> Public lpDirectory As String
-        Dim nShow As Integer
-        Dim hInstApp As IntPtr
-        Dim lpIDList As IntPtr
-        <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPTStr)> Public lpClass As String
-        Public hkeyClass As IntPtr
-        Public dwHotKey As Integer
-        Public hIcon As IntPtr
-        Public hProcess As IntPtr
-    End Structure
 
-
-    Private Const SEE_MASK_INVOKEIDLIST = &HC
-    Private Const SEE_MASK_NOCLOSEPROCESS = &H40
-    Private Const SEE_MASK_FLAG_NO_UI = &H400
-    Public Const SW_SHOW As Short = 5
-
-    <System.Runtime.InteropServices.DllImport("Shell32", CharSet:=System.Runtime.InteropServices.CharSet.Auto, SetLastError:=True)>
-    Public Shared Function ShellExecuteEx(ByRef lpExecInfo As SHELLEXECUTEINFO) As Boolean
-    End Function
     Private Sub ChangeLinksDir()
         Debug.Print("changeLinksDir")
         Me.TopMost = False
