@@ -210,7 +210,7 @@
         Public szPath As String
     End Structure
 
-    <System.Runtime.InteropServices.DllImport("user32.dll", SetLastError:=True)>
+    <System.Runtime.InteropServices.DllImport("shell32.dll", SetLastError:=True)>
     Public Function SHGetStockIconInfo(ssid As UInteger, uFlags As UInteger, ByRef pssi As SHSTOCKICONINFO) As Integer : End Function
 
 End Module
