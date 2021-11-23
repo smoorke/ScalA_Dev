@@ -22,7 +22,7 @@
     End Function
 
     <System.Runtime.InteropServices.DllImport("comctl32.dll", SetLastError:=True)>
-    Public Function ImageList_GetIcon(hIml As IntPtr, index As Integer, flags As UInteger) As IntPtr 'this tends to fail in MTA
+    Public Function ImageList_GetIcon(hIml As IntPtr, index As Integer, flags As UInteger) As IntPtr 'this tends to fail in MTA (need coinit?)
     End Function
 
     <System.Runtime.InteropServices.DllImport("comctl32.dll", SetLastError:=True)>
