@@ -199,4 +199,18 @@
     End Function
 #End Region
 
+    <Runtime.InteropServices.StructLayout(Runtime.InteropServices.LayoutKind.Sequential, CharSet:=Runtime.InteropServices.CharSet.Unicode)>
+    Public Structure SHSTOCKICONINFO
+
+        Public cbSize As UInteger
+        Public hIcon As IntPtr
+        Public iSysIconIndex As Integer
+        Public iIcon As Integer
+        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=260)>
+        Public szPath As String
+    End Structure
+
+    <System.Runtime.InteropServices.DllImport("user32.dll", SetLastError:=True)>
+    Public Function SHGetStockIconInfo(ssid As UInteger, uFlags As UInteger, ByRef pssi As SHSTOCKICONINFO) As Integer : End Function
+
 End Module

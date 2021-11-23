@@ -47,24 +47,7 @@
         End Using
     End Function
 
-    <System.Runtime.InteropServices.DllImport("user32.dll", EntryPoint:="DestroyIcon")>
-    Private Shared Function DestroyIcon(ByVal hIcon As System.IntPtr) As <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)> Boolean
-    End Function
 
-    <Runtime.InteropServices.StructLayout(Runtime.InteropServices.LayoutKind.Sequential, CharSet:=Runtime.InteropServices.CharSet.Unicode)>
-    Public Structure SHSTOCKICONINFO
-
-        Public cbSize As UInteger
-        Public hIcon As IntPtr
-        Public iSysIconIndex As Integer
-        Public iIcon As Integer
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=260)>
-        Public szPath As String
-    End Structure
-
-
-
-    Declare Function SHGetStockIconInfo Lib "Shell32.dll" (ssid As UInteger, uFlags As UInteger, ByRef pssi As SHSTOCKICONINFO) As Integer
 
     Dim storeZoom As Integer = My.Settings.zoom
     Private Sub ChkDoAlign_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkDoAlign.CheckedChanged
