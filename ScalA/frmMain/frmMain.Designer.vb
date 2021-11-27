@@ -67,6 +67,10 @@ Partial Class FrmMain
         Me.btnAlt16 = New System.Windows.Forms.Button()
         Me.pbZoom = New System.Windows.Forms.PictureBox()
         Me.sysTrayIcon = New System.Windows.Forms.NotifyIcon(Me.components)
+        Me.cornerNW = New System.Windows.Forms.PictureBox()
+        Me.cornerNE = New System.Windows.Forms.PictureBox()
+        Me.cornerSW = New System.Windows.Forms.PictureBox()
+        Me.cornerSE = New System.Windows.Forms.PictureBox()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Me.pnlSys.SuspendLayout()
         Me.cmsQuickLaunch.SuspendLayout()
@@ -77,6 +81,10 @@ Partial Class FrmMain
         Me.pnlMessage.SuspendLayout()
         CType(Me.pbMessage, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.pbZoom, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.cornerNW, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.cornerNE, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.cornerSW, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.cornerSE, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'ToolStripSeparator1
@@ -92,14 +100,14 @@ Partial Class FrmMain
         Me.pnlSys.Controls.Add(Me.cboAlt)
         Me.pnlSys.Location = New System.Drawing.Point(0, 0)
         Me.pnlSys.Name = "pnlSys"
-        Me.pnlSys.Size = New System.Drawing.Size(270, 27)
+        Me.pnlSys.Size = New System.Drawing.Size(270, 25)
         Me.pnlSys.TabIndex = 13
         '
         'btnStart
         '
         Me.btnStart.ContextMenuStrip = Me.cmsQuickLaunch
         Me.btnStart.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnStart.Location = New System.Drawing.Point(1, 2)
+        Me.btnStart.Location = New System.Drawing.Point(1, 1)
         Me.btnStart.Name = "btnStart"
         Me.btnStart.Size = New System.Drawing.Size(23, 23)
         Me.btnStart.TabIndex = 15
@@ -123,7 +131,7 @@ Partial Class FrmMain
         Me.cmbResolution.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cmbResolution.ForeColor = System.Drawing.SystemColors.WindowText
         Me.cmbResolution.FormattingEnabled = True
-        Me.cmbResolution.Location = New System.Drawing.Point(187, 3)
+        Me.cmbResolution.Location = New System.Drawing.Point(187, 2)
         Me.cmbResolution.Name = "cmbResolution"
         Me.cmbResolution.Size = New System.Drawing.Size(80, 21)
         Me.cmbResolution.TabIndex = 17
@@ -134,7 +142,7 @@ Partial Class FrmMain
         Me.cboAlt.DisplayMember = "name"
         Me.cboAlt.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cboAlt.FormattingEnabled = True
-        Me.cboAlt.Location = New System.Drawing.Point(25, 3)
+        Me.cboAlt.Location = New System.Drawing.Point(25, 2)
         Me.cboAlt.Name = "cboAlt"
         Me.cboAlt.Size = New System.Drawing.Size(160, 21)
         Me.cboAlt.TabIndex = 16
@@ -147,13 +155,13 @@ Partial Class FrmMain
         Me.pnlTitleBar.Controls.Add(Me.lblTitle)
         Me.pnlTitleBar.Location = New System.Drawing.Point(270, 0)
         Me.pnlTitleBar.Name = "pnlTitleBar"
-        Me.pnlTitleBar.Size = New System.Drawing.Size(641, 27)
+        Me.pnlTitleBar.Size = New System.Drawing.Size(641, 25)
         Me.pnlTitleBar.TabIndex = 14
         '
         'chkDebug
         '
         Me.chkDebug.AutoSize = True
-        Me.chkDebug.Location = New System.Drawing.Point(384, 7)
+        Me.chkDebug.Location = New System.Drawing.Point(384, 6)
         Me.chkDebug.Name = "chkDebug"
         Me.chkDebug.Size = New System.Drawing.Size(15, 14)
         Me.chkDebug.TabIndex = 11
@@ -164,7 +172,7 @@ Partial Class FrmMain
         'lblTitle
         '
         Me.lblTitle.AutoSize = True
-        Me.lblTitle.Location = New System.Drawing.Point(2, 7)
+        Me.lblTitle.Location = New System.Drawing.Point(-2, 6)
         Me.lblTitle.Name = "lblTitle"
         Me.lblTitle.Size = New System.Drawing.Size(71, 13)
         Me.lblTitle.TabIndex = 3
@@ -178,10 +186,10 @@ Partial Class FrmMain
         Me.pnlButtons.Controls.Add(Me.btnQuit)
         Me.pnlButtons.Dock = System.Windows.Forms.DockStyle.Right
         Me.pnlButtons.Location = New System.Drawing.Point(917, 0)
-        Me.pnlButtons.MaximumSize = New System.Drawing.Size(135, 25)
-        Me.pnlButtons.MinimumSize = New System.Drawing.Size(135, 25)
+        Me.pnlButtons.MaximumSize = New System.Drawing.Size(135, 23)
+        Me.pnlButtons.MinimumSize = New System.Drawing.Size(135, 23)
         Me.pnlButtons.Name = "pnlButtons"
-        Me.pnlButtons.Size = New System.Drawing.Size(135, 25)
+        Me.pnlButtons.Size = New System.Drawing.Size(135, 23)
         Me.pnlButtons.TabIndex = 7
         '
         'btnMin
@@ -193,7 +201,7 @@ Partial Class FrmMain
         Me.btnMin.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnMin.Location = New System.Drawing.Point(0, 0)
         Me.btnMin.Name = "btnMin"
-        Me.btnMin.Size = New System.Drawing.Size(45, 25)
+        Me.btnMin.Size = New System.Drawing.Size(45, 23)
         Me.btnMin.TabIndex = 8
         Me.btnMin.TabStop = False
         Me.btnMin.Text = "⎯"
@@ -208,7 +216,7 @@ Partial Class FrmMain
         Me.btnMax.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnMax.Location = New System.Drawing.Point(45, 0)
         Me.btnMax.Name = "btnMax"
-        Me.btnMax.Size = New System.Drawing.Size(45, 25)
+        Me.btnMax.Size = New System.Drawing.Size(45, 23)
         Me.btnMax.TabIndex = 9
         Me.btnMax.TabStop = False
         Me.btnMax.Text = "⧠"
@@ -216,6 +224,7 @@ Partial Class FrmMain
         '
         'btnQuit
         '
+        Me.btnQuit.BackColor = System.Drawing.Color.Transparent
         Me.btnQuit.Dock = System.Windows.Forms.DockStyle.Right
         Me.btnQuit.FlatAppearance.BorderColor = System.Drawing.SystemColors.Control
         Me.btnQuit.FlatAppearance.BorderSize = 0
@@ -225,11 +234,11 @@ Partial Class FrmMain
         Me.btnQuit.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnQuit.Location = New System.Drawing.Point(90, 0)
         Me.btnQuit.Name = "btnQuit"
-        Me.btnQuit.Size = New System.Drawing.Size(45, 25)
+        Me.btnQuit.Size = New System.Drawing.Size(45, 23)
         Me.btnQuit.TabIndex = 7
         Me.btnQuit.TabStop = False
         Me.btnQuit.Text = "╳"
-        Me.btnQuit.UseVisualStyleBackColor = True
+        Me.btnQuit.UseVisualStyleBackColor = False
         '
         'tmrTick
         '
@@ -291,7 +300,7 @@ Partial Class FrmMain
         Me.pnlStartup.Controls.Add(Me.btnAlt14)
         Me.pnlStartup.Controls.Add(Me.btnAlt15)
         Me.pnlStartup.Controls.Add(Me.btnAlt16)
-        Me.pnlStartup.Location = New System.Drawing.Point(1, 27)
+        Me.pnlStartup.Location = New System.Drawing.Point(1, 25)
         Me.pnlStartup.Margin = New System.Windows.Forms.Padding(0)
         Me.pnlStartup.Name = "pnlStartup"
         Me.pnlStartup.Size = New System.Drawing.Size(898, 737)
@@ -570,7 +579,7 @@ Partial Class FrmMain
         'pbZoom
         '
         Me.pbZoom.BackColor = System.Drawing.Color.Magenta
-        Me.pbZoom.Location = New System.Drawing.Point(1, 27)
+        Me.pbZoom.Location = New System.Drawing.Point(1, 25)
         Me.pbZoom.Name = "pbZoom"
         Me.pbZoom.Size = New System.Drawing.Size(800, 600)
         Me.pbZoom.TabIndex = 0
@@ -583,12 +592,56 @@ Partial Class FrmMain
         Me.sysTrayIcon.Text = "ScalA"
         Me.sysTrayIcon.Visible = True
         '
+        'cornerNW
+        '
+        Me.cornerNW.BackColor = System.Drawing.Color.Transparent
+        Me.cornerNW.Image = Global.ScalA.My.Resources.Resources.cornerNW
+        Me.cornerNW.Location = New System.Drawing.Point(907, 114)
+        Me.cornerNW.Name = "cornerNW"
+        Me.cornerNW.Size = New System.Drawing.Size(46, 41)
+        Me.cornerNW.TabIndex = 15
+        Me.cornerNW.TabStop = False
+        '
+        'cornerNE
+        '
+        Me.cornerNE.BackColor = System.Drawing.Color.Transparent
+        Me.cornerNE.Image = Global.ScalA.My.Resources.Resources.cornerNE
+        Me.cornerNE.Location = New System.Drawing.Point(959, 114)
+        Me.cornerNE.Name = "cornerNE"
+        Me.cornerNE.Size = New System.Drawing.Size(46, 41)
+        Me.cornerNE.TabIndex = 16
+        Me.cornerNE.TabStop = False
+        '
+        'cornerSW
+        '
+        Me.cornerSW.BackColor = System.Drawing.Color.Transparent
+        Me.cornerSW.Image = Global.ScalA.My.Resources.Resources.cornerSW
+        Me.cornerSW.Location = New System.Drawing.Point(907, 161)
+        Me.cornerSW.Name = "cornerSW"
+        Me.cornerSW.Size = New System.Drawing.Size(46, 41)
+        Me.cornerSW.TabIndex = 17
+        Me.cornerSW.TabStop = False
+        '
+        'cornerSE
+        '
+        Me.cornerSE.BackColor = System.Drawing.Color.Transparent
+        Me.cornerSE.Image = Global.ScalA.My.Resources.Resources.cornerSE
+        Me.cornerSE.Location = New System.Drawing.Point(959, 161)
+        Me.cornerSE.Name = "cornerSE"
+        Me.cornerSE.Size = New System.Drawing.Size(46, 41)
+        Me.cornerSE.TabIndex = 18
+        Me.cornerSE.TabStop = False
+        '
         'FrmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(1052, 855)
+        Me.Controls.Add(Me.cornerSE)
+        Me.Controls.Add(Me.cornerSW)
+        Me.Controls.Add(Me.cornerNE)
+        Me.Controls.Add(Me.cornerNW)
         Me.Controls.Add(Me.pnlStartup)
         Me.Controls.Add(Me.pbZoom)
         Me.Controls.Add(Me.pnlSys)
@@ -612,6 +665,10 @@ Partial Class FrmMain
         Me.pnlMessage.PerformLayout()
         CType(Me.pbMessage, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.pbZoom, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.cornerNW, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.cornerNE, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.cornerSW, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.cornerSE, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
@@ -658,4 +715,8 @@ Partial Class FrmMain
     Friend WithEvents btnAlt14 As Button
     Friend WithEvents btnAlt15 As Button
     Friend WithEvents btnAlt16 As Button
+    Friend WithEvents cornerNW As PictureBox
+    Friend WithEvents cornerNE As PictureBox
+    Friend WithEvents cornerSW As PictureBox
+    Friend WithEvents cornerSE As PictureBox
 End Class

@@ -82,3 +82,12 @@ Used above delegate to also handle quicklaunch icons, resulting in smoother oper
 Improved sorting in quicklaunch for shortcuts starting with identical numbers.
 Made alt cycle hotkey (ctrl-space) immediately stop on releasing keys.
 Increased maximum number of alts on overview to 16.
+
+**ScalA 0.8.8**
+Fixed reselecting already selected alt would glitch restore position. 
+Fixed reselecting 'Someone' while on overview would blank button text and images fo a split second.
+Moved quicklaunch folder selection dialog to settings.
+Implemented Cancellationtoken for quicklaunch defferred icon loading.
+Added Rounded Corners setting for them Windows 11 fanboys.
+Moved default quicklaunch location to %ProgramData%/ScalA.
+   (this is to prevent exceptions when Windows Defender Ransomware Protection is on)

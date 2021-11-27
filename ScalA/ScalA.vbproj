@@ -158,6 +158,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\cornerNE.png" />
+    <None Include="Resources\cornerNW.png" />
+    <None Include="Resources\cornerSE.png" />
+    <None Include="Resources\cornerSW.png" />
     <Content Include="Resources\moa3.ico" />
     <None Include="Resources\F12.png" />
     <Content Include="Resources\ReadMe.txt" />

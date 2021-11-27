@@ -175,6 +175,18 @@ Namespace My
                 Me("SettingsVersion") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property roundCorners() As Boolean
+            Get
+                Return CType(Me("roundCorners"),Boolean)
+            End Get
+            Set
+                Me("roundCorners") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

@@ -31,6 +31,8 @@ Partial Class FrmSettings
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmSettings))
         Me.txtResolutions = New System.Windows.Forms.TextBox()
         Me.btnOpenFolderDialog = New System.Windows.Forms.Button()
+        Me.cmsQLFolder = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.OpenInExplorerToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.txtQuickLaunchPath = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.grpAlign = New System.Windows.Forms.GroupBox()
@@ -43,8 +45,7 @@ Partial Class FrmSettings
         Me.tmrAlign = New System.Windows.Forms.Timer(Me.components)
         Me.txtExe = New System.Windows.Forms.TextBox()
         Me.txtClass = New System.Windows.Forms.TextBox()
-        Me.cmsQLFolder = New System.Windows.Forms.ContextMenuStrip(Me.components)
-        Me.OpenInExplorerToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
         Label2 = New System.Windows.Forms.Label()
         Label1 = New System.Windows.Forms.Label()
         GroupBox1 = New System.Windows.Forms.GroupBox()
@@ -52,10 +53,10 @@ Partial Class FrmSettings
         GroupBox2 = New System.Windows.Forms.GroupBox()
         GroupBox1.SuspendLayout()
         GroupBox2.SuspendLayout()
+        Me.cmsQLFolder.SuspendLayout()
         Me.grpAlign.SuspendLayout()
         CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.numXoffset, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.cmsQLFolder.SuspendLayout()
         Me.SuspendLayout()
         '
         'Label2
@@ -79,9 +80,9 @@ Partial Class FrmSettings
         'GroupBox1
         '
         GroupBox1.Controls.Add(Me.txtResolutions)
-        GroupBox1.Location = New System.Drawing.Point(115, 60)
+        GroupBox1.Location = New System.Drawing.Point(115, 50)
         GroupBox1.Name = "GroupBox1"
-        GroupBox1.Size = New System.Drawing.Size(107, 138)
+        GroupBox1.Size = New System.Drawing.Size(107, 148)
         GroupBox1.TabIndex = 9
         GroupBox1.TabStop = False
         GroupBox1.Text = "Resolutions"
@@ -92,7 +93,7 @@ Partial Class FrmSettings
         Me.txtResolutions.Multiline = True
         Me.txtResolutions.Name = "txtResolutions"
         Me.txtResolutions.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.txtResolutions.Size = New System.Drawing.Size(97, 116)
+        Me.txtResolutions.Size = New System.Drawing.Size(97, 123)
         Me.txtResolutions.TabIndex = 0
         Me.txtResolutions.Text = "800x600" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "1200x900" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "1600x1200" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2000x1500" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2400x1800" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2800x2100" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "3200x2400" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "3600x27" &
     "00" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "4000x3000" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "4400x3300"
@@ -100,7 +101,7 @@ Partial Class FrmSettings
         'Label3
         '
         Label3.AutoSize = True
-        Label3.Location = New System.Drawing.Point(80, 86)
+        Label3.Location = New System.Drawing.Point(80, 89)
         Label3.Name = "Label3"
         Label3.Size = New System.Drawing.Size(27, 13)
         Label3.TabIndex = 11
@@ -110,7 +111,7 @@ Partial Class FrmSettings
         '
         GroupBox2.Controls.Add(Me.btnOpenFolderDialog)
         GroupBox2.Controls.Add(Me.txtQuickLaunchPath)
-        GroupBox2.Location = New System.Drawing.Point(9, 12)
+        GroupBox2.Location = New System.Drawing.Point(9, 3)
         GroupBox2.Name = "GroupBox2"
         GroupBox2.Size = New System.Drawing.Size(213, 42)
         GroupBox2.TabIndex = 1
@@ -130,6 +131,18 @@ Partial Class FrmSettings
         Me.btnOpenFolderDialog.Text = ".."
         Me.btnOpenFolderDialog.UseVisualStyleBackColor = True
         '
+        'cmsQLFolder
+        '
+        Me.cmsQLFolder.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenInExplorerToolStripMenuItem})
+        Me.cmsQLFolder.Name = "cmsQLFolder"
+        Me.cmsQLFolder.Size = New System.Drawing.Size(184, 26)
+        '
+        'OpenInExplorerToolStripMenuItem
+        '
+        Me.OpenInExplorerToolStripMenuItem.Name = "OpenInExplorerToolStripMenuItem"
+        Me.OpenInExplorerToolStripMenuItem.Size = New System.Drawing.Size(183, 22)
+        Me.OpenInExplorerToolStripMenuItem.Text = "Open in File Explorer"
+        '
         'txtQuickLaunchPath
         '
         Me.txtQuickLaunchPath.Location = New System.Drawing.Point(5, 16)
@@ -141,7 +154,7 @@ Partial Class FrmSettings
         'chkTopMost
         '
         Me.chkTopMost.AutoSize = True
-        Me.chkTopMost.Location = New System.Drawing.Point(9, 60)
+        Me.chkTopMost.Location = New System.Drawing.Point(9, 69)
         Me.chkTopMost.Name = "chkTopMost"
         Me.chkTopMost.Size = New System.Drawing.Size(98, 17)
         Me.chkTopMost.TabIndex = 0
@@ -230,7 +243,7 @@ Partial Class FrmSettings
         'txtExe
         '
         Me.txtExe.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtExe.Location = New System.Drawing.Point(9, 83)
+        Me.txtExe.Location = New System.Drawing.Point(9, 87)
         Me.txtExe.Name = "txtExe"
         Me.txtExe.Size = New System.Drawing.Size(66, 20)
         Me.txtExe.TabIndex = 1
@@ -239,23 +252,21 @@ Partial Class FrmSettings
         'txtClass
         '
         Me.txtClass.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtClass.Location = New System.Drawing.Point(9, 109)
+        Me.txtClass.Location = New System.Drawing.Point(9, 111)
         Me.txtClass.Name = "txtClass"
         Me.txtClass.Size = New System.Drawing.Size(100, 20)
         Me.txtClass.TabIndex = 10
         Me.txtClass.Text = "MAINWNDMOAC | 䅍义乗䵄䅏C"
         '
-        'cmsQLFolder
+        'chkRoundCorners
         '
-        Me.cmsQLFolder.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenInExplorerToolStripMenuItem})
-        Me.cmsQLFolder.Name = "cmsQLFolder"
-        Me.cmsQLFolder.Size = New System.Drawing.Size(184, 26)
-        '
-        'OpenInExplorerToolStripMenuItem
-        '
-        Me.OpenInExplorerToolStripMenuItem.Name = "OpenInExplorerToolStripMenuItem"
-        Me.OpenInExplorerToolStripMenuItem.Size = New System.Drawing.Size(183, 22)
-        Me.OpenInExplorerToolStripMenuItem.Text = "Open in File Explorer"
+        Me.chkRoundCorners.AutoSize = True
+        Me.chkRoundCorners.Location = New System.Drawing.Point(9, 52)
+        Me.chkRoundCorners.Name = "chkRoundCorners"
+        Me.chkRoundCorners.Size = New System.Drawing.Size(109, 17)
+        Me.chkRoundCorners.TabIndex = 12
+        Me.chkRoundCorners.Text = "Rounded Corners"
+        Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
@@ -263,11 +274,12 @@ Partial Class FrmSettings
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.btnCancel
         Me.ClientSize = New System.Drawing.Size(228, 236)
+        Me.Controls.Add(GroupBox1)
+        Me.Controls.Add(Me.chkRoundCorners)
         Me.Controls.Add(GroupBox2)
         Me.Controls.Add(Label3)
         Me.Controls.Add(Me.txtClass)
         Me.Controls.Add(Me.txtExe)
-        Me.Controls.Add(GroupBox1)
         Me.Controls.Add(Me.chkDoAlign)
         Me.Controls.Add(Me.btnCancel)
         Me.Controls.Add(Me.btnOK)
@@ -284,11 +296,11 @@ Partial Class FrmSettings
         GroupBox1.PerformLayout()
         GroupBox2.ResumeLayout(False)
         GroupBox2.PerformLayout()
+        Me.cmsQLFolder.ResumeLayout(False)
         Me.grpAlign.ResumeLayout(False)
         Me.grpAlign.PerformLayout()
         CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.numXoffset, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.cmsQLFolder.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -310,4 +322,5 @@ Partial Class FrmSettings
     Friend WithEvents btnOpenFolderDialog As Button
     Friend WithEvents cmsQLFolder As ContextMenuStrip
     Friend WithEvents OpenInExplorerToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents chkRoundCorners As CheckBox
 End Class

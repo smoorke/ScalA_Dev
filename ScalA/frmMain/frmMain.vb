@@ -327,10 +327,11 @@
     End Sub
 
     Public Shared zooms() As Size = GetResolutions()
+
     Private Sub FrmMain_Load(sender As Form, e As EventArgs) Handles MyBase.Load
         CheckForIllegalCrossThreadCalls = True
 
-        If (New Version(My.Settings.SettingsVersion) < My.Application.Info.Version) Then
+        If New Version(My.Settings.SettingsVersion) < My.Application.Info.Version Then
             My.Settings.Upgrade()
             My.Settings.SettingsVersion = My.Application.Info.Version.ToString
             My.Settings.Save()
@@ -345,6 +346,13 @@
         Debug.Print("topmost " & My.Settings.topmost)
         Me.TopMost = My.Settings.topmost
         Me.chkHideMessage.Checked = My.Settings.hideMessage
+
+
+        'left big in designer to facilitate editing
+        cornerNW.Size = New Size(2, 2)
+        cornerNE.Size = New Size(2, 2)
+        cornerSW.Size = New Size(2, 2)
+        cornerSE.Size = New Size(2, 2)
 
         cmbResolution.Items.AddRange(zooms.Select(Function(ss) ss.Width & "x" & ss.Height).ToArray)
         cmbResolution.SelectedIndex = My.Settings.zoom
@@ -362,7 +370,7 @@
             cboAlt.Items.Add(ap)
             If args.Count > 1 AndAlso ap.Name = args(1) Then
                 Debug.Print($"Selecting '{ap.Name}'")
-                cboAlt.SelectedItem = ap
+                    cboAlt.SelectedItem = ap
             End If
         Next
         cboAlt.EndUpdate()
@@ -377,18 +385,18 @@
         Debug.Print("updateTitle")
         UpdateTitle()
 
-        Dim mydocs As String = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) & "\ScalA"
+        Dim progdata As String = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) & "\ScalA"
         If My.Settings.links = "" Then
-            My.Settings.links = mydocs
+            My.Settings.links = progdata
         End If
-        If Not System.IO.Directory.Exists(mydocs) Then
-            System.IO.Directory.CreateDirectory(mydocs)
-            System.IO.Directory.CreateDirectory(mydocs & "\Example Folder")
+        If Not System.IO.Directory.Exists(progdata) Then
+            System.IO.Directory.CreateDirectory(progdata)
+            System.IO.Directory.CreateDirectory(progdata & "\Example Folder")
         End If
-        'copy readme to mydocs
-        If Not FileIO.FileSystem.FileExists(mydocs & "\ReadMe.txt") OrElse My.Resources.ReadMe.Length <> FileIO.FileSystem.GetFileInfo(mydocs & "\ReadMe.txt").Length Then
+        'copy readme to progdata
+        If Not FileIO.FileSystem.FileExists(progdata & "\ReadMe.txt") OrElse My.Resources.ReadMe.Length <> FileIO.FileSystem.GetFileInfo(progdata & "\ReadMe.txt").Length Then
             Debug.Print("Readme is diffrent or nonexistant")
-            FileIO.FileSystem.WriteAllText(mydocs & "\ReadMe.txt", My.Resources.ReadMe, False, System.Text.Encoding.ASCII)
+            FileIO.FileSystem.WriteAllText(progdata & "\ReadMe.txt", My.Resources.ReadMe, False, System.Text.Encoding.ASCII)
         End If
 
 #If DEBUG Then
@@ -590,7 +598,7 @@
     Private Sub ReZoom(newSize As Size)
         Me.SuspendLayout()
         If Me.WindowState <> FormWindowState.Maximized Then
-            Me.Size = New Size(newSize.Width + 2, newSize.Height + 28)
+            Me.Size = New Size(newSize.Width + 2, newSize.Height + 26)
             pbZoom.Left = 1
             pnlStartup.Left = 1
             pbZoom.Size = newSize
@@ -600,7 +608,7 @@
             pbZoom.Left = 0
             pnlStartup.Left = 0
             pbZoom.Width = newSize.Width + 1
-            pbZoom.Height = newSize.Height - 27
+            pbZoom.Height = newSize.Height - 25
             pnlStartup.Size = pbZoom.Size
             cmbResolution.Enabled = False
         End If
@@ -610,6 +618,26 @@
         End If
         Me.ResumeLayout(True)
         pnlTitleBar.Width = pnlButtons.Left - pnlTitleBar.Left
+
+        cornerNW.Location = New Point(0, 0)
+        cornerNE.Location = New Point(Me.Width - 2, 0)
+        cornerSW.Location = New Point(0, Me.Height - 2)
+        cornerSE.Location = New Point(Me.Width - 2, Me.Height - 2)
+
+        If Me.WindowState <> FormWindowState.Maximized AndAlso My.Settings.roundCorners Then
+
+            cornerNW.Visible = True
+            cornerNE.Visible = True
+            cornerSW.Visible = True
+            cornerSE.Visible = True
+
+        Else 'maximized
+            cornerNW.Visible = False
+            cornerNE.Visible = False
+            cornerSW.Visible = False
+            cornerSE.Visible = False
+        End If
+
     End Sub
 
 #Region " SysMenu "
@@ -918,10 +946,12 @@
 
     Private Sub BtnQuit_MouseEnter(sender As Button, e As EventArgs) Handles btnQuit.MouseEnter
         sender.ForeColor = SystemColors.Control
+        sender.BackColor = Color.Red
     End Sub
 
     Private Sub BtnQuit_MouseLeave(sender As Button, e As EventArgs) Handles btnQuit.MouseLeave
         sender.ForeColor = SystemColors.ControlText
+        sender.BackColor = Color.Transparent
     End Sub
 
     Private Sub BtnQuit_Click(sender As Button, e As EventArgs) Handles btnQuit.Click
