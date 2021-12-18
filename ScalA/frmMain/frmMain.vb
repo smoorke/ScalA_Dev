@@ -1138,6 +1138,19 @@
         sysTrayIcon.Dispose()
 
     End Sub
+    Public Sub UnelevateSelf()
+        If Me.WindowState = FormWindowState.Normal Then
+            My.Settings.location = Me.Location
+        End If
+        My.Settings.Save()
+        If cboAlt.SelectedIndex > 0 AndAlso AltPP IsNot Nothing Then
+            RestorePos(AltPP)
+        End If
+        ExecuteProcessUnElevated(Environment.GetCommandLineArgs()(0), "Someone")
+        sysTrayIcon.Visible = False
+        sysTrayIcon.Dispose()
+        End
+    End Sub
 
 
 #If DEBUG Then

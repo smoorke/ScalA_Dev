@@ -35,7 +35,7 @@ Partial Public Class FrmMain
 
     Private Sub CmsAlt_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsAlt.Opening
         If My.Computer.Keyboard.ShiftKeyDown OrElse My.Computer.Keyboard.CtrlKeyDown Then
-            cmsQuickLaunch.Show(MousePosition)
+            cmsQuickLaunch.Show(sender.SourceControl, sender.SourceControl.PointToClient(MousePosition))
             e.Cancel = True
             Exit Sub
         End If
@@ -392,7 +392,7 @@ Partial Public Class FrmMain
 
         sender.Items.AddRange(ParseDir(My.Settings.links).ToArray)
 
-        If My.Computer.Keyboard.CtrlKeyDown Then 'don't show when called from trayicon except when ctrl is pressed
+        If My.Computer.Keyboard.CtrlKeyDown Then
             sender.Items.Add(New ToolStripSeparator())
             sender.Items.Add("Select Folder", My.Resources.gear_wheel, AddressOf ChangeLinksDir)
         End If
@@ -409,6 +409,18 @@ Partial Public Class FrmMain
             End If
         End If
 
+        If sender.SourceControl Is btnStart AndAlso My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then
+            'Dim image As Image = Nothing
+            'Dim imageHandle = LoadImage(IntPtr.Zero, "#106", 1, 16, 16, 0)
+            'If imageHandle <> IntPtr.Zero Then
+            '    Using Ico = Icon.FromHandle(imageHandle)
+            '        image = Ico.ToBitmap
+            '        DestroyIcon(Ico.Handle)
+            '    End Using
+            'End If
+            sender.Items.Add(New ToolStripSeparator())
+            sender.Items.Add("UnElevate", btnStart.Image, AddressOf UnelevateSelf).ToolTipText = "Drop Admin Rights" & vbCrLf & "Use this If you can't use ctrl, alt and/or shift."
+        End If
 
         If watchers.Count = 0 Then InitWatchers()
 

@@ -129,6 +129,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="NativeMethods.vb" />
+    <Compile Include="SystemUtitlity.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="frmSettings.resx">
