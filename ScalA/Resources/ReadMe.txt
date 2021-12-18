@@ -91,3 +91,7 @@ Implemented Cancellationtoken for quicklaunch deferred icon loading.
 Added Rounded Corners setting for them Windows 11 fanboys.
 Moved default quicklaunch location to %ProgramData%/ScalA.
    (this is to prevent exceptions when Windows Defender Ransomware Protection is on)
+
+**ScalA 0.8.9**
+Added option to unelevate self by right clicking on the admin shield.
+   (note: this will only show when ScalA is running as Administrator)
