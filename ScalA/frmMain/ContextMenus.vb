@@ -70,11 +70,6 @@ Partial Public Class FrmMain
     End Sub
 
 
-    'BOOL ImageList_Destroy(
-    '[in, optional] HIMAGELIST himl
-    ');
-
-
     Private ReadOnly iconCache As New Dictionary(Of String, Bitmap)
 
     Private Function GetIcon(ByVal PathName As String, isFolder As Boolean) As Bitmap
@@ -93,10 +88,10 @@ Partial Public Class FrmMain
         Dim ico As Icon
 
         If isFolder Then
-            NativeMethods.SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_ICON Or SHGFI_SMALLICON)
+            SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_ICON Or SHGFI_SMALLICON)
             If fi.iIcon = IntPtr.Zero Then
                 Debug.Print("iIcon empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
-                'Return Nothing
+                Return Nothing
             End If
             ico = Icon.FromHandle(fi.hIcon)
             bm = ico.ToBitmap
@@ -127,7 +122,7 @@ Partial Public Class FrmMain
         Dim hasNoDirs As Boolean = True
         Dim hasNoFiles As Boolean = True
         Dim watch As New Stopwatch
-        Const ICONTIMEOUT = 50
+        'Const ICONTIMEOUT = 50
         Const TOTALTIMEOUT = 3000
         Dim timedout As Boolean = False
 
@@ -141,15 +136,15 @@ Partial Public Class FrmMain
                 If attr.HasFlag(System.IO.FileAttributes.Hidden) Then Continue For
                 If attr.HasFlag(System.IO.FileAttributes.System) Then Continue For
 
-                Dim icon As Bitmap = Nothing
+                'Dim icon As Bitmap = Nothing
 
-                If watch.ElapsedMilliseconds < ICONTIMEOUT Then
-                    icon = GetIcon(fullDirs, True) 'needed or deferredIconLoading throws exception on geticon
-                Else
-                    Debug.Print("icontimeout dirs")
-                End If
+                'If watch.ElapsedMilliseconds < ICONTIMEOUT Then
+                '    'icon = GetIcon(fullDirs, True) 'needed or deferredIconLoading fails, why?
+                'Else
+                '    Debug.Print("icontimeout dirs")
+                'End If
 
-                Dim smenu As New ToolStripMenuItem(System.IO.Path.GetFileName(fullDirs), icon) With {.Tag = fullDirs}
+                Dim smenu As New ToolStripMenuItem(System.IO.Path.GetFileName(fullDirs)) With {.Tag = fullDirs}
 
                 ' add dummy so arrow is displayed
                 smenu.DropDownItems.Add("(Dummy)").Enabled = False
@@ -187,16 +182,17 @@ Partial Public Class FrmMain
             Else
                 linkName = System.IO.Path.GetFileName(fullLink)
             End If
-            Dim icon As Bitmap = Nothing
 
-            If watch.ElapsedMilliseconds < ICONTIMEOUT Then
-                icon = GetIcon(fullLink, False) 'needed or deferrediconloading fails?
-            Else
-                Debug.Print("icontimeout files")
-            End If
+            'Dim icon As Bitmap = Nothing
+
+            'If watch.ElapsedMilliseconds < ICONTIMEOUT Then
+            '    'icon = GetIcon(fullLink, False) 'needed or deferrediconloading fails, why?
+            'Else
+            '    Debug.Print("icontimeout files")
+            'End If
 
             ' append item to submenu
-            Dim item As New ToolStripMenuItem(linkName, icon) With {.Tag = fullLink}
+            Dim item As New ToolStripMenuItem(linkName) With {.Tag = fullLink}
             AddHandler item.MouseUp, AddressOf OpenLnk
 
             Files.Add(item)
@@ -225,12 +221,12 @@ Partial Public Class FrmMain
             End If
         End If
 
-        If watch.ElapsedMilliseconds >= ICONTIMEOUT Then
-            cts?.Dispose()
-            cts = New Threading.CancellationTokenSource
-            cantok = cts.Token
-            defferedIconLoading(Dirs, Files, cantok)
-        End If
+        '        If True Or watch.ElapsedMilliseconds >= ICONTIMEOUT Then
+        cts?.Dispose()
+        cts = New Threading.CancellationTokenSource
+        cantok = cts.Token
+        defferedIconLoading(Dirs, Files, cantok)
+        '       End If
 
         Debug.Print($"parsing ""{pth}"" took {watch.ElapsedMilliseconds} ms")
         watch.Stop()
@@ -242,16 +238,23 @@ Partial Public Class FrmMain
     End Sub
 
     Private Sub defferedIconLoading(dirs As IEnumerable(Of ToolStripItem), fils As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
-        cmsQuickLaunch.Update()
         Try
-            Task.Run(Sub() Parallel.ForEach(dirs.Where(Function(item As ToolStripItem) item.Image Is Nothing),
+            If dirs.Any Then
+                Me.BeginInvoke(updateImage, {dirs.First, GetIcon(dirs.First.Tag.ToString, True)}) ' needed or we get an exception in geticon later
+                Task.Run(Sub() Parallel.ForEach(dirs.Skip(1),
                                    Sub(item As ToolStripMenuItem)
                                        Me.BeginInvoke(updateImage, {item, GetIcon(item.Tag.ToString, True)})
                                    End Sub), ct)
-            Task.Run(Sub() Parallel.ForEach(fils.Where(Function(item As ToolStripItem) item.Image Is Nothing),
+            End If
+            If fils.Any Then
+                If Not dirs.Any Then
+                    Me.BeginInvoke(updateImage, {fils.First, GetIcon(fils.First.Tag.ToString, False)})
+                End If
+                Task.Run(Sub() Parallel.ForEach(fils.Skip(If(dirs.Any, 0, 1)),
                                         Sub(item As ToolStripMenuItem)
                                             Me.BeginInvoke(updateImage, {item, GetIcon(item.Tag.ToString, False)})
                                         End Sub), ct)
+            End If
         Catch ex As System.Threading.Tasks.TaskCanceledException
             Debug.Print("defferedIconLoading Task canceled")
         End Try
@@ -451,7 +454,7 @@ Partial Public Class FrmMain
         Debug.Print($"click {sender.Tag}")
         If e.Button = MouseButtons.Right Then
             Dim sei As New SHELLEXECUTEINFO With {
-               .cbSize = System.Runtime.InteropServices.Marshal.SizeOf(sei),
+               .cbSize = System.Runtime.InteropServices.Marshal.SizeOf(GetType(SHELLEXECUTEINFO)),
                .lpVerb = "properties",
                .lpFile = sender.Tag,
                .nShow = SW_SHOW,
@@ -468,10 +471,10 @@ Partial Public Class FrmMain
 
                          Dim hndl As IntPtr
                          While watch.ElapsedMilliseconds < 1500
+                             Threading.Thread.Sleep(20)
                              hndl = FindWindow("#32770", WindowName)
                              Debug.Print($"findwindow {hndl}")
                              If hndl <> IntPtr.Zero Then Exit While
-                             Threading.Thread.Sleep(20)
                          End While
                          SetWindowPos(hndl, -1, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
                          watch.Stop()

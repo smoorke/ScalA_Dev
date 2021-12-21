@@ -35,8 +35,7 @@
     End Enum
 
     Private Shared Function GetStockIconImage(type As SIID) As Image
-        Dim info As New SHSTOCKICONINFO()
-        info.cbSize = Runtime.InteropServices.Marshal.SizeOf(info)
+        Dim info As New SHSTOCKICONINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(SHSTOCKICONINFO))}
 
         SHGetStockIconInfo(type, &H101, info)
 
