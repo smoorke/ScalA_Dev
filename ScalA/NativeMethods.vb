@@ -1,4 +1,6 @@
-﻿Module NativeMethods
+﻿Imports System.Runtime.InteropServices
+
+Module NativeMethods
     Public Const SHGFI_ICON As Integer = &H100
     Public Const SHGFI_LARGEICON As Integer = &H0
     Public Const SHGFI_SMALLICON As Integer = &H1
@@ -212,5 +214,55 @@
 
     <System.Runtime.InteropServices.DllImport("shell32.dll", SetLastError:=True)>
     Public Function SHGetStockIconInfo(ssid As UInteger, uFlags As UInteger, ByRef pssi As SHSTOCKICONINFO) As Integer : End Function
+
+
+    <StructLayout(LayoutKind.Sequential)>
+    Structure PT
+        Public x As Int32
+        Public y As Int32
+    End Structure
+    <StructLayout(LayoutKind.Sequential)>
+    Structure CURSORINFO
+        Public cbSize As Int32
+        Public flags As Int32
+        Public hCursor As IntPtr
+        Public ptScreenpos As PT
+    End Structure
+
+    <DllImport("user32.dll")>
+    Public Function GetCursorInfo(ByRef pci As CURSORINFO) As Boolean : End Function
+
+
+    Public Declare Function GetSystemMenu Lib "user32" (ByVal hwnd As IntPtr, ByVal bRevert As Boolean) As Integer
+    Public Declare Function ModifyMenuA Lib "user32" (hMenu As Integer, uItem As Integer, fByPos As Integer, newID As Integer, lpNewIem As String) As Boolean
+    Public Declare Function SetMenuItemBitmaps Lib "user32" (hMenu As Integer, uitem As Integer, fByPos As Integer, hBitmapUnchecked As Integer, hBitmapChecked As Integer) As Boolean
+
+    Public Declare Function InsertMenuA Lib "user32" (ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer, uIDNewItem As Integer, lpNewItem As String) As Boolean
+    Public Declare Function RemoveMenu Lib "user32" (ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer) As Integer
+    Public Declare Function SetMenuDefaultItem Lib "user32" (hMenu As Integer, uItem As Integer, fByPos As Integer) As Boolean
+
+    'Const MF_STRING = &H0
+    'Const MF_REMOVE = &H1000&
+
+    Public Const MF_BYCOMMAND = &H0
+    Public Const MF_BYPOSITION = &H400
+    Public Const MF_SEPARATOR = &H800
+
+    Public Const WM_SYSCOMMAND = &H112
+
+    Public Const SC_SIZE As Integer = &HF000
+    Public Const SC_MOVE As Integer = &HF010
+    Public Const SC_MINIMIZE As Integer = &HF020
+    Public Const SC_MAXIMIZE As Integer = &HF030
+    Public Const SC_CLOSE As Integer = &HF060
+    Public Const SC_RESTORE As Integer = &HF120
+
+    <System.Runtime.InteropServices.DllImport("User32.Dll")>
+    Public Function TrackPopupMenuEx(ByVal hmenu As IntPtr, ByVal fuFlags As UInt32, ByVal x As Integer, ByVal y As Integer, ByVal hwnd As IntPtr, ByVal lptpm As Integer) As Integer : End Function
+    <System.Runtime.InteropServices.DllImport("user32.dll", CharSet:=System.Runtime.InteropServices.CharSet.Auto)>
+    Public Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByVal lParam As IntPtr) As IntPtr : End Function
+    <System.Runtime.InteropServices.DllImport("user32.dll", CharSet:=System.Runtime.InteropServices.CharSet.Auto)>
+    Public Function PostMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByVal lParam As IntPtr) As Boolean : End Function
+
 
 End Module

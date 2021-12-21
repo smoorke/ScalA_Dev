@@ -556,19 +556,26 @@
         If pbZoom.Contains(MousePosition) Then 'todo: replace with mousehook?
 
             Dim ptZ As Point = pbZoom.Location
+            Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
+
             ClientToScreen(Me.Handle, ptZ)
             newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AstClientOffset.Width - My.Settings.offset.X
             newY = MousePosition.Y.Map(ptZ.Y, ptZ.Y + pbZoom.Height, ptZ.Y, ptZ.Y + pbZoom.Height - rcC.Height) - AstClientOffset.Height - My.Settings.offset.Y
-
-            Task.Run(Sub()
-                         Try
-                             SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1,
-                                SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.ASyncWindowPosition)
-                         Catch ex As Exception
-                         End Try
-                     End Sub)
+            ' do not move astonia when cursor is not showing. fixes scrollbar thumb.
+            ' note there is still a client bug where using thumb will intermittently cause it to jump wildly
+            GetCursorInfo(pci)
+            If pci.flags <> 0 Then
+                Task.Run(Sub()
+                             Try
+                                 SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1,
+                                            SetWindowPosFlags.IgnoreResize Or
+                                            SetWindowPosFlags.DoNotActivate Or
+                                            SetWindowPosFlags.ASyncWindowPosition)
+                             Catch ex As Exception
+                             End Try
+                         End Sub)
+            End If
         End If
-
 #If DEBUG Then
         'watch.Stop()
         'If avgTime = 0 Then avgTime = watch.ElapsedMilliseconds
@@ -673,38 +680,6 @@
         End If
     End Sub
 
-
-
-    Private Declare Function GetSystemMenu Lib "user32" (ByVal hwnd As IntPtr, ByVal bRevert As Boolean) As Integer
-    Private Declare Function ModifyMenuA Lib "user32" (hMenu As Integer, uItem As Integer, fByPos As Integer, newID As Integer, lpNewIem As String) As Boolean
-    Private Declare Function SetMenuItemBitmaps Lib "user32" (hMenu As Integer, uitem As Integer, fByPos As Integer, hBitmapUnchecked As Integer, hBitmapChecked As Integer) As Boolean
-
-    Private Declare Function InsertMenuA Lib "user32" (ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer, uIDNewItem As Integer, lpNewItem As String) As Boolean
-    Private Declare Function RemoveMenu Lib "user32" (ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer) As Integer
-    Private Declare Function SetMenuDefaultItem Lib "user32" (hMenu As Integer, uItem As Integer, fByPos As Integer) As Boolean
-
-    'Const MF_STRING = &H0
-    Const MF_SEPARATOR = &H800
-    'Const MF_REMOVE = &H1000&
-
-    Const MF_BYCOMMAND = &H0
-    Const MF_BYPOSITION = &H400
-
-    Const WM_SYSCOMMAND = &H112
-
-    Const SC_SIZE As Integer = &HF000
-    Const SC_MOVE As Integer = &HF010
-    Const SC_MINIMIZE As Integer = &HF020
-    Const SC_MAXIMIZE As Integer = &HF030
-    Const SC_CLOSE As Integer = &HF060
-    Const SC_RESTORE As Integer = &HF120
-
-    <System.Runtime.InteropServices.DllImport("User32.Dll")>
-    Private Shared Function TrackPopupMenuEx(ByVal hmenu As IntPtr, ByVal fuFlags As UInt32, ByVal x As Integer, ByVal y As Integer, ByVal hwnd As IntPtr, ByVal lptpm As Integer) As Integer : End Function
-    <System.Runtime.InteropServices.DllImport("user32.dll", CharSet:=System.Runtime.InteropServices.CharSet.Auto)>
-    Private Shared Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByVal lParam As IntPtr) As IntPtr : End Function
-    <System.Runtime.InteropServices.DllImport("user32.dll", CharSet:=System.Runtime.InteropServices.CharSet.Auto)>
-    Private Shared Function PostMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByVal lParam As IntPtr) As Boolean : End Function
 #End Region
 
     Dim wasMaximized As Boolean = False 'todo find out what this does and see if it can be removed
