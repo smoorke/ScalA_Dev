@@ -110,10 +110,9 @@ Partial Public Class FrmMain
         End If
         DestroyIcon(ico.Handle)
         ico.Dispose()
-        Try
-            iconCache.Add(PathName, bm)
-        Catch
-        End Try
+
+        iconCache(PathName) = bm
+
         Return bm
     End Function
     Private ReadOnly nsSorter As IComparer(Of String) = New CustomStringSorter
@@ -237,22 +236,27 @@ Partial Public Class FrmMain
     End Sub
 
     Private Sub defferedIconLoading(dirs As IEnumerable(Of ToolStripItem), fils As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
+        Static init As Boolean = True
+        Dim skipped As Boolean = False
+        If init Then
+            Debug.Print("init iconloader")
+            Dim firstItem As ToolStripItem = If(dirs.First, fils.First)
+            Me.BeginInvoke(updateImage, {firstItem, GetIcon(firstItem.Tag.ToString, dirs.Any)}) ' needed or we get an exception in geticon later
+            skipped = True
+            init = False
+        End If
         Try
             If dirs.Any Then
-                Me.BeginInvoke(updateImage, {dirs.First, GetIcon(dirs.First.Tag.ToString, True)}) ' needed or we get an exception in geticon later
-                Task.Run(Sub() Parallel.ForEach(dirs.Skip(1),
+                Task.Run(Sub() Parallel.ForEach(dirs.Skip(skipped),
                                    Sub(item As ToolStripMenuItem)
                                        Me.BeginInvoke(updateImage, {item, GetIcon(item.Tag.ToString, True)})
                                    End Sub), ct)
             End If
             If fils.Any Then
-                If Not dirs.Any Then
-                    Me.BeginInvoke(updateImage, {fils.First, GetIcon(fils.First.Tag.ToString, False)})
-                End If
-                Task.Run(Sub() Parallel.ForEach(fils.Skip(If(dirs.Any, 0, 1)),
-                                        Sub(item As ToolStripMenuItem)
-                                            Me.BeginInvoke(updateImage, {item, GetIcon(item.Tag.ToString, False)})
-                                        End Sub), ct)
+                Task.Run(Sub() Parallel.ForEach(fils.Skip(skipped AndAlso Not dirs.Any),
+                                   Sub(item As ToolStripMenuItem)
+                                       Me.BeginInvoke(updateImage, {item, GetIcon(item.Tag.ToString, False)})
+                                   End Sub), ct)
             End If
         Catch ex As System.Threading.Tasks.TaskCanceledException
             Debug.Print("defferedIconLoading Task canceled")
