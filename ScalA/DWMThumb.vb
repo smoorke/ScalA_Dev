@@ -51,8 +51,7 @@ Partial Public Class FrmMain
 
 
     Public Sub AnimateThumb(startRC As Rectangle, endRC As Rectangle, Optional time As Integer = 50)
-        Dim timer As New Stopwatch
-        timer.Start()
+        Dim timer As Stopwatch = Stopwatch.StartNew
 
         Dim twp As DWM_THUMBNAIL_PROPERTIES
         twp.dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY + DwmThumbnailFlags.DWM_TNP_RECTDESTINATION + DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY + DwmThumbnailFlags.DWM_TNP_VISIBLE

@@ -465,8 +465,7 @@ Partial Public Class FrmMain
             Dim WindowName As String = sender.Tag.ToString.ToLower.Substring(sender.Tag.ToString.LastIndexOf("\") + 1).Replace(".url", "").Replace(".lnk", "") & " Properties"
             Debug.Print($"WindowName:{WindowName}")
             Task.Run(Sub()
-                         Dim watch = New Stopwatch
-                         watch.Start()
+                         Dim watch As Stopwatch = Stopwatch.StartNew()
 
                          Dim hndl As IntPtr
                          While watch.ElapsedMilliseconds < 1500
