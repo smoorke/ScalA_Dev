@@ -534,7 +534,7 @@
     Public newX As Integer
     Public newY As Integer
     Private ScalaHandle As IntPtr = Me.Handle
-    Private Sub Timer1_Tick(sender As Timer, e As EventArgs) Handles tmrTick.Tick
+    Private Sub tmrTick_Tick(sender As Timer, e As EventArgs) Handles tmrTick.Tick
 #If DEBUG Then
         'Static avgTime As Double = 0
         'Dim watch As Stopwatch = Stopwatch.StartNew()
