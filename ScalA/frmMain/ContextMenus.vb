@@ -121,12 +121,11 @@ Partial Public Class FrmMain
         Dim menuItems As New List(Of ToolStripItem)
         Dim hasNoDirs As Boolean = True
         Dim hasNoFiles As Boolean = True
-        Dim watch As New Stopwatch
         'Const ICONTIMEOUT = 50
         Const TOTALTIMEOUT = 3000
         Dim timedout As Boolean = False
 
-        watch.Start()
+        Dim watch As Stopwatch = Stopwatch.StartNew()
 
         Dim Dirs As New List(Of ToolStripItem)
         Try
@@ -384,7 +383,7 @@ Partial Public Class FrmMain
         'tmrTick.Interval = 1000
         sender.Items.Clear()
 
-        If Not FileIO.FileSystem.DirectoryExists(My.Settings.links) Then My.Settings.links = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) & "\ScalA"
+        If Not FileIO.FileSystem.DirectoryExists(My.Settings.links) Then My.Settings.links = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) & "\ScalA"
 
         If Not FileIO.FileSystem.DirectoryExists(My.Settings.links) Then
             System.IO.Directory.CreateDirectory(My.Settings.links)
