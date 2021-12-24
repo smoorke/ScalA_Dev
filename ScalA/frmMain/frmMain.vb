@@ -877,6 +877,7 @@
     Delegate Sub updateImageDelegate(obj As Object, bm As Bitmap)
     Private updateImage As updateImageDelegate = New updateImageDelegate(AddressOf updateImageMethod)
     Private Sub updateImageMethod(obj As Object, bm As Bitmap) 'used by button and toolstripmenuitem
+        If obj Is Nothing Then Exit Sub
         If TypeOf obj Is Button Then
             CType(obj, Button).Image = bm
         Else

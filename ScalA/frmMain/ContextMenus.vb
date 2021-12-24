@@ -111,7 +111,10 @@ Partial Public Class FrmMain
         DestroyIcon(ico.Handle)
         ico.Dispose()
 
-        iconCache(PathName) = bm
+        Try
+            iconCache.Add(PathName, bm)
+        Catch
+        End Try
 
         Return bm
     End Function
@@ -240,8 +243,8 @@ Partial Public Class FrmMain
         Dim skipped As Boolean = False
         If init Then
             Debug.Print("init iconloader")
-            Dim firstItem As ToolStripItem = If(dirs.First, fils.First)
-            Me.BeginInvoke(updateImage, {firstItem, GetIcon(firstItem.Tag.ToString, dirs.Any)}) ' needed or we get an exception in geticon later
+            Dim firstItem As ToolStripItem = If(dirs.FirstOrDefault, fils.FirstOrDefault)
+            Me.BeginInvoke(updateImage, {firstItem, GetIcon(firstItem?.Tag.ToString, dirs.Any)}) ' needed or we get an exception in geticon later
             skipped = True
             init = False
         End If
