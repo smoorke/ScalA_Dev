@@ -6,28 +6,28 @@ Module NativeMethods
     Public Const SHGFI_SMALLICON As Integer = &H1
     Public Const SHGFI_SYSICONINDEX As Integer = &H4000
 
-    <System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, CharSet:=System.Runtime.InteropServices.CharSet.[Unicode])>
+    <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.[Unicode])>
     Public Structure SHFILEINFOW
         Public hIcon As IntPtr
         Public iIcon As Integer
         Public dwAttributes As Integer
-        <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=260)> Public szDisplayName As String
-        <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=80)> Public szTypeName As String
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=260)> Public szDisplayName As String
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=80)> Public szTypeName As String
     End Structure
 
-    <System.Runtime.InteropServices.DllImport("shell32.dll", EntryPoint:="SHGetFileInfoW", SetLastError:=True)>
-    Public Function SHGetFileInfoW(<System.Runtime.InteropServices.InAttribute(), System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPTStr)> ByVal pszPath As String, ByVal dwFileAttributes As Integer, ByRef psfi As SHFILEINFOW, ByVal cbFileInfo As Integer, ByVal uFlags As Integer) As Integer
+    <DllImport("shell32.dll", EntryPoint:="SHGetFileInfoW", SetLastError:=True)>
+    Public Function SHGetFileInfoW(<InAttribute(), MarshalAs(UnmanagedType.LPTStr)> ByVal pszPath As String, ByVal dwFileAttributes As Integer, ByRef psfi As SHFILEINFOW, ByVal cbFileInfo As Integer, ByVal uFlags As Integer) As Integer
     End Function
 
-    <System.Runtime.InteropServices.DllImport("user32.dll", EntryPoint:="DestroyIcon")>
-    Public Function DestroyIcon(ByVal hIcon As System.IntPtr) As <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)> Boolean
+    <DllImport("user32.dll", EntryPoint:="DestroyIcon")>
+    Public Function DestroyIcon(ByVal hIcon As System.IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
     End Function
 
-    <System.Runtime.InteropServices.DllImport("comctl32.dll", SetLastError:=True)>
+    <DllImport("comctl32.dll", SetLastError:=True)>
     Public Function ImageList_GetIcon(hIml As IntPtr, index As Integer, flags As UInteger) As IntPtr 'this tends to fail in MTA (need coinit?)
     End Function
 
-    <System.Runtime.InteropServices.DllImport("comctl32.dll", SetLastError:=True)>
+    <DllImport("comctl32.dll", SetLastError:=True)>
     Public Function ImageList_Destroy(hIml As IntPtr) As Boolean
     End Function
 
@@ -39,14 +39,14 @@ Module NativeMethods
         Public cbSize As Integer
         Public fMask As Integer
         Public hwnd As IntPtr
-        <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPTStr)> Public lpVerb As String
-        <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPTStr)> Public lpFile As String
-        <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPTStr)> Public lpParameters As String
-        <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPTStr)> Public lpDirectory As String
+        <MarshalAs(UnmanagedType.LPTStr)> Public lpVerb As String
+        <MarshalAs(UnmanagedType.LPTStr)> Public lpFile As String
+        <MarshalAs(UnmanagedType.LPTStr)> Public lpParameters As String
+        <MarshalAs(UnmanagedType.LPTStr)> Public lpDirectory As String
         Dim nShow As Integer
         Dim hInstApp As IntPtr
         Dim lpIDList As IntPtr
-        <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPTStr)> Public lpClass As String
+        <MarshalAs(UnmanagedType.LPTStr)> Public lpClass As String
         Public hkeyClass As IntPtr
         Public dwHotKey As Integer
         Public hIcon As IntPtr
@@ -59,15 +59,15 @@ Module NativeMethods
     Public Const SEE_MASK_FLAG_NO_UI = &H400
     Public Const SW_SHOW As Short = 5
 
-    <System.Runtime.InteropServices.DllImport("Shell32", CharSet:=System.Runtime.InteropServices.CharSet.Auto, SetLastError:=True)>
+    <DllImport("Shell32", CharSet:=CharSet.Auto, SetLastError:=True)>
     Public Function ShellExecuteEx(ByRef lpExecInfo As SHELLEXECUTEINFO) As Boolean
     End Function
 
-    <System.Runtime.InteropServices.DllImport("user32.dll")>
+    <DllImport("user32.dll")>
     Public Function LoadImage(hinst As IntPtr, lpszName As String, uType As UInt32, cxDesired As Integer, cyDesired As Integer, fuLoad As UInt32) As IntPtr : End Function
-    <System.Runtime.InteropServices.DllImport("user32.dll")>
+    <DllImport("user32.dll")>
     Public Function SetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer, ByVal dwNewLong As UInteger) As Integer : End Function
-    <System.Runtime.InteropServices.DllImport("user32.dll")>
+    <DllImport("user32.dll")>
     Public Function GetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer) As UInteger : End Function
 
     Public Const GWL_HWNDPARENT As Integer = -8
@@ -126,16 +126,16 @@ Module NativeMethods
     End Enum
 
 
-    <System.Runtime.InteropServices.DllImport("user32.dll")>
+    <DllImport("user32.dll")>
     Public Function GetWindowRect(ByVal hWnd As IntPtr, ByRef lpRect As Rectangle) As Boolean : End Function
-    <System.Runtime.InteropServices.DllImport("user32.dll")>
+    <DllImport("user32.dll")>
     Public Function GetClientRect(ByVal hWnd As IntPtr, ByRef lpRect As Rectangle) As Boolean : End Function
-    <System.Runtime.InteropServices.DllImport("user32.dll")>
+    <DllImport("user32.dll")>
     Public Function ClientToScreen(ByVal hWnd As IntPtr, ByRef lpPoint As Point) As Boolean : End Function
-    <System.Runtime.InteropServices.DllImport("user32.dll")>
+    <DllImport("user32.dll")>
     Public Function GetForegroundWindow() As IntPtr : End Function
-    <System.Runtime.InteropServices.DllImport("user32.dll")>
-    Public Function GetWindowThreadProcessId(ByVal hWnd As IntPtr, <System.Runtime.InteropServices.Out()> ByRef lpdwProcessId As UInteger) As UInteger : End Function
+    <DllImport("user32.dll")>
+    Public Function GetWindowThreadProcessId(ByVal hWnd As IntPtr, <Out()> ByRef lpdwProcessId As UInteger) As UInteger : End Function
 #Region " SetWindowPos "
     <Flags>
     Public Enum SetWindowPosFlags As UInteger
@@ -196,7 +196,7 @@ Module NativeMethods
         ''' <remarks>SWP_SHOWWINDOW</remarks>
         ShowWindow = &H40
     End Enum
-    <System.Runtime.InteropServices.DllImport("user32.dll", SetLastError:=True)>
+    <DllImport("user32.dll", SetLastError:=True)>
     Public Function SetWindowPos(ByVal hWnd As IntPtr, ByVal hWndInsertAfter As IntPtr, ByVal X As Integer, ByVal Y As Integer, ByVal cx As Integer, ByVal cy As Integer, ByVal uFlags As SetWindowPosFlags) As Boolean
     End Function
 #End Region
@@ -212,7 +212,7 @@ Module NativeMethods
         Public szPath As String
     End Structure
 
-    <System.Runtime.InteropServices.DllImport("shell32.dll", SetLastError:=True)>
+    <DllImport("shell32.dll", SetLastError:=True)>
     Public Function SHGetStockIconInfo(ssid As UInteger, uFlags As UInteger, ByRef pssi As SHSTOCKICONINFO) As Integer : End Function
 
 
@@ -257,11 +257,11 @@ Module NativeMethods
     Public Const SC_CLOSE As Integer = &HF060
     Public Const SC_RESTORE As Integer = &HF120
 
-    <System.Runtime.InteropServices.DllImport("User32.Dll")>
+    <DllImport("User32.Dll")>
     Public Function TrackPopupMenuEx(ByVal hmenu As IntPtr, ByVal fuFlags As UInt32, ByVal x As Integer, ByVal y As Integer, ByVal hwnd As IntPtr, ByVal lptpm As Integer) As Integer : End Function
-    <System.Runtime.InteropServices.DllImport("user32.dll", CharSet:=System.Runtime.InteropServices.CharSet.Auto)>
+    <DllImport("user32.dll", CharSet:=CharSet.Auto)>
     Public Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByVal lParam As IntPtr) As IntPtr : End Function
-    <System.Runtime.InteropServices.DllImport("user32.dll", CharSet:=System.Runtime.InteropServices.CharSet.Auto)>
+    <DllImport("user32.dll", CharSet:=CharSet.Auto)>
     Public Function PostMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByVal lParam As IntPtr) As Boolean : End Function
 
 
