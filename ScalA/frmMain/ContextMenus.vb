@@ -89,8 +89,8 @@ Partial Public Class FrmMain
 
         If isFolder Then
             SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_ICON Or SHGFI_SMALLICON)
-            If fi.iIcon = IntPtr.Zero Then
-                Debug.Print("iIcon empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
+            If fi.hIcon = IntPtr.Zero Then
+                Debug.Print("hIcon empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
                 Return Nothing
             End If
             ico = Icon.FromHandle(fi.hIcon)
@@ -239,8 +239,8 @@ Partial Public Class FrmMain
     End Sub
 
     Private Sub defferedIconLoading(dirs As IEnumerable(Of ToolStripItem), fils As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
-        Static init As Boolean = True
         Dim skipped As Boolean = False
+        Static init As Boolean = True
         If init Then
             Debug.Print("init iconloader")
             Dim firstItem As ToolStripItem = If(dirs.FirstOrDefault, fils.FirstOrDefault)
