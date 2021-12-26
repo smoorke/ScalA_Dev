@@ -49,7 +49,7 @@
 
 
 
-    Dim storeZoom As Integer = My.Settings.zoom
+    ReadOnly storeZoom As Integer = My.Settings.zoom
     Private Sub ChkDoAlign_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkDoAlign.CheckedChanged
         If sender.Checked AndAlso FrmMain.AltPP.Id = 0 Then
             MessageBox.Show(FrmMain, "To perform alignment an alt needs to be selected.", "ScalA Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
