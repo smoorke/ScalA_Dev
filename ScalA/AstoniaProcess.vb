@@ -1,6 +1,6 @@
 ﻿Public Class AstoniaProcess
 
-    Private _proc As Process
+    Private ReadOnly _proc As Process
 
     Public Sub New(Optional process As Process = Nothing)
         _proc = process
@@ -114,7 +114,7 @@
     Public Overrides Function Equals(obj As Object) As Boolean
         Dim proc2 As AstoniaProcess = TryCast(obj, AstoniaProcess)
         Debug.Print($"obj {proc2?._proc?.Id} eqals _proc {_proc?.Id}")
-        Return proc2?._proc IsNot Nothing AndAlso Me._proc IsNot Nothing AndAlso proc2._proc.Id = Me._proc.Id
+        Return proc2?._proc IsNot Nothing AndAlso Me._proc IsNot Nothing AndAlso proc2._proc.Id = Me._proc.Id AndAlso proc2.Name = Me.Name
     End Function
     'Public Shared Operator =(left As AstoniaProcess, right As AstoniaProcess) As Boolean
     '    Debug.Print("AP ==")
