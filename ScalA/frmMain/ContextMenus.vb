@@ -5,7 +5,7 @@ Partial Public Class FrmMain
 
     Private Sub CloseToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseToolStripMenuItem.Click
         'SendMessage(CType(sender.Owner, ContextMenuStrip).SourceControl.Tag.MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
-        SendMessage(CType(sender.Tag, AstoniaProcess).MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
+        PostMessage(CType(sender.Tag, AstoniaProcess).MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
 
     End Sub
 
@@ -64,7 +64,7 @@ Partial Public Class FrmMain
     Private Sub CloseAllIdle_Click(sender As ToolStripMenuItem, e As EventArgs) 'Handles closeAllToolStripMenuItem.click
 
         For Each pp As AstoniaProcess In AstoniaProcess.Enumerate(True).Where(Function(p As AstoniaProcess) p.Name = "Someone")
-            SendMessage(pp.MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
+            PostMessage(pp.MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
         Next
 
     End Sub
