@@ -197,21 +197,21 @@ Module NativeMethods
         ShowWindow = &H40
     End Enum
     <DllImport("user32.dll", SetLastError:=True)>
-    Public Function SetWindowPos(ByVal hWnd As IntPtr, ByVal hWndInsertAfter As IntPtr, ByVal X As Integer, ByVal Y As Integer, ByVal cx As Integer, ByVal cy As Integer, ByVal uFlags As SetWindowPosFlags) As Boolean
+    Public Function SetWindowPos(ByVal hWnd As IntPtr, ByVal hWndInsertAfter As IntPtr,
+                                 ByVal X As Integer, ByVal Y As Integer, ByVal cx As Integer, ByVal cy As Integer,
+                                 ByVal uFlags As SetWindowPosFlags) As Boolean
     End Function
 #End Region
 
-    <Runtime.InteropServices.StructLayout(Runtime.InteropServices.LayoutKind.Sequential, CharSet:=Runtime.InteropServices.CharSet.Unicode)>
+    <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Unicode)>
     Public Structure SHSTOCKICONINFO
-
         Public cbSize As UInteger
         Public hIcon As IntPtr
         Public iSysIconIndex As Integer
         Public iIcon As Integer
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=260)>
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=260)>
         Public szPath As String
     End Structure
-
     <DllImport("shell32.dll", SetLastError:=True)>
     Public Function SHGetStockIconInfo(ssid As UInteger, uFlags As UInteger, ByRef pssi As SHSTOCKICONINFO) As Integer : End Function
 
@@ -228,18 +228,23 @@ Module NativeMethods
         Public hCursor As IntPtr
         Public ptScreenpos As PT
     End Structure
-
     <DllImport("user32.dll")>
     Public Function GetCursorInfo(ByRef pci As CURSORINFO) As Boolean : End Function
 
 
-    Public Declare Function GetSystemMenu Lib "user32" (ByVal hwnd As IntPtr, ByVal bRevert As Boolean) As Integer
-    Public Declare Function ModifyMenuA Lib "user32" (hMenu As Integer, uItem As Integer, fByPos As Integer, newID As Integer, lpNewIem As String) As Boolean
-    Public Declare Function SetMenuItemBitmaps Lib "user32" (hMenu As Integer, uitem As Integer, fByPos As Integer, hBitmapUnchecked As Integer, hBitmapChecked As Integer) As Boolean
 
-    Public Declare Function InsertMenuA Lib "user32" (ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer, uIDNewItem As Integer, lpNewItem As String) As Boolean
-    Public Declare Function RemoveMenu Lib "user32" (ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer) As Integer
-    Public Declare Function SetMenuDefaultItem Lib "user32" (hMenu As Integer, uItem As Integer, fByPos As Integer) As Boolean
+    <DllImport("user32.dll")>
+    Public Function GetSystemMenu(ByVal hwnd As IntPtr, ByVal bRevert As Boolean) As Integer : End Function
+    <DllImport("user32.dll")>
+    Public Function ModifyMenuA(hMenu As Integer, uItem As Integer, fByPos As Integer, newID As Integer, lpNewIem As String) As Boolean : End Function
+    <DllImport("user32.dll")>
+    Public Function SetMenuItemBitmaps(hMenu As Integer, uitem As Integer, fByPos As Integer, hBitmapUnchecked As Integer, hBitmapChecked As Integer) As Boolean : End Function
+    <DllImport("user32.dll")>
+    Public Function InsertMenuA(ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer, uIDNewItem As Integer, lpNewItem As String) As Boolean : End Function
+    <DllImport("user32.dll")>
+    Public Function RemoveMenu(ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer) As Integer : End Function
+    <DllImport("user32.dll")>
+    Public Function SetMenuDefaultItem(hMenu As Integer, uItem As Integer, fByPos As Integer) As Boolean : End Function
 
     'Const MF_STRING = &H0
     'Const MF_REMOVE = &H1000&
@@ -258,7 +263,7 @@ Module NativeMethods
     Public Const SC_RESTORE As Integer = &HF120
 
     <DllImport("User32.Dll")>
-    Public Function TrackPopupMenuEx(ByVal hmenu As IntPtr, ByVal fuFlags As UInt32, ByVal x As Integer, ByVal y As Integer, ByVal hwnd As IntPtr, ByVal lptpm As Integer) As Integer : End Function
+    Public Function TrackPopupMenuEx(ByVal hmenu As IntPtr, ByVal fuFlags As UInteger, ByVal x As Integer, ByVal y As Integer, ByVal hwnd As IntPtr, ByVal lptpm As Integer) As Integer : End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>
     Public Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByVal lParam As IntPtr) As IntPtr : End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>
