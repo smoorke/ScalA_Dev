@@ -92,7 +92,7 @@
     '    Return Me.Name()
     'End Function
 
-    Shared ReadOnly exeIconCache As New Dictionary(Of Integer, Tuple(Of Icon, String)) 'PID, icon, path
+    Shared ReadOnly exeIconCache As New Dictionary(Of Integer, Tuple(Of Icon, String)) 'PID, icon, name
     Public Function GetIcon(Optional invalidateCache As Boolean = False) As Icon
         If invalidateCache Then exeIconCache.Clear()
         Try
