@@ -572,9 +572,9 @@
             storedY = MousePosition.Y
 
             wasVisible = True
-        Else
+        Else ' cursor is hidden
             wasVisible = False
-            Exit Sub ' do not move astonia when cursor is not showing. fixes scrollbar thumb.
+            Exit Sub ' do not move astonia when cursor is hidden. fixes scrollbar thumb.
             ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
         End If
 
