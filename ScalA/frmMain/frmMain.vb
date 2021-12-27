@@ -534,6 +534,9 @@
     Public newX As Integer
     Public newY As Integer
     Private ScalaHandle As IntPtr = Me.Handle
+    Private storedY As Integer = 0
+    Private wasVisible As Boolean = True
+
     Private Sub tmrTick_Tick(sender As Timer, e As EventArgs) Handles tmrTick.Tick
 #If DEBUG Then
         'Static avgTime As Double = 0
@@ -553,28 +556,46 @@
             Exit Sub
         End If
 
+
+        Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
+
+        GetCursorInfo(pci)
+        If pci.flags <> 0 Then ' cursor is visible
+            If Not wasVisible Then
+                Debug.Print("thumb released")
+                If storedY <> MousePosition.Y Then
+                    Debug.Print($"thumb moved")
+                    Dim factor As Double = zooms(cmbResolution.SelectedIndex).Height / rcC.Height
+                    Cursor.Position = New Point(MousePosition.X, storedY + ((MousePosition.Y - storedY) * factor))
+                End If
+            End If
+            storedY = MousePosition.Y
+
+            wasVisible = True
+        Else
+            wasVisible = False
+            Exit Sub ' do not move astonia when cursor is not showing. fixes scrollbar thumb.
+            ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
+        End If
+
         If pbZoom.Contains(MousePosition) Then 'todo: replace with mousehook?
 
             Dim ptZ As Point = pbZoom.Location
-            Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
 
             ClientToScreen(Me.Handle, ptZ)
             newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AstClientOffset.Width - My.Settings.offset.X
             newY = MousePosition.Y.Map(ptZ.Y, ptZ.Y + pbZoom.Height, ptZ.Y, ptZ.Y + pbZoom.Height - rcC.Height) - AstClientOffset.Height - My.Settings.offset.Y
-            ' do not move astonia when cursor is not showing. fixes scrollbar thumb.
-            ' note there is still a client bug where using thumb will intermittently cause it to jump wildly
-            GetCursorInfo(pci)
-            If pci.flags <> 0 Then
-                Task.Run(Sub()
-                             Try
-                                 SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1,
-                                            SetWindowPosFlags.IgnoreResize Or
-                                            SetWindowPosFlags.DoNotActivate Or
-                                            SetWindowPosFlags.ASyncWindowPosition)
-                             Catch ex As Exception
-                             End Try
-                         End Sub)
-            End If
+
+            Task.Run(Sub()
+                         Try
+                             SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1,
+                                          SetWindowPosFlags.IgnoreResize Or
+                                          SetWindowPosFlags.DoNotActivate Or
+                                          SetWindowPosFlags.ASyncWindowPosition)
+                         Catch ex As Exception
+                         End Try
+                     End Sub)
+
         End If
 #If DEBUG Then
         'watch.Stop()
