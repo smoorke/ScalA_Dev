@@ -63,6 +63,16 @@
         End Try
     End Function
 
+    Public Function IsActive() As Boolean
+        Dim hWnd As IntPtr = GetForegroundWindow()
+        Dim ProcessID As UInteger = 0
+
+        GetWindowThreadProcessId(hWnd, ProcessID)
+
+        Return _proc?.Id = ProcessID
+    End Function
+
+
     Public Function MainWindowTitle() As String
         _proc?.Refresh()
         Return _proc?.MainWindowTitle
