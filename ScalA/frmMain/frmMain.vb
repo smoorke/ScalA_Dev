@@ -563,13 +563,13 @@
         If pci.flags <> 0 Then ' cursor is visible
             If Not wasVisible Then
                 Debug.Print("thumb released")
-                If storedY <> MousePosition.Y Then
+                If storedY <> pci.ptScreenpos.y Then
                     Debug.Print($"thumb moved")
                     Dim factor As Double = zooms(cmbResolution.SelectedIndex).Height / rcC.Height
-                    Cursor.Position = New Point(MousePosition.X, storedY + ((MousePosition.Y - storedY) * factor))
+                    Cursor.Position = New Point(pci.ptScreenpos.x, storedY + ((pci.ptScreenpos.y - storedY) * factor))
                 End If
             End If
-            storedY = MousePosition.Y
+            storedY = pci.ptScreenpos.y
 
             wasVisible = True
         Else ' cursor is hidden
