@@ -95,3 +95,10 @@ Moved default quicklaunch location to %ProgramData%/ScalA.
 **ScalA 0.8.9**
 Added option to unelevate self by right clicking on the admin shield.
    (note: this will only show when ScalA is running as Administrator)
+
+**ScalA 0.9.0**
+Improved responsiveness of quicklaunch by refactoring deferred icon loading and always using it. 
+Fixed using thumb to scroll stats/inv/depot no longer shifts cursor towards center after releasing mousebutton.
+Fixed using thumb to scroll stats/inv/depot no longer causes it to jump down.
+   (note there is an astonia client bug which will still cause this to happen intermittently)
+Fixed exception when quicklaunch folder doesn't exist.
