@@ -562,7 +562,7 @@
                     Debug.Print("scrollthumb moved")
                     Dim factor As Double = zooms(cmbResolution.SelectedIndex).Height / rcC.Height
                     Dim movedY As Integer = storedY + ((pci.ptScreenpos.y - storedY) * factor)
-                    If movedY > Me.Top + Me.Height Then movedY = Me.Top + Me.Height - 1
+                    If movedY >= Me.Bottom Then movedY = Me.Bottom - 2
                     Cursor.Position = New Point(pci.ptScreenpos.x, movedY)
                 End If
             End If
