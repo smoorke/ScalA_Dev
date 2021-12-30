@@ -538,10 +538,7 @@
     Private wasVisible As Boolean = True
 
     Private Sub tmrTick_Tick(sender As Timer, e As EventArgs) Handles tmrTick.Tick
-#If DEBUG Then
-        'Static avgTime As Double = 0
-        'Dim watch As Stopwatch = Stopwatch.StartNew()
-#End If
+
         If Not AltPP?.IsRunning() Then
             Debug.Print("Not AltPP?.IsRunning()")
             tmrTick.Enabled = False
@@ -556,9 +553,7 @@
             Exit Sub
         End If
 
-
         Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
-
         GetCursorInfo(pci)
         If pci.flags <> 0 Then ' cursor is visible
             If Not wasVisible AndAlso AltPP?.IsActive() Then
@@ -600,13 +595,6 @@
                      End Sub)
 
         End If
-#If DEBUG Then
-        'watch.Stop()
-        'If avgTime = 0 Then avgTime = watch.ElapsedMilliseconds
-        'avgTime = (avgTime + watch.ElapsedMilliseconds) / 2
-        'Debug.Print("time: " & watch.ElapsedMilliseconds & "/" & avgTime)
-#End If
-
     End Sub
 
     Private Sub CmbResolution_MouseDown(sender As ComboBox, e As MouseEventArgs) Handles cmbResolution.MouseDown
