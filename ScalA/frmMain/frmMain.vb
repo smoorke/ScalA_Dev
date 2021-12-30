@@ -556,28 +556,30 @@
             Exit Sub
         End If
 
-        If AltPP?.IsActive() Then
-            Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
 
-            GetCursorInfo(pci)
-            If pci.flags <> 0 Then ' cursor is visible
-                If Not wasVisible Then
-                    Debug.Print("scrollthumb released")
-                    If storedY <> pci.ptScreenpos.y Then
-                        Debug.Print("scrollthumb moved")
-                        Dim factor As Double = zooms(cmbResolution.SelectedIndex).Height / rcC.Height
-                        Cursor.Position = New Point(pci.ptScreenpos.x, storedY + ((pci.ptScreenpos.y - storedY) * factor))
-                    End If
+        Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
+
+        GetCursorInfo(pci)
+        If pci.flags <> 0 Then ' cursor is visible
+            If Not wasVisible AndAlso AltPP?.IsActive() Then
+                Debug.Print("scrollthumb released")
+                If storedY <> pci.ptScreenpos.y Then
+                    Debug.Print("scrollthumb moved")
+                    Dim factor As Double = zooms(cmbResolution.SelectedIndex).Height / rcC.Height
+                    Dim movedY As Integer = storedY + ((pci.ptScreenpos.y - storedY) * factor)
+                    If movedY > Me.Top + Me.Height Then movedY = Me.Top + Me.Height - 1
+                    Cursor.Position = New Point(pci.ptScreenpos.x, movedY)
                 End If
-                storedY = pci.ptScreenpos.y
-
-                wasVisible = True
-            Else ' cursor is hidden
-                wasVisible = False
-                Exit Sub ' do not move astonia when cursor is hidden. fixes scrollbar thumb.
-                ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
             End If
+            storedY = pci.ptScreenpos.y
+
+            wasVisible = True
+        Else ' cursor is hidden
+            wasVisible = False
+            Exit Sub ' do not move astonia when cursor is hidden. fixes scrollbar thumb.
+            ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
         End If
+
 
         If pbZoom.Contains(MousePosition) Then 'todo: replace with mousehook?
 
