@@ -335,6 +335,7 @@
             My.Settings.Upgrade()
             My.Settings.SettingsVersion = My.Application.Info.Version.ToString
             My.Settings.Save()
+            zooms = GetResolutions()
         End If
 
         Me.ShowInTaskbar = False
