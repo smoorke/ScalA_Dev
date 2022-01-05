@@ -371,7 +371,7 @@
             cboAlt.Items.Add(ap)
             If args.Count > 1 AndAlso ap.Name = args(1) Then
                 Debug.Print($"Selecting '{ap.Name}'")
-                    cboAlt.SelectedItem = ap
+                cboAlt.SelectedItem = ap
             End If
         Next
         cboAlt.EndUpdate()
