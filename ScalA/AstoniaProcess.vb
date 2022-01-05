@@ -216,12 +216,12 @@
                         End If
                     End If
                     If BadColorCount >= 5 Then Exit For
-                Next
+                Next dx
                 If BadColorCount >= 5 OrElse blackCount = 25 Then
                     rows -= 1
                     Continue For
                 End If
-            Next
+            Next dy
 
             g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor
             g.PixelOffsetMode = Drawing2D.PixelOffsetMode.Half
