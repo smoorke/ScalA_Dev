@@ -133,21 +133,12 @@ Partial Public Class FrmMain
         Try
             For Each fullDirs As String In System.IO.Directory.EnumerateDirectories(pth)
 
-                Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullDirs).Attributes
+                Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fulldirs).Attributes
                 If attr.HasFlag(System.IO.FileAttributes.Hidden) Then Continue For
                 If attr.HasFlag(System.IO.FileAttributes.System) Then Continue For
 
-                'Dim icon As Bitmap = Nothing
+                Dim smenu As New ToolStripMenuItem(System.IO.Path.GetFileName(fulldirs)) With {.Tag = fulldirs}
 
-                'If watch.ElapsedMilliseconds < ICONTIMEOUT Then
-                '    'icon = GetIcon(fullDirs, True) 'needed or deferredIconLoading fails, why?
-                'Else
-                '    Debug.Print("icontimeout dirs")
-                'End If
-
-                Dim smenu As New ToolStripMenuItem(System.IO.Path.GetFileName(fullDirs)) With {.Tag = fullDirs}
-
-                ' add dummy so arrow is displayed
                 smenu.DropDownItems.Add("(Dummy)").Enabled = False
                 smenu.DoubleClickEnabled = True
 
@@ -163,6 +154,7 @@ Partial Public Class FrmMain
                     Exit For
                 End If
             Next
+
         Catch
             menuItems.Add(New ToolStripMenuItem("<Access Denied>") With {.Enabled = False})
             Return menuItems
@@ -170,7 +162,7 @@ Partial Public Class FrmMain
 
         Dim Files As New List(Of ToolStripItem)
         For Each fullLink As String In System.IO.Directory.EnumerateFiles(pth) _
-                                    .Where(Function(p) {".exe", ".jar", ".lnk", ".url", ".txt"}.Contains(System.IO.Path.GetExtension(p).ToLower))
+                                       .Where(Function(p) {".exe", ".jar", ".lnk", ".url", ".txt"}.Contains(System.IO.Path.GetExtension(p).ToLower))
             Debug.Print(System.IO.Path.GetFileName(fullLink))
 
             'don't add self to list
@@ -184,15 +176,6 @@ Partial Public Class FrmMain
                 linkName = System.IO.Path.GetFileName(fullLink)
             End If
 
-            'Dim icon As Bitmap = Nothing
-
-            'If watch.ElapsedMilliseconds < ICONTIMEOUT Then
-            '    'icon = GetIcon(fullLink, False) 'needed or deferrediconloading fails, why?
-            'Else
-            '    Debug.Print("icontimeout files")
-            'End If
-
-            ' append item to submenu
             Dim item As New ToolStripMenuItem(linkName) With {.Tag = fullLink}
             AddHandler item.MouseUp, AddressOf OpenLnk
 
@@ -203,6 +186,7 @@ Partial Public Class FrmMain
                 Exit For
             End If
         Next
+
 
         menuItems = Dirs.OrderBy(Function(d) d.Text, nsSorter).ThenBy(Function(d) d.Text.Length).Concat(
                    Files.OrderBy(Function(f) f.Text, nsSorter).ThenBy(Function(f) f.Text.Length)).ToList
@@ -238,9 +222,9 @@ Partial Public Class FrmMain
         cts.Cancel()
     End Sub
 
+    Private init As Boolean = True
     Private Sub defferedIconLoading(dirs As IEnumerable(Of ToolStripItem), fils As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
         Dim skipped As Boolean = False
-        Static init As Boolean = True
         If init Then
             Debug.Print("init iconloader")
             Dim firstItem As ToolStripItem = If(dirs.FirstOrDefault, fils.FirstOrDefault)
@@ -250,19 +234,25 @@ Partial Public Class FrmMain
         End If
         Try
             If dirs.Any Then
-                Task.Run(Sub() Parallel.ForEach(dirs.Skip(skipped),
-                                   Sub(item As ToolStripMenuItem)
-                                       Me.BeginInvoke(updateImage, {item, GetIcon(item.Tag.ToString, True)})
-                                   End Sub), ct)
+                Task.Run(Sub()
+                             Parallel.ForEach(dirs.Skip(skipped).TakeWhile(Function(__) Not ct.IsCancellationRequested),
+                                              Sub(item As ToolStripItem)
+                                                  Me.BeginInvoke(updateImage, {item, GetIcon(item.Tag.ToString, True)})
+                                              End Sub)
+                         End Sub, ct)
             End If
             If fils.Any Then
-                Task.Run(Sub() Parallel.ForEach(fils.Skip(skipped AndAlso Not dirs.Any),
-                                   Sub(item As ToolStripMenuItem)
-                                       Me.BeginInvoke(updateImage, {item, GetIcon(item.Tag.ToString, False)})
-                                   End Sub), ct)
+                Task.Run(Sub()
+                             Parallel.ForEach(fils.Skip(skipped AndAlso Not dirs.Any).TakeWhile(Function(__) Not ct.IsCancellationRequested),
+                                              Sub(item As ToolStripItem)
+                                                  Me.BeginInvoke(updateImage, {item, GetIcon(item.Tag.ToString, False)})
+                                              End Sub)
+                         End Sub, ct)
             End If
         Catch ex As System.Threading.Tasks.TaskCanceledException
             Debug.Print("defferedIconLoading Task canceled")
+        Catch
+            Debug.Print("defferedIconLoading general exception")
         End Try
     End Sub
     Private Sub ParseSubDir(sender As ToolStripMenuItem, e As EventArgs) 'handles dir.DropDownOpening
