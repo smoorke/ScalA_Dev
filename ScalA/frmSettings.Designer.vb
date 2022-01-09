@@ -46,6 +46,8 @@ Partial Class FrmSettings
         Me.txtExe = New System.Windows.Forms.TextBox()
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
+        Me.chkOverViewIsGame = New System.Windows.Forms.CheckBox()
+        Me.ttSettings = New System.Windows.Forms.ToolTip(Me.components)
         Label2 = New System.Windows.Forms.Label()
         Label1 = New System.Windows.Forms.Label()
         GroupBox1 = New System.Windows.Forms.GroupBox()
@@ -101,7 +103,7 @@ Partial Class FrmSettings
         'Label3
         '
         Label3.AutoSize = True
-        Label3.Location = New System.Drawing.Point(80, 89)
+        Label3.Location = New System.Drawing.Point(80, 92)
         Label3.Name = "Label3"
         Label3.Size = New System.Drawing.Size(27, 13)
         Label3.TabIndex = 11
@@ -154,7 +156,7 @@ Partial Class FrmSettings
         'chkTopMost
         '
         Me.chkTopMost.AutoSize = True
-        Me.chkTopMost.Location = New System.Drawing.Point(9, 69)
+        Me.chkTopMost.Location = New System.Drawing.Point(9, 72)
         Me.chkTopMost.Name = "chkTopMost"
         Me.chkTopMost.Size = New System.Drawing.Size(98, 17)
         Me.chkTopMost.TabIndex = 0
@@ -209,7 +211,7 @@ Partial Class FrmSettings
         '
         'btnOK
         '
-        Me.btnOK.Location = New System.Drawing.Point(62, 207)
+        Me.btnOK.Location = New System.Drawing.Point(62, 200)
         Me.btnOK.Name = "btnOK"
         Me.btnOK.Size = New System.Drawing.Size(77, 23)
         Me.btnOK.TabIndex = 2
@@ -219,7 +221,7 @@ Partial Class FrmSettings
         'btnCancel
         '
         Me.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnCancel.Location = New System.Drawing.Point(145, 207)
+        Me.btnCancel.Location = New System.Drawing.Point(145, 200)
         Me.btnCancel.Name = "btnCancel"
         Me.btnCancel.Size = New System.Drawing.Size(77, 23)
         Me.btnCancel.TabIndex = 3
@@ -243,7 +245,7 @@ Partial Class FrmSettings
         'txtExe
         '
         Me.txtExe.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtExe.Location = New System.Drawing.Point(9, 87)
+        Me.txtExe.Location = New System.Drawing.Point(9, 89)
         Me.txtExe.Name = "txtExe"
         Me.txtExe.Size = New System.Drawing.Size(66, 20)
         Me.txtExe.TabIndex = 1
@@ -261,30 +263,42 @@ Partial Class FrmSettings
         'chkRoundCorners
         '
         Me.chkRoundCorners.AutoSize = True
-        Me.chkRoundCorners.Location = New System.Drawing.Point(9, 52)
+        Me.chkRoundCorners.Location = New System.Drawing.Point(9, 58)
         Me.chkRoundCorners.Name = "chkRoundCorners"
         Me.chkRoundCorners.Size = New System.Drawing.Size(109, 17)
         Me.chkRoundCorners.TabIndex = 12
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
+        'chkOverViewIsGame
+        '
+        Me.chkOverViewIsGame.AutoSize = True
+        Me.chkOverViewIsGame.Location = New System.Drawing.Point(9, 44)
+        Me.chkOverViewIsGame.Name = "chkOverViewIsGame"
+        Me.chkOverViewIsGame.Size = New System.Drawing.Size(107, 17)
+        Me.chkOverViewIsGame.TabIndex = 13
+        Me.chkOverViewIsGame.Text = "Active Overview "
+        Me.ttSettings.SetToolTip(Me.chkOverViewIsGame, "When this is enabled" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "the overview thumbnails" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "will function as game.")
+        Me.chkOverViewIsGame.UseVisualStyleBackColor = True
+        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.btnCancel
-        Me.ClientSize = New System.Drawing.Size(228, 236)
+        Me.ClientSize = New System.Drawing.Size(228, 228)
+        Me.Controls.Add(Me.txtExe)
+        Me.Controls.Add(Me.chkTopMost)
         Me.Controls.Add(GroupBox1)
         Me.Controls.Add(Me.chkRoundCorners)
         Me.Controls.Add(GroupBox2)
         Me.Controls.Add(Label3)
         Me.Controls.Add(Me.txtClass)
-        Me.Controls.Add(Me.txtExe)
         Me.Controls.Add(Me.chkDoAlign)
         Me.Controls.Add(Me.btnCancel)
         Me.Controls.Add(Me.btnOK)
         Me.Controls.Add(Me.grpAlign)
-        Me.Controls.Add(Me.chkTopMost)
+        Me.Controls.Add(Me.chkOverViewIsGame)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
@@ -323,4 +337,6 @@ Partial Class FrmSettings
     Friend WithEvents cmsQLFolder As ContextMenuStrip
     Friend WithEvents OpenInExplorerToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents chkRoundCorners As CheckBox
+    Friend WithEvents chkOverViewIsGame As CheckBox
+    Friend WithEvents ttSettings As ToolTip
 End Class

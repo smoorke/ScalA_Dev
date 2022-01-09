@@ -49,22 +49,6 @@ Partial Class FrmMain
         Me.pnlMessage = New System.Windows.Forms.Panel()
         Me.chkHideMessage = New System.Windows.Forms.CheckBox()
         Me.pbMessage = New System.Windows.Forms.PictureBox()
-        Me.btnAlt1 = New System.Windows.Forms.Button()
-        Me.btnAlt2 = New System.Windows.Forms.Button()
-        Me.btnAlt3 = New System.Windows.Forms.Button()
-        Me.btnAlt4 = New System.Windows.Forms.Button()
-        Me.btnAlt5 = New System.Windows.Forms.Button()
-        Me.btnAlt6 = New System.Windows.Forms.Button()
-        Me.btnAlt7 = New System.Windows.Forms.Button()
-        Me.btnAlt8 = New System.Windows.Forms.Button()
-        Me.btnAlt9 = New System.Windows.Forms.Button()
-        Me.btnAlt10 = New System.Windows.Forms.Button()
-        Me.btnAlt11 = New System.Windows.Forms.Button()
-        Me.btnAlt12 = New System.Windows.Forms.Button()
-        Me.btnAlt13 = New System.Windows.Forms.Button()
-        Me.btnAlt14 = New System.Windows.Forms.Button()
-        Me.btnAlt15 = New System.Windows.Forms.Button()
-        Me.btnAlt16 = New System.Windows.Forms.Button()
         Me.pbZoom = New System.Windows.Forms.PictureBox()
         Me.sysTrayIcon = New System.Windows.Forms.NotifyIcon(Me.components)
         Me.cornerNW = New System.Windows.Forms.PictureBox()
@@ -247,7 +231,7 @@ Partial Class FrmMain
         'tmrStartup
         '
         Me.tmrStartup.Enabled = True
-        Me.tmrStartup.Interval = 255
+        Me.tmrStartup.Interval = 33
         '
         'tmrActive
         '
@@ -284,22 +268,6 @@ Partial Class FrmMain
         '
         Me.pnlStartup.BackColor = System.Drawing.SystemColors.Control
         Me.pnlStartup.Controls.Add(Me.pnlMessage)
-        Me.pnlStartup.Controls.Add(Me.btnAlt1)
-        Me.pnlStartup.Controls.Add(Me.btnAlt2)
-        Me.pnlStartup.Controls.Add(Me.btnAlt3)
-        Me.pnlStartup.Controls.Add(Me.btnAlt4)
-        Me.pnlStartup.Controls.Add(Me.btnAlt5)
-        Me.pnlStartup.Controls.Add(Me.btnAlt6)
-        Me.pnlStartup.Controls.Add(Me.btnAlt7)
-        Me.pnlStartup.Controls.Add(Me.btnAlt8)
-        Me.pnlStartup.Controls.Add(Me.btnAlt9)
-        Me.pnlStartup.Controls.Add(Me.btnAlt10)
-        Me.pnlStartup.Controls.Add(Me.btnAlt11)
-        Me.pnlStartup.Controls.Add(Me.btnAlt12)
-        Me.pnlStartup.Controls.Add(Me.btnAlt13)
-        Me.pnlStartup.Controls.Add(Me.btnAlt14)
-        Me.pnlStartup.Controls.Add(Me.btnAlt15)
-        Me.pnlStartup.Controls.Add(Me.btnAlt16)
         Me.pnlStartup.Location = New System.Drawing.Point(1, 25)
         Me.pnlStartup.Margin = New System.Windows.Forms.Padding(0)
         Me.pnlStartup.Name = "pnlStartup"
@@ -335,246 +303,6 @@ Partial Class FrmMain
         Me.pbMessage.Size = New System.Drawing.Size(200, 150)
         Me.pbMessage.TabIndex = 12
         Me.pbMessage.TabStop = False
-        '
-        'btnAlt1
-        '
-        Me.btnAlt1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAlt1.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.btnAlt1.ImageAlign = System.Drawing.ContentAlignment.TopRight
-        Me.btnAlt1.Location = New System.Drawing.Point(200, 0)
-        Me.btnAlt1.Margin = New System.Windows.Forms.Padding(0)
-        Me.btnAlt1.Name = "btnAlt1"
-        Me.btnAlt1.Size = New System.Drawing.Size(200, 150)
-        Me.btnAlt1.TabIndex = 13
-        Me.btnAlt1.Tag = ""
-        Me.btnAlt1.Text = "1"
-        Me.btnAlt1.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        Me.btnAlt1.UseVisualStyleBackColor = True
-        '
-        'btnAlt2
-        '
-        Me.btnAlt2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAlt2.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.btnAlt2.ImageAlign = System.Drawing.ContentAlignment.TopRight
-        Me.btnAlt2.Location = New System.Drawing.Point(400, 0)
-        Me.btnAlt2.Margin = New System.Windows.Forms.Padding(0)
-        Me.btnAlt2.Name = "btnAlt2"
-        Me.btnAlt2.Size = New System.Drawing.Size(200, 150)
-        Me.btnAlt2.TabIndex = 14
-        Me.btnAlt2.Tag = ""
-        Me.btnAlt2.Text = "2"
-        Me.btnAlt2.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        Me.btnAlt2.UseVisualStyleBackColor = True
-        '
-        'btnAlt3
-        '
-        Me.btnAlt3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAlt3.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.btnAlt3.ImageAlign = System.Drawing.ContentAlignment.TopRight
-        Me.btnAlt3.Location = New System.Drawing.Point(600, 0)
-        Me.btnAlt3.Margin = New System.Windows.Forms.Padding(0)
-        Me.btnAlt3.Name = "btnAlt3"
-        Me.btnAlt3.Size = New System.Drawing.Size(200, 150)
-        Me.btnAlt3.TabIndex = 17
-        Me.btnAlt3.Tag = ""
-        Me.btnAlt3.Text = "3"
-        Me.btnAlt3.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        Me.btnAlt3.UseVisualStyleBackColor = True
-        '
-        'btnAlt4
-        '
-        Me.btnAlt4.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAlt4.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.btnAlt4.ImageAlign = System.Drawing.ContentAlignment.TopRight
-        Me.btnAlt4.Location = New System.Drawing.Point(0, 150)
-        Me.btnAlt4.Margin = New System.Windows.Forms.Padding(0)
-        Me.btnAlt4.Name = "btnAlt4"
-        Me.btnAlt4.Size = New System.Drawing.Size(200, 150)
-        Me.btnAlt4.TabIndex = 21
-        Me.btnAlt4.Tag = ""
-        Me.btnAlt4.Text = "4"
-        Me.btnAlt4.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        Me.btnAlt4.UseVisualStyleBackColor = True
-        '
-        'btnAlt5
-        '
-        Me.btnAlt5.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAlt5.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.btnAlt5.ImageAlign = System.Drawing.ContentAlignment.TopRight
-        Me.btnAlt5.Location = New System.Drawing.Point(200, 150)
-        Me.btnAlt5.Margin = New System.Windows.Forms.Padding(0)
-        Me.btnAlt5.Name = "btnAlt5"
-        Me.btnAlt5.Size = New System.Drawing.Size(200, 150)
-        Me.btnAlt5.TabIndex = 23
-        Me.btnAlt5.Tag = ""
-        Me.btnAlt5.Text = "5"
-        Me.btnAlt5.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        Me.btnAlt5.UseVisualStyleBackColor = True
-        '
-        'btnAlt6
-        '
-        Me.btnAlt6.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAlt6.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.btnAlt6.ImageAlign = System.Drawing.ContentAlignment.TopRight
-        Me.btnAlt6.Location = New System.Drawing.Point(400, 150)
-        Me.btnAlt6.Margin = New System.Windows.Forms.Padding(0)
-        Me.btnAlt6.Name = "btnAlt6"
-        Me.btnAlt6.Size = New System.Drawing.Size(200, 150)
-        Me.btnAlt6.TabIndex = 25
-        Me.btnAlt6.Tag = ""
-        Me.btnAlt6.Text = "6"
-        Me.btnAlt6.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        Me.btnAlt6.UseVisualStyleBackColor = True
-        '
-        'btnAlt7
-        '
-        Me.btnAlt7.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAlt7.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.btnAlt7.ImageAlign = System.Drawing.ContentAlignment.TopRight
-        Me.btnAlt7.Location = New System.Drawing.Point(600, 150)
-        Me.btnAlt7.Margin = New System.Windows.Forms.Padding(0)
-        Me.btnAlt7.Name = "btnAlt7"
-        Me.btnAlt7.Size = New System.Drawing.Size(200, 150)
-        Me.btnAlt7.TabIndex = 27
-        Me.btnAlt7.Tag = ""
-        Me.btnAlt7.Text = "7"
-        Me.btnAlt7.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        Me.btnAlt7.UseVisualStyleBackColor = True
-        '
-        'btnAlt8
-        '
-        Me.btnAlt8.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAlt8.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.btnAlt8.ImageAlign = System.Drawing.ContentAlignment.TopRight
-        Me.btnAlt8.Location = New System.Drawing.Point(0, 300)
-        Me.btnAlt8.Margin = New System.Windows.Forms.Padding(0)
-        Me.btnAlt8.Name = "btnAlt8"
-        Me.btnAlt8.Size = New System.Drawing.Size(200, 150)
-        Me.btnAlt8.TabIndex = 28
-        Me.btnAlt8.Tag = ""
-        Me.btnAlt8.Text = "8"
-        Me.btnAlt8.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        Me.btnAlt8.UseVisualStyleBackColor = True
-        '
-        'btnAlt9
-        '
-        Me.btnAlt9.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAlt9.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.btnAlt9.ImageAlign = System.Drawing.ContentAlignment.TopRight
-        Me.btnAlt9.Location = New System.Drawing.Point(200, 300)
-        Me.btnAlt9.Margin = New System.Windows.Forms.Padding(0)
-        Me.btnAlt9.Name = "btnAlt9"
-        Me.btnAlt9.Size = New System.Drawing.Size(200, 150)
-        Me.btnAlt9.TabIndex = 31
-        Me.btnAlt9.Tag = ""
-        Me.btnAlt9.Text = "9"
-        Me.btnAlt9.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        Me.btnAlt9.UseVisualStyleBackColor = True
-        '
-        'btnAlt10
-        '
-        Me.btnAlt10.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAlt10.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.btnAlt10.ImageAlign = System.Drawing.ContentAlignment.TopRight
-        Me.btnAlt10.Location = New System.Drawing.Point(400, 300)
-        Me.btnAlt10.Margin = New System.Windows.Forms.Padding(0)
-        Me.btnAlt10.Name = "btnAlt10"
-        Me.btnAlt10.Size = New System.Drawing.Size(200, 150)
-        Me.btnAlt10.TabIndex = 32
-        Me.btnAlt10.Tag = ""
-        Me.btnAlt10.Text = "10"
-        Me.btnAlt10.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        Me.btnAlt10.UseVisualStyleBackColor = True
-        '
-        'btnAlt11
-        '
-        Me.btnAlt11.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAlt11.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.btnAlt11.ImageAlign = System.Drawing.ContentAlignment.TopRight
-        Me.btnAlt11.Location = New System.Drawing.Point(600, 300)
-        Me.btnAlt11.Margin = New System.Windows.Forms.Padding(0)
-        Me.btnAlt11.Name = "btnAlt11"
-        Me.btnAlt11.Size = New System.Drawing.Size(200, 150)
-        Me.btnAlt11.TabIndex = 33
-        Me.btnAlt11.Tag = ""
-        Me.btnAlt11.Text = "11"
-        Me.btnAlt11.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        Me.btnAlt11.UseVisualStyleBackColor = True
-        '
-        'btnAlt12
-        '
-        Me.btnAlt12.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAlt12.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.btnAlt12.ImageAlign = System.Drawing.ContentAlignment.TopRight
-        Me.btnAlt12.Location = New System.Drawing.Point(0, 450)
-        Me.btnAlt12.Margin = New System.Windows.Forms.Padding(0)
-        Me.btnAlt12.Name = "btnAlt12"
-        Me.btnAlt12.Size = New System.Drawing.Size(200, 150)
-        Me.btnAlt12.TabIndex = 34
-        Me.btnAlt12.Tag = ""
-        Me.btnAlt12.Text = "12"
-        Me.btnAlt12.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        Me.btnAlt12.UseVisualStyleBackColor = True
-        '
-        'btnAlt13
-        '
-        Me.btnAlt13.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAlt13.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.btnAlt13.ImageAlign = System.Drawing.ContentAlignment.TopRight
-        Me.btnAlt13.Location = New System.Drawing.Point(200, 450)
-        Me.btnAlt13.Margin = New System.Windows.Forms.Padding(0)
-        Me.btnAlt13.Name = "btnAlt13"
-        Me.btnAlt13.Size = New System.Drawing.Size(200, 150)
-        Me.btnAlt13.TabIndex = 35
-        Me.btnAlt13.Tag = ""
-        Me.btnAlt13.Text = "13"
-        Me.btnAlt13.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        Me.btnAlt13.UseVisualStyleBackColor = True
-        '
-        'btnAlt14
-        '
-        Me.btnAlt14.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAlt14.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.btnAlt14.ImageAlign = System.Drawing.ContentAlignment.TopRight
-        Me.btnAlt14.Location = New System.Drawing.Point(400, 450)
-        Me.btnAlt14.Margin = New System.Windows.Forms.Padding(0)
-        Me.btnAlt14.Name = "btnAlt14"
-        Me.btnAlt14.Size = New System.Drawing.Size(200, 150)
-        Me.btnAlt14.TabIndex = 36
-        Me.btnAlt14.Tag = ""
-        Me.btnAlt14.Text = "14"
-        Me.btnAlt14.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        Me.btnAlt14.UseVisualStyleBackColor = True
-        '
-        'btnAlt15
-        '
-        Me.btnAlt15.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAlt15.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.btnAlt15.ImageAlign = System.Drawing.ContentAlignment.TopRight
-        Me.btnAlt15.Location = New System.Drawing.Point(600, 450)
-        Me.btnAlt15.Margin = New System.Windows.Forms.Padding(0)
-        Me.btnAlt15.Name = "btnAlt15"
-        Me.btnAlt15.Size = New System.Drawing.Size(200, 150)
-        Me.btnAlt15.TabIndex = 37
-        Me.btnAlt15.Tag = ""
-        Me.btnAlt15.Text = "15"
-        Me.btnAlt15.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        Me.btnAlt15.UseVisualStyleBackColor = True
-        '
-        'btnAlt16
-        '
-        Me.btnAlt16.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAlt16.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.btnAlt16.ImageAlign = System.Drawing.ContentAlignment.TopRight
-        Me.btnAlt16.Location = New System.Drawing.Point(0, 600)
-        Me.btnAlt16.Margin = New System.Windows.Forms.Padding(0)
-        Me.btnAlt16.Name = "btnAlt16"
-        Me.btnAlt16.Size = New System.Drawing.Size(200, 150)
-        Me.btnAlt16.TabIndex = 38
-        Me.btnAlt16.Tag = ""
-        Me.btnAlt16.Text = "16"
-        Me.btnAlt16.TextAlign = System.Drawing.ContentAlignment.TopCenter
-        Me.btnAlt16.UseVisualStyleBackColor = True
         '
         'pbZoom
         '
@@ -688,15 +416,6 @@ Partial Class FrmMain
     Friend WithEvents pnlStartup As FlowLayoutPanel
     Friend WithEvents pnlMessage As Panel
     Friend WithEvents chkHideMessage As CheckBox
-    Friend WithEvents btnAlt1 As Button
-    Friend WithEvents btnAlt2 As Button
-    Friend WithEvents btnAlt3 As Button
-    Friend WithEvents btnAlt4 As Button
-    Friend WithEvents btnAlt5 As Button
-    Friend WithEvents btnAlt6 As Button
-    Friend WithEvents btnAlt7 As Button
-    Friend WithEvents btnAlt8 As Button
-    Friend WithEvents btnAlt9 As Button
     Friend WithEvents pbMessage As PictureBox
     Friend WithEvents cmsQuickLaunch As ContextMenuStrip
     Friend WithEvents DummyToolStripMenuItem As ToolStripMenuItem
@@ -708,13 +427,6 @@ Partial Class FrmMain
     Friend WithEvents pnlTitleBar As Panel
     Friend WithEvents lblTitle As Label
     Friend WithEvents chkDebug As CheckBox
-    Friend WithEvents btnAlt10 As Button
-    Friend WithEvents btnAlt11 As Button
-    Friend WithEvents btnAlt12 As Button
-    Friend WithEvents btnAlt13 As Button
-    Friend WithEvents btnAlt14 As Button
-    Friend WithEvents btnAlt15 As Button
-    Friend WithEvents btnAlt16 As Button
     Friend WithEvents cornerNW As PictureBox
     Friend WithEvents cornerNE As PictureBox
     Friend WithEvents cornerSW As PictureBox

@@ -52,7 +52,7 @@
 
         Debug.Print($"CboAlt_SelectedIndexChanged {sender.SelectedIndex}")
 
-        btnAlt1.Focus()
+        'btnAlt1.Focus()
 
         Dim that As ComboBox = CType(sender, ComboBox)
 
@@ -67,13 +67,19 @@
 
         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
         RestorePos(AltPP)
+        For Each id In restoreDic.Keys
+            Dim altAP As AstoniaProcess = New AstoniaProcess(Process.GetProcessById(id))
+            If altAP.IsRunning() Then
+                SetWindowPos(altAP.MainWindowHandle, 0, restoreDic(id).X, restoreDic(id).Y, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.ASyncWindowPosition)
+            End If
+        Next
 
         AltPP = CType(that.SelectedItem, AstoniaProcess)
         UpdateTitle()
         If that.SelectedIndex = 0 Then
             pnlStartup.SuspendLayout()
             UpdateButtonLayout(AstoniaProcess.Enumerate.Count)
-            For Each but As Button In pnlStartup.Controls.OfType(Of Button).TakeWhile(Function(b) b.Text <> "")
+            For Each but As AButton In pnlStartup.Controls.OfType(Of AButton).TakeWhile(Function(b) b.Text <> "")
                 but.Image = Nothing
                 but.BackgroundImage = Nothing
                 but.Text = String.Empty
@@ -376,6 +382,8 @@
         Next
         cboAlt.EndUpdate()
 
+
+        AddAButtons(APlist.Count)
         UpdateButtonLayout(APlist.Count)
 
         If cboAlt.SelectedIndex = 0 AndAlso args.Count = 1 Then
@@ -405,6 +413,7 @@
         Dim test As New ContextMenuStrip
         test.Items.Add(New ToolStripMenuItem("Parse Info", Nothing, AddressOf dBug.ParseInfo))
         test.Items.Add(New ToolStripMenuItem("Reset Hide", Nothing, AddressOf dBug.ResetHide))
+        test.Items.Add(New ToolStripMenuItem("ResumeLayout", Nothing, AddressOf dBug.Resumelayout))
         chkDebug.ContextMenuStrip = test
 #End If
 
@@ -514,6 +523,13 @@
 
     Private Sub FrmMain_Closing(sender As Form, e As EventArgs) Handles Me.Closing
         RestorePos(AltPP)
+        For Each id In restoreDic.Keys
+            Dim altAP As AstoniaProcess = New AstoniaProcess(Process.GetProcessById(id))
+            Try
+                SetWindowPos(altAP?.MainWindowHandle, 0, restoreDic(id).X, restoreDic(id).Y, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.ASyncWindowPosition)
+            Catch
+            End Try
+        Next
         If Me.WindowState = FormWindowState.Normal Then
             My.Settings.location = Me.Location
         End If
@@ -810,9 +826,11 @@
     ReadOnly startThumbsDict As New Dictionary(Of Integer, IntPtr)
     ReadOnly opaDict As New Dictionary(Of Integer, Byte)
     ReadOnly rectDic As New Dictionary(Of Integer, Rectangle)
+    ReadOnly restoreDic As New Dictionary(Of Integer, Point)
 
     Const dimmed As Byte = 240
-    Private Sub TmrStartup_Tick(sender As Timer, e As EventArgs) Handles tmrStartup.Tick
+    Private Async Sub TmrStartup_Tick(sender As Timer, e As EventArgs) Handles tmrStartup.Tick
+
         'Debug.Print("tmrStartup.Tick")
         pnlStartup.SuspendLayout()
 
@@ -824,7 +842,7 @@
         Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate.Where(Function(p) p.Name <> String.Empty).ToList
 
         UpdateButtonLayout(alts.Count)
-        For Each but As Button In pnlStartup.Controls.OfType(Of Button).Where(Function(b) b.Visible) 'loop through visible buttons
+        For Each but As AButton In pnlStartup.Controls.OfType(Of AButton).Where(Function(b) b.Visible) 'loop through visible buttons
             If i < alts.Count Then
                 Dim name As String = alts(i).Name
 
@@ -844,7 +862,19 @@
 
                 but.Text = name
                 but.Tag = alts(i)
-                but.BackgroundImage = New Bitmap(alts(i).GetIcon?.ToBitmap, New Size(16, 16))
+                If but.Tag?.isActive() Then
+                    but.Font = New Font("Microsoft Sans Serif", 8.25, FontStyle.Bold)
+                    but.Select()
+                Else
+                    but.Font = New Font("Microsoft Sans Serif", 8.25)
+                End If
+                Using ico As Bitmap = alts(i).GetIcon?.ToBitmap
+                    If ico IsNot Nothing Then
+                        but.BackgroundImage = New Bitmap(ico, New Size(16, 16))
+                    Else
+                        but.BackgroundImage = Nothing
+                    End If
+                End Using
                 but.ContextMenuStrip = cmsAlt
 
                 'activeNameList.Add(name)
@@ -853,7 +883,8 @@
                     DwmRegisterThumbnail(Me.Handle, alts(i).MainWindowHandle, startThumbsDict(alts(i).Id))
                     Debug.Print("registered thumb " & startThumbsDict(alts(i).Id).ToString & " " & name)
                 End If
-                rectDic(alts(i).Id) = New Rectangle(pnlStartup.Left + but.Left + 3, pnlStartup.Top + but.Top + 21, but.Right - 2, pnlStartup.Top + but.Bottom - 3)
+
+                rectDic(alts(i).Id) = but.ThumbRECT
                 Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
                                        .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION,
                                        .opacity = opaDict.GetValueOrDefault(alts(i).Id, &HFF),
@@ -865,9 +896,73 @@
 
                 'If Not MovingForm Then but.Image = alts(i).getHealthbar() 'couses window moving to stutter.
                 'Task.Run(Sub() but.Image = but.Tag.getHealthbar()) 'smooth window move. causes excetpion in unamanged code on but.image.
+#Disable Warning BC42358 ' Because this call is not awaited, execution of the current method continues before the call is completed
                 Task.Run(Sub() Me.BeginInvoke(updateImage, {but, CType(but.Tag, AstoniaProcess).getHealthbar()}))
+#Enable Warning BC42358 ' Because this call is not awaited, execution of the current method continues before the call is completed
 
-            Else ' i >= alts.Count
+                Dim rccB As Rectangle
+                GetClientRect(but?.Tag.MainWindowHandle, rccB)
+
+                Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
+                GetCursorInfo(pci)
+                If pci.flags <> 0 Then ' cursor is visible
+                    If Not wasVisible AndAlso but.Tag?.IsActive() Then
+                        Debug.Print("scrollthumb released")
+                        If storedY <> pci.ptScreenpos.y Then
+                            Debug.Print("scrollthumb moved")
+                            Dim factor As Double = but.ThumbRectangle.Height / rccB.Height
+                            Dim movedY As Integer = storedY + ((pci.ptScreenpos.y - storedY) * factor)
+                            If movedY >= Me.Bottom Then movedY = Me.Bottom - 2
+                            Cursor.Position = New Point(pci.ptScreenpos.x, movedY)
+                        End If
+                    End If
+                    storedY = pci.ptScreenpos.y
+
+                    wasVisible = True
+                Else ' cursor is hidden
+                    wasVisible = False
+                    Exit For ' do not move astonia when cursor is hidden. fixes scrollbar thumb.
+                    ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
+                End If
+
+                If My.Settings.gameOnOverview AndAlso but.ThumbContains(MousePosition) Then
+                    SetWindowLong(Me.Handle, GWL_HWNDPARENT, CType(but.Tag, AstoniaProcess).MainWindowHandle)
+
+                    Dim ptZB As Point = but.ThumbRECT.Location
+                    Dim rcwB As Rectangle
+
+
+                    GetWindowRect(but?.Tag.MainWindowHandle, rcwB)
+                    If but.Tag?.id IsNot Nothing AndAlso Not restoreDic.ContainsKey(but.Tag?.Id) Then
+                        restoreDic.Add(but.Tag?.id, rcwB.Location)
+                    End If
+
+                    Dim pttB As Point
+
+                        ClientToScreen(but?.Tag.MainWindowHandle, pttB)
+
+                        Dim AstClientOffsetB = New Size(pttB.X - rcwB.Left, pttB.Y - rcwB.Top)
+
+                        ClientToScreen(Me.Handle, ptZB)
+                        Dim newXB = MousePosition.X.Map(ptZB.X, ptZB.X + but.ThumbRectangle.Width, ptZB.X, ptZB.X + but.ThumbRECT.Width - but.ThumbRECT.X - rccB.Width) - AstClientOffsetB.Width - My.Settings.offset.X
+                        Dim newYB = MousePosition.Y.Map(ptZB.Y, ptZB.Y + but.ThumbRectangle.Height, ptZB.Y, ptZB.Y + but.ThumbRECT.Height - but.ThumbRECT.Top - rccB.Height) - AstClientOffsetB.Height - My.Settings.offset.Y
+
+
+
+
+                        Await Task.Run(Sub()
+                                           Try
+                                               SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1,
+                                          SetWindowPosFlags.IgnoreResize Or
+                                          SetWindowPosFlags.DoNotActivate Or
+                                          SetWindowPosFlags.ASyncWindowPosition)
+                                           Catch ex As Exception
+                                           End Try
+                                       End Sub)
+                    End If 'gameonoverview
+
+
+                Else ' i >= alts.Count
                 but.Text = String.Empty
                 but.Tag = New AstoniaProcess(Nothing)
                 but.ContextMenuStrip = cmsQuickLaunch
@@ -885,7 +980,9 @@
             startThumbsDict.Remove(ppid)
             rectDic.Remove(ppid)
         Next
-        pnlStartup.ResumeLayout()
+
+        pnlStartup.ResumeLayout(True)
+
     End Sub
     Delegate Sub updateImageDelegate(obj As Object, bm As Bitmap)
     Private Shared ReadOnly updateImage As updateImageDelegate = New updateImageDelegate(AddressOf updateImageMethod)
@@ -893,9 +990,24 @@
         If obj Is Nothing Then Exit Sub
         If TypeOf obj Is Button Then
             CType(obj, Button).Image = bm
-        Else
+        ElseIf TypeOf obj Is toolstripitem Then
             CType(obj, ToolStripMenuItem).Image = bm
+        Else
+            obj.image = bm
         End If
+    End Sub
+    Private Function getNextPerfectSquare(num As Integer)
+
+        Return 16
+    End Function
+    Private Sub AddAButtons(count As Integer)
+        Dim sqNum As Integer = getNextPerfectSquare(count)
+        For i As Integer = 1 To sqNum
+            Dim but As AButton = New AButton($"{i}", 0, 0, 200, 150)
+
+            AddHandler but.Click, AddressOf BtnAlt_Click
+            pnlStartup.Controls.Add(but)
+        Next i
     End Sub
     Private Sub UpdateButtonLayout(count As Integer)
         pnlStartup.SuspendLayout()
@@ -910,9 +1022,8 @@
                 numrows = 4
         End Select
 
-
         Dim i = 1 + If(My.Settings.hideMessage, 0, 1)
-        For Each but As Button In pnlStartup.Controls.OfType(Of Button)
+        For Each but As AButton In pnlStartup.Controls.OfType(Of AButton)
             If i <= numrows ^ 2 Then
                 but.Visible = True
             Else
@@ -960,11 +1071,7 @@
         RestorePos(AltPP)
 
     End Sub
-    Private Sub BtnAlt_Click(sender As Button, e As EventArgs) Handles _
-        btnAlt1.Click, btnAlt2.Click, btnAlt3.Click, btnAlt4.Click,
-        btnAlt5.Click, btnAlt6.Click, btnAlt7.Click, btnAlt8.Click,
-        btnAlt9.Click, btnAlt10.Click, btnAlt11.Click, btnAlt12.Click,
-        btnAlt13.Click, btnAlt14.Click, btnAlt15.Click, btnAlt16.Click
+    Private Sub BtnAlt_Click(sender As AButton, e As EventArgs) ' Handles AButton.click
         If sender.Text = String.Empty Then
             'show cms
             cmsQuickLaunch.Show(sender, sender.PointToClient(MousePosition))
@@ -976,21 +1083,13 @@
         End If
         cboAlt.SelectedItem = sender.Tag
     End Sub
-    Private Sub BtnAlt_MouseEnter(sender As Button, e As EventArgs) Handles _
-        btnAlt1.MouseEnter, btnAlt2.MouseEnter, btnAlt3.MouseEnter, btnAlt4.MouseEnter,
-        btnAlt5.MouseEnter, btnAlt6.MouseEnter, btnAlt7.MouseEnter, btnAlt8.MouseEnter,
-        btnAlt9.MouseEnter, btnAlt10.MouseEnter, btnAlt11.MouseEnter, btnAlt12.MouseEnter,
-        btnAlt13.MouseEnter, btnAlt14.MouseEnter, btnAlt15.MouseEnter, btnAlt16.MouseEnter
+    Private Sub BtnAlt_MouseEnter(sender As AButton, e As EventArgs) ' Handles AButton.MouseEnter
         Try
             opaDict(CType(sender.Tag, AstoniaProcess).Id) = dimmed
         Catch
         End Try
     End Sub
-    Private Sub BtnAlt_MouseLeave(sender As Button, e As EventArgs) Handles _
-        btnAlt1.MouseLeave, btnAlt2.MouseLeave, btnAlt3.MouseLeave, btnAlt4.MouseLeave,
-        btnAlt5.MouseLeave, btnAlt6.MouseLeave, btnAlt7.MouseLeave, btnAlt8.MouseLeave,
-        btnAlt9.MouseLeave, btnAlt10.MouseLeave, btnAlt11.MouseLeave, btnAlt12.MouseLeave,
-        btnAlt13.MouseLeave, btnAlt14.MouseLeave, btnAlt15.MouseLeave, btnAlt16.MouseLeave
+    Private Sub BtnAlt_MouseLeave(sender As AButton, e As EventArgs) ' Handles AButton.MouseLeave
         Try
             opaDict(CType(sender.Tag, AstoniaProcess).Id) = &HFF
         Catch
@@ -1044,7 +1143,7 @@
 
     Private Sub BtnStart_Click(sender As Button, e As EventArgs) Handles btnStart.Click
         cboAlt.SelectedIndex = 0
-        btnAlt1.Focus()
+        'btnAlt1.Focus()
     End Sub
 
     ReadOnly scalaPID As Integer = Process.GetCurrentProcess().Id
@@ -1200,6 +1299,10 @@ Module dBug
 
     Friend Sub ResetHide(sender As Object, e As EventArgs)
         FrmMain.chkHideMessage.Checked = False
+    End Sub
+
+    Friend Sub Resumelayout(sender As Object, e As EventArgs)
+        FrmMain.pnlStartup.ResumeLayout(True)
     End Sub
 End Module
 

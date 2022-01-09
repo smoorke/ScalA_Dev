@@ -8,6 +8,7 @@
         Me.TopMost = My.Settings.topmost
         chkTopMost.Checked = My.Settings.topmost
         chkRoundCorners.Checked = My.Settings.roundCorners
+        chkOverViewIsGame.Checked = My.Settings.gameOnOverview
 
         'chkAspect.Checked = My.Settings.lockAspect
         'cmbAnchor.SelectedIndex = My.Settings.anchor
@@ -137,6 +138,8 @@
 
         My.Settings.topmost = chkTopMost.Checked
         FrmMain.TopMost = chkTopMost.Checked
+
+        My.Settings.gameOnOverview = chkOverViewIsGame.Checked
 
         My.Settings.roundCorners = chkRoundCorners.Checked
 
