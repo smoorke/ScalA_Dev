@@ -102,3 +102,9 @@ Fixed using thumb to scroll stats/inv/depot no longer shifts cursor towards cent
 Fixed using thumb to scroll stats/inv/depot no longer causes it to jump down.
    (note there is an astonia client bug which will still cause this to happen intermittently)
 Fixed exception when quicklaunch folder doesn't exist.
+
+**ScalA 0.9.1**
+Added setting to have thumbnails on overview function as game.
+Fixed releasing scroll thumb when dragged with Astonia client initially inactive would set mouse to wrong location.
+Fixed upgrading version would not load saved custom resolutions until program restart.
+Fixed bug in overview when switching to a different count of buttons it would sometimes mess up button positions.
