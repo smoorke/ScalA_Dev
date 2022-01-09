@@ -1032,8 +1032,8 @@
             i += 1
         Next
 
-        Dim newSZ As New Size(pbZoom.Size.Width \ numrows, pbZoom.Size.Height \ numrows)
-        For Each but As Button In pnlStartup.Controls.OfType(Of Button)
+        Dim newSZ As New Size(pbZoom.Size.Width / numrows, pbZoom.Size.Height / numrows)
+        For Each but As AButton In pnlStartup.Controls.OfType(Of AButton)
             but.Size = newSZ
         Next
 
