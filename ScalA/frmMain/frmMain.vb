@@ -65,14 +65,10 @@
             Exit Sub
         End If
 
+        counter = 0
+
         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
         RestorePos(AltPP)
-        For Each id In restoreDic.Keys
-            Dim altAP As AstoniaProcess = New AstoniaProcess(Process.GetProcessById(id))
-            If altAP.IsRunning() Then
-                SetWindowPos(altAP.MainWindowHandle, 0, restoreDic(id).X, restoreDic(id).Y, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.ASyncWindowPosition)
-            End If
-        Next
 
         AltPP = CType(that.SelectedItem, AstoniaProcess)
         UpdateTitle()
@@ -95,6 +91,7 @@
         Else
             pnlStartup.Hide()
             tmrStartup.Enabled = False
+            Debug.Print("tmrStartup.stop")
         End If
 
 
@@ -310,9 +307,16 @@
 
     Dim AstClientOffset As New Size(0, 0)
     Public Sub RestorePos(altPP As AstoniaProcess)
-        If altPP.IsRunning() Then
+        If altPP?.IsRunning() Then
             SetWindowPos(altPP.MainWindowHandle, altTopM, rcW.Left, rcW.Top, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.ASyncWindowPosition)
         End If
+        For Each id In restoreDic.Keys
+            Dim altAP As AstoniaProcess = New AstoniaProcess(Process.GetProcessById(id))
+            If altAP.IsRunning() Then
+                SetWindowPos(altAP.MainWindowHandle, 0, restoreDic(id).X, restoreDic(id).Y, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.ASyncWindowPosition)
+            End If
+        Next
+        restoreDic.Clear()
     End Sub
 
     Private Sub UpdateTitle()
@@ -523,13 +527,6 @@
 
     Private Sub FrmMain_Closing(sender As Form, e As EventArgs) Handles Me.Closing
         RestorePos(AltPP)
-        For Each id In restoreDic.Keys
-            Dim altAP As AstoniaProcess = New AstoniaProcess(Process.GetProcessById(id))
-            Try
-                SetWindowPos(altAP?.MainWindowHandle, 0, restoreDic(id).X, restoreDic(id).Y, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.ASyncWindowPosition)
-            Catch
-            End Try
-        Next
         If Me.WindowState = FormWindowState.Normal Then
             My.Settings.location = Me.Location
         End If
@@ -577,7 +574,7 @@
                 Debug.Print("scrollthumb released")
                 If storedY <> pci.ptScreenpos.y Then
                     Debug.Print("scrollthumb moved")
-                    Dim factor As Double = zooms(cmbResolution.SelectedIndex).Height / rcC.Height
+                    Dim factor As Double = pbZoom.Height / rcC.Height
                     Dim movedY As Integer = storedY + ((pci.ptScreenpos.y - storedY) * factor)
                     If movedY >= Me.Bottom Then movedY = Me.Bottom - 2
                     Cursor.Position = New Point(pci.ptScreenpos.x, movedY)
@@ -829,18 +826,18 @@
     ReadOnly restoreDic As New Dictionary(Of Integer, Point)
 
     Const dimmed As Byte = 240
+    Private counter As Integer = 0
     Private Async Sub TmrStartup_Tick(sender As Timer, e As EventArgs) Handles tmrStartup.Tick
 
         'Debug.Print("tmrStartup.Tick")
-        pnlStartup.SuspendLayout()
+#If DEBUG Then
+        chkDebug.Text = counter
+#End If
 
-        If cboAlt.SelectedIndex <> 0 Then
-            sender.Stop()
-            Exit Sub
-        End If
         Dim i As Integer = 0
         Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate.Where(Function(p) p.Name <> String.Empty).ToList
 
+        pnlStartup.SuspendLayout()
         UpdateButtonLayout(alts.Count)
         For Each but As AButton In pnlStartup.Controls.OfType(Of AButton).Where(Function(b) b.Visible) 'loop through visible buttons
             If i < alts.Count Then
@@ -854,12 +851,6 @@
                     name = alts(i).Name
                 End While
 
-                If cboAlt.SelectedIndex <> 0 Then
-                    sender.Stop()
-                    Exit For
-                End If
-                'but.SuspendLayout()
-
                 but.Text = name
                 but.Tag = alts(i)
                 If but.Tag?.isActive() Then
@@ -868,13 +859,15 @@
                 Else
                     but.Font = New Font("Microsoft Sans Serif", 8.25)
                 End If
-                Using ico As Bitmap = alts(i).GetIcon?.ToBitmap
-                    If ico IsNot Nothing Then
-                        but.BackgroundImage = New Bitmap(ico, New Size(16, 16))
-                    Else
-                        but.BackgroundImage = Nothing
-                    End If
-                End Using
+                If counter = 0 Then
+                    Using ico As Bitmap = alts(i).GetIcon?.ToBitmap
+                        If ico IsNot Nothing Then
+                            but.BackgroundImage = New Bitmap(ico, New Size(16, 16))
+                        Else
+                            but.BackgroundImage = Nothing
+                        End If
+                    End Using
+                End If
                 but.ContextMenuStrip = cmsAlt
 
                 'activeNameList.Add(name)
@@ -886,58 +879,65 @@
 
                 rectDic(alts(i).Id) = but.ThumbRECT
                 Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
-                                       .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION,
-                                       .opacity = opaDict.GetValueOrDefault(alts(i).Id, &HFF),
-                                       .fSourceClientAreaOnly = True,
-                                       .fVisible = True,
-                                       .rcDestination = rectDic(alts(i).Id)
-                                   }
+                                   .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION,
+                                   .opacity = opaDict.GetValueOrDefault(alts(i).Id, &HFF),
+                                   .fSourceClientAreaOnly = True,
+                                   .fVisible = True,
+                                   .rcDestination = rectDic(alts(i).Id)
+                               }
                 DwmUpdateThumbnailProperties(startThumbsDict(alts(i).Id), prp)
 
                 'If Not MovingForm Then but.Image = alts(i).getHealthbar() 'couses window moving to stutter.
                 'Task.Run(Sub() but.Image = but.Tag.getHealthbar()) 'smooth window move. causes excetpion in unamanged code on but.image.
+                If counter = 0 Then
 #Disable Warning BC42358 ' Because this call is not awaited, execution of the current method continues before the call is completed
-                Task.Run(Sub() Me.BeginInvoke(updateImage, {but, CType(but.Tag, AstoniaProcess).getHealthbar()}))
+                    Task.Run(Sub()
+                                 Try
+                                     Me.BeginInvoke(updateImage, {but, CType(but.Tag, AstoniaProcess).getHealthbar()})
+                                 Catch
+                                 End Try
+                             End Sub)
 #Enable Warning BC42358 ' Because this call is not awaited, execution of the current method continues before the call is completed
-
-                Dim rccB As Rectangle
-                GetClientRect(but?.Tag.MainWindowHandle, rccB)
-
-                Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
-                GetCursorInfo(pci)
-                If pci.flags <> 0 Then ' cursor is visible
-                    If Not wasVisible AndAlso but.Tag?.IsActive() Then
-                        Debug.Print("scrollthumb released")
-                        If storedY <> pci.ptScreenpos.y Then
-                            Debug.Print("scrollthumb moved")
-                            Dim factor As Double = but.ThumbRectangle.Height / rccB.Height
-                            Dim movedY As Integer = storedY + ((pci.ptScreenpos.y - storedY) * factor)
-                            If movedY >= Me.Bottom Then movedY = Me.Bottom - 2
-                            Cursor.Position = New Point(pci.ptScreenpos.x, movedY)
-                        End If
-                    End If
-                    storedY = pci.ptScreenpos.y
-
-                    wasVisible = True
-                Else ' cursor is hidden
-                    wasVisible = False
-                    Exit For ' do not move astonia when cursor is hidden. fixes scrollbar thumb.
-                    ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
                 End If
+                If My.Settings.gameOnOverview Then 'todo move this to seperate timer and make async
+                    Dim rccB As Rectangle
+                    GetClientRect(but?.Tag.MainWindowHandle, rccB)
 
-                If My.Settings.gameOnOverview AndAlso but.ThumbContains(MousePosition) Then
-                    SetWindowLong(Me.Handle, GWL_HWNDPARENT, CType(but.Tag, AstoniaProcess).MainWindowHandle)
+                    Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
+                    GetCursorInfo(pci)
+                    If pci.flags <> 0 Then ' cursor is visible
+                        If Not wasVisible AndAlso but.Tag?.IsActive() Then
+                            Debug.Print("scrollthumb released")
+                            If storedY <> pci.ptScreenpos.y Then
+                                Debug.Print("scrollthumb moved")
+                                Dim factor As Double = but.ThumbRectangle.Height / rccB.Height
+                                Dim movedY As Integer = storedY + ((pci.ptScreenpos.y - storedY) * factor)
+                                If movedY >= Me.Bottom Then movedY = Me.Bottom - 2
+                                Cursor.Position = New Point(pci.ptScreenpos.x, movedY)
+                            End If
+                        End If
+                        storedY = pci.ptScreenpos.y
 
-                    Dim ptZB As Point = but.ThumbRECT.Location
-                    Dim rcwB As Rectangle
-
-
-                    GetWindowRect(but?.Tag.MainWindowHandle, rcwB)
-                    If but.Tag?.id IsNot Nothing AndAlso Not restoreDic.ContainsKey(but.Tag?.Id) Then
-                        restoreDic.Add(but.Tag?.id, rcwB.Location)
+                        wasVisible = True
+                    Else ' cursor is hidden
+                        wasVisible = False
+                        Exit For ' do not move astonia when cursor is hidden. fixes scrollbar thumb.
+                        ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
                     End If
 
-                    Dim pttB As Point
+                    If but.ThumbContains(MousePosition) Then
+                        SetWindowLong(Me.Handle, GWL_HWNDPARENT, CType(but.Tag, AstoniaProcess).MainWindowHandle)
+
+                        Dim ptZB As Point = but.ThumbRECT.Location
+                        Dim rcwB As Rectangle
+
+
+                        GetWindowRect(but?.Tag.MainWindowHandle, rcwB)
+                        If but.Tag?.id IsNot Nothing AndAlso Not restoreDic.ContainsKey(but.Tag?.Id) Then
+                            restoreDic.Add(but.Tag?.id, rcwB.Location)
+                        End If
+
+                        Dim pttB As Point
 
                         ClientToScreen(but?.Tag.MainWindowHandle, pttB)
 
@@ -953,25 +953,26 @@
                         Await Task.Run(Sub()
                                            Try
                                                SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1,
-                                          SetWindowPosFlags.IgnoreResize Or
-                                          SetWindowPosFlags.DoNotActivate Or
-                                          SetWindowPosFlags.ASyncWindowPosition)
+                                                       SetWindowPosFlags.IgnoreResize Or
+                                                       SetWindowPosFlags.DoNotActivate Or
+                                                       SetWindowPosFlags.ASyncWindowPosition)
                                            Catch ex As Exception
                                            End Try
                                        End Sub)
-                    End If 'gameonoverview
+                    End If
+                End If 'gameonoverview
 
 
-                Else ' i >= alts.Count
+            Else ' i >= alts.Count
                 but.Text = String.Empty
-                but.Tag = New AstoniaProcess(Nothing)
+                but.Tag = Nothing 'New AstoniaProcess(Nothing)
                 but.ContextMenuStrip = cmsQuickLaunch
                 but.BackgroundImage = Nothing
                 but.Image = Nothing
             End If
             i += 1
             'but.ResumeLayout()
-        Next
+        Next but
 
         Dim purgeList As List(Of Integer) = startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList
         For Each ppid As Integer In purgeList
@@ -982,7 +983,8 @@
         Next
 
         pnlStartup.ResumeLayout(True)
-
+        counter += 1
+        If counter > 11 Then counter = 0
     End Sub
     Delegate Sub updateImageDelegate(obj As Object, bm As Bitmap)
     Private Shared ReadOnly updateImage As updateImageDelegate = New updateImageDelegate(AddressOf updateImageMethod)
@@ -1078,6 +1080,7 @@
             Exit Sub
         End If
         tmrStartup.Enabled = False
+        Debug.Print("tmrStartup.stop")
         If Not cboAlt.Items.Contains(sender.Tag) Then
             PopDropDown()
         End If
@@ -1143,7 +1146,7 @@
 
     Private Sub BtnStart_Click(sender As Button, e As EventArgs) Handles btnStart.Click
         cboAlt.SelectedIndex = 0
-        'btnAlt1.Focus()
+        RestorePos(Nothing)
     End Sub
 
     ReadOnly scalaPID As Integer = Process.GetCurrentProcess().Id
