@@ -108,3 +108,10 @@ Added setting to have thumbnails on overview function as game.
 Fixed releasing scroll thumb when dragged with Astonia client initially inactive would set mouse to wrong location.
 Fixed upgrading version would not load saved custom resolutions until program restart.
 Fixed bug in overview when switching to a different count of buttons it would sometimes mess up button positions.
+
+**ScalA 0.9.2**
+Reduced CPU utilization of overview.
+Fixed race condition exception on closing ScalA.
+Fixed releasing scroll thumb when dragged with ScalA maximized would set mouse to wrong location.
+Fixed bug on overview when alt selection combobox is open and hovering over alts would stop overview from updating.
+Fixed Astonia window position glitch on active overview when quickly moving between diffrent clients.
