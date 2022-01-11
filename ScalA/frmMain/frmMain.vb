@@ -567,7 +567,7 @@
             Exit Sub
         End If
 
-        'Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
+        Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
         GetCursorInfo(pci)
         If pci.flags <> 0 Then ' cursor is visible
             If Not wasVisible AndAlso AltPP?.IsActive() Then
@@ -828,7 +828,7 @@
     Const dimmed As Byte = 240
     Private counter As Integer = 0
     Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
-    Dim busy As Boolean = False
+    Dim AOBusy As Boolean = False
     Private Async Sub TmrStartup_Tick(sender As Timer, e As EventArgs) Handles tmrStartup.Tick
 
         'Debug.Print("tmrStartup.Tick")
@@ -927,7 +927,7 @@
                         ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
                     End If
 
-                    If but.ThumbContains(MousePosition) AndAlso Not busy Then
+                    If but.ThumbContains(MousePosition) AndAlso Not AOBusy Then
                         SetWindowLong(Me.Handle, GWL_HWNDPARENT, CType(but.Tag, AstoniaProcess).MainWindowHandle)
 
                         Dim ptZB As Point = but.ThumbRECT.Location
@@ -950,7 +950,7 @@
                         Dim newYB = MousePosition.Y.Map(ptZB.Y, ptZB.Y + but.ThumbRectangle.Height, ptZB.Y, ptZB.Y + but.ThumbRECT.Height - but.ThumbRECT.Top - rccB.Height) - AstClientOffsetB.Height - My.Settings.offset.Y
 
 
-                        busy = True
+                        AOBusy = True
                         Await Task.Run(Sub()
                                            Try
                                                SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1,
@@ -961,7 +961,7 @@
                                            Catch ex As Exception
                                            End Try
                                        End Sub)
-                        busy = False
+                        AOBusy = False
                     End If 'but.ThumbContains(MousePosition)
                 End If 'gameonoverview
 
