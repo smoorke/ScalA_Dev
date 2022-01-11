@@ -567,7 +567,7 @@
             Exit Sub
         End If
 
-        Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
+        'Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
         GetCursorInfo(pci)
         If pci.flags <> 0 Then ' cursor is visible
             If Not wasVisible AndAlso AltPP?.IsActive() Then
@@ -827,6 +827,7 @@
 
     Const dimmed As Byte = 240
     Private counter As Integer = 0
+    Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
     Private Async Sub TmrStartup_Tick(sender As Timer, e As EventArgs) Handles tmrStartup.Tick
 
         'Debug.Print("tmrStartup.Tick")
@@ -903,7 +904,7 @@
                     Dim rccB As Rectangle
                     GetClientRect(but?.Tag.MainWindowHandle, rccB)
 
-                    Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
+                    'Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
                     GetCursorInfo(pci)
                     If pci.flags <> 0 Then ' cursor is visible
                         If Not wasVisible AndAlso but.Tag?.IsActive() Then
@@ -959,7 +960,7 @@
                                            Catch ex As Exception
                                            End Try
                                        End Sub)
-                    End If
+                    End If 'but.ThumbContains(MousePosition)
                 End If 'gameonoverview
 
 
