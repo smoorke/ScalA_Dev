@@ -827,7 +827,7 @@
 
     Const dimmed As Byte = 240
     Private counter As Integer = 0
-    Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
+
     Dim AOBusy As Boolean = False
     Private Async Sub TmrStartup_Tick(sender As Timer, e As EventArgs) Handles tmrStartup.Tick
 
@@ -891,7 +891,7 @@
 
                 'If Not MovingForm Then but.Image = alts(i).getHealthbar() 'couses window moving to stutter.
                 'Task.Run(Sub() but.Image = but.Tag.getHealthbar()) 'smooth window move. causes excetpion in unamanged code on but.image.
-                If counter = 0 Then
+                If counter = 0 OrElse but.Image Is Nothing Then
 #Disable Warning BC42358 ' Because this call is not awaited, execution of the current method continues before the call is completed
                     Task.Run(Sub()
                                  Try
@@ -905,7 +905,7 @@
                     Dim rccB As Rectangle
                     GetClientRect(but?.Tag.MainWindowHandle, rccB)
 
-                    'Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
+                    Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
                     GetCursorInfo(pci)
                     If pci.flags <> 0 Then ' cursor is visible
                         If Not wasVisible AndAlso but.Tag?.IsActive() Then
