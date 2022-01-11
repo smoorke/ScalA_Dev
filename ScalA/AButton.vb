@@ -38,12 +38,6 @@
 	Public ReadOnly Property ThumbContains(screenPt As Point) As Boolean
 		Get
 			Dim clientpt As Point = Me.FindForm.PointToClient(screenPt)
-			If Me.Text = "Boolzebub" Then
-				'Debug.Print($"ThumbContains {screenPt.ToString}")
-				'Debug.Print($"after ff ptc  {clientpt.ToString}")
-				'Debug.Print($"me.thumbrectangle {Me.ThumbRectangle}")
-				'Debug.Print($"me.thumbRECT      {Me.ThumbRECT}")
-			End If
 			If New Rectangle(ThumbRECT.X, ThumbRECT.Y, ThumbRECT.Width - ThumbRECT.X, ThumbRECT.Height - ThumbRECT.Y).Contains(clientpt) Then
 				'Debug.Print($"contains = True")
 				Return True
