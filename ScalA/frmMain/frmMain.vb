@@ -828,6 +828,7 @@
     Const dimmed As Byte = 240
     Private counter As Integer = 0
     Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
+    Dim busy As Boolean = False
     Private Async Sub TmrStartup_Tick(sender As Timer, e As EventArgs) Handles tmrStartup.Tick
 
         'Debug.Print("tmrStartup.Tick")
@@ -926,7 +927,7 @@
                         ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
                     End If
 
-                    If but.ThumbContains(MousePosition) Then
+                    If but.ThumbContains(MousePosition) AndAlso Not busy Then
                         SetWindowLong(Me.Handle, GWL_HWNDPARENT, CType(but.Tag, AstoniaProcess).MainWindowHandle)
 
                         Dim ptZB As Point = but.ThumbRECT.Location
@@ -949,17 +950,18 @@
                         Dim newYB = MousePosition.Y.Map(ptZB.Y, ptZB.Y + but.ThumbRectangle.Height, ptZB.Y, ptZB.Y + but.ThumbRECT.Height - but.ThumbRECT.Top - rccB.Height) - AstClientOffsetB.Height - My.Settings.offset.Y
 
 
-
-
+                        busy = True
                         Await Task.Run(Sub()
                                            Try
                                                SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1,
                                                        SetWindowPosFlags.IgnoreResize Or
                                                        SetWindowPosFlags.DoNotActivate Or
                                                        SetWindowPosFlags.ASyncWindowPosition)
+
                                            Catch ex As Exception
                                            End Try
                                        End Sub)
+                        busy = False
                     End If 'but.ThumbContains(MousePosition)
                 End If 'gameonoverview
 
