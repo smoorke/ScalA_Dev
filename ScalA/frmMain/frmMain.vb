@@ -1008,9 +1008,10 @@
     Private Sub AddAButtons(count As Integer)
         Dim sqNum As Integer = getNextPerfectSquare(count)
         For i As Integer = 1 To sqNum
-            Dim but As AButton = New AButton($"{i}", 0, 0, 200, 150)
+            Dim but As AButton = New AButton(i, 0, 0, 200, 150)
 
             AddHandler but.Click, AddressOf BtnAlt_Click
+            AddHandler but.MouseDown, AddressOf BtnAlt_MouseDown
             pnlStartup.Controls.Add(but)
         Next i
     End Sub
@@ -1088,6 +1089,18 @@
             PopDropDown()
         End If
         cboAlt.SelectedItem = sender.Tag
+    End Sub
+    Private Sub BtnAlt_MouseDown(sender As Button, e As MouseEventArgs) ' handles AButton.MouseDown
+        Debug.Print($"MouseDown {e.Button}")
+        Select Case e.Button
+            Case MouseButtons.XButton1, MouseButtons.XButton2
+                sender.Select()
+                Try
+                    If sender.Tag IsNot Nothing AndAlso sender.Tag.id <> 0 Then AppActivate(sender.Tag.id)
+                Catch ex As Exception
+
+                End Try
+        End Select
     End Sub
     Private Sub BtnAlt_MouseEnter(sender As AButton, e As EventArgs) ' Handles AButton.MouseEnter
         Try
