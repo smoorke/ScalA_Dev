@@ -5,6 +5,54 @@
     Public Sub New(Optional process As Process = Nothing)
         _proc = process
     End Sub
+
+    Private _rcc As Rectangle
+    Public ReadOnly Property ClientRect() As Rectangle
+        Get
+            If _rcc <> New Rectangle Then
+                Return _rcc
+            Else
+                Debug.Print("called get ClientRect")
+                Dim rcc As New Rectangle
+                GetClientRect(_proc.MainWindowHandle, rcc)
+                _rcc = rcc
+                Return rcc
+            End If
+        End Get
+    End Property
+
+
+    Private _CO As Point
+    Public ReadOnly Property ClientOffset() As Point
+        Get
+            If _CO <> New Point Then
+                Return _CO
+            Else
+                Debug.Print("called get ClientOffset")
+                Dim ptt As Point
+                ClientToScreen(_proc?.MainWindowHandle, ptt)
+                Dim rcW As Rectangle
+                GetWindowRect(_proc?.MainWindowHandle, rcW)
+
+                _CO = New Point(ptt.X - rcW.Left, ptt.Y - rcW.Top)
+                Return _CO
+            End If
+        End Get
+    End Property
+
+    Public Function CenterWindowPos(hWndInsertAfter As IntPtr, x As Integer, y As Integer, Optional extraSWPFlags As UInteger = 0) As Boolean
+        Try
+            Return SetWindowPos(_proc?.MainWindowHandle, hWndInsertAfter,
+                                x - ClientRect.Width / 2 - ClientOffset.X - My.Settings.offset.X,
+                                y - ClientRect.Height / 2 - ClientOffset.Y - My.Settings.offset.Y,
+                                -1, -1,
+                                SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.ASyncWindowPosition Or extraSWPFlags)
+        Catch
+            Return False
+        End Try
+    End Function
+
+
     'Public Shared Narrowing Operator CType(ByVal d As AstoniaProcess) As Process
     '    Return d?._proc
     'End Operator
