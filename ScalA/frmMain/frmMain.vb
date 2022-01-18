@@ -1193,6 +1193,7 @@
             Me.Location = restoreLoc
             wasMaximized = False
             ReZoom(zooms(cmbResolution.SelectedIndex))
+            AltPP?.CenterWindowPos(ScalaHandle, Me.Left + pbZoom.Left + (pbZoom.Width / 2), Me.Top + pbZoom.Top + (pbZoom.Height / 2))
         End If
     End Sub
 
