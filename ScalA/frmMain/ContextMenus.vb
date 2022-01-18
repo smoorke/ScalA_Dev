@@ -16,7 +16,7 @@ Partial Public Class FrmMain
         Dim name As String = pp.Name
         Debug.Print("SelectToolStrip: " & name)
         If Not cboAlt.Items.Contains(pp) Then
-            PopDropDown()
+            PopDropDown(cboAlt)
         End If
         cboAlt.SelectedItem = pp
     End Sub

@@ -5,29 +5,29 @@
     Public AltPP As AstoniaProcess = New AstoniaProcess()
     'Private WndClass() As String = {"MAINWNDMOAC", "䅍义乗䵄䅏C"}
 #Region " Alt Dropdown "
-    Private Sub PopDropDown()
+    Private Sub PopDropDown(sender As ComboBox)
 
-        Dim current As AstoniaProcess = CType(cboAlt.SelectedItem, AstoniaProcess)
-        cboAlt.BeginUpdate()
+        Dim current As AstoniaProcess = CType(sender.SelectedItem, AstoniaProcess)
+        sender.BeginUpdate()
         updatingCombobox = True
 
-        cboAlt.Items.Clear()
-        cboAlt.Items.Add(New AstoniaProcess) 'Someone
-        cboAlt.Items.AddRange(AstoniaProcess.Enumerate.ToArray)
+        sender.Items.Clear()
+        sender.Items.Add(New AstoniaProcess) 'Someone
+        sender.Items.AddRange(AstoniaProcess.Enumerate.ToArray)
 
-        If current IsNot Nothing AndAlso cboAlt.Items.Contains(current) Then
-            cboAlt.SelectedItem = current
+        If current IsNot Nothing AndAlso sender.Items.Contains(current) Then
+            sender.SelectedItem = current
         Else
-            cboAlt.SelectedIndex = 0
+            sender.SelectedIndex = 0
         End If
 
         updatingCombobox = False
-        cboAlt.EndUpdate()
+        sender.EndUpdate()
     End Sub
 
     Private Sub CboAlt_DropDown(sender As ComboBox, e As EventArgs) Handles cboAlt.DropDown
         pbZoom.Visible = False
-        PopDropDown()
+        PopDropDown(sender)
     End Sub
     Private Sub CmbResolution_DropDown(sender As ComboBox, e As EventArgs) Handles cmbResolution.DropDown
         pbZoom.Visible = False
@@ -286,7 +286,7 @@
             Await Task.Delay(50)
             Dim targetPPs As AstoniaProcess() = AstoniaProcess.Enumerate.Where(Function(ap) ap.Name = targetName).ToArray()
             If targetPPs.Length > 0 AndAlso targetPPs(0) IsNot Nothing AndAlso targetPPs(0).Id <> 0 Then
-                PopDropDown()
+                PopDropDown(cboAlt)
                 cboAlt.SelectedItem = targetPPs(0)
                 Exit While
             End If
@@ -1114,7 +1114,7 @@
         tmrStartup.Enabled = False
         Debug.Print("tmrStartup.stop")
         If Not cboAlt.Items.Contains(sender.Tag) Then
-            PopDropDown()
+            PopDropDown(cboAlt)
         End If
         cboAlt.SelectedItem = sender.Tag
     End Sub
