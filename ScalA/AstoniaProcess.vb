@@ -211,7 +211,7 @@
 
         If rcc.Width = 0 OrElse rcc.Height = 0 Then Return Nothing
 
-        Dim bmp As Bitmap = New Bitmap(rcc.Width, rcc.Height)
+        Static Dim bmp As Bitmap = New Bitmap(rcc.Width, rcc.Height)
 
         Using gBM As Graphics = Graphics.FromImage(bmp)
             Dim hdcBm As IntPtr
@@ -229,7 +229,7 @@
     Private Shared ReadOnly validColors As Integer() = {&HFFFF0000, &HFFFF0400, &HFFFF7B29, &HFFFF7D29, &HFF297BFF, &HFF297DFF, &HFF000000, &HFF000400, &HFFFFFFFF} 'red, orange, lightblue, black, white (troy,base)
 
     Public Function getHealthbar(Optional width As Integer = 75, Optional height As Integer = 15) As Bitmap
-        Dim bmp As Bitmap = New Bitmap(width, height)
+        Static Dim bmp As Bitmap = New Bitmap(width, height)
         Using g As Graphics = Graphics.FromImage(bmp), grab As Bitmap = getClientBitmap()
 
             If grab Is Nothing Then Return Nothing
