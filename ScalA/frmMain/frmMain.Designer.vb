@@ -363,7 +363,7 @@ Partial Class FrmMain
         '
         'tmrMove
         '
-        Me.tmrMove.Interval = 55
+        Me.tmrMove.Interval = 25
         '
         'FrmMain
         '

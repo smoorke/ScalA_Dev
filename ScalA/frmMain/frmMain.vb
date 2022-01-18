@@ -482,13 +482,19 @@
             End If
         Else
             If e.Button = MouseButtons.Left Then
-                Await Task.Delay(100) 'this to allow double clicks
+                Dim sw As Stopwatch = Stopwatch.StartNew()
                 sender.Capture = False
                 tmrMove.Start()
+                tmrTick.Stop()
+                Await Task.Delay(50 - sw.ElapsedMilliseconds) 'this to allow double clicks
                 Const HTCAPTION As Integer = 2
                 Dim msg As Message = Message.Create(Me.Handle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
                 Me.WndProc(msg)
                 tmrMove.Stop()
+                If cboAlt.SelectedIndex > 0 Then
+                    AppActivate(AltPP.Id)
+                    tmrTick.Start()
+                End If
                 Debug.Print("movetimer stopped")
             End If
         End If
@@ -498,8 +504,8 @@
     pnlTitleBar.MouseMove, lblTitle.MouseMove ' Add more handles here (Example: PictureBox1.MouseMove)
         If MovingForm Then
             If AltPP IsNot Nothing AndAlso Not FrmSettings.chkDoAlign.Checked Then
-                newX = Me.Left + pbZoom.Left - AstClientOffset.Width - My.Settings.offset.X
-                newY = Me.Top + pbZoom.Top - AstClientOffset.Height - My.Settings.offset.Y
+                newX = Me.Left + pbZoom.Left + (pbZoom.Width - rcC.Width) / 2 - AstClientOffset.Width - My.Settings.offset.X
+                newY = Me.Top + pbZoom.Top + (pbZoom.Height - rcC.Height) / 2 - AstClientOffset.Height - My.Settings.offset.Y
                 Static moveable As Boolean = True
                 If moveable Then
                     Task.Run(Sub()
@@ -518,12 +524,13 @@
     End Sub
 
     Public Sub MoveForm_MouseUp(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseUp, lblTitle.MouseUp
+        ' only fires when settings.chkAlign is on
         If e.Button = MouseButtons.Left Then
             Debug.Print("Mouseup")
             MovingForm = False
             If AltPP?.IsRunning AndAlso Not FrmSettings.chkDoAlign.Checked Then
-                newX = Me.Left + pbZoom.Left - AstClientOffset.Width
-                newY = Me.Top + pbZoom.Top - AstClientOffset.Height
+                newX = Me.Left + pbZoom.Left + (pbZoom.Width - rcC.Width) / 2 - AstClientOffset.Width - My.Settings.offset.X
+                newY = Me.Top + pbZoom.Top + (pbZoom.Height - rcC.Height) / 2 - AstClientOffset.Height - My.Settings.offset.Y
                 SetWindowPos(AltPP.MainWindowHandle, Me.Handle, newX, newY, -1, -1, SetWindowPosFlags.IgnoreResize) ' + SetWindowPosFlags.DoNotActivate)
             End If
         End If
@@ -535,11 +542,13 @@
         If AltPP?.IsRunning Then
             Static moveable As Boolean = True
             If moveable Then
-                newX = Me.Left + pbZoom.Left - AstClientOffset.Width - My.Settings.offset.X
-                newY = Me.Top + pbZoom.Top - AstClientOffset.Height - My.Settings.offset.Y
+                newX = Me.Left + pbZoom.Left + (pbZoom.Width - rcC.Width) / 2 - AstClientOffset.Width - My.Settings.offset.X
+                newY = Me.Top + pbZoom.Top + (pbZoom.Height - rcC.Height) / 2 - AstClientOffset.Height - My.Settings.offset.Y
                 Task.Run(Sub()
                              moveable = False
-                             SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, SetWindowPosFlags.IgnoreResize) ' + SetWindowPosFlags.DoNotActivate)
+                             SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, SetWindowPosFlags.IgnoreResize Or
+                                          SetWindowPosFlags.DoNotActivate Or
+                                          SetWindowPosFlags.ASyncWindowPosition)
                              moveable = True
                          End Sub)
             End If
