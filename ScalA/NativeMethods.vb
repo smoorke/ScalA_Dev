@@ -71,7 +71,7 @@ Module NativeMethods
     Public Function GetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer) As UInteger : End Function
 
     Public Const GWL_HWNDPARENT As Integer = -8
-
+    <Flags()>
     Public Enum WindowStyles As Long
         WS_BORDER = &H800000
         WS_CAPTION = &HC00000
@@ -96,7 +96,7 @@ Module NativeMethods
         WS_VISIBLE = &H10000000
         WS_VSCROLL = &H200000
     End Enum
-    Public Enum WindowStylesEx As Long
+    <Flags()>
     Public Enum WindowStylesEx As UInteger
         ''' <summary>Specifies a window that accepts drag-drop files.</summary>
         WS_EX_ACCEPTFILES = &H10
