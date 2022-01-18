@@ -348,7 +348,6 @@
             zooms = GetResolutions()
         End If
 
-        Me.ShowInTaskbar = False
         ScalaHandle = Me.Handle
 
         Debug.Print("mangleSysMenu")
@@ -440,8 +439,9 @@
             System.IO.File.Delete(FileIO.SpecialDirectories.Temp & "\ScalA\tmp.lnk")
         End If
 
-    End Sub
 
+
+    End Sub
     Private Shared Function GetResolutions() As Size()
         Dim reslist As New List(Of Size)
         For Each line As String In My.Settings.resolutions.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries)
@@ -804,10 +804,6 @@
                             End If
                         End If
                 End Select
-            Case WM_NCLBUTTONDOWN
-                Debug.Print("WM_NCLBUTTONDOWN")
-            Case WM_NCLBUTTONUP
-                Debug.Print("WM_NCLBUTTONUP")
             Case WM_SYSCOMMAND
                 Select Case m.WParam
                     Case SC_RESTORE
