@@ -253,6 +253,7 @@ Module NativeMethods
     Public Const MF_BYPOSITION = &H400
     Public Const MF_SEPARATOR = &H800
 
+    Public Const WM_NCLBUTTONDOWN As Integer = &HA1
     Public Const WM_SYSCOMMAND = &H112
 
     Public Const SC_SIZE As Integer = &HF000
@@ -268,6 +269,7 @@ Module NativeMethods
     Public Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByVal lParam As IntPtr) As IntPtr : End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>
     Public Function PostMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByVal lParam As IntPtr) As Boolean : End Function
-
+    <Runtime.InteropServices.DllImport("user32.dll")>
+    Public Function BlockInput(block As Boolean) As Boolean : End Function
 
 End Module
