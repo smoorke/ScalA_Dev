@@ -8,10 +8,10 @@ Imports System.Runtime.InteropServices
 ' Review the values of the assembly attributes
 
 <Assembly: AssemblyTitle("ScalA")>
-<Assembly: AssemblyDescription("Astonia Window Scaler")>
+<Assembly: AssemblyDescription("Astonia Window Scaler and Shortcut Manager")>
 <Assembly: AssemblyCompany("")>
 <Assembly: AssemblyProduct("ScalA")>
-<Assembly: AssemblyCopyright("Copyright © 2021")>
+<Assembly: AssemblyCopyright("Copyright © 2022")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>
@@ -30,5 +30,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")>
 
-<Assembly: AssemblyVersion("0.9.2.0")>
-<Assembly: AssemblyFileVersion("0.9.2.0")>
+<Assembly: AssemblyVersion("0.9.3.0")>
+<Assembly: AssemblyFileVersion("0.9.3.0")>

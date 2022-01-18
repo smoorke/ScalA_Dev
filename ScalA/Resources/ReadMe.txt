@@ -115,3 +115,10 @@ Fixed race condition exception on closing ScalA.
 Fixed releasing scroll thumb when dragged with ScalA maximized would set mouse to wrong location.
 Fixed bug on overview when alt selection combobox is open and hovering over alts would stop overview from updating.
 Fixed Astonia window position glitch on active overview when quickly moving between diffrent clients.
+
+**ScalA 0.9.3**
+Fixed dragging scroll thumb on active overview.
+Made XMouseButton1 and XMouseButton2 on overview buttons activate the relevant Astonia client.
+Improved smooth window moving. 
+Fixed bug in alignment settings that made it unusable.
+Hidden Astonia client better when moving form and restoring from maximized state.
