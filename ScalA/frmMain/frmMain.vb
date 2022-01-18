@@ -473,7 +473,7 @@
     Private MovingForm As Boolean
     Private MoveForm_MousePosition As Point
 
-    Public Async Sub MoveForm_MouseDown(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseDown, lblTitle.MouseDown
+    Public Sub MoveForm_MouseDown(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseDown, lblTitle.MouseDown
         'Me.TopMost = True
         If FrmSettings.chkDoAlign.Checked Then
             If Me.WindowState <> FormWindowState.Maximized AndAlso e.Button = MouseButtons.Left Then
@@ -481,13 +481,10 @@
                 MoveForm_MousePosition = e.Location
             End If
         Else
-            If e.Button = MouseButtons.Left Then
-                Dim sw As Stopwatch = Stopwatch.StartNew()
+            If e.Button = MouseButtons.Left AndAlso e.Clicks = 1 Then
                 sender.Capture = False
-                tmrMove.Start()
                 tmrTick.Stop()
-                Await Task.Delay(50 - sw.ElapsedMilliseconds) 'this to allow double clicks
-                Const HTCAPTION As Integer = 2
+                tmrMove.Start()
                 Dim msg As Message = Message.Create(Me.Handle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
                 Me.WndProc(msg)
                 tmrMove.Stop()
@@ -808,7 +805,8 @@
                 End Select
             Case WM_NCLBUTTONDOWN
                 Debug.Print("WM_NCLBUTTONDOWN")
-
+            Case WM_NCLBUTTONUP
+                Debug.Print("WM_NCLBUTTONUP")
             Case WM_SYSCOMMAND
                 Select Case m.WParam
                     Case SC_RESTORE
@@ -1246,8 +1244,7 @@
 
     Private Sub FrmMain_MouseDoubleClick(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.DoubleClick, lblTitle.DoubleClick
         Debug.Print("title_DoubleClick")
-        If e.Button = MouseButtons.Right Then Exit Sub
-        btnMax.PerformClick()
+        If e.Button = MouseButtons.Left Then btnMax.PerformClick()
     End Sub
 
 

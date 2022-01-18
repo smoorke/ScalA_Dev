@@ -253,7 +253,10 @@ Module NativeMethods
     Public Const MF_BYPOSITION = &H400
     Public Const MF_SEPARATOR = &H800
 
+    Public Const HTCAPTION As Integer = 2
+
     Public Const WM_NCLBUTTONDOWN As Integer = &HA1
+    Public Const WM_NCLBUTTONUP As Integer = &HA2
     Public Const WM_SYSCOMMAND = &H112
 
     Public Const SC_SIZE As Integer = &HF000
