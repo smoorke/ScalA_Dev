@@ -458,17 +458,14 @@
 #Region " Move Self "
 
 #If 0 Then
-    Private Sub MoveSelf(ByVal sender As Control, ByVal e As System.Windows.Forms.MouseEventArgs) Handles pnlTitleBar.MouseDown, lblTitle.MouseDown
-        'breaks doubleclick
+    Private Async Sub MoveSelf(ByVal sender As Control, ByVal e As System.Windows.Forms.MouseEventArgs) Handles pnlTitleBar.MouseDown, lblTitle.MouseDown
+        'todo: handle frmsettings.alignment 
         If e.Button = MouseButtons.Left Then
-            Me.pnlTitleBar.Capture = False   'change this to the control you will use to move the window
-            Me.lblTitle.Capture = False
-            ' Create and send a WM_NCLBUTTONDOWN message.
-            Const WM_NCLBUTTONDOWN As Integer = &HA1S
+            Await Task.Delay(100) 'this to allow double clicks
+            sender.Capture = False
+            Const WM_NCLBUTTONDOWN As Integer = &HA1
             Const HTCAPTION As Integer = 2
-            Dim msg As Message =
-                Message.Create(Me.Handle, WM_NCLBUTTONDOWN,
-                    New IntPtr(HTCAPTION), IntPtr.Zero)
+            Dim msg As Message = Message.Create(Me.Handle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
             Me.DefWndProc(msg)
         End If
     End Sub
@@ -476,12 +473,24 @@
     Private MovingForm As Boolean
     Private MoveForm_MousePosition As Point
 
-    Public Sub MoveForm_MouseDown(sender As Control, e As MouseEventArgs) Handles _
-    pnlTitleBar.MouseDown, lblTitle.MouseDown ' Add more handles here (Example: PictureBox1.MouseDown)
+    Public Async Sub MoveForm_MouseDown(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseDown, lblTitle.MouseDown
         'Me.TopMost = True
-        If Me.WindowState <> FormWindowState.Maximized AndAlso e.Button = MouseButtons.Left Then
-            MovingForm = True
-            MoveForm_MousePosition = e.Location
+        If FrmSettings.chkDoAlign.Checked Then
+            If Me.WindowState <> FormWindowState.Maximized AndAlso e.Button = MouseButtons.Left Then
+                MovingForm = True
+                MoveForm_MousePosition = e.Location
+            End If
+        Else
+            If e.Button = MouseButtons.Left Then
+                Await Task.Delay(100) 'this to allow double clicks
+                sender.Capture = False
+                tmrMove.Start()
+                Const HTCAPTION As Integer = 2
+                Dim msg As Message = Message.Create(Me.Handle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
+                Me.WndProc(msg)
+                tmrMove.Stop()
+                Debug.Print("movetimer stopped")
+            End If
         End If
     End Sub
 
@@ -508,20 +517,36 @@
         End If
     End Sub
 
-    Public Sub MoveForm_MouseUp(sender As Control, e As MouseEventArgs) Handles _
-    pnlTitleBar.MouseUp, lblTitle.MouseUp  ' Add more handles here (Example: PictureBox1.MouseUp)
-
+    Public Sub MoveForm_MouseUp(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseUp, lblTitle.MouseUp
         If e.Button = MouseButtons.Left Then
+            Debug.Print("Mouseup")
             MovingForm = False
-            If AltPP.IsRunning Then
-                Debug.Print("Mouseup")
+            If AltPP?.IsRunning AndAlso Not FrmSettings.chkDoAlign.Checked Then
                 newX = Me.Left + pbZoom.Left - AstClientOffset.Width
                 newY = Me.Top + pbZoom.Top - AstClientOffset.Height
                 SetWindowPos(AltPP.MainWindowHandle, Me.Handle, newX, newY, -1, -1, SetWindowPosFlags.IgnoreResize) ' + SetWindowPosFlags.DoNotActivate)
             End If
         End If
     End Sub
+    Private Sub FrmMain_ResizeEnd(sender As Form, e As EventArgs) Handles Me.ResizeEnd
+        Debug.Print("ResizeEnd")
+    End Sub
+    Private Sub tmrMove_Tick(sender As Object, e As EventArgs) Handles tmrMove.Tick
+        If AltPP?.IsRunning Then
+            Static moveable As Boolean = True
+            If moveable Then
+                newX = Me.Left + pbZoom.Left - AstClientOffset.Width - My.Settings.offset.X
+                newY = Me.Top + pbZoom.Top - AstClientOffset.Height - My.Settings.offset.Y
+                Task.Run(Sub()
+                             moveable = False
+                             SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, SetWindowPosFlags.IgnoreResize) ' + SetWindowPosFlags.DoNotActivate)
+                             moveable = True
+                         End Sub)
+            End If
+        End If
+    End Sub
 #End If
+
 #End Region
 
 
@@ -772,6 +797,9 @@
                             End If
                         End If
                 End Select
+            Case WM_NCLBUTTONDOWN
+                Debug.Print("WM_NCLBUTTONDOWN")
+
             Case WM_SYSCOMMAND
                 Select Case m.WParam
                     Case SC_RESTORE
@@ -1213,9 +1241,7 @@
         btnMax.PerformClick()
     End Sub
 
-    Private Sub FrmMain_ResizeEnd(sender As Form, e As EventArgs) Handles Me.ResizeEnd
-        Debug.Print("ResizeEnd")
-    End Sub
+
 
 
     Public Sub ElevateSelf()
@@ -1292,6 +1318,7 @@
     Private Sub FrmMain_Click(sender As Object, e As MouseEventArgs) Handles Me.MouseDown
         Debug.Print($"me.mousedown {sender.name}")
     End Sub
+
 
 End Class
 

@@ -55,6 +55,7 @@ Partial Class FrmMain
         Me.cornerNE = New System.Windows.Forms.PictureBox()
         Me.cornerSW = New System.Windows.Forms.PictureBox()
         Me.cornerSE = New System.Windows.Forms.PictureBox()
+        Me.tmrMove = New System.Windows.Forms.Timer(Me.components)
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Me.pnlSys.SuspendLayout()
         Me.cmsQuickLaunch.SuspendLayout()
@@ -360,6 +361,10 @@ Partial Class FrmMain
         Me.cornerSE.TabIndex = 18
         Me.cornerSE.TabStop = False
         '
+        'tmrMove
+        '
+        Me.tmrMove.Interval = 55
+        '
         'FrmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -431,4 +436,5 @@ Partial Class FrmMain
     Friend WithEvents cornerNE As PictureBox
     Friend WithEvents cornerSW As PictureBox
     Friend WithEvents cornerSE As PictureBox
+    Friend WithEvents tmrMove As Timer
 End Class
