@@ -501,13 +501,14 @@
     pnlTitleBar.MouseMove, lblTitle.MouseMove ' Add more handles here (Example: PictureBox1.MouseMove)
         If MovingForm Then
             If AltPP IsNot Nothing AndAlso Not FrmSettings.chkDoAlign.Checked Then
-                newX = Me.Left + pbZoom.Left + (pbZoom.Width - rcC.Width) / 2 - AstClientOffset.Width - My.Settings.offset.X
-                newY = Me.Top + pbZoom.Top + (pbZoom.Height - rcC.Height) / 2 - AstClientOffset.Height - My.Settings.offset.Y
                 Static moveable As Boolean = True
                 If moveable Then
                     Task.Run(Sub()
                                  moveable = False
-                                 SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, SetWindowPosFlags.IgnoreResize) ' + SetWindowPosFlags.DoNotActivate)
+                                 AltPP?.CenterWindowPos(ScalaHandle,
+                                                    Me.Left + pbZoom.Left + (pbZoom.Width / 2),
+                                                    Me.Top + pbZoom.Top + (pbZoom.Height / 2),
+                                                    SetWindowPosFlags.DoNotActivate)
                                  moveable = True
                              End Sub)
                 End If
@@ -526,9 +527,10 @@
             Debug.Print("Mouseup")
             MovingForm = False
             If AltPP?.IsRunning AndAlso Not FrmSettings.chkDoAlign.Checked Then
-                newX = Me.Left + pbZoom.Left + (pbZoom.Width - rcC.Width) / 2 - AstClientOffset.Width - My.Settings.offset.X
-                newY = Me.Top + pbZoom.Top + (pbZoom.Height - rcC.Height) / 2 - AstClientOffset.Height - My.Settings.offset.Y
-                SetWindowPos(AltPP.MainWindowHandle, Me.Handle, newX, newY, -1, -1, SetWindowPosFlags.IgnoreResize) ' + SetWindowPosFlags.DoNotActivate)
+                AltPP?.CenterWindowPos(ScalaHandle,
+                                                    Me.Left + pbZoom.Left + (pbZoom.Width / 2),
+                                                    Me.Top + pbZoom.Top + (pbZoom.Height / 2),
+                                                    SetWindowPosFlags.DoNotActivate)
             End If
         End If
     End Sub
@@ -539,13 +541,12 @@
         If AltPP?.IsRunning Then
             Static moveable As Boolean = True
             If moveable Then
-                newX = Me.Left + pbZoom.Left + (pbZoom.Width - rcC.Width) / 2 - AstClientOffset.Width - My.Settings.offset.X
-                newY = Me.Top + pbZoom.Top + (pbZoom.Height - rcC.Height) / 2 - AstClientOffset.Height - My.Settings.offset.Y
                 Task.Run(Sub()
                              moveable = False
-                             SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, SetWindowPosFlags.IgnoreResize Or
-                                          SetWindowPosFlags.DoNotActivate Or
-                                          SetWindowPosFlags.ASyncWindowPosition)
+                             AltPP?.CenterWindowPos(ScalaHandle,
+                                                    Me.Left + pbZoom.Left + (pbZoom.Width / 2),
+                                                    Me.Top + pbZoom.Top + (pbZoom.Height / 2),
+                                                    SetWindowPosFlags.DoNotActivate)
                              moveable = True
                          End Sub)
             End If
@@ -1324,7 +1325,6 @@
     Private Sub FrmMain_Click(sender As Object, e As MouseEventArgs) Handles Me.MouseDown
         Debug.Print($"me.mousedown {sender.name}")
     End Sub
-
 
 End Class
 
