@@ -71,6 +71,16 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized string similar to @ECHO OFF
+        '''cmd /min /C &quot;set __COMPAT_LAYER=RUNASINVOKER &amp;&amp; start &quot;&quot; %*&quot;.
+        '''</summary>
+        Friend ReadOnly Property AsInvoker() As String
+            Get
+                Return ResourceManager.GetString("AsInvoker", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
         Friend ReadOnly Property cornerNE() As System.Drawing.Bitmap
@@ -147,16 +157,6 @@ Namespace My.Resources
             Get
                 Dim obj As Object = ResourceManager.GetObject("moa3", resourceCulture)
                 Return CType(obj,System.Drawing.Icon)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized string similar to @ECHO OFF
-        '''cmd /min /C &quot;set __COMPAT_LAYER=RUNASINVOKER &amp;&amp; start &quot;&quot; %*&quot;.
-        '''</summary>
-        Friend ReadOnly Property noadmin() As String
-            Get
-                Return ResourceManager.GetString("noadmin", resourceCulture)
             End Get
         End Property
         
