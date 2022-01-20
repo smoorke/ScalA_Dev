@@ -235,9 +235,9 @@ Partial Public Class FrmMain
                                           End Sub)
                      End Sub, ct)
         Catch ex As System.Threading.Tasks.TaskCanceledException
-            Debug.Print("defferedIconLoading Task canceled")
+            Debug.Print("deferredIconLoading Task canceled")
         Catch
-            Debug.Print("defferedIconLoading general exception")
+            Debug.Print("deferredIconLoading general exception")
         End Try
     End Sub
 
