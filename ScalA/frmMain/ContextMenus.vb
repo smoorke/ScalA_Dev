@@ -1,4 +1,6 @@
-﻿Public Class ContextMenus
+﻿Imports System.Collections.Concurrent
+
+Public Class ContextMenus
     'dummy class to prevent form being generated
 End Class
 Partial Public Class FrmMain
@@ -68,56 +70,49 @@ Partial Public Class FrmMain
         Next
 
     End Sub
+    Private ReadOnly iconCache As New ConcurrentDictionary(Of String, Bitmap)
 
-
-    Private ReadOnly iconCache As New Dictionary(Of String, Bitmap)
-
-    Private Function GetIcon(ByVal PathName As String, isFolder As Boolean) As Bitmap
+    Private Function GetIcon(ByVal PathName As String) As Bitmap
 
         If PathName Is Nothing Then Return Nothing
 
-        If iconCache.ContainsKey(PathName) Then
-            'Debug.Print($"iconCacheHit: {PathName}")
-            Return iconCache(PathName)
-        End If
+        Return iconCache.GetOrAdd(PathName,
+            Function()
 
-        Debug.Print($"iconCahceMiss: {PathName}")
+                Debug.Print($"iconCahceMiss: {PathName}")
 
-        Dim bm As Bitmap
-        Dim fi As New SHFILEINFOW
-        Dim ico As Icon
+                Dim bm As Bitmap
+                Dim fi As New SHFILEINFOW
+                Dim ico As Icon
 
-        If isFolder Then
-            SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_ICON Or SHGFI_SMALLICON)
-            If fi.hIcon = IntPtr.Zero Then
-                Debug.Print("hIcon empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
-                Return Nothing
-            End If
-            ico = Icon.FromHandle(fi.hIcon)
-            bm = ico.ToBitmap
-            DestroyIcon(fi.hIcon)
-        Else 'not a folder
-            Dim list As IntPtr = SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_SYSICONINDEX Or SHGFI_SMALLICON)
-            Dim hIcon As IntPtr = ImageList_GetIcon(list, fi.iIcon, 0)
-            If hIcon = IntPtr.Zero Then
-                Debug.Print("iconlist empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
-                Return Nothing
-            End If
-            ico = Icon.FromHandle(hIcon)
-            bm = ico.ToBitmap
-            DestroyIcon(hIcon)
-            ImageList_Destroy(list)
-        End If
-        DestroyIcon(ico.Handle)
-        ico.Dispose()
+                If PathName.EndsWith("\") Then
+                    SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_ICON Or SHGFI_SMALLICON)
+                    If fi.hIcon = IntPtr.Zero Then
+                        Debug.Print("hIcon empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
+                        Return Nothing
+                    End If
+                    ico = Icon.FromHandle(fi.hIcon)
+                    bm = ico.ToBitmap
+                    DestroyIcon(fi.hIcon)
+                Else 'not a folder
+                    Dim list As IntPtr = SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_SYSICONINDEX Or SHGFI_SMALLICON)
+                    Dim hIcon As IntPtr = ImageList_GetIcon(list, fi.iIcon, 0)
+                    ImageList_Destroy(list)
+                    If hIcon = IntPtr.Zero Then
+                        Debug.Print("iconlist empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
+                        Return Nothing
+                    End If
+                    ico = Icon.FromHandle(hIcon)
+                    bm = ico.ToBitmap
+                    DestroyIcon(hIcon)
+                End If
+                DestroyIcon(ico.Handle)
+                ico.Dispose()
 
-        Try
-            iconCache.Add(PathName, bm)
-        Catch
-        End Try
-
-        Return bm
+                Return bm
+            End Function)
     End Function
+
     Private ReadOnly nsSorter As IComparer(Of String) = New CustomStringSorter
     Private Function ParseDir(pth As String) As List(Of ToolStripItem)
         Dim menuItems As New List(Of ToolStripItem)
@@ -133,11 +128,11 @@ Partial Public Class FrmMain
         Try
             For Each fullDirs As String In System.IO.Directory.EnumerateDirectories(pth)
 
-                Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fulldirs).Attributes
+                Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullDirs).Attributes
                 If attr.HasFlag(System.IO.FileAttributes.Hidden) Then Continue For
                 If attr.HasFlag(System.IO.FileAttributes.System) Then Continue For
 
-                Dim smenu As New ToolStripMenuItem(System.IO.Path.GetFileName(fulldirs)) With {.Tag = fulldirs}
+                Dim smenu As New ToolStripMenuItem(System.IO.Path.GetFileName(fullDirs)) With {.Tag = fullDirs & "\"}
 
                 smenu.DropDownItems.Add("(Dummy)").Enabled = False
                 smenu.DoubleClickEnabled = True
@@ -145,6 +140,7 @@ Partial Public Class FrmMain
                 AddHandler smenu.MouseUp, AddressOf OpenProps
                 AddHandler smenu.DoubleClick, AddressOf DblClickDir
                 AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
+                'AddHandler smenu.DropDownOpened, AddressOf deferredIconLoading
                 AddHandler smenu.DropDown.Closing, AddressOf cmsQuickLaunchDropDown_Closing
 
                 Dirs.Add(smenu)
@@ -206,12 +202,10 @@ Partial Public Class FrmMain
             End If
         End If
 
-        '        If True Or watch.ElapsedMilliseconds >= ICONTIMEOUT Then
         cts?.Dispose()
         cts = New Threading.CancellationTokenSource
         cantok = cts.Token
-        defferedIconLoading(Dirs, Files, cantok)
-        '       End If
+        deferredIconLoading(Dirs.Concat(Files), cantok)
 
         Debug.Print($"parsing ""{pth}"" took {watch.ElapsedMilliseconds} ms")
         watch.Stop()
@@ -219,42 +213,34 @@ Partial Public Class FrmMain
     End Function
 
     Private Sub cmsQuickLaunchDropDown_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs)
-        cts.Cancel()
+        cts?.Cancel()
     End Sub
 
     Private init As Boolean = True
-    Private Sub defferedIconLoading(dirs As IEnumerable(Of ToolStripItem), fils As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
+
+    Private Sub deferredIconLoading(items As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
         Dim skipped As Boolean = False
         If init Then
             Debug.Print("init iconloader")
-            Dim firstItem As ToolStripItem = If(dirs.FirstOrDefault, fils.FirstOrDefault)
-            Me.BeginInvoke(updateImage, {firstItem, GetIcon(firstItem?.Tag.ToString, dirs.Any)}) ' needed or we get an exception in geticon later
+            Dim firstItem As ToolStripItem = items.FirstOrDefault
+            Me.BeginInvoke(updateImage, {firstItem, GetIcon(firstItem?.Tag.ToString)}) ' needed or we get an exception in geticon later
             skipped = True
             init = False
         End If
         Try
-            If dirs.Any Then
-                Task.Run(Sub()
-                             Parallel.ForEach(dirs.Skip(skipped).TakeWhile(Function(__) Not ct.IsCancellationRequested),
-                                              Sub(item As ToolStripItem)
-                                                  Me.BeginInvoke(updateImage, {item, GetIcon(item.Tag.ToString, True)})
-                                              End Sub)
-                         End Sub, ct)
-            End If
-            If fils.Any Then
-                Task.Run(Sub()
-                             Parallel.ForEach(fils.Skip(skipped AndAlso Not dirs.Any).TakeWhile(Function(__) Not ct.IsCancellationRequested),
-                                              Sub(item As ToolStripItem)
-                                                  Me.BeginInvoke(updateImage, {item, GetIcon(item.Tag.ToString, False)})
-                                              End Sub)
-                         End Sub, ct)
-            End If
+            Task.Run(Sub()
+                         Parallel.ForEach(items.Skip(skipped).TakeWhile(Function(__) Not ct.IsCancellationRequested),
+                                          Sub(it As ToolStripItem)
+                                              Me.BeginInvoke(updateImage, {it, GetIcon(it.Tag.ToString)})
+                                          End Sub)
+                     End Sub, ct)
         Catch ex As System.Threading.Tasks.TaskCanceledException
             Debug.Print("defferedIconLoading Task canceled")
         Catch
             Debug.Print("defferedIconLoading general exception")
         End Try
     End Sub
+
     Private Sub ParseSubDir(sender As ToolStripMenuItem, e As EventArgs) 'handles dir.DropDownOpening
         sender.DropDownItems.Clear()
         sender.DropDownItems.AddRange(ParseDir(sender.Tag).ToArray)
@@ -448,24 +434,23 @@ Partial Public Class FrmMain
 
     Private Sub OpenProps(ByVal sender As ToolStripMenuItem, ByVal e As System.Windows.Forms.MouseEventArgs) 'Handles smenu.MouseUp, item.MouseUp
         Debug.Print($"click {sender.Tag}")
+        Dim pth As String = sender.Tag.ToString.TrimEnd("\")
         If e.Button = MouseButtons.Right Then
             Dim sei As New SHELLEXECUTEINFO With {
                .cbSize = System.Runtime.InteropServices.Marshal.SizeOf(GetType(SHELLEXECUTEINFO)),
                .lpVerb = "properties",
-               .lpFile = sender.Tag,
+               .lpFile = pth,
                .nShow = SW_SHOW,
                .fMask = SEE_MASK_INVOKEIDLIST
             }
-            ShellExecuteEx(sei)
+            ShellExecuteEx(sei) 'open properties
             'set properties to topmost
-            Debug.Print(sender.Tag.ToString.Substring(sender.Tag.ToString.LastIndexOf("\") + 1))
-            Dim WindowName As String = sender.Tag.ToString.ToLower.Substring(sender.Tag.ToString.LastIndexOf("\") + 1).Replace(".url", "").Replace(".lnk", "") & " Properties"
-            Debug.Print($"WindowName:{WindowName}")
             Task.Run(Sub()
                          Dim watch As Stopwatch = Stopwatch.StartNew()
+                         Dim WindowName As String = pth.ToLower.Substring(pth.LastIndexOf("\") + 1).Replace(".url", "").Replace(".lnk", "") & " Properties"
 
                          Dim hndl As IntPtr
-                         While watch.ElapsedMilliseconds < 1500
+                         While watch.ElapsedMilliseconds < 2000
                              Threading.Thread.Sleep(20)
                              hndl = FindWindow("#32770", WindowName)
                              Debug.Print($"findwindow {hndl}")
@@ -498,11 +483,11 @@ Partial Public Class FrmMain
 
         Dim pp As Process
 
-        Dim bat As String = "\noAdmin.bat"
+        Dim bat As String = "\AsInvoker.bat"
         Dim tmpDir As String = FileIO.SpecialDirectories.Temp & "\ScalA"
 
         If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
-        If Not FileIO.FileSystem.FileExists(tmpDir & bat) Then FileIO.FileSystem.WriteAllText(tmpDir & bat, My.Resources.noadmin, False)
+        If Not FileIO.FileSystem.FileExists(tmpDir & bat) Then FileIO.FileSystem.WriteAllText(tmpDir & bat, My.Resources.AsInvoker, False)
 
         pp = New Process With {.StartInfo = New ProcessStartInfo With {.FileName = tmpDir & bat,
                                                                        .Arguments = """" & sender.Tag & """",
@@ -610,36 +595,40 @@ Partial Public Class FrmMain
             .IncludeSubdirectories = True
         }
 
-        AddHandler dirWatcher.Renamed, AddressOf OnRenamed
+        AddHandler dirWatcher.Renamed, AddressOf OnRenamedDir
         dirWatcher.EnableRaisingEvents = True
 
         watchers.Add(dirWatcher)
 
 
     End Sub
-
-    Private Sub OnRenamed(sender As System.IO.FileSystemWatcher, e As System.IO.RenamedEventArgs)
-        Debug.Print($"Renamed:")
+    Private Sub OnRenamedDir(sender As System.IO.FileSystemWatcher, e As System.IO.RenamedEventArgs)
+        Debug.Print($"Renamed Dir: {sender.NotifyFilter}")
         Debug.Print($"    Old: {e.OldFullPath}")
         Debug.Print($"    New: {e.FullPath}")
-        If iconCache.ContainsKey(e.OldFullPath) Then
-            iconCache(e.FullPath) = iconCache(e.OldFullPath)
-            iconCache.Remove(e.OldFullPath)
-        End If
-    End Sub
 
+        Dim item As Bitmap = Nothing
+        If iconCache.TryRemove(e.OldFullPath & "\", item) Then iconCache.TryAdd(e.FullPath & "\", item)
+
+    End Sub
+    Private Sub OnRenamed(sender As System.IO.FileSystemWatcher, e As System.IO.RenamedEventArgs)
+        Debug.Print($"Renamed File: {sender.NotifyFilter}")
+        Debug.Print($"    Old: {e.OldFullPath}")
+        Debug.Print($"    New: {e.FullPath}")
+
+        Dim item As Bitmap = Nothing
+        If iconCache.TryRemove(e.OldFullPath, item) Then iconCache.TryAdd(e.FullPath, item)
+
+    End Sub
     Private Sub OnChanged(sender As System.IO.FileSystemWatcher, e As System.IO.FileSystemEventArgs)
         If e.ChangeType = System.IO.WatcherChangeTypes.Changed Then
             Debug.Print(sender.ToString)
             Debug.Print($"Changed: {e.FullPath}")
             If e.FullPath.ToLower.EndsWith("desktop.ini") Then
-                iconCache.Remove(e.FullPath.Substring(0, e.FullPath.LastIndexOf("\")))
+                iconCache.TryRemove(e.FullPath.Substring(0, e.FullPath.LastIndexOf("\") + 1), Nothing)
             End If
-            If e.FullPath.ToLower.EndsWith(".lnk") Then
-                iconCache.Remove(e.FullPath)
-            End If
-            If e.FullPath.ToLower.EndsWith(".url") Then
-                iconCache.Remove(e.FullPath)
+            If {".lnk", ".url"}.Contains(System.IO.Path.GetExtension(e.FullPath).ToLower) Then
+                iconCache.TryRemove(e.FullPath, Nothing)
             End If
         End If
     End Sub
