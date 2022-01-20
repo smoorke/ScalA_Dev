@@ -1027,8 +1027,8 @@
         If obj Is Nothing Then Exit Sub
         If TypeOf obj Is Button Then
             CType(obj, Button).Image = bm
-        ElseIf TypeOf obj Is toolstripitem Then
-            CType(obj, ToolStripMenuItem).Image = bm
+        ElseIf TypeOf obj Is ToolStripItem Then
+            CType(obj, ToolStripItem).Image = bm
         Else
             obj.image = bm
         End If
