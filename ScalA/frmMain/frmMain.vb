@@ -959,7 +959,7 @@
                         ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
                     End If
 
-                    If but.ThumbContains(MousePosition) AndAlso Not AOBusy Then
+                    If Not AOBusy AndAlso but.ThumbContains(MousePosition) Then
                         SetWindowLong(Me.Handle, GWL_HWNDPARENT, CType(but.Tag, AstoniaProcess).MainWindowHandle)
 
                         Dim ptZB As Point = but.ThumbRECT.Location
@@ -1009,8 +1009,8 @@
             'but.ResumeLayout()
         Next but
 
-        Dim purgeList As List(Of Integer) = startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList
-        For Each ppid As Integer In purgeList
+        ' Dim purgeList As List(Of Integer) = startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList
+        For Each ppid As Integer In startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList 'purgeList
             Debug.Print("unregister thumb " & startThumbsDict(ppid).ToString)
             DwmUnregisterThumbnail(startThumbsDict(ppid))
             startThumbsDict.Remove(ppid)
