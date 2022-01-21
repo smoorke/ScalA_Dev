@@ -171,7 +171,7 @@
     <Content Include="Resources\ReadMe.txt" />
     <None Include="Resources\Add.png" />
     <Content Include="Resources\gear_wheel.png" />
-    <None Include="Resources\noadmin.bat" />
+    <None Include="Resources\AsInvoker.bat" />
     <None Include="Resources\Ookii.Dialogs.WinForms.dll" />
     <None Include="packages.config" />
     <None Include="Resources\message.png" />

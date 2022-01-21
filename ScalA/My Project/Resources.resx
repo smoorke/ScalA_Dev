@@ -124,9 +124,6 @@
   <data name="F12" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\F12.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="AsInvoker" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\noadmin.bat;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
   <data name="moa3" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\moa3.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -153,5 +150,8 @@
   </data>
   <data name="cornerSW" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\cornerSW.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AsInvoker" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\AsInvoker.bat;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>
