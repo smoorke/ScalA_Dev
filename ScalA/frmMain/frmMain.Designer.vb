@@ -39,13 +39,13 @@ Partial Class FrmMain
         Me.btnMax = New System.Windows.Forms.Button()
         Me.btnQuit = New System.Windows.Forms.Button()
         Me.tmrTick = New System.Windows.Forms.Timer(Me.components)
-        Me.tmrStartup = New System.Windows.Forms.Timer(Me.components)
+        Me.tmrOverview = New System.Windows.Forms.Timer(Me.components)
         Me.tmrActive = New System.Windows.Forms.Timer(Me.components)
         Me.cmsAlt = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.SelectToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.TopMostToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CloseToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.pnlStartup = New System.Windows.Forms.FlowLayoutPanel()
+        Me.pnlOverview = New System.Windows.Forms.FlowLayoutPanel()
         Me.pnlMessage = New System.Windows.Forms.Panel()
         Me.chkHideMessage = New System.Windows.Forms.CheckBox()
         Me.pbMessage = New System.Windows.Forms.PictureBox()
@@ -62,7 +62,7 @@ Partial Class FrmMain
         Me.pnlTitleBar.SuspendLayout()
         Me.pnlButtons.SuspendLayout()
         Me.cmsAlt.SuspendLayout()
-        Me.pnlStartup.SuspendLayout()
+        Me.pnlOverview.SuspendLayout()
         Me.pnlMessage.SuspendLayout()
         CType(Me.pbMessage, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.pbZoom, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -229,10 +229,10 @@ Partial Class FrmMain
         '
         Me.tmrTick.Interval = 1
         '
-        'tmrStartup
+        'tmrOverview
         '
-        Me.tmrStartup.Enabled = True
-        Me.tmrStartup.Interval = 33
+        Me.tmrOverview.Enabled = True
+        Me.tmrOverview.Interval = 33
         '
         'tmrActive
         '
@@ -265,15 +265,15 @@ Partial Class FrmMain
         Me.CloseToolStripMenuItem.Size = New System.Drawing.Size(127, 22)
         Me.CloseToolStripMenuItem.Text = "Close This"
         '
-        'pnlStartup
+        'pnlOverview
         '
-        Me.pnlStartup.BackColor = System.Drawing.SystemColors.Control
-        Me.pnlStartup.Controls.Add(Me.pnlMessage)
-        Me.pnlStartup.Location = New System.Drawing.Point(1, 25)
-        Me.pnlStartup.Margin = New System.Windows.Forms.Padding(0)
-        Me.pnlStartup.Name = "pnlStartup"
-        Me.pnlStartup.Size = New System.Drawing.Size(898, 737)
-        Me.pnlStartup.TabIndex = 10
+        Me.pnlOverview.BackColor = System.Drawing.SystemColors.Control
+        Me.pnlOverview.Controls.Add(Me.pnlMessage)
+        Me.pnlOverview.Location = New System.Drawing.Point(1, 25)
+        Me.pnlOverview.Margin = New System.Windows.Forms.Padding(0)
+        Me.pnlOverview.Name = "pnlOverview"
+        Me.pnlOverview.Size = New System.Drawing.Size(898, 737)
+        Me.pnlOverview.TabIndex = 10
         '
         'pnlMessage
         '
@@ -375,7 +375,7 @@ Partial Class FrmMain
         Me.Controls.Add(Me.cornerSW)
         Me.Controls.Add(Me.cornerNE)
         Me.Controls.Add(Me.cornerNW)
-        Me.Controls.Add(Me.pnlStartup)
+        Me.Controls.Add(Me.pnlOverview)
         Me.Controls.Add(Me.pbZoom)
         Me.Controls.Add(Me.pnlSys)
         Me.Controls.Add(Me.pnlButtons)
@@ -393,7 +393,7 @@ Partial Class FrmMain
         Me.pnlTitleBar.PerformLayout()
         Me.pnlButtons.ResumeLayout(False)
         Me.cmsAlt.ResumeLayout(False)
-        Me.pnlStartup.ResumeLayout(False)
+        Me.pnlOverview.ResumeLayout(False)
         Me.pnlMessage.ResumeLayout(False)
         Me.pnlMessage.PerformLayout()
         CType(Me.pbMessage, System.ComponentModel.ISupportInitialize).EndInit()
@@ -412,13 +412,13 @@ Partial Class FrmMain
     Friend WithEvents btnQuit As Button
     Friend WithEvents btnMax As Button
     Friend WithEvents pnlButtons As Panel
-    Friend WithEvents tmrStartup As Timer
+    Friend WithEvents tmrOverview As Timer
     Friend WithEvents tmrActive As Timer
     Friend WithEvents cmsAlt As ContextMenuStrip
     Friend WithEvents SelectToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents TopMostToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents CloseToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents pnlStartup As FlowLayoutPanel
+    Friend WithEvents pnlOverview As FlowLayoutPanel
     Friend WithEvents pnlMessage As Panel
     Friend WithEvents chkHideMessage As CheckBox
     Friend WithEvents pbMessage As PictureBox

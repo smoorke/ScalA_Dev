@@ -73,24 +73,24 @@
         AltPP = CType(that.SelectedItem, AstoniaProcess)
         UpdateTitle()
         If that.SelectedIndex = 0 Then
-            pnlStartup.SuspendLayout()
+            pnlOverview.SuspendLayout()
             UpdateButtonLayout(AstoniaProcess.Enumerate.Count)
-            For Each but As AButton In pnlStartup.Controls.OfType(Of AButton).TakeWhile(Function(b) b.Text <> "")
+            For Each but As AButton In pnlOverview.Controls.OfType(Of AButton).TakeWhile(Function(b) b.Text <> "")
                 but.Image = Nothing
                 but.BackgroundImage = Nothing
                 but.Text = String.Empty
             Next
-            pnlStartup.ResumeLayout()
-            pnlStartup.Show()
-            tmrStartup.Enabled = True
+            pnlOverview.ResumeLayout()
+            pnlOverview.Show()
+            tmrOverview.Enabled = True
             tmrTick.Enabled = False
             If prevItem.Id <> 0 Then startThumbsDict(prevItem.Id) = thumb
             sysTrayIcon.Icon = My.Resources.moa3
             prevItem = CType(that.SelectedItem, AstoniaProcess)
             Exit Sub
         Else
-            pnlStartup.Hide()
-            tmrStartup.Enabled = False
+            pnlOverview.Hide()
+            tmrOverview.Enabled = False
             Debug.Print("tmrStartup.stop")
         End If
 
@@ -589,7 +589,7 @@
             Debug.Print("Not AltPP?.IsRunning()")
             tmrTick.Enabled = False
             cboAlt.SelectedIndex = 0
-            tmrStartup.Enabled = True
+            tmrOverview.Enabled = True
             Exit Sub
         End If
 
@@ -665,16 +665,16 @@
         If Me.WindowState <> FormWindowState.Maximized Then
             Me.Size = New Size(newSize.Width + 2, newSize.Height + 26)
             pbZoom.Left = 1
-            pnlStartup.Left = 1
+            pnlOverview.Left = 1
             pbZoom.Size = newSize
-            pnlStartup.Size = newSize
+            pnlOverview.Size = newSize
             cmbResolution.Enabled = True
         Else 'FormWindowState.Maximized
             pbZoom.Left = 0
-            pnlStartup.Left = 0
+            pnlOverview.Left = 0
             pbZoom.Width = newSize.Width + 1
             pbZoom.Height = newSize.Height - 25
-            pnlStartup.Size = pbZoom.Size
+            pnlOverview.Size = pbZoom.Size
             cmbResolution.Enabled = False
         End If
         If cboAlt.SelectedIndex <> 0 Then
@@ -861,7 +861,7 @@
     Private counter As Integer = 0
 
     Dim AOBusy As Boolean = False
-    Private Async Sub TmrStartup_Tick(sender As Timer, e As EventArgs) Handles tmrStartup.Tick
+    Private Async Sub TmrStartup_Tick(sender As Timer, e As EventArgs) Handles tmrOverview.Tick
 
         'Debug.Print("tmrStartup.Tick")
 #If DEBUG Then
@@ -871,9 +871,9 @@
         Dim i As Integer = 0
         Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate.Where(Function(p) p.Name <> String.Empty).ToList
 
-        pnlStartup.SuspendLayout()
+        pnlOverview.SuspendLayout()
         UpdateButtonLayout(alts.Count)
-        For Each but As AButton In pnlStartup.Controls.OfType(Of AButton).Where(Function(b) b.Visible) 'loop through visible buttons
+        For Each but As AButton In pnlOverview.Controls.OfType(Of AButton).Where(Function(b) b.Visible) 'loop through visible buttons
             If i < alts.Count Then
                 Dim name As String = alts(i).Name
 
@@ -1017,7 +1017,7 @@
             rectDic.Remove(ppid)
         Next
 
-        pnlStartup.ResumeLayout(True)
+        pnlOverview.ResumeLayout(True)
         counter += 1
         If counter > 11 Then counter = 0
     End Sub
@@ -1044,11 +1044,11 @@
 
             AddHandler but.Click, AddressOf BtnAlt_Click
             AddHandler but.MouseDown, AddressOf BtnAlt_MouseDown
-            pnlStartup.Controls.Add(but)
+            pnlOverview.Controls.Add(but)
         Next i
     End Sub
     Private Sub UpdateButtonLayout(count As Integer)
-        pnlStartup.SuspendLayout()
+        pnlOverview.SuspendLayout()
 
         Dim numrows As Integer = 2
         Select Case count + If(My.Settings.hideMessage, 0, 1)
@@ -1061,7 +1061,7 @@
         End Select
 
         Dim i = 1 + If(My.Settings.hideMessage, 0, 1)
-        For Each but As AButton In pnlStartup.Controls.OfType(Of AButton)
+        For Each but As AButton In pnlOverview.Controls.OfType(Of AButton)
             If i <= numrows ^ 2 Then
                 but.Visible = True
             Else
@@ -1071,7 +1071,7 @@
         Next
 
         Dim newSZ As New Size(pbZoom.Size.Width / numrows, pbZoom.Size.Height / numrows)
-        For Each but As AButton In pnlStartup.Controls.OfType(Of AButton)
+        For Each but As AButton In pnlOverview.Controls.OfType(Of AButton)
             but.Size = newSZ
         Next
 
@@ -1079,7 +1079,7 @@
         pbMessage.Size = newSZ
         chkHideMessage.Location = New Point(pnlMessage.Width - chkHideMessage.Width, pnlMessage.Height - chkHideMessage.Height)
 
-        pnlStartup.ResumeLayout(True)
+        pnlOverview.ResumeLayout(True)
     End Sub
 
     Private Sub BtnQuit_MouseEnter(sender As Button, e As EventArgs) Handles btnQuit.MouseEnter
@@ -1115,7 +1115,7 @@
             cmsQuickLaunch.Show(sender, sender.PointToClient(MousePosition))
             Exit Sub
         End If
-        tmrStartup.Enabled = False
+        tmrOverview.Enabled = False
         Debug.Print("tmrStartup.stop")
         If Not cboAlt.Items.Contains(sender.Tag) Then
             PopDropDown(cboAlt)
@@ -1351,7 +1351,7 @@ Module dBug
     End Sub
 
     Friend Sub Resumelayout(sender As Object, e As EventArgs)
-        FrmMain.pnlStartup.ResumeLayout(True)
+        FrmMain.pnlOverview.ResumeLayout(True)
     End Sub
 End Module
 

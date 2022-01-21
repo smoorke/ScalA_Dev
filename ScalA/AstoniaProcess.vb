@@ -103,7 +103,7 @@
             Return _proc IsNot Nothing AndAlso Not _proc.HasExited
         Catch e As Exception
             FrmMain.tmrActive.Enabled = False
-            FrmMain.tmrStartup.Enabled = False
+            FrmMain.tmrOverview.Enabled = False
             FrmMain.tmrTick.Enabled = False
             My.Settings.Save()
             FrmMain.ElevateSelf()
