@@ -1327,6 +1327,13 @@
         cmsQuickLaunch.Close()
     End Sub
 
+    Private Sub cmsAlt_Closed(sender As Object, e As ToolStripDropDownClosedEventArgs) Handles cmsAlt.Closed
+        AButton.ActiveOverview = True
+    End Sub
+
+    Private Sub cmsAlt_Opened(sender As Object, e As EventArgs) Handles cmsAlt.Opened
+        AButton.ActiveOverview = False
+    End Sub
 End Class
 
 #If DEBUG Then
