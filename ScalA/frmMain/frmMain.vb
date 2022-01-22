@@ -1043,6 +1043,7 @@
     End Function
     Private Sub AddAButtons(count As Integer)
         Dim sqNum As Integer = getNextPerfectSquare(count)
+        pnlOverview.SuspendLayout()
         For i As Integer = 1 To sqNum
             Dim but As AButton = New AButton(i, 0, 0, 200, 150)
 
@@ -1050,6 +1051,7 @@
             AddHandler but.MouseDown, AddressOf BtnAlt_MouseDown
             pnlOverview.Controls.Add(but)
         Next i
+        pnlOverview.ResumeLayout()
     End Sub
     Private Sub UpdateButtonLayout(count As Integer)
         pnlOverview.SuspendLayout()
