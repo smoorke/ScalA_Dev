@@ -173,7 +173,7 @@ Partial Public Class FrmMain
             End If
 
             Dim item As New ToolStripMenuItem(linkName) With {.Tag = fullLink}
-            AddHandler item.MouseUp, AddressOf QL_Click
+            AddHandler item.MouseDown, AddressOf QL_Click
             'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
             'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
 
@@ -444,9 +444,8 @@ Partial Public Class FrmMain
         New MenuItem("-"),
         New MenuItem("Properties")})
     'Dim kb As New Microsoft.VisualBasic.Devices.Keyboard
-    Private Sub QL_Click(sender As ToolStripMenuItem, e As MouseEventArgs)
+    Private Sub QL_Click(sender As ToolStripMenuItem, e As MouseEventArgs) 'handles Abutton.mousedown
         If e.Button = MouseButtons.Right Then
-            cmsQuickLaunch.Close() 'todo have a consistent way to keep QL open
 
             Dim path As String = sender.Tag
             Dim name As String = sender.Text

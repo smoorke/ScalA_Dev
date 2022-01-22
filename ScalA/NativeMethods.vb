@@ -379,6 +379,7 @@ Module NativeMethods
     Public Const WM_NCLBUTTONDOWN As Integer = &HA1
     Public Const WM_NCLBUTTONUP As Integer = &HA2
     Public Const WM_SYSCOMMAND = &H112
+    Public Const WM_CANCELMODE = &H1F
 
     Public Const SC_SIZE As Integer = &HF000
     Public Const SC_MOVE As Integer = &HF010
