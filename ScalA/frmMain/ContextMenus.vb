@@ -494,12 +494,17 @@ Partial Public Class FrmMain
                         'Dim newpath = path.Substring(0, path.TrimEnd("\").LastIndexOf("\")) & "\" & newname
                         Debug.Print($"oldpath: {path}")
                         'Debug.Print($"newpath: {newpath}")
-                        If path.EndsWith("\") Then
-                            FileIO.FileSystem.RenameDirectory(path, newname)
-                        Else
-                            If {".lnk", ".url"}.Contains(System.IO.Path.GetExtension(path).ToLower) Then newname &= System.IO.Path.GetExtension(path)
-                            FileIO.FileSystem.RenameFile(path, newname)
-                        End If
+                        Try
+                            If path.EndsWith("\") Then
+                                FileIO.FileSystem.RenameDirectory(path, newname)
+                            Else
+                                Dim targetname As String = newname
+                                If {".lnk", ".url"}.Contains(System.IO.Path.GetExtension(path).ToLower) Then targetname &= System.IO.Path.GetExtension(path)
+                                FileIO.FileSystem.RenameFile(path, targetname)
+                            End If
+                        Catch
+                            MessageBox.Show(Me, $"Error renaming to {newname}!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        End Try
                         Debug.Print($"renamed to {newname}")
                         'IO.File.Move(path,  newname)
                     End If
