@@ -159,7 +159,7 @@ Partial Public Class FrmMain
         Dim Files As New List(Of ToolStripItem)
         For Each fullLink As String In System.IO.Directory.EnumerateFiles(pth) _
                                        .Where(Function(p) {".exe", ".jar", ".lnk", ".url", ".txt"}.Contains(System.IO.Path.GetExtension(p).ToLower))
-            Debug.Print(System.IO.Path.GetFileName(fullLink))
+            'Debug.Print(System.IO.Path.GetFileName(fullLink))
 
             'don't add self to list
             If System.IO.Path.GetFileName(fullLink) = System.IO.Path.GetFileName(Environment.GetCommandLineArgs(0)) Then Continue For
