@@ -1286,7 +1286,7 @@
         If cboAlt.SelectedIndex > 0 AndAlso AltPP IsNot Nothing Then
             RestorePos(AltPP)
         End If
-        ExecuteProcessUnElevated(Environment.GetCommandLineArgs()(0), "Someone")
+        ExecuteProcessUnElevated(Environment.GetCommandLineArgs()(0), "Someone", IO.Directory.GetCurrentDirectory())
         sysTrayIcon.Visible = False
         sysTrayIcon.Dispose()
         End
