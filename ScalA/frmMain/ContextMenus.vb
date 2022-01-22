@@ -419,7 +419,7 @@ Partial Public Class FrmMain
 
     Dim cts As New Threading.CancellationTokenSource
     Dim cantok As Threading.CancellationToken = cts.Token
-    Private Sub CmsQuickLaunch_Closed(sender As ContextMenuStrip, e As ToolStripDropDownClosedEventArgs) Handles cmsQuickLaunch.Closed
+    Private Async Sub CmsQuickLaunch_Closed(sender As ContextMenuStrip, e As ToolStripDropDownClosedEventArgs) Handles cmsQuickLaunch.Closed
         cts.Cancel() 'cancel deferred icon loading
         'sender.Items.Clear() 'this couses menu to stutter opening
         Debug.Print("cmsQuickLaunch closed reason:" & e.CloseReason.ToString)
@@ -430,7 +430,7 @@ Partial Public Class FrmMain
                 AppActivate(AltPP.Id)
             End If
         End If
-        'tmrTick.Interval = 50
+        Await Task.Delay(100)
         pbZoom.Visible = True
         AButton.ActiveOverview = True
     End Sub

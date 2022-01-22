@@ -1121,6 +1121,10 @@
             cmsQuickLaunch.Show(sender, sender.PointToClient(MousePosition))
             Exit Sub
         End If
+        If My.Settings.gameOnOverview Then
+            AButton.ActiveOverview = True
+            Exit Sub
+        End If
         tmrOverview.Enabled = False
         Debug.Print("tmrStartup.stop")
         If Not cboAlt.Items.Contains(sender.Tag) Then
@@ -1128,7 +1132,7 @@
         End If
         cboAlt.SelectedItem = sender.Tag
     End Sub
-    Private Sub BtnAlt_MouseDown(sender As Button, e As MouseEventArgs) ' handles AButton.MouseDown
+    Private Sub BtnAlt_MouseDown(sender As Button, e As MouseEventArgs) ' handles AButton.mousedown
         Debug.Print($"MouseDown {e.Button}")
         Select Case e.Button
             Case MouseButtons.XButton1, MouseButtons.XButton2
@@ -1328,9 +1332,13 @@
         End If
     End Sub
 
-    Private Sub FrmMain_Click(sender As Object, e As MouseEventArgs) Handles Me.MouseDown
+    Private Async Sub FrmMain_Click(sender As Object, e As MouseEventArgs) Handles Me.MouseDown
         Debug.Print($"me.mousedown {sender.name}")
+        MyBase.WndProc(Message.Create(ScalaHandle, WM_CANCELMODE, 0, 0))
         cmsQuickLaunch.Close()
+        Await Task.Delay(100)
+        pbZoom.Show()
+        AButton.ActiveOverview = True
     End Sub
 
     Private Sub cmsAlt_Closed(sender As Object, e As ToolStripDropDownClosedEventArgs) Handles cmsAlt.Closed
