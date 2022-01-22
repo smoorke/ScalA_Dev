@@ -387,6 +387,10 @@ Module NativeMethods
     Public Const SC_CLOSE As Integer = &HF060
     Public Const SC_RESTORE As Integer = &HF120
 
+    Public Const TPM_RECURSE = &H1
+    Public Const TPM_RIGHTBUTTON = &H2
+    Public Const TPM_RETURNCMD = &H100
+
     <DllImport("User32.Dll")>
     Public Function TrackPopupMenuEx(ByVal hmenu As IntPtr, ByVal fuFlags As UInteger, ByVal x As Integer, ByVal y As Integer, ByVal hwnd As IntPtr, ByVal lptpm As Integer) As Integer : End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>
