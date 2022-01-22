@@ -1286,10 +1286,14 @@
         If cboAlt.SelectedIndex > 0 AndAlso AltPP IsNot Nothing Then
             RestorePos(AltPP)
         End If
+        tmrActive.Stop()
+        tmrMove.Stop()
+        tmrOverview.Stop()
+        tmrTick.Stop()
         ExecuteProcessUnElevated(Environment.GetCommandLineArgs()(0), "Someone", IO.Directory.GetCurrentDirectory())
         sysTrayIcon.Visible = False
         sysTrayIcon.Dispose()
-        End
+        End 'program
     End Sub
 
 
