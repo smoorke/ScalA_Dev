@@ -391,6 +391,11 @@ Module NativeMethods
     Public Const TPM_RIGHTBUTTON = &H2
     Public Const TPM_RETURNCMD = &H100
 
+    <DllImport("user32.dll", EntryPoint:="keybd_event")>
+    Public Sub keybd_event(ByVal bVk As Byte, ByVal bScan As Byte, ByVal dwFlags As UInteger, ByVal dwExtraInfo As UInteger)
+    End Sub
+    Public Const KEYEVENTF_KEYDOWN As Integer = &H0
+    Public Const KEYEVENTF_KEYUP As Integer = &H2
     <DllImport("User32.Dll")>
     Public Function TrackPopupMenuEx(ByVal hmenu As IntPtr, ByVal fuFlags As UInteger, ByVal x As Integer, ByVal y As Integer, ByVal hwnd As IntPtr, ByVal lptpm As Integer) As Integer : End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>
