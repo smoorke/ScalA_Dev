@@ -355,6 +355,7 @@ Partial Public Class FrmMain
         '    SendMessage(AltPP.MainWindowHandle, &H205, 0, 0) 'does not fix right click drag bug, does fix right click stuck after drag bug
         'End If
         pbZoom.Visible = False
+        AButton.ActiveOverview = False
         If My.Computer.Keyboard.ShiftKeyDown Then
             'show sysmenu
             Debug.Print("ShowSysMenu ")
@@ -431,6 +432,7 @@ Partial Public Class FrmMain
         End If
         'tmrTick.Interval = 50
         pbZoom.Visible = True
+        AButton.ActiveOverview = True
     End Sub
 
 

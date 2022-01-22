@@ -27,15 +27,18 @@
 
     Private Sub CboAlt_DropDown(sender As ComboBox, e As EventArgs) Handles cboAlt.DropDown
         pbZoom.Visible = False
+        AButton.ActiveOverview = False
         PopDropDown(sender)
     End Sub
     Private Sub CmbResolution_DropDown(sender As ComboBox, e As EventArgs) Handles cmbResolution.DropDown
         pbZoom.Visible = False
+        AButton.ActiveOverview = False
     End Sub
 
     Private Async Sub ComboBoxes_DropDownClosed(sender As ComboBox, e As EventArgs) Handles cboAlt.DropDownClosed, cmbResolution.DropDownClosed
         Await Task.Delay(200)
         pbZoom.Visible = True
+        AButton.ActiveOverview = True
     End Sub
 
 #End Region

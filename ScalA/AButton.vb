@@ -1,7 +1,5 @@
 ﻿Public Class AButton
     Inherits Button
-#Region "New"
-
 	Public Sub New(ByVal text As String, ByVal left As Integer, ByVal top As Integer, ByVal width As Integer, ByVal height As Integer)
 		MyBase.New()
 
@@ -52,12 +50,11 @@
 		_passthrough = New Rectangle(3, 21, Me.Width - 6, Me.Height - 24)
 	End Sub
 
-#End Region
 
-
+	Public Shared ActiveOverview As Boolean = True
 	Protected Overrides Sub OnPaint(e As PaintEventArgs)
 		MyBase.OnPaint(e)
-		If My.Settings.gameOnOverview AndAlso Me.Text <> "" Then
+		If ActiveOverview AndAlso My.Settings.gameOnOverview AndAlso Me.Text <> "" Then
 			Using b As SolidBrush = New SolidBrush(Color.Magenta)
 				e.Graphics.FillRectangle(b, Me.ThumbRectangle)
 			End Using
