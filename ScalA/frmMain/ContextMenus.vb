@@ -467,7 +467,7 @@ Partial Public Class FrmMain
                         Dim filesCount As Integer = System.IO.Directory.GetFiles(path, "*.*", IO.SearchOption.AllDirectories).Count
                         Dim filS As String = If(filesCount = 1, "", "s")
                         folderContentsMessage &= $"This folder contains {folderCount} folder{folS} and {filesCount} file{filS}."
-                        If MessageBox.Show($"Are you sure you want to move ""{name}"" to the recycle bin?" & folderContentsMessage,
+                        If MessageBox.Show($"Are you sure you want to move ""{name}"" to the Recycle Bin?" & folderContentsMessage,
                                        "Confirm Delete", MessageBoxButtons.YesNo) = DialogResult.Yes Then
                             My.Computer.FileSystem.DeleteDirectory(path, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin, FileIO.UICancelOption.DoNothing)
                         End If
