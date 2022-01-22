@@ -722,6 +722,7 @@
             ModifyMenuA(hSysMenu, SC_SIZE, MF_BYCOMMAND Or 1, SC_SIZE, "&Size") 'disable size item
             InsertMenuA(hSysMenu, 0, MF_SEPARATOR Or MF_BYPOSITION, 0, String.Empty)
             InsertMenuA(hSysMenu, 0, MF_BYPOSITION, 1337, "Settings")
+            SetMenuItemBitmaps(hSysMenu, 0, MF_BYPOSITION, CType(My.Resources.gear_wheel, Bitmap).GetHbitmap(Color.Red), Nothing)
         End If
     End Sub
 
@@ -1199,7 +1200,6 @@
     End Sub
 
     ReadOnly scalaPID As Integer = Process.GetCurrentProcess().Id
-
     Private Sub TmrActive_Tick(sender As Timer, e As EventArgs) Handles tmrActive.Tick
 
         Try
