@@ -1337,8 +1337,11 @@
         MyBase.WndProc(Message.Create(ScalaHandle, WM_CANCELMODE, 0, 0))
         cmsQuickLaunch.Close()
         Await Task.Delay(100)
-        pbZoom.Show()
-        AButton.ActiveOverview = True
+        If cboAlt.SelectedIndex > 0 Then
+            pbZoom.Show()
+        Else
+            AButton.ActiveOverview = True
+        End If
     End Sub
 
     Private Sub cmsAlt_Closed(sender As Object, e As ToolStripDropDownClosedEventArgs) Handles cmsAlt.Closed
