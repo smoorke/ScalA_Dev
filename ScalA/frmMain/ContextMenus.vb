@@ -520,7 +520,7 @@ Partial Public Class FrmMain
     End Sub
 
     Private Sub OpenProps(ByVal sender As Object, ByVal e As MouseEventArgs) 'Handles smenu.MouseUp, item.MouseUp
-        Debug.Print($"click {sender.Tag}")
+        Debug.Print($"OpenProps {sender.Tag} {sender.GetType.ToString}")
         Dim pth As String = sender.Tag.ToString.TrimEnd("\")
         If e.Button = MouseButtons.Right Then
             Dim sei As New SHELLEXECUTEINFO With {
@@ -545,8 +545,7 @@ Partial Public Class FrmMain
                          End While
                          SetWindowPos(hndl, -1, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
                          watch.Stop()
-                     End Sub
-                )
+                     End Sub)
         End If
     End Sub
 
