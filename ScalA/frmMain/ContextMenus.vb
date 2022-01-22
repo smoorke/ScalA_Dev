@@ -489,7 +489,7 @@ Partial Public Class FrmMain
                                  SetWindowPos(hndl, -1, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
                                  watch.Stop()
                              End Sub)
-                    Dim newname = InputBox("Enter new name", title, name, MousePosition.X, MousePosition.Y)
+                    Dim newname = InputBox("Enter new name", title, name, MousePosition.X - 177, MousePosition.Y - 76)
                     If newname <> "" Then
                         'Dim newpath = path.Substring(0, path.TrimEnd("\").LastIndexOf("\")) & "\" & newname
                         Debug.Print($"oldpath: {path}")
