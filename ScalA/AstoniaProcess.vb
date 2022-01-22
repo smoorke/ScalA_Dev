@@ -151,6 +151,7 @@
     'End Function
 
     Shared ReadOnly exeIconCache As New Dictionary(Of Integer, Tuple(Of Icon, String)) 'PID, icon, name
+    Shared ReadOnly pathIcnCache As New Dictionary(Of String, Icon) 'path, icon
     Public Function GetIcon(Optional invalidateCache As Boolean = False) As Icon
         If invalidateCache Then exeIconCache.Clear()
         Try
@@ -159,9 +160,13 @@
                 Return exeIconCache(ID).Item1
             Else
                 Dim path As String = _proc.Path()
+                If pathIcnCache.ContainsKey(path) Then
+                    Return pathIcnCache(path)
+                End If
                 Debug.Print($"ExeIconCacheMiss {Me.Name} {ID} {path}")
                 Dim ico = Icon.ExtractAssociatedIcon(path)
                 exeIconCache(ID) = New Tuple(Of Icon, String)(ico, Me.Name)
+                pathIcnCache(path) = ico
                 Return ico
             End If
         Catch
