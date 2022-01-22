@@ -353,7 +353,6 @@ Partial Public Class FrmMain
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
         'If AltPP IsNot Nothing AndAlso AltPP?.Id <> 0 Then
         '    SendMessage(AltPP.MainWindowHandle, &H205, 0, 0) 'does not fix right click drag bug, does fix right click stuck after drag bug
-
         'End If
         pbZoom.Visible = False
         If My.Computer.Keyboard.ShiftKeyDown Then
@@ -405,14 +404,6 @@ Partial Public Class FrmMain
         End If
 
         If sender.SourceControl Is btnStart AndAlso My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then
-            'Dim image As Image = Nothing
-            'Dim imageHandle = LoadImage(IntPtr.Zero, "#106", 1, 16, 16, 0)
-            'If imageHandle <> IntPtr.Zero Then
-            '    Using Ico = Icon.FromHandle(imageHandle)
-            '        image = Ico.ToBitmap
-            '        DestroyIcon(Ico.Handle)
-            '    End Using
-            'End If
             sender.Items.Add(New ToolStripSeparator())
             sender.Items.Add("UnElevate", btnStart.Image, AddressOf UnelevateSelf).ToolTipText = "Drop Admin Rights" & vbCrLf & "Use this If you can't use ctrl, alt and/or shift."
         End If
