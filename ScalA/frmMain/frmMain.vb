@@ -1203,7 +1203,7 @@
     Private Sub TmrActive_Tick(sender As Timer, e As EventArgs) Handles tmrActive.Tick
 
         Try
-            Dim activeID = GetActiveProcessID()
+            Dim activeID As Integer = GetActiveProcessID()
             If activeID = scalaPID OrElse activeID = AltPP?.Id Then
                 lblTitle.ForeColor = SystemColors.ControlText
                 btnMax.ForeColor = SystemColors.ControlText
@@ -1321,6 +1321,7 @@
 
     Private Sub FrmMain_Click(sender As Object, e As MouseEventArgs) Handles Me.MouseDown
         Debug.Print($"me.mousedown {sender.name}")
+        cmsQuickLaunch.Close()
     End Sub
 
 End Class
