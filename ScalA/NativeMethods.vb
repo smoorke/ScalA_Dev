@@ -357,6 +357,8 @@ Module NativeMethods
     Public Function ModifyMenuA(hMenu As Integer, uItem As Integer, fByPos As Integer, newID As Integer, lpNewIem As String) As Boolean : End Function
     <DllImport("user32.dll")>
     Public Function SetMenuItemBitmaps(hMenu As Integer, uitem As Integer, fByPos As Integer, hBitmapUnchecked As Integer, hBitmapChecked As Integer) As Boolean : End Function
+    <DllImport("gdi32.dll")>
+    Public Function DeleteObject(hObject As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean : End Function
     <DllImport("user32.dll")>
     Public Function InsertMenuA(ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer, uIDNewItem As Integer, lpNewItem As String) As Boolean : End Function
     <DllImport("user32.dll")>
