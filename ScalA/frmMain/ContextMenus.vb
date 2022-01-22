@@ -446,6 +446,8 @@ Partial Public Class FrmMain
     'Dim kb As New Microsoft.VisualBasic.Devices.Keyboard
     Private Sub QL_Click(sender As ToolStripMenuItem, e As MouseEventArgs) 'handles Abutton.mousedown
         If e.Button = MouseButtons.Right Then
+            sender.BackColor = Color.FromArgb(&HFF3399FF) 'todo find right color
+            sender.DropDown.Close()
 
             Dim path As String = sender.Tag
             Dim name As String = sender.Text
@@ -512,6 +514,7 @@ Partial Public Class FrmMain
                 Case 6 ' Properties
                     OpenProps(sender, e)
             End Select
+            sender.BackColor = SystemColors.Control
             DeleteObject(hbm)
         ElseIf Not sender.Tag.EndsWith("\") Then 'do not process click on dirs
             Debug.Print("clicked not a dir")
