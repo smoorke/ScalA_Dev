@@ -137,7 +137,7 @@ Partial Public Class FrmMain
                 smenu.DropDownItems.Add("(Dummy)").Enabled = False
                 smenu.DoubleClickEnabled = True
 
-                AddHandler smenu.MouseUp, AddressOf OpenProps
+                AddHandler smenu.MouseUp, AddressOf QL_Click
                 AddHandler smenu.DoubleClick, AddressOf DblClickDir
                 AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
                 'AddHandler smenu.DropDownOpened, AddressOf deferredIconLoading
@@ -173,7 +173,9 @@ Partial Public Class FrmMain
             End If
 
             Dim item As New ToolStripMenuItem(linkName) With {.Tag = fullLink}
-            AddHandler item.MouseUp, AddressOf OpenLnk
+            AddHandler item.MouseUp, AddressOf QL_Click
+            'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
+            'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
 
             Files.Add(item)
             hasNoFiles = False
@@ -211,6 +213,14 @@ Partial Public Class FrmMain
         watch.Stop()
         Return menuItems
     End Function
+
+    'Private Sub QL_MouseLeave(sender As Object, e As EventArgs)
+    '    cmsQuickLaunch.AutoClose = True
+    'End Sub
+
+    'Private Sub QL_MouseEnter(sender As Object, e As EventArgs)
+    '    cmsQuickLaunch.AutoClose = False
+    'End Sub
 
     Private Sub cmsQuickLaunchDropDown_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs)
         cts?.Cancel()
@@ -432,7 +442,88 @@ Partial Public Class FrmMain
         pbZoom.Visible = True
     End Sub
 
-    Private Sub OpenProps(ByVal sender As ToolStripMenuItem, ByVal e As System.Windows.Forms.MouseEventArgs) 'Handles smenu.MouseUp, item.MouseUp
+
+    Dim QlCtxMenu As New ContextMenu({
+        New MenuItem("Name"),
+        New MenuItem("-"),
+        New MenuItem("Delete"),
+        New MenuItem("Rename"),
+        New MenuItem("-"),
+        New MenuItem("Properties")})
+    'Dim kb As New Microsoft.VisualBasic.Devices.Keyboard
+    Private Sub QL_Click(sender As ToolStripMenuItem, e As MouseEventArgs)
+        If e.Button = MouseButtons.Right Then
+            cmsQuickLaunch.Close() 'todo have a consistent way to keep QL open
+
+            Dim path As String = sender.Tag
+            Dim name As String = sender.Text
+
+            ModifyMenuA(QlCtxMenu.Handle, 0, MF_BYPOSITION, 256, $"{name}")
+
+            Dim hbm As IntPtr = CType(sender.Image, Bitmap).GetHbitmap(Color.Red)
+            SetMenuItemBitmaps(QlCtxMenu.Handle, 0, MF_BYPOSITION, hbm, Nothing)
+            SetMenuDefaultItem(QlCtxMenu.Handle, 0, MF_BYPOSITION)
+            Dim value = TrackPopupMenuEx(QlCtxMenu.Handle, TPM_RECURSE Or TPM_RIGHTBUTTON Or TPM_RETURNCMD, MousePosition.X, MousePosition.Y, Me.Handle, Nothing)
+            Debug.Print($"contextmenuvalue {value - 255}")
+            Select Case value - 255
+                Case 1 ' Open
+                    OpenLnk(sender, e)
+                Case 3 ' Delete
+                    Dim folderContentsMessage As String = vbCrLf
+                    If path.EndsWith("\") Then
+                        Dim folderCount As Integer = System.IO.Directory.GetDirectories(path, "*.*", IO.SearchOption.AllDirectories).Count
+                        Dim folS As String = If(folderCount = 1, "", "s")
+                        Dim filesCount As Integer = System.IO.Directory.GetFiles(path, "*.*", IO.SearchOption.AllDirectories).Count
+                        Dim filS As String = If(filesCount = 1, "", "s")
+                        folderContentsMessage &= $"This folder contains {folderCount} folder{folS} and {filesCount} file{filS}."
+                        If MessageBox.Show($"Are you sure you want to move ""{name}"" to the recycle bin?" & folderContentsMessage,
+                                       "Confirm Delete", MessageBoxButtons.YesNo) = DialogResult.Yes Then
+                            My.Computer.FileSystem.DeleteDirectory(path, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin, FileIO.UICancelOption.DoNothing)
+                        End If
+                    Else
+                        My.Computer.FileSystem.DeleteFile(path, FileIO.UIOption.AllDialogs, FileIO.RecycleOption.SendToRecycleBin, FileIO.UICancelOption.DoNothing)
+                    End If
+                Case 4 ' Rename
+                    Dim title As String = $"Rename {name}"
+                    Task.Run(Sub()
+                                 Dim watch As Stopwatch = Stopwatch.StartNew()
+
+                                 Dim hndl As IntPtr
+                                 While watch.ElapsedMilliseconds < 2000
+                                     Threading.Thread.Sleep(20)
+                                     hndl = FindWindow(Nothing, title)
+                                     Debug.Print($"findwindow {hndl}")
+                                     If hndl <> IntPtr.Zero Then Exit While
+                                 End While
+                                 SetWindowPos(hndl, -1, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                                 watch.Stop()
+                             End Sub)
+                    Dim newname = InputBox("Enter new name", title, name, MousePosition.X, MousePosition.Y)
+                    If newname <> "" Then
+                        'Dim newpath = path.Substring(0, path.TrimEnd("\").LastIndexOf("\")) & "\" & newname
+                        Debug.Print($"oldpath: {path}")
+                        'Debug.Print($"newpath: {newpath}")
+                        If path.EndsWith("\") Then
+                            FileIO.FileSystem.RenameDirectory(path, newname)
+                        Else
+                            If {".lnk", ".url"}.Contains(System.IO.Path.GetExtension(path).ToLower) Then newname &= System.IO.Path.GetExtension(path)
+                            FileIO.FileSystem.RenameFile(path, newname)
+                        End If
+                        Debug.Print($"renamed to {newname}")
+                        'IO.File.Move(path,  newname)
+                    End If
+                Case 6 ' Properties
+                    OpenProps(sender, e)
+            End Select
+            DeleteObject(hbm)
+        ElseIf Not sender.Tag.EndsWith("\") Then 'do not process click on dirs
+            Debug.Print("clicked not a dir")
+            OpenLnk(sender, e)
+            'cmsQuickLaunch.Close(ToolStripDropDownCloseReason.ItemClicked)
+        End If
+    End Sub
+
+    Private Sub OpenProps(ByVal sender As Object, ByVal e As MouseEventArgs) 'Handles smenu.MouseUp, item.MouseUp
         Debug.Print($"click {sender.Tag}")
         Dim pth As String = sender.Tag.ToString.TrimEnd("\")
         If e.Button = MouseButtons.Right Then
@@ -476,10 +567,10 @@ Partial Public Class FrmMain
 
     Private Sub OpenLnk(ByVal sender As ToolStripItem, ByVal e As System.Windows.Forms.MouseEventArgs) 'handles item.MouseUp
         Debug.Print("openLnk: " & sender.Tag)
-        If e.Button = MouseButtons.Right Then
-            OpenProps(sender, e)
-            Exit Sub
-        End If
+        'If e.Button = MouseButtons.Right Then
+        '    OpenProps(sender, e)
+        '    Exit Sub
+        'End If
 
         Dim pp As Process
 
