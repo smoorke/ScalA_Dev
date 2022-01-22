@@ -446,7 +446,7 @@ Partial Public Class FrmMain
     'Dim kb As New Microsoft.VisualBasic.Devices.Keyboard
     Private Sub QL_Click(sender As ToolStripMenuItem, e As MouseEventArgs) 'handles Abutton.mousedown
         If e.Button = MouseButtons.Right Then
-            sender.BackColor = Color.FromArgb(&HFF3399FF) 'todo find right color
+            sender.BackColor = Color.FromArgb(&HFFB5D7F3)
             sender.DropDown.Close()
 
             Dim path As String = sender.Tag
