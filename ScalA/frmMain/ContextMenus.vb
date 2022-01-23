@@ -271,7 +271,7 @@ Partial Public Class FrmMain
                 }
             sender.DropDownItems.Add(item)
         Next
-        If sender.DropDownItems.Count = 0 Then
+        If sender.DropDownItems.Count = 2 Then
             sender.DropDownItems.Add("(None)").Enabled = False
         End If
     End Sub
@@ -610,9 +610,14 @@ Partial Public Class FrmMain
             Dim QlCtxNewMenu = New MenuItem("New", {
                 New MenuItem("Folder", AddressOf QlCtxNewFolder) With {.Tag = path},
                 New MenuItem("-")})
-            For Each ap As AstoniaProcess In AstoniaProcess.Enumerate()
+            Dim aplist As List(Of AstoniaProcess) = AstoniaProcess.Enumerate()
+            For Each ap As AstoniaProcess In aplist
                 QlCtxNewMenu.MenuItems.Add(New MenuItem(ap.Name, AddressOf QlCtxNewAlt) With {.Tag = {ap, path}})
             Next
+            If aplist.Count = 0 Then
+                QlCtxNewMenu.MenuItems.Add(New MenuItem("(None)") With {.Enabled = False})
+            End If
+
             QlCtxMenu.MenuItems.Add(QlCtxNewMenu)
 
             ModifyMenuA(QlCtxMenu.Handle, 0, MF_BYPOSITION, 256, $"{name}")
