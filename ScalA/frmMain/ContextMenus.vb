@@ -126,7 +126,7 @@ Partial Public Class FrmMain
 
         Dim Dirs As New List(Of ToolStripItem)
         Try
-            For Each fullDirs As String In System.IO.Directory.EnumerateDirectories(pth)
+            For Each fullDirs As String In System.IO.Directory.EnumerateDirectories(pth).TakeWhile(Function(__) Not QlCtxIsOpen)
 
                 Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullDirs).Attributes
                 If attr.HasFlag(System.IO.FileAttributes.Hidden) Then Continue For
@@ -137,7 +137,7 @@ Partial Public Class FrmMain
                 smenu.DropDownItems.Add("(Dummy)").Enabled = False
                 smenu.DoubleClickEnabled = True
 
-                AddHandler smenu.MouseUp, AddressOf QL_Click
+                AddHandler smenu.MouseDown, AddressOf QL_Click
                 AddHandler smenu.DoubleClick, AddressOf DblClickDir
                 AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
                 'AddHandler smenu.DropDownOpened, AddressOf deferredIconLoading
@@ -158,7 +158,8 @@ Partial Public Class FrmMain
 
         Dim Files As New List(Of ToolStripItem)
         For Each fullLink As String In System.IO.Directory.EnumerateFiles(pth) _
-                                       .Where(Function(p) {".exe", ".jar", ".lnk", ".url", ".txt"}.Contains(System.IO.Path.GetExtension(p).ToLower))
+                                       .Where(Function(p) {".exe", ".jar", ".lnk", ".url", ".txt"}.Contains(System.IO.Path.GetExtension(p).ToLower)) _
+                                       .TakeWhile(Function(__) Not QlCtxIsOpen)
             'Debug.Print(System.IO.Path.GetFileName(fullLink))
 
             'don't add self to list
@@ -194,10 +195,10 @@ Partial Public Class FrmMain
         End If
 
         If My.Computer.Keyboard.CtrlKeyDown OrElse hasNoFiles Then
-            If hasNoFiles AndAlso hasNoDirs Then menuItems.Add(New ToolStripMenuItem("(Emtpy)") With {.Enabled = False})
+            If hasNoFiles AndAlso hasNoDirs Then menuItems.Add(New ToolStripMenuItem("(Empty)") With {.Enabled = False})
             If My.Computer.Keyboard.CtrlKeyDown OrElse hasNoDirs Then
                 menuItems.Add(New ToolStripSeparator)
-                Dim addShortcutMenu As New ToolStripMenuItem("Create Shortcut", My.Resources.Add) With {.Tag = pth}
+                Dim addShortcutMenu As New ToolStripMenuItem("New", My.Resources.Add) With {.Tag = pth}
                 addShortcutMenu.DropDownItems.Add("(Dummy)").Enabled = False
                 AddHandler addShortcutMenu.DropDownOpening, AddressOf AddShortcutMenu_DropDownOpening
                 menuItems.Add(addShortcutMenu)
@@ -252,6 +253,7 @@ Partial Public Class FrmMain
     End Sub
 
     Private Sub ParseSubDir(sender As ToolStripMenuItem, e As EventArgs) 'handles dir.DropDownOpening
+        If QlCtxIsOpen Then Exit Sub
         sender.DropDownItems.Clear()
         sender.DropDownItems.AddRange(ParseDir(sender.Tag).ToArray)
     End Sub
@@ -259,6 +261,10 @@ Partial Public Class FrmMain
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
         Debug.Print("addshortcut.sendertag:" & sender.Tag)
         sender.DropDownItems.Clear()
+
+        sender.DropDownItems.Add(New ToolStripMenuItem("Folder", GetIcon(FileIO.SpecialDirectories.Temp), AddressOf Ql_NewFolder) With {.Tag = sender.Tag})
+        sender.DropDownItems.Add(New ToolStripSeparator())
+
         For Each alt As AstoniaProcess In AstoniaProcess.Enumerate()
             Dim item As New ToolStripMenuItem(alt.Name, alt.GetIcon?.ToBitmap, AddressOf CreateShortCut) With {
                 .Tag = {alt, sender.Tag} ' sender.tag is parent menu location
@@ -268,6 +274,32 @@ Partial Public Class FrmMain
         If sender.DropDownItems.Count = 0 Then
             sender.DropDownItems.Add("(None)").Enabled = False
         End If
+    End Sub
+
+    Private Sub Ql_NewFolder(sender As ToolStripMenuItem, e As EventArgs)
+        cmsQuickLaunch.Close()
+        Debug.Print($"QlCtxNewFolder sender:{sender}")
+        Debug.Print($"tag:    {sender?.Tag}")
+
+        Dim rootFolder As String = sender.Tag
+
+        Debug.Print($"rootFolder: {rootFolder}")
+
+        Dim newfolderPath = rootFolder & "New Folder"
+
+        Dim i As Integer = 2
+        While IO.Directory.Exists(newfolderPath)
+            newfolderPath = rootFolder & $"New Folder ({i})"
+            i += 1
+        End While
+
+        Debug.Print($"newfolderpath: {newfolderPath}")
+
+        Try
+            IO.Directory.CreateDirectory(newfolderPath)
+        Catch ex As Exception
+
+        End Try
     End Sub
 
     Private Sub CreateShortCut(sender As ToolStripMenuItem, e As EventArgs)
@@ -435,87 +467,191 @@ Partial Public Class FrmMain
         AButton.ActiveOverview = True
     End Sub
 
-
     Dim QlCtxMenu As New ContextMenu({
-        New MenuItem("Name"),
+        New MenuItem("Open", AddressOf QlCtxOpen) With {.DefaultItem = True},
         New MenuItem("-"),
-        New MenuItem("Delete"),
-        New MenuItem("Rename"),
+        New MenuItem("Delete", AddressOf QlCtxDelete),
+        New MenuItem("Rename", AddressOf QlCtxRename),
         New MenuItem("-"),
-        New MenuItem("Properties")})
+        New MenuItem("Properties", AddressOf QlCtxProps),
+        New MenuItem("-")})
+
+    Private Sub QlCtxOpen(sender As MenuItem, e As EventArgs)
+        Debug.Print($"QlCtxOpen sender:{sender}")
+        OpenLnk(sender.Parent.Tag, New MouseEventArgs(MouseButtons.Left, 1, MousePosition.X, MousePosition.Y, 0))
+    End Sub
+
+    Private Sub QlCtxRename(sender As MenuItem, e As EventArgs)
+        Dim Path As String = sender.Parent.Tag.Tag
+        Dim Name As String = sender.Parent.Tag.text
+
+        Dim title As String = $"Rename {Name}"
+        Task.Run(Sub()
+                     Dim watch As Stopwatch = Stopwatch.StartNew()
+
+                     Dim hndl As IntPtr
+                     While watch.ElapsedMilliseconds < 2000
+                         Threading.Thread.Sleep(20)
+                         hndl = FindWindow(Nothing, title)
+                         Debug.Print($"findwindow {hndl}")
+                         If hndl <> IntPtr.Zero Then Exit While
+                     End While
+                     SetWindowPos(hndl, -1, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                     watch.Stop()
+                 End Sub)
+        Dim newname = InputBox("Enter new name", title, Name, MousePosition.X - 177, MousePosition.Y - 76)
+        If newname <> "" Then
+            'Dim newpath = path.Substring(0, path.TrimEnd("\").LastIndexOf("\")) & "\" & newname
+            Debug.Print($"oldpath: {Path}")
+            'Debug.Print($"newpath: {newpath}")
+            Try
+                If Path.EndsWith("\") Then
+                    FileIO.FileSystem.RenameDirectory(Path, newname)
+                Else
+                    Dim targetname As String = newname
+                    If {".lnk", ".url"}.Contains(System.IO.Path.GetExtension(Path).ToLower) Then targetname &= System.IO.Path.GetExtension(Path)
+                    FileIO.FileSystem.RenameFile(Path, targetname)
+                End If
+            Catch
+                MessageBox.Show(Me, $"Error renaming to {newname}!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+            Debug.Print($"renamed to {newname}")
+            'IO.File.Move(path,  newname)
+        End If
+    End Sub
+
+    Private Sub QlCtxDelete(sender As MenuItem, e As EventArgs)
+        cmsQuickLaunch.Close()
+
+        Dim Path As String = sender.Parent.Tag.tag
+        Dim name As String = sender.Parent.Tag.Text
+
+        Debug.Print($"Delete {Path}")
+
+        Dim folderContentsMessage As String = vbCrLf
+        If Path.EndsWith("\") Then
+            Dim folderCount As Integer = System.IO.Directory.GetDirectories(Path, "*.*", IO.SearchOption.AllDirectories).Count
+            Dim folS As String = If(folderCount = 1, "", "s")
+            Dim filesCount As Integer = System.IO.Directory.GetFiles(Path, "*.*", IO.SearchOption.AllDirectories).Count
+            Dim filS As String = If(filesCount = 1, "", "s")
+            folderContentsMessage &= $"This folder contains {folderCount} folder{folS} and {filesCount} file{filS}."
+            If MessageBox.Show($"Are you sure you want to move ""{name}"" to the Recycle Bin?" & folderContentsMessage,
+                                       "Confirm Delete", MessageBoxButtons.YesNo) = DialogResult.Yes Then
+                My.Computer.FileSystem.DeleteDirectory(Path, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin, FileIO.UICancelOption.DoNothing)
+            End If
+        Else
+            My.Computer.FileSystem.DeleteFile(Path, FileIO.UIOption.AllDialogs, FileIO.RecycleOption.SendToRecycleBin, FileIO.UICancelOption.DoNothing)
+        End If
+    End Sub
+
+    Private Sub QlCtxProps(sender As MenuItem, e As EventArgs)
+        OpenProps(sender.Parent.Tag, New MouseEventArgs(MouseButtons.Right, 1, MousePosition.X, MousePosition.Y, 0))
+    End Sub
+
+    Private Sub QlCtxNewFolder(sender As MenuItem, e As EventArgs)
+        Debug.Print($"QlCtxNewFolder sender:{sender}")
+        Debug.Print($"tag:    {sender?.Tag}")
+
+        Dim rootFolder As String = sender.Tag
+        If rootFolder.EndsWith("\") Then
+            rootFolder = rootFolder.Substring(0, rootFolder.TrimEnd("\").LastIndexOf("\") + 1)
+        Else
+            rootFolder = rootFolder.Substring(0, rootFolder.LastIndexOf("\") + 1)
+        End If
+
+        Debug.Print($"rootFolder: {rootFolder}")
+
+        Dim newfolderPath = rootFolder & "New Folder"
+
+        Dim i As Integer = 2
+        While IO.Directory.Exists(newfolderPath)
+            newfolderPath = rootFolder & $"New Folder ({i})"
+            i += 1
+        End While
+
+        Debug.Print($"newfolderpath: {newfolderPath}")
+
+        Try
+            IO.Directory.CreateDirectory(newfolderPath)
+        Catch ex As Exception
+
+        End Try
+        cmsQuickLaunch.Close()
+    End Sub
+
+    Private Sub QlCtxNewAlt(sender As MenuItem, e As EventArgs)
+        Debug.Print($"newAlt: {sender.Text}")
+        Debug.Print($"tag: {sender.Tag(1)}")
+        Dim rootFolder As String = sender.Tag(1)
+        rootFolder = rootFolder.Substring(0, rootFolder.TrimEnd("\").LastIndexOf("\") + 1)
+        CreateShortCut(New ToolStripMenuItem(sender.Text) With {.Tag = {sender.Tag(0), rootFolder}}, Nothing)
+    End Sub
+
+    Dim folderHbm As IntPtr = GetIcon(FileIO.SpecialDirectories.Temp).GetHbitmap(Color.Red)
+
+    Dim QlCtxIsOpen As Boolean = False
+
     'Dim kb As New Microsoft.VisualBasic.Devices.Keyboard
-    Private Sub QL_Click(sender As ToolStripMenuItem, e As MouseEventArgs) 'handles Abutton.mousedown
+    Private Sub QL_Click(sender As ToolStripMenuItem, e As MouseEventArgs) 'Handles cmsQuickLaunch.mousedown
         If e.Button = MouseButtons.Right Then
+
+            QlCtxIsOpen = True
+
+            sender.Select()
             sender.BackColor = Color.FromArgb(&HFFB5D7F3)
             sender.DropDown.Close()
 
             Dim path As String = sender.Tag
             Dim name As String = sender.Text
 
+            QlCtxMenu.Tag = sender
+
+
+            Dim QlCtxNewMenu = New MenuItem("New", {
+                New MenuItem("Folder", AddressOf QlCtxNewFolder) With {.Tag = path},
+                New MenuItem("-")})
+            For Each ap As AstoniaProcess In AstoniaProcess.Enumerate()
+                QlCtxNewMenu.MenuItems.Add(New MenuItem(ap.Name, AddressOf QlCtxNewAlt) With {.Tag = {ap, path}})
+            Next
+            QlCtxMenu.MenuItems.Add(QlCtxNewMenu)
+
             ModifyMenuA(QlCtxMenu.Handle, 0, MF_BYPOSITION, 256, $"{name}")
+            Dim hbm = IntPtr.Zero
+            If sender.Image IsNot Nothing Then
+                hbm = CType(sender.Image, Bitmap).GetHbitmap(Color.Red)
+                SetMenuItemBitmaps(QlCtxMenu.Handle, 0, MF_BYPOSITION, hbm, Nothing)
+            End If
 
-            Dim hbm As IntPtr = CType(sender.Image, Bitmap).GetHbitmap(Color.Red)
-            SetMenuItemBitmaps(QlCtxMenu.Handle, 0, MF_BYPOSITION, hbm, Nothing)
-            SetMenuDefaultItem(QlCtxMenu.Handle, 0, MF_BYPOSITION)
-            Dim value = TrackPopupMenuEx(QlCtxMenu.Handle, TPM_RECURSE Or TPM_RIGHTBUTTON Or TPM_RETURNCMD, MousePosition.X, MousePosition.Y, Me.Handle, Nothing)
-            Debug.Print($"contextmenuvalue {value - 255}")
-            Select Case value - 255
-                Case 1 ' Open
-                    OpenLnk(sender, e)
-                Case 3 ' Delete
-                    Dim folderContentsMessage As String = vbCrLf
-                    If path.EndsWith("\") Then
-                        Dim folderCount As Integer = System.IO.Directory.GetDirectories(path, "*.*", IO.SearchOption.AllDirectories).Count
-                        Dim folS As String = If(folderCount = 1, "", "s")
-                        Dim filesCount As Integer = System.IO.Directory.GetFiles(path, "*.*", IO.SearchOption.AllDirectories).Count
-                        Dim filS As String = If(filesCount = 1, "", "s")
-                        folderContentsMessage &= $"This folder contains {folderCount} folder{folS} and {filesCount} file{filS}."
-                        If MessageBox.Show($"Are you sure you want to move ""{name}"" to the Recycle Bin?" & folderContentsMessage,
-                                       "Confirm Delete", MessageBoxButtons.YesNo) = DialogResult.Yes Then
-                            My.Computer.FileSystem.DeleteDirectory(path, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin, FileIO.UICancelOption.DoNothing)
-                        End If
-                    Else
-                        My.Computer.FileSystem.DeleteFile(path, FileIO.UIOption.AllDialogs, FileIO.RecycleOption.SendToRecycleBin, FileIO.UICancelOption.DoNothing)
-                    End If
-                Case 4 ' Rename
-                    Dim title As String = $"Rename {name}"
-                    Task.Run(Sub()
-                                 Dim watch As Stopwatch = Stopwatch.StartNew()
+            SetMenuItemBitmaps(QlCtxMenu.Handle, 7, MF_BYPOSITION, New Bitmap(My.Resources.Add, New Size(16, 16)).GetHbitmap(Color.Red), Nothing)
 
-                                 Dim hndl As IntPtr
-                                 While watch.ElapsedMilliseconds < 2000
-                                     Threading.Thread.Sleep(20)
-                                     hndl = FindWindow(Nothing, title)
-                                     Debug.Print($"findwindow {hndl}")
-                                     If hndl <> IntPtr.Zero Then Exit While
-                                 End While
-                                 SetWindowPos(hndl, -1, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
-                                 watch.Stop()
-                             End Sub)
-                    Dim newname = InputBox("Enter new name", title, name, MousePosition.X - 177, MousePosition.Y - 76)
-                    If newname <> "" Then
-                        'Dim newpath = path.Substring(0, path.TrimEnd("\").LastIndexOf("\")) & "\" & newname
-                        Debug.Print($"oldpath: {path}")
-                        'Debug.Print($"newpath: {newpath}")
-                        Try
-                            If path.EndsWith("\") Then
-                                FileIO.FileSystem.RenameDirectory(path, newname)
-                            Else
-                                Dim targetname As String = newname
-                                If {".lnk", ".url"}.Contains(System.IO.Path.GetExtension(path).ToLower) Then targetname &= System.IO.Path.GetExtension(path)
-                                FileIO.FileSystem.RenameFile(path, targetname)
-                            End If
-                        Catch
-                            MessageBox.Show(Me, $"Error renaming to {newname}!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                        End Try
-                        Debug.Print($"renamed to {newname}")
-                        'IO.File.Move(path,  newname)
-                    End If
-                Case 6 ' Properties
-                    OpenProps(sender, e)
-            End Select
+            SetMenuItemBitmaps(QlCtxNewMenu.Handle, 0, MF_BYPOSITION, folderHbm, Nothing)
+            Dim purgeList As List(Of IntPtr) = New List(Of IntPtr)
+            Dim i = 0
+            For Each item As MenuItem In QlCtxNewMenu.MenuItems
+                If i < 2 Then
+                    i += 1
+                    Continue For
+                End If
+                Dim althbm As IntPtr = New Bitmap(CType(item.Tag(0), AstoniaProcess).GetIcon?.ToBitmap, New Size(16, 16)).GetHbitmap(Color.Red)
+                purgeList.Add(althbm)
+                SetMenuItemBitmaps(QlCtxNewMenu.Handle, i, MF_BYPOSITION, althbm, Nothing)
+                i += 1
+            Next
+
+            TrackPopupMenuEx(QlCtxMenu.Handle, TPM_RECURSE Or TPM_RIGHTBUTTON, MousePosition.X, MousePosition.Y, Me.Handle, Nothing)
+
             sender.BackColor = SystemColors.Control
             DeleteObject(hbm)
+            For Each item As IntPtr In purgeList
+                DeleteObject(item)
+            Next
+            QlCtxNewMenu.MenuItems.Clear()
+            QlCtxMenu.MenuItems.RemoveAt(7)
+            'RemoveMenu(QlCtxMenu.Handle, 6, MF_BYPOSITION)
+            'DrawMenuBar(QlCtxMenu.Handle)
+
+            QlCtxIsOpen = False
+
         ElseIf Not sender.Tag.EndsWith("\") Then 'do not process click on dirs
             Debug.Print("clicked not a dir")
             OpenLnk(sender, e)
@@ -564,12 +700,13 @@ Partial Public Class FrmMain
         End Try
     End Sub
 
-    Private Sub OpenLnk(ByVal sender As ToolStripItem, ByVal e As System.Windows.Forms.MouseEventArgs) 'handles item.MouseUp
+    Private Sub OpenLnk(ByVal sender As ToolStripItem, ByVal e As System.Windows.Forms.MouseEventArgs) 'handles item.MouseDown
         Debug.Print("openLnk: " & sender.Tag)
-        'If e.Button = MouseButtons.Right Then
-        '    OpenProps(sender, e)
-        '    Exit Sub
-        'End If
+        If e Is Nothing Then Exit Sub
+        If e.Button = MouseButtons.Right Then
+            'OpenProps(sender, e)
+            Exit Sub
+        End If
 
         Dim pp As Process
 
