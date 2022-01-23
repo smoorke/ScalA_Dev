@@ -635,10 +635,11 @@
 
             Task.Run(Sub()
                          Try
-                             SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1,
-                                          SetWindowPosFlags.IgnoreResize Or
-                                          SetWindowPosFlags.DoNotActivate Or
-                                          SetWindowPosFlags.ASyncWindowPosition)
+                             Dim flags As SetWindowPosFlags = SetWindowPosFlags.IgnoreResize Or
+                                                              SetWindowPosFlags.DoNotActivate Or
+                                                              SetWindowPosFlags.ASyncWindowPosition
+                             If QLctxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
+                             SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
                          Catch ex As Exception
                          End Try
                      End Sub)
@@ -865,7 +866,7 @@
     Private counter As Integer = 0
 
     Dim AOBusy As Boolean = False
-    Private Async Sub TmrStartup_Tick(sender As Timer, e As EventArgs) Handles tmrOverview.Tick
+    Private Async Sub TmrOverview_Tick(sender As Timer, e As EventArgs) Handles tmrOverview.Tick
 
         'Debug.Print("tmrStartup.Tick")
 #If DEBUG Then
@@ -989,11 +990,11 @@
                         AOBusy = True
                         Await Task.Run(Sub()
                                            Try
-                                               SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1,
-                                                       SetWindowPosFlags.IgnoreResize Or
-                                                       SetWindowPosFlags.DoNotActivate Or
-                                                       SetWindowPosFlags.ASyncWindowPosition)
-
+                                               Dim flags As SetWindowPosFlags = SetWindowPosFlags.IgnoreResize Or
+                                                                                SetWindowPosFlags.DoNotActivate Or
+                                                                                SetWindowPosFlags.ASyncWindowPosition
+                                               If QLctxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
+                                               SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
                                            Catch ex As Exception
                                            End Try
                                        End Sub)
