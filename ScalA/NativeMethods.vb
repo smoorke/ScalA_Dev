@@ -360,11 +360,11 @@ Module NativeMethods
     <DllImport("gdi32.dll")>
     Public Function DeleteObject(hObject As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean : End Function
     <DllImport("user32.dll")>
-    Public Function InsertMenuA(ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer, uIDNewItem As Integer, lpNewItem As String) As Boolean : End Function
+    Public Function InsertMenuA(ByVal hMenu As IntPtr, ByVal nPosition As Integer, ByVal wFlags As Integer, uIDNewItem As Integer, lpNewItem As String) As Boolean : End Function
     <DllImport("user32.dll")>
-    Public Function RemoveMenu(ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer) As Integer : End Function
+    Public Function RemoveMenu(ByVal hMenu As IntPtr, ByVal nPosition As Integer, ByVal wFlags As Integer) As Integer : End Function
     <DllImport("user32.dll")>
-    Public Function SetMenuDefaultItem(hMenu As Integer, uItem As Integer, fByPos As Integer) As Boolean : End Function
+    Public Function SetMenuDefaultItem(hMenu As IntPtr, uItem As Integer, fByPos As Integer) As Boolean : End Function
 
     'Const MF_STRING = &H0
     'Const MF_REMOVE = &H1000&
