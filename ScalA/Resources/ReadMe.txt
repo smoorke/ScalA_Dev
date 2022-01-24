@@ -122,3 +122,9 @@ Made XMouseButton1 and XMouseButton2 on overview buttons activate the relevant A
 Improved smooth window moving. 
 Fixed bug in alignment settings that made it unusable.
 Hidden Astonia client better when moving form and restoring from maximized state.
+
+**ScalA 0.9.4**
+Enabled clickguard for active overview when quicklaunch, alt and resolution comboboxes are open.
+Fixed unelevate sets wrong working directory for ScalA.
+Added right click contextmenu for quicklaunch items.
+Minor performance improvements.
