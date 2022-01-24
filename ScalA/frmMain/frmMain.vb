@@ -189,8 +189,13 @@
         Debug.Print("tmrTick.Enabled")
         tmrTick.Enabled = True
 
-
         prevItem = that.SelectedItem
+
+        If cboAlt.SelectedIndex > 0 Then
+            pbZoom.Show()
+        Else
+            AButton.ActiveOverview = My.Settings.gameOnOverview
+        End If
 
     End Sub
 
@@ -1350,12 +1355,12 @@
         If cboAlt.SelectedIndex > 0 Then
             pbZoom.Show()
         Else
-            AButton.ActiveOverview = True
+            AButton.ActiveOverview = My.Settings.gameOnOverview
         End If
     End Sub
 
     Private Sub cmsAlt_Closed(sender As Object, e As ToolStripDropDownClosedEventArgs) Handles cmsAlt.Closed
-        AButton.ActiveOverview = True
+        AButton.ActiveOverview = My.Settings.gameOnOverview
     End Sub
 
     Private Sub cmsAlt_Opened(sender As Object, e As EventArgs) Handles cmsAlt.Opened
