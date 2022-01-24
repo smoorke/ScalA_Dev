@@ -460,8 +460,10 @@ Partial Public Class FrmMain
             End If
         End If
         Await Task.Delay(100)
-        pbZoom.Visible = True
-        AButton.ActiveOverview = True
+        If cboAlt.SelectedIndex > 0 Then
+            pbZoom.Visible = True
+        End If
+        AButton.ActiveOverview = My.Settings.gameOnOverview
     End Sub
 
     Dim newFolderItem As MenuItem = New MenuItem("Folder", AddressOf QlCtxNewFolder)

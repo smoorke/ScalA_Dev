@@ -37,8 +37,10 @@
 
     Private Async Sub ComboBoxes_DropDownClosed(sender As ComboBox, e As EventArgs) Handles cboAlt.DropDownClosed, cmbResolution.DropDownClosed
         Await Task.Delay(200)
-        pbZoom.Visible = True
-        AButton.ActiveOverview = True
+        If cboAlt.SelectedIndex > 0 Then
+            pbZoom.Visible = True
+        End If
+        AButton.ActiveOverview = My.Settings.gameOnOverview
     End Sub
 
 #End Region
@@ -733,13 +735,20 @@
     Public Sub ShowSysMenu(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseUp, lblTitle.MouseUp, btnMin.MouseUp, btnMax.MouseUp
         If e Is Nothing OrElse e.Button = MouseButtons.Right Then
             Debug.Print("ShowSysMenu hSysMenu=" & hSysMenu.ToString)
-            Dim cmd As Integer = TrackPopupMenuEx(hSysMenu, &H102L, MousePosition.X, MousePosition.Y, Me.Handle, Nothing)
+            pbZoom.Visible = False
+            AButton.ActiveOverview = False
+
+            Dim cmd As Integer = TrackPopupMenuEx(hSysMenu, TPM_RIGHTBUTTON Or TPM_RETURNCMD, MousePosition.X, MousePosition.Y, Me.Handle, Nothing)
 
             If cmd > 0 Then
                 Debug.Print("SendMessage " & cmd)
                 SendMessage(Me.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
             End If
-            pbZoom.Visible = True
+
+            If cboAlt.SelectedIndex > 0 Then
+                pbZoom.Visible = True
+            End If
+            AButton.ActiveOverview = My.Settings.gameOnOverview
         End If
     End Sub
 
