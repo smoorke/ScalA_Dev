@@ -137,7 +137,7 @@ Partial Public Class FrmMain
                 smenu.DropDownItems.Add("(Dummy)").Enabled = False
                 smenu.DoubleClickEnabled = True
 
-                AddHandler smenu.MouseDown, AddressOf QL_Click
+                AddHandler smenu.MouseDown, AddressOf QL_MouseDown
                 AddHandler smenu.DoubleClick, AddressOf DblClickDir
                 AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
                 'AddHandler smenu.DropDownOpened, AddressOf deferredIconLoading
@@ -174,7 +174,7 @@ Partial Public Class FrmMain
             End If
 
             Dim item As New ToolStripMenuItem(linkName) With {.Tag = fullLink}
-            AddHandler item.MouseDown, AddressOf QL_Click
+            AddHandler item.MouseDown, AddressOf QL_MouseDown
             'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
             'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
 
@@ -215,29 +215,21 @@ Partial Public Class FrmMain
         Return menuItems
     End Function
 
-    'Private Sub QL_MouseLeave(sender As Object, e As EventArgs)
-    '    cmsQuickLaunch.AutoClose = True
-    'End Sub
-
-    'Private Sub QL_MouseEnter(sender As Object, e As EventArgs)
-    '    cmsQuickLaunch.AutoClose = False
-    'End Sub
-
     Private Sub cmsQuickLaunchDropDown_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs)
         cts?.Cancel()
     End Sub
 
-    Private init As Boolean = True
+    'Private init As Boolean = True
 
     Private Sub deferredIconLoading(items As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
         Dim skipped As Boolean = False
-        If init Then
-            Debug.Print("init iconloader")
-            Dim firstItem As ToolStripItem = items.FirstOrDefault
-            Me.BeginInvoke(updateImage, {firstItem, GetIcon(firstItem?.Tag.ToString)}) ' needed or we get an exception in geticon later
-            skipped = True
-            init = False
-        End If
+        'If init Then
+        '    Debug.Print("init iconloader")
+        '    Dim firstItem As ToolStripItem = items.FirstOrDefault
+        '    Me.BeginInvoke(updateImage, {firstItem, GetIcon(firstItem?.Tag.ToString)}) ' needed or we get an exception in geticon later
+        '    skipped = True
+        '    init = False
+        'End If
         Try
             Task.Run(Sub()
                          Parallel.ForEach(items.Skip(skipped).TakeWhile(Function(__) Not ct.IsCancellationRequested),
@@ -252,7 +244,8 @@ Partial Public Class FrmMain
         End Try
     End Sub
 
-    Private Sub ParseSubDir(sender As ToolStripMenuItem, e As EventArgs) 'handles dir.DropDownOpening
+    Private Sub ParseSubDir(sender As ToolStripMenuItem, e As EventArgs) ' Handles DummyToolStripMenuItem.DropDownOpening
+        Debug.Print($"ParseSubDir QlCtxIsOpen:{QlCtxIsOpen}")
         If QlCtxIsOpen Then Exit Sub
         sender.DropDownItems.Clear()
         sender.DropDownItems.AddRange(ParseDir(sender.Tag).ToArray)
@@ -304,9 +297,13 @@ Partial Public Class FrmMain
 
     Private Sub CreateShortCut(sender As ToolStripMenuItem, e As EventArgs)
 
+        Debug.Print($"CreateShortCut")
+        Debug.Print($"sender.text {sender.Text}")
+
         Dim alt As AstoniaProcess = CType(sender.Tag(0), AstoniaProcess)
         Dim ShortCutPath As String = sender.Tag(1)
-        Dim ShortCutName As String = alt.Name
+        Dim ShortCutName As String = sender.Text
+        If ShortCutName = "Someone" Then Exit Sub
         Dim ShortCutLink As String = ShortCutPath & "\" & ShortCutName & ".lnk"
 
         If System.IO.File.Exists(ShortCutLink) AndAlso
@@ -380,6 +377,8 @@ Partial Public Class FrmMain
         Catch ex As Exception
 
         End Try
+
+        sender.DropDown.Close()
 
     End Sub
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
@@ -467,6 +466,11 @@ Partial Public Class FrmMain
         AButton.ActiveOverview = True
     End Sub
 
+    Dim newFolderItem As MenuItem = New MenuItem("Folder", AddressOf QlCtxNewFolder)
+    Dim QlCtxNewMenu As MenuItem = New MenuItem("New", {
+        newFolderItem,
+        New MenuItem("-")})
+
     Dim QlCtxMenu As New ContextMenu({
         New MenuItem("Open", AddressOf QlCtxOpen) With {.DefaultItem = True},
         New MenuItem("-"),
@@ -474,10 +478,12 @@ Partial Public Class FrmMain
         New MenuItem("Rename", AddressOf QlCtxRename),
         New MenuItem("-"),
         New MenuItem("Properties", AddressOf QlCtxProps),
-        New MenuItem("-")})
+        New MenuItem("-"),
+        QlCtxNewMenu})
 
     Private Sub QlCtxOpen(sender As MenuItem, e As EventArgs)
         Debug.Print($"QlCtxOpen sender:{sender}")
+        cmsQuickLaunch.Close()
         OpenLnk(sender.Parent.Tag, New MouseEventArgs(MouseButtons.Left, 1, MousePosition.X, MousePosition.Y, 0))
     End Sub
 
@@ -585,40 +591,40 @@ Partial Public Class FrmMain
         Dim rootFolder As String = sender.Tag(1)
         rootFolder = rootFolder.Substring(0, rootFolder.TrimEnd("\").LastIndexOf("\") + 1)
         CreateShortCut(New ToolStripMenuItem(sender.Text) With {.Tag = {sender.Tag(0), rootFolder}}, Nothing)
+        cmsQuickLaunch.Close()
     End Sub
 
     Dim folderHbm As IntPtr = GetIcon(FileIO.SpecialDirectories.Temp).GetHbitmap(Color.Red)
+    Dim plusHbm As IntPtr = New Bitmap(My.Resources.Add, New Size(16, 16)).GetHbitmap(Color.Red)
 
-    Dim QlCtxIsOpen As Boolean = False
+    Dim QlCtxIsOpen As Boolean = False 'to handle glitch in contextmenu when moving astonia window
 
-    'Dim kb As New Microsoft.VisualBasic.Devices.Keyboard
-    Private Sub QL_Click(sender As ToolStripMenuItem, e As MouseEventArgs) 'Handles cmsQuickLaunch.mousedown
+    Private Sub QL_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs) 'Handles cmsQuickLaunch.mousedown
         If e.Button = MouseButtons.Right Then
+
+            Debug.Print("QL_MouseDown")
 
             QlCtxIsOpen = True
 
             sender.Select()
-            sender.BackColor = Color.FromArgb(&HFFB5D7F3)
-            sender.DropDown.Close()
+            sender.BackColor = Color.FromArgb(&HFFB5D7F3) 'this to fix a glitch where sender gets unselected
 
             Dim path As String = sender.Tag
             Dim name As String = sender.Text
 
             QlCtxMenu.Tag = sender
+            newFolderItem.Tag = path
 
+            Dim QlCtxNewMenuStaticItemsCount As Integer = QlCtxNewMenu.MenuItems.Count
 
-            Dim QlCtxNewMenu = New MenuItem("New", {
-                New MenuItem("Folder", AddressOf QlCtxNewFolder) With {.Tag = path},
-                New MenuItem("-")})
-            Dim aplist As List(Of AstoniaProcess) = AstoniaProcess.Enumerate()
+            'dynamically add menuitems
+            Dim aplist As List(Of AstoniaProcess) = AstoniaProcess.Enumerate().ToList
             For Each ap As AstoniaProcess In aplist
                 QlCtxNewMenu.MenuItems.Add(New MenuItem(ap.Name, AddressOf QlCtxNewAlt) With {.Tag = {ap, path}})
             Next
             If aplist.Count = 0 Then
                 QlCtxNewMenu.MenuItems.Add(New MenuItem("(None)") With {.Enabled = False})
             End If
-
-            QlCtxMenu.MenuItems.Add(QlCtxNewMenu)
 
             ModifyMenuA(QlCtxMenu.Handle, 0, MF_BYPOSITION, 256, $"{name}")
             Dim hbm = IntPtr.Zero
@@ -627,33 +633,34 @@ Partial Public Class FrmMain
                 SetMenuItemBitmaps(QlCtxMenu.Handle, 0, MF_BYPOSITION, hbm, Nothing)
             End If
 
-            SetMenuItemBitmaps(QlCtxMenu.Handle, 7, MF_BYPOSITION, New Bitmap(My.Resources.Add, New Size(16, 16)).GetHbitmap(Color.Red), Nothing)
-
             SetMenuItemBitmaps(QlCtxNewMenu.Handle, 0, MF_BYPOSITION, folderHbm, Nothing)
+            SetMenuItemBitmaps(QlCtxMenu.Handle, 7, MF_BYPOSITION, plusHbm, Nothing)
+
             Dim purgeList As List(Of IntPtr) = New List(Of IntPtr)
-            Dim i = 0
-            For Each item As MenuItem In QlCtxNewMenu.MenuItems
-                If i < 2 Then
-                    i += 1
-                    Continue For
-                End If
+
+            Dim i = QlCtxNewMenuStaticItemsCount
+            For Each item As MenuItem In QlCtxNewMenu.MenuItems.OfType(Of MenuItem).Skip(i).Where(Function(m) m.Tag IsNot Nothing)
                 Dim althbm As IntPtr = New Bitmap(CType(item.Tag(0), AstoniaProcess).GetIcon?.ToBitmap, New Size(16, 16)).GetHbitmap(Color.Red)
                 purgeList.Add(althbm)
                 SetMenuItemBitmaps(QlCtxNewMenu.Handle, i, MF_BYPOSITION, althbm, Nothing)
                 i += 1
             Next
+            Debug.Print($"purgeList.Count {purgeList.Count}")
 
             TrackPopupMenuEx(QlCtxMenu.Handle, TPM_RECURSE Or TPM_RIGHTBUTTON, MousePosition.X, MousePosition.Y, Me.Handle, Nothing)
 
-            sender.BackColor = SystemColors.Control
+            sender.BackColor = Color.Transparent
+
+            'free up recources
             DeleteObject(hbm)
             For Each item As IntPtr In purgeList
                 DeleteObject(item)
             Next
-            QlCtxNewMenu.MenuItems.Clear()
-            QlCtxMenu.MenuItems.RemoveAt(7)
-            'RemoveMenu(QlCtxMenu.Handle, 6, MF_BYPOSITION)
-            'DrawMenuBar(QlCtxMenu.Handle)
+
+            'remove dynamically added items
+            While QlCtxNewMenu.MenuItems.Count > QlCtxNewMenuStaticItemsCount
+                QlCtxNewMenu.MenuItems.RemoveAt(QlCtxNewMenuStaticItemsCount)
+            End While
 
             QlCtxIsOpen = False
 
