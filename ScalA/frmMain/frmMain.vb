@@ -640,7 +640,7 @@
                              Dim flags As SetWindowPosFlags = SetWindowPosFlags.IgnoreResize Or
                                                               SetWindowPosFlags.DoNotActivate Or
                                                               SetWindowPosFlags.ASyncWindowPosition
-                             If QLctxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
+                             If QlCtxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                              SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
                          Catch ex As Exception
                          End Try
