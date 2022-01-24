@@ -435,7 +435,7 @@ Partial Public Class FrmMain
 
         If sender.SourceControl Is btnStart AndAlso My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then
             sender.Items.Add(New ToolStripSeparator())
-            sender.Items.Add("UnElevate", btnStart.Image, AddressOf UnelevateSelf).ToolTipText = "Drop Admin Rights" & vbCrLf & "Use this If you can't use ctrl, alt and/or shift."
+            sender.Items.Add("UnElevate", btnStart.Image, AddressOf UnelevateSelf).ToolTipText = $"Drop Admin Rights{vbCrLf}Use this If you can't use ctrl, alt and/or shift."
         End If
 
         If watchers.Count = 0 Then InitWatchers()
