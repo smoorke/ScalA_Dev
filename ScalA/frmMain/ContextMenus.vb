@@ -259,10 +259,8 @@ Partial Public Class FrmMain
         sender.DropDownItems.Add(New ToolStripSeparator())
 
         For Each alt As AstoniaProcess In AstoniaProcess.Enumerate()
-            Dim item As New ToolStripMenuItem(alt.Name, alt.GetIcon?.ToBitmap, AddressOf CreateShortCut) With {
-                .Tag = {alt, sender.Tag} ' sender.tag is parent menu location
-                }
-            sender.DropDownItems.Add(item)
+            sender.DropDownItems.Add(New ToolStripMenuItem(alt.Name, alt.GetIcon?.ToBitmap, AddressOf CreateShortCut) With {
+                                               .Tag = {alt, sender.Tag}}) ' sender.tag is parent menu location
         Next
         If sender.DropDownItems.Count = 2 Then
             sender.DropDownItems.Add("(None)").Enabled = False
