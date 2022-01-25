@@ -159,7 +159,7 @@
                 Debug.Print("createThumb")
                 CreateThumb()
             Else
-                Debug.Print("reassignThumb " & item.Id & " " & startThumbsDict(item.Id).ToString)
+                Debug.Print($"reassignThumb {item.Id} {startThumbsDict(item.Id)} {item.Name}")
                 thumb = startThumbsDict(item.Id)
             End If
 
