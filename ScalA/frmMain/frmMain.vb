@@ -1322,13 +1322,14 @@
             My.Settings.location = Me.Location
         End If
         My.Settings.Save()
-        If cboAlt.SelectedIndex > 0 AndAlso AltPP IsNot Nothing Then
-            RestorePos(AltPP)
-        End If
+
         tmrActive.Stop()
         tmrMove.Stop()
         tmrOverview.Stop()
         tmrTick.Stop()
+
+        RestorePos(AltPP)
+
         ExecuteProcessUnElevated(Environment.GetCommandLineArgs()(0), "Someone", IO.Directory.GetCurrentDirectory())
         sysTrayIcon.Visible = False
         sysTrayIcon.Dispose()
