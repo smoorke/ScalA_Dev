@@ -100,7 +100,7 @@
         End If
 
 
-        If Not AltPP.IsRunning Then
+        If Not AltPP?.IsRunning Then
             Dim idx As Integer = that.SelectedIndex
             that.Items.RemoveAt(idx)
             that.SelectedIndex = Math.Min(idx, that.Items.Count - 1)
@@ -108,7 +108,7 @@
         End If
 
 
-        If Not AltPP.Id = 0 Then
+        If Not AltPP?.Id = 0 Then
 
 
             GetWindowRect(AltPP.MainWindowHandle, rcW)
@@ -1017,7 +1017,7 @@
                                                Dim flags As SetWindowPosFlags = SetWindowPosFlags.IgnoreResize Or
                                                                                 SetWindowPosFlags.DoNotActivate Or
                                                                                 SetWindowPosFlags.ASyncWindowPosition
-                                               If QLctxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
+                                               If QlCtxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                                                SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
                                            Catch ex As Exception
                                            End Try
