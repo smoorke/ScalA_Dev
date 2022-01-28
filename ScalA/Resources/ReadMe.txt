@@ -128,3 +128,9 @@ Enabled clickguard for active overview when quicklaunch, alt and resolution comb
 Fixed unelevate sets wrong working directory for ScalA.
 Added right click contextmenu for quicklaunch items.
 Minor performance improvements.
+
+**ScalA 0.9.5**
+Fixed bug where clickguard would sometimes not disable.
+Improved clickguard and enabled it when system menu is open.
+Fixed creating new folder in root of quicklaunch would create it in parent directory with wrong name.
+Fixed overview not displaying enough columns or rows when division of height/width resulted in an off by one error.
