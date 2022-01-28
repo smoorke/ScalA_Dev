@@ -1236,7 +1236,7 @@
 
     Private Sub BtnStart_Click(sender As Button, e As EventArgs) Handles btnStart.Click
         cboAlt.SelectedIndex = 0
-        RestorePos(Nothing)
+        RestorePos(AltPP)
         pnlOverview.Controls.OfType(Of AButton).First.Select()
     End Sub
 
