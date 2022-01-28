@@ -1090,7 +1090,7 @@
         If newSZ.Height * numrows > pbZoom.Height Then heightTooMuch = True
 
 
-        Dim i = 1 + If(My.Settings.hideMessage, 0, 1)
+        Dim i = If(My.Settings.hideMessage, 1, 2)
         For Each but As AButton In pnlOverview.Controls.OfType(Of AButton)
             If i <= numrows ^ 2 Then
                 but.Size = newSZ
