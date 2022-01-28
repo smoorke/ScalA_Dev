@@ -827,7 +827,7 @@
                         Dim requestedindex = cboAlt.SelectedIndex - 1
                         Debug.Print($"hotkey3: {cboAlt.SelectedIndex} {requestedindex}")
                         Debug.Print($"         {cboAlt.Items.Count} > {requestedindex} = {cboAlt.Items.Count > requestedindex}")
-                        If requestedindex <= 1 Then
+                        If requestedindex < 1 Then
                             PopDropDown(cboAlt)
                             requestedindex = cboAlt.Items.Count - 1
                         End If
