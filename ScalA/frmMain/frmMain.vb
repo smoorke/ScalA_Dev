@@ -1081,19 +1081,25 @@
                 numrows = 4
         End Select
 
+        Dim newSZ As New Size(pbZoom.Size.Width / numrows, pbZoom.Size.Height / numrows)
+        Dim widthTooMuch As Boolean = False
+        Dim heightTooMuch As Boolean = False
+
+        If newSZ.Width * numrows > pbZoom.Width Then widthTooMuch = True
+        If newSZ.Height * numrows > pbZoom.Height Then heightTooMuch = True
+
+
         Dim i = 1 + If(My.Settings.hideMessage, 0, 1)
         For Each but As AButton In pnlOverview.Controls.OfType(Of AButton)
             If i <= numrows ^ 2 Then
+                but.Size = newSZ
+                If widthTooMuch AndAlso i Mod numrows = 0 Then but.Width -= 1 'last column
+                If heightTooMuch AndAlso i > (numrows - 1) * numrows Then but.Height -= 1 'last row
                 but.Visible = True
             Else
                 but.Visible = False
             End If
             i += 1
-        Next
-
-        Dim newSZ As New Size(pbZoom.Size.Width / numrows, pbZoom.Size.Height / numrows)
-        For Each but As AButton In pnlOverview.Controls.OfType(Of AButton)
-            but.Size = newSZ
         Next
 
         pnlMessage.Size = newSZ
