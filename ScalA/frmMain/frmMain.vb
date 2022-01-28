@@ -898,7 +898,7 @@
 #End If
 
         Dim i As Integer = 0
-        Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate.Where(Function(p) p.Name <> String.Empty).ToList
+        Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(False).Where(Function(p) p.Name <> String.Empty).ToList
 
         pnlOverview.SuspendLayout()
         UpdateButtonLayout(alts.Count)
