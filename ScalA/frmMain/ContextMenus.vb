@@ -198,7 +198,7 @@ Partial Public Class FrmMain
             If hasNoFiles AndAlso hasNoDirs Then menuItems.Add(New ToolStripMenuItem("(Empty)") With {.Enabled = False})
             If My.Computer.Keyboard.CtrlKeyDown OrElse hasNoDirs Then
                 menuItems.Add(New ToolStripSeparator)
-                Dim addShortcutMenu As New ToolStripMenuItem("New", My.Resources.Add) With {.Tag = pth & "\"}
+                Dim addShortcutMenu As New ToolStripMenuItem("New", My.Resources.Add) With {.Tag = pth}
                 addShortcutMenu.DropDownItems.Add("(Dummy)").Enabled = False
                 AddHandler addShortcutMenu.DropDownOpening, AddressOf AddShortcutMenu_DropDownOpening
                 menuItems.Add(addShortcutMenu)
@@ -414,7 +414,7 @@ Partial Public Class FrmMain
         End If
 
 
-        sender.Items.AddRange(ParseDir(My.Settings.links).ToArray)
+        sender.Items.AddRange(ParseDir(My.Settings.links & "\").ToArray)
 
         If My.Computer.Keyboard.CtrlKeyDown Then
             sender.Items.Add(New ToolStripSeparator())
