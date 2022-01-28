@@ -823,6 +823,15 @@
                                 cboAlt.SelectedIndex = If(cboAlt.Items.Count = 1, 0, 1)
                             End If
                         End If
+                    Case 3 'ctrl-shift-space
+                        Dim requestedindex = cboAlt.SelectedIndex - 1
+                        Debug.Print($"hotkey3: {cboAlt.SelectedIndex} {requestedindex}")
+                        Debug.Print($"         {cboAlt.Items.Count} > {requestedindex} = {cboAlt.Items.Count > requestedindex}")
+                        If requestedindex <= 1 Then
+                            PopDropDown(cboAlt)
+                            requestedindex = cboAlt.Items.Count - 1
+                        End If
+                        cboAlt.SelectedIndex = requestedindex
                 End Select
             Case WM_SYSCOMMAND
                 Select Case m.WParam
@@ -1252,9 +1261,10 @@
                 cmbResolution.ForeColor = Color.FromArgb(&HFF666666)
                 'btnQuit.ForeColor = Color.FromArgb(&HFF666666)
             End If
-            If cboAlt.SelectedIndex > 0 AndAlso (activeID = scalaPID OrElse Process.GetProcessById(activeID).IsClassNameIn(My.Settings.className)) Then
+            If (activeID = scalaPID OrElse Process.GetProcessById(activeID).IsClassNameIn(My.Settings.className)) Then
                 Hotkey.RegisterHotkey(Me, 1, Hotkey.KeyModifier.Control, Keys.Tab)
-                Hotkey.RegisterHotkey(Me, 2, Hotkey.KeyModifier.Control Or Hotkey.KeyModifier.NoRepeat, Keys.Space) 'todo: make this work when index = 0 but first implement settings for keys
+                Hotkey.RegisterHotkey(Me, 2, Hotkey.KeyModifier.Control Or Hotkey.KeyModifier.NoRepeat, Keys.Space)
+                Hotkey.RegisterHotkey(Me, 3, Hotkey.KeyModifier.Control Or Hotkey.KeyModifier.Shift Or Hotkey.KeyModifier.NoRepeat, Keys.Space)
             Else
                 Hotkey.UnregHotkey(Me)
             End If
