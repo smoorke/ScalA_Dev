@@ -427,6 +427,7 @@
         test.Items.Add(New ToolStripMenuItem("Parse Info", Nothing, AddressOf dBug.ParseInfo))
         test.Items.Add(New ToolStripMenuItem("Reset Hide", Nothing, AddressOf dBug.ResetHide))
         test.Items.Add(New ToolStripMenuItem("ResumeLayout", Nothing, AddressOf dBug.Resumelayout))
+        test.Items.Add(New ToolStripMenuItem("Button Info", Nothing, AddressOf dBug.buttonInfo))
         chkDebug.ContextMenuStrip = test
 #End If
 
@@ -1401,6 +1402,14 @@ Module dBug
 
     Friend Sub Resumelayout(sender As Object, e As EventArgs)
         FrmMain.pnlOverview.ResumeLayout(True)
+    End Sub
+
+    Friend Sub buttonInfo(sender As Object, e As EventArgs)
+        Dim i = 1
+        For Each but As Button In FrmMain.pnlOverview.Controls.OfType(Of Button).Where(Function(b) b.Visible)
+            Debug.Print($"Button {i} Size: {but.Size}")
+            i += 1
+        Next
     End Sub
 End Module
 
