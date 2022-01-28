@@ -262,7 +262,7 @@
                     End If
                     If dy = 0 Then
                         If BadColorCount > 1 OrElse blackCount = 25 Then
-                            Debug.Print("Pane open?")
+                            'Debug.Print("Pane open?")
                             blackCount = 0
                             barX += 110
                             Exit For
