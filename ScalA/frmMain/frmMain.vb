@@ -899,11 +899,13 @@
 
         Dim i As Integer = 0
         Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(False) _
-                    .Where(Function(p) p.Name <> "" AndAlso (p.Name.StartsWith("Sir ") OrElse
-                                                             p.Name.StartsWith("Lady ") OrElse
-                                                             p.Name.EndsWith(" III") OrElse
-                                                         Not p.Name.Contains(" "))).ToList
-
+                    .Where(Function(p)
+                               Dim p_name As String = p.Name
+                               Return p_name <> "" AndAlso (p_name.StartsWith("Sir ") OrElse
+                                                            p_name.StartsWith("Lady ") OrElse
+                                                            p_name.EndsWith(" III") OrElse
+                                                        Not p_name.Contains(" "))
+                           End Function).ToList
         pnlOverview.SuspendLayout()
         UpdateButtonLayout(alts.Count)
         For Each but As AButton In pnlOverview.Controls.OfType(Of AButton).Where(Function(b) b.Visible) 'loop through visible buttons
