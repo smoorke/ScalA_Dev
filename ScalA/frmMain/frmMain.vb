@@ -899,7 +899,9 @@
 
         Dim i As Integer = 0
         Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(False) _
-                    .Where(Function(p) p.Name <> String.Empty AndAlso Not p.Name.Contains(" ")).ToList
+                    .Where(Function(p) p.Name <> "" AndAlso (p.Name.StartsWith("Sir ") OrElse
+                                                             p.Name.StartsWith("Lady ") OrElse
+                                                         Not p.Name.Contains(" "))).ToList
 
         pnlOverview.SuspendLayout()
         UpdateButtonLayout(alts.Count)
