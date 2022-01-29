@@ -917,7 +917,7 @@
 
                 but.Text = name
                 but.Tag = alts(i)
-                If but.Tag?.isActive() Then
+                If alts(i)?.IsActive() Then
                     but.Font = New Font("Microsoft Sans Serif", 8.25, FontStyle.Bold)
                     but.Select()
                 Else
