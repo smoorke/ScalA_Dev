@@ -901,6 +901,7 @@
         Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(False) _
                     .Where(Function(p) p.Name <> "" AndAlso (p.Name.StartsWith("Sir ") OrElse
                                                              p.Name.StartsWith("Lady ") OrElse
+                                                             p.Name.EndsWith(" III") OrElse
                                                          Not p.Name.Contains(" "))).ToList
 
         pnlOverview.SuspendLayout()
