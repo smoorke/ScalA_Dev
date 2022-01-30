@@ -134,3 +134,9 @@ Fixed bug where clickguard would sometimes not disable.
 Improved clickguard and enabled it when system menu is open.
 Fixed creating new folder in root of quicklaunch would create it in parent directory with wrong name.
 Fixed overview not displaying enough columns or rows when division of height/width resulted in an off by one error.
+
+**ScalA 0.9.6**
+Enabled ctrl-space hotkey on overview also implemented ctrl-shift-space to cycle backwards.
+Fixed overview sometimes glitching an alt for a brief second when logging one in.
+Fixed alt being at wrong restore position when de-elevating ScalA.
+Added configuration settings for hotkeys.
