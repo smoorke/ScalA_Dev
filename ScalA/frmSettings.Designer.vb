@@ -49,7 +49,7 @@ Partial Class FrmSettings
         Me.FromToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.DummyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.txtResolutions = New System.Windows.Forms.TextBox()
-        Me.tabShortcuts = New System.Windows.Forms.TabPage()
+        Me.tabHotkeys = New System.Windows.Forms.TabPage()
         Me.grpCycleShortcut = New System.Windows.Forms.GroupBox()
         Me.chkCycleDownShift = New System.Windows.Forms.CheckBox()
         Me.chkCycleUpShift = New System.Windows.Forms.CheckBox()
@@ -86,7 +86,7 @@ Partial Class FrmSettings
         Me.tbcSettings.SuspendLayout()
         Me.tabResolutions.SuspendLayout()
         Me.cmsGenerate.SuspendLayout()
-        Me.tabShortcuts.SuspendLayout()
+        Me.tabHotkeys.SuspendLayout()
         Me.grpCycleShortcut.SuspendLayout()
         Me.grpOverviewShortcut.SuspendLayout()
         Me.tabMisc.SuspendLayout()
@@ -210,7 +210,7 @@ Partial Class FrmSettings
         '
         Me.tbcSettings.Appearance = System.Windows.Forms.TabAppearance.FlatButtons
         Me.tbcSettings.Controls.Add(Me.tabResolutions)
-        Me.tbcSettings.Controls.Add(Me.tabShortcuts)
+        Me.tbcSettings.Controls.Add(Me.tabHotkeys)
         Me.tbcSettings.Controls.Add(Me.tabMisc)
         Me.tbcSettings.Location = New System.Drawing.Point(0, 0)
         Me.tbcSettings.Name = "tbcSettings"
@@ -294,7 +294,7 @@ Partial Class FrmSettings
         '
         Me.DummyToolStripMenuItem.Enabled = False
         Me.DummyToolStripMenuItem.Name = "DummyToolStripMenuItem"
-        Me.DummyToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.DummyToolStripMenuItem.Size = New System.Drawing.Size(125, 22)
         Me.DummyToolStripMenuItem.Text = "(Dummy)"
         '
         'txtResolutions
@@ -308,16 +308,16 @@ Partial Class FrmSettings
         Me.txtResolutions.Text = "800x600" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "1200x900" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "1600x1200" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2000x1500" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2400x1800" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2800x2100" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "3200x2400" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "3600x27" &
     "00" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "4000x3000" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "4400x3300"
         '
-        'tabShortcuts
+        'tabHotkeys
         '
-        Me.tabShortcuts.Controls.Add(Me.grpCycleShortcut)
-        Me.tabShortcuts.Controls.Add(Me.grpOverviewShortcut)
-        Me.tabShortcuts.Location = New System.Drawing.Point(4, 25)
-        Me.tabShortcuts.Name = "tabShortcuts"
-        Me.tabShortcuts.Size = New System.Drawing.Size(230, 128)
-        Me.tabShortcuts.TabIndex = 2
-        Me.tabShortcuts.Text = "Shortcuts"
-        Me.tabShortcuts.UseVisualStyleBackColor = True
+        Me.tabHotkeys.Controls.Add(Me.grpCycleShortcut)
+        Me.tabHotkeys.Controls.Add(Me.grpOverviewShortcut)
+        Me.tabHotkeys.Location = New System.Drawing.Point(4, 25)
+        Me.tabHotkeys.Name = "tabHotkeys"
+        Me.tabHotkeys.Size = New System.Drawing.Size(230, 128)
+        Me.tabHotkeys.TabIndex = 2
+        Me.tabHotkeys.Text = "Hotkeys"
+        Me.tabHotkeys.UseVisualStyleBackColor = True
         '
         'grpCycleShortcut
         '
@@ -630,7 +630,7 @@ Partial Class FrmSettings
         Me.tabResolutions.ResumeLayout(False)
         Me.tabResolutions.PerformLayout()
         Me.cmsGenerate.ResumeLayout(False)
-        Me.tabShortcuts.ResumeLayout(False)
+        Me.tabHotkeys.ResumeLayout(False)
         Me.grpCycleShortcut.ResumeLayout(False)
         Me.grpCycleShortcut.PerformLayout()
         Me.grpOverviewShortcut.ResumeLayout(False)
@@ -653,7 +653,7 @@ Partial Class FrmSettings
     Friend WithEvents tbcSettings As TabControl
     Friend WithEvents tabResolutions As TabPage
     Friend WithEvents txtResolutions As TextBox
-    Friend WithEvents tabShortcuts As TabPage
+    Friend WithEvents tabHotkeys As TabPage
     Friend WithEvents grpCycleShortcut As GroupBox
     Friend WithEvents txtCycleKeyUp As TextBox
     Friend WithEvents grpOverviewShortcut As GroupBox
