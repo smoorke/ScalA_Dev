@@ -1,4 +1,6 @@
-﻿Public Class FrmSettings
+﻿Imports System.Text
+
+Public Class FrmSettings
     Private Sub FrmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         'storeZoom = My.Settings.zoom
 
@@ -114,7 +116,8 @@
         Try
             Debug.Print("parseRes")
             For Each line As String In txtResolutions.Lines
-                Debug.Print(line)
+                Debug.Print($"""{line}""")
+                If line = "" Then Continue For
                 Dim parts() As String = line.ToUpper.Split("X")
                 Debug.Print(parts(width) & " " & parts(height))
                 If parts(width) < 400 OrElse parts(height) < 300 Then
@@ -326,6 +329,78 @@
                                     "", "", "\", "", "", "", "", "", "", "", "", "", "", "", "", "", ' 224-239
                                     "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""} ' 240-255
     Dim StoKey, CycleKeyUp, CycleKeyDown As Integer
+
+    Private Sub btnRestore_Click(sender As Object, e As EventArgs) Handles btnRestore.Click
+        txtResolutions.Text = My.Settings.resolutions
+    End Sub
+
+    Private Sub btnGenerate_Click(sender As Button, e As EventArgs) Handles btnGenerate.Click
+        cmsGenerate.Show(sender, sender.PointToClient(MousePosition))
+    End Sub
+
+    Private Sub GenerateToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles X60043ToolStripMenuItem.Click, X720169ToolStripMenuItem.Click
+        Dim sender_tag As String = sender.Tag
+
+        Dim sb As StringBuilder = New StringBuilder()
+
+        Dim baseRes As Size = New Size(Val(sender_tag),
+                                       Val(sender_tag.Substring(sender_tag.IndexOf("x") + 1)))
+
+        Debug.Print($"baseRes {baseRes}")
+
+        Dim gcd = Me.GCD(baseRes.Width, baseRes.Height)
+        Debug.Print($"aspect  {baseRes.Width / gcd}:{baseRes.Height / gcd}")
+
+        sb.AppendLine($"{baseRes.Width}x{baseRes.Height}")
+
+        Dim x = baseRes.Width
+        Dim y = baseRes.Height
+        While x < 4400
+            x += baseRes.Width / gcd * 25
+            y += baseRes.Height / gcd * 25
+            sb.AppendLine($"{x}x{y}")
+        End While
+
+        txtResolutions.Text = sb.ToString
+
+    End Sub
+
+
+
+    Private Function GCD(p, q) As Integer
+        If q = 0 Then Return p
+        Dim r As Integer = p Mod q
+        Return GCD(q, r)
+    End Function
+
+    Private Sub FromToolStripMenuItem_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) Handles FromToolStripMenuItem.DropDownOpening
+        sender.DropDownItems.Clear()
+
+        For Each ap As AstoniaProcess In AstoniaProcess.Enumerate(True)
+
+            Dim rcC As Rectangle
+            GetClientRect(ap.MainWindowHandle, rcC)
+
+            Dim baseRes As Size = New Size(rcC.Width, rcC.Height)
+            Dim gcd As Integer = Me.GCD(baseRes.Width, baseRes.Height)
+            Dim aspect As String = $"({baseRes.Width / gcd}:{baseRes.Height / gcd})"
+            If aspect = "(8:4)" Then aspect = "(16:10)"
+
+            sender.DropDownItems.Add($"{ap.Name} {baseRes.Width}x{baseRes.Height} {aspect}", ap.GetIcon?.ToBitmap, AddressOf GenerateToolStripMenuItem_Click).Tag = $"{baseRes.Width}x{baseRes.Height}"
+        Next
+        If sender.DropDownItems.Count = 0 Then sender.DropDownItems.Add("(None)").Enabled = False
+
+    End Sub
+
+    Private Sub btnSort_Click(sender As Object, e As EventArgs) Handles btnSort.Click
+        Dim sb As New StringBuilder
+        For Each line In txtResolutions.Text.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries).OrderBy(Function(res) Val(res))
+            sb.AppendLine(line)
+        Next
+        sb.Remove(sb.Length - 1, 1)
+        txtResolutions.Text = sb.ToString
+    End Sub
+
     Private Sub txtShortcuts_PreviewKeyDown(sender As TextBox, e As PreviewKeyDownEventArgs) Handles txtStoKey.PreviewKeyDown, txtCycleKeyUp.PreviewKeyDown, txtCycleKeyDown.PreviewKeyDown
         Debug.Print(e.KeyCode)
         If e.KeyCode = 16 OrElse 'shift

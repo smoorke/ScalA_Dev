@@ -27,6 +27,7 @@ Partial Class FrmSettings
         Dim Label3 As System.Windows.Forms.Label
         Dim Label2 As System.Windows.Forms.Label
         Dim Label1 As System.Windows.Forms.Label
+        Dim ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmSettings))
         Me.btnOpenFolderDialog = New System.Windows.Forms.Button()
         Me.cmsQLFolder = New System.Windows.Forms.ContextMenuStrip(Me.components)
@@ -39,6 +40,14 @@ Partial Class FrmSettings
         Me.chkOverViewIsGame = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
+        Me.btnRestore = New System.Windows.Forms.Button()
+        Me.btnSort = New System.Windows.Forms.Button()
+        Me.btnGenerate = New System.Windows.Forms.Button()
+        Me.cmsGenerate = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.X60043ToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.X720169ToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.FromToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.DummyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.txtResolutions = New System.Windows.Forms.TextBox()
         Me.tabShortcuts = New System.Windows.Forms.TabPage()
         Me.grpCycleShortcut = New System.Windows.Forms.GroupBox()
@@ -71,10 +80,12 @@ Partial Class FrmSettings
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
         Label1 = New System.Windows.Forms.Label()
+        ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         grpQLPath.SuspendLayout()
         Me.cmsQLFolder.SuspendLayout()
         Me.tbcSettings.SuspendLayout()
         Me.tabResolutions.SuspendLayout()
+        Me.cmsGenerate.SuspendLayout()
         Me.tabShortcuts.SuspendLayout()
         Me.grpCycleShortcut.SuspendLayout()
         Me.grpOverviewShortcut.SuspendLayout()
@@ -88,7 +99,7 @@ Partial Class FrmSettings
         '
         grpQLPath.Controls.Add(Me.btnOpenFolderDialog)
         grpQLPath.Controls.Add(Me.txtQuickLaunchPath)
-        grpQLPath.Location = New System.Drawing.Point(7, 5)
+        grpQLPath.Location = New System.Drawing.Point(7, 3)
         grpQLPath.Name = "grpQLPath"
         grpQLPath.Size = New System.Drawing.Size(213, 42)
         grpQLPath.TabIndex = 16
@@ -131,7 +142,7 @@ Partial Class FrmSettings
         'Label3
         '
         Label3.AutoSize = True
-        Label3.Location = New System.Drawing.Point(78, 94)
+        Label3.Location = New System.Drawing.Point(78, 83)
         Label3.Name = "Label3"
         Label3.Size = New System.Drawing.Size(27, 13)
         Label3.TabIndex = 18
@@ -155,9 +166,14 @@ Partial Class FrmSettings
         Label1.TabIndex = 6
         Label1.Text = "X"
         '
+        'ToolStripSeparator1
+        '
+        ToolStripSeparator1.Name = "ToolStripSeparator1"
+        ToolStripSeparator1.Size = New System.Drawing.Size(151, 6)
+        '
         'btnOK
         '
-        Me.btnOK.Location = New System.Drawing.Point(72, 170)
+        Me.btnOK.Location = New System.Drawing.Point(72, 159)
         Me.btnOK.Name = "btnOK"
         Me.btnOK.Size = New System.Drawing.Size(77, 23)
         Me.btnOK.TabIndex = 2
@@ -168,7 +184,7 @@ Partial Class FrmSettings
         'btnCancel
         '
         Me.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnCancel.Location = New System.Drawing.Point(155, 170)
+        Me.btnCancel.Location = New System.Drawing.Point(157, 159)
         Me.btnCancel.Name = "btnCancel"
         Me.btnCancel.Size = New System.Drawing.Size(77, 23)
         Me.btnCancel.TabIndex = 3
@@ -182,7 +198,7 @@ Partial Class FrmSettings
         'chkOverViewIsGame
         '
         Me.chkOverViewIsGame.AutoSize = True
-        Me.chkOverViewIsGame.Location = New System.Drawing.Point(7, 46)
+        Me.chkOverViewIsGame.Location = New System.Drawing.Point(7, 47)
         Me.chkOverViewIsGame.Name = "chkOverViewIsGame"
         Me.chkOverViewIsGame.Size = New System.Drawing.Size(107, 17)
         Me.chkOverViewIsGame.TabIndex = 20
@@ -199,28 +215,95 @@ Partial Class FrmSettings
         Me.tbcSettings.Location = New System.Drawing.Point(0, 0)
         Me.tbcSettings.Name = "tbcSettings"
         Me.tbcSettings.SelectedIndex = 0
-        Me.tbcSettings.Size = New System.Drawing.Size(238, 169)
+        Me.tbcSettings.Size = New System.Drawing.Size(238, 157)
         Me.tbcSettings.TabIndex = 14
         Me.tbcSettings.TabStop = False
         '
         'tabResolutions
         '
+        Me.tabResolutions.Controls.Add(Me.btnRestore)
+        Me.tabResolutions.Controls.Add(Me.btnSort)
+        Me.tabResolutions.Controls.Add(Me.btnGenerate)
         Me.tabResolutions.Controls.Add(Me.txtResolutions)
         Me.tabResolutions.Location = New System.Drawing.Point(4, 25)
         Me.tabResolutions.Name = "tabResolutions"
         Me.tabResolutions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabResolutions.Size = New System.Drawing.Size(230, 140)
+        Me.tabResolutions.Size = New System.Drawing.Size(230, 128)
         Me.tabResolutions.TabIndex = 0
         Me.tabResolutions.Text = "Resolutions"
         Me.tabResolutions.UseVisualStyleBackColor = True
         '
+        'btnRestore
+        '
+        Me.btnRestore.Location = New System.Drawing.Point(131, 96)
+        Me.btnRestore.Name = "btnRestore"
+        Me.btnRestore.Size = New System.Drawing.Size(75, 23)
+        Me.btnRestore.TabIndex = 5
+        Me.btnRestore.Text = "Restore"
+        Me.btnRestore.UseVisualStyleBackColor = True
+        '
+        'btnSort
+        '
+        Me.btnSort.Location = New System.Drawing.Point(131, 38)
+        Me.btnSort.Name = "btnSort"
+        Me.btnSort.Size = New System.Drawing.Size(75, 23)
+        Me.btnSort.TabIndex = 3
+        Me.btnSort.Text = "Sort"
+        Me.btnSort.UseVisualStyleBackColor = True
+        '
+        'btnGenerate
+        '
+        Me.btnGenerate.ContextMenuStrip = Me.cmsGenerate
+        Me.btnGenerate.Location = New System.Drawing.Point(131, 9)
+        Me.btnGenerate.Name = "btnGenerate"
+        Me.btnGenerate.Size = New System.Drawing.Size(75, 23)
+        Me.btnGenerate.TabIndex = 2
+        Me.btnGenerate.Text = "Generate"
+        Me.btnGenerate.UseVisualStyleBackColor = True
+        '
+        'cmsGenerate
+        '
+        Me.cmsGenerate.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.X60043ToolStripMenuItem, Me.X720169ToolStripMenuItem, ToolStripSeparator1, Me.FromToolStripMenuItem})
+        Me.cmsGenerate.Name = "cmsGenerate"
+        Me.cmsGenerate.Size = New System.Drawing.Size(155, 76)
+        Me.cmsGenerate.Tag = "800x600 (4:3)"
+        '
+        'X60043ToolStripMenuItem
+        '
+        Me.X60043ToolStripMenuItem.Name = "X60043ToolStripMenuItem"
+        Me.X60043ToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.X60043ToolStripMenuItem.Tag = "800x600 (4:3)"
+        Me.X60043ToolStripMenuItem.Text = "800x600 (4:3)"
+        '
+        'X720169ToolStripMenuItem
+        '
+        Me.X720169ToolStripMenuItem.Name = "X720169ToolStripMenuItem"
+        Me.X720169ToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.X720169ToolStripMenuItem.Tag = "1280x720 (16:9)"
+        Me.X720169ToolStripMenuItem.Text = "1280x720 (16:9)"
+        '
+        'FromToolStripMenuItem
+        '
+        Me.FromToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DummyToolStripMenuItem})
+        Me.FromToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.moa31
+        Me.FromToolStripMenuItem.Name = "FromToolStripMenuItem"
+        Me.FromToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.FromToolStripMenuItem.Text = "From"
+        '
+        'DummyToolStripMenuItem
+        '
+        Me.DummyToolStripMenuItem.Enabled = False
+        Me.DummyToolStripMenuItem.Name = "DummyToolStripMenuItem"
+        Me.DummyToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.DummyToolStripMenuItem.Text = "(Dummy)"
+        '
         'txtResolutions
         '
-        Me.txtResolutions.Location = New System.Drawing.Point(0, 0)
+        Me.txtResolutions.Location = New System.Drawing.Point(31, 0)
         Me.txtResolutions.Multiline = True
         Me.txtResolutions.Name = "txtResolutions"
         Me.txtResolutions.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.txtResolutions.Size = New System.Drawing.Size(94, 140)
+        Me.txtResolutions.Size = New System.Drawing.Size(94, 128)
         Me.txtResolutions.TabIndex = 1
         Me.txtResolutions.Text = "800x600" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "1200x900" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "1600x1200" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2000x1500" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2400x1800" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2800x2100" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "3200x2400" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "3600x27" &
     "00" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "4000x3000" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "4400x3300"
@@ -231,7 +314,7 @@ Partial Class FrmSettings
         Me.tabShortcuts.Controls.Add(Me.grpOverviewShortcut)
         Me.tabShortcuts.Location = New System.Drawing.Point(4, 25)
         Me.tabShortcuts.Name = "tabShortcuts"
-        Me.tabShortcuts.Size = New System.Drawing.Size(230, 140)
+        Me.tabShortcuts.Size = New System.Drawing.Size(230, 128)
         Me.tabShortcuts.TabIndex = 2
         Me.tabShortcuts.Text = "Shortcuts"
         Me.tabShortcuts.UseVisualStyleBackColor = True
@@ -425,7 +508,7 @@ Partial Class FrmSettings
         Me.tabMisc.Location = New System.Drawing.Point(4, 25)
         Me.tabMisc.Name = "tabMisc"
         Me.tabMisc.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabMisc.Size = New System.Drawing.Size(230, 140)
+        Me.tabMisc.Size = New System.Drawing.Size(230, 128)
         Me.tabMisc.TabIndex = 1
         Me.tabMisc.Text = "Misc"
         Me.tabMisc.UseVisualStyleBackColor = True
@@ -434,7 +517,7 @@ Partial Class FrmSettings
         '
         Me.chkDoAlign.AutoSize = True
         Me.chkDoAlign.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkDoAlign.Location = New System.Drawing.Point(114, 70)
+        Me.chkDoAlign.Location = New System.Drawing.Point(114, 63)
         Me.chkDoAlign.Name = "chkDoAlign"
         Me.chkDoAlign.Size = New System.Drawing.Size(66, 16)
         Me.chkDoAlign.TabIndex = 22
@@ -449,7 +532,7 @@ Partial Class FrmSettings
         Me.grpAlign.Controls.Add(Label2)
         Me.grpAlign.Controls.Add(Label1)
         Me.grpAlign.Enabled = False
-        Me.grpAlign.Location = New System.Drawing.Point(114, 70)
+        Me.grpAlign.Location = New System.Drawing.Point(114, 64)
         Me.grpAlign.Name = "grpAlign"
         Me.grpAlign.Size = New System.Drawing.Size(100, 62)
         Me.grpAlign.TabIndex = 21
@@ -490,7 +573,7 @@ Partial Class FrmSettings
         'txtExe
         '
         Me.txtExe.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtExe.Location = New System.Drawing.Point(7, 91)
+        Me.txtExe.Location = New System.Drawing.Point(7, 80)
         Me.txtExe.Name = "txtExe"
         Me.txtExe.Size = New System.Drawing.Size(66, 20)
         Me.txtExe.TabIndex = 15
@@ -499,7 +582,7 @@ Partial Class FrmSettings
         'chkTopMost
         '
         Me.chkTopMost.AutoSize = True
-        Me.chkTopMost.Location = New System.Drawing.Point(7, 74)
+        Me.chkTopMost.Location = New System.Drawing.Point(114, 47)
         Me.chkTopMost.Name = "chkTopMost"
         Me.chkTopMost.Size = New System.Drawing.Size(98, 17)
         Me.chkTopMost.TabIndex = 14
@@ -509,7 +592,7 @@ Partial Class FrmSettings
         'chkRoundCorners
         '
         Me.chkRoundCorners.AutoSize = True
-        Me.chkRoundCorners.Location = New System.Drawing.Point(7, 60)
+        Me.chkRoundCorners.Location = New System.Drawing.Point(7, 63)
         Me.chkRoundCorners.Name = "chkRoundCorners"
         Me.chkRoundCorners.Size = New System.Drawing.Size(109, 17)
         Me.chkRoundCorners.TabIndex = 19
@@ -519,7 +602,7 @@ Partial Class FrmSettings
         'txtClass
         '
         Me.txtClass.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtClass.Location = New System.Drawing.Point(7, 113)
+        Me.txtClass.Location = New System.Drawing.Point(7, 103)
         Me.txtClass.Name = "txtClass"
         Me.txtClass.Size = New System.Drawing.Size(100, 20)
         Me.txtClass.TabIndex = 17
@@ -529,7 +612,7 @@ Partial Class FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(238, 198)
+        Me.ClientSize = New System.Drawing.Size(238, 187)
         Me.Controls.Add(Me.tbcSettings)
         Me.Controls.Add(Me.btnCancel)
         Me.Controls.Add(Me.btnOK)
@@ -546,6 +629,7 @@ Partial Class FrmSettings
         Me.tbcSettings.ResumeLayout(False)
         Me.tabResolutions.ResumeLayout(False)
         Me.tabResolutions.PerformLayout()
+        Me.cmsGenerate.ResumeLayout(False)
         Me.tabShortcuts.ResumeLayout(False)
         Me.grpCycleShortcut.ResumeLayout(False)
         Me.grpCycleShortcut.PerformLayout()
@@ -599,4 +683,12 @@ Partial Class FrmSettings
     Friend WithEvents chkCycleDownAlt As CheckBox
     Friend WithEvents chkCycleDownCtrl As CheckBox
     Friend WithEvents txtCycleKeyDown As TextBox
+    Friend WithEvents btnRestore As Button
+    Friend WithEvents btnSort As Button
+    Friend WithEvents btnGenerate As Button
+    Friend WithEvents cmsGenerate As ContextMenuStrip
+    Friend WithEvents X60043ToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents X720169ToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents FromToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents DummyToolStripMenuItem As ToolStripMenuItem
 End Class

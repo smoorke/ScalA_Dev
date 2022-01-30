@@ -168,6 +168,7 @@
     <None Include="Resources\cornerSW.png" />
     <Content Include="Resources\moa3.ico" />
     <None Include="Resources\F12.png" />
+    <None Include="Resources\moa3.png" />
     <Content Include="Resources\ReadMe.txt" />
     <None Include="Resources\Add.png" />
     <Content Include="Resources\gear_wheel.png" />
