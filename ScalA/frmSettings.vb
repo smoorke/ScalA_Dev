@@ -27,6 +27,33 @@
         btnOpenFolderDialog.Image = GetStockIconImage(SIID.folder)
         If btnOpenFolderDialog.Image IsNot Nothing Then btnOpenFolderDialog.Text = ""
 
+        chkSwitchToOverview.Checked = My.Settings.SwitchToOverview
+        chkCycleAlts.Checked = My.Settings.CycleAlt
+
+        chkStoAlt.Checked = My.Settings.StoAlt = Hotkey.KeyModifier.Alt
+        Debug.Print($"My.Settings.StoAlt {My.Settings.StoAlt}")
+        chkStoCtrl.Checked = My.Settings.StoCtrl = Hotkey.KeyModifier.Control
+        Debug.Print($"My.Settings.StoCtrl {My.Settings.StoCtrl}")
+        chkStoShift.Checked = My.Settings.StoShift = Hotkey.KeyModifier.Shift
+        Debug.Print($"My.Settings.StoShift {My.Settings.StoShift}")
+
+        chkCycleDownAlt.Checked = My.Settings.CycleAltKeyFwd = Hotkey.KeyModifier.Alt
+        chkCycleDownCtrl.Checked = My.Settings.CycleCtrlKeyFwd = Hotkey.KeyModifier.Control
+        chkCycleDownShift.Checked = My.Settings.CycleShiftKeyFwd = Hotkey.KeyModifier.Shift
+
+        chkCycleUpAlt.Checked = My.Settings.CycleAltKeyBwd = Hotkey.KeyModifier.Alt
+        chkCycleUpCtrl.Checked = My.Settings.CycleCtrlKeyBwd = Hotkey.KeyModifier.Control
+        chkCycleUpShift.Checked = My.Settings.CycleShiftKeyBwd = Hotkey.KeyModifier.Shift
+
+        txtStoKey.Text = keyNames(My.Settings.StoKey)
+
+        txtCycleKeyUp.Text = keyNames(My.Settings.CycleKeyBwd)
+        txtCycleKeyDown.Text = keyNames(My.Settings.CycleKeyFwd)
+
+        StoKey = My.Settings.StoKey
+        CycleKeyDown = My.Settings.CycleKeyFwd
+        CycleKeyUp = My.Settings.CycleKeyBwd
+
     End Sub
     'https://docs.microsoft.com/en-us/windows/win32/api/shellapi/ne-shellapi-shstockiconid
     Enum SIID As UInteger
@@ -151,6 +178,34 @@
         My.Settings.offset = New Point(numXoffset.Value, numYoffset.Value)
         My.Settings.exe = txtExe.Text
         My.Settings.className = txtClass.Text
+        manualNumUpdate = False
+
+        My.Settings.SwitchToOverview = chkSwitchToOverview.Checked
+        My.Settings.StoKey = StoKey
+
+        My.Settings.StoAlt = If(chkStoAlt.Checked, Hotkey.KeyModifier.Alt, 0)
+        My.Settings.StoCtrl = If(chkStoCtrl.Checked, Hotkey.KeyModifier.Control, 0)
+        My.Settings.StoShift = If(chkStoShift.Checked, Hotkey.KeyModifier.Shift, 0)
+
+        Debug.Print($"My.Settings.StoAlt {My.Settings.StoAlt}")
+        Debug.Print($"My.Settings.StoCtrl {My.Settings.StoCtrl}")
+        Debug.Print($"My.Settings.StoShift {My.Settings.StoShift}")
+
+
+        My.Settings.CycleAlt = chkCycleAlts.Checked
+        My.Settings.CycleKeyFwd = CycleKeyDown
+        My.Settings.CycleKeyBwd = CycleKeyUp
+
+        My.Settings.CycleAltKeyFwd = If(chkCycleDownAlt.Checked, Hotkey.KeyModifier.Alt, 0)
+        My.Settings.CycleShiftKeyFwd = If(chkCycleDownShift.Checked, Hotkey.KeyModifier.Shift, 0)
+        My.Settings.CycleCtrlKeyFwd = If(chkCycleDownCtrl.Checked, Hotkey.KeyModifier.Control, 0)
+
+        My.Settings.CycleAltKeyBwd = If(chkCycleUpAlt.Checked, Hotkey.KeyModifier.Alt, 0)
+        My.Settings.CycleShiftKeyBwd = If(chkCycleUpShift.Checked, Hotkey.KeyModifier.Shift, 0)
+        My.Settings.CycleCtrlKeyBwd = If(chkCycleUpCtrl.Checked, Hotkey.KeyModifier.Control, 0)
+
+        Hotkey.UnregHotkey(FrmMain)
+
         Me.Close()
     End Sub
 
@@ -159,7 +214,6 @@
     Dim rcAstOffsetNew As Rectangle
     Private Sub TmrAlign_Tick(sender As Object, e As EventArgs) Handles tmrAlign.Tick
         GetWindowRect(FrmMain.AltPP.MainWindowHandle, rcAstOffsetNew)
-        manualNumUpdate = False
         numXoffset.Value = My.Settings.offset.X + ScalaMoved.X - rcAstOffsetNew.Left + rcAstOffsetBase.Left
         numYoffset.Value = My.Settings.offset.Y + ScalaMoved.Y - rcAstOffsetNew.Top + rcAstOffsetBase.Top
         manualNumUpdate = True
@@ -198,7 +252,7 @@
         numYoffset.Text = 0
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles btnOpenFolderDialog.Click
+    Private Sub Button1_Click(sender As Object, e As EventArgs)
         txtQuickLaunchPath.SuspendLayout()
         txtQuickLaunchPath.Text = ChangeLinksDir(My.Settings.links)
         txtQuickLaunchPath.SelectionStart = txtQuickLaunchPath.TextLength
@@ -253,6 +307,49 @@
         Catch
 
         End Try
+    End Sub
+
+    Dim keyNames() As String = {"", "", "", "", "", "", "", "", "{Backspace}", "{Tab}", "", "", "", "{Enter}", "", "", ' 0-15
+                                    "", "", "", "{Pause}", "", "", "", "", "", "", "", "{Escape}", "", "", "", "", ' 16-31
+                                    "{Space}", "{PageUp}", "{PageDown}", "{End}", "{Home}", "{Left}", "{Up}", "{Right}", "{Down}", "", "", "", "{PrintSrcn}", "{Insert}", "{Delete}", "", ' 32-47
+                                    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "", "", "", "", "", "", '  48-63
+                                    "", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", '  64-79
+                                    "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "", "", "", "", "", '  80-95
+                                    "{Num 0}", "{Num 1}", "{Num 2}", "{Num 3}", "{Num 4}", "{Num 5}", "{Num 6}", "{Num 7}", "{Num 8}", "{Num 9}", "{Num *}", "{Num +}", "", "{Num -}", "{Num .}", "{Num /}", '  96-111
+                                    "{F1}", "{F2}", "{F3}", "{F4}", "{F5}", "{F6}", "{F7}", "{F8}", "{F9}", "{F10}", "{F11}", "{F12}", "{F13}", "{F14}", "{F15}", "{F16}", ' 112-127
+                                    "{F17}", "{F18}", "{F19}", "{F20}", "{F21}", "{F22}", "{F23}", "{F24}", "", "", "", "", "", "", "", "", ' 128-143
+                                    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ' 144-159
+                                    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ' 160-175
+                                    "", "", "", "", "", "", "", "", "", "", ";", "=", ",", "-", ".", "/", ' 176-191
+                                    "{Tilde}", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ' 192-207
+                                    "", "", "", "", "", "", "", "", "", "", "", "[", "\", "]", "²", "", ' 208-223
+                                    "", "", "\", "", "", "", "", "", "", "", "", "", "", "", "", "", ' 224-239
+                                    "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""} ' 240-255
+    Dim StoKey, CycleKeyUp, CycleKeyDown As Integer
+    Private Sub txtShortcuts_PreviewKeyDown(sender As TextBox, e As PreviewKeyDownEventArgs) Handles txtStoKey.PreviewKeyDown, txtCycleKeyUp.PreviewKeyDown, txtCycleKeyDown.PreviewKeyDown
+        Debug.Print(e.KeyCode)
+        If e.KeyCode = 16 OrElse 'shift
+           e.KeyCode = 17 OrElse 'ctrl
+           e.KeyCode = 18 OrElse 'alt
+           e.KeyCode = 91 OrElse 'lwin
+           e.KeyCode = 92 OrElse 'rwin
+           e.KeyCode > 255 OrElse
+           keyNames(e.KeyCode) = "" Then
+            Exit Sub
+        End If
+        sender.Text = keyNames(e.KeyCode)
+        Select Case sender.Name
+            Case txtStoKey.Name
+                StoKey = e.KeyCode
+            Case txtCycleKeyDown.Name
+                CycleKeyDown = e.KeyCode
+            Case txtCycleKeyUp.Name
+                CycleKeyUp = e.KeyCode
+        End Select
+    End Sub
+
+    Private Sub TextBox1_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtStoKey.KeyPress, txtCycleKeyUp.KeyPress, txtCycleKeyDown.KeyPress
+        e.Handled = True
     End Sub
 
 End Class

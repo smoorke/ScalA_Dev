@@ -1269,9 +1269,18 @@
                 'btnQuit.ForeColor = Color.FromArgb(&HFF666666)
             End If
             If (activeID = scalaPID OrElse Process.GetProcessById(activeID).IsClassNameIn(My.Settings.className)) Then
-                Hotkey.RegisterHotkey(Me, 1, Hotkey.KeyModifier.Control, Keys.Tab)
-                Hotkey.RegisterHotkey(Me, 2, Hotkey.KeyModifier.Control Or Hotkey.KeyModifier.NoRepeat, Keys.Space)
-                Hotkey.RegisterHotkey(Me, 3, Hotkey.KeyModifier.Control Or Hotkey.KeyModifier.Shift Or Hotkey.KeyModifier.NoRepeat, Keys.Space)
+                If My.Settings.SwitchToOverview Then
+                    Hotkey.RegisterHotkey(Me, 1, Hotkey.KeyModifier.NoRepeat Or My.Settings.StoCtrl Or My.Settings.StoShift Or My.Settings.StoAlt, My.Settings.StoKey)
+                Else
+                    Hotkey.UnregHotkey(Me, 1)
+                End If
+                If My.Settings.CycleAlt Then
+                    Hotkey.RegisterHotkey(Me, 2, Hotkey.KeyModifier.NoRepeat Or My.Settings.CycleAltKeyFwd Or My.Settings.CycleShiftKeyFwd Or My.Settings.CycleCtrlKeyFwd, My.Settings.CycleKeyFwd)
+                    Hotkey.RegisterHotkey(Me, 3, Hotkey.KeyModifier.NoRepeat Or My.Settings.CycleAltKeyBwd Or My.Settings.CycleShiftKeyBwd Or My.Settings.CycleCtrlKeyBwd, My.Settings.CycleKeyBwd)
+                Else
+                    Hotkey.UnregHotkey(Me, 2)
+                    Hotkey.UnregHotkey(Me, 3)
+                End If
             Else
                 Hotkey.UnregHotkey(Me)
             End If

@@ -199,6 +199,174 @@ Namespace My
                 Me("gameOnOverview") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property SwitchToOverview() As Boolean
+            Get
+                Return CType(Me("SwitchToOverview"),Boolean)
+            End Get
+            Set
+                Me("SwitchToOverview") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property CycleAlt() As Boolean
+            Get
+                Return CType(Me("CycleAlt"),Boolean)
+            End Get
+            Set
+                Me("CycleAlt") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("2")>  _
+        Public Property StoCtrl() As Integer
+            Get
+                Return CType(Me("StoCtrl"),Integer)
+            End Get
+            Set
+                Me("StoCtrl") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property StoAlt() As Integer
+            Get
+                Return CType(Me("StoAlt"),Integer)
+            End Get
+            Set
+                Me("StoAlt") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property StoShift() As Integer
+            Get
+                Return CType(Me("StoShift"),Integer)
+            End Get
+            Set
+                Me("StoShift") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("2")>  _
+        Public Property CycleCtrlKeyFwd() As Integer
+            Get
+                Return CType(Me("CycleCtrlKeyFwd"),Integer)
+            End Get
+            Set
+                Me("CycleCtrlKeyFwd") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property CycleAltKeyFwd() As Integer
+            Get
+                Return CType(Me("CycleAltKeyFwd"),Integer)
+            End Get
+            Set
+                Me("CycleAltKeyFwd") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("9")>  _
+        Public Property StoKey() As Integer
+            Get
+                Return CType(Me("StoKey"),Integer)
+            End Get
+            Set
+                Me("StoKey") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("32")>  _
+        Public Property CycleKeyFwd() As Integer
+            Get
+                Return CType(Me("CycleKeyFwd"),Integer)
+            End Get
+            Set
+                Me("CycleKeyFwd") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("32")>  _
+        Public Property CycleKeyBwd() As Integer
+            Get
+                Return CType(Me("CycleKeyBwd"),Integer)
+            End Get
+            Set
+                Me("CycleKeyBwd") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property CycleShiftKeyFwd() As Integer
+            Get
+                Return CType(Me("CycleShiftKeyFwd"),Integer)
+            End Get
+            Set
+                Me("CycleShiftKeyFwd") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("4")>  _
+        Public Property CycleShiftKeyBwd() As Integer
+            Get
+                Return CType(Me("CycleShiftKeyBwd"),Integer)
+            End Get
+            Set
+                Me("CycleShiftKeyBwd") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("2")>  _
+        Public Property CycleCtrlKeyBwd() As Integer
+            Get
+                Return CType(Me("CycleCtrlKeyBwd"),Integer)
+            End Get
+            Set
+                Me("CycleCtrlKeyBwd") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property CycleAltKeyBwd() As Integer
+            Get
+                Return CType(Me("CycleAltKeyBwd"),Integer)
+            End Get
+            Set
+                Me("CycleAltKeyBwd") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
