@@ -140,3 +140,7 @@ Enabled ctrl-space hotkey on overview also implemented ctrl-shift-space to cycle
 Fixed overview sometimes glitching an alt for a brief second when logging one in.
 Fixed alt being at wrong restore position when de-elevating ScalA.
 Added configuration settings for hotkeys.
+
+**ScalA 0.9.7**
+Fixed overview glitch fix of 0.9.6 erroneously excluded alts with custom titles.
+Added Cycle on Close to misc settings.
