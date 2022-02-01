@@ -922,7 +922,8 @@
 #End If
 
         Dim i As Integer = 0
-        Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate.ToList
+        Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate _
+                    .Where(Function(ap) Not ({"", "Someone"}.Contains(ap.Name) AndAlso ap.MainWindowTitle.Count(Function(c As Char) c = "-"c) < 2)).ToList
         pnlOverview.SuspendLayout()
         UpdateButtonLayout(alts.Count)
         For Each but As AButton In pnlOverview.Controls.OfType(Of AButton).Where(Function(b) b.Visible) 'loop through visible buttons
