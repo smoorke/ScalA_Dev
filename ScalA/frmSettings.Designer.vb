@@ -204,7 +204,7 @@ Partial Class FrmSettings
         Me.chkOverViewIsGame.Size = New System.Drawing.Size(107, 17)
         Me.chkOverViewIsGame.TabIndex = 20
         Me.chkOverViewIsGame.Text = "Active Overview "
-        Me.ttSettings.SetToolTip(Me.chkOverViewIsGame, "When this is enabled" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "the overview thumbnails" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "will function as game.")
+        Me.ttSettings.SetToolTip(Me.chkOverViewIsGame, "Have overview thumbnails function as game.")
         Me.chkOverViewIsGame.UseVisualStyleBackColor = True
         '
         'tbcSettings
@@ -618,7 +618,7 @@ Partial Class FrmSettings
         Me.chkCycleOnClose.Size = New System.Drawing.Size(96, 17)
         Me.chkCycleOnClose.TabIndex = 23
         Me.chkCycleOnClose.Text = "Cycle on Close"
-        Me.ttSettings.SetToolTip(Me.chkCycleOnClose, "Closing an alt will cycle to the next one")
+        Me.ttSettings.SetToolTip(Me.chkCycleOnClose, "Closing an alt will cycle to the next one.")
         Me.chkCycleOnClose.UseVisualStyleBackColor = True
         '
         'FrmSettings
