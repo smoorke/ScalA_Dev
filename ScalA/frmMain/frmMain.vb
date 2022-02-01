@@ -898,21 +898,14 @@
 #End If
 
         Dim i As Integer = 0
-        Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(False) _
-                    .Where(Function(p)
-                               Dim p_name As String = p.Name
-                               Return p_name <> "" AndAlso (p_name.StartsWith("Sir ") OrElse
-                                                            p_name.StartsWith("Lady ") OrElse
-                                                            p_name.EndsWith(" III") OrElse
-                                                        Not p_name.Contains(" "))
-                           End Function).ToList
+        Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate.ToList
         pnlOverview.SuspendLayout()
         UpdateButtonLayout(alts.Count)
         For Each but As AButton In pnlOverview.Controls.OfType(Of AButton).Where(Function(b) b.Visible) 'loop through visible buttons
             If i < alts.Count Then
                 Dim name As String = alts(i).Name
-
-                While name = String.Empty
+                While name = "" OrElse name = "Someone" OrElse alts(i).MainWindowTitle.Count(Function(c As Char) c = "-"c) < 2
+                    'don't list "Someone"s or clients in the process of logging in ("-"<2)
                     i += 1
                     If i >= alts.Count Then
                         Exit For
