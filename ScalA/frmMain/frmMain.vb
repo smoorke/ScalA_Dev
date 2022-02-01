@@ -598,10 +598,34 @@
 
         If Not AltPP?.IsRunning() Then
             Debug.Print("Not AltPP?.IsRunning()")
-            tmrTick.Enabled = False
-            cboAlt.SelectedIndex = 0
-            tmrOverview.Enabled = True
-            Exit Sub
+            If Not My.Settings.CycleOnClose Then
+                tmrTick.Enabled = False
+                cboAlt.SelectedIndex = 0
+                tmrOverview.Enabled = True
+                Exit Sub
+            Else 'CycleOnClose
+                Dim requestedIndex = cboAlt.SelectedIndex + 1
+                Debug.Print($"CycleOnCLose: {cboAlt.SelectedIndex} {requestedIndex}")
+                Debug.Print($"              {cboAlt.Items.Count} > {requestedIndex} = {cboAlt.Items.Count > requestedIndex}")
+                If requestedIndex < cboAlt.Items.Count Then
+                    cboAlt.SelectedIndex = requestedIndex
+                Else 'add new items if available
+                    'Dim comboboxitems As List(Of AstoniaProcess) = (From item As AstoniaProcess In cboAlt.Items Select value = item).ToList
+
+                    Dim newItems = AstoniaProcess.Enumerate.Except(
+                                                 (From item As AstoniaProcess In cboAlt.Items Select value = item),
+                                                   New AstoniaProcessEqualityComparer)
+                    Debug.Print($"newitems.count {newItems.Count}")
+                    If newItems.Any() Then
+                        Debug.Print("adding new items")
+                        cboAlt.Items.AddRange(newItems.ToArray)
+                        cboAlt.SelectedIndex = requestedIndex
+                    Else
+                        'PopDropDown()
+                        cboAlt.SelectedIndex = If(cboAlt.Items.Count = 1, 0, 1)
+                    End If
+                End If
+            End If
         End If
 
         UpdateTitle()

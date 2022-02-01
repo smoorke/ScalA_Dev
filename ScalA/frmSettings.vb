@@ -56,6 +56,8 @@ Public Class FrmSettings
         CycleKeyDown = My.Settings.CycleKeyFwd
         CycleKeyUp = My.Settings.CycleKeyBwd
 
+        chkCycleOnClose.Checked = My.Settings.CycleOnClose
+
     End Sub
     'https://docs.microsoft.com/en-us/windows/win32/api/shellapi/ne-shellapi-shstockiconid
     Enum SIID As UInteger
@@ -206,6 +208,8 @@ Public Class FrmSettings
         My.Settings.CycleAltKeyBwd = If(chkCycleUpAlt.Checked, Hotkey.KeyModifier.Alt, 0)
         My.Settings.CycleShiftKeyBwd = If(chkCycleUpShift.Checked, Hotkey.KeyModifier.Shift, 0)
         My.Settings.CycleCtrlKeyBwd = If(chkCycleUpCtrl.Checked, Hotkey.KeyModifier.Control, 0)
+
+        My.Settings.CycleOnClose = chkCycleOnClose.Checked
 
         Hotkey.UnregHotkey(FrmMain)
 

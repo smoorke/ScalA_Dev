@@ -76,6 +76,7 @@ Partial Class FrmSettings
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
         Me.txtClass = New System.Windows.Forms.TextBox()
+        Me.chkCycleOnClose = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -99,7 +100,7 @@ Partial Class FrmSettings
         '
         grpQLPath.Controls.Add(Me.btnOpenFolderDialog)
         grpQLPath.Controls.Add(Me.txtQuickLaunchPath)
-        grpQLPath.Location = New System.Drawing.Point(7, 3)
+        grpQLPath.Location = New System.Drawing.Point(7, -2)
         grpQLPath.Name = "grpQLPath"
         grpQLPath.Size = New System.Drawing.Size(213, 42)
         grpQLPath.TabIndex = 16
@@ -142,7 +143,7 @@ Partial Class FrmSettings
         'Label3
         '
         Label3.AutoSize = True
-        Label3.Location = New System.Drawing.Point(78, 83)
+        Label3.Location = New System.Drawing.Point(79, 85)
         Label3.Name = "Label3"
         Label3.Size = New System.Drawing.Size(27, 13)
         Label3.TabIndex = 18
@@ -198,7 +199,7 @@ Partial Class FrmSettings
         'chkOverViewIsGame
         '
         Me.chkOverViewIsGame.AutoSize = True
-        Me.chkOverViewIsGame.Location = New System.Drawing.Point(7, 47)
+        Me.chkOverViewIsGame.Location = New System.Drawing.Point(8, 39)
         Me.chkOverViewIsGame.Name = "chkOverViewIsGame"
         Me.chkOverViewIsGame.Size = New System.Drawing.Size(107, 17)
         Me.chkOverViewIsGame.TabIndex = 20
@@ -496,6 +497,7 @@ Partial Class FrmSettings
         '
         'tabMisc
         '
+        Me.tabMisc.Controls.Add(Me.chkCycleOnClose)
         Me.tabMisc.Controls.Add(Me.chkDoAlign)
         Me.tabMisc.Controls.Add(Me.grpAlign)
         Me.tabMisc.Controls.Add(Me.txtExe)
@@ -517,7 +519,7 @@ Partial Class FrmSettings
         '
         Me.chkDoAlign.AutoSize = True
         Me.chkDoAlign.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkDoAlign.Location = New System.Drawing.Point(114, 63)
+        Me.chkDoAlign.Location = New System.Drawing.Point(119, 63)
         Me.chkDoAlign.Name = "chkDoAlign"
         Me.chkDoAlign.Size = New System.Drawing.Size(66, 16)
         Me.chkDoAlign.TabIndex = 22
@@ -532,7 +534,7 @@ Partial Class FrmSettings
         Me.grpAlign.Controls.Add(Label2)
         Me.grpAlign.Controls.Add(Label1)
         Me.grpAlign.Enabled = False
-        Me.grpAlign.Location = New System.Drawing.Point(114, 64)
+        Me.grpAlign.Location = New System.Drawing.Point(119, 64)
         Me.grpAlign.Name = "grpAlign"
         Me.grpAlign.Size = New System.Drawing.Size(100, 62)
         Me.grpAlign.TabIndex = 21
@@ -573,7 +575,7 @@ Partial Class FrmSettings
         'txtExe
         '
         Me.txtExe.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtExe.Location = New System.Drawing.Point(7, 80)
+        Me.txtExe.Location = New System.Drawing.Point(8, 82)
         Me.txtExe.Name = "txtExe"
         Me.txtExe.Size = New System.Drawing.Size(66, 20)
         Me.txtExe.TabIndex = 15
@@ -582,7 +584,7 @@ Partial Class FrmSettings
         'chkTopMost
         '
         Me.chkTopMost.AutoSize = True
-        Me.chkTopMost.Location = New System.Drawing.Point(114, 47)
+        Me.chkTopMost.Location = New System.Drawing.Point(8, 67)
         Me.chkTopMost.Name = "chkTopMost"
         Me.chkTopMost.Size = New System.Drawing.Size(98, 17)
         Me.chkTopMost.TabIndex = 14
@@ -592,7 +594,7 @@ Partial Class FrmSettings
         'chkRoundCorners
         '
         Me.chkRoundCorners.AutoSize = True
-        Me.chkRoundCorners.Location = New System.Drawing.Point(7, 63)
+        Me.chkRoundCorners.Location = New System.Drawing.Point(8, 53)
         Me.chkRoundCorners.Name = "chkRoundCorners"
         Me.chkRoundCorners.Size = New System.Drawing.Size(109, 17)
         Me.chkRoundCorners.TabIndex = 19
@@ -602,11 +604,22 @@ Partial Class FrmSettings
         'txtClass
         '
         Me.txtClass.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtClass.Location = New System.Drawing.Point(7, 103)
+        Me.txtClass.Location = New System.Drawing.Point(8, 103)
         Me.txtClass.Name = "txtClass"
         Me.txtClass.Size = New System.Drawing.Size(100, 20)
         Me.txtClass.TabIndex = 17
         Me.txtClass.Text = "MAINWNDMOAC | 䅍义乗䵄䅏C"
+        '
+        'chkCycleOnClose
+        '
+        Me.chkCycleOnClose.AutoSize = True
+        Me.chkCycleOnClose.Location = New System.Drawing.Point(114, 39)
+        Me.chkCycleOnClose.Name = "chkCycleOnClose"
+        Me.chkCycleOnClose.Size = New System.Drawing.Size(96, 17)
+        Me.chkCycleOnClose.TabIndex = 23
+        Me.chkCycleOnClose.Text = "Cycle on Close"
+        Me.ttSettings.SetToolTip(Me.chkCycleOnClose, "Closing an alt will cycle to the next one")
+        Me.chkCycleOnClose.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
@@ -691,4 +704,5 @@ Partial Class FrmSettings
     Friend WithEvents X720169ToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents FromToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents DummyToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents chkCycleOnClose As CheckBox
 End Class
