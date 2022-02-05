@@ -169,7 +169,7 @@
             Next
             startThumbsDict.Clear()
 
-
+            'Dim unused = Task.Run(Sub() AltPP?.CenterWindowPos(ScalaHandle, Me.Left + pbZoom.Left + (pbZoom.Width / 2), Me.Top + pbZoom.Top + (pbZoom.Height / 2)))
             Debug.Print("updateThumb")
             If rectDic.ContainsKey(item.Id) Then
                 AnimateThumb(rectDic(item.Id), New Rectangle(pbZoom.Left, pbZoom.Top, pbZoom.Right, pbZoom.Bottom))
@@ -977,14 +977,12 @@
                 'If Not MovingForm Then but.Image = alts(i).getHealthbar() 'couses window moving to stutter.
                 'Task.Run(Sub() but.Image = but.Tag.getHealthbar()) 'smooth window move. causes excetpion in unamanged code on but.image.
                 If counter = 0 OrElse but.Image Is Nothing Then
-#Disable Warning BC42358 ' Because this call is not awaited, execution of the current method continues before the call is completed
-                    Task.Run(Sub()
-                                 Try
-                                     Me.BeginInvoke(updateImage, {but, CType(but.Tag, AstoniaProcess).getHealthbar()})
-                                 Catch
-                                 End Try
-                             End Sub)
-#Enable Warning BC42358 ' Because this call is not awaited, execution of the current method continues before the call is completed
+                    Dim unused = Task.Run(Sub()
+                                              Try
+                                                  Me.BeginInvoke(updateImage, {but, CType(but.Tag, AstoniaProcess).getHealthbar()})
+                                              Catch
+                                              End Try
+                                          End Sub)
                 End If
                 If My.Settings.gameOnOverview Then 'todo move this to seperate timer and make async
                     Dim rccB As Rectangle
