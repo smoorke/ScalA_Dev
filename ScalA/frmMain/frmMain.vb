@@ -191,7 +191,7 @@
 
         prevItem = that.SelectedItem
 
-        If cboAlt.SelectedIndex > 0 Then
+        If that.SelectedIndex > 0 Then
             pbZoom.Show()
         Else
             AButton.ActiveOverview = My.Settings.gameOnOverview
