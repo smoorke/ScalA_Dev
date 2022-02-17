@@ -412,7 +412,7 @@ Public Class FrmSettings
         For Each line In txtResolutions.Text.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries).OrderBy(Function(res) Val(res))
             sb.AppendLine(line)
         Next
-        sb.Remove(sb.Length - 1, 1)
+        sb.Remove(sb.Length - 2, 2)
         txtResolutions.Text = sb.ToString
     End Sub
 
