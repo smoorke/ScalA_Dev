@@ -65,7 +65,8 @@ Partial Public Class FrmMain
 
     Private Sub CloseAllIdle_Click(sender As ToolStripMenuItem, e As EventArgs) 'Handles closeAllToolStripMenuItem.click
 
-        For Each pp As AstoniaProcess In AstoniaProcess.Enumerate(True).Where(Function(p As AstoniaProcess) p.Name = "Someone")
+        For Each pp As AstoniaProcess In AstoniaProcess.Enumerate().Where(Function(p As AstoniaProcess) p.Name = "Someone")
+            If sender.Tag?.id = pp.Id AndAlso sender.Tag?.name = "Someone" Then Continue For
             PostMessage(pp.MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
         Next
 
@@ -258,7 +259,7 @@ Partial Public Class FrmMain
         sender.DropDownItems.Add(New ToolStripMenuItem("Folder", GetIcon(FileIO.SpecialDirectories.Temp), AddressOf Ql_NewFolder) With {.Tag = sender.Tag})
         sender.DropDownItems.Add(New ToolStripSeparator())
 
-        For Each alt As AstoniaProcess In AstoniaProcess.Enumerate()
+        For Each alt As AstoniaProcess In AstoniaProcess.Enumerate(blackList)
             sender.DropDownItems.Add(New ToolStripMenuItem(alt.Name, alt.GetIcon?.ToBitmap, AddressOf CreateShortCut) With {
                                                .Tag = {alt, sender.Tag}}) ' sender.tag is parent menu location
         Next
@@ -421,7 +422,7 @@ Partial Public Class FrmMain
             sender.Items.Add("Select Folder", My.Resources.gear_wheel, AddressOf ChangeLinksDir)
         End If
 
-        If AstoniaProcess.Enumerate(True).Any(Function(pp As AstoniaProcess) pp.Name = "Someone") Then
+        If AstoniaProcess.Enumerate().Any(Function(pp As AstoniaProcess) pp.Name = "Someone") Then
             If sender.SourceControl Is Nothing Then 'called from trayicon
                 sender.Items.Insert(0, New ToolStripSeparator())
                 sender.Items.Insert(0, New ToolStripMenuItem("Close All Idled", My.Resources.F12, AddressOf CloseAllIdle_Click))
@@ -618,7 +619,7 @@ Partial Public Class FrmMain
             Dim QlCtxNewMenuStaticItemsCount As Integer = QlCtxNewMenu.MenuItems.Count
 
             'dynamically add menuitems
-            Dim aplist As List(Of AstoniaProcess) = AstoniaProcess.Enumerate().ToList
+            Dim aplist As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).ToList
             For Each ap As AstoniaProcess In aplist
                 QlCtxNewMenu.MenuItems.Add(New MenuItem(ap.Name, AddressOf QlCtxNewAlt) With {.Tag = {ap, path}})
             Next

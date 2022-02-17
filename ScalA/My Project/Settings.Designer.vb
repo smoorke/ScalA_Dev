@@ -379,6 +379,30 @@ Namespace My
                 Me("CycleOnClose") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Someone")>  _
+        Public Property topSort() As String
+            Get
+                Return CType(Me("topSort"),String)
+            End Get
+            Set
+                Me("topSort") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Someone")>  _
+        Public Property botSort() As String
+            Get
+                Return CType(Me("botSort"),String)
+            End Get
+            Set
+                Me("botSort") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

@@ -13,7 +13,7 @@
 
         sender.Items.Clear()
         sender.Items.Add(New AstoniaProcess) 'Someone
-        sender.Items.AddRange(AstoniaProcess.Enumerate.ToArray)
+        sender.Items.AddRange(AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name, apSorter).ToArray)
 
         If current IsNot Nothing AndAlso sender.Items.Contains(current) Then
             sender.SelectedItem = current
@@ -79,14 +79,14 @@
         UpdateTitle()
         If that.SelectedIndex = 0 Then
             pnlOverview.SuspendLayout()
-            UpdateButtonLayout(AstoniaProcess.Enumerate.Count)
-            For Each but As AButton In pnlOverview.Controls.OfType(Of AButton).TakeWhile(Function(b) b.Text <> "")
+            pnlOverview.Show()
+            UpdateButtonLayout(AstoniaProcess.Enumerate(blackList).Count)
+            For Each but As AButton In pnlOverview.Controls.OfType(Of AButton).Where(Function(b) b.Visible AndAlso b.Text <> "")
                 but.Image = Nothing
                 but.BackgroundImage = Nothing
                 but.Text = String.Empty
             Next
             pnlOverview.ResumeLayout()
-            pnlOverview.Show()
             tmrOverview.Enabled = True
             tmrTick.Enabled = False
             If prevItem.Id <> 0 Then startThumbsDict(prevItem.Id) = thumb
@@ -294,7 +294,7 @@
         While True
             count += 1
             Await Task.Delay(50)
-            Dim targetPPs As AstoniaProcess() = AstoniaProcess.Enumerate.Where(Function(ap) ap.Name = targetName).ToArray()
+            Dim targetPPs As AstoniaProcess() = AstoniaProcess.Enumerate(blackList).Where(Function(ap) ap.Name = targetName).ToArray()
             If targetPPs.Length > 0 AndAlso targetPPs(0) IsNot Nothing AndAlso targetPPs(0).Id <> 0 Then
                 PopDropDown(cboAlt)
                 cboAlt.SelectedItem = targetPPs(0)
@@ -356,7 +356,24 @@
             My.Settings.SettingsVersion = My.Application.Info.Version.ToString
             My.Settings.Save()
             zooms = GetResolutions()
+            topSortList = My.Settings.topSort.Split(CType(vbCrLf, Char()), StringSplitOptions.RemoveEmptyEntries).ToList
+            botSortList = My.Settings.botSort.Split(CType(vbCrLf, Char()), StringSplitOptions.RemoveEmptyEntries).ToList
+            blackList = topSortList.Intersect(botSortList).ToList
         End If
+        topSortList = topSortList.Except(blackList).ToList
+        botSortList = botSortList.Except(blackList).ToList
+
+        apSorter = New AstoniaProcessSorter(topSortList, botSortList)
+
+#If DEBUG Then
+        Debug.Print("Top:")
+        topSortList.ForEach(Sub(el) Debug.Print(el))
+        Debug.Print("Bot:")
+        botSortList.ForEach(Sub(el) Debug.Print(el))
+        Debug.Print("blacklist:")
+        blackList.ForEach(Sub(el) Debug.Print(el))
+#End If
+
 
         ScalaHandle = Me.Handle
 
@@ -385,7 +402,7 @@
         cboAlt.BeginUpdate()
         cboAlt.Items.Add(New AstoniaProcess()) 'someone
         cboAlt.SelectedIndex = 0
-        Dim APlist As List(Of AstoniaProcess) = AstoniaProcess.Enumerate.ToList
+        Dim APlist As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).ToList
         For Each ap As AstoniaProcess In APlist
             cboAlt.Items.Add(ap)
             If args.Count > 1 AndAlso ap.Name = args(1) Then
@@ -612,7 +629,7 @@
                 Else 'add new items if available
                     'Dim comboboxitems As List(Of AstoniaProcess) = (From item As AstoniaProcess In cboAlt.Items Select value = item).ToList
 
-                    Dim newItems = AstoniaProcess.Enumerate.Except(
+                    Dim newItems = AstoniaProcess.Enumerate(blackList).Except(
                                                  (From item As AstoniaProcess In cboAlt.Items Select value = item),
                                                    New AstoniaProcessEqualityComparer)
                     Debug.Print($"newitems.count {newItems.Count}")
@@ -834,7 +851,7 @@
                         Else 'add new items if available
                             'Dim comboboxitems As List(Of AstoniaProcess) = (From item As AstoniaProcess In cboAlt.Items Select value = item).ToList
 
-                            Dim newItems = AstoniaProcess.Enumerate.Except(
+                            Dim newItems = AstoniaProcess.Enumerate(blackList).Except(
                                                  (From item As AstoniaProcess In cboAlt.Items Select value = item),
                                                    New AstoniaProcessEqualityComparer)
                             Debug.Print($"newitems.count {newItems.Count}")
@@ -914,6 +931,8 @@
     Private counter As Integer = 0
 
     Dim AOBusy As Boolean = False
+
+    Friend Shared apSorter As AstoniaProcessSorter
     Private Async Sub TmrOverview_Tick(sender As Timer, e As EventArgs) Handles tmrOverview.Tick
 
         'Debug.Print("tmrStartup.Tick")
@@ -922,32 +941,45 @@
 #End If
 
         Dim i As Integer = 0
-        Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate _
-                    .Where(Function(ap) Not {"", "Someone"}.Contains(ap.Name) AndAlso ap.MainWindowTitle.Count(Function(c As Char) c = "-"c) > 1).ToList
+        Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name, apSorter).ToList
+
         pnlOverview.SuspendLayout()
         UpdateButtonLayout(alts.Count)
-        For Each but As AButton In pnlOverview.Controls.OfType(Of AButton).Where(Function(b) b.Visible) 'loop through visible buttons
-            If i < alts.Count Then
-                Dim name As String = alts(i).Name
-                While name = "" OrElse name = "Someone" OrElse alts(i).MainWindowTitle.Count(Function(c As Char) c = "-"c) < 2
+
+        Dim butCount As Integer = pnlOverview.Controls.OfType(Of AButton).Where(Function(b) b.Visible).Count
+
+        Dim botCount As Integer = alts.Where(Function(ap) botSortList.Contains(ap.Name)).Count
+
+        Dim topCount As Integer = alts.Count - botCount
+
+        Dim skipCount As Integer = butCount - botCount
+
+        Dim apCount As Integer = 0
+        For Each but As AButton In pnlOverview.Controls.OfType(Of AButton).Where(Function(b) b.Visible)
+            'Debug.Print($"apCount < alts.Count AndAlso (i < topCount OrElse i > skipCount")
+            'Debug.Print($"{apCount} < {alts.Count} AndAlso ({i} < {topCount} OrElse {i} > {skipCount}")
+            If apCount < alts.Count AndAlso (i < topCount OrElse i >= skipCount) Then
+
+                Dim name As String = alts(apCount).Name
+                While name = "" OrElse blackList.Contains(name) OrElse alts(apCount).MainWindowTitle.Count(Function(c As Char) c = "-"c) < 2
                     'don't list "Someone"s or clients in the process of logging in ("-"<2)
-                    i += 1
-                    If i >= alts.Count Then
+                    apCount += 1
+                    If apCount >= alts.Count Then
                         Exit For
                     End If
-                    name = alts(i).Name
+                    name = alts(apCount).Name
                 End While
 
                 but.Text = name
-                but.Tag = alts(i)
-                If alts(i)?.IsActive() Then
+                but.Tag = alts(apCount)
+                If alts(apCount)?.IsActive() Then
                     but.Font = New Font("Microsoft Sans Serif", 8.25, FontStyle.Bold)
                     but.Select()
                 Else
                     but.Font = New Font("Microsoft Sans Serif", 8.25)
                 End If
                 If counter = 0 Then
-                    Using ico As Bitmap = alts(i).GetIcon?.ToBitmap
+                    Using ico As Bitmap = alts(apCount).GetIcon?.ToBitmap
                         If ico IsNot Nothing Then
                             but.BackgroundImage = New Bitmap(ico, New Size(16, 16))
                         Else
@@ -958,21 +990,21 @@
                 but.ContextMenuStrip = cmsAlt
 
                 'activeNameList.Add(name)
-                If Not startThumbsDict.ContainsKey(alts(i).Id) Then
-                    startThumbsDict(alts(i).Id) = IntPtr.Zero
-                    DwmRegisterThumbnail(Me.Handle, alts(i).MainWindowHandle, startThumbsDict(alts(i).Id))
-                    Debug.Print("registered thumb " & startThumbsDict(alts(i).Id).ToString & " " & name)
+                If Not startThumbsDict.ContainsKey(alts(apCount).Id) Then
+                    startThumbsDict(alts(apCount).Id) = IntPtr.Zero
+                    DwmRegisterThumbnail(Me.Handle, alts(apCount).MainWindowHandle, startThumbsDict(alts(apCount).Id))
+                    Debug.Print("registered thumb " & startThumbsDict(alts(apCount).Id).ToString & " " & name)
                 End If
 
-                rectDic(alts(i).Id) = but.ThumbRECT
+                rectDic(alts(apCount).Id) = but.ThumbRECT
                 Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
-                                   .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION,
-                                   .opacity = opaDict.GetValueOrDefault(alts(i).Id, &HFF),
-                                   .fSourceClientAreaOnly = True,
-                                   .fVisible = True,
-                                   .rcDestination = rectDic(alts(i).Id)
-                               }
-                DwmUpdateThumbnailProperties(startThumbsDict(alts(i).Id), prp)
+                                       .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION,
+                                       .opacity = opaDict.GetValueOrDefault(alts(apCount).Id, &HFF),
+                                       .fSourceClientAreaOnly = True,
+                                       .fVisible = True,
+                                       .rcDestination = rectDic(alts(apCount).Id)
+                                   }
+                DwmUpdateThumbnailProperties(startThumbsDict(alts(apCount).Id), prp)
 
                 'If Not MovingForm Then but.Image = alts(i).getHealthbar() 'couses window moving to stutter.
                 'Task.Run(Sub() but.Image = but.Tag.getHealthbar()) 'smooth window move. causes excetpion in unamanged code on but.image.
@@ -1047,9 +1079,9 @@
                         AOBusy = False
                     End If 'but.ThumbContains(MousePosition)
                 End If 'gameonoverview
+                apCount += 1
 
-
-            Else ' i >= alts.Count
+            Else
                 but.Text = String.Empty
                 but.Tag = Nothing 'New AstoniaProcess(Nothing)
                 but.ContextMenuStrip = cmsQuickLaunch
@@ -1057,8 +1089,7 @@
                 but.Image = Nothing
             End If
             i += 1
-            'but.ResumeLayout()
-        Next but
+        Next
 
         ' Dim purgeList As List(Of Integer) = startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList
         For Each ppid As Integer In startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList 'purgeList
@@ -1263,6 +1294,11 @@
     End Sub
 
     ReadOnly scalaPID As Integer = Process.GetCurrentProcess().Id
+    Public Shared topSortList As List(Of String) = My.Settings.topSort.Split(CType(vbCrLf, Char()), StringSplitOptions.RemoveEmptyEntries).ToList
+    Public Shared botSortList As List(Of String) = My.Settings.botSort.Split(CType(vbCrLf, Char()), StringSplitOptions.RemoveEmptyEntries).ToList
+    Public Shared blackList As List(Of String) = topSortList.Intersect(botSortList).ToList
+
+
     Private Sub TmrActive_Tick(sender As Timer, e As EventArgs) Handles tmrActive.Tick
 
         Try

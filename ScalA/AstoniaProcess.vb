@@ -195,11 +195,13 @@
         Next
         Return IEnum
     End Function
-    Public Shared Function Enumerate(Optional listSomeone As Boolean = False) As IEnumerable(Of AstoniaProcess)
+    Public Shared Function Enumerate() As IEnumerable(Of AstoniaProcess)
+        Return AstoniaProcess.Enumerate({})
+    End Function
+    Public Shared Function Enumerate(blacklist As IEnumerable(Of String)) As IEnumerable(Of AstoniaProcess)
         Return enumProcessesByNameArray(My.Settings.exe.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries)) _
-            .Where(Function(p) listSomeone OrElse Not p.MainWindowTitle.StartsWith("Someone ")) _
-            .OrderBy(Function(p) p.MainWindowTitle) _
             .Select(Function(p) New AstoniaProcess(p)) _
+            .Where(Function(ap) Not blacklist.Contains(ap.Name) AndAlso ap.MainWindowTitle.Count(Function(c As Char) c = "-"c) > 1) _
             .Where(Function(ap) ap.HasClassNameIn(classes:=My.Settings.className))
     End Function
 
@@ -288,6 +290,46 @@
 
 End Class
 
+Class AstoniaProcessSorter
+    Implements IComparer(Of String)
+
+    Dim topOrder As List(Of String)
+    Dim botOrder As List(Of String)
+
+    Public Sub New(topOrder As List(Of String), botOrder As List(Of String))
+        Me.topOrder = topOrder
+        Me.botOrder = botOrder
+    End Sub
+
+    Public Function Compare(ap1 As String, ap2 As String) As Integer Implements IComparer(Of String).Compare
+        'equal = 0, ap1 > ap2 = 1, ap1 < ap2 = -1
+
+        Dim top1 As Boolean = topOrder.Contains(ap1)
+        Dim top2 As Boolean = topOrder.Contains(ap2)
+
+        Dim bot1 As Boolean = botOrder.Contains(ap1)
+        Dim bot2 As Boolean = botOrder.Contains(ap2)
+
+        'Debug.Print($"comp:{ap1} {ap2}")
+        'Debug.Print($"top: {top1} {top2}")
+        'Debug.Print($"bot: {bot1} {bot2}")
+
+        If top1 AndAlso bot2 Then Return -1
+        If bot1 AndAlso top2 Then Return 1
+
+        If bot1 AndAlso bot2 Then Return botOrder.IndexOf(ap1) - botOrder.IndexOf(ap2)
+        If top1 AndAlso top2 Then Return topOrder.IndexOf(ap1) - topOrder.IndexOf(ap2)
+
+        If bot1 Then Return 1
+        If bot2 Then Return -1
+
+        If top1 Then Return -1
+        If top2 Then Return 1
+
+        Return Comparer(Of String).Default.Compare(ap1, ap2)
+
+    End Function
+End Class
 Class AstoniaProcessEqualityComparer
     Implements IEqualityComparer(Of AstoniaProcess)
 

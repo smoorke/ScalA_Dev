@@ -58,6 +58,9 @@ Public Class FrmSettings
 
         chkCycleOnClose.Checked = My.Settings.CycleOnClose
 
+        txtTopSort.Text = My.Settings.topSort
+        txtBotSort.Text = My.Settings.botSort
+
     End Sub
     'https://docs.microsoft.com/en-us/windows/win32/api/shellapi/ne-shellapi-shstockiconid
     Enum SIID As UInteger
@@ -106,6 +109,9 @@ Public Class FrmSettings
 
     Private Sub BtnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
         Me.chkDoAlign.Checked = False
+        Me.txtTopSort.Text = My.Settings.topSort
+        Me.txtBotSort.Text = My.Settings.botSort
+        btnTest.PerformClick()
         Me.Close()
     End Sub
 
@@ -211,6 +217,11 @@ Public Class FrmSettings
 
         My.Settings.CycleOnClose = chkCycleOnClose.Checked
 
+        My.Settings.topSort = txtTopSort.Text
+        My.Settings.botSort = txtBotSort.Text
+
+        btnTest.PerformClick() 'apply sorting
+
         Hotkey.UnregHotkey(FrmMain)
 
         Me.Close()
@@ -276,7 +287,7 @@ Public Class FrmSettings
             Using fb As New Ookii.Dialogs.WinForms.VistaFolderBrowserDialog
                 fb.Description = "Select Folder Containing Your Shortcuts - ScalA"
                 fb.UseDescriptionForTitle = True
-                fb.ShowNewFolderButton = False
+                fb.ShowNewFolderButton = True
                 fb.RootFolder = Environment.SpecialFolder.Desktop
                 fb.SelectedPath = current
 
@@ -380,7 +391,7 @@ Public Class FrmSettings
     Private Sub FromToolStripMenuItem_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) Handles FromToolStripMenuItem.DropDownOpening
         sender.DropDownItems.Clear()
 
-        For Each ap As AstoniaProcess In AstoniaProcess.Enumerate(True)
+        For Each ap As AstoniaProcess In AstoniaProcess.Enumerate()
 
             Dim rcC As Rectangle
             GetClientRect(ap.MainWindowHandle, rcC)
@@ -403,6 +414,31 @@ Public Class FrmSettings
         Next
         sb.Remove(sb.Length - 1, 1)
         txtResolutions.Text = sb.ToString
+    End Sub
+
+    Private Sub btnHelp_Click(sender As Object, e As EventArgs) Handles btnHelp.Click
+        Dim bl As String = vbTab & """" & String.Join($"""{vbCrLf & vbTab}""", txtTopSort.Lines.Intersect(txtBotSort.Lines).Where(Function(s) s <> "")) & """"
+        If bl = vbTab & """""" Then bl = $"{vbTab}(None)"
+        MessageBox.Show($"Names are case sensitive.{vbCrLf}Left list Sorts to top, Right one to bottom.{vbCrLf}Names appearing in both are blacklisted.{vbCrLf & vbCrLf}Current Blacklist:{vbCrLf}{bl}", "Sorting/Blacklist Info", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End Sub
+
+    Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
+        FrmMain.topSortList = txtTopSort.Lines.Where(Function(s) s <> "").ToList
+        FrmMain.botSortList = txtBotSort.Lines.Where(Function(s) s <> "").ToList
+        FrmMain.blackList = FrmMain.topSortList.Intersect(FrmMain.botSortList).Where(Function(s) s <> "").ToList
+        FrmMain.topSortList = FrmMain.topSortList.Except(FrmMain.blackList).ToList
+        FrmMain.botSortList = FrmMain.botSortList.Except(FrmMain.blackList).ToList
+
+        FrmMain.apSorter = New AstoniaProcessSorter(FrmMain.topSortList, FrmMain.botSortList)
+
+#If DEBUG Then
+        Debug.Print("Top:")
+        FrmMain.topSortList.ForEach(Sub(el) Debug.Print(el))
+        Debug.Print("Bot:")
+        FrmMain.botSortList.ForEach(Sub(el) Debug.Print(el))
+        Debug.Print("blacklist:")
+        FrmMain.blackList.ForEach(Sub(el) Debug.Print(el))
+#End If
     End Sub
 
     Private Sub txtShortcuts_PreviewKeyDown(sender As TextBox, e As PreviewKeyDownEventArgs) Handles txtStoKey.PreviewKeyDown, txtCycleKeyUp.PreviewKeyDown, txtCycleKeyDown.PreviewKeyDown

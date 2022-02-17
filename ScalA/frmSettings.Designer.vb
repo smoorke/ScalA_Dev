@@ -28,6 +28,8 @@ Partial Class FrmSettings
         Dim Label2 As System.Windows.Forms.Label
         Dim Label1 As System.Windows.Forms.Label
         Dim ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
+        Dim Label4 As System.Windows.Forms.Label
+        Dim Label5 As System.Windows.Forms.Label
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmSettings))
         Me.btnOpenFolderDialog = New System.Windows.Forms.Button()
         Me.cmsQLFolder = New System.Windows.Forms.ContextMenuStrip(Me.components)
@@ -38,6 +40,7 @@ Partial Class FrmSettings
         Me.tmrAlign = New System.Windows.Forms.Timer(Me.components)
         Me.ttSettings = New System.Windows.Forms.ToolTip(Me.components)
         Me.chkOverViewIsGame = New System.Windows.Forms.CheckBox()
+        Me.chkCycleOnClose = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.btnRestore = New System.Windows.Forms.Button()
@@ -66,6 +69,11 @@ Partial Class FrmSettings
         Me.chkStoAlt = New System.Windows.Forms.CheckBox()
         Me.chkStoCtrl = New System.Windows.Forms.CheckBox()
         Me.chkSwitchToOverview = New System.Windows.Forms.CheckBox()
+        Me.tabSortAndBL = New System.Windows.Forms.TabPage()
+        Me.btnTest = New System.Windows.Forms.Button()
+        Me.btnHelp = New System.Windows.Forms.Button()
+        Me.txtBotSort = New System.Windows.Forms.TextBox()
+        Me.txtTopSort = New System.Windows.Forms.TextBox()
         Me.tabMisc = New System.Windows.Forms.TabPage()
         Me.chkDoAlign = New System.Windows.Forms.CheckBox()
         Me.grpAlign = New System.Windows.Forms.GroupBox()
@@ -76,12 +84,13 @@ Partial Class FrmSettings
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
         Me.txtClass = New System.Windows.Forms.TextBox()
-        Me.chkCycleOnClose = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
         Label1 = New System.Windows.Forms.Label()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
+        Label4 = New System.Windows.Forms.Label()
+        Label5 = New System.Windows.Forms.Label()
         grpQLPath.SuspendLayout()
         Me.cmsQLFolder.SuspendLayout()
         Me.tbcSettings.SuspendLayout()
@@ -90,6 +99,7 @@ Partial Class FrmSettings
         Me.tabHotkeys.SuspendLayout()
         Me.grpCycleShortcut.SuspendLayout()
         Me.grpOverviewShortcut.SuspendLayout()
+        Me.tabSortAndBL.SuspendLayout()
         Me.tabMisc.SuspendLayout()
         Me.grpAlign.SuspendLayout()
         CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -172,6 +182,26 @@ Partial Class FrmSettings
         ToolStripSeparator1.Name = "ToolStripSeparator1"
         ToolStripSeparator1.Size = New System.Drawing.Size(151, 6)
         '
+        'Label4
+        '
+        Label4.AutoSize = True
+        Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Label4.Location = New System.Drawing.Point(6, 3)
+        Label4.Name = "Label4"
+        Label4.Size = New System.Drawing.Size(18, 9)
+        Label4.TabIndex = 3
+        Label4.Text = "Top"
+        '
+        'Label5
+        '
+        Label5.AutoSize = True
+        Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Label5.Location = New System.Drawing.Point(140, 3)
+        Label5.Name = "Label5"
+        Label5.Size = New System.Drawing.Size(29, 9)
+        Label5.TabIndex = 4
+        Label5.Text = "Bottom"
+        '
         'btnOK
         '
         Me.btnOK.Location = New System.Drawing.Point(72, 159)
@@ -207,16 +237,28 @@ Partial Class FrmSettings
         Me.ttSettings.SetToolTip(Me.chkOverViewIsGame, "Have overview thumbnails function as game.")
         Me.chkOverViewIsGame.UseVisualStyleBackColor = True
         '
+        'chkCycleOnClose
+        '
+        Me.chkCycleOnClose.AutoSize = True
+        Me.chkCycleOnClose.Location = New System.Drawing.Point(114, 39)
+        Me.chkCycleOnClose.Name = "chkCycleOnClose"
+        Me.chkCycleOnClose.Size = New System.Drawing.Size(96, 17)
+        Me.chkCycleOnClose.TabIndex = 23
+        Me.chkCycleOnClose.Text = "Cycle on Close"
+        Me.ttSettings.SetToolTip(Me.chkCycleOnClose, "Closing an alt will cycle to the next one.")
+        Me.chkCycleOnClose.UseVisualStyleBackColor = True
+        '
         'tbcSettings
         '
         Me.tbcSettings.Appearance = System.Windows.Forms.TabAppearance.FlatButtons
         Me.tbcSettings.Controls.Add(Me.tabResolutions)
         Me.tbcSettings.Controls.Add(Me.tabHotkeys)
+        Me.tbcSettings.Controls.Add(Me.tabSortAndBL)
         Me.tbcSettings.Controls.Add(Me.tabMisc)
         Me.tbcSettings.Location = New System.Drawing.Point(0, 0)
         Me.tbcSettings.Name = "tbcSettings"
         Me.tbcSettings.SelectedIndex = 0
-        Me.tbcSettings.Size = New System.Drawing.Size(238, 157)
+        Me.tbcSettings.Size = New System.Drawing.Size(243, 157)
         Me.tbcSettings.TabIndex = 14
         Me.tbcSettings.TabStop = False
         '
@@ -229,7 +271,7 @@ Partial Class FrmSettings
         Me.tabResolutions.Location = New System.Drawing.Point(4, 25)
         Me.tabResolutions.Name = "tabResolutions"
         Me.tabResolutions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabResolutions.Size = New System.Drawing.Size(230, 128)
+        Me.tabResolutions.Size = New System.Drawing.Size(235, 128)
         Me.tabResolutions.TabIndex = 0
         Me.tabResolutions.Text = "Resolutions"
         Me.tabResolutions.UseVisualStyleBackColor = True
@@ -315,7 +357,7 @@ Partial Class FrmSettings
         Me.tabHotkeys.Controls.Add(Me.grpOverviewShortcut)
         Me.tabHotkeys.Location = New System.Drawing.Point(4, 25)
         Me.tabHotkeys.Name = "tabHotkeys"
-        Me.tabHotkeys.Size = New System.Drawing.Size(230, 128)
+        Me.tabHotkeys.Size = New System.Drawing.Size(235, 128)
         Me.tabHotkeys.TabIndex = 2
         Me.tabHotkeys.Text = "Hotkeys"
         Me.tabHotkeys.UseVisualStyleBackColor = True
@@ -495,6 +537,61 @@ Partial Class FrmSettings
         Me.chkSwitchToOverview.Text = "Switch to Overview"
         Me.chkSwitchToOverview.UseVisualStyleBackColor = True
         '
+        'tabSortAndBL
+        '
+        Me.tabSortAndBL.Controls.Add(Me.btnTest)
+        Me.tabSortAndBL.Controls.Add(Label5)
+        Me.tabSortAndBL.Controls.Add(Label4)
+        Me.tabSortAndBL.Controls.Add(Me.btnHelp)
+        Me.tabSortAndBL.Controls.Add(Me.txtBotSort)
+        Me.tabSortAndBL.Controls.Add(Me.txtTopSort)
+        Me.tabSortAndBL.Location = New System.Drawing.Point(4, 25)
+        Me.tabSortAndBL.Margin = New System.Windows.Forms.Padding(0)
+        Me.tabSortAndBL.Name = "tabSortAndBL"
+        Me.tabSortAndBL.Padding = New System.Windows.Forms.Padding(3)
+        Me.tabSortAndBL.Size = New System.Drawing.Size(235, 128)
+        Me.tabSortAndBL.TabIndex = 3
+        Me.tabSortAndBL.Text = "Sort"
+        Me.tabSortAndBL.UseVisualStyleBackColor = True
+        '
+        'btnTest
+        '
+        Me.btnTest.Location = New System.Drawing.Point(104, 47)
+        Me.btnTest.Name = "btnTest"
+        Me.btnTest.Size = New System.Drawing.Size(21, 61)
+        Me.btnTest.TabIndex = 5
+        Me.btnTest.Text = "Test"
+        Me.btnTest.UseVisualStyleBackColor = True
+        '
+        'btnHelp
+        '
+        Me.btnHelp.BackgroundImage = Global.ScalA.My.Resources.Resources.About
+        Me.btnHelp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch
+        Me.btnHelp.Location = New System.Drawing.Point(104, 18)
+        Me.btnHelp.Margin = New System.Windows.Forms.Padding(0)
+        Me.btnHelp.Name = "btnHelp"
+        Me.btnHelp.Size = New System.Drawing.Size(22, 23)
+        Me.btnHelp.TabIndex = 2
+        Me.btnHelp.UseVisualStyleBackColor = True
+        '
+        'txtBotSort
+        '
+        Me.txtBotSort.Location = New System.Drawing.Point(130, 15)
+        Me.txtBotSort.Multiline = True
+        Me.txtBotSort.Name = "txtBotSort"
+        Me.txtBotSort.Size = New System.Drawing.Size(100, 113)
+        Me.txtBotSort.TabIndex = 1
+        Me.txtBotSort.Text = "Someone"
+        '
+        'txtTopSort
+        '
+        Me.txtTopSort.Location = New System.Drawing.Point(0, 15)
+        Me.txtTopSort.Multiline = True
+        Me.txtTopSort.Name = "txtTopSort"
+        Me.txtTopSort.Size = New System.Drawing.Size(100, 113)
+        Me.txtTopSort.TabIndex = 0
+        Me.txtTopSort.Text = "Someone"
+        '
         'tabMisc
         '
         Me.tabMisc.Controls.Add(Me.chkCycleOnClose)
@@ -510,7 +607,7 @@ Partial Class FrmSettings
         Me.tabMisc.Location = New System.Drawing.Point(4, 25)
         Me.tabMisc.Name = "tabMisc"
         Me.tabMisc.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabMisc.Size = New System.Drawing.Size(230, 128)
+        Me.tabMisc.Size = New System.Drawing.Size(235, 128)
         Me.tabMisc.TabIndex = 1
         Me.tabMisc.Text = "Misc"
         Me.tabMisc.UseVisualStyleBackColor = True
@@ -610,21 +707,11 @@ Partial Class FrmSettings
         Me.txtClass.TabIndex = 17
         Me.txtClass.Text = "MAINWNDMOAC | 䅍义乗䵄䅏C"
         '
-        'chkCycleOnClose
-        '
-        Me.chkCycleOnClose.AutoSize = True
-        Me.chkCycleOnClose.Location = New System.Drawing.Point(114, 39)
-        Me.chkCycleOnClose.Name = "chkCycleOnClose"
-        Me.chkCycleOnClose.Size = New System.Drawing.Size(96, 17)
-        Me.chkCycleOnClose.TabIndex = 23
-        Me.chkCycleOnClose.Text = "Cycle on Close"
-        Me.ttSettings.SetToolTip(Me.chkCycleOnClose, "Closing an alt will cycle to the next one.")
-        Me.chkCycleOnClose.UseVisualStyleBackColor = True
-        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
         Me.ClientSize = New System.Drawing.Size(238, 187)
         Me.Controls.Add(Me.tbcSettings)
         Me.Controls.Add(Me.btnCancel)
@@ -648,6 +735,8 @@ Partial Class FrmSettings
         Me.grpCycleShortcut.PerformLayout()
         Me.grpOverviewShortcut.ResumeLayout(False)
         Me.grpOverviewShortcut.PerformLayout()
+        Me.tabSortAndBL.ResumeLayout(False)
+        Me.tabSortAndBL.PerformLayout()
         Me.tabMisc.ResumeLayout(False)
         Me.tabMisc.PerformLayout()
         Me.grpAlign.ResumeLayout(False)
@@ -705,4 +794,9 @@ Partial Class FrmSettings
     Friend WithEvents FromToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents DummyToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents chkCycleOnClose As CheckBox
+    Friend WithEvents tabSortAndBL As TabPage
+    Friend WithEvents btnHelp As Button
+    Friend WithEvents txtBotSort As TextBox
+    Friend WithEvents txtTopSort As TextBox
+    Friend WithEvents btnTest As Button
 End Class

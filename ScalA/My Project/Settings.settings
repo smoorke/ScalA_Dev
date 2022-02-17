@@ -100,5 +100,11 @@
     <Setting Name="CycleOnClose" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="topSort" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Someone</Value>
+    </Setting>
+    <Setting Name="botSort" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Someone</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
