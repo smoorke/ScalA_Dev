@@ -81,7 +81,7 @@
                 _proc?.Refresh()
                 Return Strings.Left(_proc?.MainWindowTitle, _proc?.MainWindowTitle.IndexOf(" - "))
             Catch
-                Return String.Empty
+                Return "Someone"
             End Try
         End Get
     End Property
@@ -122,8 +122,12 @@
 
 
     Public Function MainWindowTitle() As String
-        _proc?.Refresh()
-        Return _proc?.MainWindowTitle
+        Try
+            _proc?.Refresh()
+            Return _proc?.MainWindowTitle
+        Catch
+            Return ""
+        End Try
     End Function
 
     <System.Runtime.InteropServices.DllImport("user32.dll", CharSet:=System.Runtime.InteropServices.CharSet.Auto)>
@@ -140,9 +144,13 @@
     ''' <param name="classes">Pipe seperated string of classes</param>
     ''' <returns></returns>
     Public Function HasClassNameIn(classes As String) As Boolean
-        Return classes.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries) _
+        Try
+            Return classes.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries) _
                       .Select(Function(wc) Strings.Trim(wc)) _
                       .Contains(GetWindowClass(_proc?.MainWindowHandle))
+        Catch
+            Return False
+        End Try
     End Function
 
     'Public Overrides Function ToString() As String
@@ -153,7 +161,10 @@
     Shared ReadOnly exeIconCache As New Dictionary(Of Integer, Tuple(Of Icon, String)) 'PID, icon, name
     Shared ReadOnly pathIcnCache As New Dictionary(Of String, Icon) 'path, icon
     Public Function GetIcon(Optional invalidateCache As Boolean = False) As Icon
-        If invalidateCache Then exeIconCache.Clear()
+        If invalidateCache Then
+            exeIconCache.Clear()
+            pathIcnCache.Clear()
+        End If
         Try
             Dim ID As Integer = _proc?.Id
             If exeIconCache.ContainsKey(ID) AndAlso (exeIconCache(ID).Item2 = Me.Name) Then
