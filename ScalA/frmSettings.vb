@@ -270,7 +270,7 @@ Public Class FrmSettings
         numYoffset.Text = 0
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs)
+    Private Sub btnOpenFolderDialog_Click(sender As Object, e As EventArgs) Handles btnOpenFolderDialog.Click
         txtQuickLaunchPath.SuspendLayout()
         txtQuickLaunchPath.Text = ChangeLinksDir(My.Settings.links)
         txtQuickLaunchPath.SelectionStart = txtQuickLaunchPath.TextLength
