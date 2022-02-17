@@ -58,8 +58,10 @@ Partial Public Class FrmMain
         sender.Items.RemoveAt(sender.Items.Count - 1)
         sender.Items.Add("Close " & pp.Name, My.Resources.F12, AddressOf CloseToolStripMenuItem_Click).Tag = pp
 
-        If AstoniaProcess.Enumerate(True).Any(Function(p As AstoniaProcess) p.Name = "Someone") Then
-            closeAllToolStripMenuItem = sender.Items.Add("Close All Idled", My.Resources.F12, AddressOf CloseAllIdle_Click)
+        Dim other As String = If(pp.Name = "Someone", "Other ", "")
+        If AstoniaProcess.Enumerate().Any(Function(p As AstoniaProcess) p.Name = "Someone") Then
+            closeAllToolStripMenuItem = sender.Items.Add($"Close All {other}Someone", My.Resources.F12, AddressOf CloseAllIdle_Click)
+            closeAllToolStripMenuItem.Tag = pp
         End If
     End Sub
 
@@ -425,11 +427,11 @@ Partial Public Class FrmMain
         If AstoniaProcess.Enumerate().Any(Function(pp As AstoniaProcess) pp.Name = "Someone") Then
             If sender.SourceControl Is Nothing Then 'called from trayicon
                 sender.Items.Insert(0, New ToolStripSeparator())
-                sender.Items.Insert(0, New ToolStripMenuItem("Close All Idled", My.Resources.F12, AddressOf CloseAllIdle_Click))
+                sender.Items.Insert(0, New ToolStripMenuItem("Close All Someone", My.Resources.F12, AddressOf CloseAllIdle_Click))
                 closeAllAtBottom = False
             Else
                 sender.Items.Add(New ToolStripSeparator())
-                sender.Items.Add("Close All Idled", My.Resources.F12, AddressOf CloseAllIdle_Click)
+                sender.Items.Add("Close All Someone", My.Resources.F12, AddressOf CloseAllIdle_Click)
                 closeAllAtBottom = True
             End If
         End If
