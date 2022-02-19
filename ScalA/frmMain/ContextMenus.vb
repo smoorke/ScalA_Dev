@@ -462,7 +462,10 @@ Partial Public Class FrmMain
             'these couse ghosting of menu and blanking of zoom when closed by reopening when reason = appclicked
             'SetWindowPos(AltPP.MainWindowHandle, -2, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
             If sender.SourceControl IsNot Nothing AndAlso AltPP.Id <> 0 Then
-                AppActivate(AltPP.Id)
+                Try
+                    AppActivate(AltPP.Id)
+                Catch
+                End Try
             End If
         End If
         Await Task.Delay(100)
