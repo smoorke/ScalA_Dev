@@ -106,5 +106,8 @@
     <Setting Name="botSort" Type="System.String" Scope="User">
       <Value Profile="(Default)">Someone</Value>
     </Setting>
+    <Setting Name="Whitelist" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -212,8 +212,12 @@
     Public Shared Function Enumerate(blacklist As IEnumerable(Of String)) As IEnumerable(Of AstoniaProcess)
         Return enumProcessesByNameArray(My.Settings.exe.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries)) _
             .Select(Function(p) New AstoniaProcess(p)) _
-            .Where(Function(ap) Not blacklist.Contains(ap.Name) AndAlso ap.MainWindowTitle.Count(Function(c As Char) c = "-"c) > 1) _
-            .Where(Function(ap) ap.HasClassNameIn(classes:=My.Settings.className))
+            .Where(Function(ap)
+                       Return Not blacklist.Contains(ap.Name) AndAlso
+                              (Not My.Settings.Whitelist OrElse FrmMain.topSortList.Concat(FrmMain.botSortList).Contains(ap.Name)) AndAlso
+                              ap.MainWindowTitle.Count(Function(c As Char) c = "-"c) > 1 AndAlso
+                              ap.HasClassNameIn(classes:=My.Settings.className)
+                   End Function)
     End Function
 
     <System.Runtime.InteropServices.DllImport("user32.dll", SetLastError:=True)>

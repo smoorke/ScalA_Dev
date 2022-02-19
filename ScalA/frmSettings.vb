@@ -61,7 +61,12 @@ Public Class FrmSettings
         txtTopSort.Text = My.Settings.topSort
         txtBotSort.Text = My.Settings.botSort
 
+        chkWhitelist.Checked = My.Settings.Whitelist
+
     End Sub
+
+    Private restoreWhitelist As Boolean = My.Settings.Whitelist
+
     'https://docs.microsoft.com/en-us/windows/win32/api/shellapi/ne-shellapi-shstockiconid
     Enum SIID As UInteger
         folder = 3
@@ -112,6 +117,7 @@ Public Class FrmSettings
         Me.txtTopSort.Text = My.Settings.topSort
         Me.txtBotSort.Text = My.Settings.botSort
         btnTest.PerformClick()
+        My.Settings.Whitelist = restoreWhitelist
         Me.Close()
     End Sub
 
@@ -220,7 +226,7 @@ Public Class FrmSettings
         My.Settings.topSort = txtTopSort.Text
         My.Settings.botSort = txtBotSort.Text
 
-        btnTest.PerformClick() 'apply sorting
+        btnTest_Click(Nothing, Nothing) 'apply sorting
 
         Hotkey.UnregHotkey(FrmMain)
 
@@ -345,6 +351,7 @@ Public Class FrmSettings
                                     "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""} ' 240-255
     Dim StoKey, CycleKeyUp, CycleKeyDown As Integer
 
+
     Private Sub btnRestore_Click(sender As Object, e As EventArgs) Handles btnRestore.Click
         txtResolutions.Text = My.Settings.resolutions
     End Sub
@@ -419,10 +426,16 @@ Public Class FrmSettings
     Private Sub btnHelp_Click(sender As Object, e As EventArgs) Handles btnHelp.Click
         Dim bl As String = vbTab & """" & String.Join($"""{vbCrLf & vbTab}""", txtTopSort.Lines.Intersect(txtBotSort.Lines).Where(Function(s) s <> "")) & """"
         If bl = vbTab & """""" Then bl = $"{vbTab}(None)"
-        MessageBox.Show($"Names are case sensitive.{vbCrLf}Left list Sorts to top, Right one to bottom.{vbCrLf}Names appearing in both are blacklisted.{vbCrLf & vbCrLf}Current Blacklist:{vbCrLf}{bl}", "Sorting/Blacklist Info", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        MessageBox.Show($"Names are case sensitive.{vbCrLf}Left list Sorts to top, Right one to bottom.{vbCrLf}" &
+                        $"If whitelist is enabled ScalA will only show alts in lists{vbCrLf}   except those that are blacklisted{vbCrLf}" &
+                        $"Names appearing in both lists are blacklisted.{vbCrLf}{vbCrLf}" &
+                        $"Current Blacklist:{vbCrLf}{bl}", "Sorting & Black/Whitelist Info", MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 
     Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
+
+        Debug.Print("btnTest_Click")
+
         FrmMain.topSortList = txtTopSort.Lines.Where(Function(s) s <> "").ToList
         FrmMain.botSortList = txtBotSort.Lines.Where(Function(s) s <> "").ToList
         FrmMain.blackList = FrmMain.topSortList.Intersect(FrmMain.botSortList).Where(Function(s) s <> "").ToList
@@ -430,6 +443,8 @@ Public Class FrmSettings
         FrmMain.botSortList = FrmMain.botSortList.Except(FrmMain.blackList).ToList
 
         FrmMain.apSorter = New AstoniaProcessSorter(FrmMain.topSortList, FrmMain.botSortList)
+
+        My.Settings.Whitelist = chkWhitelist.Checked
 
 #If DEBUG Then
         Debug.Print("Top:")

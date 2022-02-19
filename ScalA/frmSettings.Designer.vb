@@ -84,6 +84,7 @@ Partial Class FrmSettings
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
         Me.txtClass = New System.Windows.Forms.TextBox()
+        Me.chkWhitelist = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -196,7 +197,7 @@ Partial Class FrmSettings
         '
         Label5.AutoSize = True
         Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Label5.Location = New System.Drawing.Point(140, 3)
+        Label5.Location = New System.Drawing.Point(193, 3)
         Label5.Name = "Label5"
         Label5.Size = New System.Drawing.Size(29, 9)
         Label5.TabIndex = 4
@@ -545,6 +546,7 @@ Partial Class FrmSettings
         Me.tabSortAndBL.Controls.Add(Me.btnHelp)
         Me.tabSortAndBL.Controls.Add(Me.txtBotSort)
         Me.tabSortAndBL.Controls.Add(Me.txtTopSort)
+        Me.tabSortAndBL.Controls.Add(Me.chkWhitelist)
         Me.tabSortAndBL.Location = New System.Drawing.Point(4, 25)
         Me.tabSortAndBL.Margin = New System.Windows.Forms.Padding(0)
         Me.tabSortAndBL.Name = "tabSortAndBL"
@@ -707,6 +709,16 @@ Partial Class FrmSettings
         Me.txtClass.TabIndex = 17
         Me.txtClass.Text = "MAINWNDMOAC | 䅍义乗䵄䅏C"
         '
+        'chkWhitelist
+        '
+        Me.chkWhitelist.AutoSize = True
+        Me.chkWhitelist.Location = New System.Drawing.Point(77, -1)
+        Me.chkWhitelist.Name = "chkWhitelist"
+        Me.chkWhitelist.Size = New System.Drawing.Size(66, 17)
+        Me.chkWhitelist.TabIndex = 6
+        Me.chkWhitelist.Text = "Whitelist"
+        Me.chkWhitelist.UseVisualStyleBackColor = True
+        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -799,4 +811,5 @@ Partial Class FrmSettings
     Friend WithEvents txtBotSort As TextBox
     Friend WithEvents txtTopSort As TextBox
     Friend WithEvents btnTest As Button
+    Friend WithEvents chkWhitelist As CheckBox
 End Class
