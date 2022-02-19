@@ -1313,7 +1313,8 @@
 
         Try
             Dim activeID As Integer = GetActiveProcessID()
-            If activeID = scalaPID OrElse activeID = AltPP?.Id Then
+            If activeID = scalaPID OrElse activeID = AltPP?.Id OrElse
+                (My.Settings.gameOnOverview AndAlso New AstoniaProcess(Process.GetProcessById(activeID)).HasClassNameIn(My.Settings.className)) Then
                 lblTitle.ForeColor = SystemColors.ControlText
                 btnMax.ForeColor = SystemColors.ControlText
                 btnMin.ForeColor = SystemColors.ControlText
