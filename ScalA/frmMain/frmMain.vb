@@ -619,29 +619,10 @@
                 tmrTick.Enabled = False
                 cboAlt.SelectedIndex = 0
                 tmrOverview.Enabled = True
+                AppActivate(scalaPID)
                 Exit Sub
             Else 'CycleOnClose
-                Dim requestedIndex = cboAlt.SelectedIndex + 1
-                Debug.Print($"CycleOnCLose: {cboAlt.SelectedIndex} {requestedIndex}")
-                Debug.Print($"              {cboAlt.Items.Count} > {requestedIndex} = {cboAlt.Items.Count > requestedIndex}")
-                If requestedIndex < cboAlt.Items.Count Then
-                    cboAlt.SelectedIndex = requestedIndex
-                Else 'add new items if available
-                    'Dim comboboxitems As List(Of AstoniaProcess) = (From item As AstoniaProcess In cboAlt.Items Select value = item).ToList
-
-                    Dim newItems = AstoniaProcess.Enumerate(blackList).Except(
-                                                 (From item As AstoniaProcess In cboAlt.Items Select value = item),
-                                                   New AstoniaProcessEqualityComparer)
-                    Debug.Print($"newitems.count {newItems.Count}")
-                    If newItems.Any() Then
-                        Debug.Print("adding new items")
-                        cboAlt.Items.AddRange(newItems.ToArray)
-                        cboAlt.SelectedIndex = requestedIndex
-                    Else
-                        'PopDropDown()
-                        cboAlt.SelectedIndex = If(cboAlt.Items.Count = 1, 0, 1)
-                    End If
-                End If
+                cycle()
             End If
         End If
 
@@ -842,37 +823,9 @@
                             btnStart.PerformClick()
                         End If
                     Case 2 'ctrl-space
-
-                        Dim requestedIndex = cboAlt.SelectedIndex + 1
-                        Debug.Print($"hotkey2: {cboAlt.SelectedIndex} {requestedIndex}")
-                        Debug.Print($"         {cboAlt.Items.Count} > {requestedIndex} = {cboAlt.Items.Count > requestedIndex}")
-                        If requestedIndex < cboAlt.Items.Count Then
-                            cboAlt.SelectedIndex = requestedIndex
-                        Else 'add new items if available
-                            'Dim comboboxitems As List(Of AstoniaProcess) = (From item As AstoniaProcess In cboAlt.Items Select value = item).ToList
-
-                            Dim newItems = AstoniaProcess.Enumerate(blackList).Except(
-                                                 (From item As AstoniaProcess In cboAlt.Items Select value = item),
-                                                   New AstoniaProcessEqualityComparer)
-                            Debug.Print($"newitems.count {newItems.Count}")
-                            If newItems.Any() Then
-                                Debug.Print("adding new items")
-                                cboAlt.Items.AddRange(newItems.ToArray)
-                                cboAlt.SelectedIndex = requestedIndex
-                            Else
-                                'PopDropDown()
-                                cboAlt.SelectedIndex = If(cboAlt.Items.Count = 1, 0, 1)
-                            End If
-                        End If
+                        cycle()
                     Case 3 'ctrl-shift-space
-                        Dim requestedindex = cboAlt.SelectedIndex - 1
-                        Debug.Print($"hotkey3: {cboAlt.SelectedIndex} {requestedindex}")
-                        Debug.Print($"         {cboAlt.Items.Count} > {requestedindex} = {cboAlt.Items.Count > requestedindex}")
-                        If requestedindex < 1 Then
-                            PopDropDown(cboAlt)
-                            requestedindex = cboAlt.Items.Count - 1
-                        End If
-                        cboAlt.SelectedIndex = requestedindex
+                        cycle(True)
                 End Select
             Case WM_SYSCOMMAND
                 Select Case m.WParam
@@ -921,6 +874,29 @@
 
         MyBase.WndProc(m)  ' allow form to process this message
     End Sub
+
+    Private Sub cycle(Optional up As Boolean = False)
+        PopDropDown(cboAlt)
+        Dim requestedindex = cboAlt.SelectedIndex + If(up, -1, 1)
+        If requestedindex < 1 Then
+            requestedindex = cboAlt.Items.Count - 1
+        End If
+        If requestedindex >= cboAlt.Items.Count Then
+            requestedindex = 1
+        End If
+        If requestedindex >= cboAlt.Items.Count Then
+            cboAlt.SelectedIndex = 0
+            tmrOverview.Enabled = True
+            tmrTick.Enabled = False
+            pbZoom.Hide()
+            pnlOverview.Show()
+            'AppActivate(scalaPID)
+            Exit Sub
+        End If
+        cboAlt.SelectedIndex = requestedindex
+    End Sub
+
+
 
     ReadOnly startThumbsDict As New Dictionary(Of Integer, IntPtr)
     ReadOnly opaDict As New Dictionary(Of Integer, Byte)
