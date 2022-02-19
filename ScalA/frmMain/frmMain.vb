@@ -1104,6 +1104,8 @@
 
             AddHandler but.Click, AddressOf BtnAlt_Click
             AddHandler but.MouseDown, AddressOf BtnAlt_MouseDown
+            AddHandler but.MouseEnter, AddressOf BtnAlt_MouseEnter
+            AddHandler but.MouseLeave, AddressOf BtnAlt_MouseLeave
             pnlOverview.Controls.Add(but)
         Next i
         pnlOverview.ResumeLayout()
@@ -1239,16 +1241,13 @@
         End Select
     End Sub
     Private Sub BtnAlt_MouseEnter(sender As AButton, e As EventArgs) ' Handles AButton.MouseEnter
-        Try
-            opaDict(CType(sender.Tag, AstoniaProcess).Id) = dimmed
-        Catch
-        End Try
+        If My.Settings.gameOnOverview Then Exit Sub
+        If sender.Tag Is Nothing Then Exit Sub
+        opaDict(CType(sender.Tag, AstoniaProcess)?.Id) = dimmed
     End Sub
     Private Sub BtnAlt_MouseLeave(sender As AButton, e As EventArgs) ' Handles AButton.MouseLeave
-        Try
-            opaDict(CType(sender.Tag, AstoniaProcess).Id) = &HFF
-        Catch
-        End Try
+        If sender.Tag Is Nothing Then Exit Sub
+        opaDict(CType(sender.Tag, AstoniaProcess)?.Id) = &HFF
     End Sub
 
     Private Sub ChkHideMessage_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkHideMessage.CheckedChanged
@@ -1298,9 +1297,10 @@
     End Sub
 
     Private Sub BtnStart_Click(sender As Button, e As EventArgs) Handles btnStart.Click
+        Dim prevAlt As AstoniaProcess = AltPP
         cboAlt.SelectedIndex = 0
         RestorePos(AltPP)
-        pnlOverview.Controls.OfType(Of AButton).First.Select()
+        pnlOverview.Controls.OfType(Of AButton).FirstOrDefault(Function(ab As AButton) ab.Tag?.id = prevAlt?.Id)?.Select()
     End Sub
 
     ReadOnly scalaPID As Integer = Process.GetCurrentProcess().Id
