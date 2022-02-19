@@ -226,7 +226,7 @@ Public Class FrmSettings
         My.Settings.topSort = txtTopSort.Text
         My.Settings.botSort = txtBotSort.Text
 
-        btnTest_Click(Nothing, Nothing) 'apply sorting
+        btnTest_Click(Nothing, Nothing) 'apply sorting & black/whitlelist
 
         Hotkey.UnregHotkey(FrmMain)
 
