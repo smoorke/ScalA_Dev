@@ -912,6 +912,10 @@
     Friend Shared apSorter As AstoniaProcessSorter
     Private Async Sub TmrOverview_Tick(sender As Timer, e As EventArgs) Handles tmrOverview.Tick
 
+        If Me.WindowState = FormWindowState.Minimized Then
+            Exit Sub
+        End If
+
         'Debug.Print("tmrStartup.Tick")
 #If DEBUG Then
         chkDebug.Text = counter
