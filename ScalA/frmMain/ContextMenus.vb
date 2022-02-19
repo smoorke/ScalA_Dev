@@ -79,7 +79,8 @@ Partial Public Class FrmMain
 
         If PathName Is Nothing Then Return Nothing
 
-        Return iconCache.GetOrAdd(PathName,
+        Try
+            Return iconCache.GetOrAdd(PathName,
             Function()
 
                 Debug.Print($"iconCahceMiss: {PathName}")
@@ -92,7 +93,7 @@ Partial Public Class FrmMain
                     SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_ICON Or SHGFI_SMALLICON)
                     If fi.hIcon = IntPtr.Zero Then
                         Debug.Print("hIcon empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
-                        Return Nothing
+                        Throw New Exception
                     End If
                     ico = Icon.FromHandle(fi.hIcon)
                     bm = ico.ToBitmap
@@ -103,7 +104,7 @@ Partial Public Class FrmMain
                     ImageList_Destroy(list)
                     If hIcon = IntPtr.Zero Then
                         Debug.Print("iconlist empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
-                        Return Nothing
+                        Throw New Exception
                     End If
                     ico = Icon.FromHandle(hIcon)
                     bm = ico.ToBitmap
@@ -114,6 +115,9 @@ Partial Public Class FrmMain
 
                 Return bm
             End Function)
+        Catch
+            Return Nothing
+        End Try
     End Function
 
     Private ReadOnly nsSorter As IComparer(Of String) = New CustomStringSorter
@@ -223,7 +227,6 @@ Partial Public Class FrmMain
     End Sub
 
     'Private init As Boolean = True
-
     Private Sub deferredIconLoading(items As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
         Dim skipped As Boolean = False
         'If init Then
