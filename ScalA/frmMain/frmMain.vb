@@ -66,9 +66,9 @@
             Exit Sub
         End If
 
-        If AltPP.Id = 0 AndAlso that.SelectedIndex = 0 Then
-            Exit Sub
-        End If
+        'If AltPP.Id = 0 AndAlso that.SelectedIndex = 0 Then
+        '    Exit Sub
+        'End If
 
         counter = 0
 
@@ -890,6 +890,7 @@
             tmrTick.Enabled = False
             pbZoom.Hide()
             pnlOverview.Show()
+            sysTrayIcon.Icon = My.Resources.moa3
             'AppActivate(scalaPID)
             Exit Sub
         End If
@@ -1400,7 +1401,7 @@
         End If
         Me.Show()
         'Me.BringToFront() 'doesn't work
-        If AltPP IsNot Nothing AndAlso AltPP.Id <> 0 Then
+        If AltPP IsNot Nothing AndAlso AltPP.Id <> 0 AndAlso AltPP.IsRunning Then
             SetWindowPos(AltPP.MainWindowHandle, -2, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
             AppActivate(AltPP.Id)
         Else
