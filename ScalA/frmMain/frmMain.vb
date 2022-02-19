@@ -1093,13 +1093,13 @@
         End If
     End Sub
     Private Function getNextPerfectSquare(num As Integer)
-
-        Return 16
+        Dim nextN As Integer = Math.Floor(Math.Sqrt(num)) + 1
+        If nextN > 6 Then nextN = 6
+        Return nextN * nextN
     End Function
     Private Sub AddAButtons(count As Integer)
-        Dim sqNum As Integer = getNextPerfectSquare(count)
         pnlOverview.SuspendLayout()
-        For i As Integer = 1 To sqNum
+        For i As Integer = 1 To 42
             Dim but As AButton = New AButton(i, 0, 0, 200, 150)
 
             AddHandler but.Click, AddressOf BtnAlt_Click
@@ -1110,34 +1110,67 @@
     End Sub
     Private Sub UpdateButtonLayout(count As Integer)
         pnlOverview.SuspendLayout()
+        Dim numCols As Integer
 
-        Dim numrows As Integer = 2
         Select Case count + If(My.Settings.hideMessage, 0, 1)
             Case 0 To 4
-                numrows = 2
+                numCols = 2
             Case 5 To 9
-                numrows = 3
+                numCols = 3
+            Case 10 To 16
+                numCols = 4
+            Case 17 To 25
+                numCols = 5
             Case Else
-                numrows = 4
+                numCols = 6
         End Select
+        Dim numRows As Integer = numCols
 
-        Dim newSZ As New Size(pbZoom.Size.Width / numrows, pbZoom.Size.Height / numrows)
+        If Me.WindowState = FormWindowState.Maximized Then
+            Select Case count + If(My.Settings.hideMessage, 0, 1)
+                Case 0 To 6
+                    numCols = 3
+                    numRows = 2
+                Case 7 To 12
+                    numCols = 4
+                    numRows = 3
+                Case 13 To 20
+                    numCols = 5
+                    numRows = 4
+                Case 21 To 30
+                    numCols = 6
+                    numRows = 5
+                Case Else
+                    numCols = 7
+                    numRows = 6
+            End Select
+            If pbZoom.Width < pbZoom.Height Then
+                Dim swapper As Integer = numCols
+                numCols = numRows
+                numRows = swapper
+            End If
+        End If
+
+        Dim newSZ As New Size(pbZoom.Size.Width / numCols, pbZoom.Size.Height / numRows)
         Dim widthTooMuch As Boolean = False
-        Dim heightTooMuch As Boolean = False
+        'Dim heightTooMuch As Boolean = False
 
-        If newSZ.Width * numrows > pbZoom.Width Then widthTooMuch = True
-        If newSZ.Height * numrows > pbZoom.Height Then heightTooMuch = True
-
+        If newSZ.Width * numCols > pbZoom.Width Then widthTooMuch = True
+        'If newSZ.Height * numRows > pbZoom.Height Then heightTooMuch = True
 
         Dim i = If(My.Settings.hideMessage, 1, 2)
         For Each but As AButton In pnlOverview.Controls.OfType(Of AButton)
-            If i <= numrows ^ 2 Then
+            If i <= numCols * numRows Then
                 but.Size = newSZ
-                If widthTooMuch AndAlso i Mod numrows = 0 Then but.Width -= 1 'last column
-                If heightTooMuch AndAlso i > (numrows - 1) * numrows Then but.Height -= 1 'last row
+                If widthTooMuch AndAlso i Mod numCols = 0 Then but.Width -= 2 'last column
+                'If heightTooMuch AndAlso i > (numRows - 1) * numRows Then but.Height -= 2 'last row
                 but.Visible = True
             Else
                 but.Visible = False
+                If but.Tag IsNot Nothing Then
+                    DwmUnregisterThumbnail(startThumbsDict.GetValueOrDefault(but.Tag?.id))
+                    startThumbsDict.Remove(but.Tag?.id)
+                End If
             End If
             i += 1
         Next
