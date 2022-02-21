@@ -1506,10 +1506,11 @@ Module dBug
 
     Friend Sub buttonInfo(sender As Object, e As EventArgs)
         Dim i = 1
-        For Each but As Button In FrmMain.pnlOverview.Controls.OfType(Of Button).Where(Function(b) b.Visible)
-            Debug.Print($"Button {i} Size: {but.Size}")
+        For Each but As AButton In FrmMain.pnlOverview.Controls.OfType(Of AButton).Where(Function(b) b.Visible)
+            Debug.Print($"Button {i} Size: {but.Size} thuRect: {but.ThumbRECT}")
             i += 1
         Next
+        Debug.Print($"viscount: {FrmMain.pnlOverview.Controls.OfType(Of Button).Where(Function(b) b.Visible).Count}")
     End Sub
 End Module
 
