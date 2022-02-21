@@ -910,7 +910,7 @@
     Dim AOBusy As Boolean = False
 
     Friend Shared apSorter As AstoniaProcessSorter
-    Private Async Sub TmrOverview_Tick(sender As Timer, e As EventArgs) Handles tmrOverview.Tick
+    Private Sub TmrOverview_Tick(sender As Timer, e As EventArgs) Handles tmrOverview.Tick
 
         If Me.WindowState = FormWindowState.Minimized Then
             Exit Sub
@@ -1046,18 +1046,19 @@
                         Dim newYB = MousePosition.Y.Map(ptZB.Y, ptZB.Y + but.ThumbRectangle.Height, ptZB.Y, ptZB.Y + but.ThumbRECT.Height - but.ThumbRECT.Top - rccB.Height) - AstClientOffsetB.Height - My.Settings.offset.Y
 
 
-                        AOBusy = True
-                        Await Task.Run(Sub()
-                                           Try
-                                               Dim flags As SetWindowPosFlags = SetWindowPosFlags.IgnoreResize Or
+                        Dim unused = Task.Run(Sub()
+                                                  AOBusy = True
+                                                  Try
+                                                      Dim flags As SetWindowPosFlags = SetWindowPosFlags.IgnoreResize Or
                                                                                 SetWindowPosFlags.DoNotActivate Or
                                                                                 SetWindowPosFlags.ASyncWindowPosition
-                                               If QlCtxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
-                                               SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
-                                           Catch ex As Exception
-                                           End Try
-                                       End Sub)
-                        AOBusy = False
+                                                      If QlCtxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
+                                                      SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
+                                                  Catch ex As Exception
+                                                  Finally
+                                                      AOBusy = False
+                                                  End Try
+                                              End Sub)
                     End If 'but.ThumbContains(MousePosition)
                 End If 'gameonoverview
                 apCount += 1
