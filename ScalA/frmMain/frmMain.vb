@@ -80,8 +80,8 @@
         If that.SelectedIndex = 0 Then
             pnlOverview.SuspendLayout()
             pnlOverview.Show()
-            UpdateButtonLayout(AstoniaProcess.Enumerate(blackList).Count)
-            For Each but As AButton In pnlOverview.Controls.OfType(Of AButton).Where(Function(b) b.Visible AndAlso b.Text <> "")
+            Dim visbut = UpdateButtonLayout(AstoniaProcess.Enumerate(blackList).Count)
+            For Each but As AButton In visbut.Where(Function(b) b.Text <> "")
                 but.Image = Nothing
                 but.BackgroundImage = Nothing
                 but.Text = String.Empty
@@ -925,31 +925,21 @@
         Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name, apSorter).ToList
 
         pnlOverview.SuspendLayout()
-        UpdateButtonLayout(alts.Count)
-
-        Dim butCount As Integer = pnlOverview.Controls.OfType(Of AButton).Where(Function(b) b.Visible).Count
+        Dim visibleButtons = UpdateButtonLayout(alts.Count)
 
         Dim botCount As Integer = alts.Where(Function(ap) botSortList.Contains(ap.Name)).Count
 
         Dim topCount As Integer = alts.Count - botCount
 
-        Dim skipCount As Integer = butCount - botCount
+        Dim skipCount As Integer = visibleButtons.Count - botCount
 
         Dim apCount As Integer = 0
-        For Each but As AButton In pnlOverview.Controls.OfType(Of AButton).Where(Function(b) b.Visible)
+        For Each but As AButton In visibleButtons
             'Debug.Print($"apCount < alts.Count AndAlso (i < topCount OrElse i > skipCount")
             'Debug.Print($"{apCount} < {alts.Count} AndAlso ({i} < {topCount} OrElse {i} > {skipCount}")
             If apCount < alts.Count AndAlso (i < topCount OrElse i >= skipCount) Then
 
                 Dim name As String = alts(apCount).Name
-                While name = "" OrElse blackList.Contains(name) OrElse alts(apCount).MainWindowTitle.Count(Function(c As Char) c = "-"c) < 2
-                    'don't list "Someone"s or clients in the process of logging in ("-"<2)
-                    apCount += 1
-                    If apCount >= alts.Count Then
-                        Exit For
-                    End If
-                    name = alts(apCount).Name
-                End While
 
                 but.Text = name
                 but.Tag = alts(apCount)
