@@ -1114,7 +1114,7 @@
         Next i
         pnlOverview.ResumeLayout()
     End Sub
-    Private Sub UpdateButtonLayout(count As Integer)
+    Private Function UpdateButtonLayout(count As Integer) As List(Of AButton)
         pnlOverview.SuspendLayout()
         Dim numCols As Integer
 
@@ -1164,19 +1164,23 @@
         If newSZ.Width * numCols > pbZoom.Width Then widthTooMuch = True
         'If newSZ.Height * numRows > pbZoom.Height Then heightTooMuch = True
 
+        Dim visButtons As New List(Of AButton)
+
         Dim i = If(My.Settings.hideMessage, 1, 2)
         For Each but As AButton In pnlOverview.Controls.OfType(Of AButton)
+
             If i <= numCols * numRows Then
                 but.Size = newSZ
-                If widthTooMuch AndAlso i Mod numCols = 0 Then but.Width -= 2 'last column
+                If widthTooMuch AndAlso i Mod numCols = 0 Then but.Width -= If((pbZoom.Size.Width / numCols) Mod 1 < 0.5, 1, 2) 'last column
                 'If heightTooMuch AndAlso i > (numRows - 1) * numRows Then but.Height -= 2 'last row
                 but.Visible = True
+                visButtons.Add(but)
             Else
                 but.Visible = False
-                If but.Tag IsNot Nothing Then
-                    DwmUnregisterThumbnail(startThumbsDict.GetValueOrDefault(but.Tag?.id))
-                    startThumbsDict.Remove(but.Tag?.id)
-                End If
+                but.Text = ""
+                DwmUnregisterThumbnail(startThumbsDict.GetValueOrDefault(but.Tag?.id, IntPtr.Zero))
+                startThumbsDict.Remove(but.Tag?.id)
+                but.Tag = Nothing
             End If
             i += 1
         Next
@@ -1185,8 +1189,10 @@
         pbMessage.Size = newSZ
         chkHideMessage.Location = New Point(pnlMessage.Width - chkHideMessage.Width, pnlMessage.Height - chkHideMessage.Height)
 
-        pnlOverview.ResumeLayout(True)
-    End Sub
+        pnlOverview.ResumeLayout()
+
+        Return visButtons
+    End Function
 
     Private Sub BtnQuit_MouseEnter(sender As Button, e As EventArgs) Handles btnQuit.MouseEnter
         sender.ForeColor = SystemColors.Control
