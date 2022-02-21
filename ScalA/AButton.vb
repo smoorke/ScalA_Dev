@@ -20,6 +20,7 @@
 		Me.Margin = New Padding(0)
 		Me.TextAlign = ContentAlignment.TopCenter
 		Me.Font = New Font("Microsoft Sans Serif", 8.25)
+		Me.Visible = False
 	End Sub
 
 	Private _passthrough As Rectangle
