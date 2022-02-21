@@ -321,10 +321,13 @@
             SetWindowPos(altPP.MainWindowHandle, altTopM, rcW.Left, rcW.Top, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.ASyncWindowPosition)
         End If
         For Each id In restoreDic.Keys
-            Dim altAP As AstoniaProcess = New AstoniaProcess(Process.GetProcessById(id))
-            If altAP.IsRunning() Then
-                SetWindowPos(altAP.MainWindowHandle, 0, restoreDic(id).X, restoreDic(id).Y, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.ASyncWindowPosition)
-            End If
+            Try
+                Dim altAP As AstoniaProcess = New AstoniaProcess(Process.GetProcessById(id))
+                If altAP.IsRunning() Then
+                    SetWindowPos(altAP.MainWindowHandle, 0, restoreDic(id).X, restoreDic(id).Y, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.ASyncWindowPosition)
+                End If
+            Catch
+            End Try
         Next
         restoreDic.Clear()
     End Sub
