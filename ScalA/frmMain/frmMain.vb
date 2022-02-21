@@ -1308,9 +1308,14 @@
 
     Private Sub BtnStart_Click(sender As Button, e As EventArgs) Handles btnStart.Click
         Dim prevAlt As AstoniaProcess = AltPP
+        Debug.Print($"prevAlt?.Name {prevAlt?.Name}")
         cboAlt.SelectedIndex = 0
         RestorePos(AltPP)
-        pnlOverview.Controls.OfType(Of AButton).FirstOrDefault(Function(ab As AButton) ab.Tag?.id = prevAlt?.Id)?.Select()
+        If prevAlt.Id <> 0 Then
+            pnlOverview.Controls.OfType(Of AButton).FirstOrDefault(Function(ab As AButton) ab.Tag?.id = prevAlt?.Id)?.Select()
+        Else
+            pnlOverview.Controls.OfType(Of AButton).First().Select()
+        End If
     End Sub
 
     ReadOnly scalaPID As Integer = Process.GetCurrentProcess().Id
