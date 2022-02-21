@@ -999,7 +999,7 @@
                 End If
                 If My.Settings.gameOnOverview Then 'todo move this to seperate timer and make async
                     Dim rccB As Rectangle
-                    GetClientRect(but?.Tag.MainWindowHandle, rccB)
+                    GetClientRect(but.Tag?.MainWindowHandle, rccB)
 
                     Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
                     GetCursorInfo(pci)
@@ -1037,7 +1037,7 @@
 
                         Dim pttB As Point
 
-                        ClientToScreen(but?.Tag.MainWindowHandle, pttB)
+                        ClientToScreen(but.Tag?.MainWindowHandle, pttB)
 
                         Dim AstClientOffsetB = New Size(pttB.X - rcwB.Left, pttB.Y - rcwB.Top)
 
