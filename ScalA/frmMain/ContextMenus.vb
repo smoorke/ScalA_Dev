@@ -233,16 +233,21 @@ Partial Public Class FrmMain
         'If init Then
         '    Debug.Print("init iconloader")
         '    Dim firstItem As ToolStripItem = items.FirstOrDefault
-        '    Me.BeginInvoke(updateImage, {firstItem, GetIcon(firstItem?.Tag.ToString)}) ' needed or we get an exception in geticon later
-        '    skipped = True
-        '    init = False
+        '    If firstItem IsNot Nothing Then
+        '        firstItem.Image = GetIcon(firstItem.Tag) ' needed or we get an exception in geticon later
+        '        skipped = True
+        '        init = False
+        '    End If
         'End If
         Try
             Task.Run(Sub()
-                         Parallel.ForEach(items.Skip(skipped).TakeWhile(Function(__) Not ct.IsCancellationRequested),
+                         Try
+                             Parallel.ForEach(items.Skip(skipped).TakeWhile(Function(__) Not ct.IsCancellationRequested),
                                           Sub(it As ToolStripItem)
-                                              Me.BeginInvoke(updateImage, {it, GetIcon(it.Tag.ToString)})
+                                              it.Image = GetIcon(it.Tag)
                                           End Sub)
+                         Catch
+                         End Try
                      End Sub, ct)
         Catch ex As System.Threading.Tasks.TaskCanceledException
             Debug.Print("deferredIconLoading Task canceled")

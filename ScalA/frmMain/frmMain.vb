@@ -1078,17 +1078,11 @@
         counter += 1
         If counter > 11 Then counter = 0
     End Sub
-    Delegate Sub updateImageDelegate(obj As Object, bm As Bitmap)
-    Private Shared ReadOnly updateImage As updateImageDelegate = New updateImageDelegate(AddressOf updateImageMethod)
-    Private Shared Sub updateImageMethod(obj As Object, bm As Bitmap) 'used by button and toolstripmenuitem
-        If obj Is Nothing Then Exit Sub
-        If TypeOf obj Is Button Then
-            CType(obj, Button).Image = bm
-        ElseIf TypeOf obj Is ToolStripItem Then
-            CType(obj, ToolStripItem).Image = bm
-        Else
-            obj.image = bm
-        End If
+    Delegate Sub updateButtonImageDelegate(but As AButton, bm As Bitmap)
+    Private Shared ReadOnly updateButtonImage As New updateButtonImageDelegate(AddressOf updateButtonImageMethod)
+    Private Shared Sub updateButtonImageMethod(but As AButton, bm As Bitmap)
+        If but Is Nothing Then Exit Sub
+        but.Image = bm
     End Sub
     Private Function getNextPerfectSquare(num As Integer)
         Dim nextN As Integer = Math.Floor(Math.Sqrt(num)) + 1
