@@ -34,7 +34,7 @@ Partial Public Class FrmMain
             SetWindowPos(pp.MainWindowHandle, -2, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
         End If
     End Sub
-
+    Private closeAllToolStripMenuItem As ToolStripMenuItem = Nothing
     Private Sub CmsAlt_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsAlt.Opening
         If My.Computer.Keyboard.ShiftKeyDown OrElse My.Computer.Keyboard.CtrlKeyDown Then
             cmsQuickLaunch.Show(sender.SourceControl, sender.SourceControl.PointToClient(MousePosition))
@@ -50,7 +50,6 @@ Partial Public Class FrmMain
         TopMostToolStripMenuItem.Checked = pp.IsTopMost()
         TopMostToolStripMenuItem.Tag = pp
 
-        Static closeAllToolStripMenuItem As ToolStripMenuItem = Nothing
         If sender.Items.Contains(closeAllToolStripMenuItem) Then
             sender.Items.Remove(closeAllToolStripMenuItem)
         End If
@@ -59,7 +58,9 @@ Partial Public Class FrmMain
         sender.Items.Add("Close " & pp.Name, My.Resources.F12, AddressOf CloseToolStripMenuItem_Click).Tag = pp
 
         Dim other As String = If(pp.Name = "Someone", "Other ", "")
-        If AstoniaProcess.Enumerate().Any(Function(p As AstoniaProcess) p.Name = "Someone") Then
+        Dim somecount As Integer = AstoniaProcess.Enumerate().Where(Function(p As AstoniaProcess) p.Name = "Someone").Count
+        Debug.Print($"somecount {somecount}")
+        If somecount > 0 AndAlso Not (other = "Other " AndAlso somecount = 1) Then
             closeAllToolStripMenuItem = sender.Items.Add($"Close All {other}Someone", My.Resources.F12, AddressOf CloseAllIdle_Click)
             closeAllToolStripMenuItem.Tag = pp
         End If
