@@ -65,7 +65,7 @@ Public Class FrmSettings
 
     End Sub
 
-    Private restoreWhitelist As Boolean = My.Settings.Whitelist
+    Private ReadOnly restoreWhitelist As Boolean = My.Settings.Whitelist
 
     'https://docs.microsoft.com/en-us/windows/win32/api/shellapi/ne-shellapi-shstockiconid
     Enum SIID As UInteger
@@ -333,7 +333,7 @@ Public Class FrmSettings
         End Try
     End Sub
 
-    Dim keyNames() As String = {"", "", "", "", "", "", "", "", "{Backspace}", "{Tab}", "", "", "", "{Enter}", "", "", ' 0-15
+    ReadOnly keyNames() As String = {"", "", "", "", "", "", "", "", "{Backspace}", "{Tab}", "", "", "", "{Enter}", "", "", ' 0-15
                                     "", "", "", "{Pause}", "", "", "", "", "", "", "", "{Escape}", "", "", "", "", ' 16-31
                                     "{Space}", "{PageUp}", "{PageDown}", "{End}", "{Home}", "{Left}", "{Up}", "{Right}", "{Down}", "", "", "", "{PrintSrcn}", "{Insert}", "{Delete}", "", ' 32-47
                                     "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "", "", "", "", "", "", '  48-63
@@ -363,10 +363,10 @@ Public Class FrmSettings
     Private Sub GenerateToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles X60043ToolStripMenuItem.Click, X720169ToolStripMenuItem.Click
         Dim sender_tag As String = sender.Tag
 
-        Dim sb As StringBuilder = New StringBuilder()
+        Dim sb As New StringBuilder()
 
-        Dim baseRes As Size = New Size(Val(sender_tag),
-                                       Val(sender_tag.Substring(sender_tag.IndexOf("x") + 1)))
+        Dim baseRes As New Size(Val(sender_tag),
+                                Val(sender_tag.Substring(sender_tag.IndexOf("x") + 1)))
 
         Debug.Print($"baseRes {baseRes}")
 
@@ -403,7 +403,7 @@ Public Class FrmSettings
             Dim rcC As Rectangle
             GetClientRect(ap.MainWindowHandle, rcC)
 
-            Dim baseRes As Size = New Size(rcC.Width, rcC.Height)
+            Dim baseRes As New Size(rcC.Width, rcC.Height)
             Dim gcd As Integer = Me.GCD(baseRes.Width, baseRes.Height)
             Dim aspect As String = $"({baseRes.Width / gcd}:{baseRes.Height / gcd})"
             If aspect = "(8:4)" Then aspect = "(16:10)"

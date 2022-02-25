@@ -475,12 +475,12 @@ Partial Public Class FrmMain
         AButton.ActiveOverview = My.Settings.gameOnOverview
     End Sub
 
-    Dim newFolderItem As MenuItem = New MenuItem("Folder", AddressOf QlCtxNewFolder)
-    Dim QlCtxNewMenu As MenuItem = New MenuItem("New", {
+    Private ReadOnly newFolderItem As New MenuItem("Folder", AddressOf QlCtxNewFolder)
+    Private ReadOnly QlCtxNewMenu As New MenuItem("New", {
         newFolderItem,
         New MenuItem("-")})
 
-    Dim QlCtxMenu As New ContextMenu({
+    Private ReadOnly QlCtxMenu As New ContextMenu({
         New MenuItem("Open", AddressOf QlCtxOpen) With {.DefaultItem = True},
         New MenuItem("-"),
         New MenuItem("Delete", AddressOf QlCtxDelete),
@@ -603,8 +603,8 @@ Partial Public Class FrmMain
         cmsQuickLaunch.Close()
     End Sub
 
-    Dim folderHbm As IntPtr = GetIcon(FileIO.SpecialDirectories.Temp).GetHbitmap(Color.Red)
-    Dim plusHbm As IntPtr = New Bitmap(My.Resources.Add, New Size(16, 16)).GetHbitmap(Color.Red)
+    Private ReadOnly folderHbm As IntPtr = GetIcon(FileIO.SpecialDirectories.Temp).GetHbitmap(Color.Red)
+    Private ReadOnly plusHbm As IntPtr = New Bitmap(My.Resources.Add, New Size(16, 16)).GetHbitmap(Color.Red)
 
     Dim QlCtxIsOpen As Boolean = False 'to handle glitch in contextmenu when moving astonia window
 
@@ -645,7 +645,7 @@ Partial Public Class FrmMain
             SetMenuItemBitmaps(QlCtxNewMenu.Handle, 0, MF_BYPOSITION, folderHbm, Nothing)
             SetMenuItemBitmaps(QlCtxMenu.Handle, 7, MF_BYPOSITION, plusHbm, Nothing)
 
-            Dim purgeList As List(Of IntPtr) = New List(Of IntPtr)
+            Dim purgeList As New List(Of IntPtr)
 
             Dim i = QlCtxNewMenuStaticItemsCount
             For Each item As MenuItem In QlCtxNewMenu.MenuItems.OfType(Of MenuItem).Skip(i).Where(Function(m) m.Tag IsNot Nothing)
@@ -681,7 +681,7 @@ Partial Public Class FrmMain
     End Sub
 
     Private Sub OpenProps(ByVal sender As Object, ByVal e As MouseEventArgs) 'Handles smenu.MouseUp, item.MouseUp
-        Debug.Print($"OpenProps {sender.Tag} {sender.GetType.ToString}")
+        Debug.Print($"OpenProps {sender.Tag} {sender.GetType}")
         Dim pth As String = sender.Tag.ToString.TrimEnd("\")
         If e.Button = MouseButtons.Right Then
             Dim sei As New SHELLEXECUTEINFO With {
@@ -795,7 +795,7 @@ Partial Public Class FrmMain
         Next
         watchers.Clear()
 
-        Dim iniWatcher As System.IO.FileSystemWatcher = New System.IO.FileSystemWatcher(My.Settings.links) With {
+        Dim iniWatcher As New System.IO.FileSystemWatcher(My.Settings.links) With {
             .NotifyFilter = System.IO.NotifyFilters.LastWrite,
             .Filter = "desktop.ini",
             .IncludeSubdirectories = True
@@ -808,7 +808,7 @@ Partial Public Class FrmMain
 
 
 
-        Dim lnkWatcher As System.IO.FileSystemWatcher = New System.IO.FileSystemWatcher(My.Settings.links) With {
+        Dim lnkWatcher As New System.IO.FileSystemWatcher(My.Settings.links) With {
             .NotifyFilter = System.IO.NotifyFilters.LastWrite Or
                             System.IO.NotifyFilters.FileName,
             .Filter = "*.lnk",
@@ -823,7 +823,7 @@ Partial Public Class FrmMain
 
 
 
-        Dim urlWatcher As System.IO.FileSystemWatcher = New System.IO.FileSystemWatcher(My.Settings.links) With {
+        Dim urlWatcher As New System.IO.FileSystemWatcher(My.Settings.links) With {
             .NotifyFilter = System.IO.NotifyFilters.LastWrite Or
                             System.IO.NotifyFilters.FileName,
             .Filter = "*.url",
@@ -838,7 +838,7 @@ Partial Public Class FrmMain
 
 
 
-        Dim dirWatcher As System.IO.FileSystemWatcher = New System.IO.FileSystemWatcher(My.Settings.links) With {
+        Dim dirWatcher As New System.IO.FileSystemWatcher(My.Settings.links) With {
             .NotifyFilter = System.IO.NotifyFilters.DirectoryName,
             .IncludeSubdirectories = True
         }

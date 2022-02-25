@@ -56,7 +56,7 @@
 	Protected Overrides Sub OnPaint(e As PaintEventArgs)
 		MyBase.OnPaint(e)
 		If ActiveOverview AndAlso My.Settings.gameOnOverview AndAlso Me.Text <> "" Then
-			Using b As SolidBrush = New SolidBrush(Color.Magenta)
+			Using b As New SolidBrush(Color.Magenta)
 				e.Graphics.FillRectangle(b, Me.ThumbRectangle)
 			End Using
 		End If

@@ -2,7 +2,7 @@
 
 
 
-    Public AltPP As AstoniaProcess = New AstoniaProcess()
+    Public AltPP As New AstoniaProcess()
     'Private WndClass() As String = {"MAINWNDMOAC", "䅍义乗䵄䅏C"}
 #Region " Alt Dropdown "
     Private Sub PopDropDown(sender As ComboBox)
@@ -47,7 +47,7 @@
 
     Dim altTopM As Integer = -2
     Private ReadOnly restoreParent As UInteger = GetWindowLong(Me.Handle, GWL_HWNDPARENT)
-    Private prevItem As AstoniaProcess = New AstoniaProcess()
+    Private prevItem As New AstoniaProcess()
     Private updatingCombobox As Boolean = False
     Private Async Sub CboAlt_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboAlt.SelectedIndexChanged
 
@@ -114,8 +114,8 @@
             GetWindowRect(AltPP.MainWindowHandle, rcW)
             GetClientRect(AltPP.MainWindowHandle, rcC)
 
-            Debug.Print($"rcW:{rcW.ToString}")
-            Debug.Print($"rcC:{rcC.ToString}")
+            Debug.Print($"rcW:{rcW}")
+            Debug.Print($"rcC:{rcC}")
 
             'check if target is running as windowed. if not ask to run it with -w
             If rcC.Width = 0 AndAlso rcC.Height = 0 Then
@@ -322,7 +322,7 @@
         End If
         For Each id In restoreDic.Keys
             Try
-                Dim altAP As AstoniaProcess = New AstoniaProcess(Process.GetProcessById(id))
+                Dim altAP As New AstoniaProcess(Process.GetProcessById(id))
                 If altAP.IsRunning() Then
                     SetWindowPos(altAP.MainWindowHandle, 0, restoreDic(id).X, restoreDic(id).Y, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.ASyncWindowPosition)
                 End If
@@ -1098,7 +1098,7 @@
     Private Sub AddAButtons(count As Integer)
         pnlOverview.SuspendLayout()
         For i As Integer = 1 To 42
-            Dim but As AButton = New AButton(i, 0, 0, 200, 150)
+            Dim but As New AButton(i, 0, 0, 200, 150)
 
             AddHandler but.Click, AddressOf BtnAlt_Click
             AddHandler but.MouseDown, AddressOf BtnAlt_MouseDown

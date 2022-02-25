@@ -233,7 +233,7 @@
 
         If rcc.Width = 0 OrElse rcc.Height = 0 Then Return Nothing
 
-        Static Dim bmp As Bitmap = New Bitmap(rcc.Width, rcc.Height)
+        Static Dim bmp As New Bitmap(rcc.Width, rcc.Height)
 
         Using gBM As Graphics = Graphics.FromImage(bmp)
             Dim hdcBm As IntPtr
@@ -251,7 +251,7 @@
     Private Shared ReadOnly validColors As Integer() = {&HFFFF0000, &HFFFF0400, &HFFFF7B29, &HFFFF7D29, &HFF297BFF, &HFF297DFF, &HFF000000, &HFF000400, &HFFFFFFFF} 'red, orange, lightblue, black, white (troy,base)
 
     Public Function getHealthbar(Optional width As Integer = 75, Optional height As Integer = 15) As Bitmap
-        Static Dim bmp As Bitmap = New Bitmap(width, height)
+        Static Dim bmp As New Bitmap(width, height)
         Using g As Graphics = Graphics.FromImage(bmp), grab As Bitmap = getClientBitmap()
 
             If grab Is Nothing Then Return Nothing
@@ -308,8 +308,8 @@ End Class
 Class AstoniaProcessSorter
     Implements IComparer(Of String)
 
-    Dim topOrder As List(Of String)
-    Dim botOrder As List(Of String)
+    Private ReadOnly topOrder As List(Of String)
+    Private ReadOnly botOrder As List(Of String)
 
     Public Sub New(topOrder As List(Of String), botOrder As List(Of String))
         Me.topOrder = topOrder
@@ -404,7 +404,7 @@ Module ProcessExtensions
             Dim processHandle As IntPtr = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, False, this?.Id)
             Try
                 If Not processHandle = IntPtr.Zero Then
-                    Dim buffer As System.Text.StringBuilder = New System.Text.StringBuilder(1024)
+                    Dim buffer As New System.Text.StringBuilder(1024)
                     If QueryFullProcessImageName(processHandle, 0, buffer, buffer.Capacity) Then
                         processPath = buffer.ToString()
                     End If
