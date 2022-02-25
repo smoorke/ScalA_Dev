@@ -942,18 +942,18 @@
             'Debug.Print($"{apCount} < {alts.Count} AndAlso ({i} < {topCount} OrElse {i} > {skipCount}")
             If apCount < alts.Count AndAlso (i < topCount OrElse i >= skipCount) Then
 
-                Dim name As String = alts(apCount).Name
-
-                but.Text = name
-                but.Tag = alts(apCount)
-                If alts(apCount)?.IsActive() Then
+                Dim ap As AstoniaProcess = alts(apCount)
+                Dim apID As Integer = ap?.Id
+                but.Tag = ap
+                but.Text = ap.Name
+                If ap?.IsActive() Then
                     but.Font = New Font("Microsoft Sans Serif", 8.25, FontStyle.Bold)
                     but.Select()
                 Else
                     but.Font = New Font("Microsoft Sans Serif", 8.25)
                 End If
                 If counter = 0 Then
-                    Using ico As Bitmap = alts(apCount).GetIcon?.ToBitmap
+                    Using ico As Bitmap = ap.GetIcon?.ToBitmap
                         If ico IsNot Nothing Then
                             but.BackgroundImage = New Bitmap(ico, New Size(16, 16))
                         Else
@@ -963,47 +963,46 @@
                 End If
                 but.ContextMenuStrip = cmsAlt
 
-                'activeNameList.Add(name)
-                If Not startThumbsDict.ContainsKey(alts(apCount).Id) Then
-                    startThumbsDict(alts(apCount).Id) = IntPtr.Zero
-                    DwmRegisterThumbnail(Me.Handle, alts(apCount).MainWindowHandle, startThumbsDict(alts(apCount).Id))
-                    Debug.Print("registered thumb " & startThumbsDict(alts(apCount).Id).ToString & " " & name)
+                If Not startThumbsDict.ContainsKey(apID) Then
+                    Dim thumbid As IntPtr = IntPtr.Zero
+                    DwmRegisterThumbnail(Me.Handle, ap.MainWindowHandle, thumbid)
+                    startThumbsDict(apID) = thumbid
+                    Debug.Print($"registered thumb {startThumbsDict(apID)} {ap.Name} {apID}")
                 End If
 
-                rectDic(alts(apCount).Id) = but.ThumbRECT
+                rectDic(apID) = but.ThumbRECT
                 Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
                                        .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION,
-                                       .opacity = opaDict.GetValueOrDefault(alts(apCount).Id, &HFF),
+                                       .opacity = opaDict.GetValueOrDefault(apID, &HFF),
                                        .fSourceClientAreaOnly = True,
                                        .fVisible = True,
-                                       .rcDestination = rectDic(alts(apCount).Id)
+                                       .rcDestination = rectDic(apID)
                                    }
-                DwmUpdateThumbnailProperties(startThumbsDict(alts(apCount).Id), prp)
+                DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
 
-                'If Not MovingForm Then but.Image = alts(i).getHealthbar() 'couses window moving to stutter.
-                'Task.Run(Sub() but.Image = but.Tag.getHealthbar()) 'smooth window move. causes excetpion in unamanged code on but.image.
-                If counter = 0 OrElse but.Image Is Nothing Then
+                If counter = apCount OrElse but.Image Is Nothing Then
                     Dim unused = Task.Run(Sub()
-                                              Try
-                                                  Me.BeginInvoke(updateImage, {but, CType(but.Tag, AstoniaProcess).getHealthbar()})
+                                              Try 'need invoke here or we can get exception on but.image
+                                                  Me.BeginInvoke(updateButtonImage, {but, ap.getHealthbar()})
                                               Catch
                                               End Try
                                           End Sub)
                 End If
+
                 If My.Settings.gameOnOverview Then 'todo move this to seperate timer and make async
                     Dim rccB As Rectangle
-                    GetClientRect(but.Tag?.MainWindowHandle, rccB)
+                    GetClientRect(ap?.MainWindowHandle, rccB)
 
                     Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
                     GetCursorInfo(pci)
                     If pci.flags <> 0 Then ' cursor is visible
-                        If Not wasVisible AndAlso but.Tag?.IsActive() Then
+                        If Not wasVisible AndAlso ap?.IsActive() Then
                             Debug.Print("scrollthumb released")
                             If storedY <> pci.ptScreenpos.y Then
                                 Debug.Print("scrollthumb moved")
                                 Dim factor As Double = but.ThumbRectangle.Height / rccB.Height
                                 Dim movedY As Integer = storedY + ((pci.ptScreenpos.y - storedY) * factor)
-                                If movedY >= Me.Bottom Then movedY = Me.Bottom - 2
+                                If movedY >= but.Bottom Then movedY = but.Bottom - 2
                                 Cursor.Position = New Point(pci.ptScreenpos.x, movedY)
                             End If
                         End If
@@ -1017,20 +1016,20 @@
                     End If
 
                     If Not AOBusy AndAlso but.ThumbContains(MousePosition) Then
-                        SetWindowLong(Me.Handle, GWL_HWNDPARENT, CType(but.Tag, AstoniaProcess).MainWindowHandle)
+                        SetWindowLong(Me.Handle, GWL_HWNDPARENT, ap?.MainWindowHandle)
 
                         Dim ptZB As Point = but.ThumbRECT.Location
                         Dim rcwB As Rectangle
 
 
-                        GetWindowRect(but?.Tag.MainWindowHandle, rcwB)
-                        If but.Tag?.id IsNot Nothing AndAlso Not restoreDic.ContainsKey(but.Tag?.Id) Then
-                            restoreDic.Add(but.Tag?.id, rcwB.Location)
+                        GetWindowRect(ap.MainWindowHandle, rcwB)
+                        If Not restoreDic.ContainsKey(apID) Then
+                            restoreDic.Add(apID, rcwB.Location)
                         End If
 
                         Dim pttB As Point
 
-                        ClientToScreen(but.Tag?.MainWindowHandle, pttB)
+                        ClientToScreen(ap.MainWindowHandle, pttB)
 
                         Dim AstClientOffsetB = New Size(pttB.X - rcwB.Left, pttB.Y - rcwB.Top)
 
@@ -1067,7 +1066,7 @@
         Next
 
         ' Dim purgeList As List(Of Integer) = startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList
-        For Each ppid As Integer In startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList 'purgeList
+        For Each ppid As Integer In startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList 'tolist needed as we mutate the thumbsdict
             Debug.Print("unregister thumb " & startThumbsDict(ppid).ToString)
             DwmUnregisterThumbnail(startThumbsDict(ppid))
             startThumbsDict.Remove(ppid)
@@ -1076,7 +1075,7 @@
 
         pnlOverview.ResumeLayout(True)
         counter += 1
-        If counter > 11 Then counter = 0
+        If counter > visibleButtons.Count Then counter = 0
     End Sub
     Delegate Sub updateButtonImageDelegate(but As AButton, bm As Bitmap)
     Private Shared ReadOnly updateButtonImage As New updateButtonImageDelegate(AddressOf updateButtonImageMethod)
