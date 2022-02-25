@@ -144,3 +144,11 @@ Added configuration settings for hotkeys.
 **ScalA 0.9.7**
 Fixed overview glitch fix of 0.9.6 erroneously excluded alts with custom titles.
 Added Cycle on Close to misc settings.
+
+**ScalA 0.9.8**
+Added custom sorting and white/blacklisting of alts.
+ (white/blacklisting is integrated in the sort tab of settings)
+Fixed quicklaunch path selection button in settings not doing anything.
+Fixed cycling bug when it tried to cycle to closed clients.
+Made maximized overview attempt to maintain aspect ratio.
+Increased maximum number of alts.
