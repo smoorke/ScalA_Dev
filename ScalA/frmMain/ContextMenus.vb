@@ -74,6 +74,7 @@ Partial Public Class FrmMain
         Next
 
     End Sub
+
     Private ReadOnly iconCache As New ConcurrentDictionary(Of String, Bitmap)
 
     Private Function GetIcon(ByVal PathName As String) As Bitmap
@@ -242,9 +243,10 @@ Partial Public Class FrmMain
         Try
             Task.Run(Sub()
                          Try
-                             Parallel.ForEach(items.Skip(skipped).TakeWhile(Function(__) Not ct.IsCancellationRequested),
+                             'Parallel.ForEach(items.Skip(skipped).TakeWhile(Function(__) Not ct.IsCancellationRequested),
+                             Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested),
                                           Sub(it As ToolStripItem)
-                                              it.Image = GetIcon(it.Tag)
+                                              Me.BeginInvoke(updateToolstripImage, {it, GetIcon(it.Tag)})
                                           End Sub)
                          Catch
                          End Try
@@ -254,6 +256,12 @@ Partial Public Class FrmMain
         Catch
             Debug.Print("deferredIconLoading general exception")
         End Try
+    End Sub
+    Delegate Sub updateToolstripImageDelegate(item As ToolStripItem, bm As Bitmap)
+    Private Shared ReadOnly updateToolstripImage As New updateToolstripImageDelegate(AddressOf updateToolstripImageMethod)
+    Private Shared Sub updateToolstripImageMethod(item As ToolStripItem, bm As Bitmap)
+        If item Is Nothing Then Exit Sub
+        item.Image = bm
     End Sub
 
     Private Sub ParseSubDir(sender As ToolStripMenuItem, e As EventArgs) ' Handles DummyToolStripMenuItem.DropDownOpening
