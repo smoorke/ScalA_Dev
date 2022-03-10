@@ -254,10 +254,14 @@
         Using g As Graphics = Graphics.FromImage(bmp), grab As Bitmap = getClientBitmap()
 
             If grab Is Nothing Then Return Nothing
+            If grab.Width = 0 OrElse grab.Height = 0 Then Return Nothing
 
             Dim rows = 3
 
-            Dim barX As Integer = 388
+            'Dim barX As Integer = 388
+            Dim barX As Integer = grab.Width / 2 - 12
+            'Dim barY As Integer = 205 + RebornResolutionOffset(grab.Height)
+            Dim barY As Integer = grab.Height / 2 - 95
 
             Dim BadColorCount As Integer
             Dim blackCount As Integer = 0
@@ -266,7 +270,7 @@
                 BadColorCount = 0
                 blackCount = 0
                 For dx As Integer = 0 To 24
-                    Dim currentCol As Integer = grab.GetPixel(barX + dx, 205 + dy).ToArgb
+                    Dim currentCol As Integer = grab.GetPixel(barX + dx, barY + dy).ToArgb
                     'Debug.Print($"current{dy}/{dx}:{currentCol:X8}")
                     If {&HFF000000, &HFF000400}.Contains(currentCol) Then
                         blackCount += 1
@@ -296,7 +300,7 @@
             g.PixelOffsetMode = Drawing2D.PixelOffsetMode.Half
             g.DrawImage(grab,
                         New Rectangle(0, 0, bmp.Width, bmp.Height),
-                        New Rectangle(barX, 205, 25, rows),
+                        New Rectangle(barX, barY, 25, rows),
                         GraphicsUnit.Pixel)
         End Using 'g, grab
         Return bmp
