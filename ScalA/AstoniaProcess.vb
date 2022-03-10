@@ -215,8 +215,7 @@
             .Where(Function(ap)
                        Return Not blacklist.Contains(ap.Name) AndAlso
                               (Not My.Settings.Whitelist OrElse FrmMain.topSortList.Concat(FrmMain.botSortList).Contains(ap.Name)) AndAlso
-                              ap.MainWindowTitle.Count(Function(c As Char) c = "-"c) > 1 AndAlso
-                              ap.HasClassNameIn(classes:=My.Settings.className)
+                               ap.HasClassNameIn(classes:=My.Settings.className)
                    End Function)
     End Function
 
