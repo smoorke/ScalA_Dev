@@ -287,20 +287,18 @@ Partial Public Class FrmMain
         End If
     End Sub
 
-    Private Sub Ql_NewFolder(sender As ToolStripMenuItem, e As EventArgs)
-        cmsQuickLaunch.Close()
-        Debug.Print($"QlCtxNewFolder sender:{sender}")
-        Debug.Print($"tag:    {sender?.Tag}")
+    Private Sub createNewFolder(newpath As String)
+        Debug.Print($"NewFolder:{newpath}")
 
-        Dim rootFolder As String = sender.Tag
+        Dim rootFolder As String = newpath
 
         Debug.Print($"rootFolder: {rootFolder}")
 
-        Dim newfolderPath = rootFolder & "New Folder"
+        Dim newfolderPath = rootFolder & "New Folder\"
 
         Dim i As Integer = 2
         While IO.Directory.Exists(newfolderPath)
-            newfolderPath = rootFolder & $"New Folder ({i})"
+            newfolderPath = rootFolder & $"New Folder ({i})\"
             i += 1
         End While
 
@@ -311,6 +309,21 @@ Partial Public Class FrmMain
         Catch ex As Exception
 
         End Try
+
+        cmsQuickLaunch.Close()
+
+        If IO.Directory.Exists(newfolderPath) Then
+            RenameMethod(newfolderPath, newfolderPath.Substring(newfolderPath.TrimEnd("\").LastIndexOf("\") + 1).TrimEnd("\"))
+        End If
+
+    End Sub
+
+    Private Sub Ql_NewFolder(sender As ToolStripMenuItem, e As EventArgs)
+        Debug.Print($"QlCtxNewFolder sender:{sender}")
+        Debug.Print($"tag:    {sender?.Tag}")
+
+        createNewFolder(sender.Tag)
+
     End Sub
 
     Private Sub CreateShortCut(sender As ToolStripMenuItem, e As EventArgs)
@@ -514,6 +527,12 @@ Partial Public Class FrmMain
         Dim Path As String = sender.Parent.Tag.Tag
         Dim Name As String = sender.Parent.Tag.text
 
+        Debug.Print($"QlCtxRename {Path} {Name}")
+
+        RenameMethod(Path, Name)
+    End Sub
+
+    Private Sub RenameMethod(Path As String, Name As String)
         Dim title As String = $"Rename {Name}"
         Task.Run(Sub()
                      Dim watch As Stopwatch = Stopwatch.StartNew()
@@ -529,7 +548,8 @@ Partial Public Class FrmMain
                      watch.Stop()
                  End Sub)
         Dim newname = InputBox("Enter new name", title, Name, MousePosition.X - 177, MousePosition.Y - 76)
-        If newname <> "" Then
+        Debug.Print($"Rename to {newname}")
+        If newname <> "" AndAlso newname <> Name Then
             'Dim newpath = path.Substring(0, path.TrimEnd("\").LastIndexOf("\")) & "\" & newname
             Debug.Print($"oldpath: {Path}")
             'Debug.Print($"newpath: {newpath}")
@@ -581,31 +601,15 @@ Partial Public Class FrmMain
         Debug.Print($"QlCtxNewFolder sender:{sender}")
         Debug.Print($"tag:    {sender?.Tag}")
 
-        Dim rootFolder As String = sender.Tag
-        If rootFolder.EndsWith("\") Then
-            rootFolder = rootFolder.Substring(0, rootFolder.TrimEnd("\").LastIndexOf("\") + 1)
-        Else
-            rootFolder = rootFolder.Substring(0, rootFolder.LastIndexOf("\") + 1)
-        End If
+        Dim rootFolder As String = sender.Tag.Substring(0, sender.Tag.TrimEnd("\").LastIndexOf("\") + 1)
+        'If rootFolder.EndsWith("\") Then
+        '    rootFolder = rootFolder.Substring(0, rootFolder.TrimEnd("\").LastIndexOf("\") + 1)
+        'Else
+        '    rootFolder = rootFolder.Substring(0, rootFolder.LastIndexOf("\") + 1)
+        'End If
 
-        Debug.Print($"rootFolder: {rootFolder}")
+        createNewFolder(rootFolder)
 
-        Dim newfolderPath = rootFolder & "New Folder"
-
-        Dim i As Integer = 2
-        While IO.Directory.Exists(newfolderPath)
-            newfolderPath = rootFolder & $"New Folder ({i})"
-            i += 1
-        End While
-
-        Debug.Print($"newfolderpath: {newfolderPath}")
-
-        Try
-            IO.Directory.CreateDirectory(newfolderPath)
-        Catch ex As Exception
-
-        End Try
-        cmsQuickLaunch.Close()
     End Sub
 
     Private Sub QlCtxNewAlt(sender As MenuItem, e As EventArgs)
