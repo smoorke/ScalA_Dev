@@ -545,6 +545,10 @@ Partial Public Class FrmMain
                          If hndl <> IntPtr.Zero Then Exit While
                      End While
                      SetWindowPos(hndl, -1, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                     Try
+                         AppActivate(scalaPID)
+                     Catch
+                     End Try
                      watch.Stop()
                  End Sub)
         Dim newname = InputBox("Enter new name", title, Name, MousePosition.X - 177, MousePosition.Y - 76)

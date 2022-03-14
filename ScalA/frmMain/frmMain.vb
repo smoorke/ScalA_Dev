@@ -124,9 +124,10 @@
                 'cboAlt.SelectedIndex = 0
                 Exit Sub
             End If
-
-            AppActivate(AltPP.Id)
-
+            Try
+                AppActivate(AltPP.Id)
+            Catch
+            End Try
             Dim ptt As Point
 
             Debug.Print("ClientToScreen")
@@ -177,8 +178,10 @@
                 UpdateThumb(255)
             End If
             rectDic.Clear()
-
-            AppActivate(AltPP.Id)
+            Try
+                AppActivate(AltPP.Id)
+            Catch
+            End Try
             sysTrayIcon.Icon = AltPP?.GetIcon
 
         Else 'AltPP.Id = 0
