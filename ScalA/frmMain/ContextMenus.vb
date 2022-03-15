@@ -226,22 +226,10 @@ Partial Public Class FrmMain
         cts?.Cancel()
     End Sub
 
-    'Private init As Boolean = True
     Private Sub deferredIconLoading(items As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
-        Dim skipped As Boolean = False
-        'If init Then
-        '    Debug.Print("init iconloader")
-        '    Dim firstItem As ToolStripItem = items.FirstOrDefault
-        '    If firstItem IsNot Nothing Then
-        '        firstItem.Image = GetIcon(firstItem.Tag) ' needed or we get an exception in geticon later
-        '        skipped = True
-        '        init = False
-        '    End If
-        'End If
         Try
             Task.Run(Sub()
                          Try
-                             'Parallel.ForEach(items.Skip(skipped).TakeWhile(Function(__) Not ct.IsCancellationRequested),
                              Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested),
                                           Sub(it As ToolStripItem)
                                               Me.BeginInvoke(updateToolstripImage, {it, GetIcon(it.Tag)})
