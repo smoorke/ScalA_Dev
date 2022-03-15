@@ -491,19 +491,6 @@
 
 #Region " Move Self "
 
-#If 0 Then
-    Private Async Sub MoveSelf(ByVal sender As Control, ByVal e As System.Windows.Forms.MouseEventArgs) Handles pnlTitleBar.MouseDown, lblTitle.MouseDown
-        'todo: handle frmsettings.alignment 
-        If e.Button = MouseButtons.Left Then
-            Await Task.Delay(100) 'this to allow double clicks
-            sender.Capture = False
-            Const WM_NCLBUTTONDOWN As Integer = &HA1
-            Const HTCAPTION As Integer = 2
-            Dim msg As Message = Message.Create(Me.Handle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
-            Me.DefWndProc(msg)
-        End If
-    End Sub
-#Else
     Private MovingForm As Boolean
     Private MoveForm_MousePosition As Point
 
@@ -586,8 +573,6 @@
             End If
         End If
     End Sub
-#End If
-
 #End Region
 
 
