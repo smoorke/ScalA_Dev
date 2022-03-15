@@ -125,8 +125,7 @@ Partial Public Class FrmMain
     Private ReadOnly nsSorter As IComparer(Of String) = New CustomStringSorter
     Private Function ParseDir(pth As String) As List(Of ToolStripItem)
         Dim menuItems As New List(Of ToolStripItem)
-        Dim hasNoDirs As Boolean = True
-        Dim hasNoFiles As Boolean = True
+        Dim isEmpty As Boolean = True
         'Const ICONTIMEOUT = 50
         Const TOTALTIMEOUT = 3000
         Dim timedout As Boolean = False
@@ -153,7 +152,7 @@ Partial Public Class FrmMain
                 AddHandler smenu.DropDown.Closing, AddressOf cmsQuickLaunchDropDown_Closing
 
                 Dirs.Add(smenu)
-                hasNoDirs = False
+                isEmpty = False
                 If watch.ElapsedMilliseconds > TOTALTIMEOUT Then
                     timedout = True
                     Exit For
@@ -188,7 +187,7 @@ Partial Public Class FrmMain
             'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
 
             Files.Add(item)
-            hasNoFiles = False
+            isEmpty = False
             If watch.ElapsedMilliseconds > TOTALTIMEOUT Then
                 timedout = True
                 Exit For
@@ -203,15 +202,14 @@ Partial Public Class FrmMain
             menuItems.Add(New ToolStripMenuItem("<TimedOut>") With {.Enabled = False})
         End If
 
-        If My.Computer.Keyboard.CtrlKeyDown OrElse hasNoFiles Then
-            If hasNoFiles AndAlso hasNoDirs Then menuItems.Add(New ToolStripMenuItem("(Empty)") With {.Enabled = False})
-            If My.Computer.Keyboard.CtrlKeyDown OrElse hasNoDirs Then
-                menuItems.Add(New ToolStripSeparator)
-                Dim addShortcutMenu As New ToolStripMenuItem("New", My.Resources.Add) With {.Tag = pth}
-                addShortcutMenu.DropDownItems.Add("(Dummy)").Enabled = False
-                AddHandler addShortcutMenu.DropDownOpening, AddressOf AddShortcutMenu_DropDownOpening
-                menuItems.Add(addShortcutMenu)
-            End If
+        If isEmpty Then menuItems.Add(New ToolStripMenuItem("(Empty)") With {.Enabled = False})
+
+        If My.Computer.Keyboard.CtrlKeyDown OrElse isEmpty Then
+            menuItems.Add(New ToolStripSeparator)
+            Dim addShortcutMenu As New ToolStripMenuItem("New", My.Resources.Add) With {.Tag = pth}
+            addShortcutMenu.DropDownItems.Add("(Dummy)").Enabled = False
+            AddHandler addShortcutMenu.DropDownOpening, AddressOf AddShortcutMenu_DropDownOpening
+            menuItems.Add(addShortcutMenu)
         End If
 
         cts?.Dispose()
