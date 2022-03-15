@@ -552,7 +552,7 @@ Partial Public Class FrmMain
                     FileIO.FileSystem.RenameFile(Path, targetname)
                 End If
             Catch
-                MessageBox.Show(Me, $"Error renaming to {toName}!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show(Me, $"Error renaming {currentName} to {toName}!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
             Debug.Print($"renamed to {toName}")
             'IO.File.Move(path,  newname)
