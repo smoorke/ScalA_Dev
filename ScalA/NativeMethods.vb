@@ -254,6 +254,26 @@ Module NativeMethods
     <DllImport("user32.dll")>
     Public Function GetWindowThreadProcessId(ByVal hWnd As IntPtr, <Out()> ByRef lpdwProcessId As UInteger) As UInteger : End Function
 #Region " SetWindowPos "
+
+    Enum SWP_HWND As Integer
+        ''' <summary>
+        ''' 1 Places the window at the bottom Of the Z order. If the hWnd parameter identifies a topmost window, the window loses its topmost status And Is placed at the bottom Of all other windows.
+        ''' </summary>
+        BOTTOM = 1
+        ''' <summary> 
+        ''' -2 Places the window above all non-topmost windows (that Is, behind all topmost windows). This flag has no effect If the window Is already a non-topmost window.
+        ''' </summary>
+        NOTOPMOST = -2
+        ''' <summary>
+        ''' 0 Places the window at the top Of the Z order. 
+        ''' </summary>
+        TOP = 0
+        ''' <summary>
+        ''' -1 Places the window above all non-topmost windows. The window maintains its topmost position even when it is deactivated. 
+        ''' </summary>
+        TOPMOST = -1
+    End Enum
+
     <Flags>
     Public Enum SetWindowPosFlags As UInteger
         ''' <summary>If the calling thread and the thread that owns the window are attached to different input queues,

@@ -327,7 +327,7 @@
             Try
                 Dim altAP As New AstoniaProcess(Process.GetProcessById(id))
                 If altAP.IsRunning() Then
-                    SetWindowPos(altAP.MainWindowHandle, 0, restoreDic(id).X, restoreDic(id).Y, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.ASyncWindowPosition)
+                    SetWindowPos(altAP.MainWindowHandle, SWP_HWND.TOP, restoreDic(id).X, restoreDic(id).Y, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.ASyncWindowPosition)
                 End If
             Catch
             End Try
@@ -1441,7 +1441,7 @@
         Me.Show()
         'Me.BringToFront() 'doesn't work
         If AltPP IsNot Nothing AndAlso AltPP.Id <> 0 AndAlso AltPP.IsRunning Then
-            SetWindowPos(AltPP.MainWindowHandle, -2, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
+            SetWindowPos(AltPP.MainWindowHandle, SWP_HWND.NOTOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
             AppActivate(AltPP.Id)
         Else
             Me.TopMost = True

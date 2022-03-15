@@ -29,9 +29,9 @@ Partial Public Class FrmMain
         If pp Is Nothing Then Exit Sub
         Debug.Print("Topmost " & Not sender.Checked)
         If Not sender.Checked Then
-            SetWindowPos(pp.MainWindowHandle, -1, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+            SetWindowPos(pp.MainWindowHandle, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
         Else
-            SetWindowPos(pp.MainWindowHandle, -2, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+            SetWindowPos(pp.MainWindowHandle, SWP_HWND.NOTOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
         End If
     End Sub
     Private closeAllToolStripMenuItem As ToolStripMenuItem = Nothing
@@ -544,7 +544,7 @@ Partial Public Class FrmMain
                          Debug.Print($"findwindow {hndl}")
                          If hndl <> IntPtr.Zero Then Exit While
                      End While
-                     SetWindowPos(hndl, -1, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                     SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
                      Try
                          AppActivate(scalaPID)
                      Catch
@@ -726,7 +726,7 @@ Partial Public Class FrmMain
                              Debug.Print($"findwindow {hndl}")
                              If hndl <> IntPtr.Zero Then Exit While
                          End While
-                         SetWindowPos(hndl, -1, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                         SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
                          watch.Stop()
                      End Sub)
         End If
