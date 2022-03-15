@@ -703,7 +703,7 @@
         End If
         If cboAlt.SelectedIndex <> 0 Then
             Debug.Print("updateThumb")
-            UpdateThumb(255)
+            UpdateThumb(If(chkDebug.Checked, 128, 255))
         End If
         Me.ResumeLayout(True)
         pnlTitleBar.Width = pnlButtons.Left - pnlTitleBar.Left
