@@ -246,8 +246,8 @@
             My.Settings.SettingsVersion = My.Application.Info.Version.ToString
             My.Settings.Save()
             zooms = GetResolutions()
-            topSortList = My.Settings.topSort.Split(CType(vbCrLf, Char()), StringSplitOptions.RemoveEmptyEntries).ToList
-            botSortList = My.Settings.botSort.Split(CType(vbCrLf, Char()), StringSplitOptions.RemoveEmptyEntries).ToList
+            topSortList = My.Settings.topSort.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries).ToList
+            botSortList = My.Settings.botSort.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries).ToList
             blackList = topSortList.Intersect(botSortList).ToList
         End If
         topSortList = topSortList.Except(blackList).ToList
