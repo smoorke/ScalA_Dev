@@ -681,7 +681,7 @@ Partial Public Class FrmMain
 
             QlCtxIsOpen = False
 
-        ElseIf Not sender.Tag.EndsWith("\") Then 'do not process click on dirs
+        ElseIf Not sender.Tag.EndsWith("\") Then 'do not process click on dirs as they are handled by doubleclick
             Debug.Print("clicked not a dir")
             OpenLnk(sender, e)
             'cmsQuickLaunch.Close(ToolStripDropDownCloseReason.ItemClicked)
@@ -704,7 +704,7 @@ Partial Public Class FrmMain
             Task.Run(Sub()
                          Dim watch As Stopwatch = Stopwatch.StartNew()
                          Dim WindowName As String = pth.ToLower.Substring(pth.LastIndexOf("\") + 1).Replace(".url", "").Replace(".lnk", "") & " Properties"
-
+                         'findwindow ignores case
                          Dim hndl As IntPtr
                          While watch.ElapsedMilliseconds < 2000
                              Threading.Thread.Sleep(20)
