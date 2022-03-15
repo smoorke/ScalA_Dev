@@ -532,8 +532,8 @@ Partial Public Class FrmMain
         RenameMethod(Path, Name)
     End Sub
 
-    Private Sub RenameMethod(Path As String, Name As String)
-        Dim title As String = $"Rename {Name}"
+    Private Sub RenameMethod(Path As String, currentName As String)
+        Dim title As String = $"Rename {currentName}"
         Task.Run(Sub()
                      Dim watch As Stopwatch = Stopwatch.StartNew()
 
@@ -551,24 +551,24 @@ Partial Public Class FrmMain
                      End Try
                      watch.Stop()
                  End Sub)
-        Dim newname = InputBox("Enter new name", title, Name, MousePosition.X - 177, MousePosition.Y - 76)
-        Debug.Print($"Rename to {newname}")
-        If newname <> "" AndAlso newname <> Name Then
+        Dim toName As String = InputBox("Enter new name", title, currentName, MousePosition.X - 177, MousePosition.Y - 76)
+        Debug.Print($"Rename to {toName}")
+        If toName <> "" AndAlso currentName <> toName Then
             'Dim newpath = path.Substring(0, path.TrimEnd("\").LastIndexOf("\")) & "\" & newname
             Debug.Print($"oldpath: {Path}")
             'Debug.Print($"newpath: {newpath}")
             Try
                 If Path.EndsWith("\") Then
-                    FileIO.FileSystem.RenameDirectory(Path, newname)
+                    FileIO.FileSystem.RenameDirectory(Path, toName)
                 Else
-                    Dim targetname As String = newname
+                    Dim targetname As String = toName
                     If {".lnk", ".url"}.Contains(System.IO.Path.GetExtension(Path).ToLower) Then targetname &= System.IO.Path.GetExtension(Path)
                     FileIO.FileSystem.RenameFile(Path, targetname)
                 End If
             Catch
-                MessageBox.Show(Me, $"Error renaming to {newname}!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show(Me, $"Error renaming to {toName}!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
-            Debug.Print($"renamed to {newname}")
+            Debug.Print($"renamed to {toName}")
             'IO.File.Move(path,  newname)
         End If
     End Sub
