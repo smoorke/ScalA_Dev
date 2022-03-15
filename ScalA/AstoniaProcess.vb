@@ -306,6 +306,122 @@
         Return bmp
     End Function
 
+    Private alreadylaunched As Boolean = False
+    Friend Async Function reOpenAsWindowed() As Task
+
+        If alreadylaunched Then
+            Return
+        End If
+
+        Debug.Print($"runasWindowed: {Me.Name} {Me.Id}")
+
+        Dim shortcutlink As String = FileIO.SpecialDirectories.Temp & "\ScalA\tmp.lnk"
+
+        Dim mos As Management.ManagementObject = New Management.ManagementObjectSearcher($“Select * from Win32_Process WHERE ProcessID={_proc.Id}").Get()(0)
+
+        Dim arguments As String = mos("commandline")
+
+        Debug.Print($"arguments:""{arguments}""")
+        Debug.Print($"exePath:""{mos("ExecutablePath")}""")
+
+        If arguments = "" Then
+            If MessageBox.Show("Access denied!" & vbCrLf &
+                           "Elevate ScalA to Administrator?",
+                               "Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Error) _
+               = DialogResult.Cancel Then Return
+            My.Settings.Save()
+            FrmMain.ElevateSelf()
+            End 'program
+            Return
+        End If
+        Debug.Print("cmdline:" & arguments)
+        If arguments.StartsWith("""") Then
+            'arguments = arguments.Substring(1) 'skipped with startindex
+            arguments = arguments.Substring(arguments.IndexOf("""", 1) + 1)
+        Else
+            For Each exe As String In My.Settings.exe.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries)
+                If arguments.ToLower.StartsWith(exe.Trim) Then
+                    arguments = arguments.Substring(exe.Trim.Length + 4)
+                End If
+            Next
+        End If
+
+
+
+        Dim exepath As String = ""
+        Try
+            exepath = mos("ExecutablePath")
+        Catch
+
+        End Try
+        Dim oLink As Object
+        Try
+
+            oLink = CreateObject("WScript.Shell").CreateShortcut(shortcutlink)
+
+            oLink.TargetPath = exepath
+            oLink.Arguments = arguments.Trim() & " -w"
+            oLink.WorkingDirectory = exepath.Substring(0, exepath.LastIndexOf("\"))
+            oLink.WindowStyle = 1
+            oLink.Save()
+        Catch ex As Exception
+            Return
+        End Try
+
+        Dim targetName As String = Me.Name
+
+        SendMessage(_proc.MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
+
+        Dim pp As Process
+
+        Dim bat As String = "\noAdmin.bat"
+        Dim tmpDir As String = FileIO.SpecialDirectories.Temp & "\ScalA"
+
+        If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
+        If Not FileIO.FileSystem.FileExists(tmpDir & bat) Then FileIO.FileSystem.WriteAllText(tmpDir & bat, My.Resources.AsInvoker, False)
+
+        pp = New Process With {.StartInfo = New ProcessStartInfo With {.FileName = tmpDir & bat,
+                                                                       .Arguments = """" & shortcutlink & """",
+                                                                       .WindowStyle = ProcessWindowStyle.Hidden,
+                                                                       .CreateNoWindow = True}}
+        Try
+            alreadylaunched = True
+            pp.Start()
+        Catch
+        Finally
+            pp.Dispose()
+        End Try
+
+
+
+        FrmMain.Cursor = Cursors.WaitCursor
+        Dim count As Integer = 0
+
+        While True
+            count += 1
+            Await Task.Delay(50)
+            Dim targetPPs As AstoniaProcess() = AstoniaProcess.Enumerate(FrmMain.blackList).Where(Function(ap) ap.Name = targetName).ToArray()
+            If targetPPs.Length > 0 AndAlso targetPPs(0) IsNot Nothing AndAlso targetPPs(0).Id <> 0 Then
+                FrmMain.PopDropDown(FrmMain.cboAlt)
+                FrmMain.cboAlt.SelectedItem = targetPPs(0)
+                Exit While
+            End If
+            If count >= 100 Then
+                MessageBox.Show("Windowing failed")
+                Exit While
+            End If
+        End While
+        FrmMain.Cursor = Cursors.Default
+
+        If System.IO.File.Exists(shortcutlink) Then
+            Debug.Print("Deleting shortcut")
+            System.IO.File.Delete(shortcutlink)
+        End If
+
+        alreadylaunched = False
+    End Function
+
+
 End Class
 
 Class AstoniaProcessSorter
