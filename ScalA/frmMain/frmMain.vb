@@ -690,14 +690,13 @@
     Public Sub CmbResolution_SelectedIndexChanged(sender As ComboBox, e As EventArgs) Handles cmbResolution.SelectedIndexChanged
         Debug.Print("cboResolution_SelectedIndexChanged")
         My.Settings.zoom = sender.SelectedIndex
-        If AltPP?.IsRunning Then
-            newX = Me.Left + pbZoom.Left - AstClientOffset.Width - My.Settings.offset.X
-            newY = Me.Top + pbZoom.Top - AstClientOffset.Height - My.Settings.offset.Y
-            Debug.Print("SetWindowPos")
-            SetWindowPos(AltPP.MainWindowHandle, Me.Handle, newX, newY, -1, -1, SetWindowPosFlags.IgnoreResize + SetWindowPosFlags.DoNotActivate)
-        End If
+
         Debug.Print("reZoom")
         ReZoom(zooms(My.Settings.zoom))
+        If AltPP?.IsRunning Then
+            Debug.Print("CenterWindowPos")
+            AltPP.CenterWindowPos(ScalaHandle, Me.Left + pbZoom.Left + (pbZoom.Width / 2), Me.Top + pbZoom.Top + (pbZoom.Height / 2))
+        End If
     End Sub
 
     Private Sub ReZoom(newSize As Size)
