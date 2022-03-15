@@ -222,11 +222,11 @@ Partial Public Class FrmMain
         Return menuItems
     End Function
 
-    Private Sub cmsQuickLaunchDropDown_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs)
+    Private Sub CmsQuickLaunchDropDown_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs)
         cts?.Cancel()
     End Sub
 
-    Private Sub deferredIconLoading(items As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
+    Private Sub DeferredIconLoading(items As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
         Try
             Task.Run(Sub()
                          Try
@@ -245,7 +245,7 @@ Partial Public Class FrmMain
     End Sub
     Delegate Sub updateToolstripImageDelegate(item As ToolStripItem, bm As Bitmap)
     Private Shared ReadOnly updateToolstripImage As New updateToolstripImageDelegate(AddressOf updateToolstripImageMethod)
-    Private Shared Sub updateToolstripImageMethod(item As ToolStripItem, bm As Bitmap)
+    Private Shared Sub UpdateToolstripImageMethod(item As ToolStripItem, bm As Bitmap)
         If item Is Nothing Then Exit Sub
         item.Image = bm
     End Sub
@@ -273,7 +273,7 @@ Partial Public Class FrmMain
         End If
     End Sub
 
-    Private Sub createNewFolder(newpath As String)
+    Private Sub CreateNewFolder(newpath As String)
         Debug.Print($"NewFolder:{newpath}")
 
         Dim rootFolder As String = newpath

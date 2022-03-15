@@ -439,10 +439,7 @@
             End If
         End If
     End Sub
-    Private Sub FrmMain_ResizeEnd(sender As Form, e As EventArgs) Handles Me.ResizeEnd
-        Debug.Print("ResizeEnd")
-    End Sub
-    Private Sub tmrMove_Tick(sender As Object, e As EventArgs) Handles tmrMove.Tick
+    Private Sub TmrMove_Tick(sender As Object, e As EventArgs) Handles tmrMove.Tick
         If AltPP?.IsRunning Then
             Static moveable As Boolean = True
             If moveable Then
@@ -465,6 +462,7 @@
         If Me.WindowState = FormWindowState.Normal Then
             My.Settings.location = Me.Location
         End If
+        tmrActive.Stop()
         Hotkey.UnregHotkey(Me)
     End Sub
 
@@ -485,8 +483,14 @@
     Private ScalaHandle As IntPtr = Me.Handle
     Private storedY As Integer = 0
     Private wasVisible As Boolean = True
+    Private prevMouseP = New Point
 
-    Private Sub tmrTick_Tick(sender As Timer, e As EventArgs) Handles tmrTick.Tick
+    Private Sub TmrTick_Tick(sender As Timer, e As EventArgs) Handles tmrTick.Tick
+
+        If prevMouseP = MousePosition Then
+            Exit Sub
+        End If
+        prevMouseP = MousePosition
 
         If Not AltPP?.IsRunning() Then
             Debug.Print("Not AltPP?.IsRunning()")
@@ -749,7 +753,7 @@
         MyBase.WndProc(m)  ' allow form to process this message
     End Sub
 
-    Private Sub cycle(Optional up As Boolean = False)
+    Private Sub Cycle(Optional up As Boolean = False)
         PopDropDown(cboAlt)
         Dim requestedindex = cboAlt.SelectedIndex + If(up, -1, 1)
         If requestedindex < 1 Then
@@ -860,7 +864,8 @@
                                           End Sub)
                 End If
 
-                If My.Settings.gameOnOverview Then 'todo move this to seperate timer and make async
+                If My.Settings.gameOnOverview AndAlso prevMouseP <> MousePosition Then 'todo move this to seperate timer and make async
+
                     Dim rccB As Rectangle
                     GetClientRect(ap?.MainWindowHandle, rccB)
 
@@ -925,7 +930,7 @@
                     End If 'but.ThumbContains(MousePosition)
                 End If 'gameonoverview
                 apCount += 1
-
+                prevMouseP = MousePosition
             Else
                 but.Text = String.Empty
                 but.Tag = Nothing 'New AstoniaProcess(Nothing)
@@ -950,11 +955,11 @@
     End Sub
     Delegate Sub updateButtonImageDelegate(but As AButton, bm As Bitmap)
     Private Shared ReadOnly updateButtonImage As New updateButtonImageDelegate(AddressOf updateButtonImageMethod)
-    Private Shared Sub updateButtonImageMethod(but As AButton, bm As Bitmap)
+    Private Shared Sub UpdateButtonImageMethod(but As AButton, bm As Bitmap)
         If but Is Nothing Then Exit Sub
         but.Image = bm
     End Sub
-    Private Function getNextPerfectSquare(num As Integer)
+    Private Function GetNextPerfectSquare(num As Integer)
         Dim nextN As Integer = Math.Floor(Math.Sqrt(num)) + 1
         If nextN > 6 Then nextN = 6
         Return nextN * nextN
@@ -1329,11 +1334,11 @@
         End If
     End Sub
 
-    Private Sub cmsAlt_Closed(sender As Object, e As ToolStripDropDownClosedEventArgs) Handles cmsAlt.Closed
+    Private Sub CmsAlt_Closed(sender As Object, e As ToolStripDropDownClosedEventArgs) Handles cmsAlt.Closed
         AButton.ActiveOverview = My.Settings.gameOnOverview
     End Sub
 
-    Private Sub cmsAlt_Opened(sender As Object, e As EventArgs) Handles cmsAlt.Opened
+    Private Sub CmsAlt_Opened(sender As Object, e As EventArgs) Handles cmsAlt.Opened
         AButton.ActiveOverview = False
     End Sub
 End Class
@@ -1367,7 +1372,7 @@ Module dBug
         FrmMain.pnlOverview.ResumeLayout(True)
     End Sub
 
-    Friend Sub buttonInfo(sender As Object, e As EventArgs)
+    Friend Sub ButtonInfo(sender As Object, e As EventArgs)
         Dim i = 1
         For Each but As AButton In FrmMain.pnlOverview.Controls.OfType(Of AButton).Where(Function(b) b.Visible)
             Debug.Print($"Button {i} Size: {but.Size} thuRect: {but.ThumbRECT}")

@@ -199,7 +199,7 @@
     '    Return Not left.Equals(right)
     'End Operator
 
-    Private Shared Function enumProcessesByNameArray(strings() As String) As IEnumerable(Of Process)
+    Private Shared Function EnumProcessesByNameArray(strings() As String) As IEnumerable(Of Process)
         Dim IEnum As IEnumerable(Of Process) = {}
         For Each exe As String In strings
             IEnum = IEnum.Concat(Process.GetProcessesByName(Trim(exe)))
@@ -224,7 +224,7 @@
     <System.Runtime.InteropServices.DllImport("user32.dll")>
     Private Shared Function GetClientRect(ByVal hWnd As IntPtr, ByRef lpRect As Rectangle) As Boolean : End Function
 
-    Public Function getClientBitmap() As Bitmap
+    Public Function GetClientBitmap() As Bitmap
         If _proc Is Nothing Then Return Nothing
 
         Dim rcc As Rectangle
@@ -249,9 +249,9 @@
     End Function
     Private Shared ReadOnly validColors As Integer() = {&HFFFF0000, &HFFFF0400, &HFFFF7B29, &HFFFF7D29, &HFF297BFF, &HFF297DFF, &HFF000000, &HFF000400, &HFFFFFFFF} 'red, orange, lightblue, black, white (troy,base)
 
-    Public Function getHealthbar(Optional width As Integer = 75, Optional height As Integer = 15) As Bitmap
+    Public Function GetHealthbar(Optional width As Integer = 75, Optional height As Integer = 15) As Bitmap
         Static Dim bmp As New Bitmap(width, height)
-        Using g As Graphics = Graphics.FromImage(bmp), grab As Bitmap = getClientBitmap()
+        Using g As Graphics = Graphics.FromImage(bmp), grab As Bitmap = GetClientBitmap()
 
             If grab Is Nothing Then Return Nothing
             If grab.Width = 0 OrElse grab.Height = 0 Then Return Nothing
@@ -307,7 +307,7 @@
     End Function
 
     Private alreadylaunched As Boolean = False
-    Friend Async Function reOpenAsWindowed() As Task
+    Friend Async Function ReOpenAsWindowed() As Task
 
         If alreadylaunched Then
             Return

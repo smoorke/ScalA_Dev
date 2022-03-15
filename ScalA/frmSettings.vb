@@ -276,7 +276,7 @@ Public Class FrmSettings
         numYoffset.Text = 0
     End Sub
 
-    Private Sub btnOpenFolderDialog_Click(sender As Object, e As EventArgs) Handles btnOpenFolderDialog.Click
+    Private Sub BtnOpenFolderDialog_Click(sender As Object, e As EventArgs) Handles btnOpenFolderDialog.Click
         txtQuickLaunchPath.SuspendLayout()
         txtQuickLaunchPath.Text = ChangeLinksDir(My.Settings.links)
         txtQuickLaunchPath.SelectionStart = txtQuickLaunchPath.TextLength
@@ -318,7 +318,7 @@ Public Class FrmSettings
         Return current
     End Function
 
-    Private Sub txtQuickLaunchPath_DoubleClick(sender As Object, e As EventArgs) Handles txtQuickLaunchPath.DoubleClick
+    Private Sub TxtQuickLaunchPath_DoubleClick(sender As Object, e As EventArgs) Handles txtQuickLaunchPath.DoubleClick
         txtQuickLaunchPath.SelectionStart = 0
         txtQuickLaunchPath.SelectionLength = txtQuickLaunchPath.TextLength
     End Sub
@@ -352,11 +352,11 @@ Public Class FrmSettings
     Dim StoKey, CycleKeyUp, CycleKeyDown As Integer
 
 
-    Private Sub btnRestore_Click(sender As Object, e As EventArgs) Handles btnRestore.Click
+    Private Sub BtnRestore_Click(sender As Object, e As EventArgs) Handles btnRestore.Click
         txtResolutions.Text = My.Settings.resolutions
     End Sub
 
-    Private Sub btnGenerate_Click(sender As Button, e As EventArgs) Handles btnGenerate.Click
+    Private Sub BtnGenerate_Click(sender As Button, e As EventArgs) Handles btnGenerate.Click
         cmsGenerate.Show(sender, sender.PointToClient(MousePosition))
     End Sub
 
@@ -414,7 +414,7 @@ Public Class FrmSettings
 
     End Sub
 
-    Private Sub btnSort_Click(sender As Object, e As EventArgs) Handles btnSort.Click
+    Private Sub BtnSort_Click(sender As Object, e As EventArgs) Handles btnSort.Click
         Dim sb As New StringBuilder
         For Each line In txtResolutions.Text.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries).OrderBy(Function(res) Val(res))
             sb.AppendLine(line)
@@ -423,7 +423,7 @@ Public Class FrmSettings
         txtResolutions.Text = sb.ToString
     End Sub
 
-    Private Sub btnHelp_Click(sender As Object, e As EventArgs) Handles btnHelp.Click
+    Private Sub BtnHelp_Click(sender As Object, e As EventArgs) Handles btnHelp.Click
         Dim bl As String = vbTab & """" & String.Join($"""{vbCrLf & vbTab}""", txtTopSort.Lines.Intersect(txtBotSort.Lines).Where(Function(s) s <> "")) & """"
         If bl = vbTab & """""" Then bl = $"{vbTab}(None)"
         MessageBox.Show($"Names are case sensitive.{vbCrLf}Left list Sorts to top, Right one to bottom.{vbCrLf}" &
@@ -432,7 +432,7 @@ Public Class FrmSettings
                         $"Current Blacklist:{vbCrLf}{bl}", "Sorting & Black/Whitelist Info", MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 
-    Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
+    Private Sub BtnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
 
         Debug.Print("btnTest_Click")
 
@@ -456,7 +456,7 @@ Public Class FrmSettings
 #End If
     End Sub
 
-    Private Sub txtShortcuts_PreviewKeyDown(sender As TextBox, e As PreviewKeyDownEventArgs) Handles txtStoKey.PreviewKeyDown, txtCycleKeyUp.PreviewKeyDown, txtCycleKeyDown.PreviewKeyDown
+    Private Sub TxtShortcuts_PreviewKeyDown(sender As TextBox, e As PreviewKeyDownEventArgs) Handles txtStoKey.PreviewKeyDown, txtCycleKeyUp.PreviewKeyDown, txtCycleKeyDown.PreviewKeyDown
         Debug.Print(e.KeyCode)
         If e.KeyCode = 16 OrElse 'shift
            e.KeyCode = 17 OrElse 'ctrl
