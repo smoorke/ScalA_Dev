@@ -56,7 +56,7 @@ Partial Public Class FrmMain
         Dim twp As DWM_THUMBNAIL_PROPERTIES
         twp.dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY + DwmThumbnailFlags.DWM_TNP_RECTDESTINATION + DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY + DwmThumbnailFlags.DWM_TNP_VISIBLE
         twp.fVisible = True
-        twp.opacity = 255
+        twp.opacity = If(chkDebug.Checked, 128, 255)
         twp.rcDestination = startRC
         twp.fSourceClientAreaOnly = True
 

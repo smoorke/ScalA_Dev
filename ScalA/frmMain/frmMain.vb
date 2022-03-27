@@ -175,7 +175,7 @@
             If rectDic.ContainsKey(item.Id) Then
                 AnimateThumb(rectDic(item.Id), New Rectangle(pbZoom.Left, pbZoom.Top, pbZoom.Right, pbZoom.Bottom))
             Else
-                UpdateThumb(255)
+                UpdateThumb(If(chkDebug.Checked, 128, 255))
             End If
             rectDic.Clear()
             Try
