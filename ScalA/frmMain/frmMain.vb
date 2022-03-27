@@ -488,10 +488,7 @@
 
     Private Sub TmrTick_Tick(sender As Timer, e As EventArgs) Handles tmrTick.Tick
 
-        If prevMouseP = MousePosition Then
-            Exit Sub
-        End If
-        prevMouseP = MousePosition
+
 
         If Not AltPP?.IsRunning() Then
             Debug.Print("Not AltPP?.IsRunning()")
@@ -507,6 +504,11 @@
         End If
 
         UpdateTitle()
+
+        If prevMouseP = MousePosition Then
+            Exit Sub
+        End If
+        prevMouseP = MousePosition
 
         If Me.WindowState = FormWindowState.Minimized Then
             Exit Sub
