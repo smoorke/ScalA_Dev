@@ -829,7 +829,7 @@
         For Each but As AButton In visibleButtons
             'Debug.Print($"apCount < alts.Count AndAlso (i < topCount OrElse i > skipCount")
             'Debug.Print($"{apCount} < {alts.Count} AndAlso ({i} < {topCount} OrElse {i} > {skipCount}")
-            If apCounter < alts.Count AndAlso (butCounter < topCount OrElse butCounter >= skipCount) Then
+            If apCounter < alts.Count AndAlso (butCounter < topCount OrElse butCounter >= skipCount) Then 'buttons with alts
 
                 Dim ap As AstoniaProcess = alts(apCounter)
                 Dim apID As Integer = ap?.Id
@@ -841,15 +841,23 @@
                 Else
                     but.Font = New Font("Microsoft Sans Serif", 8.25)
                 End If
-                If TickCounter = apCounter OrElse but.BackgroundImage Is Nothing Then
-                    Using ico As Bitmap = ap.GetIcon?.ToBitmap
-                        If ico IsNot Nothing Then
-                            but.BackgroundImage = New Bitmap(ico, New Size(16, 16))
-                        Else
-                            but.BackgroundImage = Nothing
-                        End If
-                    End Using
+                If TickCounter = apCounter OrElse but.BackgroundImage Is Nothing OrElse but.Image Is Nothing Then
+                    Task.Run(Sub()
+                                 If TickCounter = apCounter OrElse but.BackgroundImage Is Nothing Then
+                                     Using ico As Bitmap = ap.GetIcon?.ToBitmap
+                                         If ico IsNot Nothing Then
+                                             but.BeginInvoke(updateButtonBackgroundImage, {but, New Bitmap(ico, New Size(16, 16))})
+                                         Else
+                                             but.BeginInvoke(updateButtonBackgroundImage, {but, Nothing})
+                                         End If
+                                     End Using
+                                 End If
+                                 If TickCounter = apCounter OrElse but.Image Is Nothing Then
+                                     Me.BeginInvoke(updateButtonImage, {but, ap.GetHealthbar()})
+                                 End If
+                             End Sub)
                 End If
+
                 but.ContextMenuStrip = cmsAlt
 
                 If Not startThumbsDict.ContainsKey(apID) Then
@@ -868,15 +876,6 @@
                                        .rcDestination = rectDic(apID)
                                    }
                 DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
-
-                If TickCounter = apCounter OrElse but.Image Is Nothing Then
-                    Task.Run(Sub()
-                                 Try 'need invoke here or we can get exception on but.image
-                                     Me.BeginInvoke(updateButtonImage, {but, ap.GetHealthbar()})
-                                 Catch
-                                 End Try
-                             End Sub)
-                End If
 
                 If My.Settings.gameOnOverview Then 'todo move this to seperate timer and make async
 
@@ -942,7 +941,7 @@
                     End If 'but.ThumbContains(MousePosition)
                 End If 'gameonoverview
                 apCounter += 1
-            Else
+            Else ' buttons w/o alts
                 but.Text = String.Empty
                 but.Tag = Nothing 'New AstoniaProcess(Nothing)
                 but.ContextMenuStrip = cmsQuickLaunch
@@ -969,6 +968,12 @@
     Private Shared Sub UpdateButtonImageMethod(but As AButton, bm As Bitmap)
         If but Is Nothing Then Exit Sub
         but.Image = bm
+    End Sub
+    Delegate Sub updateButtonBackgroundImageDelegate(but As AButton, bm As Bitmap)
+    Private Shared ReadOnly updateButtonBackgroundImage As New updateButtonImageDelegate(AddressOf UpdateButtonBackgroundImageMethod)
+    Private Shared Sub UpdateButtonBackgroundImageMethod(but As AButton, bm As Bitmap)
+        If but Is Nothing Then Exit Sub
+        but.BackgroundImage = bm
     End Sub
     Private Function GetNextPerfectSquare(num As Integer)
         Dim nextN As Integer = Math.Floor(Math.Sqrt(num)) + 1
