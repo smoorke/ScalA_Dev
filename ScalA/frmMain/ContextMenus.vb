@@ -134,7 +134,7 @@ Partial Public Class FrmMain
 
         Dim Dirs As New List(Of ToolStripItem)
         Try
-            For Each fullDirs As String In System.IO.Directory.EnumerateDirectories(pth).TakeWhile(Function(__) Not QlCtxIsOpen)
+            For Each fullDirs As String In System.IO.Directory.EnumerateDirectories(pth).TakeWhile(Function(__) Not IsQlCtxOpen())
 
                 Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullDirs).Attributes
                 If attr.HasFlag(System.IO.FileAttributes.Hidden) Then Continue For
@@ -167,7 +167,7 @@ Partial Public Class FrmMain
         Dim Files As New List(Of ToolStripItem)
         For Each fullLink As String In System.IO.Directory.EnumerateFiles(pth) _
                                        .Where(Function(p) {".exe", ".jar", ".lnk", ".url", ".txt"}.Contains(System.IO.Path.GetExtension(p).ToLower)) _
-                                       .TakeWhile(Function(__) Not QlCtxIsOpen)
+                                       .TakeWhile(Function(__) Not IsQlCtxOpen())
             'Debug.Print(System.IO.Path.GetFileName(fullLink))
 
             'don't add self to list
@@ -251,8 +251,8 @@ Partial Public Class FrmMain
     End Sub
 
     Private Sub ParseSubDir(sender As ToolStripMenuItem, e As EventArgs) ' Handles DummyToolStripMenuItem.DropDownOpening
-        Debug.Print($"ParseSubDir QlCtxIsOpen:{QlCtxIsOpen}")
-        If QlCtxIsOpen Then Exit Sub
+        Debug.Print($"ParseSubDir QlCtxIsOpen:{IsQlCtxOpen()}")
+        If IsQlCtxOpen() Then Exit Sub
         sender.DropDownItems.Clear()
         sender.DropDownItems.AddRange(ParseDir(sender.Tag).ToArray)
     End Sub
@@ -614,14 +614,14 @@ Partial Public Class FrmMain
     Private ReadOnly folderHbm As IntPtr = GetIcon(FileIO.SpecialDirectories.Temp).GetHbitmap(Color.Red)
     Private ReadOnly plusHbm As IntPtr = New Bitmap(My.Resources.Add, New Size(16, 16)).GetHbitmap(Color.Red)
 
-    Dim QlCtxIsOpen As Boolean = False 'to handle glitch in contextmenu when moving astonia window
+    'Dim QlCtxIsOpen As Boolean = False 'to handle glitch in contextmenu when moving astonia window
 
     Private Sub QL_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs) 'Handles cmsQuickLaunch.mousedown
         If e.Button = MouseButtons.Right Then
 
             Debug.Print("QL_MouseDown")
 
-            QlCtxIsOpen = True
+            IsQlCtxOpen = True
 
             sender.Select()
             sender.BackColor = Color.FromArgb(&HFFB5D7F3) 'this to fix a glitch where sender gets unselected
@@ -679,7 +679,7 @@ Partial Public Class FrmMain
                 QlCtxNewMenu.MenuItems.RemoveAt(QlCtxNewMenuStaticItemsCount)
             End While
 
-            QlCtxIsOpen = False
+            IsQlCtxOpen = False
 
         ElseIf Not sender.Tag.EndsWith("\") Then 'do not process click on dirs as they are handled by doubleclick
             Debug.Print("clicked not a dir")
