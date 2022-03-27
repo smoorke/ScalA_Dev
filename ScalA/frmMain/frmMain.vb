@@ -793,17 +793,6 @@
 
     Friend Shared apSorter As AstoniaProcessSorter
 
-    Dim butCounter As Integer = 0
-
-    Dim alts As List(Of AstoniaProcess)
-    Dim visibleButtons As List(Of AButton)
-
-    Dim botCount As Integer
-    Dim topCount As Integer
-    Dim skipCount As Integer
-
-    Dim apCounter As Integer
-
     Private Sub TmrOverview_Tick(sender As Timer, e As EventArgs) Handles tmrOverview.Tick
 
         If Me.WindowState = FormWindowState.Minimized Then
@@ -815,16 +804,17 @@
         chkDebug.Text = TickCounter
 #End If
 
-        butCounter = 0
-        alts = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name, apSorter).ToList
+        Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name, apSorter).ToList
 
         pnlOverview.SuspendLayout()
-        visibleButtons = UpdateButtonLayout(alts.Count)
+        Dim visibleButtons As List(Of AButton) = UpdateButtonLayout(alts.Count)
 
-        botCount = alts.Where(Function(ap) botSortList.Contains(ap.Name)).Count()
-        topCount = alts.Count - botCount
-        skipCount = visibleButtons.Count - botCount
-        apCounter = 0
+        Dim botCount = alts.Where(Function(ap) botSortList.Contains(ap.Name)).Count()
+        Dim topCount = alts.Count - botCount
+        Dim skipCount = visibleButtons.Count - botCount
+
+        Dim apCounter = 0
+        Dim butCounter = 0
 
         For Each but As AButton In visibleButtons
             'Debug.Print($"apCount < alts.Count AndAlso (i < topCount OrElse i > skipCount")
