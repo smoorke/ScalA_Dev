@@ -149,7 +149,7 @@ Partial Public Class FrmMain
                 AddHandler smenu.DoubleClick, AddressOf DblClickDir
                 AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
                 'AddHandler smenu.DropDownOpened, AddressOf deferredIconLoading
-                AddHandler smenu.DropDown.Closing, AddressOf cmsQuickLaunchDropDown_Closing
+                AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunchDropDown_Closing
 
                 Dirs.Add(smenu)
                 isEmpty = False

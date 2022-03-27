@@ -70,7 +70,7 @@
         '    Exit Sub
         'End If
 
-        counter = 0
+        TickCounter = 0
 
         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
         RestorePos(AltPP)
@@ -120,7 +120,7 @@
             'check if target is running as windowed. if not ask to run it with -w
             If rcC.Width = 0 AndAlso rcC.Height = 0 Then
                 'MessageBox.Show("Client is not running in windowed mode", "Error")
-                Await AltPP.reOpenAsWindowed()
+                Await AltPP.ReOpenAsWindowed()
                 'cboAlt.SelectedIndex = 0
                 Exit Sub
             End If
@@ -143,10 +143,10 @@
 
             Debug.Print("SetWindowLong")
 
-            altTopM = If(AltPP.IsTopMost(), -1, -2)
+            altTopM = If(AltPP.IsTopMost(), SWP_HWND.TOPMOST, SWP_HWND.NOTOPMOST)
 
             'SetWindowPos(AltPP.MainWindowHandle, -2, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
-            SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle) ' have Client always be beneath ScalA (set Scala to be owner of client)
+            SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle) ' have Client always be beneath ScalA (set Scala to be owned by client)
             '                                                                         note SetParent() doesn't work.
 
             Debug.Print("AltPPTopMost " & AltPP.IsTopMost.ToString)
@@ -183,7 +183,8 @@
             Catch
             End Try
             sysTrayIcon.Icon = AltPP?.GetIcon
-            AltPP?.CenterWindowPos(ScalaHandle, Me.Left + pbZoom.Left + (pbZoom.Width / 2), Me.Top + pbZoom.Top + (pbZoom.Height / 2))
+            'AltPP?.CenterWindowPos(ScalaHandle, Me.Left + pbZoom.Left + (pbZoom.Width / 2), Me.Top + pbZoom.Top + (pbZoom.Height / 2))
+            prevMouseP = New Point
         Else 'AltPP.Id = 0
 
 
@@ -303,7 +304,7 @@
         cboAlt.EndUpdate()
 
 
-        AddAButtons(APlist.Count)
+        AddAButtons()
         UpdateButtonLayout(APlist.Count)
 
         If cboAlt.SelectedIndex = 0 AndAlso args.Count = 1 Then
@@ -334,7 +335,7 @@
         test.Items.Add(New ToolStripMenuItem("Parse Info", Nothing, AddressOf dBug.ParseInfo))
         test.Items.Add(New ToolStripMenuItem("Reset Hide", Nothing, AddressOf dBug.ResetHide))
         test.Items.Add(New ToolStripMenuItem("ResumeLayout", Nothing, AddressOf dBug.Resumelayout))
-        test.Items.Add(New ToolStripMenuItem("Button Info", Nothing, AddressOf dBug.buttonInfo))
+        test.Items.Add(New ToolStripMenuItem("Button Info", Nothing, AddressOf dBug.ButtonInfo))
         chkDebug.ContextMenuStrip = test
 #End If
 
@@ -501,7 +502,7 @@
                 AppActivate(scalaPID)
                 Exit Sub
             Else 'CycleOnClose
-                cycle()
+                Cycle()
             End If
         End If
 
@@ -701,9 +702,9 @@
                             btnStart.PerformClick()
                         End If
                     Case 2 'ctrl-space
-                        cycle()
+                        Cycle()
                     Case 3 'ctrl-shift-space
-                        cycle(True)
+                        Cycle(True)
                 End Select
             Case WM_SYSCOMMAND
                 Select Case m.WParam
@@ -783,11 +784,23 @@
     ReadOnly restoreDic As New Dictionary(Of Integer, Point)
 
     Const dimmed As Byte = 240
-    Private counter As Integer = 0
+    Private TickCounter As Integer = 0
 
-    Dim AOBusy As Boolean = False
+    Friend Shared AOBusy As Boolean = False
 
     Friend Shared apSorter As AstoniaProcessSorter
+
+    Dim butCounter As Integer = 0
+
+    Dim alts As List(Of AstoniaProcess)
+    Dim visibleButtons As List(Of AButton)
+
+    Dim botCount As Integer
+    Dim topCount As Integer
+    Dim skipCount As Integer
+
+    Dim apCounter As Integer
+
     Private Sub TmrOverview_Tick(sender As Timer, e As EventArgs) Handles tmrOverview.Tick
 
         If Me.WindowState = FormWindowState.Minimized Then
@@ -796,28 +809,26 @@
 
         'Debug.Print("tmrStartup.Tick")
 #If DEBUG Then
-        chkDebug.Text = counter
+        chkDebug.Text = TickCounter
 #End If
 
-        Dim i As Integer = 0
-        Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name, apSorter).ToList
+        butCounter = 0
+        alts = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name, apSorter).ToList
 
         pnlOverview.SuspendLayout()
-        Dim visibleButtons = UpdateButtonLayout(alts.Count)
+        visibleButtons = UpdateButtonLayout(alts.Count)
 
-        Dim botCount As Integer = alts.Where(Function(ap) botSortList.Contains(ap.Name)).Count
+        botCount = alts.Where(Function(ap) botSortList.Contains(ap.Name)).Count()
+        topCount = alts.Count - botCount
+        skipCount = visibleButtons.Count - botCount
+        apCounter = 0
 
-        Dim topCount As Integer = alts.Count - botCount
-
-        Dim skipCount As Integer = visibleButtons.Count - botCount
-
-        Dim apCount As Integer = 0
         For Each but As AButton In visibleButtons
             'Debug.Print($"apCount < alts.Count AndAlso (i < topCount OrElse i > skipCount")
             'Debug.Print($"{apCount} < {alts.Count} AndAlso ({i} < {topCount} OrElse {i} > {skipCount}")
-            If apCount < alts.Count AndAlso (i < topCount OrElse i >= skipCount) Then
+            If apCounter < alts.Count AndAlso (butCounter < topCount OrElse butCounter >= skipCount) Then
 
-                Dim ap As AstoniaProcess = alts(apCount)
+                Dim ap As AstoniaProcess = alts(apCounter)
                 Dim apID As Integer = ap?.Id
                 but.Tag = ap
                 but.Text = ap.Name
@@ -827,7 +838,7 @@
                 Else
                     but.Font = New Font("Microsoft Sans Serif", 8.25)
                 End If
-                If counter = 0 Then
+                If TickCounter = apCounter OrElse but.BackgroundImage Is Nothing Then
                     Using ico As Bitmap = ap.GetIcon?.ToBitmap
                         If ico IsNot Nothing Then
                             but.BackgroundImage = New Bitmap(ico, New Size(16, 16))
@@ -855,16 +866,16 @@
                                    }
                 DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
 
-                If counter = apCount OrElse but.Image Is Nothing Then
-                    Dim unused = Task.Run(Sub()
-                                              Try 'need invoke here or we can get exception on but.image
-                                                  Me.BeginInvoke(updateButtonImage, {but, ap.getHealthbar()})
-                                              Catch
-                                              End Try
-                                          End Sub)
+                If TickCounter = apCounter OrElse but.Image Is Nothing Then
+                    Task.Run(Sub()
+                                 Try 'need invoke here or we can get exception on but.image
+                                     Me.BeginInvoke(updateButtonImage, {but, ap.GetHealthbar()})
+                                 Catch
+                                 End Try
+                             End Sub)
                 End If
 
-                If My.Settings.gameOnOverview AndAlso prevMouseP <> MousePosition Then 'todo move this to seperate timer and make async
+                If My.Settings.gameOnOverview Then 'todo move this to seperate timer and make async
 
                     Dim rccB As Rectangle
                     GetClientRect(ap?.MainWindowHandle, rccB)
@@ -896,16 +907,14 @@
 
                         Dim ptZB As Point = but.ThumbRECT.Location
                         Dim rcwB As Rectangle
-
+                        Dim pttB As Point
 
                         GetWindowRect(ap.MainWindowHandle, rcwB)
+                        ClientToScreen(ap.MainWindowHandle, pttB)
+
                         If Not restoreDic.ContainsKey(apID) Then
                             restoreDic.Add(apID, rcwB.Location)
                         End If
-
-                        Dim pttB As Point
-
-                        ClientToScreen(ap.MainWindowHandle, pttB)
 
                         Dim AstClientOffsetB = New Size(pttB.X - rcwB.Left, pttB.Y - rcwB.Top)
 
@@ -929,8 +938,7 @@
                                  End Sub)
                     End If 'but.ThumbContains(MousePosition)
                 End If 'gameonoverview
-                apCount += 1
-                prevMouseP = MousePosition
+                apCounter += 1
             Else
                 but.Text = String.Empty
                 but.Tag = Nothing 'New AstoniaProcess(Nothing)
@@ -938,8 +946,8 @@
                 but.BackgroundImage = Nothing
                 but.Image = Nothing
             End If
-            i += 1
-        Next
+            butCounter += 1
+        Next but
 
         ' Dim purgeList As List(Of Integer) = startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList
         For Each ppid As Integer In startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList 'tolist needed as we mutate the thumbsdict
@@ -950,8 +958,8 @@
         Next
 
         pnlOverview.ResumeLayout(True)
-        counter += 1
-        If counter > visibleButtons.Count Then counter = 0
+        TickCounter += 1
+        If TickCounter >= visibleButtons.Count Then TickCounter = 0
     End Sub
     Delegate Sub updateButtonImageDelegate(but As AButton, bm As Bitmap)
     Private Shared ReadOnly updateButtonImage As New updateButtonImageDelegate(AddressOf updateButtonImageMethod)
@@ -964,7 +972,7 @@
         If nextN > 6 Then nextN = 6
         Return nextN * nextN
     End Function
-    Private Sub AddAButtons(count As Integer)
+    Private Sub AddAButtons()
         pnlOverview.SuspendLayout()
         For i As Integer = 1 To 42
             Dim but As New AButton(i, 0, 0, 200, 150)
