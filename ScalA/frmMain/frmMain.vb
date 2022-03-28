@@ -184,7 +184,6 @@
             End Try
             sysTrayIcon.Icon = AltPP?.GetIcon
             'AltPP?.CenterWindowPos(ScalaHandle, Me.Left + pbZoom.Left + (pbZoom.Width / 2), Me.Top + pbZoom.Top + (pbZoom.Height / 2))
-            prevMouseP = New Point
         Else 'AltPP.Id = 0
 
 
@@ -484,7 +483,6 @@
     Private ScalaHandle As IntPtr = Me.Handle
     Private storedY As Integer = 0
     Private wasVisible As Boolean = True
-    Private prevMouseP = New Point
 
     Private Sub TmrTick_Tick(sender As Timer, e As EventArgs) Handles tmrTick.Tick
 
@@ -505,10 +503,6 @@
 
         UpdateTitle()
 
-        If prevMouseP = MousePosition Then
-            Exit Sub
-        End If
-        prevMouseP = MousePosition
 
         If Me.WindowState = FormWindowState.Minimized Then
             Exit Sub
@@ -528,7 +522,6 @@
                 End If
             End If
             storedY = pci.ptScreenpos.y
-
             wasVisible = True
         Else ' cursor is hidden
             wasVisible = False
