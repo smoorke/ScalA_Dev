@@ -810,9 +810,10 @@
         Dim butCounter = 0
 
         For Each but As AButton In visibleButtons
+            butCounter += 1
             'Debug.Print($"apCount < alts.Count AndAlso (i < topCount OrElse i > skipCount")
             'Debug.Print($"{apCount} < {alts.Count} AndAlso ({i} < {topCount} OrElse {i} > {skipCount}")
-            If apCounter < alts.Count AndAlso (butCounter < topCount OrElse butCounter >= skipCount) Then 'buttons with alts
+            If apCounter < alts.Count AndAlso (butCounter <= topCount OrElse butCounter > skipCount) Then 'buttons with alts
 
                 Dim ap As AstoniaProcess = alts(apCounter)
                 Dim apID As Integer = ap?.Id
@@ -824,9 +825,12 @@
                 Else
                     but.Font = New Font("Microsoft Sans Serif", 8.25)
                 End If
-                If TickCounter = apCounter OrElse but.BackgroundImage Is Nothing OrElse but.Image Is Nothing Then
+                'Debug.Print($"tick {TickCounter} apc {apCounter} {ap.Name}")
+                If (TickCounter = apCounter OrElse but.BackgroundImage Is Nothing OrElse but.Image Is Nothing) Then
+                    Dim localAPC = apCounter
+                    Dim localTick = TickCounter
                     Task.Run(Sub()
-                                 If TickCounter = apCounter OrElse but.BackgroundImage Is Nothing Then
+                                 If localTick = localAPC OrElse but.BackgroundImage Is Nothing Then
                                      Using ico As Bitmap = ap.GetIcon?.ToBitmap
                                          If ico IsNot Nothing Then
                                              but.BeginInvoke(updateButtonBackgroundImage, {but, New Bitmap(ico, New Size(16, 16))})
@@ -835,11 +839,13 @@
                                          End If
                                      End Using
                                  End If
-                                 If TickCounter = apCounter OrElse but.Image Is Nothing Then
+                                 If localTick = localAPC OrElse but.Image Is Nothing Then
                                      Me.BeginInvoke(updateButtonImage, {but, ap.GetHealthbar()})
                                  End If
                              End Sub)
                 End If
+
+                apCounter += 1
 
                 but.ContextMenuStrip = cmsAlt
 
