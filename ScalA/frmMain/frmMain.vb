@@ -896,7 +896,6 @@
 
                         SetWindowLong(Me.Handle, GWL_HWNDPARENT, ap?.MainWindowHandle)
 
-                        Dim ptZB As Point = but.ThumbRECT.Location
                         Dim rcwB As Rectangle
                         Dim pttB As Point
 
@@ -909,7 +908,7 @@
 
                         Dim AstClientOffsetB = New Size(pttB.X - rcwB.Left, pttB.Y - rcwB.Top)
 
-                        ClientToScreen(Me.Handle, ptZB)
+                        Dim ptZB = Me.PointToScreen(but.ThumbRECT.Location)
                         Dim newXB = MousePosition.X.Map(ptZB.X, ptZB.X + but.ThumbRectangle.Width, ptZB.X, ptZB.X + but.ThumbRECT.Width - but.ThumbRECT.X - rccB.Width) - AstClientOffsetB.Width - My.Settings.offset.X
                         Dim newYB = MousePosition.Y.Map(ptZB.Y, ptZB.Y + but.ThumbRectangle.Height, ptZB.Y, ptZB.Y + but.ThumbRECT.Height - but.ThumbRECT.Top - rccB.Height) - AstClientOffsetB.Height - My.Settings.offset.Y
 
