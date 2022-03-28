@@ -852,12 +852,12 @@
 
                 rectDic(apID) = but.ThumbRECT
                 Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
-                                       .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION,
-                                       .opacity = opaDict.GetValueOrDefault(apID, &HFF),
-                                       .fSourceClientAreaOnly = True,
-                                       .fVisible = True,
-                                       .rcDestination = rectDic(apID)
-                                   }
+                                   .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION,
+                                   .opacity = opaDict.GetValueOrDefault(apID, &HFF),
+                                   .fSourceClientAreaOnly = True,
+                                   .fVisible = True,
+                                   .rcDestination = rectDic(apID)
+                               }
                 DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
 
                 If My.Settings.gameOnOverview Then 'todo move this to seperate timer and make async
@@ -912,8 +912,8 @@
                                      AOBusy = True
                                      Try
                                          Dim flags As SetWindowPosFlags = SetWindowPosFlags.IgnoreResize Or
-                                                                          SetWindowPosFlags.DoNotActivate Or
-                                                                          SetWindowPosFlags.ASyncWindowPosition
+                                                                      SetWindowPosFlags.DoNotActivate Or
+                                                                      SetWindowPosFlags.ASyncWindowPosition
                                          If IsQlCtxOpen() Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                                          SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
                                      Catch ex As Exception
