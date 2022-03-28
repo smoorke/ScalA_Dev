@@ -928,7 +928,6 @@
                                  End Sub)
                     End If 'but.ThumbContains(MousePosition)
                 End If 'gameonoverview
-                apCounter += 1
             Else ' buttons w/o alts
                 but.Text = String.Empty
                 but.Tag = Nothing 'New AstoniaProcess(Nothing)
@@ -936,7 +935,6 @@
                 but.BackgroundImage = Nothing
                 but.Image = Nothing
             End If
-            butCounter += 1
         Next but
 
         ' Dim purgeList As List(Of Integer) = startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList
