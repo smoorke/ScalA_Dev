@@ -945,7 +945,7 @@
             rectDic.Remove(ppid)
         Next
 
-        pnlOverview.ResumeLayout(True)
+        pnlOverview.ResumeLayout()
         TickCounter += 1
         If TickCounter >= visibleButtons.Count Then TickCounter = 0
     End Sub
