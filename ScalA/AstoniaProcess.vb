@@ -207,16 +207,24 @@
         Return IEnum
     End Function
     Public Shared Function Enumerate() As IEnumerable(Of AstoniaProcess)
+        _CacheCounter = 0
         Return AstoniaProcess.Enumerate({})
     End Function
+    Private Shared _ProcCache As IEnumerable(Of AstoniaProcess) = {}
+    Private Shared _CacheCounter As Integer = 0
     Public Shared Function Enumerate(blacklist As IEnumerable(Of String)) As IEnumerable(Of AstoniaProcess)
-        Return enumProcessesByNameArray(My.Settings.exe.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries)) _
-            .Select(Function(p) New AstoniaProcess(p)) _
-            .Where(Function(ap)
-                       Return Not blacklist.Contains(ap.Name) AndAlso
-                              (Not My.Settings.Whitelist OrElse FrmMain.topSortList.Concat(FrmMain.botSortList).Contains(ap.Name)) AndAlso
-                               ap.HasClassNameIn(classes:=My.Settings.className)
-                   End Function)
+        If _CacheCounter = 0 Then
+            _ProcCache = EnumProcessesByNameArray(My.Settings.exe.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries)) _
+                            .Select(Function(p) New AstoniaProcess(p)) _
+                            .Where(Function(ap)
+                                       Return Not blacklist.Contains(ap.Name) AndAlso
+                                             (Not My.Settings.Whitelist OrElse FrmMain.topSortList.Concat(FrmMain.botSortList).Contains(ap.Name)) AndAlso
+                                              ap.HasClassNameIn(classes:=My.Settings.className)
+                                   End Function)
+        End If
+        _CacheCounter += 1
+        If _CacheCounter > 5 Then _CacheCounter = 0
+        Return _ProcCache
     End Function
 
     <System.Runtime.InteropServices.DllImport("user32.dll", SetLastError:=True)>
