@@ -198,8 +198,7 @@
     '    Debug.Print("AP <>")
     '    Return Not left.Equals(right)
     'End Operator
-    Private Shared _ProcessCache As List(Of Process) = New List(Of Process)
-    Private Shared _pidList As List(Of Integer) = New List(Of Integer)
+
     Private Shared Function EnumProcessesByNameArray(strings() As String) As IEnumerable(Of Process)
         Dim IEnum As IEnumerable(Of Process) = {}
         For Each exe As String In strings
