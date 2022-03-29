@@ -198,13 +198,33 @@
     '    Debug.Print("AP <>")
     '    Return Not left.Equals(right)
     'End Operator
-
+    Private Shared _ProcessCache As List(Of Process) = New List(Of Process)
+    Private Shared _pidList As List(Of Integer) = New List(Of Integer)
     Private Shared Function EnumProcessesByNameArray(strings() As String) As IEnumerable(Of Process)
-        Dim IEnum As IEnumerable(Of Process) = {}
-        For Each exe As String In strings
-            IEnum = IEnum.Concat(Process.GetProcessesByName(Trim(exe)))
+        For Each pp In _ProcessCache
+            Try
+                If pp.HasExited Then
+                    _ProcessCache.Remove(pp)
+                    _pidList.Remove(pp.Id)
+                End If
+            Catch ex As Exception
+                _ProcessCache.Remove(pp)
+                _pidList.Remove(pp.Id)
+            End Try
         Next
-        Return IEnum
+        Dim newlist As List(Of Process) = New List(Of Process)
+        For Each exe As String In strings
+            newlist = newlist.Concat(Process.GetProcessesByName(Trim(exe))).ToList
+        Next
+        Dim newPP As List(Of Process) = New List(Of Process)
+        For Each pp In newlist
+            If Not _pidList.Contains(pp.Id) Then
+                newPP.Add(pp)
+                _pidList.Add(pp.Id)
+            End If
+        Next
+        _ProcessCache = _ProcessCache.Concat(newPP).ToList
+        Return _ProcessCache
     End Function
     Public Shared Function Enumerate() As IEnumerable(Of AstoniaProcess)
         Return AstoniaProcess.Enumerate({})
