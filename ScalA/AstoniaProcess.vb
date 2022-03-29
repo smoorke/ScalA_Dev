@@ -201,6 +201,9 @@
     Private Shared _ProcessCache As List(Of Process) = New List(Of Process)
     Private Shared _pidList As List(Of Integer) = New List(Of Integer)
     Private Shared Function EnumProcessesByNameArray(strings() As String) As IEnumerable(Of Process)
+#If DEBUG Then
+        Dim sw = Stopwatch.StartNew
+#End If
         For Each pp In _ProcessCache
             Try
                 If pp.HasExited Then
@@ -224,6 +227,9 @@
             End If
         Next
         _ProcessCache = _ProcessCache.Concat(newPP).ToList
+#If DEBUG Then
+        Debug.Print($"proc count {_ProcessCache.Count} {sw.ElapsedMilliseconds}ms")
+#End If
         Return _ProcessCache
     End Function
     Public Shared Function Enumerate() As IEnumerable(Of AstoniaProcess)
