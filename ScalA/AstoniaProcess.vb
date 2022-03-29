@@ -201,36 +201,11 @@
     Private Shared _ProcessCache As List(Of Process) = New List(Of Process)
     Private Shared _pidList As List(Of Integer) = New List(Of Integer)
     Private Shared Function EnumProcessesByNameArray(strings() As String) As IEnumerable(Of Process)
-#If DEBUG Then
-        Dim sw = Stopwatch.StartNew
-#End If
-        For Each pp In _ProcessCache
-            Try
-                If pp.HasExited Then
-                    _ProcessCache.Remove(pp)
-                    _pidList.Remove(pp.Id)
-                End If
-            Catch ex As Exception
-                _ProcessCache.Remove(pp)
-                _pidList.Remove(pp.Id)
-            End Try
-        Next
-        Dim newlist As List(Of Process) = New List(Of Process)
+        Dim IEnum As IEnumerable(Of Process) = {}
         For Each exe As String In strings
-            newlist = newlist.Concat(Process.GetProcessesByName(Trim(exe))).ToList
+            IEnum = IEnum.Concat(Process.GetProcessesByName(Trim(exe)))
         Next
-        Dim newPP As List(Of Process) = New List(Of Process)
-        For Each pp In newlist
-            If Not _pidList.Contains(pp.Id) Then
-                newPP.Add(pp)
-                _pidList.Add(pp.Id)
-            End If
-        Next
-        _ProcessCache = _ProcessCache.Concat(newPP).ToList
-#If DEBUG Then
-        Debug.Print($"proc count {_ProcessCache.Count} {sw.ElapsedMilliseconds}ms")
-#End If
-        Return _ProcessCache
+        Return IEnum
     End Function
     Public Shared Function Enumerate() As IEnumerable(Of AstoniaProcess)
         Return AstoniaProcess.Enumerate({})
