@@ -14,33 +14,22 @@ Module IPC
     End Property
 
     Private ReadOnly _MeStr As String = Application.ExecutablePath.Replace(":", "").Replace("\", "").Replace(".", "")
-    Private ReadOnly _mmfSI As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPCSI_{_MeStr}", 1 * 4 + 1)
+    Private ReadOnly _mmfSI As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPCSI_{_MeStr}", 1 + 1)
     Private ReadOnly _mmvaSI As MemoryMappedViewAccessor = _mmfSI.CreateViewAccessor()
-    Public Property AlreadyOpenPID As Integer
+    Public Property AlreadyOpen As Boolean
         Get
-            Return _mmvaSI.ReadInt32(0)
+            Return _mmvaSI.ReadBoolean(0)
         End Get
-        Set(value As Integer)
+        Set(value As Boolean)
             _mmvaSI.Write(0, value)
         End Set
     End Property
-    Public Function getNextOpenPID()
-        Dim PID As Integer = 0
-        Dim selfPID = Process.GetCurrentProcess().Id
-        For Each pp In Process.GetProcessesByName(IO.Path.GetFileNameWithoutExtension(Application.ExecutablePath))
-            If pp.Id <> selfPID Then
-                PID = pp.Id
-                Exit For
-            End If
-        Next pp
-        Return PID
-    End Function
     Public Property RequestActivation() As Boolean
         Get
-            Return _mmvaSI.ReadBoolean(4)
+            Return _mmvaSI.ReadBoolean(1)
         End Get
         Set(ByVal value As Boolean)
-            _mmvaSI.Write(4, value)
+            _mmvaSI.Write(1, value)
         End Set
     End Property
 

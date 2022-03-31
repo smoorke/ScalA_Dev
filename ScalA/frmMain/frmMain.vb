@@ -241,15 +241,11 @@
     Private Sub FrmMain_Load(sender As Form, e As EventArgs) Handles MyBase.Load
         CheckForIllegalCrossThreadCalls = True
 
-        If My.Settings.SingleInstance Then
-            Dim oldPID As Integer = AlreadyOpenPID
-            If oldPID <> 0 Then
-                'Dim opp As Process = Process.GetProcessById(oldPID)
-                IPC.RequestActivation = True
-                End
-            End If
+        If My.Settings.SingleInstance AndAlso IPC.AlreadyOpen Then
+            IPC.RequestActivation = True
+            End
         End If
-        IPC.AlreadyOpenPID = scalaPID
+        IPC.AlreadyOpen = True
 
         sysTrayIcon.Visible = True
 
@@ -475,7 +471,6 @@
             My.Settings.location = Me.Location
         End If
         tmrActive.Stop()
-        IPC.AlreadyOpenPID = IPC.getNextOpenPID
         Hotkey.UnregHotkey(Me)
     End Sub
 
