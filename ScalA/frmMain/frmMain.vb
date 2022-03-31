@@ -1165,7 +1165,7 @@
             sender.Text = "🗗"
             wasMaximized = True
             For Each scrn As Screen In Screen.AllScreens
-                If scrn.Bounds.Contains(MousePosition) Then
+                If scrn.Bounds.Contains(Me.Location + New Point(200, 150)) Then
                     Debug.Print("screen workarea " & scrn.WorkingArea.ToString)
                     Debug.Print("screen bounds " & scrn.Bounds.ToString)
                     Me.MaximizedBounds = New Rectangle(scrn.WorkingArea.Left - scrn.Bounds.Left, scrn.WorkingArea.Top - scrn.Bounds.Top, scrn.WorkingArea.Width, scrn.WorkingArea.Height)
