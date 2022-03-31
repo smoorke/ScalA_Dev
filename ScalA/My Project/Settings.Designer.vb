@@ -415,6 +415,18 @@ Namespace My
                 Me("Whitelist") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property SingleInstance() As Boolean
+            Get
+                Return CType(Me("SingleInstance"),Boolean)
+            End Get
+            Set
+                Me("SingleInstance") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

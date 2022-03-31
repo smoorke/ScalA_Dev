@@ -63,6 +63,8 @@ Public Class FrmSettings
 
         chkWhitelist.Checked = My.Settings.Whitelist
 
+        ChkSingleInstance.Checked = My.Settings.SingleInstance
+
     End Sub
 
     Private ReadOnly restoreWhitelist As Boolean = My.Settings.Whitelist
@@ -226,9 +228,13 @@ Public Class FrmSettings
         My.Settings.topSort = txtTopSort.Text
         My.Settings.botSort = txtBotSort.Text
 
-        btnTest_Click(Nothing, Nothing) 'apply sorting & black/whitlelist
+        My.Settings.SingleInstance = ChkSingleInstance.Checked
+
+        BtnTest_Click(Nothing, Nothing) 'apply sorting & black/whitlelist
 
         Hotkey.UnregHotkey(FrmMain)
+
+        My.Settings.Save()
 
         Me.Close()
     End Sub

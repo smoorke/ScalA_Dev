@@ -319,7 +319,6 @@ Partial Class FrmMain
         Me.sysTrayIcon.ContextMenuStrip = Me.cmsQuickLaunch
         Me.sysTrayIcon.Icon = CType(resources.GetObject("sysTrayIcon.Icon"), System.Drawing.Icon)
         Me.sysTrayIcon.Text = "ScalA"
-        Me.sysTrayIcon.Visible = True
         '
         'cornerNW
         '

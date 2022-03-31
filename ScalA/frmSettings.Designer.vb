@@ -74,6 +74,7 @@ Partial Class FrmSettings
         Me.btnHelp = New System.Windows.Forms.Button()
         Me.txtBotSort = New System.Windows.Forms.TextBox()
         Me.txtTopSort = New System.Windows.Forms.TextBox()
+        Me.chkWhitelist = New System.Windows.Forms.CheckBox()
         Me.tabMisc = New System.Windows.Forms.TabPage()
         Me.chkDoAlign = New System.Windows.Forms.CheckBox()
         Me.grpAlign = New System.Windows.Forms.GroupBox()
@@ -84,7 +85,7 @@ Partial Class FrmSettings
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
         Me.txtClass = New System.Windows.Forms.TextBox()
-        Me.chkWhitelist = New System.Windows.Forms.CheckBox()
+        Me.ChkSingleInstance = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -154,7 +155,7 @@ Partial Class FrmSettings
         'Label3
         '
         Label3.AutoSize = True
-        Label3.Location = New System.Drawing.Point(79, 85)
+        Label3.Location = New System.Drawing.Point(79, 93)
         Label3.Name = "Label3"
         Label3.Size = New System.Drawing.Size(27, 13)
         Label3.TabIndex = 18
@@ -205,7 +206,7 @@ Partial Class FrmSettings
         '
         'btnOK
         '
-        Me.btnOK.Location = New System.Drawing.Point(72, 159)
+        Me.btnOK.Location = New System.Drawing.Point(64, 164)
         Me.btnOK.Name = "btnOK"
         Me.btnOK.Size = New System.Drawing.Size(77, 23)
         Me.btnOK.TabIndex = 2
@@ -216,7 +217,7 @@ Partial Class FrmSettings
         'btnCancel
         '
         Me.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnCancel.Location = New System.Drawing.Point(157, 159)
+        Me.btnCancel.Location = New System.Drawing.Point(147, 164)
         Me.btnCancel.Name = "btnCancel"
         Me.btnCancel.Size = New System.Drawing.Size(77, 23)
         Me.btnCancel.TabIndex = 3
@@ -259,7 +260,7 @@ Partial Class FrmSettings
         Me.tbcSettings.Location = New System.Drawing.Point(0, 0)
         Me.tbcSettings.Name = "tbcSettings"
         Me.tbcSettings.SelectedIndex = 0
-        Me.tbcSettings.Size = New System.Drawing.Size(243, 157)
+        Me.tbcSettings.Size = New System.Drawing.Size(243, 164)
         Me.tbcSettings.TabIndex = 14
         Me.tbcSettings.TabStop = False
         '
@@ -272,14 +273,14 @@ Partial Class FrmSettings
         Me.tabResolutions.Location = New System.Drawing.Point(4, 25)
         Me.tabResolutions.Name = "tabResolutions"
         Me.tabResolutions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabResolutions.Size = New System.Drawing.Size(235, 128)
+        Me.tabResolutions.Size = New System.Drawing.Size(235, 135)
         Me.tabResolutions.TabIndex = 0
         Me.tabResolutions.Text = "Resolutions"
         Me.tabResolutions.UseVisualStyleBackColor = True
         '
         'btnRestore
         '
-        Me.btnRestore.Location = New System.Drawing.Point(131, 96)
+        Me.btnRestore.Location = New System.Drawing.Point(131, 104)
         Me.btnRestore.Name = "btnRestore"
         Me.btnRestore.Size = New System.Drawing.Size(75, 23)
         Me.btnRestore.TabIndex = 5
@@ -347,7 +348,7 @@ Partial Class FrmSettings
         Me.txtResolutions.Multiline = True
         Me.txtResolutions.Name = "txtResolutions"
         Me.txtResolutions.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.txtResolutions.Size = New System.Drawing.Size(94, 128)
+        Me.txtResolutions.Size = New System.Drawing.Size(94, 135)
         Me.txtResolutions.TabIndex = 1
         Me.txtResolutions.Text = "800x600" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "1200x900" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "1600x1200" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2000x1500" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2400x1800" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2800x2100" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "3200x2400" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "3600x27" &
     "00" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "4000x3000" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "4400x3300"
@@ -358,7 +359,7 @@ Partial Class FrmSettings
         Me.tabHotkeys.Controls.Add(Me.grpOverviewShortcut)
         Me.tabHotkeys.Location = New System.Drawing.Point(4, 25)
         Me.tabHotkeys.Name = "tabHotkeys"
-        Me.tabHotkeys.Size = New System.Drawing.Size(235, 128)
+        Me.tabHotkeys.Size = New System.Drawing.Size(235, 135)
         Me.tabHotkeys.TabIndex = 2
         Me.tabHotkeys.Text = "Hotkeys"
         Me.tabHotkeys.UseVisualStyleBackColor = True
@@ -383,7 +384,7 @@ Partial Class FrmSettings
         'chkCycleDownShift
         '
         Me.chkCycleDownShift.AutoSize = True
-        Me.chkCycleDownShift.Location = New System.Drawing.Point(84, 42)
+        Me.chkCycleDownShift.Location = New System.Drawing.Point(84, 47)
         Me.chkCycleDownShift.Name = "chkCycleDownShift"
         Me.chkCycleDownShift.Size = New System.Drawing.Size(47, 17)
         Me.chkCycleDownShift.TabIndex = 15
@@ -394,7 +395,7 @@ Partial Class FrmSettings
         'chkCycleUpShift
         '
         Me.chkCycleUpShift.AutoSize = True
-        Me.chkCycleUpShift.Location = New System.Drawing.Point(84, 21)
+        Me.chkCycleUpShift.Location = New System.Drawing.Point(84, 26)
         Me.chkCycleUpShift.Name = "chkCycleUpShift"
         Me.chkCycleUpShift.Size = New System.Drawing.Size(47, 17)
         Me.chkCycleUpShift.TabIndex = 14
@@ -405,7 +406,7 @@ Partial Class FrmSettings
         'chkCycleDownAlt
         '
         Me.chkCycleDownAlt.AutoSize = True
-        Me.chkCycleDownAlt.Location = New System.Drawing.Point(46, 42)
+        Me.chkCycleDownAlt.Location = New System.Drawing.Point(46, 47)
         Me.chkCycleDownAlt.Name = "chkCycleDownAlt"
         Me.chkCycleDownAlt.Size = New System.Drawing.Size(38, 17)
         Me.chkCycleDownAlt.TabIndex = 13
@@ -416,7 +417,7 @@ Partial Class FrmSettings
         'chkCycleDownCtrl
         '
         Me.chkCycleDownCtrl.AutoSize = True
-        Me.chkCycleDownCtrl.Location = New System.Drawing.Point(6, 42)
+        Me.chkCycleDownCtrl.Location = New System.Drawing.Point(6, 47)
         Me.chkCycleDownCtrl.Name = "chkCycleDownCtrl"
         Me.chkCycleDownCtrl.Size = New System.Drawing.Size(41, 17)
         Me.chkCycleDownCtrl.TabIndex = 12
@@ -426,7 +427,7 @@ Partial Class FrmSettings
         '
         'txtCycleKeyDown
         '
-        Me.txtCycleKeyDown.Location = New System.Drawing.Point(134, 40)
+        Me.txtCycleKeyDown.Location = New System.Drawing.Point(134, 45)
         Me.txtCycleKeyDown.Name = "txtCycleKeyDown"
         Me.txtCycleKeyDown.Size = New System.Drawing.Size(74, 20)
         Me.txtCycleKeyDown.TabIndex = 11
@@ -435,7 +436,7 @@ Partial Class FrmSettings
         'chkCycleAlts
         '
         Me.chkCycleAlts.AutoSize = True
-        Me.chkCycleAlts.Location = New System.Drawing.Point(0, -1)
+        Me.chkCycleAlts.Location = New System.Drawing.Point(0, 4)
         Me.chkCycleAlts.Name = "chkCycleAlts"
         Me.chkCycleAlts.Size = New System.Drawing.Size(122, 17)
         Me.chkCycleAlts.TabIndex = 10
@@ -446,7 +447,7 @@ Partial Class FrmSettings
         'chkCycleUpAlt
         '
         Me.chkCycleUpAlt.AutoSize = True
-        Me.chkCycleUpAlt.Location = New System.Drawing.Point(46, 21)
+        Me.chkCycleUpAlt.Location = New System.Drawing.Point(46, 26)
         Me.chkCycleUpAlt.Name = "chkCycleUpAlt"
         Me.chkCycleUpAlt.Size = New System.Drawing.Size(38, 17)
         Me.chkCycleUpAlt.TabIndex = 9
@@ -457,7 +458,7 @@ Partial Class FrmSettings
         'chkCycleUpCtrl
         '
         Me.chkCycleUpCtrl.AutoSize = True
-        Me.chkCycleUpCtrl.Location = New System.Drawing.Point(6, 21)
+        Me.chkCycleUpCtrl.Location = New System.Drawing.Point(6, 26)
         Me.chkCycleUpCtrl.Name = "chkCycleUpCtrl"
         Me.chkCycleUpCtrl.Size = New System.Drawing.Size(41, 17)
         Me.chkCycleUpCtrl.TabIndex = 8
@@ -467,7 +468,7 @@ Partial Class FrmSettings
         '
         'txtCycleKeyUp
         '
-        Me.txtCycleKeyUp.Location = New System.Drawing.Point(134, 19)
+        Me.txtCycleKeyUp.Location = New System.Drawing.Point(134, 24)
         Me.txtCycleKeyUp.Name = "txtCycleKeyUp"
         Me.txtCycleKeyUp.Size = New System.Drawing.Size(74, 20)
         Me.txtCycleKeyUp.TabIndex = 7
@@ -551,7 +552,7 @@ Partial Class FrmSettings
         Me.tabSortAndBL.Margin = New System.Windows.Forms.Padding(0)
         Me.tabSortAndBL.Name = "tabSortAndBL"
         Me.tabSortAndBL.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabSortAndBL.Size = New System.Drawing.Size(235, 128)
+        Me.tabSortAndBL.Size = New System.Drawing.Size(235, 135)
         Me.tabSortAndBL.TabIndex = 3
         Me.tabSortAndBL.Text = "Sort"
         Me.tabSortAndBL.UseVisualStyleBackColor = True
@@ -581,7 +582,7 @@ Partial Class FrmSettings
         Me.txtBotSort.Location = New System.Drawing.Point(130, 15)
         Me.txtBotSort.Multiline = True
         Me.txtBotSort.Name = "txtBotSort"
-        Me.txtBotSort.Size = New System.Drawing.Size(100, 113)
+        Me.txtBotSort.Size = New System.Drawing.Size(100, 124)
         Me.txtBotSort.TabIndex = 1
         Me.txtBotSort.Text = "Someone"
         '
@@ -590,14 +591,25 @@ Partial Class FrmSettings
         Me.txtTopSort.Location = New System.Drawing.Point(0, 15)
         Me.txtTopSort.Multiline = True
         Me.txtTopSort.Name = "txtTopSort"
-        Me.txtTopSort.Size = New System.Drawing.Size(100, 113)
+        Me.txtTopSort.Size = New System.Drawing.Size(100, 120)
         Me.txtTopSort.TabIndex = 0
         Me.txtTopSort.Text = "Someone"
         '
+        'chkWhitelist
+        '
+        Me.chkWhitelist.AutoSize = True
+        Me.chkWhitelist.Location = New System.Drawing.Point(77, -1)
+        Me.chkWhitelist.Name = "chkWhitelist"
+        Me.chkWhitelist.Size = New System.Drawing.Size(66, 17)
+        Me.chkWhitelist.TabIndex = 6
+        Me.chkWhitelist.Text = "Whitelist"
+        Me.chkWhitelist.UseVisualStyleBackColor = True
+        '
         'tabMisc
         '
-        Me.tabMisc.Controls.Add(Me.chkCycleOnClose)
+        Me.tabMisc.Controls.Add(Me.ChkSingleInstance)
         Me.tabMisc.Controls.Add(Me.chkDoAlign)
+        Me.tabMisc.Controls.Add(Me.chkCycleOnClose)
         Me.tabMisc.Controls.Add(Me.grpAlign)
         Me.tabMisc.Controls.Add(Me.txtExe)
         Me.tabMisc.Controls.Add(Me.chkTopMost)
@@ -609,7 +621,7 @@ Partial Class FrmSettings
         Me.tabMisc.Location = New System.Drawing.Point(4, 25)
         Me.tabMisc.Name = "tabMisc"
         Me.tabMisc.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabMisc.Size = New System.Drawing.Size(235, 128)
+        Me.tabMisc.Size = New System.Drawing.Size(235, 135)
         Me.tabMisc.TabIndex = 1
         Me.tabMisc.Text = "Misc"
         Me.tabMisc.UseVisualStyleBackColor = True
@@ -618,7 +630,7 @@ Partial Class FrmSettings
         '
         Me.chkDoAlign.AutoSize = True
         Me.chkDoAlign.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkDoAlign.Location = New System.Drawing.Point(119, 63)
+        Me.chkDoAlign.Location = New System.Drawing.Point(118, 74)
         Me.chkDoAlign.Name = "chkDoAlign"
         Me.chkDoAlign.Size = New System.Drawing.Size(66, 16)
         Me.chkDoAlign.TabIndex = 22
@@ -633,7 +645,7 @@ Partial Class FrmSettings
         Me.grpAlign.Controls.Add(Label2)
         Me.grpAlign.Controls.Add(Label1)
         Me.grpAlign.Enabled = False
-        Me.grpAlign.Location = New System.Drawing.Point(119, 64)
+        Me.grpAlign.Location = New System.Drawing.Point(118, 74)
         Me.grpAlign.Name = "grpAlign"
         Me.grpAlign.Size = New System.Drawing.Size(100, 62)
         Me.grpAlign.TabIndex = 21
@@ -674,7 +686,7 @@ Partial Class FrmSettings
         'txtExe
         '
         Me.txtExe.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtExe.Location = New System.Drawing.Point(8, 82)
+        Me.txtExe.Location = New System.Drawing.Point(8, 89)
         Me.txtExe.Name = "txtExe"
         Me.txtExe.Size = New System.Drawing.Size(66, 20)
         Me.txtExe.TabIndex = 15
@@ -683,7 +695,7 @@ Partial Class FrmSettings
         'chkTopMost
         '
         Me.chkTopMost.AutoSize = True
-        Me.chkTopMost.Location = New System.Drawing.Point(8, 67)
+        Me.chkTopMost.Location = New System.Drawing.Point(8, 69)
         Me.chkTopMost.Name = "chkTopMost"
         Me.chkTopMost.Size = New System.Drawing.Size(98, 17)
         Me.chkTopMost.TabIndex = 14
@@ -693,7 +705,7 @@ Partial Class FrmSettings
         'chkRoundCorners
         '
         Me.chkRoundCorners.AutoSize = True
-        Me.chkRoundCorners.Location = New System.Drawing.Point(8, 53)
+        Me.chkRoundCorners.Location = New System.Drawing.Point(8, 54)
         Me.chkRoundCorners.Name = "chkRoundCorners"
         Me.chkRoundCorners.Size = New System.Drawing.Size(109, 17)
         Me.chkRoundCorners.TabIndex = 19
@@ -703,28 +715,33 @@ Partial Class FrmSettings
         'txtClass
         '
         Me.txtClass.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtClass.Location = New System.Drawing.Point(8, 103)
+        Me.txtClass.Location = New System.Drawing.Point(8, 110)
         Me.txtClass.Name = "txtClass"
         Me.txtClass.Size = New System.Drawing.Size(100, 20)
         Me.txtClass.TabIndex = 17
         Me.txtClass.Text = "MAINWNDMOAC | 䅍义乗䵄䅏C"
         '
-        'chkWhitelist
+        'ChkSingleInstance
         '
-        Me.chkWhitelist.AutoSize = True
-        Me.chkWhitelist.Location = New System.Drawing.Point(77, -1)
-        Me.chkWhitelist.Name = "chkWhitelist"
-        Me.chkWhitelist.Size = New System.Drawing.Size(66, 17)
-        Me.chkWhitelist.TabIndex = 6
-        Me.chkWhitelist.Text = "Whitelist"
-        Me.chkWhitelist.UseVisualStyleBackColor = True
+        Me.ChkSingleInstance.AutoSize = True
+        Me.ChkSingleInstance.Checked = True
+        Me.ChkSingleInstance.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.ChkSingleInstance.Location = New System.Drawing.Point(114, 54)
+        Me.ChkSingleInstance.Name = "ChkSingleInstance"
+        Me.ChkSingleInstance.Size = New System.Drawing.Size(99, 17)
+        Me.ChkSingleInstance.TabIndex = 24
+        Me.ChkSingleInstance.Text = "Single Instance"
+        Me.ttSettings.SetToolTip(Me.ChkSingleInstance, "Running ScalA for a 2nd time or more will bring an" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  already open ScalA from the" &
+        " same profile to the front." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "To make additional profiles copy and rename or move" &
+        " ScalA.exe" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
+        Me.ChkSingleInstance.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
-        Me.ClientSize = New System.Drawing.Size(238, 187)
+        Me.ClientSize = New System.Drawing.Size(236, 196)
         Me.Controls.Add(Me.tbcSettings)
         Me.Controls.Add(Me.btnCancel)
         Me.Controls.Add(Me.btnOK)
@@ -812,4 +829,5 @@ Partial Class FrmSettings
     Friend WithEvents txtTopSort As TextBox
     Friend WithEvents btnTest As Button
     Friend WithEvents chkWhitelist As CheckBox
+    Friend WithEvents ChkSingleInstance As CheckBox
 End Class

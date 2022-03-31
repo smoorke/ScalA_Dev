@@ -241,6 +241,18 @@
     Private Sub FrmMain_Load(sender As Form, e As EventArgs) Handles MyBase.Load
         CheckForIllegalCrossThreadCalls = True
 
+        If My.Settings.SingleInstance Then
+            Dim oldPID As Integer = AlreadyOpenPID
+            If oldPID <> 0 Then
+                Dim opp As Process = Process.GetProcessById(oldPID)
+                SendMessage(opp.MainWindowHandle, WM_SYSCOMMAND, SC_RESTORE, New IntPtr(1))
+                AppActivate(oldPID)
+                End
+            End If
+        End If
+        AlreadyOpenPID = scalaPID
+        sysTrayIcon.Visible = True
+
         If New Version(My.Settings.SettingsVersion) < My.Application.Info.Version Then
             My.Settings.Upgrade()
             My.Settings.SettingsVersion = My.Application.Info.Version.ToString
@@ -463,6 +475,13 @@
             My.Settings.location = Me.Location
         End If
         tmrActive.Stop()
+        IPC.AlreadyOpenPID = 0
+        For Each pp In Process.GetProcessesByName(IO.Path.GetFileNameWithoutExtension(Application.ExecutablePath))
+            If pp.Id <> scalaPID Then
+                IPC.AlreadyOpenPID = pp.Id
+                Exit For
+            End If
+        Next pp
         Hotkey.UnregHotkey(Me)
     End Sub
 
