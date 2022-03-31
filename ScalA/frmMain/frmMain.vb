@@ -729,7 +729,8 @@
                         'Me.ShowInTaskbar = False
                         Debug.Print("wasMax " & wasMaximized)
                         If wasMaximized Then
-                            btnMax.PerformClick()
+                            SendMessage(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero)
+                            'btnMax.PerformClick
                             Exit Sub
                         End If
                         If minByMenu Then
@@ -1162,10 +1163,8 @@
         '🗖,🗗,⧠
         If Me.WindowState <> FormWindowState.Maximized Then
             'go maximized
-            sender.Text = "🗗"
-            wasMaximized = True
             For Each scrn As Screen In Screen.AllScreens
-                If scrn.Bounds.Contains(Me.Location + New Point(200, 150)) Then
+                If scrn.Bounds.Contains(Me.Location + New Point(Me.Width / 2, Me.Height / 2)) Then
                     Debug.Print("screen workarea " & scrn.WorkingArea.ToString)
                     Debug.Print("screen bounds " & scrn.Bounds.ToString)
                     Me.MaximizedBounds = New Rectangle(scrn.WorkingArea.Left - scrn.Bounds.Left, scrn.WorkingArea.Top - scrn.Bounds.Top, scrn.WorkingArea.Width, scrn.WorkingArea.Height)
@@ -1176,10 +1175,12 @@
                     End If
                     Me.Location = scrn.WorkingArea.Location
                     Me.WindowState = FormWindowState.Maximized
+                    ReZoom(New Size(Me.MaximizedBounds.Width, Me.MaximizedBounds.Height))
+                    sender.Text = "🗗"
+                    wasMaximized = True
                     Exit For
                 End If
             Next
-            ReZoom(New Size(Me.MaximizedBounds.Width, Me.MaximizedBounds.Height))
         Else 'go normal
             Me.WindowState = FormWindowState.Normal
             sender.Text = "⧠"
