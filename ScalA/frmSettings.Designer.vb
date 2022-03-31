@@ -114,7 +114,7 @@ Partial Class FrmSettings
         grpQLPath.Controls.Add(Me.txtQuickLaunchPath)
         grpQLPath.Location = New System.Drawing.Point(7, -2)
         grpQLPath.Name = "grpQLPath"
-        grpQLPath.Size = New System.Drawing.Size(213, 42)
+        grpQLPath.Size = New System.Drawing.Size(213, 40)
         grpQLPath.TabIndex = 16
         grpQLPath.TabStop = False
         grpQLPath.Text = "QuickLaunch Path"
@@ -227,6 +227,12 @@ Partial Class FrmSettings
         '
         'tmrAlign
         '
+        '
+        'ttSettings
+        '
+        Me.ttSettings.AutoPopDelay = 10000
+        Me.ttSettings.InitialDelay = 500
+        Me.ttSettings.ReshowDelay = 100
         '
         'chkOverViewIsGame
         '
@@ -732,8 +738,8 @@ Partial Class FrmSettings
         Me.ChkSingleInstance.TabIndex = 24
         Me.ChkSingleInstance.Text = "Single Instance"
         Me.ttSettings.SetToolTip(Me.ChkSingleInstance, "Running ScalA for a 2nd time or more will bring an" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  already open ScalA from the" &
-        " same profile to the front." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "To make additional profiles copy and rename or move" &
-        " ScalA.exe" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
+        " same profile to the front." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "To make additional profiles copy, rename and/or mov" &
+        "e ScalA.exe" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
         Me.ChkSingleInstance.UseVisualStyleBackColor = True
         '
         'FrmSettings
