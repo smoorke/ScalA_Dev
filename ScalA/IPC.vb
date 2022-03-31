@@ -24,6 +24,17 @@ Module IPC
             _mmvaSI.Write(0, value)
         End Set
     End Property
+    Public Function getNextOpenPID()
+        Dim PID As Integer = 0
+        Dim selfPID = Process.GetCurrentProcess().Id
+        For Each pp In Process.GetProcessesByName(IO.Path.GetFileNameWithoutExtension(Application.ExecutablePath))
+            If pp.Id <> selfPID Then
+                PID = pp.Id
+                Exit For
+            End If
+        Next pp
+        Return PID
+    End Function
     Public Property RequestActivation() As Boolean
         Get
             Return _mmvaSI.ReadBoolean(4)

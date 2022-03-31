@@ -475,13 +475,7 @@
             My.Settings.location = Me.Location
         End If
         tmrActive.Stop()
-        IPC.AlreadyOpenPID = 0
-        For Each pp In Process.GetProcessesByName(IO.Path.GetFileNameWithoutExtension(Application.ExecutablePath))
-            If pp.Id <> scalaPID Then
-                IPC.AlreadyOpenPID = pp.Id
-                Exit For
-            End If
-        Next pp
+        IPC.AlreadyOpenPID = IPC.getNextOpenPID
         Hotkey.UnregHotkey(Me)
     End Sub
 
@@ -1203,7 +1197,7 @@
         End If
     End Sub
 
-    ReadOnly scalaPID As Integer = Process.GetCurrentProcess().Id
+    Private ReadOnly scalaPID As Integer = Process.GetCurrentProcess().Id
     Public Shared topSortList As List(Of String) = My.Settings.topSort.Split(CType(vbCrLf, Char()), StringSplitOptions.RemoveEmptyEntries).ToList
     Public Shared botSortList As List(Of String) = My.Settings.botSort.Split(CType(vbCrLf, Char()), StringSplitOptions.RemoveEmptyEntries).ToList
     Public Shared blackList As List(Of String) = topSortList.Intersect(botSortList).ToList
