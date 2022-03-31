@@ -244,13 +244,13 @@
         If My.Settings.SingleInstance Then
             Dim oldPID As Integer = AlreadyOpenPID
             If oldPID <> 0 Then
-                Dim opp As Process = Process.GetProcessById(oldPID)
-                SendMessage(opp.MainWindowHandle, WM_SYSCOMMAND, SC_RESTORE, New IntPtr(1))
-                AppActivate(oldPID)
+                'Dim opp As Process = Process.GetProcessById(oldPID)
+                IPC.RequestActivation = True
                 End
             End If
         End If
-        AlreadyOpenPID = scalaPID
+        IPC.AlreadyOpenPID = scalaPID
+
         sysTrayIcon.Visible = True
 
         If New Version(My.Settings.SettingsVersion) < My.Application.Info.Version Then
@@ -1257,6 +1257,25 @@
             Hotkey.UnregHotkey(Me)
 
         End Try
+
+        If IPC.requestActivation Then
+            IPC.RequestActivation = 0
+            Debug.Print("IPC.requestActivation")
+
+            If Me.WindowState = FormWindowState.Minimized Then
+                If Not wasMaximized Then
+                    SendMessage(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
+                Else
+                    SendMessage(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero)
+                End If
+                'Me.Invalidate(True)
+            End If
+            If cboAlt.SelectedIndex > 0 Then
+                AppActivate(AltPP.Id)
+            Else
+                AppActivate(scalaPID)
+            End If
+        End If
     End Sub
 
     Private Sub FrmMain_MouseDoubleClick(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.DoubleClick, lblTitle.DoubleClick
