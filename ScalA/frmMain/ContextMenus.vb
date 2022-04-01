@@ -215,7 +215,7 @@ Partial Public Class FrmMain
         cts?.Dispose()
         cts = New Threading.CancellationTokenSource
         cantok = cts.Token
-        deferredIconLoading(Dirs.Concat(Files), cantok)
+        DeferredIconLoading(Dirs.Concat(Files), cantok)
 
         Debug.Print($"parsing ""{pth}"" took {watch.ElapsedMilliseconds} ms")
         watch.Stop()
@@ -244,7 +244,7 @@ Partial Public Class FrmMain
         End Try
     End Sub
     Delegate Sub updateToolstripImageDelegate(item As ToolStripItem, bm As Bitmap)
-    Private Shared ReadOnly updateToolstripImage As New updateToolstripImageDelegate(AddressOf updateToolstripImageMethod)
+    Private Shared ReadOnly updateToolstripImage As New updateToolstripImageDelegate(AddressOf UpdateToolstripImageMethod)
     Private Shared Sub UpdateToolstripImageMethod(item As ToolStripItem, bm As Bitmap)
         If item Is Nothing Then Exit Sub
         item.Image = bm
@@ -308,7 +308,7 @@ Partial Public Class FrmMain
         Debug.Print($"QlCtxNewFolder sender:{sender}")
         Debug.Print($"tag:    {sender?.Tag}")
 
-        createNewFolder(sender.Tag)
+        CreateNewFolder(sender.Tag)
 
     End Sub
 
@@ -606,7 +606,7 @@ Partial Public Class FrmMain
         '    rootFolder = rootFolder.Substring(0, rootFolder.LastIndexOf("\") + 1)
         'End If
 
-        createNewFolder(rootFolder)
+        CreateNewFolder(rootFolder)
 
     End Sub
 

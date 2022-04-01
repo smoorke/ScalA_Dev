@@ -729,14 +729,14 @@
                             Exit Sub
                         End If
                         If minByMenu Then
-                            Me.Location = restoreLoc
+                            Me.Location = RestoreLoc
                         End If
                         minByMenu = False
                     Case SC_MAXIMIZE
                         Debug.Print("SC_MAXIMIZE " & m.LParam.ToString)
                         If Me.WindowState = FormWindowState.Minimized Then
                             Me.WindowState = FormWindowState.Normal
-                            Me.Location = restoreLoc
+                            Me.Location = RestoreLoc
                         End If
                         btnMax.PerformClick()
 
@@ -749,8 +749,8 @@
                         wasMaximized = (Me.WindowState = FormWindowState.Maximized)
                         Debug.Print("wasMax " & wasMaximized)
                         If Not wasMaximized Then
-                            restoreLoc = Me.Location
-                            Debug.Print("restoreLoc " & restoreLoc.ToString)
+                            RestoreLoc = Me.Location
+                            Debug.Print("restoreLoc " & RestoreLoc.ToString)
                         End If
                         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
                         RestorePos(AltPP)
@@ -968,7 +968,7 @@
         If TickCounter >= visibleButtons.Count Then TickCounter = 0
     End Sub
     Delegate Sub updateButtonImageDelegate(but As AButton, bm As Bitmap)
-    Private Shared ReadOnly updateButtonImage As New updateButtonImageDelegate(AddressOf updateButtonImageMethod)
+    Private Shared ReadOnly updateButtonImage As New updateButtonImageDelegate(AddressOf UpdateButtonImageMethod)
     Private Shared Sub UpdateButtonImageMethod(but As AButton, bm As Bitmap)
         If but Is Nothing Then Exit Sub
         but.Image = bm
@@ -1098,8 +1098,8 @@
         Debug.Print("btnMin_Click")
         wasMaximized = (Me.WindowState = FormWindowState.Maximized)
         If Not wasMaximized Then
-            restoreLoc = Me.Location
-            Debug.Print("restoreLoc " & restoreLoc.ToString)
+            RestoreLoc = Me.Location
+            Debug.Print("restoreLoc " & RestoreLoc.ToString)
         End If
         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
         Me.WindowState = FormWindowState.Minimized
@@ -1180,8 +1180,8 @@
                     Me.MaximizedBounds = New Rectangle(scrn.WorkingArea.Left - scrn.Bounds.Left, scrn.WorkingArea.Top - scrn.Bounds.Top, scrn.WorkingArea.Width, scrn.WorkingArea.Height)
                     Debug.Print("new maxbound " & MaximizedBounds.ToString)
                     If Me.WindowState = FormWindowState.Normal Then
-                        restoreLoc = Me.Location
-                        Debug.Print("restoreLoc " & restoreLoc.ToString)
+                        RestoreLoc = Me.Location
+                        Debug.Print("restoreLoc " & RestoreLoc.ToString)
                     End If
                     Me.Location = scrn.WorkingArea.Location
                     Me.WindowState = FormWindowState.Maximized
@@ -1194,7 +1194,7 @@
         Else 'go normal
             Me.WindowState = FormWindowState.Normal
             sender.Text = "⧠"
-            Me.Location = restoreLoc
+            Me.Location = RestoreLoc
             wasMaximized = False
             ReZoom(zooms(cmbResolution.SelectedIndex))
         End If
@@ -1269,7 +1269,7 @@
 
         End Try
 
-        If IPC.requestActivation Then
+        If IPC.RequestActivation Then
             IPC.RequestActivation = 0
             Debug.Print("IPC.requestActivation")
 
@@ -1359,7 +1359,7 @@
         Debug.Print("sysTrayIcon_MouseDoubleClick")
         If e.Button = MouseButtons.Right Then Exit Sub
         If Me.WindowState = FormWindowState.Minimized Then
-            Me.Location = restoreLoc
+            Me.Location = RestoreLoc
             SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle) 'hides scala from taskbar
             Me.WindowState = FormWindowState.Normal
             ReZoom(zooms(cmbResolution.SelectedIndex))

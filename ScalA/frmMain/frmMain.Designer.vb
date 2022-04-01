@@ -124,7 +124,7 @@ Partial Class FrmMain
         'cboAlt
         '
         Me.cboAlt.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.cboAlt.DisplayMember = "name"
+        Me.cboAlt.DisplayMember = "Name"
         Me.cboAlt.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cboAlt.FormattingEnabled = True
         Me.cboAlt.Location = New System.Drawing.Point(25, 2)
