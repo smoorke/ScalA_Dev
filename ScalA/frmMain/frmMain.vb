@@ -1286,6 +1286,9 @@
             Else
                 AppActivate(scalaPID)
             End If
+            Me.TopMost = False
+            Me.TopMost = True
+            Me.TopMost = My.Settings.topmost
         End If
     End Sub
 
