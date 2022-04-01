@@ -344,6 +344,11 @@
         test.Items.Add(New ToolStripMenuItem("ResumeLayout", Nothing, AddressOf dBug.Resumelayout))
         test.Items.Add(New ToolStripMenuItem("Button Info", Nothing, AddressOf dBug.ButtonInfo))
         chkDebug.ContextMenuStrip = test
+        AddHandler test.Opening, Sub()
+                                     Debug.Print("test Opening")
+                                     AppActivate(scalaPID)
+                                     UntrapRMouse()
+                                 End Sub
 #End If
 
         'set shield if runing as admin
@@ -645,6 +650,7 @@
 
     Public Sub ShowSysMenu(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseUp, lblTitle.MouseUp, btnMin.MouseUp, btnMax.MouseUp
         If e Is Nothing OrElse e.Button = MouseButtons.Right Then
+            UntrapRMouse() ' fix rbuttn stuck bug
             Debug.Print("ShowSysMenu hSysMenu=" & hSysMenu.ToString)
             pbZoom.Visible = False
             AButton.ActiveOverview = False
@@ -728,7 +734,10 @@
                         minByMenu = False
                     Case SC_MAXIMIZE
                         Debug.Print("SC_MAXIMIZE " & m.LParam.ToString)
-
+                        If Me.WindowState = FormWindowState.Minimized Then
+                            Me.WindowState = FormWindowState.Normal
+                            Me.Location = restoreLoc
+                        End If
                         btnMax.PerformClick()
 
                         Debug.Print("wasMax " & wasMaximized)
@@ -1081,6 +1090,9 @@
     Private Sub BtnQuit_Click(sender As Button, e As EventArgs) Handles btnQuit.Click
         Me.Close()
     End Sub
+    Private Sub BtnQuit_MouseUp(sender As Object, e As MouseEventArgs) Handles btnQuit.MouseUp
+        UntrapRMouse()
+    End Sub
 
     Private Sub BtnMin_Click(sender As Button, e As EventArgs) Handles btnMin.Click
         Debug.Print("btnMin_Click")
@@ -1146,7 +1158,16 @@
         End If
     End Sub
 
-    Dim restoreLoc As Point
+    Private _restoreLoc As Point
+    Private Property RestoreLoc As Point
+        Get
+            Return _restoreLoc
+        End Get
+        Set(ByVal value As Point)
+            _restoreLoc = value
+            Debug.Print($"Set restoreloc to {value}")
+        End Set
+    End Property
     Private Sub BtnMax_Click(sender As Button, e As EventArgs) Handles btnMax.Click
         Debug.Print("btnMax_Click")
         '🗖,🗗,⧠
@@ -1359,6 +1380,7 @@
         Await Task.Delay(100)
         If cboAlt.SelectedIndex > 0 Then
             pbZoom.Show()
+            AppActivate(AltPP.Id)
         Else
             AButton.ActiveOverview = My.Settings.gameOnOverview
         End If
