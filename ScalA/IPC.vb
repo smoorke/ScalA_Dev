@@ -1,6 +1,6 @@
 ﻿Imports System.IO.MemoryMappedFiles
 Module IPC
-    Private ReadOnly _mmfBoolean As MemoryMappedFile = MemoryMappedFile.CreateOrOpen("ScalA_IPC_Boolean", 2 * 1)
+    Private ReadOnly _mmfBoolean As MemoryMappedFile = MemoryMappedFile.CreateOrOpen("ScalA_IPC_Boolean", 1)
     Private ReadOnly _mmvaBoolean As MemoryMappedViewAccessor = _mmfBoolean.CreateViewAccessor()
     Public Property IsQlCtxOpen As Boolean
         Get
@@ -24,7 +24,7 @@ Module IPC
             _mmvaSI.Write(0, value)
         End Set
     End Property
-    Public Property RequestActivation() As Boolean
+    Public Property RequestActivation As Boolean
         Get
             Return _mmvaSI.ReadBoolean(1)
         End Get
