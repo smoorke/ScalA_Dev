@@ -87,8 +87,7 @@
     End Property
 
     <System.Runtime.InteropServices.DllImport("user32.dll")>
-    Private Shared Function GetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer) As UInteger
-    End Function
+    Private Shared Function GetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer) As Long : End Function
     Public ReadOnly Property IsTopMost() As Boolean
         Get
             Const GWL_EXSTYLE = -20
