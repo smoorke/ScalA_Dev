@@ -6,7 +6,6 @@
     'Private WndClass() As String = {"MAINWNDMOAC", "䅍义乗䵄䅏C"}
 #Region " Alt Dropdown "
     Friend Sub PopDropDown(sender As ComboBox)
-        AstoniaProcess.ResetEnumCache()
 
         Dim current As AstoniaProcess = CType(sender.SelectedItem, AstoniaProcess)
         sender.BeginUpdate()
@@ -14,6 +13,7 @@
 
         sender.Items.Clear()
         sender.Items.Add(New AstoniaProcess) 'Someone
+        AstoniaProcess.ResetEnumCache()
         sender.Items.AddRange(AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name, apSorter).ToArray)
 
         If current IsNot Nothing AndAlso sender.Items.Contains(current) Then
