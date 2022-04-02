@@ -6,6 +6,7 @@
     'Private WndClass() As String = {"MAINWNDMOAC", "䅍义乗䵄䅏C"}
 #Region " Alt Dropdown "
     Friend Sub PopDropDown(sender As ComboBox)
+        AstoniaProcess.ResetEnumCache()
 
         Dim current As AstoniaProcess = CType(sender.SelectedItem, AstoniaProcess)
         sender.BeginUpdate()
@@ -769,7 +770,7 @@
     End Sub
 
     Private Sub Cycle(Optional up As Boolean = False)
-        AstoniaProcess.ResetEnumCache()
+
         PopDropDown(cboAlt)
         Dim requestedindex = cboAlt.SelectedIndex + If(up, -1, 1)
         If requestedindex < 1 Then

@@ -211,6 +211,9 @@
     End Function
     Private Shared _ProcCache As IEnumerable(Of AstoniaProcess) = {}
     Private Shared _CacheCounter As Integer = 0
+    Public Shared Sub ResetEnumCache()
+        _CacheCounter = 0
+    End Sub
     Public Shared Function Enumerate(blacklist As IEnumerable(Of String)) As IEnumerable(Of AstoniaProcess)
         If _CacheCounter = 0 Then
             _ProcCache = EnumProcessesByNameArray(My.Settings.exe.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries)) _
