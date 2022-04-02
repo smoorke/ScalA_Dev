@@ -198,35 +198,34 @@
     '    Return Not left.Equals(right)
     'End Operator
 
-    Private Shared Function EnumProcessesByNameArray(strings() As String) As IEnumerable(Of Process)
+    Private Shared Function EnumProcessesByNameArray(strings() As String, blacklist As IEnumerable(Of String)) As IEnumerable(Of AstoniaProcess)
         Dim IEnum As IEnumerable(Of Process) = {}
         For Each exe As String In strings
             IEnum = IEnum.Concat(Process.GetProcessesByName(Trim(exe)))
         Next
-        Return IEnum
+        Return IEnum.Select(Function(p) New AstoniaProcess(p)) _
+                    .Where(Function(ap)
+                               Return Not blacklist.Contains(ap.Name) AndAlso
+                                     (Not My.Settings.Whitelist OrElse FrmMain.topSortList.Concat(FrmMain.botSortList).Contains(ap.Name)) AndAlso
+                                      ap.HasClassNameIn(classes:=My.Settings.className)
+                           End Function)
     End Function
-    Public Shared Function Enumerate() As IEnumerable(Of AstoniaProcess)
-        _CacheCounter = 0
-        Return AstoniaProcess.Enumerate({})
+    Public Shared Function Enumerate(Optional useCache As Boolean = False) As IEnumerable(Of AstoniaProcess)
+        Return AstoniaProcess.Enumerate({}, useCache)
     End Function
     Private Shared _ProcCache As IEnumerable(Of AstoniaProcess) = {}
     Private Shared _CacheCounter As Integer = 0
-    Public Shared Sub ResetEnumCache()
-        _CacheCounter = 0
-    End Sub
-    Public Shared Function Enumerate(blacklist As IEnumerable(Of String)) As IEnumerable(Of AstoniaProcess)
-        If _CacheCounter = 0 Then
-            _ProcCache = EnumProcessesByNameArray(My.Settings.exe.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries)) _
-                            .Select(Function(p) New AstoniaProcess(p)) _
-                            .Where(Function(ap)
-                                       Return Not blacklist.Contains(ap.Name) AndAlso
-                                             (Not My.Settings.Whitelist OrElse FrmMain.topSortList.Concat(FrmMain.botSortList).Contains(ap.Name)) AndAlso
-                                              ap.HasClassNameIn(classes:=My.Settings.className)
-                                   End Function)
+
+    Public Shared Function Enumerate(blacklist As IEnumerable(Of String), Optional useCache As Boolean = False) As IEnumerable(Of AstoniaProcess)
+        If useCache Then
+            If _CacheCounter = 0 Then
+                _ProcCache = EnumProcessesByNameArray(My.Settings.exe.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries), blacklist)
+            End If
+            _CacheCounter += 1
+            If _CacheCounter > 5 Then _CacheCounter = 0
+            Return _ProcCache
         End If
-        _CacheCounter += 1
-        If _CacheCounter > 5 Then _CacheCounter = 0
-        Return _ProcCache
+        Return EnumProcessesByNameArray(My.Settings.exe.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries), blacklist)
     End Function
 
     <System.Runtime.InteropServices.DllImport("user32.dll", SetLastError:=True)>

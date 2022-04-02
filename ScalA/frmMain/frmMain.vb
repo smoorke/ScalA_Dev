@@ -13,7 +13,7 @@
 
         sender.Items.Clear()
         sender.Items.Add(New AstoniaProcess) 'Someone
-        AstoniaProcess.ResetEnumCache()
+
         sender.Items.AddRange(AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name, apSorter).ToArray)
 
         If current IsNot Nothing AndAlso sender.Items.Contains(current) Then
@@ -817,7 +817,7 @@
         chkDebug.Text = TickCounter
 #End If
 
-        Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name, apSorter).ToList
+        Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList, True).OrderBy(Function(ap) ap.Name, apSorter).ToList
 
         pnlOverview.SuspendLayout()
         Dim visibleButtons As List(Of AButton) = UpdateButtonLayout(alts.Count)
