@@ -1283,14 +1283,15 @@
                 End If
                 'Me.Invalidate(True)
             End If
+
+            Me.TopMost = False
+            Me.TopMost = True
+            Me.TopMost = My.Settings.topmost
             If cboAlt.SelectedIndex > 0 Then
                 AppActivate(AltPP.Id)
             Else
                 AppActivate(scalaPID)
             End If
-            Me.TopMost = False
-            Me.TopMost = True
-            Me.TopMost = My.Settings.topmost
         End If
     End Sub
 
