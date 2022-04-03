@@ -152,3 +152,15 @@ Fixed quicklaunch path selection button in settings not doing anything.
 Fixed cycling bug when it tried to cycle to closed clients.
 Made maximized overview attempt to maintain aspect ratio.
 Increased maximum number of alts.
+
+**ScalA 0.9.9**
+Fixed quicklaunch icons sometimes blank when first opening it or its submenus.
+Fixed quicklaunch contextmenu submenu edge case where it glitched behind quicklaunch when running multiple ScalAs with same alt selected.
+Fixed scroll thumb dragging glitch when multiple ScalAs have same alt selected and they are not on same Y position.
+Made New Folder subroutine ask for new name after folder creation.
+Improved overview garbage collection and CPU usage by caching process list.
+Added SingleInstance setting and enabled it by default. 
+  (If you want to run multiple instances you should make a copy of ScalA.exe and rename it to Scala2.exe or something)
+  (This will give the additional benefit of having separate settings)
+Fixed right click drag opening of contextmenus glitching the zoom and look cursor getting stuck until you right click again.
+Made clickguard activate selected client when triggered.
