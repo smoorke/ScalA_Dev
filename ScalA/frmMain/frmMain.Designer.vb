@@ -87,22 +87,22 @@ Partial Class FrmMain
         'ToolStripSeparator1
         '
         ToolStripSeparator1.Name = "ToolStripSeparator1"
-        ToolStripSeparator1.Size = New System.Drawing.Size(124, 6)
+        ToolStripSeparator1.Size = New System.Drawing.Size(149, 6)
         '
         'NoneSortSeperator1
         '
         NoneSortSeperator1.Name = "NoneSortSeperator1"
-        NoneSortSeperator1.Size = New System.Drawing.Size(177, 6)
+        NoneSortSeperator1.Size = New System.Drawing.Size(115, 6)
         '
         'NoneSortSeperator2
         '
         NoneSortSeperator2.Name = "NoneSortSeperator2"
-        NoneSortSeperator2.Size = New System.Drawing.Size(177, 6)
+        NoneSortSeperator2.Size = New System.Drawing.Size(115, 6)
         '
         'ToolStripSeparator2
         '
         ToolStripSeparator2.Name = "ToolStripSeparator2"
-        ToolStripSeparator2.Size = New System.Drawing.Size(124, 6)
+        ToolStripSeparator2.Size = New System.Drawing.Size(149, 6)
         '
         'pnlSys
         '
@@ -270,68 +270,68 @@ Partial Class FrmMain
         '
         Me.cmsAlt.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SelectToolStripMenuItem, ToolStripSeparator1, Me.SortSubToolStripMenuItem, Me.TopMostToolStripMenuItem, ToolStripSeparator2, Me.CloseToolStripMenuItem})
         Me.cmsAlt.Name = "cmsAlt"
-        Me.cmsAlt.Size = New System.Drawing.Size(128, 104)
+        Me.cmsAlt.Size = New System.Drawing.Size(153, 104)
         '
         'SelectToolStripMenuItem
         '
         Me.SelectToolStripMenuItem.Name = "SelectToolStripMenuItem"
         Me.SelectToolStripMenuItem.ShortcutKeyDisplayString = ""
-        Me.SelectToolStripMenuItem.Size = New System.Drawing.Size(127, 22)
+        Me.SelectToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.SelectToolStripMenuItem.Text = "Select"
         '
         'SortSubToolStripMenuItem
         '
         Me.SortSubToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TopFirstToolStripMenuItem, Me.TopLastToolStripMenuItem, NoneSortSeperator1, Me.NoneSortToolStripMenuItem, NoneSortSeperator2, Me.BotFirstToolStripMenuItem, Me.BotLastToolStripMenuItem})
         Me.SortSubToolStripMenuItem.Name = "SortSubToolStripMenuItem"
-        Me.SortSubToolStripMenuItem.Size = New System.Drawing.Size(127, 22)
+        Me.SortSubToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.SortSubToolStripMenuItem.Text = "Sort"
         '
         'TopFirstToolStripMenuItem
         '
         Me.TopFirstToolStripMenuItem.Name = "TopFirstToolStripMenuItem"
-        Me.TopFirstToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.TopFirstToolStripMenuItem.Size = New System.Drawing.Size(118, 22)
         Me.TopFirstToolStripMenuItem.Tag = "-2"
         Me.TopFirstToolStripMenuItem.Text = "Top First"
         '
         'TopLastToolStripMenuItem
         '
         Me.TopLastToolStripMenuItem.Name = "TopLastToolStripMenuItem"
-        Me.TopLastToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.TopLastToolStripMenuItem.Size = New System.Drawing.Size(118, 22)
         Me.TopLastToolStripMenuItem.Tag = "-1"
         Me.TopLastToolStripMenuItem.Text = "Top Last"
         '
         'NoneSortToolStripMenuItem
         '
         Me.NoneSortToolStripMenuItem.Name = "NoneSortToolStripMenuItem"
-        Me.NoneSortToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.NoneSortToolStripMenuItem.Size = New System.Drawing.Size(118, 22)
         Me.NoneSortToolStripMenuItem.Tag = "0"
         Me.NoneSortToolStripMenuItem.Text = "None"
         '
         'BotFirstToolStripMenuItem
         '
         Me.BotFirstToolStripMenuItem.Name = "BotFirstToolStripMenuItem"
-        Me.BotFirstToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.BotFirstToolStripMenuItem.Size = New System.Drawing.Size(118, 22)
         Me.BotFirstToolStripMenuItem.Tag = "1"
         Me.BotFirstToolStripMenuItem.Text = "Bot First"
         '
         'BotLastToolStripMenuItem
         '
         Me.BotLastToolStripMenuItem.Name = "BotLastToolStripMenuItem"
-        Me.BotLastToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.BotLastToolStripMenuItem.Size = New System.Drawing.Size(118, 22)
         Me.BotLastToolStripMenuItem.Tag = "2"
         Me.BotLastToolStripMenuItem.Text = "Bot Last"
         '
         'TopMostToolStripMenuItem
         '
         Me.TopMostToolStripMenuItem.Name = "TopMostToolStripMenuItem"
-        Me.TopMostToolStripMenuItem.Size = New System.Drawing.Size(127, 22)
-        Me.TopMostToolStripMenuItem.Text = "TopMost"
+        Me.TopMostToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.TopMostToolStripMenuItem.Text = "Always On Top"
         '
         'CloseToolStripMenuItem
         '
         Me.CloseToolStripMenuItem.Name = "CloseToolStripMenuItem"
         Me.CloseToolStripMenuItem.ShortcutKeyDisplayString = ""
-        Me.CloseToolStripMenuItem.Size = New System.Drawing.Size(127, 22)
+        Me.CloseToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.CloseToolStripMenuItem.Text = "Close This"
         '
         'pnlOverview
