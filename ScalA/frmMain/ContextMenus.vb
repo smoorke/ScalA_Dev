@@ -83,8 +83,20 @@ Partial Public Class FrmMain
     Private Sub CmsAlt_Opened(sender As Object, e As EventArgs) Handles cmsAlt.Opened
         AButton.ActiveOverview = False
     End Sub
-
-    Private Sub SortSubToolStripMenuItem_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs) Handles SortSubToolStripMenuItem.MouseUp
+    Private Sub SortSubToolStripMenuItem_MouseEnter(sender As ToolStripMenuItem, e As EventArgs) Handles SortSubToolStripMenuItem.MouseEnter
+        If MouseButtons And MouseButtons.Right = MouseButtons.Right Then
+            sender.Image = My.Resources.gear_wheel
+        End If
+    End Sub
+    Private Sub SortSubToolStripMenuItem_MouseLeave(sender As ToolStripMenuItem, e As EventArgs) Handles SortSubToolStripMenuItem.MouseLeave
+        sender.Image = Nothing
+    End Sub
+    Private Sub SortSubToolStripMenuItem_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs) Handles SortSubToolStripMenuItem.MouseDown
+        If e.Button = MouseButtons.Right Then
+            sender.Image = My.Resources.gear_wheel
+        End If
+    End Sub
+    Private Sub SortSubToolStripMenuItem_MouseUp(sender As ToolStripMenuItem, e As MouseEventArgs) Handles SortSubToolStripMenuItem.MouseUp
         If e.Button = MouseButtons.Right Then
             FrmSettings.Tag = "Sort"
             FrmSettings.Show()
