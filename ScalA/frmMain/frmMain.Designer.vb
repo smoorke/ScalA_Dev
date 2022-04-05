@@ -24,6 +24,9 @@ Partial Class FrmMain
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
+        Dim NoneSortSeperator1 As System.Windows.Forms.ToolStripSeparator
+        Dim NoneSortSeperator2 As System.Windows.Forms.ToolStripSeparator
+        Dim ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmMain))
         Me.pnlSys = New System.Windows.Forms.Panel()
         Me.btnStart = New System.Windows.Forms.Button()
@@ -43,6 +46,12 @@ Partial Class FrmMain
         Me.tmrActive = New System.Windows.Forms.Timer(Me.components)
         Me.cmsAlt = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.SelectToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.SortSubToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.TopFirstToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.TopLastToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.NoneSortToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BotFirstToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BotLastToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.TopMostToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CloseToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.pnlOverview = New System.Windows.Forms.FlowLayoutPanel()
@@ -57,6 +66,9 @@ Partial Class FrmMain
         Me.cornerSE = New System.Windows.Forms.PictureBox()
         Me.tmrMove = New System.Windows.Forms.Timer(Me.components)
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
+        NoneSortSeperator1 = New System.Windows.Forms.ToolStripSeparator()
+        NoneSortSeperator2 = New System.Windows.Forms.ToolStripSeparator()
+        ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
         Me.pnlSys.SuspendLayout()
         Me.cmsQuickLaunch.SuspendLayout()
         Me.pnlTitleBar.SuspendLayout()
@@ -76,6 +88,21 @@ Partial Class FrmMain
         '
         ToolStripSeparator1.Name = "ToolStripSeparator1"
         ToolStripSeparator1.Size = New System.Drawing.Size(124, 6)
+        '
+        'NoneSortSeperator1
+        '
+        NoneSortSeperator1.Name = "NoneSortSeperator1"
+        NoneSortSeperator1.Size = New System.Drawing.Size(177, 6)
+        '
+        'NoneSortSeperator2
+        '
+        NoneSortSeperator2.Name = "NoneSortSeperator2"
+        NoneSortSeperator2.Size = New System.Drawing.Size(177, 6)
+        '
+        'ToolStripSeparator2
+        '
+        ToolStripSeparator2.Name = "ToolStripSeparator2"
+        ToolStripSeparator2.Size = New System.Drawing.Size(124, 6)
         '
         'pnlSys
         '
@@ -241,9 +268,9 @@ Partial Class FrmMain
         '
         'cmsAlt
         '
-        Me.cmsAlt.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SelectToolStripMenuItem, Me.TopMostToolStripMenuItem, ToolStripSeparator1, Me.CloseToolStripMenuItem})
+        Me.cmsAlt.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SelectToolStripMenuItem, ToolStripSeparator1, Me.SortSubToolStripMenuItem, Me.TopMostToolStripMenuItem, ToolStripSeparator2, Me.CloseToolStripMenuItem})
         Me.cmsAlt.Name = "cmsAlt"
-        Me.cmsAlt.Size = New System.Drawing.Size(128, 76)
+        Me.cmsAlt.Size = New System.Drawing.Size(128, 104)
         '
         'SelectToolStripMenuItem
         '
@@ -251,6 +278,48 @@ Partial Class FrmMain
         Me.SelectToolStripMenuItem.ShortcutKeyDisplayString = ""
         Me.SelectToolStripMenuItem.Size = New System.Drawing.Size(127, 22)
         Me.SelectToolStripMenuItem.Text = "Select"
+        '
+        'SortSubToolStripMenuItem
+        '
+        Me.SortSubToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TopFirstToolStripMenuItem, Me.TopLastToolStripMenuItem, NoneSortSeperator1, Me.NoneSortToolStripMenuItem, NoneSortSeperator2, Me.BotFirstToolStripMenuItem, Me.BotLastToolStripMenuItem})
+        Me.SortSubToolStripMenuItem.Name = "SortSubToolStripMenuItem"
+        Me.SortSubToolStripMenuItem.Size = New System.Drawing.Size(127, 22)
+        Me.SortSubToolStripMenuItem.Text = "Sort"
+        '
+        'TopFirstToolStripMenuItem
+        '
+        Me.TopFirstToolStripMenuItem.Name = "TopFirstToolStripMenuItem"
+        Me.TopFirstToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.TopFirstToolStripMenuItem.Tag = "-2"
+        Me.TopFirstToolStripMenuItem.Text = "Top First"
+        '
+        'TopLastToolStripMenuItem
+        '
+        Me.TopLastToolStripMenuItem.Name = "TopLastToolStripMenuItem"
+        Me.TopLastToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.TopLastToolStripMenuItem.Tag = "-1"
+        Me.TopLastToolStripMenuItem.Text = "Top Last"
+        '
+        'NoneSortToolStripMenuItem
+        '
+        Me.NoneSortToolStripMenuItem.Name = "NoneSortToolStripMenuItem"
+        Me.NoneSortToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.NoneSortToolStripMenuItem.Tag = "0"
+        Me.NoneSortToolStripMenuItem.Text = "None"
+        '
+        'BotFirstToolStripMenuItem
+        '
+        Me.BotFirstToolStripMenuItem.Name = "BotFirstToolStripMenuItem"
+        Me.BotFirstToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.BotFirstToolStripMenuItem.Tag = "1"
+        Me.BotFirstToolStripMenuItem.Text = "Bot First"
+        '
+        'BotLastToolStripMenuItem
+        '
+        Me.BotLastToolStripMenuItem.Name = "BotLastToolStripMenuItem"
+        Me.BotLastToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.BotLastToolStripMenuItem.Tag = "2"
+        Me.BotLastToolStripMenuItem.Text = "Bot Last"
         '
         'TopMostToolStripMenuItem
         '
@@ -413,7 +482,6 @@ Partial Class FrmMain
     Friend WithEvents pnlButtons As Panel
     Friend WithEvents tmrOverview As Timer
     Friend WithEvents tmrActive As Timer
-    Friend WithEvents cmsAlt As ContextMenuStrip
     Friend WithEvents SelectToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents TopMostToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents CloseToolStripMenuItem As ToolStripMenuItem
@@ -436,4 +504,11 @@ Partial Class FrmMain
     Friend WithEvents cornerSW As PictureBox
     Friend WithEvents cornerSE As PictureBox
     Friend WithEvents tmrMove As Timer
+    Friend WithEvents SortSubToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents TopFirstToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents TopLastToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents BotFirstToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents BotLastToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents NoneSortToolStripMenuItem As ToolStripMenuItem
+    Public WithEvents cmsAlt As ContextMenuStrip
 End Class

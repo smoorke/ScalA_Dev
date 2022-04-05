@@ -7,6 +7,16 @@ Public Class FrmSettings
         Me.Owner = FrmMain
         Me.CenterToParent()
 
+        If Me.Tag IsNot Nothing Then
+            For Each TabPage As TabPage In tbcSettings.TabPages
+                If TabPage.Text = Me.Tag Then
+                    tbcSettings.SelectedTab = TabPage
+                    Me.Tag = Nothing
+                    Exit For
+                End If
+            Next
+        End If
+
         Me.TopMost = My.Settings.topmost
         chkTopMost.Checked = My.Settings.topmost
         chkRoundCorners.Checked = My.Settings.roundCorners

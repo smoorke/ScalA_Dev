@@ -41,6 +41,14 @@ Partial Public Class FrmMain
             e.Cancel = True
             Exit Sub
         End If
+
+        If Application.OpenForms().OfType(Of FrmSettings).Any Then
+            FrmSettings.BringToFront()
+            FrmSettings.btnHelp.Select()
+            e.Cancel = True
+            Exit Sub
+        End If
+
         Dim pp As AstoniaProcess = sender.SourceControl.Tag
 
         SelectToolStripMenuItem.Text = "Select " & pp.Name
@@ -49,6 +57,8 @@ Partial Public Class FrmMain
 
         TopMostToolStripMenuItem.Checked = pp.IsTopMost()
         TopMostToolStripMenuItem.Tag = pp
+
+        SortSubToolStripMenuItem.Tag = pp
 
         If sender.Items.Contains(closeAllToolStripMenuItem) Then
             sender.Items.Remove(closeAllToolStripMenuItem)
@@ -66,6 +76,65 @@ Partial Public Class FrmMain
         End If
     End Sub
 
+
+    Private Sub SortSubToolStripMenuItem_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs) Handles SortSubToolStripMenuItem.MouseUp
+        If e.Button = MouseButtons.Right Then
+            FrmSettings.Tag = "Sort"
+            FrmSettings.Show()
+            FrmSettings.BringToFront()
+            cmsAlt.Close()
+        End If
+    End Sub
+
+    Private Sub SortSubToolStripMenuItem_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) Handles SortSubToolStripMenuItem.DropDownOpening
+
+        Dim AltName As String = sender.Tag.name
+
+        Dim topDoesNotContain As Boolean = Not topSortList.Contains(AltName)
+        Dim botDoesnotContain As Boolean = Not botSortList.Contains(AltName)
+
+        Dim FirstTopSortItem As String = topSortList.FirstOrDefault()
+        Dim LastTopSortItem As String = topSortList.LastOrDefault()
+
+        Dim FirstBotSortItem As String = botSortList.FirstOrDefault()
+        Dim LastBotSortItem As String = botSortList.LastOrDefault()
+
+        TopFirstToolStripMenuItem.Checked = FirstTopSortItem = AltName
+        TopLastToolStripMenuItem.Checked = LastTopSortItem = AltName
+
+        NoneSortToolStripMenuItem.Checked = topDoesNotContain AndAlso botDoesnotContain
+
+        BotFirstToolStripMenuItem.Checked = FirstBotSortItem = AltName
+        BotLastToolStripMenuItem.Checked = LastBotSortItem = AltName
+
+    End Sub
+
+    Private Sub NoneSortToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles NoneSortToolStripMenuItem.Click,
+            TopFirstToolStripMenuItem.Click, TopLastToolStripMenuItem.Click,
+            BotFirstToolStripMenuItem.Click, BotLastToolStripMenuItem.Click
+        Dim AltName As String = sender.OwnerItem.Tag.name
+        Debug.Print($"Apply sorting {AltName} {sender.Tag}")
+
+        topSortList.Remove(AltName)
+        botSortList.Remove(AltName)
+
+        Select Case sender.Tag
+            Case -2
+                topSortList.Insert(0, AltName)
+            Case -1
+                topSortList.Add(AltName)
+            Case 1
+                botSortList.Insert(0, AltName)
+            Case 2
+                botSortList.Add(AltName)
+        End Select
+
+        My.Settings.topSort = String.Join(vbCrLf, blackList.Concat(topSortList))
+        My.Settings.botSort = String.Join(vbCrLf, blackList.Concat(botSortList))
+
+        apSorter = New AstoniaProcessSorter(topSortList, botSortList)
+
+    End Sub
     Private Sub CloseAllIdle_Click(sender As ToolStripMenuItem, e As EventArgs) 'Handles closeAllToolStripMenuItem.click
 
         For Each pp As AstoniaProcess In AstoniaProcess.Enumerate().Where(Function(p As AstoniaProcess) p.Name = "Someone")
@@ -896,5 +965,6 @@ Partial Public Class FrmMain
             End If
         End If
     End Sub
+
 
 End Class
