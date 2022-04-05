@@ -76,6 +76,13 @@ Partial Public Class FrmMain
         End If
     End Sub
 
+    Private Sub CmsAlt_Closed(sender As Object, e As ToolStripDropDownClosedEventArgs) Handles cmsAlt.Closed
+        AButton.ActiveOverview = My.Settings.gameOnOverview
+    End Sub
+
+    Private Sub CmsAlt_Opened(sender As Object, e As EventArgs) Handles cmsAlt.Opened
+        AButton.ActiveOverview = False
+    End Sub
 
     Private Sub SortSubToolStripMenuItem_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs) Handles SortSubToolStripMenuItem.MouseUp
         If e.Button = MouseButtons.Right Then

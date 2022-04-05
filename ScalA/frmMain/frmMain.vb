@@ -1392,13 +1392,6 @@
         End If
     End Sub
 
-    Private Sub CmsAlt_Closed(sender As Object, e As ToolStripDropDownClosedEventArgs) Handles cmsAlt.Closed
-        AButton.ActiveOverview = My.Settings.gameOnOverview
-    End Sub
-
-    Private Sub CmsAlt_Opened(sender As Object, e As EventArgs) Handles cmsAlt.Opened
-        AButton.ActiveOverview = False
-    End Sub
 End Class
 
 #If DEBUG Then
