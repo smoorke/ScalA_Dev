@@ -107,24 +107,44 @@ Partial Public Class FrmMain
 
     Private Sub SortSubToolStripMenuItem_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) Handles SortSubToolStripMenuItem.DropDownOpening
 
+        For Each item In sender.DropDownItems.OfType(Of ToolStripMenuItem)
+            item.CheckState = CheckState.Unchecked
+        Next
+
         Dim AltName As String = sender.Tag.name
 
-        Dim topDoesNotContain As Boolean = Not topSortList.Contains(AltName)
-        Dim botDoesnotContain As Boolean = Not botSortList.Contains(AltName)
+        Dim topContains As Boolean = topSortList.Contains(AltName)
+        Dim botContains As Boolean = botSortList.Contains(AltName)
 
-        Dim FirstTopSortItem As String = topSortList.FirstOrDefault()
-        Dim LastTopSortItem As String = topSortList.LastOrDefault()
+        If topContains Then
+            TopFirstToolStripMenuItem.CheckState = CheckState.Indeterminate
+            TopLastToolStripMenuItem.CheckState = CheckState.Indeterminate
+        End If
 
-        Dim FirstBotSortItem As String = botSortList.FirstOrDefault()
-        Dim LastBotSortItem As String = botSortList.LastOrDefault()
+        If botContains Then
+            BotFirstToolStripMenuItem.CheckState = CheckState.Indeterminate
+            BotLastToolStripMenuItem.CheckState = CheckState.Indeterminate
+        End If
 
-        TopFirstToolStripMenuItem.Checked = FirstTopSortItem = AltName
-        TopLastToolStripMenuItem.Checked = LastTopSortItem = AltName
+        If topSortList.FirstOrDefault() = AltName Then
+            TopFirstToolStripMenuItem.CheckState = CheckState.Checked
+            TopLastToolStripMenuItem.CheckState = CheckState.Unchecked
+        End If
+        If topSortList.LastOrDefault() = AltName Then
+            TopLastToolStripMenuItem.CheckState = CheckState.Checked
+            TopFirstToolStripMenuItem.CheckState = CheckState.Unchecked
+        End If
 
-        NoneSortToolStripMenuItem.Checked = topDoesNotContain AndAlso botDoesnotContain
+        NoneSortToolStripMenuItem.Checked = Not (topContains OrElse botContains)
 
-        BotFirstToolStripMenuItem.Checked = FirstBotSortItem = AltName
-        BotLastToolStripMenuItem.Checked = LastBotSortItem = AltName
+        If botSortList.FirstOrDefault() = AltName Then
+            BotFirstToolStripMenuItem.CheckState = CheckState.Checked
+            BotLastToolStripMenuItem.CheckState = CheckState.Unchecked
+        End If
+        If botSortList.LastOrDefault() = AltName Then
+            BotLastToolStripMenuItem.CheckState = CheckState.Checked
+            BotFirstToolStripMenuItem.CheckState = CheckState.Unchecked
+        End If
 
     End Sub
 
