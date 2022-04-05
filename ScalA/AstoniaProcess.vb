@@ -235,26 +235,29 @@
 
     Public Function GetClientBitmap() As Bitmap
         If _proc Is Nothing Then Return Nothing
+        Try
+            Dim rcc As Rectangle
+            If Not GetClientRect(_proc.MainWindowHandle, rcc) Then Return Nothing 'GetClientRect fails if astonia is running fullscreen and is tabbed out
 
-        Dim rcc As Rectangle
-        If Not GetClientRect(_proc.MainWindowHandle, rcc) Then Return Nothing 'GetClientRect fails if astonia is running fullscreen and is tabbed out
+            If rcc.Width = 0 OrElse rcc.Height = 0 Then Return Nothing
 
-        If rcc.Width = 0 OrElse rcc.Height = 0 Then Return Nothing
+            Static Dim bmp As New Bitmap(rcc.Width, rcc.Height)
 
-        Static Dim bmp As New Bitmap(rcc.Width, rcc.Height)
-
-        Using gBM As Graphics = Graphics.FromImage(bmp)
-            Dim hdcBm As IntPtr
-            Try
-                hdcBm = gBM.GetHdc
-            Catch ex As Exception
-                Debug.Print("GetHdc error")
-                Return Nothing
-            End Try
-            PrintWindow(_proc.MainWindowHandle, hdcBm, 1)
-            gBM.ReleaseHdc()
-        End Using
-        Return bmp
+            Using gBM As Graphics = Graphics.FromImage(bmp)
+                Dim hdcBm As IntPtr
+                Try
+                    hdcBm = gBM.GetHdc
+                Catch ex As Exception
+                    Debug.Print("GetHdc error")
+                    Return Nothing
+                End Try
+                PrintWindow(_proc.MainWindowHandle, hdcBm, 1)
+                gBM.ReleaseHdc()
+            End Using
+            Return bmp
+        Catch
+            Return Nothing
+        End Try
     End Function
     Private Shared ReadOnly validColors As Integer() = {&HFFFF0000, &HFFFF0400, &HFFFF7B29, &HFFFF7D29, &HFF297BFF, &HFF297DFF, &HFF000000, &HFF000400, &HFFFFFFFF} 'red, orange, lightblue, black, white (troy,base)
 
