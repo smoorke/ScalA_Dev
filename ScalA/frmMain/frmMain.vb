@@ -649,7 +649,7 @@
         End If
     End Sub
 
-    Public Sub ShowSysMenu(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseUp, lblTitle.MouseUp, btnMin.MouseUp, btnMax.MouseUp
+    Public Async Sub ShowSysMenu(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseUp, lblTitle.MouseUp, btnMin.MouseUp, btnMax.MouseUp
         If e Is Nothing OrElse e.Button = MouseButtons.Right Then
             UntrapRMouse() ' fix rbuttn stuck bug
             Debug.Print("ShowSysMenu hSysMenu=" & hSysMenu.ToString)
@@ -663,6 +663,7 @@
                 SendMessage(Me.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
             End If
 
+            Await Task.Delay(200)
             If cboAlt.SelectedIndex > 0 Then
                 pbZoom.Visible = True
             End If
