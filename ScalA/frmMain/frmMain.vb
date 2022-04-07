@@ -38,10 +38,12 @@
 
     Private Async Sub ComboBoxes_DropDownClosed(sender As ComboBox, e As EventArgs) Handles cboAlt.DropDownClosed, cmbResolution.DropDownClosed
         Await Task.Delay(200)
+        If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse sysMenuOpen Then Exit Sub
         If cboAlt.SelectedIndex > 0 Then
             pbZoom.Visible = True
+        Else
+            AButton.ActiveOverview = My.Settings.gameOnOverview
         End If
-        AButton.ActiveOverview = My.Settings.gameOnOverview
     End Sub
 
 #End Region
@@ -196,7 +198,7 @@
         prevItem = that.SelectedItem
 
         If that.SelectedIndex > 0 Then
-            pbZoom.Show()
+            pbZoom.Visible = True
         Else
             AButton.ActiveOverview = My.Settings.gameOnOverview
         End If
@@ -648,7 +650,7 @@
             SetMenuItemBitmaps(hSysMenu, 0, MF_BYPOSITION, CType(My.Resources.gear_wheel, Bitmap).GetHbitmap(Color.Red), Nothing)
         End If
     End Sub
-
+    Private sysMenuOpen As Boolean = False
     Public Async Sub ShowSysMenu(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseUp, lblTitle.MouseUp, btnMin.MouseUp, btnMax.MouseUp
         If e Is Nothing OrElse e.Button = MouseButtons.Right Then
             UntrapRMouse() ' fix rbuttn stuck bug
@@ -656,18 +658,21 @@
             pbZoom.Visible = False
             AButton.ActiveOverview = False
 
+            sysMenuOpen = True
             Dim cmd As Integer = TrackPopupMenuEx(hSysMenu, TPM_RIGHTBUTTON Or TPM_RETURNCMD, MousePosition.X, MousePosition.Y, Me.Handle, Nothing)
-
+            sysMenuOpen = False
             If cmd > 0 Then
                 Debug.Print("SendMessage " & cmd)
                 SendMessage(Me.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
             End If
 
             Await Task.Delay(200)
+            If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse sysMenuOpen Then Exit Sub
             If cboAlt.SelectedIndex > 0 Then
                 pbZoom.Visible = True
+            Else
+                AButton.ActiveOverview = My.Settings.gameOnOverview
             End If
-            AButton.ActiveOverview = My.Settings.gameOnOverview
         End If
     End Sub
 
@@ -1386,7 +1391,7 @@
         cmsQuickLaunch.Close()
         Await Task.Delay(100)
         If cboAlt.SelectedIndex > 0 Then
-            pbZoom.Show()
+            pbZoom.Visible = True
             AppActivate(AltPP.Id)
         Else
             AButton.ActiveOverview = My.Settings.gameOnOverview

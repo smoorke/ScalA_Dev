@@ -597,11 +597,13 @@ Partial Public Class FrmMain
                 End Try
             End If
         End If
-        Await Task.Delay(100)
+        Await Task.Delay(200)
+        If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse sysMenuOpen Then Exit Sub
         If cboAlt.SelectedIndex > 0 Then
             pbZoom.Visible = True
+        Else
+            AButton.ActiveOverview = My.Settings.gameOnOverview
         End If
-        AButton.ActiveOverview = My.Settings.gameOnOverview
     End Sub
 
     Private ReadOnly newFolderItem As New MenuItem("Folder", AddressOf QlCtxNewFolder)
