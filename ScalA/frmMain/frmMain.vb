@@ -426,10 +426,7 @@
                 If moveable Then
                     Task.Run(Sub()
                                  moveable = False
-                                 AltPP?.CenterWindowPos(ScalaHandle,
-                                                    Me.Left + pbZoom.Left + (pbZoom.Width / 2),
-                                                    Me.Top + pbZoom.Top + (pbZoom.Height / 2),
-                                                    SetWindowPosFlags.DoNotActivate)
+                                 AltPP?.CenterBehind(pbZoom, SetWindowPosFlags.DoNotActivate)
                                  moveable = True
                              End Sub)
                 End If
@@ -448,10 +445,7 @@
             Debug.Print("Mouseup")
             MovingForm = False
             If AltPP?.IsRunning AndAlso Not FrmSettings.chkDoAlign.Checked Then
-                AltPP?.CenterWindowPos(ScalaHandle,
-                                                    Me.Left + pbZoom.Left + (pbZoom.Width / 2),
-                                                    Me.Top + pbZoom.Top + (pbZoom.Height / 2),
-                                                    SetWindowPosFlags.DoNotActivate)
+                AltPP?.CenterBehind(pbZoom, SetWindowPosFlags.DoNotActivate)
             End If
         End If
     End Sub
@@ -1206,7 +1200,7 @@
             wasMaximized = False
             ReZoom(zooms(cmbResolution.SelectedIndex))
         End If
-        AltPP?.CenterWindowPos(ScalaHandle, Me.Left + pbZoom.Left + (pbZoom.Width / 2), Me.Top + pbZoom.Top + (pbZoom.Height / 2))
+        AltPP?.CenterBehind(pbZoom)
     End Sub
 
     Private Sub BtnStart_Click(sender As Button, e As EventArgs) Handles btnStart.Click
@@ -1294,6 +1288,7 @@
             Me.TopMost = True
             Me.TopMost = My.Settings.topmost
             If cboAlt.SelectedIndex > 0 Then
+                AltPP?.CenterBehind(pbZoom)
                 AppActivate(AltPP.Id)
             Else
                 AppActivate(scalaPID)
