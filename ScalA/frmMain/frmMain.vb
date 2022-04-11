@@ -707,6 +707,11 @@
                         If activeID = scalaPID OrElse Process.GetProcessById(activeID).IsClassNameIn(My.Settings.className) Then
                             If Me.WindowState = FormWindowState.Minimized Then
                                 Me.WindowState = FormWindowState.Normal
+                                If wasMaximized Then
+                                    Dim tmp As Point = RestoreLoc
+                                    btnMax.PerformClick()
+                                    RestoreLoc = tmp
+                                End If
                             End If
                             Me.Activate()
                             Me.BringToFront()
@@ -720,13 +725,16 @@
             Case WM_SYSCOMMAND
                 Select Case m.WParam
                     Case SC_RESTORE
-                        Debug.Print("SC_RESTORE")
+                        Debug.Print("SC_RESTORE " & m.LParam.ToString)
                         SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
                         'Me.ShowInTaskbar = False
                         Debug.Print("wasMax " & wasMaximized)
+                        If WindowState = FormWindowState.Maximized Then
+                            btnMax.PerformClick()
+                            Exit Sub
+                        End If
                         If wasMaximized Then
                             SendMessage(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero)
-                            'btnMax.PerformClick
                             Exit Sub
                         End If
                         If minByMenu Then
@@ -1161,6 +1169,9 @@
     End Sub
 
     Private _restoreLoc As Point
+    ''' <summary>
+    ''' Used to set Scala to the right position when restoring from maximized state
+    ''' </summary>
     Private Property RestoreLoc As Point
         Get
             Return _restoreLoc
