@@ -253,6 +253,7 @@ Public Class FrmSettings
     Public ScalaMoved As Point
     Dim rcAstOffsetNew As Rectangle
     Private Sub TmrAlign_Tick(sender As Object, e As EventArgs) Handles tmrAlign.Tick
+        manualNumUpdate = False
         GetWindowRect(FrmMain.AltPP.MainWindowHandle, rcAstOffsetNew)
         numXoffset.Value = My.Settings.offset.X + ScalaMoved.X - rcAstOffsetNew.Left + rcAstOffsetBase.Left
         numYoffset.Value = My.Settings.offset.Y + ScalaMoved.Y - rcAstOffsetNew.Top + rcAstOffsetBase.Top
@@ -264,6 +265,7 @@ Public Class FrmSettings
     Private Sub NumXYoffsets_ValueChanged(sender As NumericUpDown, e As EventArgs) Handles numYoffset.ValueChanged, numXoffset.ValueChanged
 
         If manualNumUpdate Then
+            Debug.Print($"ManualNumUpdate")
             Dim ptMove As New Point(0, 0)
             If sender.Tag Then
                 ptMove.Y += sender.Text - sender.Value
