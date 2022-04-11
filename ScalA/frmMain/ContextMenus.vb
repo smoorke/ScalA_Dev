@@ -49,6 +49,8 @@ Partial Public Class FrmMain
             Exit Sub
         End If
 
+        AppActivate(scalaPID) 'fix right click drag bug
+
         Dim pp As AstoniaProcess = sender.SourceControl.Tag
 
         SelectToolStripMenuItem.Text = "Select " & pp.Name
