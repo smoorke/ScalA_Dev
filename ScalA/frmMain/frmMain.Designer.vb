@@ -184,9 +184,10 @@ Partial Class FrmMain
         'lblTitle
         '
         Me.lblTitle.AutoSize = True
-        Me.lblTitle.Location = New System.Drawing.Point(-2, 6)
+        Me.lblTitle.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblTitle.Location = New System.Drawing.Point(-2, 5)
         Me.lblTitle.Name = "lblTitle"
-        Me.lblTitle.Size = New System.Drawing.Size(71, 13)
+        Me.lblTitle.Size = New System.Drawing.Size(78, 15)
         Me.lblTitle.TabIndex = 3
         Me.lblTitle.Text = "- ScalA beta -"
         '
