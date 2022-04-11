@@ -244,9 +244,10 @@ Partial Public Class FrmMain
         Try
             For Each fullDirs As String In System.IO.Directory.EnumerateDirectories(pth).TakeWhile(Function(__) Not IsQlCtxOpen())
 
-                Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullDirs).Attributes
-                If attr.HasFlag(System.IO.FileAttributes.Hidden) Then Continue For
-                If attr.HasFlag(System.IO.FileAttributes.System) Then Continue For
+                If Not My.Computer.Keyboard.CtrlKeyDown Then
+                    Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullDirs).Attributes
+                    If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then Continue For
+                End If
 
                 Dim smenu As New ToolStripMenuItem(System.IO.Path.GetFileName(fullDirs)) With {.Tag = fullDirs & "\"}
 
@@ -277,6 +278,11 @@ Partial Public Class FrmMain
                                        .Where(Function(p) {".exe", ".jar", ".lnk", ".url", ".txt"}.Contains(System.IO.Path.GetExtension(p).ToLower)) _
                                        .TakeWhile(Function(__) Not IsQlCtxOpen())
             'Debug.Print(System.IO.Path.GetFileName(fullLink))
+
+            If Not My.Computer.Keyboard.CtrlKeyDown Then
+                Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullLink).Attributes
+                If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then Continue For
+            End If
 
             'don't add self to list
             If System.IO.Path.GetFileName(fullLink) = System.IO.Path.GetFileName(Environment.GetCommandLineArgs(0)) Then Continue For
