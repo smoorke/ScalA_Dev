@@ -40,7 +40,7 @@
         End Get
     End Property
     Public Function CenterBehind(centerOn As Control, Optional extraSWPFlags As UInteger = 0) As Boolean
-        Dim pt As Point = centerOn.PointToScreen(centerOn.Location + New Point(centerOn.Width / 2, centerOn.Height / 2))
+        Dim pt As Point = centerOn.PointToScreen(New Point(centerOn.Width / 2, centerOn.Height / 2))
         Return CenterWindowPos(centerOn.FindForm.Handle, pt.X, pt.Y, extraSWPFlags)
     End Function
     Public Function CenterWindowPos(hWndInsertAfter As IntPtr, x As Integer, y As Integer, Optional extraSWPFlags As UInteger = 0) As Boolean
