@@ -102,19 +102,26 @@ Public Class FrmSettings
 
 
     ReadOnly storeZoom As Integer = My.Settings.zoom
-    Private Sub ChkDoAlign_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkDoAlign.CheckedChanged
+    Private Async Sub ChkDoAlign_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkDoAlign.CheckedChanged
         If sender.Checked AndAlso FrmMain.AltPP.Id = 0 Then
             MessageBox.Show(FrmMain, "To perform alignment an alt needs to be selected.", "ScalA Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             sender.Checked = False
             Exit Sub
         End If
-        grpAlign.Enabled = sender.Checked
+        If FrmMain.WindowState = FormWindowState.Maximized Then
+            FrmMain.btnMax.PerformClick()
+        End If
         FrmMain.tmrTick.Enabled = Not sender.Checked
-        FrmMain.cmbResolution.SelectedIndex = If(sender.Checked, 0, storeZoom)
+        Await Task.Delay(200) ' wait for tmrtick to stop running async code
+        If FrmMain.cmbResolution.SelectedIndex <> 0 Then
+            FrmMain.cmbResolution.SelectedIndex = If(sender.Checked, 0, storeZoom)
+        Else ' SelectedIndex = 0
+            Call FrmMain.CmbResolution_SelectedIndexChanged(FrmMain.cmbResolution, Nothing)
+        End If
+        grpAlign.Enabled = sender.Checked
         FrmMain.UpdateThumb(If(sender.Checked, 122, 255))
 
         If sender.Checked Then
-            SetWindowPos(FrmMain.AltPP.MainWindowHandle, FrmMain.Handle, FrmMain.newX, FrmMain.newY, -1, -1, SetWindowPosFlags.IgnoreResize + SetWindowPosFlags.DoNotActivate)
             GetWindowRect(FrmMain.AltPP.MainWindowHandle, rcAstOffsetBase)
             Debug.Print(rcAstOffsetBase.ToString)
         End If
@@ -240,7 +247,7 @@ Public Class FrmSettings
 
         My.Settings.SingleInstance = ChkSingleInstance.Checked
 
-        BtnTest_Click(Nothing, Nothing) 'apply sorting & black/whitlelist
+        BtnTest_Click(Nothing, Nothing) 'apply sorting & black/whitlelist, note: .PerformClick() doesn't work as button may not be visible
 
         Hotkey.UnregHotkey(FrmMain)
 
