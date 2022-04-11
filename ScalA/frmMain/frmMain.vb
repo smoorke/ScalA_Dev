@@ -641,7 +641,7 @@
             ModifyMenuA(hSysMenu, SC_SIZE, MF_BYCOMMAND Or 1, SC_SIZE, "&Size") 'disable size item
             InsertMenuA(hSysMenu, 0, MF_SEPARATOR Or MF_BYPOSITION, 0, String.Empty)
             InsertMenuA(hSysMenu, 0, MF_BYPOSITION, 1337, "Settings")
-            SetMenuItemBitmaps(hSysMenu, 0, MF_BYPOSITION, CType(My.Resources.gear_wheel, Bitmap).GetHbitmap(Color.Red), Nothing)
+            SetMenuItemBitmaps(hSysMenu, 0, MF_BYPOSITION, My.Resources.gear_wheel.GetHbitmap(Color.Red), Nothing)
         End If
     End Sub
     Private sysMenuOpen As Boolean = False
@@ -671,32 +671,12 @@
     End Sub
 
 #End Region
-
-    Dim wasMaximized As Boolean = False 'todo find out what this does and see if it can be removed
-    Dim minByMenu As Boolean = False 'todo find out what this does and see if it can be removed
-
-    'Const WM_GETMINMAXINFO = &H24
-    ''<StructLayout(LayoutKind.Sequential)>
-    ''Private Structure MINMAXINFO
-    ''    Dim ptReserved As Point
-    ''    Dim ptMaxSize As Point
-    ''    Dim ptMaxPosition As Point
-    ''    Dim ptMinTrackSize As Point
-    ''    Dim ptMaxTrackSize As Point
-    ''End Structure
+    ''' <summary>
+    ''' wasMaximized is used to determine what state to restore to
+    ''' </summary>
+    Dim wasMaximized As Boolean = False
 
     Protected Overrides Sub WndProc(ByRef m As Message)
-        'If m.Msg = &H2E0 Then
-        '    Debug.Print("&H2E0")
-        '    Dim b As Rectangle = Screen.FromControl(Me).WorkingArea ' //where mForm Is Application.OpenForms[0], this Is specific to my applications use case.
-        '    b.X = 0 '; //The bounds will Try To base it On Monitor 1 For example, 1920x1080, To another 1920x1080 monitor On right, will Set X To 1080, making it show up On the monitor On right, outside its bounds.
-        '    b.Y = 0 '; //same As b.X
-        '    MaximizedBounds = b '; //Apply it To MaximizedBounds
-        '    m.Result = New IntPtr(0) '; //Tell WndProc it did stuff
-
-        'Else
-
-
         Select Case m.Msg
             Case Hotkey.WM_HOTKEY
                 Select Case m.WParam
@@ -737,10 +717,6 @@
                             SendMessage(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero)
                             Exit Sub
                         End If
-                        If minByMenu Then
-                            Me.Location = RestoreLoc
-                        End If
-                        minByMenu = False
                     Case SC_MAXIMIZE
                         Debug.Print("SC_MAXIMIZE " & m.LParam.ToString)
                         If Me.WindowState = FormWindowState.Minimized Then
@@ -754,7 +730,6 @@
                         m.Result = 0
                     Case SC_MINIMIZE
                         Debug.Print("SC_MINIMIZE")
-                        minByMenu = True
                         wasMaximized = (Me.WindowState = FormWindowState.Maximized)
                         Debug.Print("wasMax " & wasMaximized)
                         If Not wasMaximized Then
