@@ -514,7 +514,6 @@ Partial Public Class FrmMain
     End Sub
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
         AppActivate(scalaPID) 'fix right click drag bug
-        UntrapRMouse() 'fix rbutton stuck
         pbZoom.Visible = False
         AButton.ActiveOverview = False
         If My.Computer.Keyboard.ShiftKeyDown Then
@@ -573,14 +572,7 @@ Partial Public Class FrmMain
         If watchers.Count = 0 Then InitWatchers()
 
     End Sub
-    ''' <summary>
-    ''' fix right click stuck after drag bug
-    ''' </summary>
-    Private Sub UntrapRMouse()
-        If cboAlt.SelectedIndex > 0 Then
-            SendMessage(AltPP.MainWindowHandle, &H205, 0, 0)
-        End If
-    End Sub
+
 
     Private closeAllAtBottom As Boolean = True
 

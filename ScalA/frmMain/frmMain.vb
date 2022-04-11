@@ -350,7 +350,7 @@
         AddHandler test.Opening, Sub()
                                      Debug.Print("test Opening")
                                      AppActivate(scalaPID)
-                                     UntrapRMouse()
+                                     UntrapMouse()
                                  End Sub
 #End If
 
@@ -646,8 +646,8 @@
     End Sub
     Private sysMenuOpen As Boolean = False
     Public Async Sub ShowSysMenu(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseUp, lblTitle.MouseUp, btnMin.MouseUp, btnMax.MouseUp
+        UntrapMouse() ' fix mousebutton stuck bug
         If e Is Nothing OrElse e.Button = MouseButtons.Right Then
-            UntrapRMouse() ' fix rbuttn stuck bug
             Debug.Print("ShowSysMenu hSysMenu=" & hSysMenu.ToString)
             pbZoom.Visible = False
             AButton.ActiveOverview = False
@@ -671,6 +671,16 @@
     End Sub
 
 #End Region
+    ''' <summary>
+    ''' fix mousebutton stuck after drag bug
+    ''' </summary>
+    Private Sub UntrapMouse()
+        If cboAlt.SelectedIndex > 0 Then
+            Debug.Print("untrap mouse")
+            SendMessage(AltPP.MainWindowHandle, WM_RBUTTONUP, 0, 0)
+            SendMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0)
+        End If
+    End Sub
     ''' <summary>
     ''' wasMaximized is used to determine what state to restore to
     ''' </summary>
@@ -1075,8 +1085,8 @@
     Private Sub BtnQuit_Click(sender As Button, e As EventArgs) Handles btnQuit.Click
         Me.Close()
     End Sub
-    Private Sub BtnQuit_MouseUp(sender As Object, e As MouseEventArgs) Handles btnQuit.MouseUp
-        UntrapRMouse()
+    Private Sub various_MouseUp(sender As Object, e As MouseEventArgs) Handles Me.MouseUp, btnQuit.MouseUp, pnlSys.MouseUp, pnlButtons.MouseUp, btnStart.MouseUp, cboAlt.MouseUp, cmbResolution.MouseUp
+        UntrapMouse() 'fix mousebutton stuck
     End Sub
 
     Private Sub BtnMin_Click(sender As Button, e As EventArgs) Handles btnMin.Click
