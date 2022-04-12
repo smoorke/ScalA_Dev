@@ -1277,6 +1277,8 @@
 
             Me.TopMost = True
             Me.BringToFront()
+            Await Task.Delay(100)
+            Me.TopMost = My.Settings.topmost
 
             If cboAlt.SelectedIndex > 0 Then
                 AltPP?.CenterBehind(pbZoom)
@@ -1284,9 +1286,6 @@
             Else
                 AppActivate(scalaPID)
             End If
-
-            Await Task.Delay(150)
-            Me.TopMost = My.Settings.topmost
 
         End If
 
