@@ -186,7 +186,7 @@
             Catch
             End Try
             sysTrayIcon.Icon = AltPP?.GetIcon
-            'AltPP?.CenterWindowPos(ScalaHandle, Me.Left + pbZoom.Left + (pbZoom.Width / 2), Me.Top + pbZoom.Top + (pbZoom.Height / 2))
+            AltPP?.CenterBehind(pbZoom)
         Else 'AltPP.Id = 0
 
 
