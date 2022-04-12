@@ -677,8 +677,8 @@
     Private Sub UntrapMouse()
         If cboAlt.SelectedIndex > 0 Then
             Debug.Print("untrap mouse")
-            SendMessage(AltPP.MainWindowHandle, WM_RBUTTONUP, 0, 0)
-            SendMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0)
+            PostMessage(AltPP.MainWindowHandle, WM_RBUTTONUP, 0, 0)
+            PostMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0)
         End If
     End Sub
     ''' <summary>
@@ -724,7 +724,7 @@
                             Exit Sub
                         End If
                         If wasMaximized Then
-                            SendMessage(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero)
+                            PostMessage(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero)
                             Exit Sub
                         End If
                     Case SC_MAXIMIZE
@@ -1273,9 +1273,9 @@
 
             If Me.WindowState = FormWindowState.Minimized Then
                 If Not wasMaximized Then
-                    SendMessage(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
+                    PostMessage(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
                 Else
-                    SendMessage(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero)
+                    PostMessage(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero)
                 End If
                 'Me.Invalidate(True)
             End If
