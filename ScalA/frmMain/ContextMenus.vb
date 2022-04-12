@@ -6,17 +6,13 @@ End Class
 Partial Public Class FrmMain
 
     Private Sub CloseToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseToolStripMenuItem.Click
-        'SendMessage(CType(sender.Owner, ContextMenuStrip).SourceControl.Tag.MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
         PostMessage(CType(sender.Tag, AstoniaProcess).MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
-
     End Sub
 
     Private Sub SelectToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles SelectToolStripMenuItem.Click
-        'Dim name As String = CType(sender.Owner, ContextMenuStrip).SourceControl.Text
         Dim pp As AstoniaProcess = CType(sender.Tag, AstoniaProcess)
         If pp Is Nothing Then Exit Sub
-        Dim name As String = pp.Name
-        Debug.Print("SelectToolStrip: " & name)
+        Debug.Print("SelectToolStrip: " & pp.Name)
         If Not cboAlt.Items.Contains(pp) Then
             PopDropDown(cboAlt)
         End If
@@ -24,7 +20,6 @@ Partial Public Class FrmMain
     End Sub
 
     Private Sub TopMostToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles TopMostToolStripMenuItem.Click
-        'Dim pp As Process = CType(sender.Owner, ContextMenuStrip).SourceControl.Tag
         Dim pp As AstoniaProcess = CType(sender.Tag, AstoniaProcess)
         If pp Is Nothing Then Exit Sub
         Debug.Print("Topmost " & Not sender.Checked)
@@ -70,7 +65,7 @@ Partial Public Class FrmMain
         sender.Items.Add("Close " & pp.Name, My.Resources.F12, AddressOf CloseToolStripMenuItem_Click).Tag = pp
 
         Dim other As String = If(pp.Name = "Someone", "Other ", "")
-        Dim somecount As Integer = AstoniaProcess.Enumerate().Where(Function(p As AstoniaProcess) p.Name = "Someone").Count
+        Dim somecount As Integer = AstoniaProcess.Enumerate().Count(Function(p) p.Name = "Someone")
         Debug.Print($"somecount {somecount}")
         If somecount > 0 AndAlso Not (other = "Other " AndAlso somecount = 1) Then
             closeAllToolStripMenuItem = sender.Items.Add($"Close All {other}Someone", My.Resources.F12, AddressOf CloseAllIdle_Click)
