@@ -1217,7 +1217,7 @@
     Public Shared blackList As List(Of String) = topSortList.Intersect(botSortList).ToList
 
 
-    Private Sub TmrActive_Tick(sender As Timer, e As EventArgs) Handles tmrActive.Tick
+    Private Async Sub TmrActive_Tick(sender As Timer, e As EventArgs) Handles tmrActive.Tick
 
         Try
             Dim activeID As Integer = GetActiveProcessID()
@@ -1272,24 +1272,24 @@
             Debug.Print("IPC.requestActivation")
 
             If Me.WindowState = FormWindowState.Minimized Then
-                If Not wasMaximized Then
-                    PostMessage(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
-                Else
-                    PostMessage(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero)
-                End If
-                'Me.Invalidate(True)
+                SendMessage(ScalaHandle, WM_SYSCOMMAND, If(wasMaximized, SC_MAXIMIZE, SC_RESTORE), IntPtr.Zero)
             End If
 
-            Me.TopMost = False
             Me.TopMost = True
-            Me.TopMost = My.Settings.topmost
+            Me.BringToFront()
+
             If cboAlt.SelectedIndex > 0 Then
                 AltPP?.CenterBehind(pbZoom)
                 AppActivate(AltPP.Id)
             Else
                 AppActivate(scalaPID)
             End If
+
+            Await Task.Delay(150)
+            Me.TopMost = My.Settings.topmost
+
         End If
+
     End Sub
 
     Private Sub FrmMain_MouseDoubleClick(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.DoubleClick, lblTitle.DoubleClick
