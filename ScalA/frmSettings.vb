@@ -431,7 +431,7 @@ Public Class FrmSettings
             Dim baseRes As New Size(rcC.Width, rcC.Height)
             Dim gcd As Integer = Me.GCD(baseRes.Width, baseRes.Height)
             Dim aspect As String = $"({baseRes.Width / gcd}:{baseRes.Height / gcd})"
-            If aspect = "(8:4)" Then aspect = "(16:10)"
+            If aspect = "(8:5)" Then aspect = "(16:10)"
 
             sender.DropDownItems.Add($"{ap.Name} {baseRes.Width}x{baseRes.Height} {aspect}", ap.GetIcon?.ToBitmap, AddressOf GenerateToolStripMenuItem_Click).Tag = $"{baseRes.Width}x{baseRes.Height}"
         Next
