@@ -675,11 +675,14 @@
     ''' fix mousebutton stuck after drag bug
     ''' </summary>
     Private Sub UntrapMouse()
-        If cboAlt.SelectedIndex > 0 Then
-            Debug.Print("untrap mouse")
-            PostMessage(AltPP.MainWindowHandle, WM_RBUTTONUP, 0, 0)
-            PostMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0)
-        End If
+        Try
+            If cboAlt.SelectedIndex > 0 AndAlso Not pbZoom.Contains(MousePosition) Then
+                Debug.Print("untrap mouse")
+                PostMessage(AltPP.MainWindowHandle, WM_RBUTTONUP, 0, 0) 'this looks funny
+                PostMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0) 'this breaks clickguard
+            End If
+        Catch
+        End Try
     End Sub
     ''' <summary>
     ''' wasMaximized is used to determine what state to restore to
@@ -1085,7 +1088,7 @@
     Private Sub BtnQuit_Click(sender As Button, e As EventArgs) Handles btnQuit.Click
         Me.Close()
     End Sub
-    Private Sub various_MouseUp(sender As Object, e As MouseEventArgs) Handles Me.MouseUp, btnQuit.MouseUp, pnlSys.MouseUp, pnlButtons.MouseUp, btnStart.MouseUp, cboAlt.MouseUp, cmbResolution.MouseUp
+    Private Sub various_MouseUp(sender As Control, e As MouseEventArgs) Handles Me.MouseUp, btnQuit.MouseUp, pnlSys.MouseUp, pnlButtons.MouseUp, btnStart.MouseUp, cboAlt.MouseUp, cmbResolution.MouseUp
         UntrapMouse() 'fix mousebutton stuck
     End Sub
 
@@ -1379,7 +1382,7 @@
         Debug.Print($"me.mousedown {sender.name}")
         MyBase.WndProc(Message.Create(ScalaHandle, WM_CANCELMODE, 0, 0))
         cmsQuickLaunch.Close()
-        Await Task.Delay(100)
+        Await Task.Delay(200)
         If cboAlt.SelectedIndex > 0 Then
             pbZoom.Visible = True
             AppActivate(AltPP.Id)
