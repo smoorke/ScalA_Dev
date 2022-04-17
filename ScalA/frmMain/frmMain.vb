@@ -48,7 +48,7 @@
 
 #End Region
 
-    Dim altTopM As Integer = -2
+    Dim altTopM As Integer = SWP_HWND.NOTOPMOST '-2
     Private ReadOnly restoreParent As UInteger = GetWindowLong(Me.Handle, GWL_HWNDPARENT)
     Private prevItem As New AstoniaProcess()
     Private updatingCombobox As Boolean = False
