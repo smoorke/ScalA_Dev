@@ -2,7 +2,7 @@
 Module IPC
     Private ReadOnly _mmfBoolean As MemoryMappedFile = MemoryMappedFile.CreateOrOpen("ScalA_IPC_Boolean", 1)
     Private ReadOnly _mmvaBoolean As MemoryMappedViewAccessor = _mmfBoolean.CreateViewAccessor()
-    Public Property IsQlCtxOpen As Boolean
+    Public Property QlCtxIsOpen As Boolean
         Get
             'Debug.Print(_mmvaBoolean.ReadBoolean(0))
             Return _mmvaBoolean.ReadBoolean(0)

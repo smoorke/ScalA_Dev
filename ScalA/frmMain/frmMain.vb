@@ -553,7 +553,7 @@
                              Dim flags As SetWindowPosFlags = SetWindowPosFlags.IgnoreResize Or
                                                               SetWindowPosFlags.DoNotActivate Or
                                                               SetWindowPosFlags.ASyncWindowPosition
-                             If IsQlCtxOpen() Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
+                             If QlCtxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                              SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
                          Catch ex As Exception
                          End Try
@@ -935,7 +935,7 @@
                                          Dim flags As SetWindowPosFlags = SetWindowPosFlags.IgnoreResize Or
                                                                       SetWindowPosFlags.DoNotActivate Or
                                                                       SetWindowPosFlags.ASyncWindowPosition
-                                         If IsQlCtxOpen() Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
+                                         If QlCtxIsOpen() Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                                          SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
                                      Catch ex As Exception
                                      Finally
