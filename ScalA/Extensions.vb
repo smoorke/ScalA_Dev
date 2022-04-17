@@ -53,7 +53,7 @@ Module Extensions
     ''' <returns></returns>
     <Extension()>
     Public Function Contains(ctrl As Control, screenPt As Point) As Boolean
-        If TypeOf ctrl IsNot Form Then screenPt = ctrl.FindForm.PointToClient(screenPt)
+        If TypeOf ctrl IsNot Form Then screenPt = ctrl.FindForm?.PointToClient(screenPt)
         Return ctrl.Bounds.Contains(screenPt)
     End Function
     ''' <summary>
