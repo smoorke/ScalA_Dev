@@ -164,3 +164,13 @@ Added SingleInstance setting and enabled it by default.
   (This will give the additional benefit of having separate settings)
 Fixed right click drag opening of contextmenus glitching the zoom and look cursor getting stuck until you right click again.
 Made clickguard activate selected client when triggered.
+
+**ScalA 1.0.0**
+Fixed exception when closing alts with overview visible.
+Added sorting options to overview alt contextmenu.
+Improved clickguard when reopening menus or dropdowns.
+Made holding ctrl while opening quicklaunch or its submenus show hidden files and folders.
+Fixed alignment settings once again.
+Fixed numerous bugs pertaining to restoring to/from maximized state.
+Extended untrapping of right/middle mousebuttons when interacting with ScalA.
+Fixed rename dialog losing focus with an alt selected.
