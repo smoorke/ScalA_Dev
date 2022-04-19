@@ -585,7 +585,7 @@ Partial Public Class FrmMain
         If AltPP IsNot Nothing AndAlso e.CloseReason <> ToolStripDropDownCloseReason.AppClicked AndAlso e.CloseReason <> ToolStripDropDownCloseReason.ItemClicked Then
             'these couse ghosting of menu and blanking of zoom when closed by reopening when reason = appclicked
             'SetWindowPos(AltPP.MainWindowHandle, -2, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
-            If sender.SourceControl IsNot Nothing AndAlso AltPP.Id <> 0 Then
+            If sender.SourceControl IsNot Nothing AndAlso AltPP.Id <> 0 AndAlso Not renameOpen Then
                 Try
                     AppActivate(AltPP.Id)
                 Catch
@@ -630,9 +630,10 @@ Partial Public Class FrmMain
 
         RenameMethod(Path, Name)
     End Sub
-
+    Private renameOpen As Boolean
     Private Sub RenameMethod(Path As String, currentName As String)
         Dim title As String = $"Rename {currentName}"
+
         Task.Run(Sub()
                      Dim watch As Stopwatch = Stopwatch.StartNew()
 
@@ -650,7 +651,9 @@ Partial Public Class FrmMain
                      End Try
                      watch.Stop()
                  End Sub)
+        renameOpen = True
         Dim toName As String = InputBox("Enter new name", title, currentName, MousePosition.X - 177, MousePosition.Y - 76)
+        renameOpen = False
         Debug.Print($"Rename to {toName}")
         If toName <> "" AndAlso currentName <> toName Then
             'Dim newpath = path.Substring(0, path.TrimEnd("\").LastIndexOf("\")) & "\" & newname
