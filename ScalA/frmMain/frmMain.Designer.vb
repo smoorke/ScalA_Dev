@@ -35,6 +35,7 @@ Partial Class FrmMain
         Me.cmbResolution = New System.Windows.Forms.ComboBox()
         Me.cboAlt = New System.Windows.Forms.ComboBox()
         Me.pnlTitleBar = New System.Windows.Forms.Panel()
+        Me.chkEqLock = New System.Windows.Forms.CheckBox()
         Me.chkDebug = New System.Windows.Forms.CheckBox()
         Me.lblTitle = New System.Windows.Forms.Label()
         Me.pnlButtons = New System.Windows.Forms.Panel()
@@ -65,6 +66,8 @@ Partial Class FrmMain
         Me.cornerSW = New System.Windows.Forms.PictureBox()
         Me.cornerSE = New System.Windows.Forms.PictureBox()
         Me.tmrMove = New System.Windows.Forms.Timer(Me.components)
+        Me.pnlEqLock = New System.Windows.Forms.Panel()
+        Me.ttMain = New System.Windows.Forms.ToolTip(Me.components)
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         NoneSortSeperator1 = New System.Windows.Forms.ToolStripSeparator()
         NoneSortSeperator2 = New System.Windows.Forms.ToolStripSeparator()
@@ -163,12 +166,31 @@ Partial Class FrmMain
         'pnlTitleBar
         '
         Me.pnlTitleBar.BackColor = System.Drawing.SystemColors.Control
+        Me.pnlTitleBar.Controls.Add(Me.chkEqLock)
         Me.pnlTitleBar.Controls.Add(Me.chkDebug)
         Me.pnlTitleBar.Controls.Add(Me.lblTitle)
         Me.pnlTitleBar.Location = New System.Drawing.Point(270, 0)
         Me.pnlTitleBar.Name = "pnlTitleBar"
         Me.pnlTitleBar.Size = New System.Drawing.Size(641, 25)
         Me.pnlTitleBar.TabIndex = 14
+        '
+        'chkEqLock
+        '
+        Me.chkEqLock.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
+        Me.chkEqLock.CheckAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.chkEqLock.Checked = Global.ScalA.My.MySettings.Default.LockEq
+        Me.chkEqLock.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.chkEqLock.DataBindings.Add(New System.Windows.Forms.Binding("Checked", Global.ScalA.My.MySettings.Default, "LockEq", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.chkEqLock.Dock = System.Windows.Forms.DockStyle.Right
+        Me.chkEqLock.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkEqLock.Location = New System.Drawing.Point(604, 0)
+        Me.chkEqLock.Name = "chkEqLock"
+        Me.chkEqLock.Padding = New System.Windows.Forms.Padding(0, 3, 3, 0)
+        Me.chkEqLock.Size = New System.Drawing.Size(37, 25)
+        Me.chkEqLock.TabIndex = 12
+        Me.chkEqLock.Text = "🔒"
+        Me.ttMain.SetToolTip(Me.chkEqLock, "EQ Lock" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Hold Alt-Key to override")
+        Me.chkEqLock.UseVisualStyleBackColor = True
         '
         'chkDebug
         '
@@ -265,7 +287,7 @@ Partial Class FrmMain
         'tmrActive
         '
         Me.tmrActive.Enabled = True
-        Me.tmrActive.Interval = 99
+        Me.tmrActive.Interval = 33
         '
         'cmsAlt
         '
@@ -434,12 +456,21 @@ Partial Class FrmMain
         '
         Me.tmrMove.Interval = 25
         '
+        'pnlEqLock
+        '
+        Me.pnlEqLock.Cursor = System.Windows.Forms.Cursors.No
+        Me.pnlEqLock.Location = New System.Drawing.Point(805, 423)
+        Me.pnlEqLock.Name = "pnlEqLock"
+        Me.pnlEqLock.Size = New System.Drawing.Size(200, 54)
+        Me.pnlEqLock.TabIndex = 22
+        '
         'FrmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(1052, 855)
+        Me.Controls.Add(Me.pnlEqLock)
         Me.Controls.Add(Me.cornerSE)
         Me.Controls.Add(Me.cornerSW)
         Me.Controls.Add(Me.cornerNE)
@@ -512,4 +543,7 @@ Partial Class FrmMain
     Friend WithEvents BotLastToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents NoneSortToolStripMenuItem As ToolStripMenuItem
     Public WithEvents cmsAlt As ContextMenuStrip
+    Friend WithEvents chkEqLock As CheckBox
+    Friend WithEvents pnlEqLock As Panel
+    Friend WithEvents ttMain As ToolTip
 End Class

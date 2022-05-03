@@ -249,6 +249,8 @@ Module NativeMethods
     Public Function GetClientRect(ByVal hWnd As IntPtr, ByRef lpRect As Rectangle) As Boolean : End Function
     <DllImport("user32.dll")>
     Public Function ClientToScreen(ByVal hWnd As IntPtr, ByRef lpPoint As Point) As Boolean : End Function
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function ScreenToClient(ByVal hWnd As IntPtr, ByRef lpPoint As Point) As Boolean : End Function
     <DllImport("user32.dll")>
     Public Function GetForegroundWindow() As IntPtr : End Function
     <DllImport("user32.dll")>
@@ -395,12 +397,20 @@ Module NativeMethods
 
     Public Const HTCAPTION As Integer = 2
 
+    Public Const WM_SETCURSOR = &H20
+
     Public Const WM_NCHITTEST As Integer = &H84
     Public Const WM_NCLBUTTONDOWN As Integer = &HA1
     Public Const WM_NCLBUTTONUP As Integer = &HA2
     Public Const WM_SYSCOMMAND = &H112
     Public Const WM_CANCELMODE = &H1F
+
+    Public Const WM_MOUSEMOVE = &H200
+
+    Public Const WM_RBUTTONDOWN = &H204
     Public Const WM_RBUTTONUP = &H205
+
+    Public Const WM_MBUTTONDOWN = &H207
     Public Const WM_MBUTTONUP = &H208
 
     Public Const SC_SIZE As Integer = &HF000

@@ -132,6 +132,9 @@
   <metadata name="cmsQuickLaunch.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>416, 17</value>
   </metadata>
+  <metadata name="ttMain.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>734, 17</value>
+  </metadata>
   <metadata name="tmrTick.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
@@ -148,7 +151,7 @@
   <data name="pbMessage.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAQoAAADICAIAAACf/jiVAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        wgAADsIBFShKgAAAGSdJREFUeF7tndux4zgOQCeqjsfZdDCdy01iaz+2dmq2O4OlCJDEk4Rkya+L8zF1
+        vAAADrwBlbxySQAAGSdJREFUeF7tndux4zgOQCeqjsfZdDCdy01iaz+2dmq2O4OlCJDEk4Rkya+L8zF1
         ReFNQLZsteev30mSOOR4JIlLjkeSuOR4JIlLjkeSuOR4JImLMx6/bn+Z/Pjx4/bz1xdKFb5+/tiWf5Kl
         F+a9or0IKMILluEFd2fneCAjhRyPd6NNx+E6gIHbLzw8j3cbD12Cr19Y3HYqx+PNwOa+bRt8rBCXjccL
         snM8Nti5HI/3ovf2bIfn5HhMi8fKYzVceYm5/diWK/JupfL1q0h0EVOoiuDpQpEwrCwdcXq0VRPULMvz

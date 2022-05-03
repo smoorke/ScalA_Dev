@@ -427,6 +427,18 @@ Namespace My
                 Me("SingleInstance") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property LockEq() As Boolean
+            Get
+                Return CType(Me("LockEq"),Boolean)
+            End Get
+            Set
+                Me("LockEq") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

@@ -127,6 +127,9 @@
                 'cboAlt.SelectedIndex = 0
                 Exit Sub
             End If
+            pnlEqLock.Location = New Point(CType(rcC.Width / 2 - 260, Integer).Map(0, rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width), 24)
+            pnlEqLock.Size = New Size(CType(rcC.Width / 2 + 122, Integer).Map(0, rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width),
+                                      42.Map(0, rcC.Height, 0, zooms(cmbResolution.SelectedIndex).Height))
             Try
                 AppActivate(AltPP.Id)
             Catch
@@ -607,6 +610,10 @@
         cornerNE.Location = New Point(Me.Width - 2, 0)
         cornerSW.Location = New Point(0, Me.Height - 2)
         cornerSE.Location = New Point(Me.Width - 2, Me.Height - 2)
+
+        pnlEqLock.Location = New Point(140.Map(0, 800, 0, newSize.Width), 24)
+        pnlEqLock.Size = New Size(522.Map(0, 800, 0, newSize.Width),
+                                  42.Map(0, 600, 0, newSize.Height))
 
         If Me.WindowState <> FormWindowState.Maximized AndAlso My.Settings.roundCorners Then
 
@@ -1292,9 +1299,29 @@
 
         End If
 
+        If My.Settings.LockEq AndAlso cboAlt.SelectedIndex > 0 AndAlso Not My.Computer.Keyboard.AltKeyDown Then
+            If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
+                If Not pnlEqLock.Visible Then
+                    'Await Task.Delay(100)
+                    Debug.Print("pnlEqLock.Visible")
+                    pnlEqLock.Visible = True
+                End If
+                If pnlEqLock.Contains(MousePosition) Then Cursor.Current = Cursors.No
+            End If
+            chkEqLock.CheckState = CheckState.Checked
+            chkEqLock.Text = "🔒"
+        Else
+            pnlEqLock.Visible = False
+            If My.Settings.LockEq AndAlso cboAlt.SelectedIndex > 0 Then
+                chkEqLock.CheckState = CheckState.Indeterminate
+                chkEqLock.Text = "🔓"
+            End If
+        End If
+        ''locked 🔒
+        ''unlocked 🔓
     End Sub
 
-    Private Sub FrmMain_MouseDoubleClick(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.DoubleClick, lblTitle.DoubleClick
+    Private Sub title_MouseDoubleClick(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.DoubleClick, lblTitle.DoubleClick
         Debug.Print("title_DoubleClick")
         If e.Button = MouseButtons.Left Then btnMax.PerformClick()
     End Sub
@@ -1391,6 +1418,71 @@
         End If
     End Sub
 
+    Private Sub pnlEqLock_MouseDown(sender As Object, e As MouseEventArgs) Handles pnlEqLock.MouseDown
+        Debug.Print($"pnlEqLock.MouseDown {e.Button}")
+        If e.Button = MouseButtons.Right Then
+            pnlEqLock.Visible = False
+            PostMessage(AltPP.MainWindowHandle, WM_RBUTTONDOWN, 0, 0) 'to change cursor
+        End If
+        If e.Button = MouseButtons.Middle Then
+            pnlEqLock.Visible = False
+
+            SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, 0, 0) 'to change cursor and enable mmb
+            'Threading.Thread.Sleep(tmrActive.Interval + 20)
+
+        End If
+    End Sub
+
+    Private Async Sub pnlEqLock_MouseUp(sender As Object, e As MouseEventArgs) Handles pnlEqLock.MouseUp
+        Debug.Print($"pnlEqLock.MouseUp {e.Button} lock vis {pnlEqLock.Visible}")
+        If e.Button = MouseButtons.Right Then
+            PostMessage(AltPP.MainWindowHandle, WM_RBUTTONUP, 0, 0) ' to send rmb to client
+        End If
+        If e.Button = MouseButtons.Middle Then
+            'does not fix click bug
+            'Dim pt As Point = MousePosition
+            'ScreenToClient(AltPP.MainWindowHandle, pt)
+            'SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, 0, 0)
+            'SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, 0, pt.Y << 16 Or (pt.X And &HFFFF))
+            'SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, 0, (pt.Y + 1) << 16 Or (pt.X And &HFFFF))
+
+            'Await Task.Delay(tmrActive.Interval + 20) 'kidndah fixie
+
+            SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, 0, 0)
+            Await Task.Delay(50)
+            If pnlEqLock.Contains(MousePosition) Then
+                SendMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0) 'send and untrap middlemouse. couses left click sometimes
+                Debug.Print("mmbug")
+            End If
+        End If
+        Try
+            Dim unused = Task.Run(Sub() AppActivate(AltPP.Id))
+        Catch
+        End Try
+    End Sub
+
+    Private Sub pnlEqLock_MouseHover(sender As Panel, e As MouseEventArgs) Handles pnlEqLock.MouseMove
+        If e.Button = MouseButtons.Right OrElse e.Button = MouseButtons.Middle Then
+            sender.Visible = False
+        End If
+    End Sub
+
+    Private Sub chkEqLock_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkEqLock.CheckedChanged
+        'locked 🔒
+        'unlocked 🔓
+        sender.Text = If(sender.CheckState = CheckState.Unchecked, "🔓", "🔒")
+
+    End Sub
+
+    Private Sub chkEqLock_MouseUp(sender As Object, e As MouseEventArgs) Handles chkEqLock.MouseUp
+        UntrapMouse()
+        If cboAlt.SelectedIndex > 0 Then
+            Try
+                AppActivate(AltPP.Id)
+            Catch
+            End Try
+        End If
+    End Sub
 End Class
 
 #If DEBUG Then
