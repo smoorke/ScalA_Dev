@@ -192,7 +192,7 @@ Partial Class FrmMain
         Me.chkEqLock.Size = New System.Drawing.Size(37, 25)
         Me.chkEqLock.TabIndex = 12
         Me.chkEqLock.Text = "🔒"
-        Me.ttMain.SetToolTip(Me.chkEqLock, "EQ Lock" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Hold Alt-Key to override")
+        Me.ttMain.SetToolTip(Me.chkEqLock, "EQ Lock" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Disable Left Click on worn gear." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Hold Alt-Key to override.")
         Me.chkEqLock.UseVisualStyleBackColor = True
         '
         'chkDebug
@@ -278,7 +278,7 @@ Partial Class FrmMain
         Me.btnQuit.TabIndex = 7
         Me.btnQuit.TabStop = False
         Me.btnQuit.Text = "╳"
-        Me.ttMain.SetToolTip(Me.btnQuit, "Close")
+        Me.ttMain.SetToolTip(Me.btnQuit, "Close ScalA")
         Me.btnQuit.UseVisualStyleBackColor = False
         '
         'tmrTick
