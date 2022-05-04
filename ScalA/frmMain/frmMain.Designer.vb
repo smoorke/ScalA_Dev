@@ -464,8 +464,9 @@ Partial Class FrmMain
         '
         'PnlEqLock
         '
+        Me.PnlEqLock.BackColor = System.Drawing.Color.Red
         Me.PnlEqLock.Cursor = System.Windows.Forms.Cursors.No
-        Me.PnlEqLock.Location = New System.Drawing.Point(805, 423)
+        Me.PnlEqLock.Location = New System.Drawing.Point(782, 423)
         Me.PnlEqLock.Name = "PnlEqLock"
         Me.PnlEqLock.Size = New System.Drawing.Size(200, 54)
         Me.PnlEqLock.TabIndex = 22
@@ -480,13 +481,13 @@ Partial Class FrmMain
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(1052, 855)
+        Me.Controls.Add(Me.pnlOverview)
         Me.Controls.Add(Me.PnlEqLock)
+        Me.Controls.Add(Me.pbZoom)
         Me.Controls.Add(Me.cornerSE)
         Me.Controls.Add(Me.cornerSW)
         Me.Controls.Add(Me.cornerNE)
         Me.Controls.Add(Me.cornerNW)
-        Me.Controls.Add(Me.pnlOverview)
-        Me.Controls.Add(Me.pbZoom)
         Me.Controls.Add(Me.pnlSys)
         Me.Controls.Add(Me.pnlButtons)
         Me.Controls.Add(Me.pnlTitleBar)
