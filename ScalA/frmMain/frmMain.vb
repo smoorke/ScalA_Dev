@@ -1308,7 +1308,7 @@
                     Debug.Print("pnlEqLock.Visible")
                     PnlEqLock.Visible = True
                 End If
-                If PnlEqLock.Contains(MousePosition) Then Cursor.Current = Cursors.No
+                If Not (cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse sysMenuOpen) AndAlso PnlEqLock.Contains(MousePosition) Then Cursor.Current = Cursors.No
             End If
             ChkEqLock.CheckState = CheckState.Checked
             ChkEqLock.Text = "🔒"
@@ -1321,6 +1321,7 @@
         End If
         ''locked 🔒
         ''unlocked 🔓
+
     End Sub
 
     Private Sub Title_MouseDoubleClick(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.DoubleClick, lblTitle.DoubleClick
