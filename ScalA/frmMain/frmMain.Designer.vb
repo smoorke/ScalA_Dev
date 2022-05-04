@@ -35,6 +35,7 @@ Partial Class FrmMain
         Me.cmbResolution = New System.Windows.Forms.ComboBox()
         Me.cboAlt = New System.Windows.Forms.ComboBox()
         Me.pnlTitleBar = New System.Windows.Forms.Panel()
+        Me.ChkEqLock = New System.Windows.Forms.CheckBox()
         Me.chkDebug = New System.Windows.Forms.CheckBox()
         Me.lblTitle = New System.Windows.Forms.Label()
         Me.pnlButtons = New System.Windows.Forms.Panel()
@@ -67,7 +68,6 @@ Partial Class FrmMain
         Me.tmrMove = New System.Windows.Forms.Timer(Me.components)
         Me.PnlEqLock = New System.Windows.Forms.Panel()
         Me.ttMain = New System.Windows.Forms.ToolTip(Me.components)
-        Me.ChkEqLock = New System.Windows.Forms.CheckBox()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         NoneSortSeperator1 = New System.Windows.Forms.ToolStripSeparator()
         NoneSortSeperator2 = New System.Windows.Forms.ToolStripSeparator()
@@ -127,7 +127,7 @@ Partial Class FrmMain
         Me.btnStart.Size = New System.Drawing.Size(23, 23)
         Me.btnStart.TabIndex = 15
         Me.btnStart.Text = "⊞"
-        Me.ttMain.SetToolTip(Me.btnStart, "Switch to Overview")
+        Me.ttMain.SetToolTip(Me.btnStart, "Switch to Overview" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "RMB: QuickLaunch")
         Me.btnStart.UseVisualStyleBackColor = True
         '
         'cmsQuickLaunch
@@ -151,7 +151,7 @@ Partial Class FrmMain
         Me.cmbResolution.Name = "cmbResolution"
         Me.cmbResolution.Size = New System.Drawing.Size(80, 21)
         Me.cmbResolution.TabIndex = 17
-        Me.ttMain.SetToolTip(Me.cmbResolution, "Change Resolution")
+        Me.ttMain.SetToolTip(Me.cmbResolution, "Change Resolution" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "RMB: Settings")
         '
         'cboAlt
         '
@@ -163,7 +163,7 @@ Partial Class FrmMain
         Me.cboAlt.Name = "cboAlt"
         Me.cboAlt.Size = New System.Drawing.Size(160, 21)
         Me.cboAlt.TabIndex = 16
-        Me.ttMain.SetToolTip(Me.cboAlt, "Select Client")
+        Me.ttMain.SetToolTip(Me.cboAlt, "Select Client" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "RMB: QuickLaunch")
         Me.cboAlt.ValueMember = "value"
         '
         'pnlTitleBar
@@ -176,6 +176,24 @@ Partial Class FrmMain
         Me.pnlTitleBar.Name = "pnlTitleBar"
         Me.pnlTitleBar.Size = New System.Drawing.Size(641, 25)
         Me.pnlTitleBar.TabIndex = 14
+        '
+        'ChkEqLock
+        '
+        Me.ChkEqLock.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
+        Me.ChkEqLock.CheckAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.ChkEqLock.Checked = Global.ScalA.My.MySettings.Default.LockEq
+        Me.ChkEqLock.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.ChkEqLock.DataBindings.Add(New System.Windows.Forms.Binding("Checked", Global.ScalA.My.MySettings.Default, "LockEq", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
+        Me.ChkEqLock.Dock = System.Windows.Forms.DockStyle.Right
+        Me.ChkEqLock.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ChkEqLock.Location = New System.Drawing.Point(604, 0)
+        Me.ChkEqLock.Name = "ChkEqLock"
+        Me.ChkEqLock.Padding = New System.Windows.Forms.Padding(0, 3, 3, 0)
+        Me.ChkEqLock.Size = New System.Drawing.Size(37, 25)
+        Me.ChkEqLock.TabIndex = 12
+        Me.ChkEqLock.Text = "🔒"
+        Me.ttMain.SetToolTip(Me.ChkEqLock, "EQ Lock" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Disable Left Click on worn gear." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Hold Alt-Key to override.")
+        Me.ChkEqLock.UseVisualStyleBackColor = True
         '
         'chkDebug
         '
@@ -455,24 +473,6 @@ Partial Class FrmMain
         'ttMain
         '
         Me.ttMain.ShowAlways = True
-        '
-        'ChkEqLock
-        '
-        Me.ChkEqLock.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.ChkEqLock.CheckAlign = System.Drawing.ContentAlignment.MiddleRight
-        Me.ChkEqLock.Checked = Global.ScalA.My.MySettings.Default.LockEq
-        Me.ChkEqLock.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.ChkEqLock.DataBindings.Add(New System.Windows.Forms.Binding("Checked", Global.ScalA.My.MySettings.Default, "LockEq", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
-        Me.ChkEqLock.Dock = System.Windows.Forms.DockStyle.Right
-        Me.ChkEqLock.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ChkEqLock.Location = New System.Drawing.Point(604, 0)
-        Me.ChkEqLock.Name = "ChkEqLock"
-        Me.ChkEqLock.Padding = New System.Windows.Forms.Padding(0, 3, 3, 0)
-        Me.ChkEqLock.Size = New System.Drawing.Size(37, 25)
-        Me.ChkEqLock.TabIndex = 12
-        Me.ChkEqLock.Text = "🔒"
-        Me.ttMain.SetToolTip(Me.ChkEqLock, "EQ Lock" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Disable Left Click on worn gear." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Hold Alt-Key to override.")
-        Me.ChkEqLock.UseVisualStyleBackColor = True
         '
         'FrmMain
         '

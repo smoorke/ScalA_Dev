@@ -127,7 +127,7 @@
                 'cboAlt.SelectedIndex = 0
                 Exit Sub
             End If
-            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 260, Integer).Map(0, rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width), 24)
+            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 260, Integer).Map(0, rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width), 25)
             PnlEqLock.Size = New Size(CType(rcC.Width / 2 + 122, Integer).Map(0, rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width),
                                       42.Map(0, rcC.Height, 0, zooms(cmbResolution.SelectedIndex).Height))
             Try
@@ -611,7 +611,7 @@
         cornerSW.Location = New Point(0, Me.Height - 2)
         cornerSE.Location = New Point(Me.Width - 2, Me.Height - 2)
 
-        PnlEqLock.Location = New Point(140.Map(0, 800, 0, newSize.Width), 24)
+        PnlEqLock.Location = New Point(140.Map(0, 800, 0, newSize.Width), 25)
         PnlEqLock.Size = New Size(522.Map(0, 800, 0, newSize.Width),
                                   42.Map(0, 600, 0, newSize.Height))
 
