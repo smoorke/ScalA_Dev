@@ -127,6 +127,7 @@ Partial Class FrmMain
         Me.btnStart.Size = New System.Drawing.Size(23, 23)
         Me.btnStart.TabIndex = 15
         Me.btnStart.Text = "⊞"
+        Me.ttMain.SetToolTip(Me.btnStart, "Switch to Overview")
         Me.btnStart.UseVisualStyleBackColor = True
         '
         'cmsQuickLaunch
@@ -150,6 +151,7 @@ Partial Class FrmMain
         Me.cmbResolution.Name = "cmbResolution"
         Me.cmbResolution.Size = New System.Drawing.Size(80, 21)
         Me.cmbResolution.TabIndex = 17
+        Me.ttMain.SetToolTip(Me.cmbResolution, "Change Resolution")
         '
         'cboAlt
         '
@@ -161,6 +163,7 @@ Partial Class FrmMain
         Me.cboAlt.Name = "cboAlt"
         Me.cboAlt.Size = New System.Drawing.Size(160, 21)
         Me.cboAlt.TabIndex = 16
+        Me.ttMain.SetToolTip(Me.cboAlt, "Select Client")
         Me.cboAlt.ValueMember = "value"
         '
         'pnlTitleBar
@@ -240,6 +243,7 @@ Partial Class FrmMain
         Me.btnMin.TabIndex = 8
         Me.btnMin.TabStop = False
         Me.btnMin.Text = "⎯"
+        Me.ttMain.SetToolTip(Me.btnMin, "Minimize")
         Me.btnMin.UseVisualStyleBackColor = True
         '
         'btnMax
@@ -255,6 +259,7 @@ Partial Class FrmMain
         Me.btnMax.TabIndex = 9
         Me.btnMax.TabStop = False
         Me.btnMax.Text = "⧠"
+        Me.ttMain.SetToolTip(Me.btnMax, "Maximize")
         Me.btnMax.UseVisualStyleBackColor = True
         '
         'btnQuit
@@ -273,6 +278,7 @@ Partial Class FrmMain
         Me.btnQuit.TabIndex = 7
         Me.btnQuit.TabStop = False
         Me.btnQuit.Text = "╳"
+        Me.ttMain.SetToolTip(Me.btnQuit, "Close")
         Me.btnQuit.UseVisualStyleBackColor = False
         '
         'tmrTick
@@ -463,6 +469,10 @@ Partial Class FrmMain
         Me.pnlEqLock.Name = "pnlEqLock"
         Me.pnlEqLock.Size = New System.Drawing.Size(200, 54)
         Me.pnlEqLock.TabIndex = 22
+        '
+        'ttMain
+        '
+        Me.ttMain.ShowAlways = True
         '
         'FrmMain
         '

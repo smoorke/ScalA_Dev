@@ -1195,6 +1195,7 @@
                     Me.WindowState = FormWindowState.Maximized
                     ReZoom(New Size(Me.MaximizedBounds.Width, Me.MaximizedBounds.Height))
                     sender.Text = "🗗"
+                    ttMain.SetToolTip(sender, "Restore")
                     wasMaximized = True
                     Exit For
                 End If
@@ -1202,6 +1203,7 @@
         Else 'go normal
             Me.WindowState = FormWindowState.Normal
             sender.Text = "⧠"
+            ttMain.SetToolTip(sender, "Maximize")
             Me.Location = RestoreLoc
             wasMaximized = False
             ReZoom(zooms(cmbResolution.SelectedIndex))
@@ -1393,6 +1395,8 @@
             Me.WindowState = FormWindowState.Normal
             ReZoom(zooms(cmbResolution.SelectedIndex))
             btnMax.Text = "⧠"
+            ttMain.SetToolTip(btnMax, "Maximize")
+            If wasMaximized Then btnMax.PerformClick()
         End If
         Me.Show()
         'Me.BringToFront() 'doesn't work
