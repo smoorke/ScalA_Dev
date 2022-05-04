@@ -174,3 +174,7 @@ Fixed alignment settings once again.
 Fixed numerous bugs pertaining to restoring to/from maximized state.
 Extended untrapping of right/middle mousebuttons when interacting with ScalA.
 Fixed rename dialog losing focus with an alt selected.
+
+**ScalA 1.0.1**
+Implemented EQ Lock.
+Minor UI improvements.
