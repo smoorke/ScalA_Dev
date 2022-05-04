@@ -163,7 +163,7 @@ Partial Class FrmMain
         Me.cboAlt.Name = "cboAlt"
         Me.cboAlt.Size = New System.Drawing.Size(160, 21)
         Me.cboAlt.TabIndex = 16
-        Me.ttMain.SetToolTip(Me.cboAlt, "Select Client" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "RMB: QuickLaunch")
+        Me.ttMain.SetToolTip(Me.cboAlt, "Select Astonia Client" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "RMB: QuickLaunch")
         Me.cboAlt.ValueMember = "value"
         '
         'pnlTitleBar
