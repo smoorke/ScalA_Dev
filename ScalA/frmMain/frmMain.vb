@@ -1310,8 +1310,9 @@
                     PnlEqLock.Visible = True
                 End If
                 If Not (cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse sysMenuOpen) AndAlso
-                   PnlEqLock.Contains(MousePosition) AndAlso
+                   Not (FrmSettings.cmsGenerate.Visible OrElse FrmSettings.cmsQLFolder.Visible) AndAlso
                    Not FrmSettings.Contains(MousePosition) AndAlso
+                   PnlEqLock.Contains(MousePosition) AndAlso
                    Not cboAlt.Contains(MousePosition) AndAlso
                    Not cmbResolution.Contains(MousePosition) Then
                     Cursor.Current = Cursors.No
