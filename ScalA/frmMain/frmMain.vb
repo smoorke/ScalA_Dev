@@ -496,7 +496,7 @@
     Private ScalaHandle As IntPtr = Me.Handle
     Private storedY As Integer = 0
     Private wasVisible As Boolean = True
-
+    Private swpBusy As Boolean = False
     Private Sub TmrTick_Tick(sender As Timer, e As EventArgs) Handles tmrTick.Tick
 
 
@@ -551,18 +551,22 @@
             newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AstClientOffset.Width - My.Settings.offset.X
             newY = MousePosition.Y.Map(ptZ.Y, ptZ.Y + pbZoom.Height, ptZ.Y, ptZ.Y + pbZoom.Height - rcC.Height) - AstClientOffset.Height - My.Settings.offset.Y
 
-            Task.Run(Sub()
-                         Try
-                             Dim flags As SetWindowPosFlags = SetWindowPosFlags.IgnoreResize Or
+            If Not swpBusy Then
+                swpBusy = True
+                Task.Run(Sub()
+                             Try
+                                 Dim flags As SetWindowPosFlags = SetWindowPosFlags.IgnoreResize Or
                                                               SetWindowPosFlags.DoNotActivate Or
-                                                              SetWindowPosFlags.ASyncWindowPosition Or
                                                               SetWindowPosFlags.IgnoreZOrder
-                             'If QlCtxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
-                             'SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags
-                             SetWindowPos(AltPP?.MainWindowHandle, Nothing, newX, newY, -1, -1, flags)
-                         Catch ex As Exception
-                         End Try
-                     End Sub)
+                                 'If QlCtxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
+                                 'SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags
+                                 SetWindowPos(AltPP?.MainWindowHandle, Nothing, newX, newY, -1, -1, flags)
+                             Catch ex As Exception
+                             Finally
+                                 swpBusy = False
+                             End Try
+                         End Sub)
+            End If
         End If
     End Sub
 
@@ -937,12 +941,11 @@
                         Dim newYB = MousePosition.Y.Map(ptZB.Y, ptZB.Y + but.ThumbRectangle.Height, ptZB.Y, ptZB.Y + but.ThumbRECT.Height - but.ThumbRECT.Top - rccB.Height) - AstClientOffsetB.Height - My.Settings.offset.Y
 
 
+                        AOBusy = True
                         Task.Run(Sub()
-                                     AOBusy = True
                                      Try
                                          Dim flags As SetWindowPosFlags = SetWindowPosFlags.IgnoreResize Or
-                                                                      SetWindowPosFlags.DoNotActivate Or
-                                                                      SetWindowPosFlags.ASyncWindowPosition
+                                                                          SetWindowPosFlags.DoNotActivate
                                          If QlCtxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                                          SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
                                      Catch ex As Exception
