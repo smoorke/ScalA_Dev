@@ -178,3 +178,9 @@ Fixed rename dialog losing focus with an alt selected.
 **ScalA 1.0.1**
 Implemented EQ Lock.
 Minor UI improvements.
+
+**ScalA 1.0.2**
+Fixed Quicklaunch and Comboboxes glitching wrong cursor when overlapping EQ lock zone.
+Fixed hovering over alt selection dropdown items would show EQ lock zone on overview.
+Fixed ScalA popping to front after hovering over alt selection dropdown items.
+Fixed cursor glitch when settings form overlaps EQ lock zone.
