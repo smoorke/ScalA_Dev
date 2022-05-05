@@ -1313,7 +1313,7 @@
                         cmbResolution.DroppedDown OrElse
                         cmsQuickLaunch.Visible OrElse
                         cmsAlt.Visible OrElse
-                        sysMenuOpen) AndAlso PnlEqLock.Contains(MousePosition) Then
+                        sysMenuOpen) AndAlso PnlEqLock.Contains(MousePosition) AndAlso Not FrmSettings.Contains(MousePosition) Then
                     Cursor.Current = Cursors.No
                 End If
             End If
