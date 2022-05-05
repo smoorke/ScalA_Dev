@@ -648,7 +648,7 @@
             'RemoveMenu(hSysMenu, SC_SIZE, MF_BYCOMMAND) 'remove size menuitem
             ModifyMenuA(hSysMenu, SC_SIZE, MF_BYCOMMAND Or 1, SC_SIZE, "&Size") 'disable size item
             InsertMenuA(hSysMenu, 0, MF_SEPARATOR Or MF_BYPOSITION, 0, String.Empty)
-            InsertMenuA(hSysMenu, 0, MF_BYPOSITION, 1337, "Settings")
+            InsertMenuA(hSysMenu, 0, MF_BYPOSITION, &H8000 + 1337, "Settings")
             SetMenuItemBitmaps(hSysMenu, 0, MF_BYPOSITION, My.Resources.gear_wheel.GetHbitmap(Color.Red), Nothing)
         End If
     End Sub
@@ -759,7 +759,7 @@
                         End If
                         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
                         RestorePos(AltPP)
-                    Case 1337
+                    Case &H8000 + 1337
                         Debug.Print("Settings called by 1337")
                         FrmSettings.Show()
                 End Select
