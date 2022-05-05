@@ -1316,8 +1316,8 @@
                    Not (FrmSettings.cmsGenerate.Visible OrElse FrmSettings.cmsQLFolder.Visible) AndAlso
                    Not FrmSettings.Contains(MousePosition) AndAlso
                    PnlEqLock.Contains(MousePosition) AndAlso
-                   Not cboAlt.Contains(MousePosition) AndAlso
-                   Not cmbResolution.Contains(MousePosition) Then
+                   Not cboAlt.DropDownContains(MousePosition) AndAlso
+                   Not cmbResolution.DropDownContains(MousePosition) Then
                     Cursor.Current = Cursors.No
                 End If
             End If

@@ -74,7 +74,7 @@ Module Extensions
     End Function
 
     ''' <summary>
-    ''' Checks if a combobox and it's dropdown contains a given point in screen coords
+    ''' Checks if a combobox or it's dropdown contains a given point in screen coords
     ''' </summary>
     ''' <param name="box"></param>
     ''' <param name="screenPt"></param>
@@ -84,6 +84,18 @@ Module Extensions
         screenPt = box.FindForm?.PointToClient(screenPt)
         Return box.Bounds.Contains(screenPt) OrElse
                 (box.DroppedDown AndAlso
+                New Rectangle(box.Left, box.Bottom, box.DropDownWidth, box.DropDownHeight).Contains(screenPt))
+    End Function
+    ''' <summary>
+    ''' Checks if the dropdown of a combobox contains a given point in screen coords
+    ''' </summary>
+    ''' <param name="box"></param>
+    ''' <param name="screenPt"></param>
+    ''' <returns></returns>
+    <Extension()>
+    Public Function DropDownContains(box As ComboBox, screenPt As Point) As Boolean
+        screenPt = box.FindForm?.PointToClient(screenPt)
+        Return (box.DroppedDown AndAlso
                 New Rectangle(box.Left, box.Bottom, box.DropDownWidth, box.DropDownHeight).Contains(screenPt))
     End Function
 
