@@ -555,13 +555,14 @@
                          Try
                              Dim flags As SetWindowPosFlags = SetWindowPosFlags.IgnoreResize Or
                                                               SetWindowPosFlags.DoNotActivate Or
-                                                              SetWindowPosFlags.ASyncWindowPosition
-                             If QlCtxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
-                             SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
+                                                              SetWindowPosFlags.ASyncWindowPosition Or
+                                                              SetWindowPosFlags.IgnoreZOrder
+                             'If QlCtxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
+                             'SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags
+                             SetWindowPos(AltPP?.MainWindowHandle, Nothing, newX, newY, -1, -1, flags)
                          Catch ex As Exception
                          End Try
                      End Sub)
-
         End If
     End Sub
 
