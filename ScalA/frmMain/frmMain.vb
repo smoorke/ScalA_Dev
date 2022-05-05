@@ -1309,7 +1309,13 @@
                     Debug.Print("pnlEqLock.Visible")
                     PnlEqLock.Visible = True
                 End If
-                If Not (cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse sysMenuOpen) AndAlso PnlEqLock.Contains(MousePosition) Then Cursor.Current = Cursors.No
+                If Not (cboAlt.DroppedDown OrElse
+                        cmbResolution.DroppedDown OrElse
+                        cmsQuickLaunch.Visible OrElse
+                        cmsAlt.Visible OrElse
+                        sysMenuOpen) AndAlso PnlEqLock.Contains(MousePosition) Then
+                    Cursor.Current = Cursors.No
+                End If
             End If
             ChkEqLock.CheckState = CheckState.Checked
             ChkEqLock.Text = "🔒"
