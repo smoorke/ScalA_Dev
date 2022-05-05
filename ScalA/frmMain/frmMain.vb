@@ -496,7 +496,7 @@
     Private ScalaHandle As IntPtr = Me.Handle
     Private storedY As Integer = 0
     Private wasVisible As Boolean = True
-    Private swpBusy As Boolean = False
+    Private Shared swpBusy As Boolean = False
     Private Sub TmrTick_Tick(sender As Timer, e As EventArgs) Handles tmrTick.Tick
 
 
@@ -560,6 +560,7 @@
                                              SetWindowPosFlags.IgnoreZOrder Or
                                              SetWindowPosFlags.ASyncWindowPosition
                                  'If QlCtxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
+                                 swpBusy = True
                                  SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
                                  'SetWindowPos(AltPP?.MainWindowHandle, Nothing, newX, newY, -1, -1, flags)
                              Catch ex As Exception
@@ -949,6 +950,7 @@
                                                      SetWindowPosFlags.ASyncWindowPosition Or
                                                      SetWindowPosFlags.DoNotActivate
                                          If QlCtxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
+                                         AOBusy = True
                                          SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
                                      Catch ex As Exception
                                      Finally
