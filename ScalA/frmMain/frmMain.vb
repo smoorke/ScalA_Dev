@@ -39,7 +39,7 @@
     Private Async Sub ComboBoxes_DropDownClosed(sender As ComboBox, e As EventArgs) Handles cboAlt.DropDownClosed, cmbResolution.DropDownClosed
         Await Task.Delay(200)
         If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse sysMenuOpen Then Exit Sub
-        If cboAlt.SelectedIndex > 0 Then
+        If Not pnlOverview.Visible Then
             pbZoom.Visible = True
         Else
             AButton.ActiveOverview = My.Settings.gameOnOverview
@@ -412,7 +412,7 @@
                 Dim msg As Message = Message.Create(Me.Handle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
                 Me.WndProc(msg)
                 tmrMove.Stop()
-                If cboAlt.SelectedIndex > 0 Then
+                If Not pnlOverview.Visible Then
                     AppActivate(AltPP.Id)
                     tmrTick.Start()
                 End If
@@ -670,7 +670,7 @@
 
             Await Task.Delay(200)
             If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse sysMenuOpen Then Exit Sub
-            If cboAlt.SelectedIndex > 0 Then
+            If Not pnlOverview.Visible Then
                 pbZoom.Visible = True
             Else
                 AButton.ActiveOverview = My.Settings.gameOnOverview
@@ -684,7 +684,7 @@
     ''' </summary>
     Private Sub UntrapMouse()
         Try
-            If cboAlt.SelectedIndex > 0 AndAlso Not pbZoom.Contains(MousePosition) Then
+            If Not (pnlOverview.Visible OrElse pbZoom.Contains(MousePosition)) Then
                 Debug.Print("untrap mouse")
                 PostMessage(AltPP.MainWindowHandle, WM_RBUTTONUP, 0, 0) 'this looks funny
                 PostMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0) 'this breaks clickguard
@@ -1293,7 +1293,7 @@
             Await Task.Delay(100)
             Me.TopMost = My.Settings.topmost
 
-            If cboAlt.SelectedIndex > 0 Then
+            If Not pnlOverview.Visible Then
                 AltPP?.CenterBehind(pbZoom)
                 AppActivate(AltPP.Id)
             Else
@@ -1321,7 +1321,7 @@
             ChkEqLock.Text = "🔒"
         Else
             PnlEqLock.Visible = False
-            If My.Settings.LockEq AndAlso cboAlt.SelectedIndex > 0 Then
+            If My.Settings.LockEq AndAlso Not pnlOverview.Visible Then
                 ChkEqLock.CheckState = CheckState.Indeterminate
                 ChkEqLock.Text = "🔓"
             End If
@@ -1421,7 +1421,7 @@
         MyBase.WndProc(Message.Create(ScalaHandle, WM_CANCELMODE, 0, 0))
         cmsQuickLaunch.Close()
         Await Task.Delay(200)
-        If cboAlt.SelectedIndex > 0 Then
+        If Not pnlOverview.Visible Then
             pbZoom.Visible = True
             AppActivate(AltPP.Id)
         Else
