@@ -1302,18 +1302,18 @@
 
         End If
 
-        If My.Settings.LockEq AndAlso cboAlt.SelectedIndex > 0 AndAlso Not My.Computer.Keyboard.AltKeyDown Then
+        If My.Settings.LockEq AndAlso Not pnlOverview.Visible AndAlso Not My.Computer.Keyboard.AltKeyDown Then
             If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
                 If Not PnlEqLock.Visible Then
                     'Await Task.Delay(100)
                     Debug.Print("pnlEqLock.Visible")
                     PnlEqLock.Visible = True
                 End If
-                If Not (cboAlt.DroppedDown OrElse
-                        cmbResolution.DroppedDown OrElse
-                        cmsQuickLaunch.Visible OrElse
-                        cmsAlt.Visible OrElse
-                        sysMenuOpen) AndAlso PnlEqLock.Contains(MousePosition) AndAlso Not FrmSettings.Contains(MousePosition) Then
+                If Not (cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse sysMenuOpen) AndAlso
+                   PnlEqLock.Contains(MousePosition) AndAlso
+                   Not FrmSettings.Contains(MousePosition) AndAlso
+                   Not cboAlt.Contains(MousePosition) AndAlso
+                   Not cmbResolution.Contains(MousePosition) Then
                     Cursor.Current = Cursors.No
                 End If
             End If
