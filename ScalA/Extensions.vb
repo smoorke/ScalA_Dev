@@ -59,6 +59,58 @@ Module Extensions
                 (box IsNot Nothing AndAlso box.DroppedDown AndAlso
                 New Rectangle(box.Left, box.Bottom, box.DropDownWidth, box.DropDownHeight).Contains(screenPt))
     End Function
+
+    ' duplications due to hot path
+
+    ''' <summary>
+    ''' Checks if a form contains a given point in screen coords
+    ''' </summary>
+    ''' <param name="frm"></param>
+    ''' <param name="screenPt"></param>
+    ''' <returns></returns>
+    <Extension()>
+    Public Function Contains(frm As Form, screenPt As Point) As Boolean
+        Return frm.Bounds.Contains(screenPt)
+    End Function
+
+    ''' <summary>
+    ''' Checks if a combobox and it's dropdown contains a given point in screen coords
+    ''' </summary>
+    ''' <param name="box"></param>
+    ''' <param name="screenPt"></param>
+    ''' <returns></returns>
+    <Extension()>
+    Public Function Contains(box As ComboBox, screenPt As Point) As Boolean
+        screenPt = box.FindForm?.PointToClient(screenPt)
+        Return box.Bounds.Contains(screenPt) OrElse
+                (box.DroppedDown AndAlso
+                New Rectangle(box.Left, box.Bottom, box.DropDownWidth, box.DropDownHeight).Contains(screenPt))
+    End Function
+
+    ''' <summary>
+    ''' Checks if a panel contains a given point in screen coords
+    ''' </summary>
+    ''' <param name="pnl"></param>
+    ''' <param name="screenPt"></param>
+    ''' <returns></returns>
+    <Extension()>
+    Public Function Contains(pnl As Panel, screenPt As Point) As Boolean
+        screenPt = pnl.FindForm?.PointToClient(screenPt)
+        Return pnl.Bounds.Contains(screenPt)
+    End Function
+
+    ''' <summary>
+    ''' Checks if a picturebox contains a given point in screen coords
+    ''' </summary>
+    ''' <param name="pbox"></param>
+    ''' <param name="screenPt"></param>
+    ''' <returns></returns>
+    <Extension()>
+    Public Function Contains(pbox As PictureBox, screenPt As Point) As Boolean
+        screenPt = pbox.FindForm?.PointToClient(screenPt)
+        Return pbox.Bounds.Contains(screenPt)
+    End Function
+
     ''' <summary>
     ''' Maps an integer between a given from and to a given min max value.
     ''' </summary>
