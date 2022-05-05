@@ -1096,7 +1096,7 @@
     Private Sub BtnQuit_Click(sender As Button, e As EventArgs) Handles btnQuit.Click
         Me.Close()
     End Sub
-    Private Sub Various_MouseUp(sender As Control, e As MouseEventArgs) Handles Me.MouseUp, btnQuit.MouseUp, pnlSys.MouseUp, pnlButtons.MouseUp, btnStart.MouseUp, cboAlt.MouseUp, cmbResolution.MouseUp
+    Private Sub Various_MouseUp(sender As Control, e As MouseEventArgs) Handles Me.MouseUp, btnQuit.MouseUp, pnlSys.MouseUp, pnlButtons.MouseUp, btnStart.MouseUp, cboAlt.MouseUp, cmbResolution.MouseUp, ChkEqLock.MouseUp
         UntrapMouse() 'fix mousebutton stuck
     End Sub
 
@@ -1328,7 +1328,6 @@
         End If
         ''locked 🔒
         ''unlocked 🔓
-
     End Sub
 
     Private Sub Title_MouseDoubleClick(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.DoubleClick, lblTitle.DoubleClick
@@ -1484,16 +1483,6 @@
         'unlocked 🔓
         sender.Text = If(sender.CheckState = CheckState.Unchecked, "🔓", "🔒")
 
-    End Sub
-
-    Private Sub ChkEqLock_MouseUp(sender As Object, e As MouseEventArgs) Handles ChkEqLock.MouseUp
-        UntrapMouse()
-        If cboAlt.SelectedIndex > 0 Then
-            Try
-                AppActivate(AltPP.Id)
-            Catch
-            End Try
-        End If
     End Sub
 End Class
 
