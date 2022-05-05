@@ -57,7 +57,7 @@ Module Extensions
         If TypeOf ctrl IsNot Form Then screenPt = ctrl.FindForm?.PointToClient(screenPt)
         Return ctrl.Bounds.Contains(screenPt) OrElse
                 (box IsNot Nothing AndAlso box.DroppedDown AndAlso
-                New Rectangle(New Point(box.Left, box.Bottom), New Size(box.DropDownWidth, box.DropDownHeight)).Contains(screenPt))
+                New Rectangle(box.Left, box.Bottom, box.DropDownWidth, box.DropDownHeight).Contains(screenPt))
     End Function
     ''' <summary>
     ''' Maps an integer between a given from and to a given min max value.
