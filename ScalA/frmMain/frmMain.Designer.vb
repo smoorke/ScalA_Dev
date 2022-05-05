@@ -192,7 +192,7 @@ Partial Class FrmMain
         Me.ChkEqLock.Size = New System.Drawing.Size(37, 25)
         Me.ChkEqLock.TabIndex = 12
         Me.ChkEqLock.Text = "🔒"
-        Me.ttMain.SetToolTip(Me.ChkEqLock, "EQ Lock" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Disable Left Click on worn gear." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Hold Alt-Key to override.")
+        Me.ttMain.SetToolTip(Me.ChkEqLock, "EQ Lock" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Disable Left Click on worn gear." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Hold Alt or Shift-Key to override.")
         Me.ChkEqLock.UseVisualStyleBackColor = True
         '
         'chkDebug

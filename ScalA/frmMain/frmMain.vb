@@ -1305,7 +1305,7 @@
 
         End If
 
-        If My.Settings.LockEq AndAlso Not pnlOverview.Visible AndAlso Not My.Computer.Keyboard.AltKeyDown Then
+        If My.Settings.LockEq AndAlso Not pnlOverview.Visible AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then
             If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
                 If Not PnlEqLock.Visible Then
                     'Await Task.Delay(100)
