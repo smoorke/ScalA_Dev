@@ -95,8 +95,10 @@
             If prevItem.Id <> 0 Then startThumbsDict(prevItem.Id) = thumb
             sysTrayIcon.Icon = My.Resources.moa3
             prevItem = CType(that.SelectedItem, AstoniaProcess)
+            ChkEqLock.ForeColor = Color.Gray
             Exit Sub
         Else
+            ChkEqLock.ForeColor = Color.Black
             pnlOverview.Hide()
             tmrOverview.Enabled = False
             Debug.Print("tmrStartup.stop")
