@@ -96,6 +96,7 @@
             sysTrayIcon.Icon = My.Resources.moa3
             prevItem = CType(that.SelectedItem, AstoniaProcess)
             ChkEqLock.ForeColor = Color.Gray
+            ChkEqLock.CheckState = If(My.Settings.LockEq, CheckState.Checked, CheckState.Unchecked)
             Exit Sub
         Else
             ChkEqLock.ForeColor = Color.Black
