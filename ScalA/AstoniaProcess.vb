@@ -68,6 +68,15 @@
         End Get
     End Property
 
+    Public Sub Activate()
+        If _proc Is Nothing Then Exit Sub
+        Try
+            AppActivate(_proc.Id)
+        Catch ex As Exception
+
+        End Try
+    End Sub
+
     Public ReadOnly Property MainWindowHandle() As IntPtr
         Get
             Try

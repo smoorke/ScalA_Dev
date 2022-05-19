@@ -65,7 +65,7 @@
         Dim that As ComboBox = CType(sender, ComboBox)
 
         If AltPP.Id <> 0 AndAlso AltPP.Equals(CType(that.SelectedItem, AstoniaProcess)) Then
-            AppActivate(AltPP.Id)
+            AltPP.Activate()
             Exit Sub
         End If
 
@@ -134,10 +134,7 @@
             ' PnlEqLock.Size = New Size(CType(rcC.Width / 2 + 122, Integer).Map(rcC.Width, rcC.Width / 2, zooms(cmbResolution.SelectedIndex).Width, zooms(cmbResolution.SelectedIndex).Width / 2),
             PnlEqLock.Size = New Size(522.Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0),
                                       42.Map(0, rcC.Height, 0, zooms(cmbResolution.SelectedIndex).Height))
-            Try
-                AppActivate(AltPP.Id)
-            Catch
-            End Try
+            AltPP.Activate()
             Dim ptt As Point
 
             Debug.Print("ClientToScreen")
@@ -188,10 +185,7 @@
                 UpdateThumb(If(chkDebug.Checked, 128, 255))
             End If
             rectDic.Clear()
-            Try
-                AppActivate(AltPP.Id)
-            Catch
-            End Try
+            AltPP?.Activate()
             sysTrayIcon.Icon = AltPP?.GetIcon
             AltPP?.CenterBehind(pbZoom)
         Else 'AltPP.Id = 0
@@ -417,10 +411,7 @@
                 Me.WndProc(msg)
                 tmrMove.Stop()
                 If Not pnlOverview.Visible Then
-                    Try
-                        AppActivate(AltPP.Id)
-                    Catch
-                    End Try
+                    AltPP.Activate()
                     tmrTick.Start()
                 End If
                 Debug.Print("movetimer stopped")
@@ -1155,11 +1146,7 @@
         Select Case e.Button
             Case MouseButtons.XButton1, MouseButtons.XButton2
                 sender.Select()
-                Try
-                    If sender.Tag IsNot Nothing AndAlso sender.Tag.id <> 0 Then AppActivate(sender.Tag.id)
-                Catch ex As Exception
-
-                End Try
+                If sender.Tag IsNot Nothing Then CType(sender.Tag, AstoniaProcess).Activate()
         End Select
     End Sub
     Private Sub BtnAlt_MouseEnter(sender As AButton, e As EventArgs) ' Handles AButton.MouseEnter
@@ -1315,7 +1302,7 @@
 
             If Not pnlOverview.Visible Then
                 AltPP?.CenterBehind(pbZoom)
-                AppActivate(AltPP.Id)
+                AltPP?.Activate()
             Else
                 AppActivate(scalaPID)
             End If
@@ -1430,7 +1417,7 @@
         'Me.BringToFront() 'doesn't work
         If AltPP IsNot Nothing AndAlso AltPP.Id <> 0 AndAlso AltPP.IsRunning Then
             SetWindowPos(AltPP.MainWindowHandle, SWP_HWND.NOTOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
-            AppActivate(AltPP.Id)
+            AltPP.Activate()
         Else
             Me.TopMost = True
             Me.TopMost = My.Settings.topmost
@@ -1444,7 +1431,7 @@
         Await Task.Delay(200)
         If Not pnlOverview.Visible Then
             pbZoom.Visible = True
-            AppActivate(AltPP.Id)
+            AltPP.Activate()
         Else
             AButton.ActiveOverview = My.Settings.gameOnOverview
         End If
@@ -1488,7 +1475,7 @@
             End If
         End If
         Try
-            Dim unused = Task.Run(Sub() AppActivate(AltPP.Id))
+            Dim unused = Task.Run(Sub() AltPP.Activate())
         Catch
         End Try
     End Sub
