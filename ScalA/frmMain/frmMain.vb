@@ -677,9 +677,9 @@
                 Debug.Print("SendMessage " & cmd)
                 SendMessage(Me.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
             End If
-
             Await Task.Delay(200)
             If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse sysMenuOpen Then Exit Sub
+            AltPP?.Activate()
             If Not pnlOverview.Visible Then
                 pbZoom.Visible = True
             Else
