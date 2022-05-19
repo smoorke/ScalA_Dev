@@ -512,6 +512,8 @@ Partial Public Class FrmMain
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
         AppActivate(scalaPID) 'fix right click drag bug
+        ttMain.Hide(cboAlt)
+        ttMain.Hide(btnStart)
         pbZoom.Visible = False
         AButton.ActiveOverview = False
         If My.Computer.Keyboard.ShiftKeyDown Then
