@@ -464,7 +464,7 @@ Partial Class FrmMain
         '
         'PnlEqLock
         '
-        Me.PnlEqLock.BackColor = System.Drawing.Color.Red
+        Me.PnlEqLock.BackColor = System.Drawing.SystemColors.Control
         Me.PnlEqLock.Cursor = System.Windows.Forms.Cursors.No
         Me.PnlEqLock.Location = New System.Drawing.Point(782, 423)
         Me.PnlEqLock.Name = "PnlEqLock"

@@ -130,8 +130,9 @@
                 'cboAlt.SelectedIndex = 0
                 Exit Sub
             End If
-            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 260, Integer).Map(0, rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width), 25)
-            PnlEqLock.Size = New Size(CType(rcC.Width / 2 + 122, Integer).Map(0, rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width),
+            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 260, Integer).Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0), 25)
+            ' PnlEqLock.Size = New Size(CType(rcC.Width / 2 + 122, Integer).Map(rcC.Width, rcC.Width / 2, zooms(cmbResolution.SelectedIndex).Width, zooms(cmbResolution.SelectedIndex).Width / 2),
+            PnlEqLock.Size = New Size(522.Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0),
                                       42.Map(0, rcC.Height, 0, zooms(cmbResolution.SelectedIndex).Height))
             Try
                 AppActivate(AltPP.Id)
@@ -621,9 +622,15 @@
         cornerSW.Location = New Point(0, Me.Height - 2)
         cornerSE.Location = New Point(Me.Width - 2, Me.Height - 2)
 
-        PnlEqLock.Location = New Point(140.Map(0, 800, 0, newSize.Width), 25)
-        PnlEqLock.Size = New Size(522.Map(0, 800, 0, newSize.Width),
+        If rcC.Width = 0 Then
+            PnlEqLock.Location = New Point(140.Map(800, 0, newSize.Width, 0), 25)
+            PnlEqLock.Size = New Size(522.Map(800, 0, newSize.Width, 0),
                                   42.Map(0, 600, 0, newSize.Height))
+        Else
+            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 260, Integer).Map(rcC.Width, 0, newSize.Width, 0), 25)
+            PnlEqLock.Size = New Size(522.Map(rcC.Width, 0, newSize.Width, 0),
+                                      42.Map(0, rcC.Height, 0, newSize.Height))
+        End If
 
         If Me.WindowState <> FormWindowState.Maximized AndAlso My.Settings.roundCorners Then
 
