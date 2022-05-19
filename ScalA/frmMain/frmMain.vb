@@ -417,7 +417,10 @@
                 Me.WndProc(msg)
                 tmrMove.Stop()
                 If Not pnlOverview.Visible Then
-                    AppActivate(AltPP.Id)
+                    Try
+                        AppActivate(AltPP.Id)
+                    Catch
+                    End Try
                     tmrTick.Start()
                 End If
                 Debug.Print("movetimer stopped")
