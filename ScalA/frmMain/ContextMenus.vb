@@ -510,6 +510,7 @@ Partial Public Class FrmMain
 
     End Sub
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
+        SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
         AppActivate(scalaPID) 'fix right click drag bug
         pbZoom.Visible = False
         AButton.ActiveOverview = False
@@ -582,11 +583,24 @@ Partial Public Class FrmMain
         cts.Cancel() 'cancel deferred icon loading
         'sender.Items.Clear() 'this couses menu to stutter opening
         Debug.Print("cmsQuickLaunch closed reason:" & e.CloseReason.ToString)
-        If AltPP IsNot Nothing AndAlso e.CloseReason <> ToolStripDropDownCloseReason.AppClicked AndAlso e.CloseReason <> ToolStripDropDownCloseReason.ItemClicked Then
-            'these couse ghosting of menu and blanking of zoom when closed by reopening when reason = appclicked
-            'SetWindowPos(AltPP.MainWindowHandle, -2, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
-            If sender.SourceControl IsNot Nothing AndAlso AltPP.Id <> 0 AndAlso Not renameOpen Then
+        'If AltPP IsNot Nothing AndAlso
+        '    e.CloseReason <> ToolStripDropDownCloseReason.AppClicked AndAlso
+        '    e.CloseReason <> ToolStripDropDownCloseReason.ItemClicked Then
+        '    'these couse ghosting of menu and blanking of zoom when closed by reopening when reason = appclicked
+        '    'SetWindowPos(AltPP.MainWindowHandle, -2, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
+        '    If sender.SourceControl IsNot Nothing AndAlso AltPP.Id <> 0 AndAlso Not renameOpen Then
+        '        Try
+        '            SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
+        '            AppActivate(AltPP.Id)
+        '        Catch
+        '        End Try
+        '    End If
+        'End If
+        If cboAlt.SelectedIndex > 0 Then
+            SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
+            If AltPP?.IsActive Then
                 Try
+                    AppActivate(scalaPID) 'Fixes astona popping to front
                     AppActivate(AltPP.Id)
                 Catch
                 End Try
