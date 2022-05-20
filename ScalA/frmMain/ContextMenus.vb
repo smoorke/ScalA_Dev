@@ -527,7 +527,9 @@ Partial Public Class FrmMain
             '    Debug.Print("SendMessage " & cmd)
             '    SendMessage(Me.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
             'End If
-
+            If cboAlt.SelectedIndex > 0 Then
+                SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
+            End If
             e.Cancel = True
             Exit Sub
         End If
