@@ -43,7 +43,7 @@ Partial Public Class FrmMain
             e.Cancel = True
             Exit Sub
         End If
-
+        SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
         AppActivate(scalaPID) 'fix right click drag bug
 
         Dim pp As AstoniaProcess = sender.SourceControl.Tag

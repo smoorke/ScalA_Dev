@@ -929,7 +929,11 @@
                             ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
                         End If
 
-                        SetWindowLong(Me.Handle, GWL_HWNDPARENT, ap?.MainWindowHandle)
+                        If cmsQuickLaunch.Visible OrElse cmsAlt.Visible Then
+                            SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
+                        Else
+                            SetWindowLong(Me.Handle, GWL_HWNDPARENT, ap?.MainWindowHandle)
+                        End If
 
                         Dim rcwB As Rectangle
                         Dim pttB As Point
