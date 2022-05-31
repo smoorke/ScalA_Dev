@@ -603,11 +603,8 @@ Partial Public Class FrmMain
         If cboAlt.SelectedIndex > 0 Then
             SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
             If (AltPP?.IsActive OrElse GetActiveProcessID() = scalaPID) AndAlso e.CloseReason <> ToolStripDropDownCloseReason.AppClicked Then
-                Try
-                    AppActivate(scalaPID) 'Fixes astona popping to front
-                    AppActivate(AltPP.Id)
-                Catch
-                End Try
+                AppActivate(scalaPID) 'Fixes astona popping to front
+                AltPP?.Activate()
             End If
         End If
         Await Task.Delay(200)
