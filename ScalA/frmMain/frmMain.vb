@@ -1216,7 +1216,10 @@
             wasMaximized = False
             ReZoom(zooms(cmbResolution.SelectedIndex))
         End If
-        AltPP?.CenterBehind(pbZoom)
+        If cboAlt.SelectedIndex > 0 Then
+            SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
+            AltPP?.CenterBehind(pbZoom)
+        End If
     End Sub
 
     Private Sub BtnStart_Click(sender As Button, e As EventArgs) Handles btnStart.Click
