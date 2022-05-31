@@ -675,7 +675,8 @@
             sysMenuOpen = False
             If cmd > 0 Then
                 Debug.Print("SendMessage " & cmd)
-                SendMessage(Me.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
+                'SendMessage(Me.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
+                WndProc(Message.Create(Me.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero))
             End If
             Await Task.Delay(200)
             If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse sysMenuOpen Then Exit Sub
@@ -1295,7 +1296,8 @@
             Debug.Print("IPC.requestActivation")
 
             If Me.WindowState = FormWindowState.Minimized Then
-                SendMessage(ScalaHandle, WM_SYSCOMMAND, If(wasMaximized, SC_MAXIMIZE, SC_RESTORE), IntPtr.Zero)
+                'SendMessage(ScalaHandle, WM_SYSCOMMAND, If(wasMaximized, SC_MAXIMIZE, SC_RESTORE), IntPtr.Zero)
+                WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, If(wasMaximized, SC_MAXIMIZE, SC_RESTORE), IntPtr.Zero))
             End If
 
             Me.TopMost = True
