@@ -740,13 +740,14 @@
                         Debug.Print("SC_RESTORE " & m.LParam.ToString)
                         SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
                         'Me.ShowInTaskbar = False
-                        Debug.Print("wasMax " & wasMaximized)
                         If WindowState = FormWindowState.Maximized Then
                             btnMax.PerformClick()
                             Exit Sub
                         End If
+                        Debug.Print("wasMax " & wasMaximized)
                         If wasMaximized Then
-                            PostMessage(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero)
+                            'PostMessage(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero)
+                            Me.WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero))
                             Exit Sub
                         End If
                     Case SC_MAXIMIZE
@@ -1038,23 +1039,18 @@
         Dim numRows As Integer = numCols
 
         If Me.WindowState = FormWindowState.Maximized Then
-            Select Case count + If(My.Settings.hideMessage, 0, 1)
-                Case 0 To 6
-                    numCols = 3
-                    numRows = 2
-                Case 7 To 12
-                    numCols = 4
-                    numRows = 3
-                Case 13 To 20
-                    numCols = 5
-                    numRows = 4
-                Case 21 To 30
-                    numCols = 6
-                    numRows = 5
-                Case Else
-                    numCols = 7
-                    numRows = 6
-            End Select
+
+            Dim numAlts = count + If(My.Settings.hideMessage, 0, 1)
+
+            numCols = 2 + My.Settings.ExtraMaxColRow
+            numRows = 2 - If(My.Settings.OneLessRowCol, 1, 0)
+
+            While numAlts > numCols * numRows
+                numCols += 1
+                numRows += 1
+                If numCols >= 7 Then Exit While
+            End While
+
             If pbZoom.Width < pbZoom.Height Then
                 Dim swapper As Integer = numCols
                 numCols = numRows
@@ -1198,7 +1194,16 @@
                 If scrn.Bounds.Contains(Me.Location + New Point(Me.Width / 2, Me.Height / 2)) Then
                     Debug.Print("screen workarea " & scrn.WorkingArea.ToString)
                     Debug.Print("screen bounds " & scrn.Bounds.ToString)
-                    Me.MaximizedBounds = New Rectangle(scrn.WorkingArea.Left - scrn.Bounds.Left, scrn.WorkingArea.Top - scrn.Bounds.Top, scrn.WorkingArea.Width, scrn.WorkingArea.Height)
+
+                    Dim leftBorder = scrn.WorkingArea.Width * My.Settings.MaxBorderLeft / 1000
+                    Dim topBorder = scrn.WorkingArea.Height * My.Settings.MaxBorderTop / 1000
+                    Dim rightborder = scrn.WorkingArea.Width * My.Settings.MaxBorderRight / 1000
+                    Dim botBorder = scrn.WorkingArea.Height * My.Settings.MaxBorderBot / 1000
+
+                    Me.MaximizedBounds = New Rectangle(scrn.WorkingArea.Left - scrn.Bounds.Left + leftBorder,
+                                                       scrn.WorkingArea.Top - scrn.Bounds.Top + topBorder,
+                                                       scrn.WorkingArea.Width - leftBorder - rightborder,
+                                                       scrn.WorkingArea.Height - topBorder - botBorder)
                     Debug.Print("new maxbound " & MaximizedBounds.ToString)
                     If Me.WindowState = FormWindowState.Normal Then
                         RestoreLoc = Me.Location

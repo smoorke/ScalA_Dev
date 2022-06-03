@@ -30,17 +30,31 @@ Partial Class FrmSettings
         Dim ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
         Dim Label4 As System.Windows.Forms.Label
         Dim Label5 As System.Windows.Forms.Label
+        Dim Label7 As System.Windows.Forms.Label
+        Dim Label8 As System.Windows.Forms.Label
+        Dim Label9 As System.Windows.Forms.Label
+        Dim Label10 As System.Windows.Forms.Label
+        Dim Label11 As System.Windows.Forms.Label
+        Dim Label12 As System.Windows.Forms.Label
+        Dim Label13 As System.Windows.Forms.Label
+        Dim Label14 As System.Windows.Forms.Label
+        Dim Label6 As System.Windows.Forms.Label
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmSettings))
+        Me.txtQuickLaunchPath = New System.Windows.Forms.TextBox()
         Me.btnOpenFolderDialog = New System.Windows.Forms.Button()
         Me.cmsQLFolder = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.OpenInExplorerToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.txtQuickLaunchPath = New System.Windows.Forms.TextBox()
         Me.btnOK = New System.Windows.Forms.Button()
         Me.btnCancel = New System.Windows.Forms.Button()
         Me.tmrAlign = New System.Windows.Forms.Timer(Me.components)
         Me.ttSettings = New System.Windows.Forms.ToolTip(Me.components)
-        Me.chkOverViewIsGame = New System.Windows.Forms.CheckBox()
         Me.chkCycleOnClose = New System.Windows.Forms.CheckBox()
+        Me.ChkSingleInstance = New System.Windows.Forms.CheckBox()
+        Me.grpReserveSpace = New System.Windows.Forms.GroupBox()
+        Me.NumBorderBot = New System.Windows.Forms.NumericUpDown()
+        Me.NumBorderRight = New System.Windows.Forms.NumericUpDown()
+        Me.NumBorderTop = New System.Windows.Forms.NumericUpDown()
+        Me.NumBorderLeft = New System.Windows.Forms.NumericUpDown()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.btnRestore = New System.Windows.Forms.Button()
@@ -75,17 +89,20 @@ Partial Class FrmSettings
         Me.txtBotSort = New System.Windows.Forms.TextBox()
         Me.txtTopSort = New System.Windows.Forms.TextBox()
         Me.chkWhitelist = New System.Windows.Forms.CheckBox()
+        Me.tabMaximized = New System.Windows.Forms.TabPage()
         Me.tabMisc = New System.Windows.Forms.TabPage()
         Me.chkDoAlign = New System.Windows.Forms.CheckBox()
         Me.grpAlign = New System.Windows.Forms.GroupBox()
         Me.btnResetAlign = New System.Windows.Forms.Button()
-        Me.numYoffset = New System.Windows.Forms.NumericUpDown()
         Me.numXoffset = New System.Windows.Forms.NumericUpDown()
+        Me.numYoffset = New System.Windows.Forms.NumericUpDown()
         Me.txtExe = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
         Me.txtClass = New System.Windows.Forms.TextBox()
-        Me.ChkSingleInstance = New System.Windows.Forms.CheckBox()
+        Me.ChkLessRowCol = New System.Windows.Forms.CheckBox()
+        Me.NumExtraMax = New System.Windows.Forms.NumericUpDown()
+        Me.chkOverViewIsGame = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -93,8 +110,22 @@ Partial Class FrmSettings
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Label4 = New System.Windows.Forms.Label()
         Label5 = New System.Windows.Forms.Label()
+        Label7 = New System.Windows.Forms.Label()
+        Label8 = New System.Windows.Forms.Label()
+        Label9 = New System.Windows.Forms.Label()
+        Label10 = New System.Windows.Forms.Label()
+        Label11 = New System.Windows.Forms.Label()
+        Label12 = New System.Windows.Forms.Label()
+        Label13 = New System.Windows.Forms.Label()
+        Label14 = New System.Windows.Forms.Label()
+        Label6 = New System.Windows.Forms.Label()
         grpQLPath.SuspendLayout()
         Me.cmsQLFolder.SuspendLayout()
+        Me.grpReserveSpace.SuspendLayout()
+        CType(Me.NumBorderBot, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumBorderRight, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumBorderTop, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumBorderLeft, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tbcSettings.SuspendLayout()
         Me.tabResolutions.SuspendLayout()
         Me.cmsGenerate.SuspendLayout()
@@ -102,22 +133,32 @@ Partial Class FrmSettings
         Me.grpCycleShortcut.SuspendLayout()
         Me.grpOverviewShortcut.SuspendLayout()
         Me.tabSortAndBL.SuspendLayout()
+        Me.tabMaximized.SuspendLayout()
         Me.tabMisc.SuspendLayout()
         Me.grpAlign.SuspendLayout()
-        CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.numXoffset, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumExtraMax, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'grpQLPath
         '
-        grpQLPath.Controls.Add(Me.btnOpenFolderDialog)
         grpQLPath.Controls.Add(Me.txtQuickLaunchPath)
+        grpQLPath.Controls.Add(Me.btnOpenFolderDialog)
         grpQLPath.Location = New System.Drawing.Point(7, -2)
         grpQLPath.Name = "grpQLPath"
-        grpQLPath.Size = New System.Drawing.Size(213, 40)
+        grpQLPath.Size = New System.Drawing.Size(291, 40)
         grpQLPath.TabIndex = 16
         grpQLPath.TabStop = False
         grpQLPath.Text = "QuickLaunch Path"
+        '
+        'txtQuickLaunchPath
+        '
+        Me.txtQuickLaunchPath.Location = New System.Drawing.Point(5, 13)
+        Me.txtQuickLaunchPath.Name = "txtQuickLaunchPath"
+        Me.txtQuickLaunchPath.Size = New System.Drawing.Size(259, 20)
+        Me.txtQuickLaunchPath.TabIndex = 0
+        Me.txtQuickLaunchPath.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         '
         'btnOpenFolderDialog
         '
@@ -125,10 +166,10 @@ Partial Class FrmSettings
         Me.btnOpenFolderDialog.FlatAppearance.BorderSize = 0
         Me.btnOpenFolderDialog.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnOpenFolderDialog.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-        Me.btnOpenFolderDialog.Location = New System.Drawing.Point(187, 16)
+        Me.btnOpenFolderDialog.Location = New System.Drawing.Point(263, 13)
         Me.btnOpenFolderDialog.Name = "btnOpenFolderDialog"
         Me.btnOpenFolderDialog.Size = New System.Drawing.Size(22, 20)
-        Me.btnOpenFolderDialog.TabIndex = 13
+        Me.btnOpenFolderDialog.TabIndex = 1
         Me.btnOpenFolderDialog.Text = ".."
         Me.btnOpenFolderDialog.UseVisualStyleBackColor = True
         '
@@ -144,18 +185,10 @@ Partial Class FrmSettings
         Me.OpenInExplorerToolStripMenuItem.Size = New System.Drawing.Size(183, 22)
         Me.OpenInExplorerToolStripMenuItem.Text = "Open in File Explorer"
         '
-        'txtQuickLaunchPath
-        '
-        Me.txtQuickLaunchPath.Location = New System.Drawing.Point(5, 16)
-        Me.txtQuickLaunchPath.Name = "txtQuickLaunchPath"
-        Me.txtQuickLaunchPath.Size = New System.Drawing.Size(182, 20)
-        Me.txtQuickLaunchPath.TabIndex = 0
-        Me.txtQuickLaunchPath.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
-        '
         'Label3
         '
         Label3.AutoSize = True
-        Label3.Location = New System.Drawing.Point(79, 93)
+        Label3.Location = New System.Drawing.Point(166, 92)
         Label3.Name = "Label3"
         Label3.Size = New System.Drawing.Size(27, 13)
         Label3.TabIndex = 18
@@ -188,7 +221,7 @@ Partial Class FrmSettings
         '
         Label4.AutoSize = True
         Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Label4.Location = New System.Drawing.Point(6, 3)
+        Label4.Location = New System.Drawing.Point(52, 3)
         Label4.Name = "Label4"
         Label4.Size = New System.Drawing.Size(18, 9)
         Label4.TabIndex = 3
@@ -198,15 +231,87 @@ Partial Class FrmSettings
         '
         Label5.AutoSize = True
         Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Label5.Location = New System.Drawing.Point(193, 3)
+        Label5.Location = New System.Drawing.Point(212, 3)
         Label5.Name = "Label5"
         Label5.Size = New System.Drawing.Size(29, 9)
         Label5.TabIndex = 4
         Label5.Text = "Bottom"
         '
+        'Label7
+        '
+        Label7.AutoSize = True
+        Label7.Location = New System.Drawing.Point(5, 39)
+        Label7.Name = "Label7"
+        Label7.Size = New System.Drawing.Size(26, 13)
+        Label7.TabIndex = 0
+        Label7.Text = "Top"
+        '
+        'Label8
+        '
+        Label8.AutoSize = True
+        Label8.Location = New System.Drawing.Point(5, 20)
+        Label8.Name = "Label8"
+        Label8.Size = New System.Drawing.Size(25, 13)
+        Label8.TabIndex = 1
+        Label8.Text = "Left"
+        '
+        'Label9
+        '
+        Label9.AutoSize = True
+        Label9.Location = New System.Drawing.Point(107, 20)
+        Label9.Name = "Label9"
+        Label9.Size = New System.Drawing.Size(32, 13)
+        Label9.TabIndex = 2
+        Label9.Text = "Right"
+        '
+        'Label10
+        '
+        Label10.AutoSize = True
+        Label10.Location = New System.Drawing.Point(107, 39)
+        Label10.Name = "Label10"
+        Label10.Size = New System.Drawing.Size(23, 13)
+        Label10.TabIndex = 3
+        Label10.Text = "Bot"
+        '
+        'Label11
+        '
+        Label11.AutoSize = True
+        Label11.Location = New System.Drawing.Point(86, 20)
+        Label11.Name = "Label11"
+        Label11.Size = New System.Drawing.Size(18, 13)
+        Label11.TabIndex = 8
+        Label11.Text = "‰"
+        '
+        'Label12
+        '
+        Label12.AutoSize = True
+        Label12.Location = New System.Drawing.Point(86, 39)
+        Label12.Name = "Label12"
+        Label12.Size = New System.Drawing.Size(18, 13)
+        Label12.TabIndex = 9
+        Label12.Text = "‰"
+        '
+        'Label13
+        '
+        Label13.AutoSize = True
+        Label13.Location = New System.Drawing.Point(188, 20)
+        Label13.Name = "Label13"
+        Label13.Size = New System.Drawing.Size(18, 13)
+        Label13.TabIndex = 10
+        Label13.Text = "‰"
+        '
+        'Label14
+        '
+        Label14.AutoSize = True
+        Label14.Location = New System.Drawing.Point(188, 39)
+        Label14.Name = "Label14"
+        Label14.Size = New System.Drawing.Size(18, 13)
+        Label14.TabIndex = 11
+        Label14.Text = "‰"
+        '
         'btnOK
         '
-        Me.btnOK.Location = New System.Drawing.Point(64, 164)
+        Me.btnOK.Location = New System.Drawing.Point(141, 166)
         Me.btnOK.Name = "btnOK"
         Me.btnOK.Size = New System.Drawing.Size(77, 23)
         Me.btnOK.TabIndex = 2
@@ -217,7 +322,7 @@ Partial Class FrmSettings
         'btnCancel
         '
         Me.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnCancel.Location = New System.Drawing.Point(147, 164)
+        Me.btnCancel.Location = New System.Drawing.Point(224, 166)
         Me.btnCancel.Name = "btnCancel"
         Me.btnCancel.Size = New System.Drawing.Size(77, 23)
         Me.btnCancel.TabIndex = 3
@@ -234,27 +339,90 @@ Partial Class FrmSettings
         Me.ttSettings.InitialDelay = 500
         Me.ttSettings.ReshowDelay = 100
         '
-        'chkOverViewIsGame
-        '
-        Me.chkOverViewIsGame.AutoSize = True
-        Me.chkOverViewIsGame.Location = New System.Drawing.Point(8, 39)
-        Me.chkOverViewIsGame.Name = "chkOverViewIsGame"
-        Me.chkOverViewIsGame.Size = New System.Drawing.Size(107, 17)
-        Me.chkOverViewIsGame.TabIndex = 20
-        Me.chkOverViewIsGame.Text = "Active Overview "
-        Me.ttSettings.SetToolTip(Me.chkOverViewIsGame, "Have overview thumbnails function as game.")
-        Me.chkOverViewIsGame.UseVisualStyleBackColor = True
-        '
         'chkCycleOnClose
         '
         Me.chkCycleOnClose.AutoSize = True
-        Me.chkCycleOnClose.Location = New System.Drawing.Point(114, 39)
+        Me.chkCycleOnClose.Location = New System.Drawing.Point(20, 69)
         Me.chkCycleOnClose.Name = "chkCycleOnClose"
         Me.chkCycleOnClose.Size = New System.Drawing.Size(96, 17)
-        Me.chkCycleOnClose.TabIndex = 23
+        Me.chkCycleOnClose.TabIndex = 4
         Me.chkCycleOnClose.Text = "Cycle on Close"
         Me.ttSettings.SetToolTip(Me.chkCycleOnClose, "Closing an alt will cycle to the next one.")
         Me.chkCycleOnClose.UseVisualStyleBackColor = True
+        '
+        'ChkSingleInstance
+        '
+        Me.ChkSingleInstance.AutoSize = True
+        Me.ChkSingleInstance.Checked = True
+        Me.ChkSingleInstance.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.ChkSingleInstance.Location = New System.Drawing.Point(172, 39)
+        Me.ChkSingleInstance.Name = "ChkSingleInstance"
+        Me.ChkSingleInstance.Size = New System.Drawing.Size(99, 17)
+        Me.ChkSingleInstance.TabIndex = 5
+        Me.ChkSingleInstance.Text = "Single Instance"
+        Me.ttSettings.SetToolTip(Me.ChkSingleInstance, "Running ScalA for a 2nd time or more will bring an" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  already open ScalA from the" &
+        " same profile to the front." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "To make additional profiles copy, rename and/or mov" &
+        "e ScalA.exe" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
+        Me.ChkSingleInstance.UseVisualStyleBackColor = True
+        '
+        'grpReserveSpace
+        '
+        Me.grpReserveSpace.Controls.Add(Me.NumBorderBot)
+        Me.grpReserveSpace.Controls.Add(Me.NumBorderRight)
+        Me.grpReserveSpace.Controls.Add(Me.NumBorderTop)
+        Me.grpReserveSpace.Controls.Add(Me.NumBorderLeft)
+        Me.grpReserveSpace.Controls.Add(Label10)
+        Me.grpReserveSpace.Controls.Add(Label9)
+        Me.grpReserveSpace.Controls.Add(Label8)
+        Me.grpReserveSpace.Controls.Add(Label7)
+        Me.grpReserveSpace.Controls.Add(Label11)
+        Me.grpReserveSpace.Controls.Add(Label14)
+        Me.grpReserveSpace.Controls.Add(Label13)
+        Me.grpReserveSpace.Controls.Add(Label12)
+        Me.grpReserveSpace.Location = New System.Drawing.Point(49, 9)
+        Me.grpReserveSpace.Name = "grpReserveSpace"
+        Me.grpReserveSpace.Size = New System.Drawing.Size(212, 67)
+        Me.grpReserveSpace.TabIndex = 2
+        Me.grpReserveSpace.TabStop = False
+        Me.grpReserveSpace.Text = "Reserve Border"
+        Me.ttSettings.SetToolTip(Me.grpReserveSpace, "Reserve a border around ScalA when Maximized" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Doesn't apply untill you Re-Maximiz" &
+        "e" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: Values are promille")
+        '
+        'NumBorderBot
+        '
+        Me.NumBorderBot.Location = New System.Drawing.Point(140, 37)
+        Me.NumBorderBot.Maximum = New Decimal(New Integer() {750, 0, 0, 0})
+        Me.NumBorderBot.Name = "NumBorderBot"
+        Me.NumBorderBot.Size = New System.Drawing.Size(50, 20)
+        Me.NumBorderBot.TabIndex = 3
+        Me.NumBorderBot.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'NumBorderRight
+        '
+        Me.NumBorderRight.Location = New System.Drawing.Point(140, 18)
+        Me.NumBorderRight.Maximum = New Decimal(New Integer() {750, 0, 0, 0})
+        Me.NumBorderRight.Name = "NumBorderRight"
+        Me.NumBorderRight.Size = New System.Drawing.Size(50, 20)
+        Me.NumBorderRight.TabIndex = 1
+        Me.NumBorderRight.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'NumBorderTop
+        '
+        Me.NumBorderTop.Location = New System.Drawing.Point(38, 37)
+        Me.NumBorderTop.Maximum = New Decimal(New Integer() {750, 0, 0, 0})
+        Me.NumBorderTop.Name = "NumBorderTop"
+        Me.NumBorderTop.Size = New System.Drawing.Size(50, 20)
+        Me.NumBorderTop.TabIndex = 2
+        Me.NumBorderTop.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'NumBorderLeft
+        '
+        Me.NumBorderLeft.Location = New System.Drawing.Point(38, 18)
+        Me.NumBorderLeft.Maximum = New Decimal(New Integer() {750, 0, 0, 0})
+        Me.NumBorderLeft.Name = "NumBorderLeft"
+        Me.NumBorderLeft.Size = New System.Drawing.Size(50, 20)
+        Me.NumBorderLeft.TabIndex = 0
+        Me.NumBorderLeft.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         '
         'tbcSettings
         '
@@ -262,11 +430,13 @@ Partial Class FrmSettings
         Me.tbcSettings.Controls.Add(Me.tabResolutions)
         Me.tbcSettings.Controls.Add(Me.tabHotkeys)
         Me.tbcSettings.Controls.Add(Me.tabSortAndBL)
+        Me.tbcSettings.Controls.Add(Me.tabMaximized)
         Me.tbcSettings.Controls.Add(Me.tabMisc)
         Me.tbcSettings.Location = New System.Drawing.Point(0, 0)
+        Me.tbcSettings.Multiline = True
         Me.tbcSettings.Name = "tbcSettings"
         Me.tbcSettings.SelectedIndex = 0
-        Me.tbcSettings.Size = New System.Drawing.Size(243, 164)
+        Me.tbcSettings.Size = New System.Drawing.Size(316, 165)
         Me.tbcSettings.TabIndex = 14
         Me.tbcSettings.TabStop = False
         '
@@ -279,14 +449,14 @@ Partial Class FrmSettings
         Me.tabResolutions.Location = New System.Drawing.Point(4, 25)
         Me.tabResolutions.Name = "tabResolutions"
         Me.tabResolutions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabResolutions.Size = New System.Drawing.Size(235, 135)
+        Me.tabResolutions.Size = New System.Drawing.Size(308, 136)
         Me.tabResolutions.TabIndex = 0
         Me.tabResolutions.Text = "Resolutions"
         Me.tabResolutions.UseVisualStyleBackColor = True
         '
         'btnRestore
         '
-        Me.btnRestore.Location = New System.Drawing.Point(131, 104)
+        Me.btnRestore.Location = New System.Drawing.Point(170, 104)
         Me.btnRestore.Name = "btnRestore"
         Me.btnRestore.Size = New System.Drawing.Size(75, 23)
         Me.btnRestore.TabIndex = 5
@@ -295,7 +465,7 @@ Partial Class FrmSettings
         '
         'btnSort
         '
-        Me.btnSort.Location = New System.Drawing.Point(131, 38)
+        Me.btnSort.Location = New System.Drawing.Point(170, 38)
         Me.btnSort.Name = "btnSort"
         Me.btnSort.Size = New System.Drawing.Size(75, 23)
         Me.btnSort.TabIndex = 3
@@ -305,7 +475,7 @@ Partial Class FrmSettings
         'btnGenerate
         '
         Me.btnGenerate.ContextMenuStrip = Me.cmsGenerate
-        Me.btnGenerate.Location = New System.Drawing.Point(131, 9)
+        Me.btnGenerate.Location = New System.Drawing.Point(170, 9)
         Me.btnGenerate.Name = "btnGenerate"
         Me.btnGenerate.Size = New System.Drawing.Size(75, 23)
         Me.btnGenerate.TabIndex = 2
@@ -350,7 +520,7 @@ Partial Class FrmSettings
         '
         'txtResolutions
         '
-        Me.txtResolutions.Location = New System.Drawing.Point(31, 0)
+        Me.txtResolutions.Location = New System.Drawing.Point(70, 0)
         Me.txtResolutions.Multiline = True
         Me.txtResolutions.Name = "txtResolutions"
         Me.txtResolutions.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
@@ -365,7 +535,7 @@ Partial Class FrmSettings
         Me.tabHotkeys.Controls.Add(Me.grpOverviewShortcut)
         Me.tabHotkeys.Location = New System.Drawing.Point(4, 25)
         Me.tabHotkeys.Name = "tabHotkeys"
-        Me.tabHotkeys.Size = New System.Drawing.Size(235, 135)
+        Me.tabHotkeys.Size = New System.Drawing.Size(308, 136)
         Me.tabHotkeys.TabIndex = 2
         Me.tabHotkeys.Text = "Hotkeys"
         Me.tabHotkeys.UseVisualStyleBackColor = True
@@ -381,7 +551,7 @@ Partial Class FrmSettings
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleUpAlt)
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleUpCtrl)
         Me.grpCycleShortcut.Controls.Add(Me.txtCycleKeyUp)
-        Me.grpCycleShortcut.Location = New System.Drawing.Point(8, 59)
+        Me.grpCycleShortcut.Location = New System.Drawing.Point(46, 59)
         Me.grpCycleShortcut.Name = "grpCycleShortcut"
         Me.grpCycleShortcut.Size = New System.Drawing.Size(214, 67)
         Me.grpCycleShortcut.TabIndex = 1
@@ -487,7 +657,7 @@ Partial Class FrmSettings
         Me.grpOverviewShortcut.Controls.Add(Me.chkStoAlt)
         Me.grpOverviewShortcut.Controls.Add(Me.chkStoCtrl)
         Me.grpOverviewShortcut.Controls.Add(Me.chkSwitchToOverview)
-        Me.grpOverviewShortcut.Location = New System.Drawing.Point(8, 8)
+        Me.grpOverviewShortcut.Location = New System.Drawing.Point(46, 8)
         Me.grpOverviewShortcut.Name = "grpOverviewShortcut"
         Me.grpOverviewShortcut.Size = New System.Drawing.Size(214, 45)
         Me.grpOverviewShortcut.TabIndex = 0
@@ -558,14 +728,14 @@ Partial Class FrmSettings
         Me.tabSortAndBL.Margin = New System.Windows.Forms.Padding(0)
         Me.tabSortAndBL.Name = "tabSortAndBL"
         Me.tabSortAndBL.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabSortAndBL.Size = New System.Drawing.Size(235, 135)
+        Me.tabSortAndBL.Size = New System.Drawing.Size(308, 136)
         Me.tabSortAndBL.TabIndex = 3
         Me.tabSortAndBL.Text = "Sort"
         Me.tabSortAndBL.UseVisualStyleBackColor = True
         '
         'btnTest
         '
-        Me.btnTest.Location = New System.Drawing.Point(104, 47)
+        Me.btnTest.Location = New System.Drawing.Point(142, 47)
         Me.btnTest.Name = "btnTest"
         Me.btnTest.Size = New System.Drawing.Size(21, 61)
         Me.btnTest.TabIndex = 5
@@ -576,7 +746,7 @@ Partial Class FrmSettings
         '
         Me.btnHelp.BackgroundImage = Global.ScalA.My.Resources.Resources.About
         Me.btnHelp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch
-        Me.btnHelp.Location = New System.Drawing.Point(104, 18)
+        Me.btnHelp.Location = New System.Drawing.Point(142, 18)
         Me.btnHelp.Margin = New System.Windows.Forms.Padding(0)
         Me.btnHelp.Name = "btnHelp"
         Me.btnHelp.Size = New System.Drawing.Size(22, 23)
@@ -585,34 +755,50 @@ Partial Class FrmSettings
         '
         'txtBotSort
         '
-        Me.txtBotSort.Location = New System.Drawing.Point(130, 15)
+        Me.txtBotSort.Location = New System.Drawing.Point(168, 15)
         Me.txtBotSort.Multiline = True
         Me.txtBotSort.Name = "txtBotSort"
-        Me.txtBotSort.Size = New System.Drawing.Size(100, 124)
+        Me.txtBotSort.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+        Me.txtBotSort.Size = New System.Drawing.Size(130, 120)
         Me.txtBotSort.TabIndex = 1
         Me.txtBotSort.Text = "Someone"
         '
         'txtTopSort
         '
-        Me.txtTopSort.Location = New System.Drawing.Point(0, 15)
+        Me.txtTopSort.Location = New System.Drawing.Point(8, 15)
         Me.txtTopSort.Multiline = True
         Me.txtTopSort.Name = "txtTopSort"
-        Me.txtTopSort.Size = New System.Drawing.Size(100, 120)
+        Me.txtTopSort.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+        Me.txtTopSort.Size = New System.Drawing.Size(130, 120)
         Me.txtTopSort.TabIndex = 0
         Me.txtTopSort.Text = "Someone"
         '
         'chkWhitelist
         '
         Me.chkWhitelist.AutoSize = True
-        Me.chkWhitelist.Location = New System.Drawing.Point(77, -1)
+        Me.chkWhitelist.Location = New System.Drawing.Point(115, -1)
         Me.chkWhitelist.Name = "chkWhitelist"
         Me.chkWhitelist.Size = New System.Drawing.Size(66, 17)
         Me.chkWhitelist.TabIndex = 6
         Me.chkWhitelist.Text = "Whitelist"
         Me.chkWhitelist.UseVisualStyleBackColor = True
         '
+        'tabMaximized
+        '
+        Me.tabMaximized.Controls.Add(Me.ChkLessRowCol)
+        Me.tabMaximized.Controls.Add(Me.NumExtraMax)
+        Me.tabMaximized.Controls.Add(Label6)
+        Me.tabMaximized.Controls.Add(Me.grpReserveSpace)
+        Me.tabMaximized.Location = New System.Drawing.Point(4, 25)
+        Me.tabMaximized.Name = "tabMaximized"
+        Me.tabMaximized.Size = New System.Drawing.Size(308, 136)
+        Me.tabMaximized.TabIndex = 4
+        Me.tabMaximized.Text = "Maximized"
+        Me.tabMaximized.UseVisualStyleBackColor = True
+        '
         'tabMisc
         '
+        Me.tabMisc.Controls.Add(Me.chkOverViewIsGame)
         Me.tabMisc.Controls.Add(Me.ChkSingleInstance)
         Me.tabMisc.Controls.Add(Me.chkDoAlign)
         Me.tabMisc.Controls.Add(Me.chkCycleOnClose)
@@ -623,11 +809,10 @@ Partial Class FrmSettings
         Me.tabMisc.Controls.Add(grpQLPath)
         Me.tabMisc.Controls.Add(Label3)
         Me.tabMisc.Controls.Add(Me.txtClass)
-        Me.tabMisc.Controls.Add(Me.chkOverViewIsGame)
         Me.tabMisc.Location = New System.Drawing.Point(4, 25)
         Me.tabMisc.Name = "tabMisc"
         Me.tabMisc.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabMisc.Size = New System.Drawing.Size(235, 135)
+        Me.tabMisc.Size = New System.Drawing.Size(308, 136)
         Me.tabMisc.TabIndex = 1
         Me.tabMisc.Text = "Misc"
         Me.tabMisc.UseVisualStyleBackColor = True
@@ -636,22 +821,22 @@ Partial Class FrmSettings
         '
         Me.chkDoAlign.AutoSize = True
         Me.chkDoAlign.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkDoAlign.Location = New System.Drawing.Point(118, 74)
+        Me.chkDoAlign.Location = New System.Drawing.Point(200, 70)
         Me.chkDoAlign.Name = "chkDoAlign"
         Me.chkDoAlign.Size = New System.Drawing.Size(66, 16)
-        Me.chkDoAlign.TabIndex = 22
+        Me.chkDoAlign.TabIndex = 8
         Me.chkDoAlign.Text = "Alignment"
         Me.chkDoAlign.UseVisualStyleBackColor = True
         '
         'grpAlign
         '
         Me.grpAlign.Controls.Add(Me.btnResetAlign)
-        Me.grpAlign.Controls.Add(Me.numYoffset)
         Me.grpAlign.Controls.Add(Me.numXoffset)
         Me.grpAlign.Controls.Add(Label2)
         Me.grpAlign.Controls.Add(Label1)
+        Me.grpAlign.Controls.Add(Me.numYoffset)
         Me.grpAlign.Enabled = False
-        Me.grpAlign.Location = New System.Drawing.Point(118, 74)
+        Me.grpAlign.Location = New System.Drawing.Point(200, 70)
         Me.grpAlign.Name = "grpAlign"
         Me.grpAlign.Size = New System.Drawing.Size(100, 62)
         Me.grpAlign.TabIndex = 21
@@ -663,20 +848,9 @@ Partial Class FrmSettings
         Me.btnResetAlign.Location = New System.Drawing.Point(65, -1)
         Me.btnResetAlign.Name = "btnResetAlign"
         Me.btnResetAlign.Size = New System.Drawing.Size(33, 17)
-        Me.btnResetAlign.TabIndex = 10
+        Me.btnResetAlign.TabIndex = 11
         Me.btnResetAlign.Text = "Reset"
         Me.btnResetAlign.UseVisualStyleBackColor = True
-        '
-        'numYoffset
-        '
-        Me.numYoffset.Location = New System.Drawing.Point(26, 39)
-        Me.numYoffset.Maximum = New Decimal(New Integer() {4000, 0, 0, 0})
-        Me.numYoffset.Minimum = New Decimal(New Integer() {4000, 0, 0, -2147483648})
-        Me.numYoffset.Name = "numYoffset"
-        Me.numYoffset.Size = New System.Drawing.Size(72, 20)
-        Me.numYoffset.TabIndex = 9
-        Me.numYoffset.Tag = "1"
-        Me.numYoffset.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         '
         'numXoffset
         '
@@ -685,69 +859,108 @@ Partial Class FrmSettings
         Me.numXoffset.Minimum = New Decimal(New Integer() {4000, 0, 0, -2147483648})
         Me.numXoffset.Name = "numXoffset"
         Me.numXoffset.Size = New System.Drawing.Size(72, 20)
-        Me.numXoffset.TabIndex = 8
+        Me.numXoffset.TabIndex = 9
         Me.numXoffset.Tag = "0"
         Me.numXoffset.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'numYoffset
+        '
+        Me.numYoffset.Location = New System.Drawing.Point(26, 38)
+        Me.numYoffset.Maximum = New Decimal(New Integer() {4000, 0, 0, 0})
+        Me.numYoffset.Minimum = New Decimal(New Integer() {4000, 0, 0, -2147483648})
+        Me.numYoffset.Name = "numYoffset"
+        Me.numYoffset.Size = New System.Drawing.Size(72, 20)
+        Me.numYoffset.TabIndex = 10
+        Me.numYoffset.Tag = "1"
+        Me.numYoffset.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         '
         'txtExe
         '
         Me.txtExe.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtExe.Location = New System.Drawing.Point(8, 89)
+        Me.txtExe.Location = New System.Drawing.Point(12, 89)
         Me.txtExe.Name = "txtExe"
-        Me.txtExe.Size = New System.Drawing.Size(66, 20)
-        Me.txtExe.TabIndex = 15
+        Me.txtExe.Size = New System.Drawing.Size(154, 20)
+        Me.txtExe.TabIndex = 6
         Me.txtExe.Text = "moac | new"
         '
         'chkTopMost
         '
         Me.chkTopMost.AutoSize = True
-        Me.chkTopMost.Location = New System.Drawing.Point(8, 69)
+        Me.chkTopMost.Location = New System.Drawing.Point(20, 54)
         Me.chkTopMost.Name = "chkTopMost"
         Me.chkTopMost.Size = New System.Drawing.Size(98, 17)
-        Me.chkTopMost.TabIndex = 14
+        Me.chkTopMost.TabIndex = 3
         Me.chkTopMost.Text = "Always On Top"
         Me.chkTopMost.UseVisualStyleBackColor = True
         '
         'chkRoundCorners
         '
         Me.chkRoundCorners.AutoSize = True
-        Me.chkRoundCorners.Location = New System.Drawing.Point(8, 54)
+        Me.chkRoundCorners.Location = New System.Drawing.Point(20, 39)
         Me.chkRoundCorners.Name = "chkRoundCorners"
         Me.chkRoundCorners.Size = New System.Drawing.Size(109, 17)
-        Me.chkRoundCorners.TabIndex = 19
+        Me.chkRoundCorners.TabIndex = 2
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
         'txtClass
         '
         Me.txtClass.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtClass.Location = New System.Drawing.Point(8, 110)
+        Me.txtClass.Location = New System.Drawing.Point(12, 110)
         Me.txtClass.Name = "txtClass"
-        Me.txtClass.Size = New System.Drawing.Size(100, 20)
-        Me.txtClass.TabIndex = 17
+        Me.txtClass.Size = New System.Drawing.Size(182, 20)
+        Me.txtClass.TabIndex = 7
         Me.txtClass.Text = "MAINWNDMOAC | 䅍义乗䵄䅏C"
         '
-        'ChkSingleInstance
+        'ChkLessRowCol
         '
-        Me.ChkSingleInstance.AutoSize = True
-        Me.ChkSingleInstance.Checked = True
-        Me.ChkSingleInstance.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.ChkSingleInstance.Location = New System.Drawing.Point(114, 54)
-        Me.ChkSingleInstance.Name = "ChkSingleInstance"
-        Me.ChkSingleInstance.Size = New System.Drawing.Size(99, 17)
-        Me.ChkSingleInstance.TabIndex = 24
-        Me.ChkSingleInstance.Text = "Single Instance"
-        Me.ttSettings.SetToolTip(Me.ChkSingleInstance, "Running ScalA for a 2nd time or more will bring an" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  already open ScalA from the" &
-        " same profile to the front." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "To make additional profiles copy, rename and/or mov" &
-        "e ScalA.exe" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
-        Me.ChkSingleInstance.UseVisualStyleBackColor = True
+        Me.ChkLessRowCol.AutoSize = True
+        Me.ChkLessRowCol.Checked = True
+        Me.ChkLessRowCol.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.ChkLessRowCol.Location = New System.Drawing.Point(87, 82)
+        Me.ChkLessRowCol.Name = "ChkLessRowCol"
+        Me.ChkLessRowCol.Size = New System.Drawing.Size(136, 17)
+        Me.ChkLessRowCol.TabIndex = 4
+        Me.ChkLessRowCol.Text = "One Less Row/Column"
+        Me.ttSettings.SetToolTip(Me.ChkLessRowCol, "When Width is bigger than Height have on less Row " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "If Height is bigger than Widt" &
+        "h have one less Column")
+        Me.ChkLessRowCol.UseVisualStyleBackColor = True
+        '
+        'NumExtraMax
+        '
+        Me.NumExtraMax.Location = New System.Drawing.Point(193, 102)
+        Me.NumExtraMax.Maximum = New Decimal(New Integer() {9, 0, 0, 0})
+        Me.NumExtraMax.Name = "NumExtraMax"
+        Me.NumExtraMax.Size = New System.Drawing.Size(40, 20)
+        Me.NumExtraMax.TabIndex = 5
+        Me.NumExtraMax.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'Label6
+        '
+        Label6.AutoSize = True
+        Label6.Location = New System.Drawing.Point(86, 104)
+        Label6.Name = "Label6"
+        Label6.Size = New System.Drawing.Size(106, 13)
+        Label6.TabIndex = 28
+        Label6.Text = "Extra Columns/Rows"
+        '
+        'chkOverViewIsGame
+        '
+        Me.chkOverViewIsGame.AutoSize = True
+        Me.chkOverViewIsGame.Location = New System.Drawing.Point(172, 54)
+        Me.chkOverViewIsGame.Name = "chkOverViewIsGame"
+        Me.chkOverViewIsGame.Size = New System.Drawing.Size(107, 17)
+        Me.chkOverViewIsGame.TabIndex = 22
+        Me.chkOverViewIsGame.Text = "Active Overview "
+        Me.ttSettings.SetToolTip(Me.chkOverViewIsGame, "Have overview thumbnails function as game.")
+        Me.chkOverViewIsGame.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
-        Me.ClientSize = New System.Drawing.Size(236, 196)
+        Me.ClientSize = New System.Drawing.Size(314, 198)
         Me.Controls.Add(Me.tbcSettings)
         Me.Controls.Add(Me.btnCancel)
         Me.Controls.Add(Me.btnOK)
@@ -761,6 +974,12 @@ Partial Class FrmSettings
         grpQLPath.ResumeLayout(False)
         grpQLPath.PerformLayout()
         Me.cmsQLFolder.ResumeLayout(False)
+        Me.grpReserveSpace.ResumeLayout(False)
+        Me.grpReserveSpace.PerformLayout()
+        CType(Me.NumBorderBot, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumBorderRight, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumBorderTop, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumBorderLeft, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tbcSettings.ResumeLayout(False)
         Me.tabResolutions.ResumeLayout(False)
         Me.tabResolutions.PerformLayout()
@@ -772,12 +991,15 @@ Partial Class FrmSettings
         Me.grpOverviewShortcut.PerformLayout()
         Me.tabSortAndBL.ResumeLayout(False)
         Me.tabSortAndBL.PerformLayout()
+        Me.tabMaximized.ResumeLayout(False)
+        Me.tabMaximized.PerformLayout()
         Me.tabMisc.ResumeLayout(False)
         Me.tabMisc.PerformLayout()
         Me.grpAlign.ResumeLayout(False)
         Me.grpAlign.PerformLayout()
-        CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.numXoffset, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumExtraMax, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
@@ -787,7 +1009,6 @@ Partial Class FrmSettings
     Friend WithEvents cmsQLFolder As ContextMenuStrip
     Friend WithEvents OpenInExplorerToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ttSettings As ToolTip
-    Friend WithEvents tbcSettings As TabControl
     Friend WithEvents tabResolutions As TabPage
     Friend WithEvents txtResolutions As TextBox
     Friend WithEvents tabHotkeys As TabPage
@@ -810,7 +1031,6 @@ Partial Class FrmSettings
     Friend WithEvents btnOpenFolderDialog As Button
     Friend WithEvents txtQuickLaunchPath As TextBox
     Friend WithEvents txtClass As TextBox
-    Friend WithEvents chkOverViewIsGame As CheckBox
     Friend WithEvents chkCycleAlts As CheckBox
     Friend WithEvents chkCycleUpAlt As CheckBox
     Friend WithEvents chkCycleUpCtrl As CheckBox
@@ -836,4 +1056,14 @@ Partial Class FrmSettings
     Friend WithEvents btnTest As Button
     Friend WithEvents chkWhitelist As CheckBox
     Friend WithEvents ChkSingleInstance As CheckBox
+    Friend WithEvents tabMaximized As TabPage
+    Friend WithEvents grpReserveSpace As GroupBox
+    Friend WithEvents NumBorderBot As NumericUpDown
+    Friend WithEvents NumBorderRight As NumericUpDown
+    Friend WithEvents NumBorderTop As NumericUpDown
+    Friend WithEvents NumBorderLeft As NumericUpDown
+    Friend WithEvents tbcSettings As TabControl
+    Friend WithEvents ChkLessRowCol As CheckBox
+    Friend WithEvents NumExtraMax As NumericUpDown
+    Friend WithEvents chkOverViewIsGame As CheckBox
 End Class

@@ -439,6 +439,78 @@ Namespace My
                 Me("LockEq") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property MaxBorderTop() As Integer
+            Get
+                Return CType(Me("MaxBorderTop"),Integer)
+            End Get
+            Set
+                Me("MaxBorderTop") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property MaxBorderLeft() As Integer
+            Get
+                Return CType(Me("MaxBorderLeft"),Integer)
+            End Get
+            Set
+                Me("MaxBorderLeft") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property MaxBorderRight() As Integer
+            Get
+                Return CType(Me("MaxBorderRight"),Integer)
+            End Get
+            Set
+                Me("MaxBorderRight") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property MaxBorderBot() As Integer
+            Get
+                Return CType(Me("MaxBorderBot"),Integer)
+            End Get
+            Set
+                Me("MaxBorderBot") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property ExtraMaxColRow() As Integer
+            Get
+                Return CType(Me("ExtraMaxColRow"),Integer)
+            End Get
+            Set
+                Me("ExtraMaxColRow") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property OneLessRowCol() As Boolean
+            Get
+                Return CType(Me("OneLessRowCol"),Boolean)
+            End Get
+            Set
+                Me("OneLessRowCol") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

@@ -75,6 +75,15 @@ Public Class FrmSettings
 
         ChkSingleInstance.Checked = My.Settings.SingleInstance
 
+        NumBorderTop.Value = My.Settings.MaxBorderTop
+        NumBorderBot.Value = My.Settings.MaxBorderBot
+        NumBorderLeft.Value = My.Settings.MaxBorderLeft
+        NumBorderRight.Value = My.Settings.MaxBorderRight
+
+        ChkLessRowCol.Checked = My.Settings.OneLessRowCol
+
+        NumExtraMax.Value = My.Settings.ExtraMaxColRow
+
     End Sub
 
     Private ReadOnly restoreWhitelist As Boolean = My.Settings.Whitelist
@@ -246,6 +255,15 @@ Public Class FrmSettings
         My.Settings.botSort = txtBotSort.Text
 
         My.Settings.SingleInstance = ChkSingleInstance.Checked
+
+        My.Settings.MaxBorderTop = NumBorderTop.Value
+        My.Settings.MaxBorderBot = NumBorderBot.Value
+        My.Settings.MaxBorderLeft = NumBorderLeft.Value
+        My.Settings.MaxBorderRight = NumBorderRight.Value
+
+        My.Settings.ExtraMaxColRow = NumExtraMax.Value
+
+        My.Settings.OneLessRowCol = ChkLessRowCol.Checked
 
         BtnTest_Click(Nothing, Nothing) 'apply sorting & black/whitlelist, note: .PerformClick() doesn't work as button may not be visible
 
@@ -479,6 +497,29 @@ Public Class FrmSettings
         Debug.Print("blacklist:")
         FrmMain.blackList.ForEach(Sub(el) Debug.Print(el))
 #End If
+    End Sub
+
+    Private performingBorderAdjust As Boolean = False
+    Private Sub NumBorder_ValueChanged(sender As NumericUpDown, e As EventArgs) _
+        Handles NumBorderLeft.ValueChanged, NumBorderRight.ValueChanged, NumBorderTop.ValueChanged, NumBorderBot.ValueChanged
+        If performingBorderAdjust Then Exit Sub
+        Dim anti As NumericUpDown
+        Select Case sender.Name
+            Case "NumBorderBot"
+                anti = NumBorderTop
+            Case "NumBorderLeft"
+                anti = NumBorderRight
+            Case "NumBorderRight"
+                anti = NumBorderLeft
+            Case Else
+                anti = NumBorderBot
+        End Select
+
+        performingBorderAdjust = True
+        While anti.Value + sender.Value > 750
+            anti.Value -= 1
+        End While
+        performingBorderAdjust = False
     End Sub
 
     Private Sub TxtShortcuts_PreviewKeyDown(sender As TextBox, e As PreviewKeyDownEventArgs) Handles txtStoKey.PreviewKeyDown, txtCycleKeyUp.PreviewKeyDown, txtCycleKeyDown.PreviewKeyDown
