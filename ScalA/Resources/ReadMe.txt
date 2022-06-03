@@ -184,3 +184,12 @@ Fixed Quicklaunch and Comboboxes glitching wrong cursor when overlapping EQ lock
 Fixed hovering over alt selection dropdown items would show EQ lock zone on overview.
 Fixed ScalA popping to front after hovering over alt selection dropdown items.
 Fixed cursor glitch when settings form overlaps EQ lock zone.
+
+**ScalA 1.0.3**
+Grayed EQ Lock icon to indicate it is not supported on active overview.
+Fixed EQ lock stuck on indeterminate state when switching to overview with shift or alt-key pressed.
+Fixed client popping in front after restoring from minimized to maximized state when relaunching ScalA.
+Implemented a border reservation setting for maximized state.
+Implemented settings to handle ultra widescreen monitors.
+Fixed Quicklaunch being slow on vanilla clients.
+Minor UX improvements.

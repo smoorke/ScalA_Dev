@@ -55,6 +55,8 @@ Partial Class FrmSettings
         Me.NumBorderRight = New System.Windows.Forms.NumericUpDown()
         Me.NumBorderTop = New System.Windows.Forms.NumericUpDown()
         Me.NumBorderLeft = New System.Windows.Forms.NumericUpDown()
+        Me.ChkLessRowCol = New System.Windows.Forms.CheckBox()
+        Me.chkOverViewIsGame = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.btnRestore = New System.Windows.Forms.Button()
@@ -90,6 +92,7 @@ Partial Class FrmSettings
         Me.txtTopSort = New System.Windows.Forms.TextBox()
         Me.chkWhitelist = New System.Windows.Forms.CheckBox()
         Me.tabMaximized = New System.Windows.Forms.TabPage()
+        Me.NumExtraMax = New System.Windows.Forms.NumericUpDown()
         Me.tabMisc = New System.Windows.Forms.TabPage()
         Me.chkDoAlign = New System.Windows.Forms.CheckBox()
         Me.grpAlign = New System.Windows.Forms.GroupBox()
@@ -100,9 +103,6 @@ Partial Class FrmSettings
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
         Me.txtClass = New System.Windows.Forms.TextBox()
-        Me.ChkLessRowCol = New System.Windows.Forms.CheckBox()
-        Me.NumExtraMax = New System.Windows.Forms.NumericUpDown()
-        Me.chkOverViewIsGame = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -134,11 +134,11 @@ Partial Class FrmSettings
         Me.grpOverviewShortcut.SuspendLayout()
         Me.tabSortAndBL.SuspendLayout()
         Me.tabMaximized.SuspendLayout()
+        CType(Me.NumExtraMax, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tabMisc.SuspendLayout()
         Me.grpAlign.SuspendLayout()
         CType(Me.numXoffset, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.NumExtraMax, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'grpQLPath
@@ -309,6 +309,15 @@ Partial Class FrmSettings
         Label14.TabIndex = 11
         Label14.Text = "‰"
         '
+        'Label6
+        '
+        Label6.AutoSize = True
+        Label6.Location = New System.Drawing.Point(86, 104)
+        Label6.Name = "Label6"
+        Label6.Size = New System.Drawing.Size(106, 13)
+        Label6.TabIndex = 28
+        Label6.Text = "Extra Columns/Rows"
+        '
         'btnOK
         '
         Me.btnOK.Location = New System.Drawing.Point(141, 166)
@@ -423,6 +432,31 @@ Partial Class FrmSettings
         Me.NumBorderLeft.Size = New System.Drawing.Size(50, 20)
         Me.NumBorderLeft.TabIndex = 0
         Me.NumBorderLeft.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'ChkLessRowCol
+        '
+        Me.ChkLessRowCol.AutoSize = True
+        Me.ChkLessRowCol.Checked = True
+        Me.ChkLessRowCol.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.ChkLessRowCol.Location = New System.Drawing.Point(87, 82)
+        Me.ChkLessRowCol.Name = "ChkLessRowCol"
+        Me.ChkLessRowCol.Size = New System.Drawing.Size(136, 17)
+        Me.ChkLessRowCol.TabIndex = 4
+        Me.ChkLessRowCol.Text = "One Less Row/Column"
+        Me.ttSettings.SetToolTip(Me.ChkLessRowCol, "When Width is bigger than Height have one less Row " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "If Height is bigger than Wid" &
+        "th have one less Column")
+        Me.ChkLessRowCol.UseVisualStyleBackColor = True
+        '
+        'chkOverViewIsGame
+        '
+        Me.chkOverViewIsGame.AutoSize = True
+        Me.chkOverViewIsGame.Location = New System.Drawing.Point(172, 54)
+        Me.chkOverViewIsGame.Name = "chkOverViewIsGame"
+        Me.chkOverViewIsGame.Size = New System.Drawing.Size(107, 17)
+        Me.chkOverViewIsGame.TabIndex = 22
+        Me.chkOverViewIsGame.Text = "Active Overview "
+        Me.ttSettings.SetToolTip(Me.chkOverViewIsGame, "Have overview thumbnails function as game.")
+        Me.chkOverViewIsGame.UseVisualStyleBackColor = True
         '
         'tbcSettings
         '
@@ -796,6 +830,15 @@ Partial Class FrmSettings
         Me.tabMaximized.Text = "Maximized"
         Me.tabMaximized.UseVisualStyleBackColor = True
         '
+        'NumExtraMax
+        '
+        Me.NumExtraMax.Location = New System.Drawing.Point(193, 102)
+        Me.NumExtraMax.Maximum = New Decimal(New Integer() {9, 0, 0, 0})
+        Me.NumExtraMax.Name = "NumExtraMax"
+        Me.NumExtraMax.Size = New System.Drawing.Size(40, 20)
+        Me.NumExtraMax.TabIndex = 5
+        Me.NumExtraMax.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
         'tabMisc
         '
         Me.tabMisc.Controls.Add(Me.chkOverViewIsGame)
@@ -912,49 +955,6 @@ Partial Class FrmSettings
         Me.txtClass.TabIndex = 7
         Me.txtClass.Text = "MAINWNDMOAC | 䅍义乗䵄䅏C"
         '
-        'ChkLessRowCol
-        '
-        Me.ChkLessRowCol.AutoSize = True
-        Me.ChkLessRowCol.Checked = True
-        Me.ChkLessRowCol.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.ChkLessRowCol.Location = New System.Drawing.Point(87, 82)
-        Me.ChkLessRowCol.Name = "ChkLessRowCol"
-        Me.ChkLessRowCol.Size = New System.Drawing.Size(136, 17)
-        Me.ChkLessRowCol.TabIndex = 4
-        Me.ChkLessRowCol.Text = "One Less Row/Column"
-        Me.ttSettings.SetToolTip(Me.ChkLessRowCol, "When Width is bigger than Height have on less Row " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "If Height is bigger than Widt" &
-        "h have one less Column")
-        Me.ChkLessRowCol.UseVisualStyleBackColor = True
-        '
-        'NumExtraMax
-        '
-        Me.NumExtraMax.Location = New System.Drawing.Point(193, 102)
-        Me.NumExtraMax.Maximum = New Decimal(New Integer() {9, 0, 0, 0})
-        Me.NumExtraMax.Name = "NumExtraMax"
-        Me.NumExtraMax.Size = New System.Drawing.Size(40, 20)
-        Me.NumExtraMax.TabIndex = 5
-        Me.NumExtraMax.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
-        '
-        'Label6
-        '
-        Label6.AutoSize = True
-        Label6.Location = New System.Drawing.Point(86, 104)
-        Label6.Name = "Label6"
-        Label6.Size = New System.Drawing.Size(106, 13)
-        Label6.TabIndex = 28
-        Label6.Text = "Extra Columns/Rows"
-        '
-        'chkOverViewIsGame
-        '
-        Me.chkOverViewIsGame.AutoSize = True
-        Me.chkOverViewIsGame.Location = New System.Drawing.Point(172, 54)
-        Me.chkOverViewIsGame.Name = "chkOverViewIsGame"
-        Me.chkOverViewIsGame.Size = New System.Drawing.Size(107, 17)
-        Me.chkOverViewIsGame.TabIndex = 22
-        Me.chkOverViewIsGame.Text = "Active Overview "
-        Me.ttSettings.SetToolTip(Me.chkOverViewIsGame, "Have overview thumbnails function as game.")
-        Me.chkOverViewIsGame.UseVisualStyleBackColor = True
-        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -993,13 +993,13 @@ Partial Class FrmSettings
         Me.tabSortAndBL.PerformLayout()
         Me.tabMaximized.ResumeLayout(False)
         Me.tabMaximized.PerformLayout()
+        CType(Me.NumExtraMax, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tabMisc.ResumeLayout(False)
         Me.tabMisc.PerformLayout()
         Me.grpAlign.ResumeLayout(False)
         Me.grpAlign.PerformLayout()
         CType(Me.numXoffset, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.NumExtraMax, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
