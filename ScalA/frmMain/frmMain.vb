@@ -895,7 +895,7 @@
                 rectDic(apID) = but.ThumbRECT
                 Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
                                    .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION,
-                                   .opacity = opaDict.GetValueOrDefault(apID, &HFF),
+                                   .opacity = opaDict.GetValueOrDefault(apID, If(chkDebug.Checked, 128, 255)),
                                    .fSourceClientAreaOnly = True,
                                    .fVisible = True,
                                    .rcDestination = rectDic(apID)
@@ -1020,6 +1020,7 @@
         Next i
         pnlOverview.ResumeLayout()
     End Sub
+
     Private Function UpdateButtonLayout(count As Integer) As List(Of AButton)
         pnlOverview.SuspendLayout()
         Dim numCols As Integer
@@ -1157,7 +1158,7 @@
     End Sub
     Private Sub BtnAlt_MouseLeave(sender As AButton, e As EventArgs) ' Handles AButton.MouseLeave
         If sender.Tag Is Nothing Then Exit Sub
-        opaDict(CType(sender.Tag, AstoniaProcess)?.Id) = &HFF
+        opaDict(CType(sender.Tag, AstoniaProcess)?.Id) = If(chkDebug.Checked, 128, 255)
     End Sub
 
     Private Sub ChkHideMessage_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkHideMessage.CheckedChanged
