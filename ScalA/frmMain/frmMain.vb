@@ -1143,12 +1143,20 @@
         End If
         cboAlt.SelectedItem = sender.Tag
     End Sub
-    Private Sub BtnAlt_MouseDown(sender As Button, e As MouseEventArgs) ' handles AButton.mousedown
+    Private Sub BtnAlt_MouseDown(sender As AButton, e As MouseEventArgs) ' handles AButton.mousedown
         Debug.Print($"MouseDown {e.Button}")
+        If sender.Tag Is Nothing Then Exit Sub
         Select Case e.Button
             Case MouseButtons.XButton1, MouseButtons.XButton2
                 sender.Select()
-                If sender.Tag IsNot Nothing Then CType(sender.Tag, AstoniaProcess).Activate()
+                CType(sender.Tag, AstoniaProcess).Activate()
+            Case MouseButtons.Left
+                If e.Clicks = 2 Then
+                    If Not cboAlt.Items.Contains(sender.Tag) Then
+                        PopDropDown(cboAlt)
+                    End If
+                    cboAlt.SelectedItem = sender.Tag
+                End If
         End Select
     End Sub
     Private Sub BtnAlt_MouseEnter(sender As AButton, e As EventArgs) ' Handles AButton.MouseEnter
