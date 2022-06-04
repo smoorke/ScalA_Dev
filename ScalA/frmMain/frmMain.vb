@@ -1419,7 +1419,7 @@
 #If DEBUG Then
     Private Sub ChkDebug_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkDebug.CheckedChanged
         Debug.Print(Screen.GetWorkingArea(sender).ToString)
-        UpdateThumb(If(sender.Checked, 122, 255))
+        If Not pnlOverview.Visible Then UpdateThumb(If(sender.Checked, 122, 255))
     End Sub
 #End If
 
@@ -1515,6 +1515,7 @@
         sender.Text = If(sender.CheckState = CheckState.Unchecked, "🔓", "🔒")
 
     End Sub
+
 End Class
 
 #If DEBUG Then
