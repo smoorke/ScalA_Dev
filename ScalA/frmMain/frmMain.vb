@@ -350,9 +350,12 @@
         chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()
                                      Debug.Print("test Opening")
+                                     sysMenuOpen = True
+                                     UntrapMouse(MouseButtons.Right)
                                      AppActivate(scalaPID)
-                                     UntrapMouse()
                                  End Sub
+        AddHandler test.Closed, Sub() sysMenuOpen = False
+        AddHandler chkDebug.MouseUp, Sub(sen, ev) UntrapMouse(ev.Button)
 #End If
 
         'set shield if runing as admin
@@ -664,8 +667,8 @@
     End Sub
     Private sysMenuOpen As Boolean = False
     Public Async Sub ShowSysMenu(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseUp, lblTitle.MouseUp, btnMin.MouseUp, btnMax.MouseUp
-        UntrapMouse() ' fix mousebutton stuck bug
-        If e Is Nothing OrElse e.Button = MouseButtons.Right Then
+        UntrapMouse(e.Button) ' fix mousebutton stuck bug
+        If e.Button = MouseButtons.Right Then
             Debug.Print("ShowSysMenu hSysMenu=" & hSysMenu.ToString)
             pbZoom.Visible = False
             AButton.ActiveOverview = False
@@ -691,14 +694,18 @@
 
 #End Region
     ''' <summary>
-    ''' fix mousebutton stuck after drag bug
+    ''' Fix mousebutton stuck after drag bug
+    ''' Note: needs to be run before acivating self
     ''' </summary>
-    Private Sub UntrapMouse()
+    Private Sub UntrapMouse(button As MouseButtons)
+        Dim activePID = GetActiveProcessID()
+        Debug.Print($"active {activePID} is AltPP.id {activePID = AltPP?.Id}")
+        If activePID <> AltPP?.Id Then Exit Sub 'only when dragged from client
         Try
             If Not (pnlOverview.Visible OrElse pbZoom.Contains(MousePosition)) Then
-                Debug.Print("untrap mouse")
-                PostMessage(AltPP.MainWindowHandle, WM_RBUTTONUP, 0, 0) 'this looks funny
-                PostMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0) 'this breaks clickguard
+                Debug.Print($"untrap mouse {button}")
+                If button = MouseButtons.Right Then PostMessage(AltPP.MainWindowHandle, WM_RBUTTONUP, 0, 0)
+                If button = MouseButtons.Middle Then PostMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0)
             End If
         Catch
         End Try
@@ -1110,7 +1117,7 @@
         Me.Close()
     End Sub
     Private Sub Various_MouseUp(sender As Control, e As MouseEventArgs) Handles Me.MouseUp, btnQuit.MouseUp, pnlSys.MouseUp, pnlButtons.MouseUp, btnStart.MouseUp, cboAlt.MouseUp, cmbResolution.MouseUp, ChkEqLock.MouseUp
-        UntrapMouse() 'fix mousebutton stuck
+        UntrapMouse(e.Button) 'fix mousebutton stuck
     End Sub
 
     Private Sub BtnMin_Click(sender As Button, e As EventArgs) Handles btnMin.Click

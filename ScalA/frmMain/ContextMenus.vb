@@ -511,6 +511,7 @@ Partial Public Class FrmMain
     End Sub
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
+        UntrapMouse(MouseButtons.Right)
         AppActivate(scalaPID) 'fix right click drag bug
         ttMain.Hide(cboAlt)
         ttMain.Hide(btnStart)
@@ -520,7 +521,7 @@ Partial Public Class FrmMain
             'show sysmenu
             Debug.Print("ShowSysMenu ")
 
-            Me.ShowSysMenu(sender, Nothing)
+            Me.ShowSysMenu(sender, New MouseEventArgs(MouseButtons.Right, 1, 0, 0, 0))
 
             'Dim cmd As Integer = TrackPopupMenuEx(hSysMenu, &H102L, MousePosition.X, MousePosition.Y, Me.Handle, Nothing)
             'If cmd > 0 Then
