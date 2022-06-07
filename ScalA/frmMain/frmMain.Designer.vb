@@ -481,8 +481,8 @@ Partial Class FrmMain
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(1052, 855)
-        Me.Controls.Add(Me.pnlOverview)
         Me.Controls.Add(Me.PnlEqLock)
+        Me.Controls.Add(Me.pnlOverview)
         Me.Controls.Add(Me.pbZoom)
         Me.Controls.Add(Me.cornerSE)
         Me.Controls.Add(Me.cornerSW)

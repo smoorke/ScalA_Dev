@@ -64,7 +64,7 @@
 
         Dim that As ComboBox = CType(sender, ComboBox)
 
-        If AltPP.Id <> 0 AndAlso AltPP.Equals(CType(that.SelectedItem, AstoniaProcess)) Then
+        If AltPP IsNot Nothing AndAlso AltPP.Id <> 0 AndAlso AltPP.Equals(CType(that.SelectedItem, AstoniaProcess)) Then
             AltPP.Activate()
             Exit Sub
         End If
@@ -851,6 +851,8 @@
 
         Dim apCounter = 0
         Dim butCounter = 0
+        Dim eqLockDrawn As Boolean = False
+        AltPP = Nothing
 
         For Each but As AButton In visibleButtons
             butCounter += 1
@@ -862,6 +864,8 @@
                 Dim apID As Integer = ap?.Id
                 but.Tag = ap
                 but.Text = ap.Name
+
+
                 If ap?.IsActive() Then
                     but.Font = New Font("Microsoft Sans Serif", 8.25, FontStyle.Bold)
                     but.Select()
@@ -931,6 +935,8 @@
                     End If
 
                     If Not AOBusy AndAlso but.ThumbContains(MousePosition) Then
+                        AltPP = ap
+
                         If pci.flags = 0 Then ' cursor is hidden
                             wasVisible = False
                             Exit For ' do not move astonia when cursor is hidden. fixes scrollbar thumb.
@@ -952,6 +958,12 @@
                         If Not restoreDic.ContainsKey(apID) Then
                             restoreDic.Add(apID, rcwB.Location)
                         End If
+
+                        PnlEqLock.BringToFront()
+                        eqLockDrawn = True
+                        PnlEqLock.Location = but.ThumbRECT.Location + New Point((rccB.Width \ 2 - 260).Map(0, rccB.Width, 0, but.ThumbRECT.Width - but.ThumbRECT.Left), 0)
+                        PnlEqLock.Size = New Size(522.Map(rccB.Width, 0, but.ThumbRECT.Width - but.ThumbRECT.Left, 0),
+                                                   42.Map(0, rccB.Height, 0, but.ThumbRECT.Height - but.ThumbRECT.Top))
 
                         Dim AstClientOffsetB = New Size(pttB.X - rcwB.Left, pttB.Y - rcwB.Top)
 
@@ -984,6 +996,10 @@
                 but.Image = Nothing
             End If
         Next but
+        If Not eqLockDrawn Then
+            PnlEqLock.SendToBack()
+            pbZoom.SendToBack()
+        End If
 
         ' Dim purgeList As List(Of Integer) = startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList
         For Each ppid As Integer In startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList 'tolist needed as we mutate the thumbsdict
@@ -1339,7 +1355,7 @@
 
         End If
 
-        If My.Settings.LockEq AndAlso Not pnlOverview.Visible AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then
+        If My.Settings.LockEq AndAlso My.Settings.gameOnOverview AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then
             If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
                 If Not PnlEqLock.Visible Then
                     'Await Task.Delay(100)
