@@ -44,6 +44,7 @@ Partial Public Class FrmMain
             Exit Sub
         End If
         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
+        UntrapMouse(MouseButtons.Right)
         AppActivate(scalaPID) 'fix right click drag bug
 
         Dim pp As AstoniaProcess = sender.SourceControl.Tag
