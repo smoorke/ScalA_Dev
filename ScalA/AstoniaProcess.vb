@@ -21,6 +21,37 @@
         End Get
     End Property
 
+    Private _restoreLoc As Point? = Nothing
+    Private _wasTopmost As Boolean = False
+#Disable Warning IDE0140 ' Object creation can be simplified 'needs to be declared and assigned for parrallel.foreach
+    Private Shared ReadOnly _restoreDic As Dictionary(Of Integer, AstoniaProcess) = New Dictionary(Of Integer, AstoniaProcess)
+#Enable Warning IDE0140 ' Object creation can be simplified
+    Public Shared Sub RestorePos()
+        Parallel.ForEach(_restoreDic.Values,
+                         Sub(ap As AstoniaProcess)
+                             Try
+                                 If ap._restoreLoc IsNot Nothing AndAlso ap.IsRunning() Then
+                                     SetWindowPos(ap.MainWindowHandle, If(ap._wasTopmost, SWP_HWND.TOPMOST, SWP_HWND.NOTOPMOST),
+                                                  ap._restoreLoc?.X, ap._restoreLoc?.Y, -1, -1,
+                                                  SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+                                     ap._restoreLoc = Nothing
+                                 End If
+                             Catch
+                             End Try
+                         End Sub)
+        _restoreDic.Clear()
+    End Sub
+
+    Public Sub SavePos(Optional pt As Point? = Nothing, Optional overwrite As Boolean = True)
+        If pt Is Nothing Then
+            Dim rc As Rectangle
+            GetWindowRect(_proc.MainWindowHandle, rc)
+            pt = rc.Location
+        End If
+        If overwrite OrElse Not _restoreDic.ContainsKey(_proc.Id) Then Me._restoreLoc = pt
+        If Not _restoreDic.ContainsKey(_proc.Id) Then _restoreDic.Add(_proc.Id, Me)
+        Me._wasTopmost = Me.IsTopMost()
+    End Sub
 
     Private _CO As Point
     Public ReadOnly Property ClientOffset() As Point

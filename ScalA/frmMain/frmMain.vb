@@ -48,7 +48,6 @@
 
 #End Region
 
-    Dim altTopM As Integer = SWP_HWND.NOTOPMOST '-2
     Private ReadOnly restoreParent As UInteger = GetWindowLong(Me.Handle, GWL_HWNDPARENT)
     Private prevItem As New AstoniaProcess()
     Private updatingCombobox As Boolean = False
@@ -76,7 +75,7 @@
         TickCounter = 0
 
         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
-        RestorePos(AltPP)
+        AstoniaProcess.RestorePos()
         AltPP = that.SelectedItem
         UpdateTitle()
         If that.SelectedIndex = 0 Then
@@ -134,6 +133,9 @@
                 'cboAlt.SelectedIndex = 0
                 Exit Sub
             End If
+
+            AltPP.SavePos(rcW.Location)
+
             PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 260, Integer).Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0), 25)
             ' PnlEqLock.Size = New Size(CType(rcC.Width / 2 + 122, Integer).Map(rcC.Width, rcC.Width / 2, zooms(cmbResolution.SelectedIndex).Width, zooms(cmbResolution.SelectedIndex).Width / 2),
             PnlEqLock.Size = New Size(522.Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0),
@@ -146,25 +148,11 @@
 
             AstClientOffset = New Size(ptt.X - rcW.Left, ptt.Y - rcW.Top)
 
-            'Debug.Print("updateTitle")
-            'UpdateTitle()
-
-            'newX = Me.Left + pbZoom.Left - AstClientOffset.Width - My.Settings.offset.X
-            'newY = Me.Top + pbZoom.Top - AstClientOffset.Height - My.Settings.offset.Y
-
-            Debug.Print("SetWindowLong")
-
-            altTopM = If(AltPP.IsTopMost(), SWP_HWND.TOPMOST, SWP_HWND.NOTOPMOST)
-
-            'SetWindowPos(AltPP.MainWindowHandle, -2, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
             SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle) ' have Client always be beneath ScalA (set Scala to be owned by client)
-            '                                                                         note SetParent() doesn't work.
+            '                                                                  note SetParent() doesn't work.
 
             Debug.Print("AltPPTopMost " & AltPP.IsTopMost.ToString)
             Debug.Print("SelfTopMost " & Process.GetCurrentProcess.IsTopMost.ToString)
-
-            'Debug.Print("SetWindowPos")
-            'SetWindowPos(AltPP.MainWindowHandle, Me.Handle, newX, newY, -1, -1, SetWindowPosFlags.IgnoreResize) ' + SetWindowPosFlags.DoNotActivate)
 
             Dim item As AstoniaProcess = CType(that.SelectedItem, AstoniaProcess)
             If Not startThumbsDict.ContainsKey(item.Id) Then
@@ -181,7 +169,6 @@
             Next
             startThumbsDict.Clear()
 
-            'Dim unused = Task.Run(Sub() AltPP?.CenterWindowPos(ScalaHandle, Me.Left + pbZoom.Left + (pbZoom.Width / 2), Me.Top + pbZoom.Top + (pbZoom.Height / 2)))
             Debug.Print("updateThumb")
             If rectDic.ContainsKey(item.Id) Then
                 AnimateThumb(rectDic(item.Id), New Rectangle(pbZoom.Left, pbZoom.Top, pbZoom.Right, pbZoom.Bottom))
@@ -211,21 +198,6 @@
     End Sub
 
     Dim AstClientOffset As New Size(0, 0)
-    Public Sub RestorePos(altPP As AstoniaProcess)
-        If altPP?.IsRunning() Then
-            SetWindowPos(altPP.MainWindowHandle, altTopM, rcW.Left, rcW.Top, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.ASyncWindowPosition)
-        End If
-        For Each id In restoreDic.Keys
-            Try
-                Dim altAP As New AstoniaProcess(Process.GetProcessById(id))
-                If altAP.IsRunning() Then
-                    SetWindowPos(altAP.MainWindowHandle, SWP_HWND.TOP, restoreDic(id).X, restoreDic(id).Y, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.ASyncWindowPosition)
-                End If
-            Catch
-            End Try
-        Next
-        restoreDic.Clear()
-    End Sub
 
     Private Sub UpdateTitle()
         Dim titleSuff As String = String.Empty
@@ -476,7 +448,7 @@
 
 
     Private Sub FrmMain_Closing(sender As Form, e As EventArgs) Handles Me.Closing
-        RestorePos(AltPP)
+        AstoniaProcess.RestorePos()
         If Me.WindowState = FormWindowState.Normal Then
             My.Settings.location = Me.Location
         End If
@@ -781,7 +753,7 @@
                             Debug.Print("restoreLoc " & RestoreLoc.ToString)
                         End If
                         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
-                        RestorePos(AltPP)
+                        AstoniaProcess.RestorePos()
                     Case &H8000 + 1337
                         Debug.Print("Settings called by 1337")
                         FrmSettings.Show()
@@ -824,7 +796,6 @@
     ReadOnly startThumbsDict As New Dictionary(Of Integer, IntPtr)
     ReadOnly opaDict As New Dictionary(Of Integer, Byte)
     ReadOnly rectDic As New Dictionary(Of Integer, Rectangle)
-    ReadOnly restoreDic As New Dictionary(Of Integer, Point)
 
     Const dimmed As Byte = 240
     Private TickCounter As Integer = 0
@@ -959,9 +930,7 @@
                         GetWindowRect(ap.MainWindowHandle, rcwB)
                         ClientToScreen(ap.MainWindowHandle, pttB)
 
-                        If Not restoreDic.ContainsKey(apID) Then
-                            restoreDic.Add(apID, rcwB.Location)
-                        End If
+                        ap.SavePos(rcwB.Location, False)
 
                         PnlEqLock.BringToFront()
                         eqLockShown = True
@@ -1151,7 +1120,7 @@
         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
         Me.WindowState = FormWindowState.Minimized
 
-        RestorePos(AltPP)
+        AstoniaProcess.RestorePos()
 
     End Sub
     Private Sub BtnAlt_Click(sender As AButton, e As EventArgs) ' Handles AButton.click
@@ -1273,7 +1242,7 @@
         Dim prevAlt As AstoniaProcess = AltPP
         Debug.Print($"prevAlt?.Name {prevAlt?.Name}")
         cboAlt.SelectedIndex = 0
-        RestorePos(AltPP)
+        AstoniaProcess.RestorePos()
         If prevAlt.Id <> 0 Then
             pnlOverview.Controls.OfType(Of AButton).FirstOrDefault(Function(ab As AButton) ab.Tag?.id = prevAlt?.Id)?.Select()
         Else
@@ -1439,7 +1408,7 @@
         tmrOverview.Stop()
         tmrTick.Stop()
 
-        RestorePos(AltPP)
+        AstoniaProcess.RestorePos()
 
         ExecuteProcessUnElevated(Environment.GetCommandLineArgs()(0), "Someone", IO.Directory.GetCurrentDirectory())
         sysTrayIcon.Visible = False
