@@ -777,13 +777,14 @@
                     Debug.Print("WM_WINDOWPOSCHANGED from maximized and mousebutton down")
                     wasMaximized = False
                     Me.WindowState = FormWindowState.Normal
+                    Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
+                    pnlTitleBar.Width = winpos.cx - pnlButtons.Width - pnlSys.Width
+                    Me.Location = New Point(winpos.x, winpos.y)
+                    AltPP?.CenterBehind(Me)
                     btnMax.Text = "⧠"
                     ttMain.SetToolTip(btnMax, "Maximize")
                     cmbResolution.Enabled = True
                     ReZoom(zooms(cmbResolution.SelectedIndex))
-                    Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
-                    pnlTitleBar.Width = winpos.cx - pnlButtons.Width - pnlSys.Width
-
                     'handle sysmenu max/restore worng
                     Dim mii As New MENUITEMINFO With {
                         .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MENUITEMINFO)),
@@ -792,6 +793,7 @@
                     SetMenuItemInfo(hSysMenu, SC_RESTORE, False, mii)
                     mii.fState = MFS.ENABLED
                     SetMenuItemInfo(hSysMenu, SC_MAXIMIZE, False, mii)
+                    m.Result = 0
                     Exit Sub
                 End If
 
