@@ -731,6 +731,7 @@
                 End If
                 If wasMaximized And MouseButtons = MouseButtons.Left Then
                     Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
+                    'winpos.flags = SetWindowPosFlags.IgnoreMove
                     Debug.Print("WM_WINDOWPOSCHANGED from maximized and mousebutton down")
                     btnMax.Text = "⧠"
                     ttMain.SetToolTip(btnMax, "Maximize")
@@ -746,7 +747,7 @@
                     'handle sysmenu max/restore worng
                     SysMenu.Disable(SC_RESTORE)
                     SysMenu.Enable(SC_MAXIMIZE)
-
+                    System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                     posChangeBusy = False
                 End If
 
