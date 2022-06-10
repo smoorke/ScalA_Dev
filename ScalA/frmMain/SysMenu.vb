@@ -22,7 +22,7 @@
 
     Public Shared Visible As Boolean
 
-    Public Shared Function Show(pos As Point)
+    Public Shared Sub Show(pos As Point)
         SysMenu.Visible = True
         Dim cmd As Integer = TrackPopupMenuEx(SysMenu.Handle, TPM_RIGHTBUTTON Or TPM_RETURNCMD, pos.X, pos.Y, _form.Handle, Nothing)
         SysMenu.Visible = False
@@ -31,7 +31,7 @@
             '_form.WndProc(Message.Create(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)) 'cant call because protected
             SendMessage(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
         End If
-    End Function
+    End Sub
 
     Private Shared mii As New MENUITEMINFO With {
                .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MENUITEMINFO)),
