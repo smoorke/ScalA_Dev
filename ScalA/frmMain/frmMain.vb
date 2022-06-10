@@ -430,6 +430,7 @@
         End If
     End Sub
     Private Sub TmrMove_Tick(sender As Object, e As EventArgs) Handles tmrMove.Tick
+        Me.Cursor = Cursors.Default
         If AltPP?.IsRunning Then
             Static moveable As Boolean = True
             If moveable Then
@@ -589,6 +590,7 @@
         End If
         Me.ResumeLayout(True)
         pnlTitleBar.Width = pnlButtons.Left - pnlTitleBar.Left
+        Debug.Print($"rezoom pnlTitleBar.Width {pnlTitleBar.Width}")
 
         cornerNW.Location = New Point(0, 0)
         cornerNE.Location = New Point(Me.Width - 2, 0)
@@ -758,12 +760,30 @@
                         Debug.Print("Settings called by 1337")
                         FrmSettings.Show()
                 End Select
+            Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
+                If wasMaximized And MouseButtons = MouseButtons.Left Then
+                    Debug.Print("WM_WINDOWPOSCHANGED from maximized and mousebutton down")
+                    wasMaximized = False
+                    Me.WindowState = FormWindowState.Normal
+                    btnMax.Text = "⧠"
+                    ttMain.SetToolTip(btnMax, "Maximize")
+                    cmbResolution.Enabled = True
+                    ReZoom(zooms(cmbResolution.SelectedIndex))
+                    Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
+                    pnlTitleBar.Width = winpos.cx - pnlButtons.Width - pnlSys.Width
 
+                    'handle sysmenu max/restore worng
+                    Dim mii As New MENUITEMINFO With {
+                        .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MENUITEMINFO)),
+                        .fMask = MIIM.STATE}
+                    mii.fState = MFS.DISABLED
+                    SetMenuItemInfo(hSysMenu, SC_RESTORE, False, mii)
+                    mii.fState = MFS.ENABLED
+                    SetMenuItemInfo(hSysMenu, SC_MAXIMIZE, False, mii)
+
+                End If
 
         End Select
-
-
-
 
         MyBase.WndProc(m)  ' allow form to process this message
     End Sub
@@ -1205,6 +1225,24 @@
                     Dim topBorder = scrn.WorkingArea.Height * My.Settings.MaxBorderTop / 1000
                     Dim rightborder = scrn.WorkingArea.Width * My.Settings.MaxBorderRight / 1000
                     Dim botBorder = scrn.WorkingArea.Height * My.Settings.MaxBorderBot / 1000
+
+                    'find out where taskbar is and add 1 pixel at that location
+                    'dirty hack to enable dragging when maximized
+                    If leftBorder + rightborder + topBorder + botBorder = 0 Then
+                        If scrn.WorkingArea.Left <> scrn.Bounds.Left Then leftBorder = 1
+                        If scrn.WorkingArea.Top <> scrn.Bounds.Top Then topBorder = 1
+                        If scrn.WorkingArea.Width <> scrn.Bounds.Width Then rightborder = 1
+                        If scrn.WorkingArea.Bottom <> scrn.Bounds.Bottom Then botBorder = 1
+                    End If
+                    'if taskbar set to auto hide add border to bottom
+                    If leftBorder + rightborder + topBorder + botBorder = 0 Then
+                        botBorder = 1
+                    End If
+
+                    Debug.Print($"leftborder {leftBorder}")
+                    Debug.Print($"topborder {topBorder}")
+                    Debug.Print($"rightborder {rightborder}")
+                    Debug.Print($"botborder {botBorder}")
 
                     Me.MaximizedBounds = New Rectangle(scrn.WorkingArea.Left - scrn.Bounds.Left + leftBorder,
                                                        scrn.WorkingArea.Top - scrn.Bounds.Top + topBorder,

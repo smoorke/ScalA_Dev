@@ -15,6 +15,17 @@ Module NativeMethods
         <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=80)> Public szTypeName As String
     End Structure
 
+    <StructLayout(LayoutKind.Sequential)>
+    Public Structure WINDOWPOS
+        Public hwnd As IntPtr
+        Public hwndInsertAfter As IntPtr
+        Public x As Integer
+        Public y As Integer
+        Public cx As Integer
+        Public cy As Integer
+        Public flags As Integer
+    End Structure
+
     <DllImport("shell32.dll", EntryPoint:="SHGetFileInfoW", SetLastError:=True)>
     Public Function SHGetFileInfoW(<InAttribute(), MarshalAs(UnmanagedType.LPTStr)> ByVal pszPath As String, ByVal dwFileAttributes As Integer, ByRef psfi As SHFILEINFOW, ByVal cbFileInfo As Integer, ByVal uFlags As Integer) As Integer
     End Function
@@ -388,6 +399,103 @@ Module NativeMethods
     <DllImport("user32.dll")>
     Public Function SetMenuDefaultItem(hMenu As IntPtr, uItem As Integer, fByPos As Integer) As Boolean : End Function
 
+
+
+    <DllImport("user32.dll", CharSet:=CharSet.Auto)>
+    Public Function GetMenuItemInfo(hMenu As IntPtr, uItem As UInt32, fByPosition As Boolean, ByRef lpmii As MENUITEMINFO) As Boolean : End Function
+    <DllImport("user32.dll")>
+    Public Function SetMenuItemInfo(hMenu As IntPtr, uItem As UInt32, fByPosition As Boolean, ByRef lpmii As MENUITEMINFO) As Boolean : End Function
+
+
+    Public Structure MENUITEMINFO
+        Dim cbSize As Integer
+        Dim fMask As Integer
+        Dim fType As Integer
+        Dim fState As Integer
+        Dim wID As Integer
+        Dim hSubMenu As Integer
+        Dim hbmpChecked As IntPtr
+        Dim hbmpUnchecked As IntPtr
+        Dim dwItemData As Integer
+        Dim dwTypeData As String
+        Dim cch As Integer
+        Dim hbmpItem As IntPtr
+    End Structure
+    Public Enum MFS As Long
+        ''' <summary>
+        '''Checks the menu item. For more information about selected menu items, see the hbmpChecked member.
+        ''' </summary>
+        CHECKED = &H8L
+        ''' <summary>
+        ''' Specifies that the menu item Is the Default. A menu can contain only one Default menu item, which Is displayed In bold.
+        ''' </summary>
+        [DEFAULT] = &H1000L
+        ''' <summary>
+        ''' Disables the menu item And grays it so that it cannot be selected. This Is equivalent To MFS_GRAYED.
+        ''' </summary>
+        DISABLED = &H3L
+        ''' <summary>
+        ''' Enables the menu item so that it can be selected. This Is the Default state.
+        ''' </summary>
+        ENABLED = &H0L
+        ''' <summary>
+        ''' Disables the menu item And grays it so that it cannot be selected. This Is equivalent To MFS_DISABLED.
+        ''' </summary>
+        GRAYED = &H3L
+        ''' <summary>
+        ''' Highlights the menu item.
+        ''' </summary>
+        HILITE = &H80L
+        ''' <summary>
+        ''' Unchecks the menu item. For more information about clear menu items, see the hbmpChecked member.
+        ''' </summary>
+        UNCHECKED = &H0L
+        ''' <summary>
+        '''Removes the highlight from the menu item. This Is the Default state.  
+        ''' </summary>
+        UNHILITE = &H0L
+    End Enum
+    <Flags>
+    Public Enum MIIM As Long
+        ''' <summary>
+        ''' Retrieves Or sets the hbmpItem member.
+        ''' </summary>
+        BITMAP = &H80
+        ''' <summary>
+        ''' Retrieves Or sets the hbmpChecked And hbmpUnchecked members.
+        ''' </summary>
+        CHECKMARKS = &H8
+        ''' <summary>
+        ''' Retrieves Or sets the dwItemData member.
+        ''' </summary>
+        DATA = &H20
+        ''' <summary>
+        ''' Retrieves Or sets the fType member.
+        ''' </summary>
+        FTYPE = &H100
+        ''' <summary>
+        ''' Retrieves Or sets the wID member.
+        ''' </summary>
+        ID = &H2
+        ''' <summary>
+        ''' Retrieves Or sets the fState member.
+        ''' </summary>
+        STATE = &H1
+        ''' <summary>
+        ''' Retrieves Or sets the dwTypeData member.
+        ''' </summary>
+        [STRING] = &H40
+        ''' <summary>
+        ''' Retrieves Or sets the hSubMenu member.
+        ''' </summary>
+        SUBMENU = &H4
+        ''' <summary>
+        ''' Retrieves Or sets the fType And dwTypeData members.
+        ''' MIIM_TYPE Is replaced by MIIM_BITMAP, MIIM_FTYPE, And MIIM_STRING.
+        ''' </summary>
+        TYPE = &H10
+    End Enum
+
     'Const MF_STRING = &H0
     'Const MF_REMOVE = &H1000&
 
@@ -399,11 +507,14 @@ Module NativeMethods
 
     Public Const WM_SETCURSOR = &H20
 
+    Public Const WM_WINDOWPOSCHANGED = &H47
+
     Public Const WM_NCHITTEST As Integer = &H84
     Public Const WM_NCLBUTTONDOWN As Integer = &HA1
     Public Const WM_NCLBUTTONUP As Integer = &HA2
     Public Const WM_SYSCOMMAND = &H112
     Public Const WM_CANCELMODE = &H1F
+
 
     Public Const WM_MOUSEMOVE = &H200
 
