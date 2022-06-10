@@ -387,6 +387,7 @@
                 tmrTick.Stop()
                 tmrMove.Start()
                 Dim msg As Message = Message.Create(Me.Handle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
+                Debug.Print("WM_NCLBUTTONDOWN")
                 Me.WndProc(msg)
                 tmrMove.Stop()
                 If Not pnlOverview.Visible Then
@@ -1247,11 +1248,11 @@
                     End If
                     'if taskbar set to auto hide find where it is hiding
                     If leftBorder + rightborder + topBorder + botBorder = 0 Then
-                        Dim monifo As New MonitorInfo With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MonitorInfo))}
-                        GetMonitorInfo(MonitorFromPoint(scrn.Bounds.Location, MONITOR.DEFAULTTONEAREST), monifo)
+                        'Dim monifo As New MonitorInfo With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MonitorInfo))}
+                        'GetMonitorInfo(MonitorFromPoint(scrn.Bounds.Location, MONITOR.DEFAULTTONEAREST), monifo)
                         Dim pabd As New APPBARDATA With {
-                        .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(APPBARDATA)),
-                        .rc = monifo.rcMonitor}
+                            .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(APPBARDATA)),
+                            .rc = scrn.Bounds.ToRECT}
                         For edge = 0 To 3
                             pabd.uEdge = edge
                             If SHAppBarMessage(ABM.GETAUTOHIDEBAREX, pabd) <> IntPtr.Zero Then
