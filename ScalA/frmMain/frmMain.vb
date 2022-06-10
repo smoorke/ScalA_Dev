@@ -626,18 +626,29 @@
 #Region " SysMenu "
 
     Private hSysMenu As IntPtr = GetSystemMenu(Me.Handle, False)
+
     Public Sub MangleSysMenu()
         Const GWL_STYLE As Integer = -16
         Debug.Print("SetWindowLong")
         SetWindowLong(Me.Handle, GWL_STYLE, GetWindowLong(Me.Handle, GWL_STYLE) Or WindowStyles.WS_SYSMENU Or WindowStyles.WS_MINIMIZEBOX) 'Enable SysMenu and MinimizeBox 
-
+        Dim mii As MENUITEMINFO
         hSysMenu = GetSystemMenu(Me.Handle, False)
         If hSysMenu Then
-            ModifyMenuA(hSysMenu, SC_CLOSE, MF_BYCOMMAND, SC_CLOSE, "&Close") 'remove Alt-F4
-            SetMenuItemBitmaps(hSysMenu, SC_CLOSE, MF_BYCOMMAND, 5, IntPtr.Zero) 're-add close icon
-            SetMenuDefaultItem(hSysMenu, SC_CLOSE, MF_BYCOMMAND)
-            'RemoveMenu(hSysMenu, SC_SIZE, MF_BYCOMMAND) 'remove size menuitem
-            ModifyMenuA(hSysMenu, SC_SIZE, MF_BYCOMMAND Or 1, SC_SIZE, "&Size") 'disable size item
+            'remove alt-F4 from close item
+            mii = New MENUITEMINFO With {
+                .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MENUITEMINFO)),
+                .fMask = MIIM.STRING Or MIIM.STATE,
+                .dwTypeData = "&Close",
+                .fState = MFS.DEFAULT}
+            SetMenuItemInfo(hSysMenu, SC_CLOSE, False, mii)
+            'disable size and restore item
+            mii = New MENUITEMINFO With {
+                .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MENUITEMINFO)),
+                .fMask = MIIM.STATE,
+                .fState = MFS.DISABLED}
+            SetMenuItemInfo(hSysMenu, SC_SIZE, False, mii)
+            SetMenuItemInfo(hSysMenu, SC_RESTORE, False, mii)
+            'add settings
             InsertMenuA(hSysMenu, 0, MF_SEPARATOR Or MF_BYPOSITION, 0, String.Empty)
             InsertMenuA(hSysMenu, 0, MF_BYPOSITION, &H8000 + 1337, "Settings")
             SetMenuItemBitmaps(hSysMenu, 0, MF_BYPOSITION, My.Resources.gear_wheel.GetHbitmap(Color.Red), Nothing)
