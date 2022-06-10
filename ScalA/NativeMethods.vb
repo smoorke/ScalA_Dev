@@ -12,6 +12,12 @@ Module NativeMethods
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
     Public Function GetMonitorInfo(hmonitor As IntPtr, ByRef info As MonitorInfo) As Boolean : End Function
 
+    Public Enum MONITOR As UInt32
+        DEFAULTTONULL = &H0
+        DEFAULTTOPRIMARY = &H1
+        DEFAULTTONEAREST = &H2
+    End Enum
+
     <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Auto, Pack:=4)>
     Public Structure MonitorInfo
         Public cbSize As UInteger
