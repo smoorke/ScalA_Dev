@@ -1302,6 +1302,11 @@
                     sender.Text = "🗗"
                     ttMain.SetToolTip(sender, "Restore")
                     wasMaximized = True
+                    Dim mii As New MENUITEMINFO With {
+                        .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MENUITEMINFO)),
+                        .fMask = MIIM.STATE}
+                    mii.fState = MFS.DISABLED
+                    SetMenuItemInfo(hSysMenu, SC_MOVE, False, mii)
                     Exit For
                 End If
             Next
@@ -1312,6 +1317,12 @@
             Me.Location = RestoreLoc
             wasMaximized = False
             ReZoom(zooms(cmbResolution.SelectedIndex))
+            wasMaximized = True
+            Dim mii As New MENUITEMINFO With {
+                .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MENUITEMINFO)),
+                .fMask = MIIM.STATE}
+            mii.fState = MFS.ENABLED
+            SetMenuItemInfo(hSysMenu, SC_MOVE, False, mii)
         End If
         If cboAlt.SelectedIndex > 0 Then
             SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
