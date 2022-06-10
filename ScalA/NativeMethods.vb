@@ -582,6 +582,7 @@ Module NativeMethods
 
     Public Const WM_SETCURSOR = &H20
 
+    Public Const WM_WINDOWPOSCHANGING = &H46
     Public Const WM_WINDOWPOSCHANGED = &H47
 
     Public Const WM_NCHITTEST As Integer = &H84

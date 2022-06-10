@@ -478,8 +478,6 @@
     Private Shared swpBusy As Boolean = False
     Private Sub TmrTick_Tick(sender As Timer, e As EventArgs) Handles tmrTick.Tick
 
-
-
         If Not AltPP?.IsRunning() Then
             Debug.Print("Not AltPP?.IsRunning()")
             If Not My.Settings.CycleOnClose Then
@@ -650,7 +648,7 @@
     ''' wasMaximized is used to determine what state to restore to
     ''' </summary>
     Dim wasMaximized As Boolean = False
-
+    Dim posChangeBusy As Boolean = False
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case Hotkey.WM_HOTKEY
@@ -721,24 +719,35 @@
                         FrmSettings.Show()
                         FrmSettings.WindowState = FormWindowState.Normal
                 End Select
+            Case WM_WINDOWPOSCHANGing
+                If posChangeBusy Then
+                    m.Result = 0
+                    Exit Sub
+                End If
             Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
+                If posChangeBusy Then
+                    m.Result = 0
+                    Exit Sub
+                End If
                 If wasMaximized And MouseButtons = MouseButtons.Left Then
+                    Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
                     Debug.Print("WM_WINDOWPOSCHANGED from maximized and mousebutton down")
-                    wasMaximized = False
-                    Me.WindowState = FormWindowState.Normal
                     btnMax.Text = "⧠"
                     ttMain.SetToolTip(btnMax, "Maximize")
                     cmbResolution.Enabled = True
+                    wasMaximized = False
+                    posChangeBusy = True
+                    Me.WindowState = FormWindowState.Normal
                     ReZoom(zooms(cmbResolution.SelectedIndex))
-                    Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
-                    pnlTitleBar.Width = winpos.cx - pnlButtons.Width - pnlSys.Width
-                    Me.Location = New Point(winpos.x, winpos.y)
                     AltPP?.CenterBehind(Me)
+                    pnlTitleBar.Width = winpos.cx - pnlButtons.Width - pnlSys.Width
+                    Debug.Print($"winpos location {New Point(winpos.x, winpos.y)}")
+                    Debug.Print($"winpos size {New Size(winpos.cx, winpos.cy)}")
                     'handle sysmenu max/restore worng
                     SysMenu.Disable(SC_RESTORE)
                     SysMenu.Enable(SC_MAXIMIZE)
-                    m.Result = 0
-                    Exit Sub
+
+                    posChangeBusy = False
                 End If
 
         End Select
