@@ -38,7 +38,7 @@
 
     Private Async Sub ComboBoxes_DropDownClosed(sender As ComboBox, e As EventArgs) Handles cboAlt.DropDownClosed, cmbResolution.DropDownClosed
         Await Task.Delay(200)
-        If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse sysMenuOpen Then Exit Sub
+        If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse SysMenu.Visible Then Exit Sub
         If Not pnlOverview.Visible Then
             pbZoom.Visible = True
         Else
@@ -326,11 +326,11 @@
         chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()
                                      Debug.Print("test Opening")
-                                     sysMenuOpen = True
+                                     SysMenu.Visible = True
                                      UntrapMouse(MouseButtons.Right)
                                      AppActivate(scalaPID)
                                  End Sub
-        AddHandler test.Closed, Sub() sysMenuOpen = False
+        AddHandler test.Closed, Sub() SysMenu.Visible = False
         AddHandler chkDebug.MouseUp, Sub(sen, ev) UntrapMouse(ev.Button)
 #End If
 
@@ -472,7 +472,7 @@
     Dim rcC As Rectangle ' clientrect
     Public newX As Integer
     Public newY As Integer
-    Private ScalaHandle As IntPtr = Me.Handle
+    Private Shared ScalaHandle As IntPtr
     Private storedY As Integer = 0
     Private wasVisible As Boolean = True
     Private Shared swpBusy As Boolean = False
@@ -626,61 +626,7 @@
 
 #Region " SysMenu "
 
-    Private hSysMenu As IntPtr = GetSystemMenu(Me.Handle, False)
 
-    Public Sub MangleSysMenu()
-        Const GWL_STYLE As Integer = -16
-        Debug.Print("SetWindowLong")
-        SetWindowLong(Me.Handle, GWL_STYLE, GetWindowLong(Me.Handle, GWL_STYLE) Or WindowStyles.WS_SYSMENU Or WindowStyles.WS_MINIMIZEBOX) 'Enable SysMenu and MinimizeBox 
-        Dim mii As MENUITEMINFO
-        hSysMenu = GetSystemMenu(Me.Handle, False)
-        If hSysMenu Then
-            'remove alt-F4 from close item
-            mii = New MENUITEMINFO With {
-                .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MENUITEMINFO)),
-                .fMask = MIIM.STRING Or MIIM.STATE,
-                .dwTypeData = "&Close",
-                .fState = MFS.DEFAULT}
-            SetMenuItemInfo(hSysMenu, SC_CLOSE, False, mii)
-            'disable size and restore item
-            mii = New MENUITEMINFO With {
-                .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MENUITEMINFO)),
-                .fMask = MIIM.STATE,
-                .fState = MFS.DISABLED}
-            SetMenuItemInfo(hSysMenu, SC_SIZE, False, mii)
-            SetMenuItemInfo(hSysMenu, SC_RESTORE, False, mii)
-            'add settings
-            InsertMenuA(hSysMenu, 0, MF_SEPARATOR Or MF_BYPOSITION, 0, String.Empty)
-            InsertMenuA(hSysMenu, 0, MF_BYPOSITION, &H8000 + 1337, "Settings")
-            SetMenuItemBitmaps(hSysMenu, 0, MF_BYPOSITION, My.Resources.gear_wheel.GetHbitmap(Color.Red), Nothing)
-        End If
-    End Sub
-    Private sysMenuOpen As Boolean = False
-    Public Async Sub ShowSysMenu(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseUp, lblTitle.MouseUp, btnMin.MouseUp, btnMax.MouseUp
-        UntrapMouse(e.Button) ' fix mousebutton stuck bug
-        If e.Button = MouseButtons.Right Then
-            Debug.Print("ShowSysMenu hSysMenu=" & hSysMenu.ToString)
-            pbZoom.Visible = False
-            AButton.ActiveOverview = False
-
-            sysMenuOpen = True
-            Dim cmd As Integer = TrackPopupMenuEx(hSysMenu, TPM_RIGHTBUTTON Or TPM_RETURNCMD, MousePosition.X, MousePosition.Y, Me.Handle, Nothing)
-            sysMenuOpen = False
-            If cmd > 0 Then
-                Debug.Print("SendMessage " & cmd)
-                'SendMessage(Me.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
-                WndProc(Message.Create(Me.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero))
-            End If
-            Await Task.Delay(200)
-            If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse sysMenuOpen Then Exit Sub
-            AltPP?.Activate()
-            If Not pnlOverview.Visible Then
-                pbZoom.Visible = True
-            Else
-                AButton.ActiveOverview = My.Settings.gameOnOverview
-            End If
-        End If
-    End Sub
 
 #End Region
     ''' <summary>
@@ -747,6 +693,7 @@
                             Me.WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero))
                             Exit Sub
                         End If
+                        SysMenu.Disable(SC_MOVE)
                     Case SC_MAXIMIZE
                         Debug.Print("SC_MAXIMIZE " & m.LParam.ToString)
                         If Me.WindowState = FormWindowState.Minimized Then
@@ -768,6 +715,7 @@
                         End If
                         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
                         AstoniaProcess.RestorePos()
+                        SysMenu.Disable(SC_MOVE)
                     Case &H8000 + 1337
                         Debug.Print("Settings called by 1337")
                         FrmSettings.Show()
@@ -786,13 +734,8 @@
                     cmbResolution.Enabled = True
                     ReZoom(zooms(cmbResolution.SelectedIndex))
                     'handle sysmenu max/restore worng
-                    Dim mii As New MENUITEMINFO With {
-                        .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MENUITEMINFO)),
-                        .fMask = MIIM.STATE}
-                    mii.fState = MFS.DISABLED
-                    SetMenuItemInfo(hSysMenu, SC_RESTORE, False, mii)
-                    mii.fState = MFS.ENABLED
-                    SetMenuItemInfo(hSysMenu, SC_MAXIMIZE, False, mii)
+                    SysMenu.Disable(SC_RESTORE)
+                    SysMenu.Enable(SC_MAXIMIZE)
                     m.Result = 0
                     Exit Sub
                 End If
@@ -824,8 +767,6 @@
         End If
         cboAlt.SelectedIndex = requestedindex
     End Sub
-
-
 
     ReadOnly startThumbsDict As New Dictionary(Of Integer, IntPtr)
     ReadOnly opaDict As New Dictionary(Of Integer, Byte)
@@ -1153,9 +1094,8 @@
         End If
         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
         Me.WindowState = FormWindowState.Minimized
-
         AstoniaProcess.RestorePos()
-
+        SysMenu.Disable(SC_MOVE)
     End Sub
     Private Sub BtnAlt_Click(sender As AButton, e As EventArgs) ' Handles AButton.click
         If sender.Text = String.Empty Then
@@ -1302,11 +1242,7 @@
                     sender.Text = "🗗"
                     ttMain.SetToolTip(sender, "Restore")
                     wasMaximized = True
-                    Dim mii As New MENUITEMINFO With {
-                        .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MENUITEMINFO)),
-                        .fMask = MIIM.STATE}
-                    mii.fState = MFS.DISABLED
-                    SetMenuItemInfo(hSysMenu, SC_MOVE, False, mii)
+                    SysMenu.Disable(SC_MOVE)
                     Exit For
                 End If
             Next
@@ -1318,11 +1254,7 @@
             wasMaximized = False
             ReZoom(zooms(cmbResolution.SelectedIndex))
             wasMaximized = True
-            Dim mii As New MENUITEMINFO With {
-                .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MENUITEMINFO)),
-                .fMask = MIIM.STATE}
-            mii.fState = MFS.ENABLED
-            SetMenuItemInfo(hSysMenu, SC_MOVE, False, mii)
+            SysMenu.Enable(SC_MOVE)
         End If
         If cboAlt.SelectedIndex > 0 Then
             SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
@@ -1430,7 +1362,7 @@
                 End If
 
                 If PnlEqLock.Visible AndAlso eqLockShown AndAlso
-                   Not (cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse sysMenuOpen) AndAlso
+                   Not (cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse SysMenu.Visible) AndAlso
                    Not (FrmSettings.cmsGenerate.Visible OrElse FrmSettings.cmsQLFolder.Visible) AndAlso
                    Not FrmSettings.Contains(MousePosition) AndAlso
                    PnlEqLock.Contains(MousePosition) AndAlso

@@ -521,14 +521,9 @@ Partial Public Class FrmMain
         If My.Computer.Keyboard.ShiftKeyDown Then
             'show sysmenu
             Debug.Print("ShowSysMenu ")
+            Dim pt As Point = sender.PointToClient(MousePosition)
+            Me.ShowSysMenu(sender, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
 
-            Me.ShowSysMenu(sender, New MouseEventArgs(MouseButtons.Right, 1, 0, 0, 0))
-
-            'Dim cmd As Integer = TrackPopupMenuEx(hSysMenu, &H102L, MousePosition.X, MousePosition.Y, Me.Handle, Nothing)
-            'If cmd > 0 Then
-            '    Debug.Print("SendMessage " & cmd)
-            '    SendMessage(Me.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
-            'End If
             If cboAlt.SelectedIndex > 0 Then
                 SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
             End If
@@ -610,7 +605,7 @@ Partial Public Class FrmMain
             End If
         End If
         Await Task.Delay(200)
-        If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse sysMenuOpen Then Exit Sub
+        If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse SysMenu.Visible Then Exit Sub
         If cboAlt.SelectedIndex > 0 Then
             pbZoom.Visible = True
         Else

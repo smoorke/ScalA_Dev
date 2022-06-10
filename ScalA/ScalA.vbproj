@@ -103,6 +103,7 @@
     <Compile Include="DWMThumb.vb" />
     <Compile Include="Extensions.vb" />
     <Compile Include="frmMain\ContextMenus.vb" />
+    <Compile Include="frmMain\SysMenu.vb" />
     <Compile Include="frmSettings.Designer.vb">
       <DependentUpon>frmSettings.vb</DependentUpon>
     </Compile>
