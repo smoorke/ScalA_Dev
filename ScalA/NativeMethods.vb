@@ -32,7 +32,23 @@ Module NativeMethods
         Public Top As Integer
         Public Right As Integer
         Public Bottom As Integer
+        Public Sub New(ByVal Rectangle As Rectangle)
+            Me.New(Rectangle.Left, Rectangle.Top, Rectangle.Right, Rectangle.Bottom)
+        End Sub
+        Public Sub New(ByVal Left As Integer, ByVal Top As Integer, ByVal Right As Integer, ByVal Bottom As Integer)
+            Me.Left = Left
+            Me.Top = Top
+            Me.Right = Right
+            Me.Bottom = Bottom
+        End Sub
+        Public Function ToRectangle() As Rectangle
+            Return Rectangle.FromLTRB(Me.Left, Me.Top, Me.Right, Me.Bottom)
+        End Function
     End Structure
+    <Runtime.CompilerServices.Extension>
+    Public Function ToRECT(Rectangle As Rectangle) As RECT
+        Return New RECT(Rectangle)
+    End Function
 
     <StructLayout(LayoutKind.Sequential)>
     Structure APPBARDATA
