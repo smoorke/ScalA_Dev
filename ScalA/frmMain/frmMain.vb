@@ -719,6 +719,7 @@
                     Case &H8000 + 1337
                         Debug.Print("Settings called by 1337")
                         FrmSettings.Show()
+                        FrmSettings.WindowState = FormWindowState.Normal
                 End Select
             Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
                 If wasMaximized And MouseButtons = MouseButtons.Left Then
