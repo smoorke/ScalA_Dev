@@ -791,7 +791,7 @@
                     SetMenuItemInfo(hSysMenu, SC_RESTORE, False, mii)
                     mii.fState = MFS.ENABLED
                     SetMenuItemInfo(hSysMenu, SC_MAXIMIZE, False, mii)
-
+                    Exit Sub
                 End If
 
         End Select
@@ -1245,8 +1245,35 @@
                         If scrn.WorkingArea.Width <> scrn.Bounds.Width Then rightborder = 1
                         If scrn.WorkingArea.Bottom <> scrn.Bounds.Bottom Then botBorder = 1
                     End If
-                    'if taskbar set to auto hide add border to bottom
+                    'if taskbar set to auto hide find where it is hiding
+                    Dim monifo As New MonitorInfo With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MonitorInfo))}
+                    GetMonitorInfo(MonitorFromPoint(scrn.Bounds.Location, 0), monifo)
+                    Dim pabd As New APPBARDATA With {
+                        .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(APPBARDATA)),
+                        .rc = monifo.rcMonitor}
+                    For edge = 0 To 3
+                        pabd.uEdge = edge
+                        If SHAppBarMessage(ABM.GETAUTOHIDEBAREX, pabd) <> IntPtr.Zero Then
+                            Select Case edge
+                                Case 0
+                                    leftBorder = 1
+                                    Debug.Print("Hidden taskbar left")
+                                Case 1
+                                    topBorder = 1
+                                    Debug.Print("Hidden taskbar top")
+                                Case 2
+                                    rightborder = 1
+                                    Debug.Print("Hidden taskbar right")
+                                Case 3
+                                    botBorder = 1
+                                    Debug.Print("Hidden taskbar bottom")
+                            End Select
+                            Exit For
+                        End If
+                    Next
+                    'if no taskbar present add to bottom
                     If leftBorder + rightborder + topBorder + botBorder = 0 Then
+                        Debug.Print("no taskbar present")
                         botBorder = 1
                     End If
 

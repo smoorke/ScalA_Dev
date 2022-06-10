@@ -6,6 +6,57 @@ Module NativeMethods
     Public Const SHGFI_SMALLICON As Integer = &H1
     Public Const SHGFI_SYSICONINDEX As Integer = &H4000
 
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, ExactSpelling:=True)>
+    Public Function MonitorFromPoint(pt As Point, dwFlags As UInt32) As IntPtr : End Function
+
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
+    Public Function GetMonitorInfo(hmonitor As IntPtr, ByRef info As MonitorInfo) As Boolean : End Function
+
+    <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Auto, Pack:=4)>
+    Public Structure MonitorInfo
+        Public cbSize As UInteger
+        Public rcMonitor As RECT
+        Public rcWork As RECT
+        Public dwFlags As UInteger
+    End Structure
+
+    <StructLayout(LayoutKind.Sequential)>
+    Structure RECT
+        Public Left As Integer
+        Public Top As Integer
+        Public Right As Integer
+        Public Bottom As Integer
+    End Structure
+
+    <StructLayout(LayoutKind.Sequential)>
+    Structure APPBARDATA
+        Public cbSize As Integer
+        Public hWnd As IntPtr
+        Public uCallbackMessage As Integer
+        Public uEdge As Integer
+        Public rc As RECT
+        Public lParam As Boolean
+    End Structure
+
+    Public Enum ABM As UInteger
+        [NEW] = &H0
+        REMOVE = &H1
+        QUERYPOS = &H2
+        SETPOS = &H3
+        GETSTATE = &H4
+        GETTASKBARPOS = &H5
+        ACTIVATE = &H6
+        GETAUTOHIDEBAR = &H7
+        SETAUTOHIDEBAR = &H8
+        WINDOWPOSCHANGED = &H9
+        SETSTATE = &HA
+        GETAUTOHIDEBAREX = &HB
+        SETAUTOHIDEBAREX = &HC
+    End Enum
+
+    <DllImport("shell32.dll", CallingConvention:=CallingConvention.StdCall)>
+    Public Function SHAppBarMessage(ByVal dwMessage As Integer, ByRef pData As APPBARDATA) As IntPtr : End Function
+
     <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.[Unicode])>
     Public Structure SHFILEINFOW
         Public hIcon As IntPtr
@@ -29,6 +80,8 @@ Module NativeMethods
     <DllImport("shell32.dll", EntryPoint:="SHGetFileInfoW", SetLastError:=True)>
     Public Function SHGetFileInfoW(<InAttribute(), MarshalAs(UnmanagedType.LPTStr)> ByVal pszPath As String, ByVal dwFileAttributes As Integer, ByRef psfi As SHFILEINFOW, ByVal cbFileInfo As Integer, ByVal uFlags As Integer) As Integer
     End Function
+
+
 
     <DllImport("user32.dll", EntryPoint:="DestroyIcon")>
     Public Function DestroyIcon(ByVal hIcon As System.IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
