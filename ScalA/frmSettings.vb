@@ -5,7 +5,7 @@ Public Class FrmSettings
         'storeZoom = My.Settings.zoom
 
         Me.Owner = FrmMain
-        Me.CenterToParent()
+        If FrmMain.WindowState <> FormWindowState.Minimized Then Me.CenterToParent()
 
         If Me.Tag IsNot Nothing Then
             For Each TabPage As TabPage In tbcSettings.TabPages
