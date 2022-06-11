@@ -256,7 +256,7 @@
         ScalaHandle = Me.Handle
 
         Debug.Print("mangleSysMenu")
-        MangleSysMenu()
+        InitSysMenu()
 
         Debug.Print("topmost " & My.Settings.topmost)
         Me.TopMost = My.Settings.topmost
