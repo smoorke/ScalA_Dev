@@ -712,7 +712,7 @@
                             Debug.Print("restoreLoc " & RestoreLoc.ToString)
                         End If
                         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
-                        AstoniaProcess.RestorePos()
+                        AstoniaProcess.RestorePos(True)
                         SysMenu.Disable(SC_MOVE)
                     Case &H8000 + 1337
                         Debug.Print("Settings called by 1337")
@@ -1105,7 +1105,7 @@
         End If
         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
         Me.WindowState = FormWindowState.Minimized
-        AstoniaProcess.RestorePos()
+        AstoniaProcess.RestorePos(True)
         SysMenu.Disable(SC_MOVE)
     End Sub
     Private Sub BtnAlt_Click(sender As AButton, e As EventArgs) ' Handles AButton.click

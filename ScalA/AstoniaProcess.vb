@@ -26,7 +26,7 @@
 #Disable Warning IDE0140 ' Object creation can be simplified 'needs to be declared and assigned for parrallel.foreach
     Private Shared ReadOnly _restoreDic As Dictionary(Of Integer, AstoniaProcess) = New Dictionary(Of Integer, AstoniaProcess)
 #Enable Warning IDE0140 ' Object creation can be simplified
-    Public Shared Sub RestorePos()
+    Public Shared Sub RestorePos(Optional keep As Boolean = False)
         Parallel.ForEach(_restoreDic.Values,
                          Sub(ap As AstoniaProcess)
                              Try
@@ -34,12 +34,12 @@
                                      SetWindowPos(ap.MainWindowHandle, If(ap._wasTopmost, SWP_HWND.TOPMOST, SWP_HWND.NOTOPMOST),
                                                   ap._restoreLoc?.X, ap._restoreLoc?.Y, -1, -1,
                                                   SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
-                                     ap._restoreLoc = Nothing
+                                     If Not keep Then ap._restoreLoc = Nothing
                                  End If
                              Catch
                              End Try
                          End Sub)
-        _restoreDic.Clear()
+        If Not keep Then _restoreDic.Clear()
     End Sub
 
     Public Sub SavePos(Optional pt As Point? = Nothing, Optional overwrite As Boolean = True)
