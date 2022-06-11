@@ -740,7 +740,7 @@
                     posChangeBusy = True
                     Me.WindowState = FormWindowState.Normal
                     ReZoom(zooms(cmbResolution.SelectedIndex))
-                    AltPP?.CenterBehind(Me)
+                    AltPP?.CenterBehind(pbZoom)
                     pnlTitleBar.Width = winpos.cx - pnlButtons.Width - pnlSys.Width
                     Debug.Print($"winpos location {New Point(winpos.x, winpos.y)}")
                     Debug.Print($"winpos size {New Size(winpos.cx, winpos.cy)}")
