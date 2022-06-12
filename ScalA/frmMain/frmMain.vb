@@ -750,7 +750,12 @@
                     System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                     posChangeBusy = False
                 End If
-
+            Case WM_ENTERIDLE
+                If m.LParam <> ScalaHandle Then SysMenu.windowHandle = m.LParam
+            Case WM_ENTERMENULOOP
+                SysMenu.Visible = True
+            Case WM_EXITMENULOOP
+                SysMenu.Visible = False
         End Select
 
         MyBase.WndProc(m)  ' allow form to process this message
@@ -1378,9 +1383,11 @@
                    Not FrmSettings.Contains(MousePosition) AndAlso
                    PnlEqLock.Contains(MousePosition) AndAlso
                    Not cboAlt.DropDownContains(MousePosition) AndAlso
-                   Not cmbResolution.DropDownContains(MousePosition) Then
-                    'Debug.Print("cursor no")
+                   Not cmbResolution.DropDownContains(MousePosition) AndAlso
+                   Not SysMenu.Contains(MousePosition) Then
                     Cursor.Current = Cursors.No
+                ElseIf SysMenu.Contains(MousePosition) Then
+                    Cursor.Current = Cursors.Default
                 End If
             End If
             ChkEqLock.CheckState = CheckState.Checked

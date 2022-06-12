@@ -474,14 +474,10 @@ Module NativeMethods
     <DllImport("user32.dll")>
     Public Function SetMenuDefaultItem(hMenu As IntPtr, uItem As Integer, fByPos As Integer) As Boolean : End Function
 
-
-
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>
     Public Function GetMenuItemInfo(hMenu As IntPtr, uItem As UInt32, fByPosition As Boolean, ByRef lpmii As MENUITEMINFO) As Boolean : End Function
     <DllImport("user32.dll")>
     Public Function SetMenuItemInfo(hMenu As IntPtr, uItem As UInt32, fByPosition As Boolean, ByRef lpmii As MENUITEMINFO) As Boolean : End Function
-
-
     Public Structure MENUITEMINFO
         Dim cbSize As Integer
         Dim fMask As Integer
@@ -580,6 +576,7 @@ Module NativeMethods
 
     Public Const HTCAPTION As Integer = 2
 
+    Public Const WM_CANCELMODE = &H1F
     Public Const WM_SETCURSOR = &H20
 
     Public Const WM_WINDOWPOSCHANGING = &H46
@@ -588,9 +585,11 @@ Module NativeMethods
     Public Const WM_NCHITTEST As Integer = &H84
     Public Const WM_NCLBUTTONDOWN As Integer = &HA1
     Public Const WM_NCLBUTTONUP As Integer = &HA2
-    Public Const WM_SYSCOMMAND = &H112
-    Public Const WM_CANCELMODE = &H1F
 
+    Public Const WM_SYSCOMMAND = &H112
+    'Public Const WM_MENUSELECT = &H11F
+
+    Public Const WM_ENTERIDLE = &H121
 
     Public Const WM_MOUSEMOVE = &H200
 
@@ -599,6 +598,9 @@ Module NativeMethods
 
     Public Const WM_MBUTTONDOWN = &H207
     Public Const WM_MBUTTONUP = &H208
+
+    Public Const WM_ENTERMENULOOP = &H211
+    Public Const WM_EXITMENULOOP = &H212
 
     Public Const SC_SIZE As Integer = &HF000
     Public Const SC_MOVE As Integer = &HF010

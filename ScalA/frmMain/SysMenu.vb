@@ -18,9 +18,9 @@
     Public Visible As Boolean
 
     Public Sub Show(pos As Point)
-        Me.Visible = True
+        'Me.Visible = True 'handled in wndproc
         Dim cmd As Integer = TrackPopupMenuEx(Me.handle, TPM_RIGHTBUTTON Or TPM_RETURNCMD, pos.X, pos.Y, _form.Handle, Nothing)
-        Me.Visible = False
+        'Me.Visible = False 'handled in wndproc
         If cmd > 0 Then
             Debug.Print("SendMessage " & cmd)
             '_form.WndProc(Message.Create(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)) 'cant call because protected
@@ -62,6 +62,14 @@
     End Function
     Public Function InsertItem(pos As Integer, cmdID As Integer, item As String) As Boolean
         Return InsertMenuA(Me.handle, pos, MF_BYPOSITION, cmdID, item)
+    End Function
+
+    Public windowHandle As IntPtr
+    Public Function Contains(pt As Point) As Boolean
+        If Not Me.Visible OrElse Me.windowHandle = IntPtr.Zero Then Return False
+        Dim rc As Rectangle
+        GetWindowRect(windowHandle, rc) 'todo: rewrite signature and codebase to use RECT instead of rectangle 
+        Return Rectangle.FromLTRB(rc.X, rc.Y, rc.Width, rc.Height).Contains(pt)
     End Function
 
 End Class
