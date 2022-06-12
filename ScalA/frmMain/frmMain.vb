@@ -724,7 +724,7 @@
                     m.Result = 0
                     Exit Sub
                 End If
-                If wasMaximized And MouseButtons = MouseButtons.Left Then
+                If wasMaximized AndAlso MouseButtons = MouseButtons.Left Then
                     Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
                     'winpos.flags = SetWindowPosFlags.IgnoreMove
                     Debug.Print("WM_WINDOWPOSCHANGED from maximized and mousebutton down")
