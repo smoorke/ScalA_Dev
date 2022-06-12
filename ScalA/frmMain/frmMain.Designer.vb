@@ -470,6 +470,7 @@ Partial Class FrmMain
         Me.PnlEqLock.Name = "PnlEqLock"
         Me.PnlEqLock.Size = New System.Drawing.Size(200, 54)
         Me.PnlEqLock.TabIndex = 22
+        Me.PnlEqLock.Visible = False
         '
         'ttMain
         '

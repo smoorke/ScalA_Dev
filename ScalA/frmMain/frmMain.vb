@@ -94,17 +94,14 @@
             If prevItem.Id <> 0 Then startThumbsDict(prevItem.Id) = thumb
             sysTrayIcon.Icon = My.Resources.moa3
             prevItem = CType(that.SelectedItem, AstoniaProcess)
-            PnlEqLock.Hide()
-            'ChkEqLock.ForeColor = Color.Gray
-            'ChkEqLock.CheckState = If(My.Settings.LockEq, CheckState.Checked, CheckState.Unchecked)
+            PnlEqLock.Visible = False
             Exit Sub
         Else
             ' AltPP = CType(that.SelectedItem, AstoniaProcess)
             ChkEqLock.ForeColor = Color.Black
             pnlOverview.Hide()
             tmrOverview.Enabled = False
-            PnlEqLock.Show()
-            PnlEqLock.BringToFront()
+            PnlEqLock.Visible = True
             Debug.Print("tmrStartup.stop")
         End If
 
@@ -326,11 +323,9 @@
         chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()
                                      Debug.Print("test Opening")
-                                     SysMenu.Visible = True
                                      UntrapMouse(MouseButtons.Right)
                                      AppActivate(scalaPID)
                                  End Sub
-        AddHandler test.Closed, Sub() SysMenu.Visible = False
         AddHandler chkDebug.MouseUp, Sub(sen, ev) UntrapMouse(ev.Button)
 #End If
 
@@ -719,7 +714,7 @@
                         FrmSettings.Show()
                         FrmSettings.WindowState = FormWindowState.Normal
                 End Select
-            Case WM_WINDOWPOSCHANGing
+            Case WM_WINDOWPOSCHANGING
                 If posChangeBusy Then
                     m.Result = 0
                     Exit Sub
@@ -792,7 +787,7 @@
     Private TickCounter As Integer = 0
 
     Friend Shared AOBusy As Boolean = False
-    Private eqLockShown As Boolean = False
+    Private AOshowEqLock As Boolean = False
 
     Friend Shared apSorter As AstoniaProcessSorter
 
@@ -818,7 +813,7 @@
 
         Dim apCounter = 0
         Dim butCounter = 0
-        eqLockShown = False
+        Dim eqLockShown = False
 
         For Each but As AButton In visibleButtons
             butCounter += 1
@@ -923,8 +918,8 @@
 
                         ap.SavePos(rcwB.Location, False)
 
-                        PnlEqLock.BringToFront()
                         eqLockShown = True
+
                         PnlEqLock.Location = but.ThumbRECT.Location + New Point((rccB.Width \ 2 - 260).Map(0, rccB.Width, 0, but.ThumbRECT.Width - but.ThumbRECT.Left), 0)
                         PnlEqLock.Size = New Size(522.Map(rccB.Width, 0, but.ThumbRECT.Width - but.ThumbRECT.Left, 0),
                                                    42.Map(0, rccB.Height, 0, but.ThumbRECT.Height - but.ThumbRECT.Top))
@@ -960,9 +955,10 @@
                 but.Image = Nothing
             End If
         Next but
-        If Not eqLockShown Then
-            PnlEqLock.SendToBack()
-            pbZoom.SendToBack()
+        If eqLockShown AndAlso My.Settings.LockEq Then
+            AOshowEqLock = True
+        Else
+            AOshowEqLock = False
         End If
 
         ' Dim purgeList As List(Of Integer) = startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList
@@ -1372,13 +1368,14 @@
         If My.Settings.LockEq AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then
             If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
                 If Not PnlEqLock.Visible Then
-                    Debug.Print("pnlEqLock.Show")
-                    PnlEqLock.Visible = True
-                    eqLockShown = True
+                    If Not pnlOverview.Visible AndAlso Not My.Settings.gameOnOverview Then
+                        PnlEqLock.Visible = True
+                    Else
+                        PnlEqLock.Visible = AOshowEqLock OrElse Not pnlOverview.Visible
+                    End If
                 End If
-
-                If PnlEqLock.Visible AndAlso eqLockShown AndAlso
-                   Not (cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse SysMenu.Visible) AndAlso
+                If PnlEqLock.Visible AndAlso
+                   Not (cmsQuickLaunch.Visible OrElse cmsAlt.Visible) AndAlso
                    Not (FrmSettings.cmsGenerate.Visible OrElse FrmSettings.cmsQLFolder.Visible) AndAlso
                    Not FrmSettings.Contains(MousePosition) AndAlso
                    PnlEqLock.Contains(MousePosition) AndAlso
