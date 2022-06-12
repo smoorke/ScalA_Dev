@@ -3,23 +3,23 @@
     Private ReadOnly _form As Form
     Public Sub New(frm As Form)
         _form = frm
-        handle = GetSystemMenu(_form.Handle, False)
+        Handle = GetSystemMenu(_form.Handle, False)
     End Sub
 
-    Private ReadOnly handle As IntPtr = IntPtr.Zero
+    Private ReadOnly Handle As IntPtr = IntPtr.Zero
 
     Public Shared Operator IsFalse(ByVal [Me] As SysMenu) As Boolean
-        Return [Me].handle = IntPtr.Zero
+        Return [Me].Handle = IntPtr.Zero
     End Operator
     Public Shared Operator IsTrue(ByVal [Me] As SysMenu) As Boolean
-        Return [Me].handle <> IntPtr.Zero
+        Return [Me].Handle <> IntPtr.Zero
     End Operator
 
     Public Visible As Boolean
 
     Public Sub Show(pos As Point)
         'Me.Visible = True 'handled in wndproc
-        Dim cmd As Integer = TrackPopupMenuEx(Me.handle, TPM_RIGHTBUTTON Or TPM_RETURNCMD, pos.X, pos.Y, _form.Handle, Nothing)
+        Dim cmd As Integer = TrackPopupMenuEx(Me.Handle, TPM_RIGHTBUTTON Or TPM_RETURNCMD, pos.X, pos.Y, _form.Handle, Nothing)
         'Me.Visible = False 'handled in wndproc
         If cmd > 0 Then
             Debug.Print("SendMessage " & cmd)
@@ -52,7 +52,7 @@
     End Function
     'todo: convert these to also use mii
     Public Function SetBitmaps(item As Integer, bmUnchecked As Bitmap, bmChecked As Bitmap, Optional byPos As Boolean = False) As Boolean
-        Return SetMenuItemBitmaps(Me.handle, item,
+        Return SetMenuItemBitmaps(Me.Handle, item,
                                   If(byPos, MF_BYPOSITION, MF_BYCOMMAND),
                                   If(bmUnchecked IsNot Nothing, bmUnchecked.GetHbitmap(Color.Red), Nothing),
                                   If(bmChecked IsNot Nothing, bmChecked.GetHbitmap(Color.Red), Nothing))
@@ -61,7 +61,7 @@
         Return InsertMenuA(Me.Handle, pos, MF_SEPARATOR Or MF_BYPOSITION, 0, String.Empty)
     End Function
     Public Function InsertItem(pos As Integer, cmdID As Integer, item As String) As Boolean
-        Return InsertMenuA(Me.handle, pos, MF_BYPOSITION, cmdID, item)
+        Return InsertMenuA(Me.Handle, pos, MF_BYPOSITION, cmdID, item)
     End Function
 
     Public Function Contains(pt As Point) As Boolean
