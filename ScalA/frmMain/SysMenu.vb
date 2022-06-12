@@ -1,4 +1,4 @@
-﻿Class SysMenu
+﻿Public Class SysMenu
 
     Private ReadOnly _form As Form
     Public Sub New(frm As Form)

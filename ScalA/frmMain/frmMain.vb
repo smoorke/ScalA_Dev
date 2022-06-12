@@ -1382,9 +1382,10 @@
                    PnlEqLock.Contains(MousePosition) AndAlso
                    Not cboAlt.DropDownContains(MousePosition) AndAlso
                    Not cmbResolution.DropDownContains(MousePosition) AndAlso
-                   Not SysMenu.Contains(MousePosition) Then
+                   Not SysMenu.Contains(MousePosition) AndAlso
+                   Not FrmSettings.SysMenu.Contains(MousePosition) Then
                     Cursor.Current = Cursors.No
-                ElseIf SysMenu.Contains(MousePosition) Then
+                ElseIf SysMenu.Contains(MousePosition) OrElse FrmSettings.SysMenu.Contains(MousePosition) Then
                     Cursor.Current = Cursors.Default
                 End If
             End If

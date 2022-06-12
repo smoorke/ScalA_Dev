@@ -1,6 +1,7 @@
 ﻿Imports System.Text
 
 Public Class FrmSettings
+    Public SysMenu As New SysMenu(Me)
     Private Sub FrmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         'storeZoom = My.Settings.zoom
 
@@ -84,6 +85,16 @@ Public Class FrmSettings
 
         NumExtraMax.Value = My.Settings.ExtraMaxColRow
 
+    End Sub
+
+    Protected Overrides Sub WndProc(ByRef m As Message)
+        Select Case m.Msg
+            Case WM_ENTERMENULOOP
+                SysMenu.Visible = True
+            Case WM_EXITMENULOOP
+                SysMenu.Visible = False
+        End Select
+        MyBase.WndProc(m)
     End Sub
 
     Private ReadOnly restoreWhitelist As Boolean = My.Settings.Whitelist
