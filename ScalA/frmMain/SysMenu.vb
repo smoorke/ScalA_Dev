@@ -85,7 +85,7 @@ Partial Class FrmMain
                 .Disable(SC_SIZE)
                 .Disable(SC_RESTORE)
                 'remove alt-F4 from close item
-                .Rename(SC_CLOSE, "&Close")
+                .Rename(SC_CLOSE, "&Close ScalA")
                 .SetDefault(SC_CLOSE)
                 'add settings
                 .InsertSeperator(0)
