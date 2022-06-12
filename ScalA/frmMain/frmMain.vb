@@ -733,6 +733,7 @@
                     cmbResolution.Enabled = True
                     wasMaximized = False
                     posChangeBusy = True
+                    Me.Location = New Point(winpos.x, winpos.y)
                     Me.WindowState = FormWindowState.Normal
                     ReZoom(zooms(cmbResolution.SelectedIndex))
                     AltPP?.CenterBehind(pbZoom)
