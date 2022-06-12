@@ -64,11 +64,10 @@
         Return InsertMenuA(Me.handle, pos, MF_BYPOSITION, cmdID, item)
     End Function
 
-    Public windowHandle As IntPtr
     Public Function Contains(pt As Point) As Boolean
-        If Not Me.Visible OrElse Me.windowHandle = IntPtr.Zero Then Return False
+        If Not Me.Visible Then Return False
         Dim rc As Rectangle
-        GetWindowRect(windowHandle, rc) 'todo: rewrite signature and codebase to use RECT instead of rectangle 
+        GetWindowRect(FindWindow("#32768", Nothing), rc) 'todo: rewrite signature and codebase to use RECT instead of rectangle 
         Return Rectangle.FromLTRB(rc.X, rc.Y, rc.Width, rc.Height).Contains(pt)
     End Function
 

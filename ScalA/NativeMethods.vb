@@ -117,7 +117,7 @@ Module NativeMethods
     Public Function ImageList_Destroy(hIml As IntPtr) As Boolean
     End Function
 
-    <Runtime.InteropServices.DllImport("user32.dll", SetLastError:=True, CharSet:=Runtime.InteropServices.CharSet.Auto)>
+    <DllImport("user32.dll", SetLastError:=True, CharSet:=Runtime.InteropServices.CharSet.Auto)>
     Public Function FindWindow(ByVal lpClassName As String, ByVal lpWindowName As String) As IntPtr
     End Function
 
@@ -589,7 +589,7 @@ Module NativeMethods
     Public Const WM_SYSCOMMAND = &H112
     'Public Const WM_MENUSELECT = &H11F
 
-    Public Const WM_ENTERIDLE = &H121
+    'Public Const WM_ENTERIDLE = &H121
 
     Public Const WM_MOUSEMOVE = &H200
 

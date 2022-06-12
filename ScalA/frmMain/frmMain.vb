@@ -746,11 +746,11 @@
                     System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                     posChangeBusy = False
                 End If
-            Case WM_ENTERIDLE
-                If m.LParam <> ScalaHandle Then SysMenu.windowHandle = m.LParam
             Case WM_ENTERMENULOOP
-                SysMenu.Visible = True
+                Debug.Print($"WM_ENTERMENULOOP {cmsQuickLaunch.Visible}")
+                SysMenu.Visible = Not cmsQuickLaunch.Visible
             Case WM_EXITMENULOOP
+                Debug.Print("WM_EXITMENULOOP")
                 SysMenu.Visible = False
         End Select
 
