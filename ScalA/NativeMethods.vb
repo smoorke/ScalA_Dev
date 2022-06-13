@@ -576,6 +576,8 @@ Module NativeMethods
 
     Public Const HTCAPTION As Integer = 2
 
+    Public Const WM_WININICHANGE = &H1A
+
     Public Const WM_CANCELMODE = &H1F
     Public Const WM_SETCURSOR = &H20
 

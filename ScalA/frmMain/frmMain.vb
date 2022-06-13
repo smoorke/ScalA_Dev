@@ -97,12 +97,9 @@
             PnlEqLock.Visible = False
             Exit Sub
         Else
-            ' AltPP = CType(that.SelectedItem, AstoniaProcess)
-            ChkEqLock.ForeColor = Color.Black
             pnlOverview.Hide()
             tmrOverview.Enabled = False
             PnlEqLock.Visible = True
-            Debug.Print("tmrStartup.stop")
         End If
 
 
@@ -746,6 +743,16 @@
                     System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                     posChangeBusy = False
                 End If
+            Case WM_WININICHANGE
+                If m.LParam = IntPtr.Zero AndAlso Me.WindowState = FormWindowState.Maximized Then
+                    Debug.Print($"WM_WININICHANGE {m.LParam}")
+                    'handle taskbar changing
+                    If Screen.FromPoint(Me.Location + New Point(Me.Width / 2, Me.Height / 2)).WorkingArea <> prevWA Then
+                        Debug.Print("Taskbar changed")
+                        Me.WindowState = FormWindowState.Normal
+                        btnMax.PerformClick()
+                    End If
+                End If
             Case WM_ENTERMENULOOP
                 Debug.Print($"WM_ENTERMENULOOP {cmsQuickLaunch.Visible}")
                 SysMenu.Visible = Not cmsQuickLaunch.Visible
@@ -1178,6 +1185,8 @@
             Debug.Print($"Set restoreloc to {value}")
         End Set
     End Property
+
+    Dim prevWA As Rectangle
     Private Sub BtnMax_Click(sender As Button, e As EventArgs) Handles btnMax.Click
         Debug.Print("btnMax_Click")
         '🗖,🗗,⧠
@@ -1187,11 +1196,12 @@
                 If scrn.Bounds.Contains(Me.Location + New Point(Me.Width / 2, Me.Height / 2)) Then
                     Debug.Print("screen workarea " & scrn.WorkingArea.ToString)
                     Debug.Print("screen bounds " & scrn.Bounds.ToString)
+                    prevWA = scrn.WorkingArea
 
-                    Dim leftBorder = scrn.WorkingArea.Width * My.Settings.MaxBorderLeft / 1000
-                    Dim topBorder = scrn.WorkingArea.Height * My.Settings.MaxBorderTop / 1000
-                    Dim rightborder = scrn.WorkingArea.Width * My.Settings.MaxBorderRight / 1000
-                    Dim botBorder = scrn.WorkingArea.Height * My.Settings.MaxBorderBot / 1000
+                    Dim leftBorder As Integer = scrn.WorkingArea.Width * My.Settings.MaxBorderLeft / 1000
+                    Dim topBorder As Integer = scrn.WorkingArea.Height * My.Settings.MaxBorderTop / 1000
+                    Dim rightborder As Integer = scrn.WorkingArea.Width * My.Settings.MaxBorderRight / 1000
+                    Dim botBorder As Integer = scrn.WorkingArea.Height * My.Settings.MaxBorderBot / 1000
 
                     'find out where taskbar is and add 1 pixel at that location
                     'dirty hack to enable dragging when maximized
