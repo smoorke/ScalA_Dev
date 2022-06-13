@@ -756,8 +756,10 @@
                 If m.LParam = IntPtr.Zero AndAlso Me.WindowState = FormWindowState.Maximized Then
                     Debug.Print($"WM_WININICHANGE {m.LParam}")
                     'handle taskbar changing
-                    If Screen.FromPoint(Me.Location + New Point(Me.Width / 2, Me.Height / 2)).WorkingArea <> prevWA Then
-                        Debug.Print("Taskbar changed")
+                    Dim newWA = Screen.FromPoint(Me.Location + New Point(Me.Width / 2, Me.Height / 2)).WorkingArea
+                    'only do adjustment when size change or moved from top/bottom to sides
+                    If newWA.Height <> prevWA.Height OrElse newWA.Width <> prevWA.Width Then
+                        Debug.Print($"Taskbar changed {prevWA}->{newWA}")
                         Me.WindowState = FormWindowState.Normal
                         btnMax.PerformClick()
                     End If
@@ -1247,83 +1249,79 @@
         '🗖,🗗,⧠
         If Me.WindowState <> FormWindowState.Maximized Then
             'go maximized
-            For Each scrn As Screen In Screen.AllScreens
-                If scrn.Bounds.Contains(Me.Location + New Point(Me.Width / 2, Me.Height / 2)) Then
-                    Debug.Print("screen workarea " & scrn.WorkingArea.ToString)
-                    Debug.Print("screen bounds " & scrn.Bounds.ToString)
-                    prevWA = scrn.WorkingArea
+            Dim scrn As Screen = Screen.FromPoint(Me.Location + New Point(Me.Width / 2, Me.Height / 2))
+            Debug.Print("screen workarea " & scrn.WorkingArea.ToString)
+            Debug.Print("screen bounds " & scrn.Bounds.ToString)
+            prevWA = scrn.WorkingArea
 
-                    Dim leftBorder As Integer = scrn.WorkingArea.Width * My.Settings.MaxBorderLeft / 1000
-                    Dim topBorder As Integer = scrn.WorkingArea.Height * My.Settings.MaxBorderTop / 1000
-                    Dim rightborder As Integer = scrn.WorkingArea.Width * My.Settings.MaxBorderRight / 1000
-                    Dim botBorder As Integer = scrn.WorkingArea.Height * My.Settings.MaxBorderBot / 1000
+            Dim leftBorder As Integer = scrn.WorkingArea.Width * My.Settings.MaxBorderLeft / 1000
+            Dim topBorder As Integer = scrn.WorkingArea.Height * My.Settings.MaxBorderTop / 1000
+            Dim rightborder As Integer = scrn.WorkingArea.Width * My.Settings.MaxBorderRight / 1000
+            Dim botBorder As Integer = scrn.WorkingArea.Height * My.Settings.MaxBorderBot / 1000
 
-                    'find out where taskbar is and add 1 pixel at that location
-                    'dirty hack to enable dragging when maximized
-                    If leftBorder + rightborder + topBorder + botBorder = 0 Then
-                        If scrn.WorkingArea.Left <> scrn.Bounds.Left Then leftBorder = 1
-                        If scrn.WorkingArea.Top <> scrn.Bounds.Top Then topBorder = 1
-                        If scrn.WorkingArea.Right <> scrn.Bounds.Right Then rightborder = 1
-                        If scrn.WorkingArea.Bottom <> scrn.Bounds.Bottom Then botBorder = 1
-                    End If
-                    'if taskbar set to auto hide find where it is hiding
-                    If leftBorder + rightborder + topBorder + botBorder = 0 Then
-                        'Dim monifo As New MonitorInfo With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MonitorInfo))}
-                        'GetMonitorInfo(MonitorFromPoint(scrn.Bounds.Location, MONITOR.DEFAULTTONEAREST), monifo)
-                        Dim pabd As New APPBARDATA With {
+            'find out where taskbar is and add 1 pixel at that location
+            'dirty hack to enable dragging when maximized
+            If leftBorder + rightborder + topBorder + botBorder = 0 Then
+                If scrn.WorkingArea.Left <> scrn.Bounds.Left Then leftBorder = 1
+                If scrn.WorkingArea.Top <> scrn.Bounds.Top Then topBorder = 1
+                If scrn.WorkingArea.Right <> scrn.Bounds.Right Then rightborder = 1
+                If scrn.WorkingArea.Bottom <> scrn.Bounds.Bottom Then botBorder = 1
+            End If
+            'if taskbar set to auto hide find where it is hiding
+            If leftBorder + rightborder + topBorder + botBorder = 0 Then
+                'Dim monifo As New MonitorInfo With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MonitorInfo))}
+                'GetMonitorInfo(MonitorFromPoint(scrn.Bounds.Location, MONITOR.DEFAULTTONEAREST), monifo)
+                Dim pabd As New APPBARDATA With {
                             .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(APPBARDATA)),
                             .rc = scrn.Bounds.ToRECT}
-                        For edge = 0 To 3
-                            pabd.uEdge = edge
-                            If SHAppBarMessage(ABM.GETAUTOHIDEBAREX, pabd) <> IntPtr.Zero Then
-                                Select Case edge
-                                    Case 0
-                                        leftBorder = 1
-                                        Debug.Print("Hidden taskbar left")
-                                    Case 1
-                                        topBorder = 1
-                                        Debug.Print("Hidden taskbar top")
-                                    Case 2
-                                        rightborder = 1
-                                        Debug.Print("Hidden taskbar right")
-                                    Case 3
-                                        botBorder = 1
-                                        Debug.Print("Hidden taskbar bottom")
-                                End Select
-                                Exit For
-                            End If
-                        Next
+                For edge = 0 To 3
+                    pabd.uEdge = edge
+                    If SHAppBarMessage(ABM.GETAUTOHIDEBAREX, pabd) <> IntPtr.Zero Then
+                        Select Case edge
+                            Case 0
+                                leftBorder = 1
+                                Debug.Print("Hidden taskbar left")
+                            Case 1
+                                topBorder = 1
+                                Debug.Print("Hidden taskbar top")
+                            Case 2
+                                rightborder = 1
+                                Debug.Print("Hidden taskbar right")
+                            Case 3
+                                botBorder = 1
+                                Debug.Print("Hidden taskbar bottom")
+                        End Select
+                        Exit For
                     End If
-                    'if no taskbar present add to bottom
-                    If leftBorder + rightborder + topBorder + botBorder = 0 Then
-                        Debug.Print("no taskbar present")
-                        botBorder = 1
-                    End If
+                Next
+            End If
+            'if no taskbar present add to bottom
+            If leftBorder + rightborder + topBorder + botBorder = 0 Then
+                Debug.Print("no taskbar present")
+                botBorder = 1
+            End If
 
-                    Debug.Print($"leftborder {leftBorder}")
-                    Debug.Print($"topborder {topBorder}")
-                    Debug.Print($"rightborder {rightborder}")
-                    Debug.Print($"botborder {botBorder}")
+            Debug.Print($"leftborder {leftBorder}")
+            Debug.Print($"topborder {topBorder}")
+            Debug.Print($"rightborder {rightborder}")
+            Debug.Print($"botborder {botBorder}")
 
-                    Me.MaximizedBounds = New Rectangle(scrn.WorkingArea.Left - scrn.Bounds.Left + leftBorder,
+            Me.MaximizedBounds = New Rectangle(scrn.WorkingArea.Left - scrn.Bounds.Left + leftBorder,
                                                    scrn.WorkingArea.Top - scrn.Bounds.Top + topBorder,
                                                    scrn.WorkingArea.Width - leftBorder - rightborder,
                                                    scrn.WorkingArea.Height - topBorder - botBorder)
-                    Debug.Print("new maxbound " & MaximizedBounds.ToString)
-                    If Me.WindowState = FormWindowState.Normal Then
-                        RestoreLoc = Me.Location
-                        Debug.Print("restoreLoc " & RestoreLoc.ToString)
-                    End If
-                    Me.Location = scrn.WorkingArea.Location
-                    Me.WindowState = FormWindowState.Maximized
-                    ReZoom(New Size(Me.MaximizedBounds.Width, Me.MaximizedBounds.Height))
-                    sender.Text = "🗗"
-                    ttMain.SetToolTip(sender, "Restore")
-                    wasMaximized = True
-                    SysMenu.Disable(SC_MOVE)
-                    Exit For
-                End If
-            Next
+            Debug.Print("new maxbound " & MaximizedBounds.ToString)
+            If Me.WindowState = FormWindowState.Normal Then
+                RestoreLoc = Me.Location
+                Debug.Print("restoreLoc " & RestoreLoc.ToString)
+            End If
+            Me.Location = scrn.WorkingArea.Location
+            Me.WindowState = FormWindowState.Maximized
+            ReZoom(New Size(Me.MaximizedBounds.Width, Me.MaximizedBounds.Height))
+            sender.Text = "🗗"
+            ttMain.SetToolTip(sender, "Restore")
+            wasMaximized = True
+            SysMenu.Disable(SC_MOVE)
         Else 'go normal
             Me.WindowState = FormWindowState.Normal
             sender.Text = "⧠"
