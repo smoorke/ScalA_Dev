@@ -768,6 +768,52 @@
             Case WM_EXITMENULOOP
                 Debug.Print("WM_EXITMENULOOP")
                 SysMenu.Visible = False
+#If DEBUG Then
+            Case &H3 ' WM_MOVE 
+            Case &H6 ' WM_AACTIVATE
+            Case &H7 ' WM_SETFOCUS
+            Case &H8 ' WM_KILLFOCUS
+            Case &HF ' WM_PAINT
+
+            Case &HC ' WM_SETTEXT
+            Case &HD ' WM_GETTEXT 
+            Case &HE ' WM_GETTEXTLENGTH
+
+
+
+            Case &H1C ' WM_ACTIVATEAPP 
+
+            Case &H20 '	WM_SETCURSOR
+            Case &H21 ' WM_MOUSEACTIVATE
+            Case &H24 ' WM_GETMINMAXINFO
+
+            Case &H7F ' WM_GETICON 
+            Case &H84 ' WM_NCHITTEST
+            Case &H86 ' WM_NCACTIVATE
+
+            Case &HA1 ' WM_NCLBUTTONDOWN
+
+            Case &H104 ' WM_SYSKEYDOWN
+            Case &H105 ' WM_SYSKEYUP
+
+            Case &H121 ' WM_ENTERIDLE
+
+            Case &H200 ' WM_MOUSEMOVE
+
+            Case &H210 ' WM_PARENTNOTIFY 
+            Case &H215 ' WM_CAPTURECHANGED
+            Case &H216 ' WM_MOVEING
+
+            Case &H281 ' WM_IME_SETCONTEXT
+            Case &H282 ' WM_IME_NOTIFY 
+            Case &H2A3 ' WM_MOUSELEAVE
+
+            Case &HC1B2 ' unknown
+            Case &HC1B6 ' unknown
+
+            Case Else
+                Debug.Print($"Unhandeld WM_ 0x{m.Msg:X8} &H{m.Msg:X8}")
+#End If
         End Select
 
         MyBase.WndProc(m)  ' allow form to process this message
