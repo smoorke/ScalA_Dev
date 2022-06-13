@@ -248,10 +248,10 @@
 #End If
 
 
-        ScalaHandle = Me.Handle
 
         Debug.Print("mangleSysMenu")
         InitSysMenu()
+        ScalaHandle = Me.Handle
 
         Debug.Print("topmost " & My.Settings.topmost)
         Me.TopMost = My.Settings.topmost
@@ -752,7 +752,7 @@
                     System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                     posChangeBusy = False
                 End If
-            Case WM_WININICHANGE
+            Case WM_WININICHANGE '&H1A
                 If m.LParam = IntPtr.Zero AndAlso Me.WindowState = FormWindowState.Maximized Then
                     Debug.Print($"WM_WININICHANGE {m.LParam}")
                     'handle taskbar changing
