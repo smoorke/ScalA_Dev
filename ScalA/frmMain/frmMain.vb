@@ -365,6 +365,7 @@
 
     Private MovingForm As Boolean
     Private MoveForm_MousePosition As Point
+    Private caption_Mousedown As Boolean = False
 
     Public Sub MoveForm_MouseDown(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseDown, lblTitle.MouseDown
         'Me.TopMost = True
@@ -378,9 +379,11 @@
                 sender.Capture = False
                 tmrTick.Stop()
                 tmrMove.Start()
+                caption_Mousedown = True
                 Dim msg As Message = Message.Create(Me.Handle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
                 Debug.Print("WM_NCLBUTTONDOWN")
                 Me.WndProc(msg)
+                caption_Mousedown = False
                 tmrMove.Stop()
                 If Not pnlOverview.Visible Then
                     AltPP.Activate()
@@ -713,23 +716,28 @@
                 End Select
             Case WM_WINDOWPOSCHANGING
                 If posChangeBusy Then
+                    Debug.Print("WM_WINDOWPOSCHANGING busy")
                     m.Result = 0
                     Exit Sub
                 End If
             Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
                 If posChangeBusy Then
+                    Debug.Print("WM_WINDOWPOSCHANGED busy")
                     m.Result = 0
                     Exit Sub
                 End If
-                If wasMaximized AndAlso MouseButtons = MouseButtons.Left Then
+                If wasMaximized AndAlso caption_Mousedown Then
                     Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
                     'winpos.flags = SetWindowPosFlags.IgnoreMove
                     Debug.Print("WM_WINDOWPOSCHANGED from maximized and mousebutton down")
+                    Debug.Print($"hwndInsertAfter {winpos.hwndInsertAfter}")
+                    Debug.Print($"flags {winpos.flags}")
                     btnMax.Text = "⧠"
                     ttMain.SetToolTip(btnMax, "Maximize")
                     cmbResolution.Enabled = True
                     wasMaximized = False
                     posChangeBusy = True
+                    AOshowEqLock = False
                     Me.Location = New Point(winpos.x, winpos.y)
                     Me.WindowState = FormWindowState.Normal
                     ReZoom(zooms(cmbResolution.SelectedIndex))
