@@ -95,6 +95,7 @@
             sysTrayIcon.Icon = My.Resources.moa3
             prevItem = CType(that.SelectedItem, AstoniaProcess)
             PnlEqLock.Visible = False
+            AOshowEqLock = False
             Exit Sub
         Else
             pnlOverview.Hide()
@@ -1285,6 +1286,7 @@
             wasMaximized = False
             ReZoom(zooms(cmbResolution.SelectedIndex))
             wasMaximized = True
+            AOshowEqLock = False
             SysMenu.Enable(SC_MOVE)
         End If
         If cboAlt.SelectedIndex > 0 Then
