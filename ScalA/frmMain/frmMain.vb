@@ -812,6 +812,8 @@
 
             Case &HC1B2 ' unknown
             Case &HC1B6 ' unknown
+            Case &HC1B8 ' unknown
+            Case &HC1BD ' unknown
 
             Case Else
                 Debug.Print($"Unhandeld WM_ 0x{m.Msg:X8} &H{m.Msg:X8}")
