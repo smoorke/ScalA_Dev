@@ -193,3 +193,14 @@ Implemented a border reservation setting for maximized state.
 Implemented settings to handle ultra widescreen monitors.
 Fixed Quicklaunch being slow on vanilla clients.
 Minor UX improvements.
+
+**ScalA 1.0.4**
+Fixed untrap mousebutton sending both rmb and mmb up message to client when interacting with ScalA and not dragged from currently selected alt.
+Enabled dragging ScalA by the titlebar when maximized by adding a 1px border between ScalA and taskbar if no border was manually set.
+  (adds the border to bottom if there is no taskbar on the monitor)
+Fixed resolution being all wonky and EQ Lock checkbox disappearing when dragged from maximized state.
+Fixed changing size and/or position of taskbar didn't adjust maximized ScalA correctly.
+Fixed Settings form showing at wrong location with ScalA minimized.
+Fixed Scala forgetting original Astonia positions when minimized.
+Fixed EQ Lock not showing no-cursor when sysMenu is open.
+Enabled EQ Lock on active overview.
