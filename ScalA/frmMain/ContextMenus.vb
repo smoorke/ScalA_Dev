@@ -240,7 +240,7 @@ Partial Public Class FrmMain
 
         Dim Dirs As New List(Of ToolStripItem)
         Try
-            For Each fullDirs As String In System.IO.Directory.EnumerateDirectories(pth).TakeWhile(Function(__) Not QlCtxIsOpen)
+            For Each fullDirs As String In System.IO.Directory.EnumerateDirectories(pth)
 
                 If Not My.Computer.Keyboard.CtrlKeyDown Then
                     Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullDirs).Attributes
@@ -273,8 +273,7 @@ Partial Public Class FrmMain
 
         Dim Files As New List(Of ToolStripItem)
         For Each fullLink As String In System.IO.Directory.EnumerateFiles(pth) _
-                                       .Where(Function(p) {".exe", ".jar", ".lnk", ".url", ".txt"}.Contains(System.IO.Path.GetExtension(p).ToLower)) _
-                                       .TakeWhile(Function(__) Not QlCtxIsOpen)
+                                       .Where(Function(p) {".exe", ".jar", ".lnk", ".url", ".txt"}.Contains(System.IO.Path.GetExtension(p).ToLower))
             'Debug.Print(System.IO.Path.GetFileName(fullLink))
 
             If Not My.Computer.Keyboard.CtrlKeyDown Then
@@ -363,8 +362,8 @@ Partial Public Class FrmMain
     End Sub
 
     Private Sub ParseSubDir(sender As ToolStripMenuItem, e As EventArgs) ' Handles DummyToolStripMenuItem.DropDownOpening
-        Debug.Print($"ParseSubDir QlCtxIsOpen:{QlCtxIsOpen}")
-        If QlCtxIsOpen Then Exit Sub
+        'Debug.Print($"ParseSubDir QlCtxIsOpen:{QlCtxIsOpen}")
+        'If QlCtxIsOpen Then Exit Sub
         sender.DropDownItems.Clear()
         sender.DropDownItems.AddRange(ParseDir(sender.Tag).ToArray)
     End Sub
@@ -749,7 +748,7 @@ Partial Public Class FrmMain
 
             Debug.Print("QL_MouseDown")
 
-            QlCtxIsOpen = True
+            'QlCtxIsOpen = True
 
             sender.Select()
             sender.BackColor = Color.FromArgb(&HFFB5D7F3) 'this to fix a glitch where sender gets unselected
@@ -807,7 +806,7 @@ Partial Public Class FrmMain
                 QlCtxNewMenu.MenuItems.RemoveAt(QlCtxNewMenuStaticItemsCount)
             End While
 
-            QlCtxIsOpen = False
+            'QlCtxIsOpen = False
 
         ElseIf Not sender.Tag.EndsWith("\") Then 'do not process click on dirs as they are handled by doubleclick
             Debug.Print("clicked not a dir")

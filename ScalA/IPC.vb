@@ -1,17 +1,17 @@
 ﻿Imports System.IO.MemoryMappedFiles
 Module IPC
-    Private ReadOnly _mmfBoolean As MemoryMappedFile = MemoryMappedFile.CreateOrOpen("ScalA_IPC_Boolean", 1)
-    Private ReadOnly _mmvaBoolean As MemoryMappedViewAccessor = _mmfBoolean.CreateViewAccessor()
-    Public Property QlCtxIsOpen As Boolean
-        Get
-            'Debug.Print(_mmvaBoolean.ReadBoolean(0))
-            Return _mmvaBoolean.ReadBoolean(0)
-        End Get
-        Set(ByVal value As Boolean)
-            _mmvaBoolean.Write(0, value)
-            Debug.Print($"set QlCtxOpen to {value}")
-        End Set
-    End Property
+    'Private ReadOnly _mmfBoolean As MemoryMappedFile = MemoryMappedFile.CreateOrOpen("ScalA_IPC_Boolean", 1)
+    'Private ReadOnly _mmvaBoolean As MemoryMappedViewAccessor = _mmfBoolean.CreateViewAccessor()
+    'Public Property QlCtxIsOpen As Boolean
+    '    Get
+    '        'Debug.Print(_mmvaBoolean.ReadBoolean(0))
+    '        Return _mmvaBoolean.ReadBoolean(0)
+    '    End Get
+    '    Set(ByVal value As Boolean)
+    '        _mmvaBoolean.Write(0, value)
+    '        Debug.Print($"set QlCtxOpen to {value}")
+    '    End Set
+    'End Property
 
     Private ReadOnly _MeStr As String = Application.ExecutablePath.Replace(":", "").Replace("\", "").Replace(".", "")
     Private ReadOnly _mmfSI As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPCSI_{_MeStr}", 1 + 1)

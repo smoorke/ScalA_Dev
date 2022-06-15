@@ -530,8 +530,8 @@
                              Try
                                  Dim flags = SetWindowPosFlags.IgnoreResize Or
                                              SetWindowPosFlags.DoNotActivate Or
-                                             SetWindowPosFlags.IgnoreZOrder Or
-                                             SetWindowPosFlags.ASyncWindowPosition
+                                             SetWindowPosFlags.ASyncWindowPosition Or
+                                             SetWindowPosFlags.DoNotChangeOwnerZOrder
                                  'If QlCtxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                                  swpBusy = True
                                  SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
@@ -1003,8 +1003,9 @@
                                      Try
                                          Dim flags = SetWindowPosFlags.IgnoreResize Or
                                                      SetWindowPosFlags.ASyncWindowPosition Or
+                                                     SetWindowPosFlags.DoNotChangeOwnerZOrder Or
                                                      SetWindowPosFlags.DoNotActivate
-                                         If QlCtxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
+                                         'If QlCtxIsOpen Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                                          AOBusy = True
                                          SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
                                      Catch ex As Exception
