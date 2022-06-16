@@ -65,7 +65,6 @@ Partial Class FrmMain
         Me.cornerNE = New System.Windows.Forms.PictureBox()
         Me.cornerSW = New System.Windows.Forms.PictureBox()
         Me.cornerSE = New System.Windows.Forms.PictureBox()
-        Me.tmrMove = New System.Windows.Forms.Timer(Me.components)
         Me.PnlEqLock = New System.Windows.Forms.Panel()
         Me.ttMain = New System.Windows.Forms.ToolTip(Me.components)
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
@@ -458,10 +457,6 @@ Partial Class FrmMain
         Me.cornerSE.TabIndex = 18
         Me.cornerSE.TabStop = False
         '
-        'tmrMove
-        '
-        Me.tmrMove.Interval = 25
-        '
         'PnlEqLock
         '
         Me.PnlEqLock.BackColor = System.Drawing.SystemColors.Control
@@ -547,7 +542,6 @@ Partial Class FrmMain
     Friend WithEvents cornerNE As PictureBox
     Friend WithEvents cornerSW As PictureBox
     Friend WithEvents cornerSE As PictureBox
-    Friend WithEvents tmrMove As Timer
     Friend WithEvents SortSubToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents TopFirstToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents TopLastToolStripMenuItem As ToolStripMenuItem

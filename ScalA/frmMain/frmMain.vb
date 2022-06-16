@@ -174,6 +174,7 @@
             AltPP?.Activate()
             sysTrayIcon.Icon = AltPP?.GetIcon
             AltPP?.CenterBehind(pbZoom)
+            moveBusy = False
         Else 'AltPP.Id = 0
 
 
@@ -268,7 +269,9 @@
         cmbResolution.SelectedIndex = My.Settings.zoom
 
         Debug.Print("location " & My.Settings.location.ToString)
+        suppressWM_MOVEcwp = True
         Me.Location = My.Settings.location
+        suppressWM_MOVEcwp = False
 
         Dim args() As String = Environment.GetCommandLineArgs()
 
@@ -346,9 +349,14 @@
             System.IO.File.Delete(FileIO.SpecialDirectories.Temp & "\ScalA\tmp.lnk")
         End If
 
-
-
+        suppressWM_MOVEcwp = True
     End Sub
+    Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
+        Debug.Print("FrmMain_Shown")
+        suppressWM_MOVEcwp = False
+    End Sub
+
+
     Private Shared Function GetResolutions() As Size()
         Dim reslist As New List(Of Size)
         For Each line As String In My.Settings.resolutions.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries)
@@ -379,13 +387,11 @@
             If e.Button = MouseButtons.Left AndAlso e.Clicks = 1 Then
                 sender.Capture = False
                 tmrTick.Stop()
-                tmrMove.Start()
                 caption_Mousedown = True
                 Dim msg As Message = Message.Create(Me.Handle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
                 Debug.Print("WM_NCLBUTTONDOWN")
                 Me.WndProc(msg)
                 caption_Mousedown = False
-                tmrMove.Stop()
                 If Not pnlOverview.Visible Then
                     AltPP.Activate()
                     tmrTick.Start()
@@ -398,16 +404,6 @@
     Public Sub MoveForm_MouseMove(sender As Control, e As MouseEventArgs) Handles _
     pnlTitleBar.MouseMove, lblTitle.MouseMove ' Add more handles here (Example: PictureBox1.MouseMove)
         If MovingForm Then
-            If AltPP IsNot Nothing AndAlso Not FrmSettings.chkDoAlign.Checked Then
-                Static moveable As Boolean = True
-                If moveable Then
-                    Task.Run(Sub()
-                                 moveable = False
-                                 AltPP?.CenterBehind(pbZoom, SetWindowPosFlags.DoNotActivate)
-                                 moveable = True
-                             End Sub)
-                End If
-            End If
             Dim newoffset As Point = e.Location - MoveForm_MousePosition
             Me.Location += newoffset
             If FrmSettings.chkDoAlign.Checked Then
@@ -426,22 +422,7 @@
             End If
         End If
     End Sub
-    Private Sub TmrMove_Tick(sender As Object, e As EventArgs) Handles tmrMove.Tick
-        Me.Cursor = Cursors.Default
-        If AltPP?.IsRunning Then
-            Static moveable As Boolean = True
-            If moveable Then
-                Task.Run(Sub()
-                             moveable = False
-                             AltPP?.CenterWindowPos(ScalaHandle,
-                                                    Me.Left + pbZoom.Left + (pbZoom.Width / 2),
-                                                    Me.Top + pbZoom.Top + (pbZoom.Height / 2),
-                                                    SetWindowPosFlags.DoNotActivate)
-                             moveable = True
-                         End Sub)
-            End If
-        End If
-    End Sub
+
 #End Region
 
 
@@ -528,7 +509,7 @@
             newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AstClientOffset.Width - My.Settings.offset.X
             newY = MousePosition.Y.Map(ptZ.Y, ptZ.Y + pbZoom.Height, ptZ.Y, ptZ.Y + pbZoom.Height - rcC.Height) - AstClientOffset.Height - My.Settings.offset.Y
 
-            If Not swpBusy Then
+            If Not swpBusy AndAlso Not moveBusy Then
                 swpBusy = True
                 Task.Run(Sub()
                              Try
@@ -556,14 +537,14 @@
             Debug.Print("SetWindowPos")
             SetWindowPos(AltPP.MainWindowHandle, Me.Handle, newX, newY, -1, -1, SetWindowPosFlags.IgnoreResize + SetWindowPosFlags.DoNotActivate)
         End If
-        Debug.Print("reZoom")
         ReZoom(zooms(My.Settings.zoom))
     End Sub
 
     Private Sub ReZoom(newSize As Size)
+        Debug.Print($"reZoom {newSize}")
         Me.SuspendLayout()
         If Me.WindowState <> FormWindowState.Maximized Then
-            Me.Size = New Size(newSize.Width + 2, newSize.Height + 26)
+            Me.Size = New Size(newSize.Width + 2, newSize.Height + pnlTitleBar.Height + 1)
             pbZoom.Left = 1
             pnlOverview.Left = 1
             pbZoom.Size = newSize
@@ -572,8 +553,8 @@
         Else 'FormWindowState.Maximized
             pbZoom.Left = 0
             pnlOverview.Left = 0
-            pbZoom.Width = newSize.Width + 1
-            pbZoom.Height = newSize.Height - 25
+            pbZoom.Width = newSize.Width
+            pbZoom.Height = newSize.Height - pnlTitleBar.Height
             pnlOverview.Size = pbZoom.Size
             cmbResolution.Enabled = False
         End If
@@ -581,8 +562,8 @@
             Debug.Print("updateThumb")
             UpdateThumb(If(chkDebug.Checked, 128, 255))
         End If
+        pnlTitleBar.Width = newSize.Width - pnlButtons.Width - pnlSys.Width
         Me.ResumeLayout(True)
-        pnlTitleBar.Width = pnlButtons.Left - pnlTitleBar.Left
         Debug.Print($"rezoom pnlTitleBar.Width {pnlTitleBar.Width}")
 
         cornerNW.Location = New Point(0, 0)
@@ -643,6 +624,8 @@
     ''' </summary>
     Dim wasMaximized As Boolean = False
     Dim posChangeBusy As Boolean = False
+    Dim moveBusy As Boolean = False
+    Dim suppressWM_MOVEcwp = False
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case Hotkey.WM_HOTKEY
@@ -675,6 +658,7 @@
                         Debug.Print("SC_RESTORE " & m.LParam.ToString)
                         SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
                         'Me.ShowInTaskbar = False
+                        moveBusy = False
                         If WindowState = FormWindowState.Maximized Then
                             btnMax.PerformClick()
                             Exit Sub
@@ -685,7 +669,11 @@
                             Me.WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero))
                             Exit Sub
                         End If
-                        SysMenu.Disable(SC_MOVE)
+                        SysMenu.Enable(SC_MOVE)
+                        suppressWM_MOVEcwp = True
+                        MyBase.DefWndProc(m)
+                        suppressWM_MOVEcwp = False
+                        Exit Sub
                     Case SC_MAXIMIZE
                         Debug.Print("SC_MAXIMIZE " & m.LParam.ToString)
                         If Me.WindowState = FormWindowState.Minimized Then
@@ -693,9 +681,8 @@
                             Me.Location = RestoreLoc
                         End If
                         btnMax.PerformClick()
-
+                        SysMenu.Disable(SC_MOVE)
                         Debug.Print("wasMax " & wasMaximized)
-
                         m.Result = 0
                     Case SC_MINIMIZE
                         Debug.Print("SC_MINIMIZE")
@@ -713,6 +700,35 @@
                         FrmSettings.Show()
                         FrmSettings.WindowState = FormWindowState.Normal
                 End Select
+            Case WM_MOVE
+                Debug.Print($"WM_MOVE {Me.WindowState}")
+                Me.Cursor = Cursors.Default
+                If AltPP?.IsRunning AndAlso Not FrmSettings.chkDoAlign.Checked AndAlso Me.WindowState <> FormWindowState.Minimized Then
+#If DEBUG Then
+                    pbZoom.Visible = True
+#End If
+                    If Not suppressWM_MOVEcwp Then
+                        Debug.Print($"moveBusy true")
+                        moveBusy = True
+                        Task.Run(Sub()
+                                     'Exit Sub
+                                     AltPP?.CenterWindowPos(ScalaHandle,
+                                                        Me.Left + pbZoom.Left + (pbZoom.Width / 2),
+                                                        Me.Top + pbZoom.Top + (pbZoom.Height / 2),
+                                                        SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.ASyncWindowPosition)
+
+                                 End Sub)
+                    End If
+                End If
+            Case WM_EXITSIZEMOVE
+                moveBusy = False
+            Case WM_SIZE ' = &h0005
+                Dim width As Integer = LOWORD(m.LParam)
+                Dim height As Integer = HIWORD(m.LParam)
+                Debug.Print($"WM_SIZE {m.WParam} {width}x{height}")
+                If m.WParam = 2 Then 'maximized
+                    ReZoom(New Drawing.Size(width, height))
+                End If
             Case WM_WINDOWPOSCHANGING
                 If posChangeBusy Then
                     Debug.Print("WM_WINDOWPOSCHANGING busy")
@@ -727,7 +743,7 @@
                 End If
                 If wasMaximized AndAlso caption_Mousedown Then
                     Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
-                    'winpos.flags = SetWindowPosFlags.IgnoreMove
+                    winpos.flags = SetWindowPosFlags.IgnoreMove
                     Debug.Print("WM_WINDOWPOSCHANGED from maximized and mousebutton down")
                     Debug.Print($"hwndInsertAfter {winpos.hwndInsertAfter}")
                     Debug.Print($"flags {winpos.flags}")
@@ -769,7 +785,7 @@
                 Debug.Print("WM_EXITMENULOOP")
                 SysMenu.Visible = False
 #If DEBUG Then
-            Case &H3 ' WM_MOVE 
+
             Case &H6 ' WM_AACTIVATE
             Case &H7 ' WM_SETFOCUS
             Case &H8 ' WM_KILLFOCUS
@@ -806,12 +822,11 @@
 
             Case &H281 ' WM_IME_SETCONTEXT
             Case &H282 ' WM_IME_NOTIFY 
+
+            Case &H2A1 ' WM_MOUSEHOVER 
             Case &H2A3 ' WM_MOUSELEAVE
 
-            Case &HC1B2 ' unknown
-            Case &HC1B6 ' unknown
-            Case &HC1B8 ' unknown
-            Case &HC1BD ' unknown
+            Case &HC0EA To &HC1CF ' unknown
 
             Case Else
                 Debug.Print($"Unhandeld WM_ 0x{m.Msg:X8} &H{m.Msg:X8}")
@@ -1160,6 +1175,7 @@
 
     Private Sub BtnMin_Click(sender As Button, e As EventArgs) Handles btnMin.Click
         Debug.Print("btnMin_Click")
+        'suppressWM_MOVEcwp = True
         wasMaximized = (Me.WindowState = FormWindowState.Maximized)
         If Not wasMaximized Then
             RestoreLoc = Me.Location
@@ -1169,6 +1185,7 @@
         Me.WindowState = FormWindowState.Minimized
         AstoniaProcess.RestorePos(True)
         SysMenu.Disable(SC_MOVE)
+        'suppressWM_MOVEcwp = False
     End Sub
     Private Sub BtnAlt_Click(sender As AButton, e As EventArgs) ' Handles AButton.click
         If sender.Text = String.Empty Then
@@ -1242,6 +1259,7 @@
     Dim prevWA As Rectangle
     Private Sub BtnMax_Click(sender As Button, e As EventArgs) Handles btnMax.Click
         Debug.Print("btnMax_Click")
+        suppressWM_MOVEcwp = True
         '🗖,🗗,⧠
         If Me.WindowState <> FormWindowState.Maximized Then
             'go maximized
@@ -1313,7 +1331,7 @@
             End If
             Me.Location = scrn.WorkingArea.Location
             Me.WindowState = FormWindowState.Maximized
-            ReZoom(New Size(Me.MaximizedBounds.Width, Me.MaximizedBounds.Height))
+            'ReZoom(New Size(Me.MaximizedBounds.Width, Me.MaximizedBounds.Height))
             sender.Text = "🗗"
             ttMain.SetToolTip(sender, "Restore")
             wasMaximized = True
@@ -1333,6 +1351,8 @@
             SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
             AltPP?.CenterBehind(pbZoom)
         End If
+        moveBusy = False
+        suppressWM_MOVEcwp = False
     End Sub
 
     Private Sub BtnStart_Click(sender As Button, e As EventArgs) Handles btnStart.Click
@@ -1420,6 +1440,8 @@
             If Not pnlOverview.Visible Then
                 AltPP?.CenterBehind(pbZoom)
                 AltPP?.Activate()
+                Debug.Print($"{moveBusy} {swpBusy}")
+                moveBusy = False
             Else
                 AppActivate(scalaPID)
             End If
@@ -1505,7 +1527,6 @@
         My.Settings.Save()
 
         tmrActive.Stop()
-        tmrMove.Stop()
         tmrOverview.Stop()
         tmrTick.Stop()
 
@@ -1532,11 +1553,14 @@
         If Me.WindowState = FormWindowState.Minimized Then
             Me.Location = RestoreLoc
             SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle) 'hides scala from taskbar
-            Me.WindowState = FormWindowState.Normal
-            ReZoom(zooms(cmbResolution.SelectedIndex))
-            btnMax.Text = "⧠"
-            ttMain.SetToolTip(btnMax, "Maximize")
-            If wasMaximized Then btnMax.PerformClick()
+            suppressWM_MOVEcwp = True
+            Me.WindowState = If(wasMaximized, FormWindowState.Maximized, FormWindowState.Normal)
+            suppressWM_MOVEcwp = False
+            'ReZoom(zooms(cmbResolution.SelectedIndex)) 'handled in WM_SIZE
+            AltPP?.CenterBehind(pbZoom)
+            btnMax.Text = If(wasMaximized, "🗗", "⧠")
+            ttMain.SetToolTip(btnMax, If(wasMaximized, "Restore", "Maximize"))
+            'If wasMaximized Then btnMax.PerformClick()
         End If
         Me.Show()
         'Me.BringToFront() 'doesn't work
@@ -1547,6 +1571,7 @@
             Me.TopMost = True
             Me.TopMost = My.Settings.topmost
         End If
+        'moveBusy = False
     End Sub
 
     Private Async Sub FrmMain_Click(sender As Object, e As MouseEventArgs) Handles Me.MouseDown

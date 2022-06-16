@@ -49,6 +49,15 @@ Module NativeMethods
     Public Function ToRECT(Rectangle As Rectangle) As RECT
         Return New RECT(Rectangle)
     End Function
+    <Runtime.CompilerServices.Extension>
+    Public Function LOWORD(param As IntPtr) As Short
+        Return CType(param, Integer) And &HFFFF
+    End Function
+    <Runtime.CompilerServices.Extension>
+    Public Function HIWORD(param As IntPtr) As Short
+        Return (CType(param, Integer) And &HFFFF0000) >> 16
+    End Function
+
 
     <StructLayout(LayoutKind.Sequential)>
     Structure APPBARDATA
@@ -118,8 +127,12 @@ Module NativeMethods
     End Function
 
     <DllImport("user32.dll", SetLastError:=True, CharSet:=Runtime.InteropServices.CharSet.Auto)>
-    Public Function FindWindow(ByVal lpClassName As String, ByVal lpWindowName As String) As IntPtr
-    End Function
+    Public Function FindWindow(ByVal lpClassName As String, ByVal lpWindowName As String) As IntPtr : End Function
+
+    <DllImport("user32.dll")>
+    Public Function GetWindow(hWnd As IntPtr, uCmd As UInteger) As IntPtr : End Function
+
+
 
     Public Structure SHELLEXECUTEINFO
         Public cbSize As Integer
@@ -576,6 +589,9 @@ Module NativeMethods
 
     Public Const HTCAPTION As Integer = 2
 
+    Public Const WM_MOVE = &H3
+    Public Const WM_SIZE = &H5
+
     Public Const WM_WININICHANGE = &H1A
 
     Public Const WM_CANCELMODE = &H1F
@@ -603,6 +619,7 @@ Module NativeMethods
 
     Public Const WM_ENTERMENULOOP = &H211
     Public Const WM_EXITMENULOOP = &H212
+    Public Const WM_EXITSIZEMOVE = &H232
 
     Public Const SC_SIZE As Integer = &HF000
     Public Const SC_MOVE As Integer = &HF010
