@@ -1579,13 +1579,16 @@
     End Sub
 
     Private Async Sub FrmMain_Click(sender As Object, e As MouseEventArgs) Handles Me.MouseDown
-        Debug.Print($"me.mousedown {sender.name}")
+        Debug.Print($"me.mousedown {sender.name} {e.Button}")
         MyBase.WndProc(Message.Create(ScalaHandle, WM_CANCELMODE, 0, 0))
         cmsQuickLaunch.Close()
         Await Task.Delay(200)
+        Debug.Print($"Me.MouseDown awaited")
         If Not pnlOverview.Visible Then
             pbZoom.Visible = True
-            AltPP.Activate()
+            If e.Button <> MouseButtons.None Then
+                AltPP?.Activate()
+            End If
         Else
             AButton.ActiveOverview = My.Settings.gameOnOverview
         End If
@@ -1612,17 +1615,9 @@
             PostMessage(AltPP.MainWindowHandle, WM_RBUTTONUP, 0, 0) ' to send rmb to client
         End If
         If e.Button = MouseButtons.Middle Then
-            'does not fix click bug
-            'Dim pt As Point = MousePosition
-            'ScreenToClient(AltPP.MainWindowHandle, pt)
-            'SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, 0, 0)
-            'SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, 0, pt.Y << 16 Or (pt.X And &HFFFF))
-            'SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, 0, (pt.Y + 1) << 16 Or (pt.X And &HFFFF))
-
-            'Await Task.Delay(tmrActive.Interval + 20) 'kidndah fixie
 
             SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, 0, 0)
-            Await Task.Delay(50)
+            Await Task.Delay(40)
             If PnlEqLock.Contains(MousePosition) Then
                 SendMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0) 'send and untrap middlemouse. couses left click sometimes
                 Debug.Print("mmbug")
