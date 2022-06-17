@@ -19,6 +19,7 @@
 
     Public Sub Show(pos As Point)
         'Me.Visible = True 'handled in wndproc
+        Debug.Print($"SysMenu.Show {pos}")
         Dim cmd As Integer = TrackPopupMenuEx(Me.Handle, TPM_RIGHTBUTTON Or TPM_RETURNCMD, pos.X, pos.Y, _form.Handle, Nothing)
         'Me.Visible = False 'handled in wndproc
         If cmd > 0 Then
@@ -105,7 +106,12 @@ Partial Class FrmMain
 
             Await Task.Delay(200)
             If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse SysMenu.Visible Then Exit Sub
-            AltPP?.Activate()
+            Debug.Print($"ShowSysMenu awaited")
+
+            If GetActiveProcessID() = scalaPID Then
+                Debug.Print($"ShowSysMenu activating {AltPP.Name}")
+                AltPP?.Activate()
+            End If
             If Not pnlOverview.Visible Then
                 pbZoom.Visible = True
             Else
