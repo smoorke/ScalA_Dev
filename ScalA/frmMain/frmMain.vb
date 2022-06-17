@@ -1157,13 +1157,17 @@
     End Function
 
     Private Sub BtnQuit_MouseEnter(sender As Button, e As EventArgs) Handles btnQuit.MouseEnter
-        sender.ForeColor = SystemColors.Control
+        sender.ForeColor = Color.White 'SystemColors.Control
         sender.BackColor = Color.Red
+        cornerNE.BackColor = Color.Red
     End Sub
-
     Private Sub BtnQuit_MouseLeave(sender As Button, e As EventArgs) Handles btnQuit.MouseLeave
         sender.ForeColor = SystemColors.ControlText
         sender.BackColor = Color.Transparent
+        cornerNE.BackColor = Color.Transparent
+    End Sub
+    Private Sub BtnQuit_MouseDown(sender As Object, e As MouseEventArgs) Handles btnQuit.MouseDown
+        cornerNE.BackColor = Color.FromArgb(255, 102, 102)
     End Sub
 
     Private Sub BtnQuit_Click(sender As Button, e As EventArgs) Handles btnQuit.Click
