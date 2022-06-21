@@ -1489,6 +1489,21 @@
         'Me.ResumeLayout()
         ''locked 🔒
         ''unlocked 🔓
+
+        'close error dialog
+        Dim dummy = Task.Run(Sub()
+                                 Try
+                                     Dim errorHwnd = FindWindow("#32770", "error")
+                                     If errorHwnd Then
+                                         If FindWindowEx(errorHwnd, Nothing, "Static", "Copy new->moac failed: 32") Then
+                                             Dim butHandle = FindWindowEx(errorHwnd, Nothing, "Button", "OK")
+                                             SendMessage(butHandle, &HF5, IntPtr.Zero, IntPtr.Zero)
+                                             Debug.Print("Error dialog closed")
+                                         End If
+                                     End If
+                                 Catch
+                                 End Try
+                             End Sub)
     End Sub
 
     Private Sub Title_MouseDoubleClick(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.DoubleClick, lblTitle.DoubleClick

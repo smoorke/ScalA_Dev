@@ -128,6 +128,12 @@ Module NativeMethods
 
     <DllImport("user32.dll", SetLastError:=True, CharSet:=Runtime.InteropServices.CharSet.Auto)>
     Public Function FindWindow(ByVal lpClassName As String, ByVal lpWindowName As String) As IntPtr : End Function
+    <DllImport("user32.dll", SetLastError:=True, CharSet:=CharSet.Auto)>
+    Public Function FindWindowEx(ByVal parentHandle As IntPtr,
+                      ByVal childAfter As IntPtr,
+                      ByVal lclassName As String,
+                      ByVal windowTitle As String) As IntPtr
+    End Function
 
     <DllImport("user32.dll")>
     Public Function GetWindow(hWnd As IntPtr, uCmd As UInteger) As IntPtr : End Function
