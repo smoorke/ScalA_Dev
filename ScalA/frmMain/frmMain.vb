@@ -462,10 +462,12 @@
         If Not AltPP?.IsRunning() Then
             Debug.Print("Not AltPP?.IsRunning()")
             If Not My.Settings.CycleOnClose Then
+                AppActivate(scalaPID)
+                Me.Activate()
+                BringToFront()
                 tmrTick.Enabled = False
                 cboAlt.SelectedIndex = 0
                 tmrOverview.Enabled = True
-                AppActivate(scalaPID)
                 Exit Sub
             Else 'CycleOnClose
                 Cycle()
@@ -1617,7 +1619,7 @@
         If e.Button = MouseButtons.Middle Then
 
             SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, 0, 0)
-            Await Task.Delay(40)
+            Await Task.Delay(45)
             If PnlEqLock.Contains(MousePosition) Then
                 SendMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0) 'send and untrap middlemouse. couses left click sometimes
                 Debug.Print("mmbug")
