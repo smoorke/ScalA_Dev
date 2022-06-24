@@ -51,32 +51,34 @@ Partial Public Class FrmMain
 
 
     Public Sub AnimateThumb(startRC As Rectangle, endRC As Rectangle, Optional time As Integer = 50)
-        Dim timer As Stopwatch = Stopwatch.StartNew
+        Task.Run(Sub()
+                     Dim timer As Stopwatch = Stopwatch.StartNew
 
-        Dim twp As DWM_THUMBNAIL_PROPERTIES
-        twp.dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY + DwmThumbnailFlags.DWM_TNP_RECTDESTINATION + DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY + DwmThumbnailFlags.DWM_TNP_VISIBLE
-        twp.fVisible = True
-        twp.opacity = If(chkDebug.Checked, 128, 255)
-        twp.rcDestination = startRC
-        twp.fSourceClientAreaOnly = True
+                     Dim twp As DWM_THUMBNAIL_PROPERTIES
+                     twp.dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY + DwmThumbnailFlags.DWM_TNP_RECTDESTINATION + DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY + DwmThumbnailFlags.DWM_TNP_VISIBLE
+                     twp.fVisible = True
+                     twp.opacity = If(chkDebug.Checked, 128, 255)
+                     twp.rcDestination = startRC
+                     twp.fSourceClientAreaOnly = True
 
-        'DwmUpdateThumbnailProperties(thumb, twp)
+                     'DwmUpdateThumbnailProperties(thumb, twp)
 
-        While timer.ElapsedMilliseconds < time
-            Dim percent = timer.ElapsedMilliseconds / time
-            ' Debug.Print($"{percent * 100}%")
-            twp.rcDestination = New Rectangle(startRC.X + (endRC.X - startRC.X) * percent,
+                     While timer.ElapsedMilliseconds < time
+                         Dim percent = timer.ElapsedMilliseconds / time
+                         ' Debug.Print($"{percent * 100}%")
+                         twp.rcDestination = New Rectangle(startRC.X + (endRC.X - startRC.X) * percent,
                                               startRC.Y + (endRC.Y - startRC.Y) * percent,
                                               startRC.Width + (endRC.Width - startRC.Width) * percent,
                                               startRC.Height + (endRC.Height - startRC.Height) * percent)
-            DwmUpdateThumbnailProperties(thumb, twp)
-        End While
+                         DwmUpdateThumbnailProperties(thumb, twp)
+                     End While
 
-        timer.Stop()
+                     timer.Stop()
 
-        twp.rcDestination = endRC
-        DwmUpdateThumbnailProperties(thumb, twp)
+                     twp.rcDestination = endRC
+                     DwmUpdateThumbnailProperties(thumb, twp)
 
+                 End Sub)
     End Sub
 
 End Class
