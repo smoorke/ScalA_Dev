@@ -71,6 +71,7 @@
         End Get
     End Property
     Public Function CenterBehind(centerOn As Control, Optional extraSWPFlags As UInteger = 0) As Boolean
+        If centerOn.RectangleToScreen(centerOn.Bounds).Contains(Form.MousePosition) Then Return False
         Dim pt As Point = centerOn.PointToScreen(New Point(centerOn.Width / 2, centerOn.Height / 2))
         Return CenterWindowPos(centerOn.FindForm.Handle, pt.X, pt.Y, extraSWPFlags)
     End Function
