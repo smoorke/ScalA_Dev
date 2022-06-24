@@ -663,7 +663,10 @@ Partial Public Class FrmMain
                      watch.Stop()
                  End Sub)
         renameOpen = True
-        Dim toName As String = InputBox("Enter new name", title, currentName, MousePosition.X - 177, MousePosition.Y - 76)
+        Dim screenWA = Screen.FromPoint(MousePosition).WorkingArea
+        Dim dialogLeft = Math.Min(Math.Max(screenWA.Left, MousePosition.X - 177), screenWA.Right - 370)
+        Dim dialogTop = Math.Min(Math.Max(screenWA.Top, MousePosition.Y - 76), screenWA.Bottom - 152)
+        Dim toName As String = InputBox("Enter new name", title, currentName, dialogLeft, dialogTop)
         renameOpen = False
         Debug.Print($"Rename to {toName}")
         If toName <> "" AndAlso currentName <> toName Then
