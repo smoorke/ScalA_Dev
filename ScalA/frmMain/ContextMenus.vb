@@ -644,14 +644,14 @@ Partial Public Class FrmMain
     Private renameOpen As Boolean
     Private Sub RenameMethod(Path As String, currentName As String)
         Dim title As String = $"Rename {currentName}"
-
+        Dim scalaClass = GetWindowClass(ScalaHandle)
         Task.Run(Sub()
                      Dim watch As Stopwatch = Stopwatch.StartNew()
 
                      Dim hndl As IntPtr
                      While watch.ElapsedMilliseconds < 2000
                          Threading.Thread.Sleep(20)
-                         hndl = FindWindow(Nothing, title)
+                         hndl = FindWindow(scalaClass, title)
                          Debug.Print($"findwindow {hndl}")
                          If hndl <> IntPtr.Zero Then Exit While
                      End While
