@@ -612,21 +612,6 @@ Partial Public Class FrmMain
         End If
     End Sub
 
-    Private ReadOnly newFolderItem As New MenuItem("Folder", AddressOf QlCtxNewFolder)
-    Private ReadOnly QlCtxNewMenu As New MenuItem("New", {
-        newFolderItem,
-        New MenuItem("-")})
-
-    Private ReadOnly QlCtxMenu As New ContextMenu({
-        New MenuItem("Open", AddressOf QlCtxOpen) With {.DefaultItem = True},
-        New MenuItem("-"),
-        New MenuItem("Delete", AddressOf QlCtxDelete),
-        New MenuItem("Rename", AddressOf QlCtxRename),
-        New MenuItem("-"),
-        New MenuItem("Properties", AddressOf QlCtxProps),
-        New MenuItem("-"),
-        QlCtxNewMenu})
-
     Private Sub QlCtxOpen(sender As MenuItem, e As EventArgs)
         Debug.Print($"QlCtxOpen sender:{sender}")
         cmsQuickLaunch.Close()
@@ -756,6 +741,23 @@ Partial Public Class FrmMain
             sender.Select()
             sender.BackColor = Color.FromArgb(&HFFB5D7F3) 'this to fix a glitch where sender gets unselected
 
+            Dim newFolderItem As New MenuItem("Folder", AddressOf QlCtxNewFolder)
+            Dim QlCtxNewMenu As New MenuItem("New", {
+                                             newFolderItem,
+                                             New MenuItem("-")})
+
+            Dim QlCtxMenu As New ContextMenu({
+                New MenuItem("Open", AddressOf QlCtxOpen) With {.DefaultItem = True},
+                New MenuItem("-"),
+                New MenuItem("Delete", AddressOf QlCtxDelete),
+                New MenuItem("Rename", AddressOf QlCtxRename),
+                New MenuItem("-"),
+                New MenuItem("Properties", AddressOf QlCtxProps),
+                New MenuItem("-"),
+                QlCtxNewMenu})
+
+
+
             Dim path As String = sender.Tag
             Dim name As String = sender.Text
 
@@ -803,13 +805,10 @@ Partial Public Class FrmMain
             For Each item As IntPtr In purgeList
                 DeleteObject(item)
             Next
-
-            'remove dynamically added items
-            While QlCtxNewMenu.MenuItems.Count > QlCtxNewMenuStaticItemsCount
-                QlCtxNewMenu.MenuItems.RemoveAt(QlCtxNewMenuStaticItemsCount)
-            End While
-
-            'QlCtxIsOpen = False
+            DestroyMenu(QlCtxMenu.Handle) ' manual destroy since we recreate everytime, might not be needed if we dispose
+            QlCtxMenu.Dispose()           ' but better to err on the side of caution and do it anyways.
+            DestroyMenu(QlCtxNewMenu.Handle)
+            QlCtxNewMenu.Dispose()
 
         ElseIf Not sender.Tag.EndsWith("\") Then 'do not process click on dirs as they are handled by doubleclick
             Debug.Print("clicked not a dir")
