@@ -175,6 +175,14 @@ Module NativeMethods
     <DllImport("user32.dll")>
     Public Function GetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer) As UInteger : End Function
 
+    <System.Runtime.InteropServices.DllImport("user32.dll", CharSet:=System.Runtime.InteropServices.CharSet.Auto)>
+    Public Function GetClassName(ByVal hWnd As System.IntPtr, ByVal lpClassName As System.Text.StringBuilder, ByVal nMaxCount As Integer) As Integer : End Function
+    Public Function GetWindowClass(ByVal hwnd As IntPtr) As String
+        Dim sClassName As New System.Text.StringBuilder("", 256)
+        Call GetClassName(hwnd, sClassName, 256)
+        Return sClassName.ToString
+    End Function
+
     Public Const GWL_HWNDPARENT As Integer = -8
     <Flags()>
     Public Enum WindowStyles As Long

@@ -173,14 +173,7 @@
         End Try
     End Function
 
-    <System.Runtime.InteropServices.DllImport("user32.dll", CharSet:=System.Runtime.InteropServices.CharSet.Auto)>
-    Private Shared Sub GetClassName(ByVal hWnd As System.IntPtr, ByVal lpClassName As System.Text.StringBuilder, ByVal nMaxCount As Integer)
-    End Sub
-    Private Shared Function GetWindowClass(ByVal hwnd As Long) As String
-        Dim sClassName As New System.Text.StringBuilder("", 256)
-        Call GetClassName(hwnd, sClassName, 256)
-        Return sClassName.ToString
-    End Function
+
     ''' <summary>
     ''' Returns True if WindowClass is in pipe seperated string of classes 
     ''' </summary>
