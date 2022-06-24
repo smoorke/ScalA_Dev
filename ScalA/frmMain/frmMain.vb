@@ -515,6 +515,7 @@
                 swpBusy = True
                 Task.Run(Sub()
                              Try
+                                 If Not AltPP?.IsRunning Then Exit Sub
                                  swpBusy = True
                                  SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, swpFlags)
                              Catch ex As Exception
