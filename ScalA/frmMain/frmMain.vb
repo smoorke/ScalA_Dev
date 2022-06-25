@@ -131,10 +131,10 @@
 
             AltPP.SavePos(rcW.Location)
 
-            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 260, Integer).Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0), 25)
+            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 262, Integer).Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0), 25)
             ' PnlEqLock.Size = New Size(CType(rcC.Width / 2 + 122, Integer).Map(rcC.Width, rcC.Width / 2, zooms(cmbResolution.SelectedIndex).Width, zooms(cmbResolution.SelectedIndex).Width / 2),
-            PnlEqLock.Size = New Size(522.Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0),
-                                      42.Map(0, rcC.Height, 0, zooms(cmbResolution.SelectedIndex).Height))
+            PnlEqLock.Size = New Size(524.Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0),
+                                      45.Map(0, rcC.Height, 0, zooms(cmbResolution.SelectedIndex).Height))
             AltPP.Activate()
             Dim ptt As Point
 
@@ -575,13 +575,13 @@
         cornerSE.Location = New Point(Me.Width - 2, Me.Height - 2)
 
         If rcC.Width = 0 Then
-            PnlEqLock.Location = New Point(140.Map(800, 0, newSize.Width, 0), 25)
-            PnlEqLock.Size = New Size(522.Map(800, 0, newSize.Width, 0),
-                                  42.Map(0, 600, 0, newSize.Height))
+            PnlEqLock.Location = New Point(138.Map(800, 0, newSize.Width, 0), 25)
+            PnlEqLock.Size = New Size(524.Map(800, 0, newSize.Width, 0),
+                                  45.Map(0, 600, 0, newSize.Height))
         Else
-            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 260, Integer).Map(rcC.Width, 0, newSize.Width, 0), 25)
-            PnlEqLock.Size = New Size(522.Map(rcC.Width, 0, newSize.Width, 0),
-                                      42.Map(0, rcC.Height, 0, newSize.Height))
+            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 262, Integer).Map(rcC.Width, 0, newSize.Width, 0), 25)
+            PnlEqLock.Size = New Size(524.Map(rcC.Width, 0, newSize.Width, 0),
+                                      45.Map(0, rcC.Height, 0, newSize.Height))
         End If
 
         If Me.WindowState <> FormWindowState.Maximized AndAlso My.Settings.roundCorners Then
@@ -1003,9 +1003,9 @@
 
                         eqLockShown = True
 
-                        PnlEqLock.Location = but.ThumbRECT.Location + New Point((rccB.Width \ 2 - 260).Map(0, rccB.Width, 0, but.ThumbRECT.Width - but.ThumbRECT.Left), 0)
-                        PnlEqLock.Size = New Size(522.Map(rccB.Width, 0, but.ThumbRECT.Width - but.ThumbRECT.Left, 0),
-                                                   42.Map(0, rccB.Height, 0, but.ThumbRECT.Height - but.ThumbRECT.Top))
+                        PnlEqLock.Location = but.ThumbRECT.Location + New Point((rccB.Width \ 2 - 248).Map(0, rccB.Width, 0, but.ThumbRECT.Width - but.ThumbRECT.Left), 0)
+                        PnlEqLock.Size = New Size(524.Map(rccB.Width, 0, but.ThumbRECT.Width - but.ThumbRECT.Left, 0),
+                                                   45.Map(0, rccB.Height, 0, but.ThumbRECT.Height - but.ThumbRECT.Top))
 
                         Dim AstClientOffsetB = New Size(pttB.X - rcwB.Left, pttB.Y - rcwB.Top)
 
