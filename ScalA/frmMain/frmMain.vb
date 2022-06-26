@@ -456,8 +456,7 @@
     Private Shared swpBusy As Boolean = False
     Const swpFlags = SetWindowPosFlags.IgnoreResize Or
                      SetWindowPosFlags.DoNotActivate Or
-                     SetWindowPosFlags.ASyncWindowPosition Or
-                     SetWindowPosFlags.DoNotChangeOwnerZOrder
+                     SetWindowPosFlags.ASyncWindowPosition
     Private Sub TmrTick_Tick(sender As Timer, e As EventArgs) Handles tmrTick.Tick
 
         If Not AltPP?.IsRunning() Then
@@ -518,7 +517,9 @@
                              Try
                                  If Not AltPP?.IsRunning Then Exit Sub
                                  swpBusy = True
-                                 SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, swpFlags)
+                                 Dim flags = swpFlags
+                                 If Not AltPP?.IsActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
+                                 SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
                              Catch ex As Exception
                              Finally
                                  swpBusy = False
@@ -979,6 +980,8 @@
                         wasVisible = True
                     End If
 
+                    If ap.IsActive Then Me.BringToFront()
+
                     If Not AOBusy AndAlso but.ThumbContains(MousePosition) Then
                         AltPP = ap
 
@@ -1014,12 +1017,13 @@
                         Dim newXB = MousePosition.X.Map(ptZB.X, ptZB.X + but.ThumbRectangle.Width, ptZB.X, ptZB.X + but.ThumbRECT.Width - but.ThumbRECT.X - rccB.Width) - AstClientOffsetB.Width - My.Settings.offset.X
                         Dim newYB = MousePosition.Y.Map(ptZB.Y, ptZB.Y + but.ThumbRectangle.Height, ptZB.Y, ptZB.Y + but.ThumbRECT.Height - but.ThumbRECT.Top - rccB.Height) - AstClientOffsetB.Height - My.Settings.offset.Y
 
-
                         AOBusy = True
                         Task.Run(Sub()
                                      Try
                                          AOBusy = True
-                                         SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, swpFlags)
+                                         Dim flags = swpFlags
+                                         If Not but.Tag?.isActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
+                                         SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
                                      Catch ex As Exception
                                      Finally
                                          AOBusy = False
