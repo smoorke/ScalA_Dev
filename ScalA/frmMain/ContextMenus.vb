@@ -812,7 +812,7 @@ Partial Public Class FrmMain
 
         ElseIf Not sender.Tag.EndsWith("\") Then 'do not process click on dirs as they are handled by doubleclick
             Debug.Print("clicked not a dir")
-            OpenLnk(sender, e)
+            Task.Run(Sub() OpenLnk(sender, e))
             'cmsQuickLaunch.Close(ToolStripDropDownCloseReason.ItemClicked)
         End If
     End Sub
