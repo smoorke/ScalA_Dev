@@ -135,6 +135,7 @@
             ' PnlEqLock.Size = New Size(CType(rcC.Width / 2 + 122, Integer).Map(rcC.Width, rcC.Width / 2, zooms(cmbResolution.SelectedIndex).Width, zooms(cmbResolution.SelectedIndex).Width / 2),
             PnlEqLock.Size = New Size(524.Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0),
                                       45.Map(0, rcC.Height, 0, zooms(cmbResolution.SelectedIndex).Height))
+
             AltPP.Activate()
             Dim ptt As Point
 
