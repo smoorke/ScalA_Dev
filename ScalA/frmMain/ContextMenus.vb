@@ -730,11 +730,17 @@ Partial Public Class FrmMain
     Private ReadOnly plusHbm As IntPtr = New Bitmap(My.Resources.Add, New Size(16, 16)).GetHbitmap(Color.Red)
 
     'Dim QlCtxIsOpen As Boolean = False 'to handle glitch in contextmenu when moving astonia window
-
+    Dim QlCtxNewMenu As New MenuItem
+    Dim QlCtxMenu As New ContextMenu
     Private Sub QL_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs) 'Handles cmsQuickLaunch.mousedown
         If e.Button = MouseButtons.Right Then
 
             Debug.Print("QL_MouseDown")
+
+            DestroyMenu(QlCtxMenu.Handle) ' manual destroy old since we recreate everytime, might not be needed if we dispose
+            QlCtxMenu.Dispose()           ' but better to err on the side of caution and do it anyways.
+            DestroyMenu(QlCtxNewMenu.Handle)
+            QlCtxNewMenu.Dispose()
 
             'QlCtxIsOpen = True
 
@@ -742,11 +748,11 @@ Partial Public Class FrmMain
             sender.BackColor = Color.FromArgb(&HFFB5D7F3) 'this to fix a glitch where sender gets unselected
 
             Dim newFolderItem As New MenuItem("Folder", AddressOf QlCtxNewFolder)
-            Dim QlCtxNewMenu As New MenuItem("New", {
+            QlCtxNewMenu = New MenuItem("New", {
                                              newFolderItem,
                                              New MenuItem("-")})
 
-            Dim QlCtxMenu As New ContextMenu({
+            QlCtxMenu = New ContextMenu({
                 New MenuItem("Open", AddressOf QlCtxOpen) With {.DefaultItem = True},
                 New MenuItem("-"),
                 New MenuItem("Delete", AddressOf QlCtxDelete),
@@ -805,10 +811,7 @@ Partial Public Class FrmMain
             For Each item As IntPtr In purgeList
                 DeleteObject(item)
             Next
-            DestroyMenu(QlCtxMenu.Handle) ' manual destroy since we recreate everytime, might not be needed if we dispose
-            QlCtxMenu.Dispose()           ' but better to err on the side of caution and do it anyways.
-            DestroyMenu(QlCtxNewMenu.Handle)
-            QlCtxNewMenu.Dispose()
+
 
         ElseIf Not sender.Tag.EndsWith("\") Then 'do not process click on dirs as they are handled by doubleclick
             Debug.Print("clicked not a dir")
