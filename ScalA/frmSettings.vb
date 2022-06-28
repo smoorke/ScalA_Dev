@@ -155,7 +155,8 @@ Public Class FrmSettings
         Me.chkDoAlign.Checked = False
         Me.txtTopSort.Text = My.Settings.topSort
         Me.txtBotSort.Text = My.Settings.botSort
-        btnTest.PerformClick()
+        'btnTest.PerformClick()
+        BtnTest_Click(Nothing, Nothing)
         My.Settings.Whitelist = restoreWhitelist
         Me.Close()
     End Sub
