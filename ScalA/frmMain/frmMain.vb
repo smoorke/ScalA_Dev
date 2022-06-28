@@ -735,20 +735,20 @@
                     ReZoom(New Drawing.Size(width, height))
                 End If
             Case WM_WINDOWPOSCHANGING
-                If posChangeBusy Then
-                    Debug.Print("WM_WINDOWPOSCHANGING busy")
-                    m.Result = 0
-                    Exit Sub
-                End If
+                'If posChangeBusy Then
+                '    Debug.Print("WM_WINDOWPOSCHANGING busy")
+                '    m.Result = 0
+                '    Exit Sub
+                'End If
             Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
-                If posChangeBusy Then
-                    Debug.Print("WM_WINDOWPOSCHANGED busy")
-                    m.Result = 0
-                    Exit Sub
-                End If
-                If wasMaximized AndAlso caption_Mousedown Then
+                'If posChangeBusy Then
+                '    Debug.Print("WM_WINDOWPOSCHANGED busy")
+                '    m.Result = 0
+                '    Exit Sub
+                'End If
+                If wasMaximized AndAlso caption_Mousedown AndAlso Not posChangeBusy Then
                     Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
-                    winpos.flags = SetWindowPosFlags.IgnoreMove
+                    'winpos.flags = SetWindowPosFlags.IgnoreMove
                     Debug.Print("WM_WINDOWPOSCHANGED from maximized and mousebutton down")
                     Debug.Print($"hwndInsertAfter {winpos.hwndInsertAfter}")
                     Debug.Print($"flags {winpos.flags}")
