@@ -980,7 +980,10 @@
                         wasVisible = True
                     End If
 
-                    If ap.IsActive Then Me.BringToFront()
+                    If ap.IsActive Then
+                        SetWindowLong(Me.Handle, GWL_HWNDPARENT, ap?.MainWindowHandle)
+                        Me.BringToFront()
+                    End If
 
                     If Not AOBusy AndAlso but.ThumbContains(MousePosition) Then
                         AltPP = ap
