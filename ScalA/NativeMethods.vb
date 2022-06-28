@@ -447,6 +447,15 @@ Module NativeMethods
         ''' <summary>Displays the window.</summary>
         ''' <remarks>SWP_SHOWWINDOW</remarks>
         ShowWindow = &H40
+        ''' <summary>Undocumented</summary>
+        ''' <remarks>SWP_NOCLIENTSIZE</remarks>
+        NoClientSize = &H800
+        ''' <summary>Undocumented</summary>
+        ''' <remarks>SWP_NOCLIENTMOVE</remarks>
+        NoClientMove = &H1000
+        ''' <summary>Undocumented</summary>
+        ''' <remarks>SWP_STATECHANGED</remarks>
+        StateChanged = &H8000
     End Enum
 
     <DllImport("user32.dll", SetLastError:=True)>
@@ -628,6 +637,9 @@ Module NativeMethods
     'Public Const WM_ENTERIDLE = &H121
 
     Public Const WM_MOUSEMOVE = &H200
+
+    Public Const WM_LBUTTONDOWN = &H201
+    Public Const WM_LBUTTONUP = &H202
 
     Public Const WM_RBUTTONDOWN = &H204
     Public Const WM_RBUTTONUP = &H205
