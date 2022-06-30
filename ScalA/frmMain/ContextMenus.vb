@@ -597,7 +597,6 @@ Partial Public Class FrmMain
         '    End If
         'End If
         If cboAlt.SelectedIndex > 0 Then
-            SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
             If (AltPP?.IsActive OrElse GetActiveProcessID() = scalaPID) AndAlso e.CloseReason <> ToolStripDropDownCloseReason.AppClicked Then
                 AppActivate(scalaPID) 'Fixes astona popping to front
                 AltPP?.Activate()
@@ -606,6 +605,7 @@ Partial Public Class FrmMain
         Await Task.Delay(200)
         If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse SysMenu.Visible Then Exit Sub
         If cboAlt.SelectedIndex > 0 Then
+            SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
             pbZoom.Visible = True
         Else
             AButton.ActiveOverview = My.Settings.gameOnOverview
