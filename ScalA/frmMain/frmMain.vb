@@ -970,6 +970,9 @@
 
                 If My.Settings.gameOnOverview Then 'todo move this to seperate timer and make async
 
+                    'InvalidateRect(ap.MainWindowHandle, IntPtr.Zero, False)
+                    'SendMessage(ap.MainWindowHandle, WM_PAINT, IntPtr.Zero, IntPtr.Zero)
+
                     Dim rccB As Rectangle
                     GetClientRect(ap?.MainWindowHandle, rccB)
 

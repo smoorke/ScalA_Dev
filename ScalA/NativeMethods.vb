@@ -357,6 +357,8 @@ Module NativeMethods
         WS_EX_WINDOWEDGE = &H100
     End Enum
     <DllImport("user32.dll")>
+    Public Function InvalidateRect(hWnd As IntPtr, lpRect As IntPtr, bErase As Boolean) As Boolean : End Function
+    <DllImport("user32.dll")>
     Public Function GetWindowRect(ByVal hWnd As IntPtr, ByRef lpRect As Rectangle) As Boolean : End Function
     <DllImport("user32.dll")>
     Public Function GetClientRect(ByVal hWnd As IntPtr, ByRef lpRect As Rectangle) As Boolean : End Function
@@ -618,6 +620,8 @@ Module NativeMethods
 
     Public Const WM_MOVE = &H3
     Public Const WM_SIZE = &H5
+
+    Public Const WM_PAINT = &HF
 
     Public Const WM_WININICHANGE = &H1A
 
