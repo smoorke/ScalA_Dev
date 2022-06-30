@@ -520,7 +520,14 @@
                                  Dim flags = swpFlags
                                  If Not AltPP?.IsActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
                                  SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
+                                 Dim pt As Point = MousePosition
+                                 ScreenToClient(AltPP?.MainWindowHandle, pt)
+                                 If prevWMMMpt <> pt Then
+                                     SendMessage(AltPP?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
+                                 End If
+                                 prevWMMMpt = pt
                              Catch ex As Exception
+                                 Debug.Print(ex.Message)
                              Finally
                                  swpBusy = False
                              End Try
@@ -528,6 +535,7 @@
             End If
         End If
     End Sub
+    Dim prevWMMMpt As New Point
 
     Private Sub CmbResolution_MouseDown(sender As ComboBox, e As MouseEventArgs) Handles cmbResolution.MouseDown
         If e.Button = MouseButtons.Right Then FrmSettings.Show()
@@ -820,6 +828,7 @@
             Case &H121 ' WM_ENTERIDLE
 
             Case &H200 ' WM_MOUSEMOVE
+                Debug.Print($"WM_MOUSEMOVE {Nothing} {Nothing}")
 
             Case &H210 ' WM_PARENTNOTIFY 
             Case &H215 ' WM_CAPTURECHANGED
@@ -1027,7 +1036,14 @@
                                          Dim flags = swpFlags
                                          If Not but.Tag?.isActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
                                          SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
+                                         Dim pt As Point = MousePosition
+                                         ScreenToClient(but.Tag?.MainWindowHandle, pt)
+                                         If prevWMMMpt <> pt Then
+                                             SendMessage(but.Tag?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
+                                         End If
+                                         prevWMMMpt = pt
                                      Catch ex As Exception
+                                         Debug.Print(ex.Message)
                                      Finally
                                          AOBusy = False
                                      End Try
