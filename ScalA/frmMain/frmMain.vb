@@ -520,9 +520,11 @@
                                  swpBusy = True
                                  Dim flags = swpFlags
                                  If Not AltPP?.IsActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
+                                 Dim pt As Point = MousePosition - New Point(newX + AstClientOffset.Width, newY + AstClientOffset.Height)
+                                 If prevWMMMpt <> pt Then
+                                     SendMessage(AltPP?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
+                                 End If
                                  SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
-                                 Dim pt As Point = MousePosition
-                                 ScreenToClient(AltPP?.MainWindowHandle, pt)
                                  If prevWMMMpt <> pt Then
                                      SendMessage(AltPP?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                  End If
@@ -1047,9 +1049,11 @@
                                          AOBusy = True
                                          Dim flags = swpFlags
                                          If Not but.Tag?.isActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
+                                         Dim pt As Point = MousePosition - New Point(newXB + AstClientOffset.Width, newYB + AstClientOffset.Height)
+                                         If prevWMMMpt <> pt Then
+                                             SendMessage(but.Tag?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
+                                         End If
                                          SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
-                                         Dim pt As Point = MousePosition
-                                         ScreenToClient(but.Tag?.MainWindowHandle, pt)
                                          If prevWMMMpt <> pt Then
                                              SendMessage(but.Tag?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                          End If
