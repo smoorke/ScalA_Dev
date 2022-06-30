@@ -350,6 +350,7 @@
             System.IO.File.Delete(FileIO.SpecialDirectories.Temp & "\ScalA\tmp.lnk")
         End If
 
+        frmCaptureClickBehind.Show()
         suppressWM_MOVEcwp = True
     End Sub
     Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
@@ -608,6 +609,8 @@
             cornerSE.Visible = False
         End If
 
+        FrmCaptureClickBehind.Bounds = Me.RectangleToScreen(pbZoom.Bounds)
+
     End Sub
 
 #Region " SysMenu "
@@ -716,6 +719,7 @@
             Case WM_MOVE
                 Debug.Print($"WM_MOVE {Me.WindowState}")
                 Me.Cursor = Cursors.Default
+                'frmCaptureClickBehind.Bounds = Me.RectangleToScreen(pbZoom.Bounds)
                 If AltPP?.IsRunning AndAlso Not FrmSettings.chkDoAlign.Checked AndAlso Me.WindowState <> FormWindowState.Minimized Then
 #If DEBUG Then
                     pbZoom.Visible = True
@@ -739,6 +743,7 @@
                 Dim width As Integer = LOWORD(m.LParam)
                 Dim height As Integer = HIWORD(m.LParam)
                 Debug.Print($"WM_SIZE {m.WParam} {width}x{height}")
+                'frmCaptureClickBehind.Size = New Size(width - 2, height - pnlTitleBar.Height)
                 If m.WParam = 2 Then 'maximized
                     ReZoom(New Drawing.Size(width, height))
                 End If
@@ -754,8 +759,12 @@
                 '    m.Result = 0
                 '    Exit Sub
                 'End If
+                Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
+                If winpos.x <> 0 AndAlso winpos.y <> 0 AndAlso FrmCaptureClickBehind IsNot Nothing Then
+                    FrmCaptureClickBehind.Bounds = New Rectangle(winpos.x + 1, winpos.y + pnlTitleBar.Height, winpos.cx - 2, winpos.cy - pnlTitleBar.Height)
+                End If
                 If wasMaximized AndAlso caption_Mousedown AndAlso Not posChangeBusy Then
-                    Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
+                    'Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
                     'winpos.flags = SetWindowPosFlags.IgnoreMove
                     Debug.Print("WM_WINDOWPOSCHANGED from maximized and mousebutton down")
                     Debug.Print($"hwndInsertAfter {winpos.hwndInsertAfter}")
@@ -776,7 +785,7 @@
                     'handle sysmenu max/restore worng
                     SysMenu.Disable(SC_RESTORE)
                     SysMenu.Enable(SC_MAXIMIZE)
-                    System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
+                    'System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                     posChangeBusy = False
                 End If
             Case WM_WININICHANGE '&H1A
@@ -1532,6 +1541,18 @@
                                  Catch
                                  End Try
                              End Sub)
+
+        Dim setbehind As IntPtr = AltPP?.MainWindowHandle
+
+        'If setbehind = IntPtr.Zero Then
+        '    setbehind = If(pnlOverview.Visible, ScalaHandle, AltPP?.MainWindowHandle)
+        'End If
+
+        If setbehind = IntPtr.Zero AndAlso pnlOverview.Visible Then setbehind = ScalaHandle
+
+        SetWindowPos(frmCaptureClickBehind.Handle, setbehind, -1, -1, -1, -1,
+                     SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreResize)
+
     End Sub
 
     Private Sub Title_MouseDoubleClick(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.DoubleClick, lblTitle.DoubleClick

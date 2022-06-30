@@ -651,6 +651,9 @@ Module NativeMethods
     Public Const WM_MBUTTONDOWN = &H207
     Public Const WM_MBUTTONUP = &H208
 
+    Public Const WM_XBUTTONDOWN = &H20B
+    Public Const WM_XBUTTONUP = &H20C
+
     Public Const WM_ENTERMENULOOP = &H211
     Public Const WM_EXITMENULOOP = &H212
     Public Const WM_EXITSIZEMOVE = &H232
