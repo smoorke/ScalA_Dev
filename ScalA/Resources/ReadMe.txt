@@ -204,3 +204,17 @@ Fixed Settings form showing at wrong location with ScalA minimized.
 Fixed Scala forgetting original Astonia positions when minimized.
 Fixed EQ Lock not showing no-cursor when sysMenu is open.
 Enabled EQ Lock on active overview.
+
+**ScalA 1.0.5**
+Fixed ScalA intermittently popping to front on active overview.
+Fixed white pixel when mousedown on close button with rounded corners.
+Added method to auto-close error dialog when an Astonia client was improperly closed. 
+  (eg. by not using F12, clicking exit or the ScalA context menu options)
+Fixed quicklaunch contextmenu staying wide after opening on an item with a long name.
+Fixed rename dialog possibly opening off screen.
+Increased the size of the EQ Lock zone as it was still possible to click off gear when clicking near the edge.
+Fixed cancelling settings could possibly not restore sorting/black/whitelist.
+Fixed ScalA not coming to front when one of its alts is the active window on active overview.
+Increased cursor accuracy. (note: scaling more than 2x is still very jittery)
+Implemented click capture to prevent clicks passing behind ScalA/Client.
+Fixed moving other Astonia clients with quicklaunch open would be buggy.
