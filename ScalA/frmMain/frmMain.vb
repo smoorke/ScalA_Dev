@@ -792,6 +792,7 @@
 
                     'InvalidateRect(ap.MainWindowHandle, IntPtr.Zero, False)
                     'SendMessage(ap.MainWindowHandle, WM_PAINT, IntPtr.Zero, IntPtr.Zero)
+                    'RedrawWindow(ap.MainWindowHandle, Nothing, Nothing, RedrawWindowFlags.Invalidate Or RedrawWindowFlags.InternalPaint)
 
                     Dim rccB As Rectangle
                     GetClientRect(ap?.MainWindowHandle, rccB)
