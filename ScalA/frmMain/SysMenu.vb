@@ -25,7 +25,11 @@
         If cmd > 0 Then
             Debug.Print("SendMessage " & cmd)
             '_form.WndProc(Message.Create(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)) 'cant call because protected
-            SendMessage(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
+            If cmd = SC_SIZE Then
+                SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
+            Else
+                SendMessage(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
+            End If
         End If
     End Sub
 
@@ -83,7 +87,7 @@ Partial Class FrmMain
         SysMenu = New SysMenu(Me)
         If SysMenu Then
             With SysMenu
-                .Disable(SC_SIZE)
+                .Enable(SC_SIZE)
                 .Disable(SC_RESTORE)
                 'remove alt-F4 from close item
                 .Rename(SC_CLOSE, "&Close ScalA")
@@ -101,6 +105,8 @@ Partial Class FrmMain
 
             pbZoom.Visible = False
             AButton.ActiveOverview = False
+
+            If Me.WindowState = FormWindowState.Normal Then SysMenu.Enable(SC_SIZE)
 
             SysMenu.Show(sender.PointToScreen(e.Location))
 

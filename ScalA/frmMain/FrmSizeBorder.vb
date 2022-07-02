@@ -68,9 +68,7 @@
 
         If m.Msg = WM_NCHITTEST Then
             Dim mp = Me.PointToClient(Cursor.Position)
-            Debug.Print($"WM_NCHITTEST")
             If TopLeftRC.Contains(mp) Then
-                Debug.Print($"topleft true")
                 m.Result = CType(HTTOPLEFT, IntPtr)
             ElseIf TopRightRC.Contains(mp) Then
                 m.Result = CType(HTTOPRIGHT, IntPtr)

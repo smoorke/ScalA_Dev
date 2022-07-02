@@ -29,11 +29,15 @@ Partial Class FrmSizeBorder
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.Fuchsia
-        Me.ClientSize = New System.Drawing.Size(225, 181)
+        Me.ClientSize = New System.Drawing.Size(400, 325)
         Me.ControlBox = False
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
+        Me.MaximizeBox = False
+        Me.MinimizeBox = False
+        Me.MinimumSize = New System.Drawing.Size(400, 325)
         Me.Name = "FrmSizeBorder"
         Me.Opacity = 0.01R
+        Me.ShowIcon = False
         Me.ShowInTaskbar = False
         Me.Text = "FrmSizeBorder"
         Me.TransparencyKey = System.Drawing.Color.Fuchsia
