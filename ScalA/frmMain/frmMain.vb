@@ -350,7 +350,9 @@
             System.IO.File.Delete(FileIO.SpecialDirectories.Temp & "\ScalA\tmp.lnk")
         End If
 
-        frmCaptureClickBehind.Show()
+        frmBehind.Show()
+        FrmSizeBorder.Show(Me)
+        ScalaHandle = Me.Handle
         suppressWM_MOVEcwp = True
     End Sub
     Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
@@ -451,7 +453,7 @@
     Dim rcC As Rectangle ' clientrect
     Public newX As Integer
     Public newY As Integer
-    Private Shared ScalaHandle As IntPtr
+    Public Shared ScalaHandle As IntPtr
     Private storedY As Integer = 0
     Private wasVisible As Boolean = True
     Private Shared swpBusy As Boolean = False
@@ -556,7 +558,7 @@
         ReZoom(zooms(My.Settings.zoom))
     End Sub
 
-    Private Sub ReZoom(newSize As Size)
+    Public Sub ReZoom(newSize As Size)
         Debug.Print($"reZoom {newSize}")
         Me.SuspendLayout()
         If Me.WindowState <> FormWindowState.Maximized Then
@@ -611,8 +613,8 @@
             cornerSE.Visible = False
         End If
 
-        FrmCaptureClickBehind.Bounds = Me.RectangleToScreen(pbZoom.Bounds)
-
+        frmBehind.Bounds = Me.Bounds
+        FrmSizeBorder.Bounds = Me.Bounds
     End Sub
 
 #Region " SysMenu "
@@ -642,7 +644,7 @@
     ''' </summary>
     Dim wasMaximized As Boolean = False
     Dim posChangeBusy As Boolean = False
-    Dim moveBusy As Boolean = False
+    Public moveBusy As Boolean = False
     Dim suppressWM_MOVEcwp = False
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
@@ -749,6 +751,8 @@
                 If m.WParam = 2 Then 'maximized
                     ReZoom(New Drawing.Size(width, height))
                 End If
+                frmBehind.Bounds = New Rectangle(Me.Left, Me.Top, width, height)
+                FrmSizeBorder.Bounds = New Rectangle(Me.Left, Me.Top, width, height)
             Case WM_WINDOWPOSCHANGING
                 'If posChangeBusy Then
                 '    Debug.Print("WM_WINDOWPOSCHANGING busy")
@@ -762,8 +766,17 @@
                 '    Exit Sub
                 'End If
                 Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
-                If winpos.x <> 0 AndAlso winpos.y <> 0 AndAlso FrmCaptureClickBehind IsNot Nothing Then
-                    FrmCaptureClickBehind.Bounds = New Rectangle(winpos.x + 1, winpos.y + pnlTitleBar.Height, winpos.cx - 2, winpos.cy - pnlTitleBar.Height)
+                If winpos.x <> 0 AndAlso winpos.y <> 0 AndAlso frmBehind IsNot Nothing Then
+                    'Dim wr As Rectangle
+                    'GetWindowRect(FrmCaptureClickBehind.Handle, wr)
+                    'Dim ptt As Point
+                    'ClientToScreen(FrmCaptureClickBehind.Handle, ptt)
+                    'Dim bordersize = ptt.X - wr.Left
+                    'Dim captionsize = ptt.Y - wr.Top
+                    'FrmCaptureClickBehind.Location = New Point(winpos.x - bordersize, winpos.y - 3)
+                    'FrmCaptureClickBehind.ClientSize = New Size(winpos.cx, winpos.cy - captionsize)
+                    frmBehind.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
+                    FrmSizeBorder.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
                 End If
                 If wasMaximized AndAlso caption_Mousedown AndAlso Not posChangeBusy Then
                     'Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
@@ -1383,6 +1396,7 @@
             ttMain.SetToolTip(sender, "Restore")
             wasMaximized = True
             SysMenu.Disable(SC_MOVE)
+            FrmSizeBorder.Visible = False
         Else 'go normal
             Me.WindowState = FormWindowState.Normal
             sender.Text = "⧠"
@@ -1393,6 +1407,7 @@
             wasMaximized = True
             AOshowEqLock = False
             SysMenu.Enable(SC_MOVE)
+            FrmSizeBorder.Visible = True
         End If
         If cboAlt.SelectedIndex > 0 Then
             SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
@@ -1554,8 +1569,8 @@
 
         If setbehind = IntPtr.Zero AndAlso pnlOverview.Visible Then setbehind = ScalaHandle
 
-        SetWindowPos(frmCaptureClickBehind.Handle, setbehind, -1, -1, -1, -1,
-                     SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreResize)
+        SetWindowPos(frmBehind.Handle, setbehind, -1, -1, -1, -1,
+                     SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.ASyncWindowPosition)
 
     End Sub
 
@@ -1617,6 +1632,7 @@
     Private Sub ChkDebug_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkDebug.CheckedChanged
         Debug.Print(Screen.GetWorkingArea(sender).ToString)
         If Not pnlOverview.Visible Then UpdateThumb(If(sender.Checked, 122, 255))
+        FrmSizeBorder.Opacity = If(sender.Checked, 1, 0.01)
     End Sub
 #End If
 

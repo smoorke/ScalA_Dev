@@ -656,6 +656,9 @@ Module NativeMethods
 
     Public Const WM_ENTERMENULOOP = &H211
     Public Const WM_EXITMENULOOP = &H212
+
+    Public Const WM_SIZING = &H214
+
     Public Const WM_EXITSIZEMOVE = &H232
 
     Public Const SC_SIZE As Integer = &HF000
