@@ -68,7 +68,7 @@ Namespace My
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("1")>  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
         Public Property zoom() As Integer
             Get
                 Return CType(Me("zoom"),Integer)
@@ -509,6 +509,18 @@ Namespace My
             End Get
             Set
                 Me("OneLessRowCol") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("900, 675")>  _
+        Public Property resol() As Global.System.Drawing.Size
+            Get
+                Return CType(Me("resol"),Global.System.Drawing.Size)
+            End Get
+            Set
+                Me("resol") = value
             End Set
         End Property
     End Class

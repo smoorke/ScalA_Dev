@@ -266,6 +266,7 @@
         cornerSW.Size = New Size(2, 2)
         cornerSE.Size = New Size(2, 2)
 
+        cmbResolution.Items.Add($"{My.Settings.resol.Width}x{My.Settings.resol.Height}")
         cmbResolution.Items.AddRange(zooms.Select(Function(ss) ss.Width & "x" & ss.Height).ToArray)
         cmbResolution.SelectedIndex = My.Settings.zoom
 
@@ -350,7 +351,7 @@
             System.IO.File.Delete(FileIO.SpecialDirectories.Temp & "\ScalA\tmp.lnk")
         End If
 
-        frmBehind.Show()
+        FrmBehind.Show()
         FrmSizeBorder.Show(Me)
         ScalaHandle = Me.Handle
         suppressWM_MOVEcwp = True
@@ -547,16 +548,26 @@
         If e.Button = MouseButtons.Right Then FrmSettings.Show()
     End Sub
 
+    Public suppressResChange As Boolean = False
     Public Sub CmbResolution_SelectedIndexChanged(sender As ComboBox, e As EventArgs) Handles cmbResolution.SelectedIndexChanged
-        Debug.Print("cboResolution_SelectedIndexChanged")
+        If sender.SelectedIndex = 0 Then Exit Sub
+        Debug.Print($"cboResolution_SelectedIndexChanged {sender.SelectedIndex}")
+
         My.Settings.zoom = sender.SelectedIndex
-        If AltPP?.IsRunning Then
-            newX = Me.Left + pbZoom.Left - AstClientOffset.Width - My.Settings.offset.X
-            newY = Me.Top + pbZoom.Top - AstClientOffset.Height - My.Settings.offset.Y
-            Debug.Print("SetWindowPos")
-            SetWindowPos(AltPP.MainWindowHandle, Me.Handle, newX, newY, -1, -1, SetWindowPosFlags.IgnoreResize + SetWindowPosFlags.DoNotActivate)
+        My.Settings.resol = zooms(sender.SelectedIndex - 1)
+
+        If WindowState = FormWindowState.Maximized Then
+            btnMax.PerformClick()
+            wasMaximized = False
+            Exit Sub
         End If
-        ReZoom(zooms(My.Settings.zoom))
+
+        sender.Items(0) = $"{My.Settings.resol.Width}x{My.Settings.resol.Height}"
+
+        If suppressResChange Then Exit Sub
+        ReZoom(My.Settings.resol)
+        AltPP?.CenterBehind(pbZoom)
+
     End Sub
 
     Public Sub ReZoom(newSize As Size)
@@ -569,14 +580,25 @@
             pbZoom.Size = newSize
             pnlOverview.Size = newSize
             cmbResolution.Enabled = True
+
+            suppressResChange = True
+            cmbResolution.SelectedIndex = My.Settings.zoom
+
         Else 'FormWindowState.Maximized
             pbZoom.Left = 0
             pnlOverview.Left = 0
             pbZoom.Width = newSize.Width
             pbZoom.Height = newSize.Height - pnlTitleBar.Height
             pnlOverview.Size = pbZoom.Size
-            cmbResolution.Enabled = False
+
+            suppressResChange = True
+            cmbResolution.SelectedIndex = 0
+
         End If
+
+        cmbResolution.Items(0) = $"{pbZoom.Size.Width}x{pbZoom.Size.Height}"
+        suppressResChange = False
+
         If cboAlt.SelectedIndex <> 0 Then
             Debug.Print("updateThumb")
             UpdateThumb(If(chkDebug.Checked, 128, 255))
@@ -615,7 +637,7 @@
         End If
 
         frmBehind.Bounds = Me.Bounds
-        FrmSizeBorder.Bounds = Me.Bounds
+        'FrmSizeBorder.Bounds = Me.Bounds
     End Sub
 
 #Region " SysMenu "
@@ -1096,6 +1118,7 @@
         suppressWM_MOVEcwp = True
         '🗖,🗗,⧠
         If Me.WindowState <> FormWindowState.Maximized Then
+            My.Settings.zoom = cmbResolution.SelectedIndex
             'go maximized
             Dim scrn As Screen = Screen.FromPoint(Me.Location + New Point(Me.Width / 2, Me.Height / 2))
             Debug.Print("screen workarea " & scrn.WorkingArea.ToString)
@@ -1176,9 +1199,9 @@
             sender.Text = "⧠"
             ttMain.SetToolTip(sender, "Maximize")
             Me.Location = RestoreLoc
-            wasMaximized = False
-            ReZoom(zooms(cmbResolution.SelectedIndex))
-            wasMaximized = True
+            'wasMaximized = False
+            ReZoom(My.Settings.resol)
+            'wasMaximized = True
             AOshowEqLock = False
             SysMenu.Enable(SC_MOVE)
             FrmSizeBorder.Opacity = If(chkDebug.Checked, 1, 0.01)
@@ -1501,6 +1524,7 @@
         sender.Text = If(sender.CheckState = CheckState.Unchecked, "🔓", "🔒")
 
     End Sub
+
 
 End Class
 

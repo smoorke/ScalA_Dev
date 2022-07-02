@@ -1,8 +1,9 @@
 ﻿Public Class FrmSizeBorder
     Private Sub FrmSizeBorder_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.FormBorderStyle = FormBorderStyle.None
-        Me.DoubleBuffered = False
+        Me.DoubleBuffered = True
         Me.SetStyle(ControlStyles.ResizeRedraw, True)
+        Me.MinimumSize = New Size(400 + BorderSize * 2 + 2, 300 + BorderSize * 2 + FrmMain.pnlTitleBar.Height + 1)
     End Sub
 
     Protected Overrides Sub OnPaint(ByVal e As PaintEventArgs)
@@ -52,6 +53,14 @@
                         SetWindowPos(FrmMain.ScalaHandle, IntPtr.Zero, sr.X, sr.Y, sr.Width, sr.Height,
                                  SetWindowPosFlags.ASyncWindowPosition Or SetWindowPosFlags.IgnoreZOrder)
                         FrmMain.ReZoom(New Size(sr.Width - 2, sr.Height - FrmMain.pnlTitleBar.Height - 1))
+                        Dim zoomSZ As New Size(sr.Width - 2, sr.Height - FrmMain.pnlTitleBar.Height - 1)
+                        'FrmMain.ReZoom(zoomSZ)
+                        My.Settings.resol = zoomSZ
+                        'FrmMain.suppressResChange = True
+                        'FrmMain.cmbResolution.Items(0) = $"{zoomSZ.Width}x{zoomSZ.Height}"
+                        'FrmMain.cmbResolution.SelectedIndex = 0
+                        'FrmMain.suppressResChange = False
+                        My.Settings.zoom = 0
                         'If prevRC.Location = sr.Location AndAlso prevRC <> sr Then
                         '    FrmMain.AltPP?.CenterBehind(FrmMain.pbZoom)
                         'End If

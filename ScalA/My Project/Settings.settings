@@ -6,7 +6,7 @@
       <Value Profile="(Default)">0, 0</Value>
     </Setting>
     <Setting Name="zoom" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1</Value>
+      <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="topmost" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -132,6 +132,9 @@
     </Setting>
     <Setting Name="OneLessRowCol" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="resol" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">900, 675</Value>
     </Setting>
   </Settings>
 </SettingsFile>

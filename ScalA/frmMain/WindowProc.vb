@@ -78,7 +78,7 @@ Partial Class FrmMain
                         FrmSettings.WindowState = FormWindowState.Normal
                 End Select
             Case WM_MOVE
-                Debug.Print($"WM_MOVE {Me.WindowState}")
+                'Debug.Print($"WM_MOVE {Me.WindowState}")
                 Me.Cursor = Cursors.Default
                 'frmCaptureClickBehind.Bounds = Me.RectangleToScreen(pbZoom.Bounds)
                 If AltPP?.IsRunning AndAlso Not FrmSettings.chkDoAlign.Checked AndAlso Me.WindowState <> FormWindowState.Minimized Then
@@ -86,7 +86,7 @@ Partial Class FrmMain
                     pbZoom.Visible = True
 #End If
                     If Not suppressWM_MOVEcwp Then
-                        Debug.Print($"moveBusy true")
+                        'Debug.Print($"moveBusy true")
                         moveBusy = True
                         Task.Run(Sub()
                                      'Exit Sub
@@ -141,6 +141,7 @@ Partial Class FrmMain
                     Debug.Print("WM_WINDOWPOSCHANGED from maximized and mousebutton down")
                     Debug.Print($"hwndInsertAfter {winpos.hwndInsertAfter}")
                     Debug.Print($"flags {winpos.flags}")
+                    Debug.Print($"pos {winpos.x} {winpos.y} size {winpos.cx} {winpos.cy}")
                     btnMax.Text = "⧠"
                     ttMain.SetToolTip(btnMax, "Maximize")
                     cmbResolution.Enabled = True
@@ -148,8 +149,11 @@ Partial Class FrmMain
                     posChangeBusy = True
                     AOshowEqLock = False
                     Me.Location = New Point(winpos.x, winpos.y)
+
                     Me.WindowState = FormWindowState.Normal
-                    ReZoom(zooms(cmbResolution.SelectedIndex))
+                    ReZoom(New Drawing.Size(winpos.cx - 2, winpos.cy - pnlTitleBar.Height - 1))
+                    cmbResolution.SelectedIndex = My.Settings.zoom
+
                     AltPP?.CenterBehind(pbZoom)
                     pnlTitleBar.Width = winpos.cx - pnlButtons.Width - pnlSys.Width
                     Debug.Print($"winpos location {New Point(winpos.x, winpos.y)}")
@@ -160,6 +164,7 @@ Partial Class FrmMain
                     'System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                     FrmSizeBorder.Opacity = If(chkDebug.Checked, 1, 0.01)
                     posChangeBusy = False
+                    Exit Sub
                 End If
             Case WM_WININICHANGE '&H1A
                 If m.LParam = IntPtr.Zero AndAlso Me.WindowState = FormWindowState.Maximized Then
