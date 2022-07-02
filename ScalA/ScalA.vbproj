@@ -116,6 +116,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmMain\SysMenu.vb" />
+    <Compile Include="frmMain\WindowProc.vb" />
     <Compile Include="frmSettings.Designer.vb">
       <DependentUpon>frmSettings.vb</DependentUpon>
     </Compile>
