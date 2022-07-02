@@ -283,6 +283,8 @@ Public Class FrmSettings
 
         My.Settings.Save()
 
+        FrmSizeBorder.Invalidate()
+
         Me.Close()
     End Sub
 
