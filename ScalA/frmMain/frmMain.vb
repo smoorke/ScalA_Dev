@@ -401,6 +401,7 @@
                     tmrTick.Start()
                 End If
                 Debug.Print("movetimer stopped")
+                FrmSizeBorder.Bounds = Me.Bounds
             End If
         End If
     End Sub
@@ -1169,7 +1170,7 @@
             ttMain.SetToolTip(sender, "Restore")
             wasMaximized = True
             SysMenu.Disable(SC_MOVE)
-            FrmSizeBorder.Visible = False
+            FrmSizeBorder.Opacity = 0
         Else 'go normal
             Me.WindowState = FormWindowState.Normal
             sender.Text = "⧠"
@@ -1180,7 +1181,7 @@
             wasMaximized = True
             AOshowEqLock = False
             SysMenu.Enable(SC_MOVE)
-            FrmSizeBorder.Visible = True
+            FrmSizeBorder.Opacity = If(chkDebug.Checked, 1, 0.01)
         End If
         If cboAlt.SelectedIndex > 0 Then
             SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)

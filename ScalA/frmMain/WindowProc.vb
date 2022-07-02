@@ -158,6 +158,7 @@ Partial Class FrmMain
                     SysMenu.Disable(SC_RESTORE)
                     SysMenu.Enable(SC_MAXIMIZE)
                     'System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
+                    FrmSizeBorder.Opacity = If(chkDebug.Checked, 1, 0.01)
                     posChangeBusy = False
                 End If
             Case WM_WININICHANGE '&H1A
