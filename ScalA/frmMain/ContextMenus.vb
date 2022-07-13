@@ -571,7 +571,6 @@ Partial Public Class FrmMain
 
     End Sub
 
-
     Private closeAllAtBottom As Boolean = True
 
 
@@ -1024,6 +1023,5 @@ Partial Public Class FrmMain
             End If
         End If
     End Sub
-
 
 End Class
