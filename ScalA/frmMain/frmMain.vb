@@ -102,6 +102,7 @@
         Else
             pnlOverview.Hide()
             tmrOverview.Enabled = False
+            DoEqLock(pbZoom.Size)
             PnlEqLock.Visible = True
         End If
 
@@ -361,6 +362,9 @@
         FrmSizeBorder.Show(Me)
         ScalaHandle = Me.Handle
         suppressWM_MOVEcwp = True
+
+        If cmbResolution.SelectedIndex = 0 Then DoEqLock(My.Settings.resol)
+
     End Sub
     Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         Debug.Print("FrmMain_Shown")
@@ -577,6 +581,7 @@
         End If
 
         sender.Items(0) = $"{My.Settings.resol.Width}x{My.Settings.resol.Height}"
+        DoEqLock(My.Settings.resol)
 
         If suppressResChange Then Exit Sub
         ReZoom(My.Settings.resol)
@@ -627,15 +632,7 @@
         cornerSW.Location = New Point(0, Me.Height - 2)
         cornerSE.Location = New Point(Me.Width - 2, Me.Height - 2)
 
-        If rcC.Width = 0 Then
-            PnlEqLock.Location = New Point(138.Map(800, 0, newSize.Width, 0), 25)
-            PnlEqLock.Size = New Size(524.Map(800, 0, newSize.Width, 0),
-                                  45.Map(0, 600, 0, newSize.Height))
-        Else
-            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 262, Integer).Map(rcC.Width, 0, newSize.Width, 0), 25)
-            PnlEqLock.Size = New Size(524.Map(rcC.Width, 0, newSize.Width, 0),
-                                      45.Map(0, rcC.Height, 0, newSize.Height))
-        End If
+        DoEqLock(newSize)
 
         If Me.WindowState <> FormWindowState.Maximized AndAlso My.Settings.roundCorners Then
 
@@ -655,11 +652,18 @@
         'FrmSizeBorder.Bounds = Me.Bounds
     End Sub
 
-#Region " SysMenu "
+    Private Sub DoEqLock(newSize As Size)
+        If rcC.Width = 0 Then
+            PnlEqLock.Location = New Point(138.Map(800, 0, newSize.Width, 0), 25)
+            PnlEqLock.Size = New Size(524.Map(800, 0, newSize.Width, 0),
+                                  45.Map(0, 600, 0, newSize.Height))
+        Else
+            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 262, Integer).Map(rcC.Width, 0, newSize.Width, 0), 25)
+            PnlEqLock.Size = New Size(524.Map(rcC.Width, 0, newSize.Width, 0),
+                                      45.Map(0, rcC.Height, 0, newSize.Height))
+        End If
+    End Sub
 
-
-
-#End Region
     ''' <summary>
     ''' Fix mousebutton stuck after drag bug
     ''' Note: needs to be run before acivating self
