@@ -6,7 +6,7 @@
         Handle = GetSystemMenu(_form.Handle, False)
     End Sub
 
-    Private ReadOnly Handle As IntPtr = IntPtr.Zero
+    Public ReadOnly Handle As IntPtr = IntPtr.Zero
 
     Public Shared Operator IsFalse(ByVal [Me] As SysMenu) As Boolean
         Return [Me].Handle = IntPtr.Zero
@@ -14,6 +14,15 @@
     Public Shared Operator IsTrue(ByVal [Me] As SysMenu) As Boolean
         Return [Me].Handle <> IntPtr.Zero
     End Operator
+
+    'Public Shared Operator =(ByVal left As IntPtr, [Me] As SysMenu)
+    '    Return [Me].Handle = left
+    'End Operator
+
+    'Public Shared Operator <>(left As IntPtr, [Me] As SysMenu)
+    '    Return [Me].Handle <> left
+    'End Operator
+
 
     Public Visible As Boolean
 
