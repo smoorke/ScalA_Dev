@@ -32,11 +32,13 @@
         PopDropDown(sender)
     End Sub
     Private Sub CmbResolution_DropDown(sender As ComboBox, e As EventArgs) Handles cmbResolution.DropDown
+        moveBusy = False
         pbZoom.Visible = False
         AButton.ActiveOverview = False
     End Sub
 
     Private Async Sub ComboBoxes_DropDownClosed(sender As ComboBox, e As EventArgs) Handles cboAlt.DropDownClosed, cmbResolution.DropDownClosed
+        moveBusy = False
         Await Task.Delay(200)
         If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse SysMenu.Visible Then Exit Sub
         If Not pnlOverview.Visible Then
@@ -291,6 +293,9 @@
         Next
         cboAlt.EndUpdate()
 
+        If cmbResolution.SelectedIndex = 0 Then
+            ReZoom(My.Settings.resol)
+        End If
 
         AddAButtons()
         UpdateButtonLayout(APlist.Count)
@@ -526,14 +531,14 @@
                                  Dim flags = swpFlags
                                  If Not AltPP?.IsActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
                                  Dim pt As Point = MousePosition - New Point(newX + AstClientOffset.Width, newY + AstClientOffset.Height)
-                                 If prevWMMMpt <> pt Then
+                                 If prevWMMMpt <> MousePosition Then
                                      SendMessage(AltPP?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                  End If
                                  SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
-                                 If prevWMMMpt <> pt Then
+                                 If prevWMMMpt <> MousePosition Then
                                      SendMessage(AltPP?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                  End If
-                                 prevWMMMpt = pt
+                                 prevWMMMpt = MousePosition
                              Catch ex As Exception
                                  Debug.Print(ex.Message)
                              Finally
@@ -544,7 +549,14 @@
         End If
     End Sub
     Dim prevWMMMpt As New Point
-
+    Protected Overrides ReadOnly Property CreateParams As CreateParams
+        Get
+            'Const CS_DROPSHADOW = &H20000
+            Dim cp As CreateParams = MyBase.CreateParams
+            'cp.ClassStyle = cp.ClassStyle Or CS_DROPSHADOW
+            Return cp
+        End Get
+    End Property
     Private Sub CmbResolution_MouseDown(sender As ComboBox, e As MouseEventArgs) Handles cmbResolution.MouseDown
         If e.Button = MouseButtons.Right Then FrmSettings.Show()
     End Sub
@@ -552,6 +564,7 @@
     Public suppressResChange As Boolean = False
     Public Sub CmbResolution_SelectedIndexChanged(sender As ComboBox, e As EventArgs) Handles cmbResolution.SelectedIndexChanged
         If sender.SelectedIndex = 0 Then Exit Sub
+        moveBusy = False
         Debug.Print($"cboResolution_SelectedIndexChanged {sender.SelectedIndex}")
 
         My.Settings.zoom = sender.SelectedIndex
@@ -574,6 +587,7 @@
     Public Sub ReZoom(newSize As Size)
         Debug.Print($"reZoom {newSize}")
         Me.SuspendLayout()
+        suppressResChange = True
         If Me.WindowState <> FormWindowState.Maximized Then
             Me.Size = New Size(newSize.Width + 2, newSize.Height + pnlTitleBar.Height + 1)
             pbZoom.Left = 1
@@ -582,7 +596,7 @@
             pnlOverview.Size = newSize
             cmbResolution.Enabled = True
 
-            suppressResChange = True
+            'suppressResChange = True
             cmbResolution.SelectedIndex = My.Settings.zoom
 
         Else 'FormWindowState.Maximized
@@ -592,20 +606,20 @@
             pbZoom.Height = newSize.Height - pnlTitleBar.Height
             pnlOverview.Size = pbZoom.Size
 
-            suppressResChange = True
+            'suppressResChange = True
             cmbResolution.SelectedIndex = 0
 
         End If
 
         cmbResolution.Items(0) = $"{pbZoom.Size.Width}x{pbZoom.Size.Height}"
         suppressResChange = False
+        Me.ResumeLayout(True)
 
         If cboAlt.SelectedIndex <> 0 Then
             Debug.Print("updateThumb")
             UpdateThumb(If(chkDebug.Checked, 128, 255))
         End If
         pnlTitleBar.Width = newSize.Width - pnlButtons.Width - pnlSys.Width
-        Me.ResumeLayout(True)
         Debug.Print($"rezoom pnlTitleBar.Width {pnlTitleBar.Width}")
 
         cornerNW.Location = New Point(0, 0)
@@ -729,6 +743,7 @@
         Dim apCounter = 0
         Dim butCounter = 0
         Dim eqLockShown = False
+        Dim SetParentLater As Boolean = True
 
         For Each but As AButton In visibleButtons
             butCounter += 1
@@ -814,11 +829,6 @@
                         wasVisible = True
                     End If
 
-                    If ap.IsActive Then
-                        SetWindowLong(Me.Handle, GWL_HWNDPARENT, ap?.MainWindowHandle)
-                        Me.BringToFront()
-                    End If
-
                     If Not AOBusy AndAlso but.ThumbContains(MousePosition) Then
                         AltPP = ap
 
@@ -828,6 +838,7 @@
                             ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
                         End If
 
+                        SetParentLater = False
                         If cmsQuickLaunch.Visible OrElse cmsAlt.Visible Then
                             SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
                         Else
@@ -861,14 +872,14 @@
                                          Dim flags = swpFlags
                                          If Not but.Tag?.isActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
                                          Dim pt As Point = MousePosition - New Point(newXB + AstClientOffset.Width, newYB + AstClientOffset.Height)
-                                         If prevWMMMpt <> pt Then
+                                         If prevWMMMpt <> MousePosition Then
                                              SendMessage(but.Tag?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                          End If
                                          SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
-                                         If prevWMMMpt <> pt Then
+                                         If prevWMMMpt <> MousePosition Then
                                              SendMessage(but.Tag?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                          End If
-                                         prevWMMMpt = pt
+                                         prevWMMMpt = MousePosition
                                      Catch ex As Exception
                                          Debug.Print(ex.Message)
                                      Finally
@@ -876,6 +887,18 @@
                                      End Try
                                  End Sub)
                     End If 'but.ThumbContains(MousePosition)
+                    If SetParentLater AndAlso ap.IsActive Then
+                        SetWindowLong(Me.Handle, GWL_HWNDPARENT, ap?.MainWindowHandle)
+                        'SetWindowPos(ap?.MainWindowHandle, Nothing, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+                        Dim apl As AstoniaProcess = ap
+                        Task.Run(Sub()
+                                     Threading.Thread.Sleep(75)
+                                     If Not apl.IsActive Then Exit Sub
+                                     SetWindowPos(ScalaHandle, SWP_HWND.NOTOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+                                 End Sub)
+                        'Me.BringToFront() 'this breaks other scala hotkeys
+
+                    End If
                 End If 'gameonoverview
             Else ' buttons w/o alts
                 but.Text = String.Empty
