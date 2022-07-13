@@ -686,6 +686,10 @@ Module NativeMethods
     Public Const WM_NCLBUTTONUP As Integer = &HA2
 
     Public Const WM_SYSCOMMAND = &H112
+
+    Public Const WM_INITMENU = &H116
+    Public Const WM_INITMENUPOPUP = &H117
+
     'Public Const WM_MENUSELECT = &H11F
 
     'Public Const WM_ENTERIDLE = &H121
@@ -709,6 +713,7 @@ Module NativeMethods
 
     Public Const WM_SIZING = &H214
 
+    Public Const WM_ENTERSIZEMOVE = &H231
     Public Const WM_EXITSIZEMOVE = &H232
 
     Public Const SC_SIZE As Integer = &HF000

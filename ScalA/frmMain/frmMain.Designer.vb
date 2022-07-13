@@ -475,6 +475,7 @@ Partial Class FrmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(1052, 855)
         Me.Controls.Add(Me.PnlEqLock)
@@ -487,6 +488,7 @@ Partial Class FrmMain
         Me.Controls.Add(Me.pnlSys)
         Me.Controls.Add(Me.pnlButtons)
         Me.Controls.Add(Me.pnlTitleBar)
+        Me.DoubleBuffered = True
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "FrmMain"

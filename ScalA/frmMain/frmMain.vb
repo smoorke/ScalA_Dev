@@ -270,6 +270,7 @@
         cmbResolution.Items.AddRange(zooms.Select(Function(ss) ss.Width & "x" & ss.Height).ToArray)
         cmbResolution.SelectedIndex = My.Settings.zoom
 
+
         Debug.Print("location " & My.Settings.location.ToString)
         suppressWM_MOVEcwp = True
         Me.Location = My.Settings.location
@@ -1430,7 +1431,9 @@
     Private Sub ChkDebug_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkDebug.CheckedChanged
         Debug.Print(Screen.GetWorkingArea(sender).ToString)
         If Not pnlOverview.Visible Then UpdateThumb(If(sender.Checked, 122, 255))
-        FrmSizeBorder.Opacity = If(sender.Checked, 1, 0.01)
+        If WindowState <> FormWindowState.Maximized Then
+            FrmSizeBorder.Opacity = If(sender.Checked, 1, 0.01)
+        End If
     End Sub
 #End If
 
@@ -1525,7 +1528,6 @@
         sender.Text = If(sender.CheckState = CheckState.Unchecked, "🔓", "🔒")
 
     End Sub
-
 
 End Class
 

@@ -72,6 +72,10 @@ Partial Class FrmMain
                         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
                         AstoniaProcess.RestorePos(True)
                         SysMenu.Disable(SC_MOVE)
+                    Case SC_SIZE
+                        SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, SC_SIZE, IntPtr.Zero)
+                        m.Result = 0
+                        Exit Sub
                     Case &H8000 + 1337
                         Debug.Print("Settings called by 1337")
                         FrmSettings.Show()
@@ -99,6 +103,7 @@ Partial Class FrmMain
                     End If
                 End If
             Case WM_EXITSIZEMOVE
+                Debug.Print($"WM_EXITSIZEMOVE")
                 moveBusy = False
             Case WM_SIZE ' = &h0005
                 Dim width As Integer = LOWORD(m.LParam)
@@ -184,6 +189,15 @@ Partial Class FrmMain
             Case WM_EXITMENULOOP
                 Debug.Print("WM_EXITMENULOOP")
                 SysMenu.Visible = False
+            Case WM_INITMENU
+                Debug.Print($"WM_INITMENU {m.WParam} {SysMenu.Handle}")
+                If Me.WindowState = FormWindowState.Normal Then
+                    SysMenu.Enable(SC_SIZE)
+                    SysMenu.Enable(SC_MOVE)
+                Else
+                    SysMenu.Disable(SC_SIZE)
+                    SysMenu.Disable(SC_MOVE)
+                End If
 #If DEBUG Then
 
             Case &H6 ' WM_AACTIVATE

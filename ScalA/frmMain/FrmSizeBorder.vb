@@ -6,12 +6,12 @@
         Me.MinimumSize = New Size(400 + BorderSize * 2 + 2, 300 + BorderSize * 2 + FrmMain.pnlTitleBar.Height + 1)
     End Sub
 
-    Protected Overrides Sub OnPaint(ByVal e As PaintEventArgs)
-
-        Dim bru As Brush = Brushes.Black
 #If DEBUG Then
-        bru = Brushes.Red
+    Private ReadOnly bru As Brush = Brushes.Red
+#Else
+    Private ReadOnly bru As Brush = Brushes.Black
 #End If
+    Protected Overrides Sub OnPaint(ByVal e As PaintEventArgs)
 
         e.Graphics.FillRectangle(bru, TopRC)
         e.Graphics.FillRectangle(bru, LeftRC)
@@ -40,7 +40,6 @@
 
     Private Const HTLEFT As Integer = 10, HTRIGHT As Integer = 11, HTTOP As Integer = 12, HTTOPLEFT As Integer = 13, HTTOPRIGHT As Integer = 14, HTBOTTOM As Integer = 15, HTBOTTOMLEFT As Integer = 16, HTBOTTOMRIGHT As Integer = 17
     Public suppressWM_SIZING As Boolean = True
-    Private prevRC As New Rectangle
     Protected Overrides Sub WndProc(ByRef m As System.Windows.Forms.Message)
 
         Select Case m.Msg
@@ -49,29 +48,15 @@
                     FrmMain.moveBusy = True
                     Dim rc As RECT = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(RECT))
                     Dim sr As New Rectangle(rc.Left + BorderSize, rc.Top + BorderSize, rc.Right - rc.Left - BorderSize * 2, rc.Bottom - rc.Top - BorderSize * 2)
-                    If sr <> prevRC Then
-                        SetWindowPos(FrmMain.ScalaHandle, IntPtr.Zero, sr.X, sr.Y, sr.Width, sr.Height,
-                                 SetWindowPosFlags.ASyncWindowPosition Or SetWindowPosFlags.IgnoreZOrder)
-                        FrmMain.ReZoom(New Size(sr.Width - 2, sr.Height - FrmMain.pnlTitleBar.Height - 1))
+                    If sr <> FrmMain.Bounds Then
+                        FrmMain.Bounds = sr
                         Dim zoomSZ As New Size(sr.Width - 2, sr.Height - FrmMain.pnlTitleBar.Height - 1)
-                        'FrmMain.ReZoom(zoomSZ)
+                        FrmMain.ReZoom(zoomSZ)
                         My.Settings.resol = zoomSZ
-                        'FrmMain.suppressResChange = True
-                        'FrmMain.cmbResolution.Items(0) = $"{zoomSZ.Width}x{zoomSZ.Height}"
-                        'FrmMain.cmbResolution.SelectedIndex = 0
-                        'FrmMain.suppressResChange = False
                         My.Settings.zoom = 0
-                        'If prevRC.Location = sr.Location AndAlso prevRC <> sr Then
-                        '    FrmMain.AltPP?.CenterBehind(FrmMain.pbZoom)
-                        'End If
-                        prevRC = sr
-                        End If
                     End If
-            Case WM_EXITSIZEMOVE
-                FrmMain.AltPP?.CenterBehind(FrmMain.pbZoom)
-                FrmMain.moveBusy = False
+                End If
         End Select
-
 
         MyBase.WndProc(m)
 
@@ -95,24 +80,33 @@
                 m.Result = CType(HTBOTTOM, IntPtr)
             End If
         End If
+        If m.Msg = WM_ENTERSIZEMOVE Then
+            Debug.Print("border WM_ENTERSIZEMOVE")
+            FrmMain.moveBusy = True
+        End If
+        If m.Msg = WM_EXITSIZEMOVE Then
+            Debug.Print("Border WM_EXITSIZEMOVE")
+            FrmMain.moveBusy = False
+            FrmMain.AltPP?.CenterBehind(FrmMain.pbZoom)
+        End If
     End Sub
 
-    Const BorderSize As Integer = 8
+    Const BorderSize As Integer = 6
 
     Function TopRC() As Rectangle
-        Return New Rectangle(0, 0, Me.ClientSize.Width, BorderSize)
+        Return New Rectangle(0, 0, Me.ClientSize.Width, BorderSize + 1)
     End Function
 
     Function LeftRC() As Rectangle
-        Return New Rectangle(0, 0, BorderSize, Me.ClientSize.Height)
+        Return New Rectangle(0, 0, BorderSize + 1, Me.ClientSize.Height)
     End Function
 
     Function BotRC() As Rectangle
-        Return New Rectangle(0, Me.ClientSize.Height - BorderSize, Me.ClientSize.Width, BorderSize)
+        Return New Rectangle(0, Me.ClientSize.Height - BorderSize - 1, Me.ClientSize.Width, BorderSize + 1)
     End Function
 
     Function RightRC() As Rectangle
-        Return New Rectangle(Me.ClientSize.Width - BorderSize, 0, BorderSize, Me.ClientSize.Height)
+        Return New Rectangle(Me.ClientSize.Width - BorderSize - 1, 0, BorderSize + 1, Me.ClientSize.Height)
     End Function
 
     Function TopLeftRC() As Rectangle
