@@ -115,6 +115,26 @@ Partial Class FrmMain
                 End If
                 FrmBehind.Bounds = New Rectangle(Me.Left, Me.Top, width, height)
                 FrmSizeBorder.Bounds = New Rectangle(Me.Left, Me.Top, width, height)
+                If Me.Location = prevLoc Then
+                    If Not sizeMoveBusy Then
+                        sizeMoveBusy = True
+                        moveBusy = True
+                        Task.Run(Sub()
+                                     Try
+                                         AltPP?.CenterWindowPos(ScalaHandle,
+                                                        Me.Left + pbZoom.Left + (pbZoom.Width / 2),
+                                                        Me.Top + pbZoom.Top + (pbZoom.Height / 2),
+                                                        SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder)
+                                     Catch
+                                     Finally
+                                         sizeMoveBusy = False
+                                         ' moveBusy = False
+                                     End Try
+                                 End Sub)
+                    End If
+                End If
+                If Me.cmbResolution.SelectedIndex > 0 Then Me.moveBusy = False
+                prevLoc = Me.Location
             Case WM_WINDOWPOSCHANGING
                 'If posChangeBusy Then
                 '    Debug.Print("WM_WINDOWPOSCHANGING busy")
@@ -128,7 +148,7 @@ Partial Class FrmMain
                 '    Exit Sub
                 'End If
                 Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
-                If winpos.x <> 0 AndAlso winpos.y <> 0 AndAlso FrmBehind IsNot Nothing Then
+                If winpos.x <> 0 AndAlso winpos.y <> 0 AndAlso frmBehind IsNot Nothing Then
                     'Dim wr As Rectangle
                     'GetWindowRect(FrmCaptureClickBehind.Handle, wr)
                     'Dim ptt As Point
@@ -137,7 +157,7 @@ Partial Class FrmMain
                     'Dim captionsize = ptt.Y - wr.Top
                     'FrmCaptureClickBehind.Location = New Point(winpos.x - bordersize, winpos.y - 3)
                     'FrmCaptureClickBehind.ClientSize = New Size(winpos.cx, winpos.cy - captionsize)
-                    FrmBehind.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
+                    frmBehind.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
                     FrmSizeBorder.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
                 End If
                 If wasMaximized AndAlso caption_Mousedown AndAlso Not posChangeBusy Then
@@ -250,5 +270,8 @@ Partial Class FrmMain
 
         MyBase.WndProc(m)  ' allow form to process this message
     End Sub
+
+    Dim prevLoc As Point
+    Dim sizeMoveBusy As Boolean = False
 
 End Class
