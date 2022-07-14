@@ -197,7 +197,7 @@
 
     End Sub
 
-    Dim AstClientOffset As New Size(0, 0)
+    Public AstClientOffset As New Size(0, 0)
 
     Private Sub UpdateTitle()
         Dim titleSuff As String = String.Empty

@@ -133,18 +133,44 @@ Public Class FrmSettings
         End If
         FrmMain.tmrTick.Enabled = Not sender.Checked
         Await Task.Delay(200) ' wait for tmrtick to stop running async code
-        If FrmMain.cmbResolution.SelectedIndex <> 0 Then
-            FrmMain.cmbResolution.SelectedIndex = If(sender.Checked, 0, storeZoom)
-        Else ' SelectedIndex = 0
-            Call FrmMain.CmbResolution_SelectedIndexChanged(FrmMain.cmbResolution, Nothing)
-        End If
-        grpAlign.Enabled = sender.Checked
-        FrmMain.UpdateThumb(If(sender.Checked, 122, 255))
+        'If FrmMain.cmbResolution.SelectedIndex <> 0 Then
+        '    FrmMain.cmbResolution.SelectedIndex = If(sender.Checked, 0, storeZoom)
+        'Else ' SelectedIndex = 0
+        '    Call FrmMain.CmbResolution_SelectedIndexChanged(FrmMain.cmbResolution, Nothing)
+        'End If
 
+        grpAlign.Enabled = sender.Checked
         If sender.Checked Then
-            GetWindowRect(FrmMain.AltPP.MainWindowHandle, rcAstOffsetBase)
+            FrmMain.suppressResChange = False
+
             Debug.Print(rcAstOffsetBase.ToString)
+
+            Dim rcClient As Rectangle
+            GetClientRect(FrmMain.AltPP.MainWindowHandle, rcClient)
+            FrmMain.ReZoom(New Drawing.Size(rcClient.Width, rcClient.Height))
+            FrmMain.cmbResolution.SelectedIndex = 0
+            FrmMain.cmbResolution.Items(0) = "Aligning"
+            FrmMain.suppressResChange = False
+
+            Dim ptz As Point = FrmMain.pbZoom.PointToScreen(New Point)
+            'FrmMain.AltPP.CenterBehind(FrmMain.pbZoom)
+            SetWindowPos(FrmMain.AltPP.MainWindowHandle, FrmMain.ScalaHandle,
+                                ptz.X - FrmMain.AstClientOffset.Width,
+                                ptz.Y - FrmMain.AstClientOffset.Height,
+                                -1, -1,
+                                SetWindowPosFlags.IgnoreResize)
+
+            GetWindowRect(FrmMain.AltPP.MainWindowHandle, rcAstOffsetBase)
+            manualNumUpdate = False
+            numXoffset.Value = 0
+            numYoffset.Value = 0
+            manualNumUpdate = True
+        Else
+            FrmMain.cmbResolution.Items(0) = $"{My.Settings.resol.Width}x{My.Settings.resol.Height}"
+            FrmMain.cmbResolution.SelectedIndex = My.Settings.zoom
         End If
+        FrmMain.UpdateThumb(If(sender.Checked, 122, 255))
+        FrmMain.cmbResolution.Enabled = Not sender.Checked
         tmrAlign.Enabled = sender.Checked
         chkDoAlign.Enabled = Not sender.Checked
     End Sub
@@ -327,10 +353,13 @@ Public Class FrmSettings
     End Sub
 
     Private Sub BtnResetAlign_Click(sender As Object, e As EventArgs) Handles btnResetAlign.Click
+        tmrAlign.Stop()
         chkDoAlign.Checked = False
         My.Settings.offset = New Point(0, 0)
+        manualNumUpdate = False
         numXoffset.Text = 0
         numYoffset.Text = 0
+        manualNumUpdate = True
     End Sub
 
     Private Sub BtnOpenFolderDialog_Click(sender As Object, e As EventArgs) Handles btnOpenFolderDialog.Click

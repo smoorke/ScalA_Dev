@@ -841,8 +841,6 @@ Partial Class FrmSettings
         '
         'tabMisc
         '
-        Me.tabMisc.Controls.Add(Me.chkOverViewIsGame)
-        Me.tabMisc.Controls.Add(Me.ChkSingleInstance)
         Me.tabMisc.Controls.Add(Me.chkDoAlign)
         Me.tabMisc.Controls.Add(Me.chkCycleOnClose)
         Me.tabMisc.Controls.Add(Me.grpAlign)
@@ -852,6 +850,8 @@ Partial Class FrmSettings
         Me.tabMisc.Controls.Add(grpQLPath)
         Me.tabMisc.Controls.Add(Label3)
         Me.tabMisc.Controls.Add(Me.txtClass)
+        Me.tabMisc.Controls.Add(Me.chkOverViewIsGame)
+        Me.tabMisc.Controls.Add(Me.ChkSingleInstance)
         Me.tabMisc.Location = New System.Drawing.Point(4, 25)
         Me.tabMisc.Name = "tabMisc"
         Me.tabMisc.Padding = New System.Windows.Forms.Padding(3)
