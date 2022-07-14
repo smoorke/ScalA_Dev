@@ -747,7 +747,7 @@
         Dim apCounter = 0
         Dim butCounter = 0
         Dim eqLockShown = False
-        Dim SetParentLater As Boolean = True
+        Dim thumbContainedMouse As Boolean = False
 
         For Each but As AButton In visibleButtons
             butCounter += 1
@@ -842,7 +842,8 @@
                             ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
                         End If
 
-                        SetParentLater = False
+                        thumbContainedMouse = True
+
                         If cmsQuickLaunch.Visible OrElse cmsAlt.Visible Then
                             SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
                         Else
@@ -891,18 +892,6 @@
                                      End Try
                                  End Sub)
                     End If 'but.ThumbContains(MousePosition)
-                    If SetParentLater AndAlso ap.IsActive Then
-                        SetWindowLong(Me.Handle, GWL_HWNDPARENT, ap?.MainWindowHandle)
-                        'SetWindowPos(ap?.MainWindowHandle, Nothing, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
-                        Dim apl As AstoniaProcess = ap
-                        Task.Run(Sub()
-                                     Threading.Thread.Sleep(75)
-                                     If Not apl.IsActive Then Exit Sub
-                                     SetWindowPos(ScalaHandle, SWP_HWND.NOTOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
-                                 End Sub)
-                        'Me.BringToFront() 'this breaks other scala hotkeys
-
-                    End If
                 End If 'gameonoverview
             Else ' buttons w/o alts
                 but.Text = String.Empty
@@ -912,6 +901,19 @@
                 but.Image = Nothing
             End If
         Next but
+
+        If Not thumbContainedMouse AndAlso My.Settings.gameOnOverview Then 'if active is in alts then set parent and bring scala to front
+            Dim active = GetForegroundWindow()
+            If active <> 0 Then
+                Dim parent = GetWindowLong(ScalaHandle, GWL_HWNDPARENT)
+                If parent <> active AndAlso alts.Any(Function(ap) ap.MainWindowHandle = active) Then
+                    SetWindowLong(ScalaHandle, GWL_HWNDPARENT, active)
+                    SetWindowPos(active, ScalaHandle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+                End If
+            End If
+        End If
+
+
         If eqLockShown AndAlso My.Settings.LockEq Then
             AOshowEqLock = True
         Else
