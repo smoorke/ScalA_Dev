@@ -218,3 +218,8 @@ Fixed ScalA not coming to front when one of its alts is the active window on act
 Increased cursor accuracy. (note: scaling more than 2x is still very jittery)
 Implemented click capture to prevent clicks passing behind ScalA/Client.
 Fixed moving other Astonia clients with quicklaunch open would be buggy.
+
+**ScalA 1.0.6**
+Fixed click capture would send wrong message to client on capturing mouseup.
+Fixed hotkeys failing when running multiple ScalAs with at least one on active overview.
+Implemented sizing border.
