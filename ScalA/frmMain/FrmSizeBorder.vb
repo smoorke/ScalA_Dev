@@ -86,8 +86,8 @@
         End If
         If m.Msg = WM_EXITSIZEMOVE Then
             Debug.Print("Border WM_EXITSIZEMOVE")
+            FrmMain.ResumeLayout()
             FrmMain.moveBusy = False
-            FrmMain.AltPP?.CenterBehind(FrmMain.pbZoom)
         End If
     End Sub
 

@@ -136,6 +136,13 @@ Partial Class FrmMain
                 If Me.cmbResolution.SelectedIndex > 0 Then Me.moveBusy = False
                 prevLoc = Me.Location
             Case WM_WINDOWPOSCHANGING
+                'If pnlButtons IsNot Nothing Then
+                '    Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
+                '    Dim posInfo As IntPtr = BeginDeferWindowPos(2)
+                '    DeferWindowPos(posInfo, ScalaHandle, Nothing, winpos.x, winpos.y, winpos.cx, winpos.cy, SetWindowPosFlags.DoNotSendChangingEvent)
+                '    DeferWindowPos(posInfo, pnlButtons.Handle, Nothing, winpos.cx - pnlButtons.Width, 0, -1, -1, SetWindowPosFlags.IgnoreResize)
+                '    EndDeferWindowPos(posInfo)
+                'End If
                 'If posChangeBusy Then
                 '    Debug.Print("WM_WINDOWPOSCHANGING busy")
                 '    m.Result = 0

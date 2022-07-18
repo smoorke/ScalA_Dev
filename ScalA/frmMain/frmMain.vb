@@ -690,8 +690,9 @@
     Dim suppressWM_MOVEcwp = False
 
     Private Sub Cycle(Optional up As Boolean = False)
-
+        tmrTick.Enabled = False
         PopDropDown(cboAlt)
+        AstoniaProcess.RestorePos(True)
         Dim requestedindex = cboAlt.SelectedIndex + If(up, -1, 1)
         If requestedindex < 1 Then
             requestedindex = cboAlt.Items.Count - 1

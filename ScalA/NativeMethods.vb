@@ -515,6 +515,13 @@ Module NativeMethods
                                  ByVal X As Integer, ByVal Y As Integer, ByVal cx As Integer, ByVal cy As Integer,
                                  ByVal uFlags As SetWindowPosFlags) As Boolean
     End Function
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function BeginDeferWindowPos(nNumWindows As Integer) As IntPtr : End Function
+    <DllImport("User32.dll")>
+    Public Function DeferWindowPos(hWinPosInfo As IntPtr, hWnd As IntPtr, hWndInsertAfter As IntPtr, X As Integer, Y As Integer,
+                                   cx As Integer, cy As Integer, uFlags As SetWindowPosFlags) As Boolean : End Function
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function EndDeferWindowPos(hWinPosInfo As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean : End Function
 #End Region
 
     <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Unicode)>
