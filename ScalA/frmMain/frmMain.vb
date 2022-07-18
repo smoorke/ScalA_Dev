@@ -557,6 +557,8 @@
         Get
             'Const CS_DROPSHADOW = &H20000
             Dim cp As CreateParams = MyBase.CreateParams
+            'cp.Style = cp.Style Or WindowStyles.WS_CLIPCHILDREN
+            'cp.ExStyle = cp.ExStyle Or WindowStylesEx.WS_EX_COMPOSITED
             'cp.ClassStyle = cp.ClassStyle Or CS_DROPSHADOW
             Return cp
         End Get
