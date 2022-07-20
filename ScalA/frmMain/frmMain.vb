@@ -712,7 +712,7 @@
             'AppActivate(scalaPID)
             Exit Sub
         End If
-        tmrTick.Start()
+        If requestedindex > 0 Then tmrTick.Start()
         cboAlt.SelectedIndex = requestedindex
     End Sub
 
