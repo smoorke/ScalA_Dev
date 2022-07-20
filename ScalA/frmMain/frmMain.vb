@@ -1250,10 +1250,11 @@
     End Sub
 
     Private Sub BtnStart_Click(sender As Button, e As EventArgs) Handles btnStart.Click
+        tmrTick.Stop()
         Dim prevAlt As AstoniaProcess = AltPP
         Debug.Print($"prevAlt?.Name {prevAlt?.Name}")
+        AstoniaProcess.RestorePos(True)
         cboAlt.SelectedIndex = 0
-        AstoniaProcess.RestorePos()
         If prevAlt.Id <> 0 Then
             pnlOverview.Controls.OfType(Of AButton).FirstOrDefault(Function(ab As AButton) ab.Tag?.id = prevAlt?.Id)?.Select()
         Else
