@@ -102,7 +102,6 @@
         Else
             pnlOverview.Hide()
             tmrOverview.Enabled = False
-            DoEqLock(pbZoom.Size)
             PnlEqLock.Visible = True
         End If
 
@@ -178,6 +177,7 @@
             AltPP?.Activate()
             sysTrayIcon.Icon = AltPP?.GetIcon
             AltPP?.CenterBehind(pbZoom)
+
             moveBusy = False
         Else 'AltPP.Id = 0
 
@@ -186,7 +186,7 @@
 
         Debug.Print("tmrTick.Enabled")
         tmrTick.Enabled = True
-
+        DoEqLock(pbZoom.Size)
         prevItem = that.SelectedItem
 
         If that.SelectedIndex > 0 Then
@@ -330,9 +330,12 @@
         test.Items.Add(New ToolStripMenuItem("Reset Hide", Nothing, AddressOf dBug.ResetHide))
         test.Items.Add(New ToolStripMenuItem("ResumeLayout", Nothing, AddressOf dBug.Resumelayout))
         test.Items.Add(New ToolStripMenuItem("Button Info", Nothing, AddressOf dBug.ButtonInfo))
+        Static extraitem As New ToolStripMenuItem($"movebusy {moveBusy}")
+        test.Items.Add(extraitem)
         chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()
                                      Debug.Print("test Opening")
+                                     extraitem.Text = $"movebusy {moveBusy}"
                                      UntrapMouse(MouseButtons.Right)
                                      AppActivate(scalaPID)
                                  End Sub
@@ -369,6 +372,10 @@
     Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         Debug.Print("FrmMain_Shown")
         suppressWM_MOVEcwp = False
+        If cboAlt.SelectedIndex > 0 Then
+            tmrTick.Start()
+            moveBusy = False
+        End If
     End Sub
 
 
@@ -569,8 +576,8 @@
 
     Public suppressResChange As Boolean = False
     Public Sub CmbResolution_SelectedIndexChanged(sender As ComboBox, e As EventArgs) Handles cmbResolution.SelectedIndexChanged
-        If sender.SelectedIndex = 0 Then Exit Sub
         moveBusy = False
+        If sender.SelectedIndex = 0 Then Exit Sub
         Debug.Print($"cboResolution_SelectedIndexChanged {sender.SelectedIndex}")
 
         My.Settings.zoom = sender.SelectedIndex
@@ -712,8 +719,8 @@
             'AppActivate(scalaPID)
             Exit Sub
         End If
-        If requestedindex > 0 Then tmrTick.Start()
         cboAlt.SelectedIndex = requestedindex
+        If requestedindex > 0 Then tmrTick.Start()
     End Sub
 
     ReadOnly startThumbsDict As New Dictionary(Of Integer, IntPtr)
@@ -1562,6 +1569,7 @@
         sender.Text = If(sender.CheckState = CheckState.Unchecked, "🔓", "🔒")
 
     End Sub
+
 
 End Class
 
