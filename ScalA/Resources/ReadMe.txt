@@ -223,3 +223,8 @@ Fixed moving other Astonia clients with quicklaunch open would be buggy.
 Fixed click capture would send wrong message to client on capturing mouseup.
 Fixed hotkeys failing when running multiple ScalAs with at least one on active overview.
 Implemented sizing border.
+
+**ScalA 1.0.7**
+Fixed cycling would sometimes restore to wrong position.
+Fixed resizing by a single pixel wouldn't update custom resolution correctly.
+Fixed cursor not tracking when ScalA starts up with exactly 1 client.
