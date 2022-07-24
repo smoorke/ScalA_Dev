@@ -40,6 +40,7 @@
 
     Private Const HTLEFT As Integer = 10, HTRIGHT As Integer = 11, HTTOP As Integer = 12, HTTOPLEFT As Integer = 13, HTTOPRIGHT As Integer = 14, HTBOTTOM As Integer = 15, HTBOTTOMLEFT As Integer = 16, HTBOTTOMRIGHT As Integer = 17
     Public suppressWM_SIZING As Boolean = True
+    Private prevSR As New Rectangle
     Protected Overrides Sub WndProc(ByRef m As System.Windows.Forms.Message)
 
         Select Case m.Msg
@@ -48,12 +49,13 @@
                     FrmMain.moveBusy = True
                     Dim rc As RECT = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(RECT))
                     Dim sr As New Rectangle(rc.Left + BorderSize, rc.Top + BorderSize, rc.Right - rc.Left - BorderSize * 2, rc.Bottom - rc.Top - BorderSize * 2)
-                    If sr <> FrmMain.Bounds Then
+                    If sr <> prevSR Then
                         FrmMain.Bounds = sr
                         Dim zoomSZ As New Size(sr.Width - 2, sr.Height - FrmMain.pnlTitleBar.Height - 1)
-                        FrmMain.ReZoom(zoomSZ)
                         My.Settings.resol = zoomSZ
                         My.Settings.zoom = 0
+                        FrmMain.ReZoom(zoomSZ)
+                        prevSR = sr
                     End If
                 End If
         End Select
