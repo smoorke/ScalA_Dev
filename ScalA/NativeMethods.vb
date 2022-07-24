@@ -44,6 +44,9 @@ Module NativeMethods
         Public Function ToRectangle() As Rectangle
             Return Rectangle.FromLTRB(Me.Left, Me.Top, Me.Right, Me.Bottom)
         End Function
+        Public Overrides Function ToString() As String
+            Return $"L={Me.Left},T={Me.Top},R={Me.Right},B={Me.Bottom}"
+        End Function
     End Structure
     <Runtime.CompilerServices.Extension>
     Public Function ToRECT(Rectangle As Rectangle) As RECT
@@ -107,6 +110,13 @@ Module NativeMethods
         Public cy As Integer
         Public flags As Integer
     End Structure
+    <StructLayout(LayoutKind.Sequential)>
+    Structure NCCALCSIZE_PARAMS
+        <MarshalAs(UnmanagedType.ByValArray, SizeConst:=3)>
+        Public rgrc As RECT()
+        Public lppos As WINDOWPOS
+    End Structure
+
 
     <DllImport("shell32.dll", EntryPoint:="SHGetFileInfoW", SetLastError:=True)>
     Public Function SHGetFileInfoW(<InAttribute(), MarshalAs(UnmanagedType.LPTStr)> ByVal pszPath As String, ByVal dwFileAttributes As Integer, ByRef psfi As SHFILEINFOW, ByVal cbFileInfo As Integer, ByVal uFlags As Integer) As Integer
