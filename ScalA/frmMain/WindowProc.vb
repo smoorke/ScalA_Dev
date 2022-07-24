@@ -245,6 +245,27 @@ Partial Class FrmMain
             Case &H24 ' WM_GETMINMAXINFO
 
             Case &H7F ' WM_GETICON 
+            Case &H83 ' WM_NCCALCSIZE
+                'If CType(m.WParam, Boolean) = True AndAlso pnlButtons IsNot Nothing Then
+                '    Debug.Print($"WM_NCCALCSIZE")
+                '    Dim NCCS As NCCALCSIZE_PARAMS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(NCCALCSIZE_PARAMS))
+
+                '    Debug.Print($"{NCCS.rgrc(0)} {NCCS.rgrc(1)} {NCCS.rgrc(2)}")
+
+
+                '    Dim origin As RECT = New RECT(NCCS.rgrc(1).Right - pnlButtons.Width, NCCS.rgrc(1).Top, NCCS.rgrc(1).Right, NCCS.rgrc(1).Top + pnlButtons.Height)
+                '    Dim dest As RECT = New RECT(NCCS.rgrc(0).Right - pnlButtons.Width, NCCS.rgrc(0).Top, NCCS.rgrc(0).Right, NCCS.rgrc(0).Top + pnlButtons.Height)
+
+                '    NCCS.rgrc(1) = origin
+                '    NCCS.rgrc(2) = dest
+
+                '    Debug.Print($"{NCCS.rgrc(0)} {NCCS.rgrc(1)} {NCCS.rgrc(2)}")
+
+                '    m.Result = &H400 'WVR_VALIDRECTS
+
+                '    System.Runtime.InteropServices.Marshal.StructureToPtr(NCCS, m.LParam, True)
+
+                'End If
             Case &H84 ' WM_NCHITTEST
             Case &H86 ' WM_NCACTIVATE
 
