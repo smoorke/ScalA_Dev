@@ -49,6 +49,7 @@ Partial Class FrmMain
                         SysMenu.Enable(SC_MOVE)
                         suppressWM_MOVEcwp = True
                         MyBase.DefWndProc(m)
+                        Me.Invalidate()
                         suppressWM_MOVEcwp = False
                         Exit Sub
                     Case SC_MAXIMIZE

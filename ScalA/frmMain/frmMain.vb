@@ -1482,17 +1482,20 @@
     Private Sub SysTrayIcon_MouseDoubleClick(sender As NotifyIcon, e As MouseEventArgs) Handles sysTrayIcon.MouseDoubleClick
         Debug.Print("sysTrayIcon_MouseDoubleClick")
         If e.Button = MouseButtons.Right Then Exit Sub
+        'If Me.WindowState = FormWindowState.Minimized Then
+        '    Me.Location = RestoreLoc
+        '    SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle) 'hides scala from taskbar
+        '    suppressWM_MOVEcwp = True
+        '    Me.WindowState = If(wasMaximized, FormWindowState.Maximized, FormWindowState.Normal)
+        '    suppressWM_MOVEcwp = False
+        '    ReZoom(zooms(cmbResolution.SelectedIndex)) 'handled in WM_SIZE
+        '    AltPP?.CenterBehind(pbZoom)
+        '    btnMax.Text = If(wasMaximized, "🗗", "⧠")
+        '    ttMain.SetToolTip(btnMax, If(wasMaximized, "Restore", "Maximize"))
+        '    If wasMaximized Then btnMax.PerformClick()
+        'End If
         If Me.WindowState = FormWindowState.Minimized Then
-            Me.Location = RestoreLoc
-            SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle) 'hides scala from taskbar
-            suppressWM_MOVEcwp = True
-            Me.WindowState = If(wasMaximized, FormWindowState.Maximized, FormWindowState.Normal)
-            suppressWM_MOVEcwp = False
-            'ReZoom(zooms(cmbResolution.SelectedIndex)) 'handled in WM_SIZE
-            AltPP?.CenterBehind(pbZoom)
-            btnMax.Text = If(wasMaximized, "🗗", "⧠")
-            ttMain.SetToolTip(btnMax, If(wasMaximized, "Restore", "Maximize"))
-            'If wasMaximized Then btnMax.PerformClick()
+            Me.WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, Nothing))
         End If
         Me.Show()
         'Me.BringToFront() 'doesn't work
