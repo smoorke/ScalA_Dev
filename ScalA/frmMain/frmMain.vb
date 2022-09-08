@@ -330,6 +330,7 @@
         test.Items.Add(New ToolStripMenuItem("Reset Hide", Nothing, AddressOf dBug.ResetHide))
         test.Items.Add(New ToolStripMenuItem("ResumeLayout", Nothing, AddressOf dBug.Resumelayout))
         test.Items.Add(New ToolStripMenuItem("Button Info", Nothing, AddressOf dBug.ButtonInfo))
+        test.Items.Add(New ToolStripMenuItem("isBelow", Nothing, AddressOf dBug.IsBelow))
         Static extraitem As New ToolStripMenuItem($"movebusy {moveBusy}")
         test.Items.Add(extraitem)
         chkDebug.ContextMenuStrip = test
@@ -657,7 +658,7 @@
             cornerSE.Visible = False
         End If
 
-        frmBehind.Bounds = Me.Bounds
+        FrmBehind.Bounds = Me.Bounds
         'FrmSizeBorder.Bounds = Me.Bounds
     End Sub
 
@@ -913,14 +914,16 @@
             End If
         Next but
 
-        If Not thumbContainedMouse AndAlso My.Settings.gameOnOverview Then 'if active is in alts then set parent and bring scala to front
+
+
+        If Not thumbContainedMouse AndAlso My.Settings.gameOnOverview Then
             Dim active = GetForegroundWindow()
-            If active <> 0 Then
-                Dim parent = GetWindowLong(ScalaHandle, GWL_HWNDPARENT)
-                If parent <> active AndAlso alts.Any(Function(ap) ap.MainWindowHandle = active) Then
-                    SetWindowLong(ScalaHandle, GWL_HWNDPARENT, active)
-                    SetWindowPos(active, ScalaHandle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
-                End If
+            Dim activePP = alts.FirstOrDefault(Function(ap) ap.MainWindowHandle = active)
+            If activePP IsNot Nothing AndAlso Not activePP.IsBelow(Me.Handle) Then
+                Debug.Print("Pop")
+                SetWindowLong(ScalaHandle, GWL_HWNDPARENT, active)
+                SetWindowPos(active, Me.Handle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+                SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
             End If
         End If
 
@@ -1409,7 +1412,7 @@
 
         If setbehind = IntPtr.Zero AndAlso pnlOverview.Visible Then setbehind = ScalaHandle
 
-        SetWindowPos(frmBehind.Handle, setbehind, -1, -1, -1, -1,
+        SetWindowPos(FrmBehind.Handle, setbehind, -1, -1, -1, -1,
                      SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.ASyncWindowPosition)
 
     End Sub
@@ -1613,6 +1616,11 @@ Module dBug
         Next
         Debug.Print($"viscount: {FrmMain.pnlOverview.Controls.OfType(Of Button).Where(Function(b) b.Visible).Count}")
     End Sub
+
+    Friend Sub IsBelow(sender As Object, e As EventArgs)
+        Debug.Print($"isBelow {FrmMain.AltPP?.IsBelow(FrmMain.Handle)}")
+    End Sub
+
 End Module
 
 #End If

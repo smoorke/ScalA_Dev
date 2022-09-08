@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
-Partial Class frmBehind
+Partial Class FrmBehind
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -24,7 +24,7 @@ Partial Class frmBehind
     Private Sub InitializeComponent()
         Me.SuspendLayout()
         '
-        'FrmCaptureClickBehind
+        'FrmBehind
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
@@ -33,10 +33,10 @@ Partial Class frmBehind
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.MaximizeBox = False
         Me.MinimizeBox = False
-        Me.Name = "FrmCaptureClickBehind"
+        Me.Name = "FrmBehind"
         Me.Opacity = 0.01R
         Me.ShowInTaskbar = False
-        Me.Text = "frmCaptureClickBehind"
+        Me.Text = "ScalA"
         Me.ResumeLayout(False)
 
     End Sub

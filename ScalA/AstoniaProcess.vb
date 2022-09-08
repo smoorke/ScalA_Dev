@@ -163,6 +163,15 @@
         Return _proc?.Id = ProcessID
     End Function
 
+    Public Function IsBelow(hwnd As IntPtr) As Boolean
+        Dim curr As IntPtr = Me.MainWindowHandle
+        For i As Integer = 1 To 10
+            curr = GetWindow(curr, 3)
+            If curr = IntPtr.Zero Then Return False
+            If curr = hwnd Then Return True
+        Next i
+        Return False
+    End Function
 
     Public Function MainWindowTitle() As String
         Try
