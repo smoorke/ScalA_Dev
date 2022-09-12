@@ -1020,10 +1020,10 @@
 
         Dim newSZ As New Size(pbZoom.Size.Width / numCols, pbZoom.Size.Height / numRows)
         Dim widthTooMuch As Boolean = False
-        'Dim heightTooMuch As Boolean = False
+        Dim heightTooMuch As Boolean = False
 
         If newSZ.Width * numCols > pbZoom.Width Then widthTooMuch = True
-        'If newSZ.Height * numRows > pbZoom.Height Then heightTooMuch = True
+        If newSZ.Height * numRows > pbZoom.Height Then heightTooMuch = True
 
         Dim visButtons As New List(Of AButton)
 
@@ -1033,7 +1033,7 @@
             If i <= numCols * numRows Then
                 but.Size = newSZ
                 If widthTooMuch AndAlso i Mod numCols = 0 Then but.Width -= If((pbZoom.Size.Width / numCols) Mod 1 < 0.5, 1, 2) 'last column
-                'If heightTooMuch AndAlso i > (numRows - 1) * numRows Then but.Height -= 2 'last row
+                If heightTooMuch AndAlso i > (numRows - 1) * numRows Then but.Height -= 1 'last row
                 but.Visible = True
                 visButtons.Add(but)
             Else
