@@ -165,11 +165,21 @@
 
     Public Function IsBelow(hwnd As IntPtr) As Boolean
         Dim curr As IntPtr = Me.MainWindowHandle
-        For i As Integer = 1 To 10
+        Do While True
             curr = GetWindow(curr, 3)
             If curr = IntPtr.Zero Then Return False
             If curr = hwnd Then Return True
-        Next i
+        Loop
+        Return False
+    End Function
+
+    Public Function IsAbove(hwnd As IntPtr) As Boolean
+        Dim curr As IntPtr = Me.MainWindowHandle
+        Do While True
+            curr = GetWindow(curr, 2)
+            If curr = IntPtr.Zero Then Return False
+            If curr = hwnd Then Return True
+        Loop
         Return False
     End Function
 

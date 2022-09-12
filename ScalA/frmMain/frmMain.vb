@@ -542,6 +542,7 @@
                                  swpBusy = True
                                  Dim flags = swpFlags
                                  If Not AltPP?.IsActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
+                                 If AltPP?.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                                  Dim pt As Point = MousePosition - New Point(newX + AstClientOffset.Width, newY + AstClientOffset.Height)
                                  If prevWMMMpt <> MousePosition Then
                                      SendMessage(AltPP?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
@@ -888,6 +889,7 @@
                                          AOBusy = True
                                          Dim flags = swpFlags
                                          If Not but.Tag?.isActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
+                                         'If but.Tag?.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                                          Dim pt As Point = MousePosition - New Point(newXB + AstClientOffset.Width, newYB + AstClientOffset.Height)
                                          If prevWMMMpt <> MousePosition Then
                                              SendMessage(but.Tag?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
@@ -917,10 +919,10 @@
 
 
         If Not thumbContainedMouse AndAlso My.Settings.gameOnOverview Then
+            eqLockShown = False
             Dim active = GetForegroundWindow()
             Dim activePP = alts.FirstOrDefault(Function(ap) ap.MainWindowHandle = active)
             If activePP IsNot Nothing AndAlso Not activePP.IsBelow(Me.Handle) Then
-                Debug.Print("Pop")
                 SetWindowLong(ScalaHandle, GWL_HWNDPARENT, active)
                 SetWindowPos(active, Me.Handle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
                 SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
