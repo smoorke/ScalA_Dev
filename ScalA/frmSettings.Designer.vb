@@ -57,6 +57,7 @@ Partial Class FrmSettings
         Me.NumBorderLeft = New System.Windows.Forms.NumericUpDown()
         Me.ChkLessRowCol = New System.Windows.Forms.CheckBox()
         Me.chkOverViewIsGame = New System.Windows.Forms.CheckBox()
+        Me.ChkDark = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.btnRestore = New System.Windows.Forms.Button()
@@ -103,7 +104,6 @@ Partial Class FrmSettings
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
         Me.txtClass = New System.Windows.Forms.TextBox()
-        Me.ChkDark = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -458,6 +458,16 @@ Partial Class FrmSettings
         Me.chkOverViewIsGame.Text = "Active Overview "
         Me.ttSettings.SetToolTip(Me.chkOverViewIsGame, "Have overview thumbnails function as game.")
         Me.chkOverViewIsGame.UseVisualStyleBackColor = True
+        '
+        'ChkDark
+        '
+        Me.ChkDark.AutoSize = True
+        Me.ChkDark.Location = New System.Drawing.Point(114, 69)
+        Me.ChkDark.Name = "ChkDark"
+        Me.ChkDark.Size = New System.Drawing.Size(85, 17)
+        Me.ChkDark.TabIndex = 5
+        Me.ChkDark.Text = "Dark Theme"
+        Me.ChkDark.UseVisualStyleBackColor = True
         '
         'tbcSettings
         '
@@ -956,17 +966,6 @@ Partial Class FrmSettings
         Me.txtClass.Size = New System.Drawing.Size(182, 20)
         Me.txtClass.TabIndex = 9
         Me.txtClass.Text = "MAINWNDMOAC | 䅍义乗䵄䅏C"
-        '
-        'ChkDark
-        '
-        Me.ChkDark.AutoSize = True
-        Me.ChkDark.Location = New System.Drawing.Point(114, 69)
-        Me.ChkDark.Name = "ChkDark"
-        Me.ChkDark.Size = New System.Drawing.Size(85, 17)
-        Me.ChkDark.TabIndex = 5
-        Me.ChkDark.Text = "Dark Theme"
-        Me.ttSettings.SetToolTip(Me.ChkDark, "Requires Restart")
-        Me.ChkDark.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
