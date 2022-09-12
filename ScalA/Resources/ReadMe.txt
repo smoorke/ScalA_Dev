@@ -228,3 +228,10 @@ Implemented sizing border.
 Fixed cycling would sometimes restore to wrong position.
 Fixed resizing by a single pixel wouldn't update custom resolution correctly.
 Fixed cursor not tracking when ScalA starts up with exactly 1 client.
+
+**ScalA 1.0.8**
+Fixed restoring via sysMenu when minmimized with an alt selected would mess up border.
+Fixed artifacts below min/max/close buttons when enlarging the window using top right drag point.
+Fixed game lagging when running multiple ScalAs with at least one on active overview.
+Defaulted Single Instance to off.
+Implemented Dark Theme.
