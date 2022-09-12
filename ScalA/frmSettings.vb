@@ -85,6 +85,8 @@ Public Class FrmSettings
 
         NumExtraMax.Value = My.Settings.ExtraMaxColRow
 
+        ChkDark.Checked = My.Settings.DarkMode
+
     End Sub
 
     Protected Overrides Sub WndProc(ByRef m As Message)
@@ -226,6 +228,7 @@ Public Class FrmSettings
     End Function
 
     Private Sub BtnOK_Click(sender As Object, e As EventArgs) Handles btnOK.Click
+
         'save settings
         If My.Settings.resolutions <> txtResolutions.Text Then
             If Not ParseResolutions() Then Exit Sub
@@ -302,6 +305,15 @@ Public Class FrmSettings
         My.Settings.ExtraMaxColRow = NumExtraMax.Value
 
         My.Settings.OneLessRowCol = ChkLessRowCol.Checked
+
+        If ChkDark.Checked <> My.Settings.DarkMode Then
+            My.Settings.DarkMode = ChkDark.Checked
+            FrmMain.pnlOverview.BackColor = If(My.Settings.DarkMode, Color.Gray, Color.FromKnownColor(KnownColor.Control))
+            Dim butcounter As Integer = 0
+            For Each but As AButton In FrmMain.pnlOverview.Controls.OfType(Of AButton)
+                but.BackColor = If(My.Settings.DarkMode, Color.DarkGray, Color.FromArgb(&HFFF0F0F0))
+            Next
+        End If
 
         BtnTest_Click(Nothing, Nothing) 'apply sorting & black/whitlelist, note: .PerformClick() doesn't work as button may not be visible
 

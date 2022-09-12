@@ -523,6 +523,18 @@ Namespace My
                 Me("resol") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property DarkMode() As Boolean
+            Get
+                Return CType(Me("DarkMode"),Boolean)
+            End Get
+            Set
+                Me("DarkMode") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

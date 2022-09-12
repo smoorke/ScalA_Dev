@@ -149,7 +149,7 @@
             FrmMain.tmrOverview.Enabled = False
             FrmMain.tmrTick.Enabled = False
             My.Settings.Save()
-            FrmMain.ElevateSelf()
+            FrmMain.RestartSelf()
             End 'program
         End Try
     End Function
@@ -398,7 +398,7 @@
                                "Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Error) _
                = DialogResult.Cancel Then Return
             My.Settings.Save()
-            FrmMain.ElevateSelf()
+            FrmMain.RestartSelf()
             End 'program
             Return
         End If

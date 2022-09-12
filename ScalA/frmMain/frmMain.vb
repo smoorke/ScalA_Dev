@@ -369,6 +369,11 @@
 
         If cmbResolution.SelectedIndex = 0 Then DoEqLock(My.Settings.resol)
 
+        cmsAlt.Renderer = New ToolStripProfessionalRenderer(New CustomColorTable)
+        cmsQuickLaunch.Renderer = New ToolStripProfessionalRenderer(New CustomColorTable)
+        If My.Settings.DarkMode Then
+            pnlOverview.BackColor = Color.Gray
+        End If
     End Sub
     Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         Debug.Print("FrmMain_Shown")
@@ -1427,14 +1432,14 @@
 
 
 
-    Public Sub ElevateSelf()
+    Public Sub RestartSelf(Optional asAdmin As Boolean = True)
 
         Dim procStartInfo As New ProcessStartInfo With {
             .UseShellExecute = True,
             .FileName = Environment.GetCommandLineArgs()(0),
             .Arguments = """" & CType(Me.cboAlt.SelectedItem, AstoniaProcess).Name & """",
             .WindowStyle = ProcessWindowStyle.Normal,
-            .Verb = "runas" 'add this to prompt for elevation
+            .Verb = If(asAdmin, "runas", "") 'add this to prompt for elevation
         }
 
         If Me.WindowState = FormWindowState.Normal Then

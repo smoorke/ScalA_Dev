@@ -136,5 +136,8 @@
     <Setting Name="resol" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">900, 675</Value>
     </Setting>
+    <Setting Name="DarkMode" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

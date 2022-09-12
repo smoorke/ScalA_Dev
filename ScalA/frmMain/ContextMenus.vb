@@ -453,7 +453,7 @@ Partial Public Class FrmMain
                                "Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Error) _
                = DialogResult.Cancel Then Exit Sub
             My.Settings.Save()
-            ElevateSelf()
+            RestartSelf()
             End 'program
             Exit Sub
         End If

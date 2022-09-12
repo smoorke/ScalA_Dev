@@ -103,6 +103,7 @@ Partial Class FrmSettings
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
         Me.txtClass = New System.Windows.Forms.TextBox()
+        Me.ChkDark = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -367,7 +368,7 @@ Partial Class FrmSettings
         Me.ChkSingleInstance.Location = New System.Drawing.Point(172, 39)
         Me.ChkSingleInstance.Name = "ChkSingleInstance"
         Me.ChkSingleInstance.Size = New System.Drawing.Size(99, 17)
-        Me.ChkSingleInstance.TabIndex = 5
+        Me.ChkSingleInstance.TabIndex = 6
         Me.ChkSingleInstance.Text = "Single Instance"
         Me.ttSettings.SetToolTip(Me.ChkSingleInstance, "Running ScalA for a 2nd time or more will bring an" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  already open ScalA from the" &
         " same profile to the front." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "To make additional profiles copy, rename and/or mov" &
@@ -453,7 +454,7 @@ Partial Class FrmSettings
         Me.chkOverViewIsGame.Location = New System.Drawing.Point(172, 54)
         Me.chkOverViewIsGame.Name = "chkOverViewIsGame"
         Me.chkOverViewIsGame.Size = New System.Drawing.Size(107, 17)
-        Me.chkOverViewIsGame.TabIndex = 22
+        Me.chkOverViewIsGame.TabIndex = 7
         Me.chkOverViewIsGame.Text = "Active Overview "
         Me.ttSettings.SetToolTip(Me.chkOverViewIsGame, "Have overview thumbnails function as game.")
         Me.chkOverViewIsGame.UseVisualStyleBackColor = True
@@ -841,6 +842,7 @@ Partial Class FrmSettings
         '
         'tabMisc
         '
+        Me.tabMisc.Controls.Add(Me.ChkDark)
         Me.tabMisc.Controls.Add(Me.chkDoAlign)
         Me.tabMisc.Controls.Add(Me.chkCycleOnClose)
         Me.tabMisc.Controls.Add(Me.grpAlign)
@@ -867,7 +869,7 @@ Partial Class FrmSettings
         Me.chkDoAlign.Location = New System.Drawing.Point(200, 70)
         Me.chkDoAlign.Name = "chkDoAlign"
         Me.chkDoAlign.Size = New System.Drawing.Size(66, 16)
-        Me.chkDoAlign.TabIndex = 8
+        Me.chkDoAlign.TabIndex = 10
         Me.chkDoAlign.Text = "Alignment"
         Me.chkDoAlign.UseVisualStyleBackColor = True
         '
@@ -902,7 +904,7 @@ Partial Class FrmSettings
         Me.numXoffset.Minimum = New Decimal(New Integer() {4000, 0, 0, -2147483648})
         Me.numXoffset.Name = "numXoffset"
         Me.numXoffset.Size = New System.Drawing.Size(72, 20)
-        Me.numXoffset.TabIndex = 9
+        Me.numXoffset.TabIndex = 12
         Me.numXoffset.Tag = "0"
         Me.numXoffset.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         '
@@ -913,7 +915,7 @@ Partial Class FrmSettings
         Me.numYoffset.Minimum = New Decimal(New Integer() {4000, 0, 0, -2147483648})
         Me.numYoffset.Name = "numYoffset"
         Me.numYoffset.Size = New System.Drawing.Size(72, 20)
-        Me.numYoffset.TabIndex = 10
+        Me.numYoffset.TabIndex = 13
         Me.numYoffset.Tag = "1"
         Me.numYoffset.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         '
@@ -923,7 +925,7 @@ Partial Class FrmSettings
         Me.txtExe.Location = New System.Drawing.Point(12, 89)
         Me.txtExe.Name = "txtExe"
         Me.txtExe.Size = New System.Drawing.Size(154, 20)
-        Me.txtExe.TabIndex = 6
+        Me.txtExe.TabIndex = 8
         Me.txtExe.Text = "moac | new"
         '
         'chkTopMost
@@ -952,8 +954,19 @@ Partial Class FrmSettings
         Me.txtClass.Location = New System.Drawing.Point(12, 110)
         Me.txtClass.Name = "txtClass"
         Me.txtClass.Size = New System.Drawing.Size(182, 20)
-        Me.txtClass.TabIndex = 7
+        Me.txtClass.TabIndex = 9
         Me.txtClass.Text = "MAINWNDMOAC | 䅍义乗䵄䅏C"
+        '
+        'ChkDark
+        '
+        Me.ChkDark.AutoSize = True
+        Me.ChkDark.Location = New System.Drawing.Point(114, 69)
+        Me.ChkDark.Name = "ChkDark"
+        Me.ChkDark.Size = New System.Drawing.Size(85, 17)
+        Me.ChkDark.TabIndex = 5
+        Me.ChkDark.Text = "Dark Theme"
+        Me.ttSettings.SetToolTip(Me.ChkDark, "Requires Restart")
+        Me.ChkDark.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
@@ -1066,4 +1079,5 @@ Partial Class FrmSettings
     Friend WithEvents ChkLessRowCol As CheckBox
     Friend WithEvents NumExtraMax As NumericUpDown
     Friend WithEvents chkOverViewIsGame As CheckBox
+    Friend WithEvents ChkDark As CheckBox
 End Class

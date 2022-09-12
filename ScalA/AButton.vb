@@ -21,6 +21,7 @@
         Me.TextAlign = ContentAlignment.TopCenter
         Me.Font = New Font("Microsoft Sans Serif", 8.25)
         Me.Visible = False
+        Me.BackColor = If(My.Settings.DarkMode, Color.DarkGray, Color.FromArgb(&HFFF0F0F0))
     End Sub
 
     Private _passthrough As Rectangle
@@ -55,6 +56,16 @@
     Public Shared ActiveOverview As Boolean = True
     Protected Overrides Sub OnPaint(e As PaintEventArgs)
         MyBase.OnPaint(e)
+        If My.Settings.DarkMode Then
+            Using p As New Pen(Color.Gray, 2)
+                e.Graphics.DrawRectangle(p, New Rectangle(3, 3, Me.Width - 6, Me.Height - 6))
+            End Using
+            If Me.Focused Then
+                Using p As New Pen(Color.FromKnownColor(KnownColor.Highlight), 1)
+                    e.Graphics.DrawRectangle(p, New Rectangle(2, 2, Me.Width - 5, Me.Height - 5))
+                End Using
+            End If
+        End If
         If ActiveOverview AndAlso My.Settings.gameOnOverview AndAlso Me.Text <> "" Then
             Using b As New SolidBrush(Color.Magenta)
                 e.Graphics.FillRectangle(b, Me.ThumbRectangle)
