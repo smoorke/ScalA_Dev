@@ -784,7 +784,7 @@ Partial Public Class FrmMain
                 QlCtxNewMenu.MenuItems.Add(New MenuItem("(None)") With {.Enabled = False})
             End If
 
-            ModifyMenuA(QlCtxMenu.Handle, 0, MF_BYPOSITION, 256, $"{name}")
+            ModifyMenuA(QlCtxMenu.Handle, 0, MF_BYPOSITION, GetMenuItemID(QlCtxMenu.Handle, 0), $"{name}")
             Dim hbm = IntPtr.Zero
             If sender.Image IsNot Nothing Then
                 hbm = CType(sender.Image, Bitmap).GetHbitmap(Color.Red)

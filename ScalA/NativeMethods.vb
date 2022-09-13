@@ -582,7 +582,8 @@ Module NativeMethods
     Public Function DestroyMenu(hMenu As IntPtr) As Boolean : End Function
     <DllImport("user32.dll")>
     Public Function SetMenuDefaultItem(hMenu As IntPtr, uItem As Integer, fByPos As Integer) As Boolean : End Function
-
+    <DllImport("user32.dll")>
+    Public Function GetMenuItemID(ByVal hMenu As IntPtr, ByVal nPos As Integer) As UInteger : End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>
     Public Function GetMenuItemInfo(hMenu As IntPtr, uItem As UInt32, fByPosition As Boolean, ByRef lpmii As MENUITEMINFO) As Boolean : End Function
     <DllImport("user32.dll")>
