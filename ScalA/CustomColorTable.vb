@@ -1,4 +1,4 @@
-﻿Public Class CustomColorTable
+﻿Public NotInheritable Class CustomColorTable
     Inherits ProfessionalColorTable
 
     Public Overrides ReadOnly Property ToolStripBorder As Color

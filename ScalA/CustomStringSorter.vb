@@ -1,4 +1,4 @@
-﻿Public Class CustomStringSorter
+﻿Public NotInheritable Class CustomStringSorter
 	Implements IComparer(Of String)
 
 	Private Shared ReadOnly StringComparer As Comparer(Of String) = Comparer(Of String).Default

@@ -1,4 +1,4 @@
-﻿Public Class FrmBehind
+﻿Public NotInheritable Class FrmBehind
 
     Private Sub FrmBehind_MouseDown(sender As Object, e As MouseEventArgs) Handles Me.MouseDown
         Debug.Print($"behind down {e.Button}")

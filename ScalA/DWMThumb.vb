@@ -23,11 +23,11 @@
 
 End Module
 
-Public Class DWMAPI
+Public NotInheritable Class DWMAPI
     'dummy class to prevent form being generated
 End Class
 
-Partial Public Class FrmMain
+Partial Public NotInheritable Class FrmMain
     Dim thumb As IntPtr = IntPtr.Zero
     Private Sub CreateThumb()
 

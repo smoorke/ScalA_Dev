@@ -1,6 +1,6 @@
 ﻿Imports System.Text
 
-Public Class FrmSettings
+Public NotInheritable Class FrmSettings
     Public SysMenu As New SysMenu(Me)
     Private Sub FrmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         'storeZoom = My.Settings.zoom

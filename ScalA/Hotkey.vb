@@ -1,4 +1,4 @@
-﻿Public Class Hotkey
+﻿Public NotInheritable Class Hotkey
     ''' <summary>
     ''' Declaration of winAPI function wrappers. The winAPI functions are used to register / unregister a hotkey
     ''' </summary>

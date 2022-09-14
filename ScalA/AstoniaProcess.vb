@@ -1,4 +1,4 @@
-﻿Public Class AstoniaProcess
+﻿Public NotInheritable Class AstoniaProcess
 
     Private ReadOnly _proc As Process
 
@@ -255,7 +255,7 @@
     'End Operator
 
     Private Shared Function EnumProcessesByNameArray(strings() As String, blacklist As IEnumerable(Of String)) As IEnumerable(Of AstoniaProcess)
-        Dim IEnum As IEnumerable(Of Process) = {}
+        Dim IEnum As IEnumerable(Of Process) = Enumerable.Empty(Of Process)
         For Each exe As String In strings
             IEnum = IEnum.Concat(Process.GetProcessesByName(Trim(exe)))
         Next
@@ -269,7 +269,7 @@
     Public Shared Function Enumerate(Optional useCache As Boolean = False) As IEnumerable(Of AstoniaProcess)
         Return AstoniaProcess.Enumerate({}, useCache)
     End Function
-    Private Shared _ProcCache As IEnumerable(Of AstoniaProcess) = {}
+    Private Shared _ProcCache As IEnumerable(Of AstoniaProcess) = Enumerable.Empty(Of AstoniaProcess)
     Private Shared _CacheCounter As Integer = 0
 
     Public Shared Function Enumerate(blacklist As IEnumerable(Of String), Optional useCache As Boolean = False) As IEnumerable(Of AstoniaProcess)
@@ -492,7 +492,7 @@
 
 End Class
 
-Class AstoniaProcessSorter
+NotInheritable Class AstoniaProcessSorter
     Implements IComparer(Of String)
 
     Private ReadOnly topOrder As List(Of String)
@@ -532,7 +532,7 @@ Class AstoniaProcessSorter
 
     End Function
 End Class
-Class AstoniaProcessEqualityComparer
+NotInheritable Class AstoniaProcessEqualityComparer
     Implements IEqualityComparer(Of AstoniaProcess)
 
     Public Overloads Function Equals(ap1 As AstoniaProcess, ap2 As AstoniaProcess) As Boolean Implements IEqualityComparer(Of AstoniaProcess).Equals

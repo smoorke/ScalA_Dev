@@ -1,4 +1,4 @@
-﻿Public Class AButton
+﻿Public NotInheritable Class AButton
     Inherits Button
     Public Sub New(ByVal text As String, ByVal left As Integer, ByVal top As Integer, ByVal width As Integer, ByVal height As Integer)
         MyBase.New()

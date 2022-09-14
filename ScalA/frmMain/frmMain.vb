@@ -1,4 +1,4 @@
-﻿Partial Public Class FrmMain
+﻿Partial Public NotInheritable Class FrmMain
 
 
 

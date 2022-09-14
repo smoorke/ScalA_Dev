@@ -1,4 +1,4 @@
-﻿Public Class SysMenu
+﻿Public NotInheritable Class SysMenu
 
     Private ReadOnly _form As Form
     Public Sub New(frm As Form)
@@ -87,7 +87,7 @@
 
 End Class
 
-Partial Class FrmMain
+Partial NotInheritable Class FrmMain
     Dim SysMenu As SysMenu
     Public Sub InitSysMenu()
         Const GWL_STYLE As Integer = -16

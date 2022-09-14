@@ -1,9 +1,9 @@
 ﻿Imports System.Collections.Concurrent
 
-Public Class ContextMenus
+Public NotInheritable Class ContextMenus
     'dummy class to prevent form being generated
 End Class
-Partial Public Class FrmMain
+Partial Public NotInheritable Class FrmMain
 
     Private Sub CloseToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseToolStripMenuItem.Click
         PostMessage(CType(sender.Tag, AstoniaProcess).MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)

@@ -1,8 +1,8 @@
-﻿Public Class WindowProc
+﻿Public NotInheritable Class WindowProc
     'dummy class to prevent form generation
 End Class
 
-Partial Class FrmMain
+Partial NotInheritable Class FrmMain
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case Hotkey.WM_HOTKEY
@@ -156,7 +156,7 @@ Partial Class FrmMain
                 '    Exit Sub
                 'End If
                 Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
-                If winpos.x <> 0 AndAlso winpos.y <> 0 AndAlso frmBehind IsNot Nothing Then
+                If winpos.x <> 0 AndAlso winpos.y <> 0 AndAlso FrmBehind IsNot Nothing Then
                     'Dim wr As Rectangle
                     'GetWindowRect(FrmCaptureClickBehind.Handle, wr)
                     'Dim ptt As Point
@@ -165,7 +165,7 @@ Partial Class FrmMain
                     'Dim captionsize = ptt.Y - wr.Top
                     'FrmCaptureClickBehind.Location = New Point(winpos.x - bordersize, winpos.y - 3)
                     'FrmCaptureClickBehind.ClientSize = New Size(winpos.cx, winpos.cy - captionsize)
-                    frmBehind.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
+                    FrmBehind.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
                     FrmSizeBorder.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
                 End If
                 If wasMaximized AndAlso caption_Mousedown AndAlso Not posChangeBusy Then

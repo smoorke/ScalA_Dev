@@ -17,7 +17,7 @@ Public Module SystemUtitlity
 
         ' Get the desktop window
         Dim Loc() As Object = {CSIDL_Desktop}
-        Dim unused As Object = New Object()
+        Dim unused As New Object()
         Dim hwnd As Integer
         Dim serviceProvider As IServiceProvider = CType(shellWindows.FindWindowSW(Loc, unused, SWC_DESKTOP, hwnd, SWFO_NEEDDISPATCH), IServiceProvider)
 
@@ -43,10 +43,10 @@ Public Module SystemUtitlity
     Private Const SWFO_NEEDDISPATCH As Integer = 1
     Private Const SW_SHOWNORMAL As Integer = 1
     Private Const SVGIO_BACKGROUND As Integer = 0
-    Private ReadOnly SID_STopLevelBrowser As Guid = New Guid("4C96BE40-915C-11CF-99D3-00AA004AE837")
+    Private ReadOnly SID_STopLevelBrowser As New Guid("4C96BE40-915C-11CF-99D3-00AA004AE837")
 
     <ComImport(), Guid("9BA05972-F6A8-11CF-A442-00A0C90A8F39"), ClassInterfaceAttribute(ClassInterfaceType.None)>
-    Private Class CShellWindows
+    Private NotInheritable Class CShellWindows
     End Class
 
     <ComImport(), Guid("85CB6900-4D95-11CF-960C-0080C7F4EE85"), InterfaceType(ComInterfaceType.InterfaceIsIDispatch)>
@@ -99,7 +99,7 @@ Public Module SystemUtitlity
 
     <ComImport(), Guid("E7A1AF80-4D96-11CF-960C-0080C7F4EE85"), InterfaceType(ComInterfaceType.InterfaceIsIDispatch)>
     Private Interface IShellFolderViewDual
-        ReadOnly Property application As <MarshalAs(UnmanagedType.IDispatch)> Object
+        ReadOnly Property Application As <MarshalAs(UnmanagedType.IDispatch)> Object
     End Interface
 
     <ComImport(), Guid("A4C6892C-3BA9-11D2-9DEA-00C04FB16162"), InterfaceType(ComInterfaceType.InterfaceIsIDispatch)>
