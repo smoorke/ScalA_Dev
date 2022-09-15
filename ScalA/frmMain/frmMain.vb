@@ -371,9 +371,7 @@
 
         cmsAlt.Renderer = New ToolStripProfessionalRenderer(New CustomColorTable)
         cmsQuickLaunch.Renderer = New ToolStripProfessionalRenderer(New CustomColorTable)
-        If My.Settings.DarkMode Then
-            pnlOverview.BackColor = Color.Gray
-        End If
+        ApplyTheme()
     End Sub
     Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         Debug.Print("FrmMain_Shown")
@@ -382,6 +380,40 @@
             tmrTick.Start()
             moveBusy = False
         End If
+    End Sub
+
+    Public Sub ApplyTheme()
+        If My.Settings.DarkMode Then
+            pnlOverview.BackColor = Color.Gray
+            pnlButtons.BackColor = Color.FromArgb(60, 63, 65)
+            pnlSys.BackColor = Color.FromArgb(60, 63, 65)
+            Me.BackColor = Color.FromArgb(60, 63, 65)
+            btnStart.BackColor = Color.FromArgb(60, 63, 65)
+            pnlTitleBar.BackColor = Color.FromArgb(60, 63, 65)
+            lblTitle.ForeColor = Colors.LightText
+            ChkEqLock.ForeColor = Color.Gray
+#If DEBUG Then
+            chkDebug.ForeColor = Colors.LightText
+#End If
+        Else
+            pnlOverview.BackColor = Color.FromKnownColor(KnownColor.Control)
+            pnlButtons.BackColor = Color.FromKnownColor(KnownColor.Control)
+            pnlSys.BackColor = Color.FromKnownColor(KnownColor.Control)
+            Me.BackColor = Color.FromKnownColor(KnownColor.Control)
+            btnStart.BackColor = Color.FromKnownColor(KnownColor.Control)
+            pnlTitleBar.BackColor = Color.FromKnownColor(KnownColor.Control)
+            lblTitle.ForeColor = Color.Black
+            ChkEqLock.ForeColor = Color.Black
+#If DEBUG Then
+            chkDebug.ForeColor = Color.Black
+#End If
+        End If
+        For Each but As AButton In pnlOverview.Controls.OfType(Of AButton)
+            but.BackColor = If(My.Settings.DarkMode, Color.DarkGray, Color.FromArgb(&HFFF0F0F0))
+        Next
+        cmbResolution.DarkTheme = My.Settings.DarkMode
+        cboAlt.DarkTheme = My.Settings.DarkMode
+        btnStart.DarkTheme = My.Settings.DarkMode
     End Sub
 
 
@@ -1291,13 +1323,18 @@
             Dim activeID As Integer = GetActiveProcessID()
             If activeID = scalaPID OrElse activeID = AltPP?.Id OrElse
                 (My.Settings.gameOnOverview AndAlso New AstoniaProcess(Process.GetProcessById(activeID)).HasClassNameIn(My.Settings.className)) Then
-                lblTitle.ForeColor = SystemColors.ControlText
-                btnMax.ForeColor = SystemColors.ControlText
-                btnMin.ForeColor = SystemColors.ControlText
-                btnStart.ForeColor = SystemColors.ControlText
-                cboAlt.ForeColor = SystemColors.ControlText
-                cmbResolution.ForeColor = SystemColors.ControlText
-                'btnQuit.ForeColor = SystemColors.ControlText
+                Dim fcol As Color = If(My.Settings.DarkMode, Colors.LightText, SystemColors.ControlText)
+                lblTitle.ForeColor = fcol
+                btnMax.ForeColor = fcol
+                btnMin.ForeColor = fcol
+                btnStart.ForeColor = fcol
+                cboAlt.ForeColor = fcol
+                cmbResolution.ForeColor = fcol
+                If btnQuit.Contains(MousePosition) Then
+                    btnQuit.ForeColor = Color.White
+                Else
+                    btnQuit.ForeColor = fcol
+                End If
             Else
                 lblTitle.ForeColor = Color.FromArgb(&HFF666666)
                 btnMax.ForeColor = Color.FromArgb(&HFF666666)
@@ -1305,7 +1342,7 @@
                 btnStart.ForeColor = Color.FromArgb(&HFF666666)
                 cboAlt.ForeColor = Color.FromArgb(&HFF666666)
                 cmbResolution.ForeColor = Color.FromArgb(&HFF666666)
-                'btnQuit.ForeColor = Color.FromArgb(&HFF666666)
+                btnQuit.ForeColor = Color.FromArgb(&HFF666666)
             End If
             If (activeID = scalaPID OrElse Process.GetProcessById(activeID).IsClassNameIn(My.Settings.className)) Then
                 If My.Settings.SwitchToOverview Then
@@ -1583,7 +1620,33 @@
 
     End Sub
 
+    Private Sub CmbResolution_DropDown(sender As Object, e As EventArgs) Handles cmbResolution.DropDown
 
+    End Sub
+
+    Private Sub CmbResolution_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cmbResolution.SelectedIndexChanged
+
+    End Sub
+
+    Private Sub ComboBoxes_DropDownClosed(sender As Object, e As EventArgs) Handles cmbResolution.DropDownClosed, cboAlt.DropDownClosed
+
+    End Sub
+
+    Private Sub CmbResolution_MouseDown(sender As Object, e As MouseEventArgs) Handles cmbResolution.MouseDown
+
+    End Sub
+
+    Private Sub Various_MouseUp(sender As Object, e As MouseEventArgs) Handles pnlSys.MouseUp, pnlButtons.MouseUp, MyBase.MouseUp, cmbResolution.MouseUp, ChkEqLock.MouseUp, cboAlt.MouseUp, btnStart.MouseUp, btnQuit.MouseUp
+
+    End Sub
+
+    Private Sub CboAlt_DropDown(sender As Object, e As EventArgs) Handles cboAlt.DropDown
+
+    End Sub
+
+    Private Sub BtnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
+
+    End Sub
 End Class
 
 #If DEBUG Then

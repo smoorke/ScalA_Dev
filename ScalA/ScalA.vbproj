@@ -117,6 +117,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmMain\SysMenu.vb" />
+    <Compile Include="frmMain\ThemedControls.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="frmMain\WindowProc.vb" />
     <Compile Include="frmSettings.Designer.vb">
       <DependentUpon>frmSettings.vb</DependentUpon>
@@ -186,6 +189,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\scrollbar_arrow_small_hot.png" />
     <None Include="Resources\cornerNE.png" />
     <None Include="Resources\cornerNW.png" />
     <None Include="Resources\cornerSE.png" />

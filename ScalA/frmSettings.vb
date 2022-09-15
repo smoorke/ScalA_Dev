@@ -308,11 +308,7 @@ Public NotInheritable Class FrmSettings
 
         If ChkDark.Checked <> My.Settings.DarkMode Then
             My.Settings.DarkMode = ChkDark.Checked
-            FrmMain.pnlOverview.BackColor = If(My.Settings.DarkMode, Color.Gray, Color.FromKnownColor(KnownColor.Control))
-            Dim butcounter As Integer = 0
-            For Each but As AButton In FrmMain.pnlOverview.Controls.OfType(Of AButton)
-                but.BackColor = If(My.Settings.DarkMode, Color.DarkGray, Color.FromArgb(&HFFF0F0F0))
-            Next
+            FrmMain.ApplyTheme()
         End If
 
         BtnTest_Click(Nothing, Nothing) 'apply sorting & black/whitlelist, note: .PerformClick() doesn't work as button may not be visible

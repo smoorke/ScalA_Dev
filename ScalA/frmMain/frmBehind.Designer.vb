@@ -22,6 +22,7 @@ Partial NotInheritable Class FrmBehind
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmBehind))
         Me.SuspendLayout()
         '
         'FrmBehind
@@ -30,11 +31,14 @@ Partial NotInheritable Class FrmBehind
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.Black
         Me.ClientSize = New System.Drawing.Size(784, 561)
+        Me.ControlBox = False
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "FrmBehind"
         Me.Opacity = 0.01R
+        Me.ShowIcon = False
         Me.ShowInTaskbar = False
         Me.Text = "ScalA"
         Me.ResumeLayout(False)

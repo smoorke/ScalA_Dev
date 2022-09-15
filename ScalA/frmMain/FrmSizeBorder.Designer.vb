@@ -22,6 +22,7 @@ Partial NotInheritable Class FrmSizeBorder
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmSizeBorder))
         Me.SuspendLayout()
         '
         'FrmSizeBorder
@@ -32,6 +33,7 @@ Partial NotInheritable Class FrmSizeBorder
         Me.ClientSize = New System.Drawing.Size(400, 325)
         Me.ControlBox = False
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.MinimumSize = New System.Drawing.Size(400, 325)
