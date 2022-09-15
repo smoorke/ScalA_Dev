@@ -235,3 +235,8 @@ Fixed artifacts below min/max/close buttons when enlarging the window using top 
 Fixed game lagging when running multiple ScalAs with at least one on active overview.
 Defaulted Single Instance to off.
 Implemented Dark Theme.
+
+**ScalA 1.1.0**
+Fixed Quicklaunch context menu default item would use random function instead of opening current item.
+Finished implementing Dark Theme.
+Performance improvements.
