@@ -434,13 +434,18 @@ Public NotInheritable Class ThemedStartButton
                 g.DrawRectangle(p, modRect)
             End Using
         End If
-
-        Using p = New Pen(textColor, 1)
-            Dim modRect = New Rectangle(rect.Left + 4, rect.Top + 4, rect.Width - 9, rect.Height - 9)
-            g.DrawRectangle(p, modRect)
-            g.DrawLine(p, New Point(modRect.Left + modRect.Width / 2, modRect.Top), New Point(modRect.Left + modRect.Width / 2, modRect.Bottom))
-            g.DrawLine(p, New Point(modRect.Left, modRect.Top + modRect.Height / 2), New Point(modRect.Right, modRect.Top + modRect.Height / 2))
-        End Using
+        If Image IsNot Nothing Then
+            Dim x = (ClientSize.Width / 2) - (Image.Size.Width / 2) + 1
+            Dim y = (ClientSize.Height / 2) - (Image.Size.Height / 2) + 1
+            g.DrawImageUnscaled(Image, x, y)
+        Else
+            Using p = New Pen(textColor, 1)
+                Dim modRect = New Rectangle(rect.Left + 4, rect.Top + 4, rect.Width - 9, rect.Height - 9)
+                g.DrawRectangle(p, modRect)
+                g.DrawLine(p, New Point(modRect.Left + modRect.Width / 2, modRect.Top), New Point(modRect.Left + modRect.Width / 2, modRect.Bottom))
+                g.DrawLine(p, New Point(modRect.Left, modRect.Top + modRect.Height / 2), New Point(modRect.Right, modRect.Top + modRect.Height / 2))
+            End Using
+        End If
     End Sub
 End Class
 
