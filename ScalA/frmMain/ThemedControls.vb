@@ -1,5 +1,7 @@
 ﻿Imports System.ComponentModel
-
+Public NotInheritable Class ThemedControls
+    'dummy class
+End Class
 Public NotInheritable Class ThemedComboBox
     Inherits ComboBox
 
