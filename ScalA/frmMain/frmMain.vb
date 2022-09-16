@@ -1098,7 +1098,7 @@
         cornerNE.BackColor = Color.Red
     End Sub
     Private Sub BtnQuit_MouseLeave(sender As Button, e As EventArgs) Handles btnQuit.MouseLeave
-        sender.ForeColor = SystemColors.ControlText
+        sender.ForeColor = If(My.Settings.DarkMode, Colors.LightText, SystemColors.ControlText)
         sender.BackColor = Color.Transparent
         cornerNE.BackColor = Color.Transparent
     End Sub
