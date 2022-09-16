@@ -353,7 +353,7 @@
                     btnStart.Image = Ico.ToBitmap
                     DestroyIcon(Ico.Handle)
                 End Using
-                btnStart.Text = ""
+                'btnStart.Text = ""
             End If
         End If
 
