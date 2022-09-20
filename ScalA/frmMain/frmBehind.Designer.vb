@@ -40,7 +40,6 @@ Partial NotInheritable Class FrmBehind
         Me.Opacity = 0.01R
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
-        Me.Text = "ScalA"
         Me.ResumeLayout(False)
 
     End Sub

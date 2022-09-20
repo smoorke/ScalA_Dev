@@ -41,7 +41,6 @@ Partial NotInheritable Class FrmSizeBorder
         Me.Opacity = 0.01R
         Me.ShowIcon = False
         Me.ShowInTaskbar = False
-        Me.Text = "ScalA"
         Me.TransparencyKey = System.Drawing.Color.Fuchsia
         Me.ResumeLayout(False)
 
