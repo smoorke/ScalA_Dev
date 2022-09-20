@@ -1091,18 +1091,20 @@
 
         Return visButtons
     End Function
-
+    Private Sub Buttons_BackColorChanged(sender As Button, e As EventArgs) Handles btnQuit.BackColorChanged, btnMax.BackColorChanged, btnMin.BackColorChanged
+        Dim target As Control = sender
+        While TypeOf target IsNot Form AndAlso target.BackColor.ToArgb = Color.Transparent.ToArgb
+            target = target.Parent
+        End While
+        sender.FlatAppearance.BorderColor = target.BackColor
+    End Sub
     Private Sub BtnQuit_MouseEnter(sender As Button, e As EventArgs) Handles btnQuit.MouseEnter
-        sender.ForeColor = Color.White 'SystemColors.Control
-        sender.BackColor = Color.Red
         cornerNE.BackColor = Color.Red
     End Sub
     Private Sub BtnQuit_MouseLeave(sender As Button, e As EventArgs) Handles btnQuit.MouseLeave
-        sender.ForeColor = If(My.Settings.DarkMode, Colors.LightText, SystemColors.ControlText)
-        sender.BackColor = Color.Transparent
         cornerNE.BackColor = Color.Transparent
     End Sub
-    Private Sub BtnQuit_MouseDown(sender As Object, e As MouseEventArgs) Handles btnQuit.MouseDown
+    Private Sub BtnQuit_MouseDown(sender As Button, e As MouseEventArgs) Handles btnQuit.MouseDown
         cornerNE.BackColor = Color.FromArgb(255, 102, 102)
     End Sub
 
@@ -1335,14 +1337,18 @@
                 Else
                     btnQuit.ForeColor = fcol
                 End If
-            Else
+            Else 'inactive
                 lblTitle.ForeColor = Color.FromArgb(&HFF666666)
                 btnMax.ForeColor = Color.FromArgb(&HFF666666)
                 btnMin.ForeColor = Color.FromArgb(&HFF666666)
                 btnStart.ForeColor = Color.FromArgb(&HFF666666)
                 cboAlt.ForeColor = Color.FromArgb(&HFF666666)
                 cmbResolution.ForeColor = Color.FromArgb(&HFF666666)
-                btnQuit.ForeColor = Color.FromArgb(&HFF666666)
+                If btnQuit.Contains(MousePosition) Then
+                    btnQuit.ForeColor = Color.White
+                Else
+                    btnQuit.ForeColor = Color.FromArgb(&HFF666666)
+                End If
             End If
             If (activeID = scalaPID OrElse Process.GetProcessById(activeID).IsClassNameIn(My.Settings.className)) Then
                 If My.Settings.SwitchToOverview Then
