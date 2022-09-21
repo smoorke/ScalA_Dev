@@ -1100,12 +1100,15 @@
     End Sub
     Private Sub BtnQuit_MouseEnter(sender As Button, e As EventArgs) Handles btnQuit.MouseEnter
         cornerNE.BackColor = Color.Red
+        sender.BackColor = Color.Red
     End Sub
     Private Sub BtnQuit_MouseLeave(sender As Button, e As EventArgs) Handles btnQuit.MouseLeave
         cornerNE.BackColor = Color.Transparent
+        sender.BackColor = Color.Transparent
     End Sub
     Private Sub BtnQuit_MouseDown(sender As Button, e As MouseEventArgs) Handles btnQuit.MouseDown
         cornerNE.BackColor = Color.FromArgb(255, 102, 102)
+        sender.BackColor = Color.FromArgb(255, 102, 102)
     End Sub
 
     Private Sub BtnQuit_Click(sender As Button, e As EventArgs) Handles btnQuit.Click
