@@ -409,7 +409,7 @@
 #End If
         End If
         For Each but As AButton In pnlOverview.Controls.OfType(Of AButton)
-            but.BackColor = If(My.Settings.DarkMode, Color.DarkGray, Color.FromArgb(&HFFF0F0F0))
+            but.BackColor = If(My.Settings.DarkMode, Color.DarkGray, Color.FromArgb(&HFFE1E1E1))
         Next
         For Each but As Button In pnlButtons.Controls.OfType(Of Button)
             but.FlatAppearance.BorderColor = If(My.Settings.DarkMode, Color.FromArgb(60, 63, 65), Color.FromKnownColor(KnownColor.Control))

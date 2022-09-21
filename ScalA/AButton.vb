@@ -1,4 +1,7 @@
-﻿Public NotInheritable Class AButton
+﻿Public NotInheritable Class Dummy12
+    'Dummy class
+End Class
+Public NotInheritable Class AButton
     Inherits Button
     Public Sub New(ByVal text As String, ByVal left As Integer, ByVal top As Integer, ByVal width As Integer, ByVal height As Integer)
         MyBase.New()
@@ -21,7 +24,7 @@
         Me.TextAlign = ContentAlignment.TopCenter
         Me.Font = New Font("Microsoft Sans Serif", 8.25)
         Me.Visible = False
-        Me.BackColor = If(My.Settings.DarkMode, Color.DarkGray, Color.FromArgb(&HFFF0F0F0))
+        Me.BackColor = If(My.Settings.DarkMode, Color.DarkGray, Color.FromArgb(&HFFE1E1E1))
     End Sub
 
     Private _passthrough As Rectangle
@@ -52,6 +55,22 @@
         _passthrough = New Rectangle(3, 21, Me.Width - 6, Me.Height - 24)
     End Sub
 
+    Protected Overrides Sub OnMouseEnter(e As EventArgs)
+        MyBase.OnMouseEnter(e)
+        If My.Settings.DarkMode Then
+            Me.BackColor = Color.FromArgb(&HFFA2A2A2)
+        Else
+            Me.BackColor = Color.FromArgb(&HFFE5F1FB)
+        End If
+    End Sub
+    Protected Overrides Sub OnMouseLeave(e As EventArgs)
+        MyBase.OnMouseLeave(e)
+        If My.Settings.DarkMode Then
+            Me.BackColor = Color.DarkGray
+        Else
+            Me.BackColor = Color.FromArgb(&HFFE1E1E1)
+        End If
+    End Sub
 
     Public Shared ActiveOverview As Boolean = True
     Protected Overrides Sub OnPaint(e As PaintEventArgs)
