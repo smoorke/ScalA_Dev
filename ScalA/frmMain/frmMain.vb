@@ -370,8 +370,9 @@
         If cmbResolution.SelectedIndex = 0 Then DoEqLock(My.Settings.resol)
 
         cmsAlt.Renderer = New ToolStripProfessionalRenderer(New CustomColorTable)
-        cmsQuickLaunch.Renderer = New ToolStripProfessionalRenderer(New CustomColorTable)
-        ApplyTheme()
+        cmsQuickLaunch.Renderer = cmsAlt.Renderer
+
+        If My.Settings.DarkMode Then ApplyTheme()
     End Sub
     Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         Debug.Print("FrmMain_Shown")
@@ -408,12 +409,15 @@
             chkDebug.ForeColor = Color.Black
 #End If
         End If
-        For Each but As AButton In pnlOverview.Controls.OfType(Of AButton)
-            but.BackColor = If(My.Settings.DarkMode, Color.DarkGray, Color.FromArgb(&HFFE1E1E1))
-        Next
+
+        Dim bBc As Color = If(My.Settings.DarkMode, Color.DarkGray, Color.FromArgb(&HFFE1E1E1))
+        Task.Run(Sub() Parallel.ForEach(pnlOverview.Controls.OfType(Of AButton), Sub(but) but.BackColor = bBc))
+
+        Dim bFaBc As Color = If(My.Settings.DarkMode, Color.FromArgb(60, 63, 65), Color.FromKnownColor(KnownColor.Control))
         For Each but As Button In pnlButtons.Controls.OfType(Of Button)
-            but.FlatAppearance.BorderColor = If(My.Settings.DarkMode, Color.FromArgb(60, 63, 65), Color.FromKnownColor(KnownColor.Control))
+            but.FlatAppearance.BorderColor = bFaBc
         Next
+
         cmbResolution.DarkTheme = My.Settings.DarkMode
         cboAlt.DarkTheme = My.Settings.DarkMode
         btnStart.DarkTheme = My.Settings.DarkMode
