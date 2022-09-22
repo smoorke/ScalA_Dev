@@ -120,7 +120,7 @@ Public NotInheritable Class ThemedComboBox
                     .LineAlignment = StringAlignment.Center,
                     .Alignment = StringAlignment.Near,
                     .FormatFlags = StringFormatFlags.NoWrap,
-                    .Trimming = StringTrimming.EllipsisCharacter
+                    .Trimming = StringTrimming.None
                 }
                 g.DrawString(text, Font, b, modRect, stringFormat)
             End Using
@@ -136,6 +136,8 @@ Public NotInheritable Class ThemedComboBox
     Protected Overrides Sub OnDrawItem(ByVal e As DrawItemEventArgs)
         Dim g = e.Graphics
         Dim rect = e.Bounds
+        DropDownHeight = rect.Height * Items.Count + 2
+        If rect.X = 3 Then Exit Sub
         Dim textColor = If(_theme, Colors.LightText, Color.Black)
         Dim fillColor = If(_theme, Colors.LightBackground, Color.White)
         If (e.State And DrawItemState.Selected) = DrawItemState.Selected OrElse
@@ -151,7 +153,6 @@ Public NotInheritable Class ThemedComboBox
 
         If e.Index >= 0 AndAlso e.Index < Items.Count Then
             Dim text = GetItemText(Items(e.Index))
-
             Using b = New SolidBrush(textColor)
                 Dim padding = 2
                 Dim modRect = New Rectangle(rect.Left + padding, rect.Top + padding, rect.Width - (padding * 2), rect.Height - (padding * 2))
@@ -159,12 +160,25 @@ Public NotInheritable Class ThemedComboBox
                     .LineAlignment = StringAlignment.Center,
                     .Alignment = StringAlignment.Near,
                     .FormatFlags = StringFormatFlags.NoWrap,
-                    .Trimming = StringTrimming.EllipsisCharacter
+                    .Trimming = StringTrimming.None
                 }
                 g.DrawString(text, Font, b, modRect, stringFormat)
             End Using
         End If
     End Sub
+
+
+    Overloads Function DropDownContains(screenPt As Point) As Boolean
+        screenPt = Me.FindForm?.PointToClient(screenPt)
+        'If Me.DroppedDown Then
+        '    Dim dd As Rectangle = New Rectangle(Me.Left, Me.Bottom, Me.Width, Me.DropDownHeight)
+        '    If dd.Contains(screenPt) Then
+        '        Debug.Print($"Dropdown {dd} contains mouse {screenPt}")
+        '    End If
+        'End If
+        Return (Me.DroppedDown AndAlso
+                New Rectangle(Me.Left, Me.Bottom, Me.Width, Me.DropDownHeight).Contains(screenPt))
+    End Function
 
 End Class
 
