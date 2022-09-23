@@ -240,3 +240,9 @@ Implemented Dark Theme.
 Fixed Quicklaunch context menu default item would use random function instead of opening current item.
 Finished implementing Dark Theme.
 Performance improvements.
+
+**ScalA 1.1.1**
+Fixed start button not displaying shield icon when ScalA is running as admin.
+Fixed quit button glitching black text when mouse leaves its bounds in dark theme.
+Fixed themed comboboxes glitching selected item background, position and ellipsis. 
+Other minor dark theme UI improvements.
