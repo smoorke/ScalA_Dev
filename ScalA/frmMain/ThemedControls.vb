@@ -170,12 +170,6 @@ Public NotInheritable Class ThemedComboBox
 
     Overloads Function DropDownContains(screenPt As Point) As Boolean
         screenPt = Me.FindForm?.PointToClient(screenPt)
-        'If Me.DroppedDown Then
-        '    Dim dd As Rectangle = New Rectangle(Me.Left, Me.Bottom, Me.Width, Me.DropDownHeight)
-        '    If dd.Contains(screenPt) Then
-        '        Debug.Print($"Dropdown {dd} contains mouse {screenPt}")
-        '    End If
-        'End If
         Return (Me.DroppedDown AndAlso
                 New Rectangle(Me.Left, Me.Bottom, Me.Width, Me.DropDownHeight).Contains(screenPt))
     End Function
@@ -422,12 +416,7 @@ Public NotInheritable Class ThemedStartButton
         Dim rect = New Rectangle(0, 0, ClientSize.Width, ClientSize.Height)
         Dim textColor = ForeColor
         Dim borderColor = If(_theme, Colors.GreySelection, Color.FromArgb(&HFFADADAD))
-        Dim fillColor As Color
-        If _theme Then
-            fillColor = Colors.LightBackground
-        Else
-            fillColor = Color.FromKnownColor(KnownColor.Control)
-        End If
+        Dim fillColor As Color = If(_theme, Colors.LightBackground, Color.FromArgb(&HFFE1E1E1))
 
         If Focused AndAlso TabStop Then borderColor = If(_theme, Colors.BlueHighlight, Color.FromArgb(&HFF0078D7))
 
