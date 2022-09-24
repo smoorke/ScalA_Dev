@@ -47,7 +47,6 @@
         Select Case m.Msg
             Case WM_SIZING
                 If Not suppressWM_SIZING Then
-                    FrmMain.moveBusy = True
                     Dim rc As RECT = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(RECT))
                     Dim sr As New Rectangle(rc.Left + BorderSize, rc.Top + BorderSize, rc.Right - rc.Left - BorderSize * 2, rc.Bottom - rc.Top - BorderSize * 2)
                     If sr <> prevSR Then
@@ -85,13 +84,13 @@
         End If
         If m.Msg = WM_ENTERSIZEMOVE Then
             Debug.Print("border WM_ENTERSIZEMOVE")
-            FrmMain.moveBusy = True
+            FrmMain.Resizing = True
         End If
         If m.Msg = WM_EXITSIZEMOVE Then
             Debug.Print("Border WM_EXITSIZEMOVE")
             FrmMain.ResumeLayout()
             FrmMain.Invalidate()
-            FrmMain.moveBusy = False
+            FrmMain.Resizing = False
         End If
     End Sub
 

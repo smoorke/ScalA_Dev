@@ -110,12 +110,9 @@ Partial NotInheritable Class FrmMain
                 Dim width As Integer = LOWORD(m.LParam)
                 Dim height As Integer = HIWORD(m.LParam)
                 Debug.Print($"WM_SIZE {m.WParam} {width}x{height}")
-                'frmCaptureClickBehind.Size = New Size(width - 2, height - pnlTitleBar.Height)
                 If m.WParam = 2 Then 'maximized
                     ReZoom(New Drawing.Size(width, height))
                 End If
-                FrmBehind.Bounds = New Rectangle(Me.Left, Me.Top, width, height)
-                FrmSizeBorder.Bounds = New Rectangle(Me.Left, Me.Top, width, height)
                 If Me.Location = prevLoc Then
                     If Not sizeMoveBusy Then
                         sizeMoveBusy = True

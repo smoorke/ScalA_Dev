@@ -199,6 +199,8 @@
 
     Public AstClientOffset As New Size(0, 0)
 
+    Public Resizing As Boolean
+
     Private Sub UpdateTitle()
         Dim titleSuff As String = String.Empty
         Dim traytooltip As String = "ScalA"
@@ -578,7 +580,7 @@
             newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AstClientOffset.Width - My.Settings.offset.X
             newY = MousePosition.Y.Map(ptZ.Y, ptZ.Y + pbZoom.Height, ptZ.Y, ptZ.Y + pbZoom.Height - rcC.Height) - AstClientOffset.Height - My.Settings.offset.Y
 
-            If Not swpBusy AndAlso Not moveBusy Then
+            If Not swpBusy AndAlso Not moveBusy AndAlso Not Resizing Then
                 swpBusy = True
                 Task.Run(Sub()
                              Try
