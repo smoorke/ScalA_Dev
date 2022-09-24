@@ -440,9 +440,7 @@ Public NotInheritable Class ThemedStartButton
             End Using
         End If
         If Image IsNot Nothing Then
-            Dim x = (ClientSize.Width / 2) - (Image.Size.Width / 2) + 1
-            Dim y = (ClientSize.Height / 2) - (Image.Size.Height / 2) + 1
-            g.DrawImageUnscaled(Image, x, y)
+            g.DrawImage(Image, New Rectangle(0, 1, Me.Width, Me.Height - 1), Image.GetBounds(GraphicsUnit.Pixel), GraphicsUnit.Pixel)
         Else
             Using p = New Pen(textColor, 1)
                 Dim modRect = New Rectangle(rect.Left + 4, rect.Top + 4, rect.Width - 9, rect.Height - 9)
