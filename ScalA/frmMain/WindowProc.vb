@@ -12,13 +12,16 @@ Partial NotInheritable Class FrmMain
                         Dim activeID = GetActiveProcessID()
                         Debug.Print("aID " & activeID & " selfPID " & scalaPID)
                         If activeID = scalaPID OrElse Process.GetProcessById(activeID).IsClassNameIn(My.Settings.className) Then
+                            'If Me.WindowState = FormWindowState.Minimized Then
+                            '    Me.WindowState = FormWindowState.Normal
+                            '    If wasMaximized Then
+                            '        Dim tmp As Point = RestoreLoc
+                            '        btnMax.PerformClick()
+                            '        RestoreLoc = tmp
+                            '    End If
+                            'End If
                             If Me.WindowState = FormWindowState.Minimized Then
-                                Me.WindowState = FormWindowState.Normal
-                                If wasMaximized Then
-                                    Dim tmp As Point = RestoreLoc
-                                    btnMax.PerformClick()
-                                    RestoreLoc = tmp
-                                End If
+                                SendMessage(Me.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
                             End If
                             Me.Activate()
                             Me.BringToFront()

@@ -750,6 +750,9 @@
         tmrTick.Enabled = False
         PopDropDown(cboAlt)
         AstoniaProcess.RestorePos(True)
+        If Me.WindowState = FormWindowState.Minimized Then
+            SendMessage(Me.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
+        End If
         Dim requestedindex = cboAlt.SelectedIndex + If(up, -1, 1)
         If requestedindex < 1 Then
             requestedindex = cboAlt.Items.Count - 1
