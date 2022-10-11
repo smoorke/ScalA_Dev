@@ -8,6 +8,15 @@ Public NotInheritable Class ThemedComboBox
     <Browsable(False)>
     <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Overloads Property ForeColor As Color
+        Get
+            Return _ForeColor
+        End Get
+        Set(value As Color)
+            _ForeColor = value
+            _buffer = Nothing
+            Invalidate()
+        End Set
+    End Property
     <Browsable(False)>
     <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Overloads Property BackColor As Color
@@ -20,6 +29,7 @@ Public NotInheritable Class ThemedComboBox
 
     Private _buffer As Bitmap
     Private _theme As Boolean = False
+    Private _ForeColor As Color = Color.White
 
     Public WriteOnly Property DarkTheme() As Boolean
         Set(ByVal value As Boolean)
@@ -95,7 +105,8 @@ Public NotInheritable Class ThemedComboBox
 
         Using g = Graphics.FromImage(_buffer)
             Dim rect = New Rectangle(0, 0, ClientSize.Width, ClientSize.Height)
-            Dim textColor = If(_theme, Colors.LightText, Color.Black)
+            'Dim textColor = If(_theme, Colors.LightText, Color.Black)
+            Dim textColor = _ForeColor
             Dim borderColor = If(_theme, Colors.GreySelection, Color.FromArgb(&HFFADADAD))
             Dim fillColor = If(_theme, Colors.LightBackground, Color.FromArgb(&HFFE1E1E1))
             If Focused AndAlso TabStop Then borderColor = If(_theme, Colors.BlueHighlight, Color.FromArgb(&HFF005499))
