@@ -1,4 +1,5 @@
-﻿Imports System.Text
+﻿Imports System.Runtime.InteropServices
+Imports System.Text
 
 Public NotInheritable Class FrmSettings
     Public SysMenu As New SysMenu(Me)

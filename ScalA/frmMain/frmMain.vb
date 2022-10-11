@@ -1,4 +1,6 @@
-﻿Partial Public NotInheritable Class FrmMain
+﻿Imports System.Runtime.InteropServices
+
+Partial Public NotInheritable Class FrmMain
 
 
 
@@ -425,7 +427,6 @@
         btnStart.DarkTheme = My.Settings.DarkMode
     End Sub
 
-
     Private Shared Function GetResolutions() As Size()
         Dim reslist As New List(Of Size)
         For Each line As String In My.Settings.resolutions.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries)
@@ -447,6 +448,9 @@
 
     Public Sub MoveForm_MouseDown(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseDown, lblTitle.MouseDown
         'Me.TopMost = True
+        'setActive(True)
+        'Me.Invalidate(True)
+
         If FrmSettings.chkDoAlign.Checked Then
             If Me.WindowState <> FormWindowState.Maximized AndAlso e.Button = MouseButtons.Left Then
                 MovingForm = True
@@ -1333,6 +1337,38 @@
     Public Shared botSortList As List(Of String) = My.Settings.botSort.Split(CType(vbCrLf, Char()), StringSplitOptions.RemoveEmptyEntries).ToList
     Public Shared blackList As List(Of String) = topSortList.Intersect(botSortList).ToList
 
+    Private Sub setActive(active As Boolean)
+        If active Then
+            Dim fcol As Color = If(My.Settings.DarkMode, Colors.LightText, SystemColors.ControlText)
+            lblTitle.ForeColor = fcol
+            btnMax.ForeColor = fcol
+            btnMin.ForeColor = fcol
+            btnStart.ForeColor = fcol
+            cboAlt.ForeColor = fcol
+            cmbResolution.ForeColor = fcol
+            If btnQuit.Contains(MousePosition) Then
+                btnQuit.ForeColor = Color.White
+            Else
+                btnQuit.ForeColor = fcol
+            End If
+            cboAlt.ForeColor = fcol
+            cmbResolution.ForeColor = fcol
+        Else
+            lblTitle.ForeColor = Color.FromArgb(&HFF666666)
+            btnMax.ForeColor = Color.FromArgb(&HFF666666)
+            btnMin.ForeColor = Color.FromArgb(&HFF666666)
+            btnStart.ForeColor = Color.FromArgb(&HFF666666)
+            cboAlt.ForeColor = Color.FromArgb(&HFF666666)
+            cmbResolution.ForeColor = Color.FromArgb(&HFF666666)
+            If btnQuit.Contains(MousePosition) Then
+                btnQuit.ForeColor = Color.White
+            Else
+                btnQuit.ForeColor = Color.FromArgb(&HFF666666)
+            End If
+            cboAlt.ForeColor = Color.FromArgb(&HFF666666)
+            cmbResolution.ForeColor = Color.FromArgb(&HFF666666)
+        End If
+    End Sub
 
     Private Async Sub TmrActive_Tick(sender As Timer, e As EventArgs) Handles tmrActive.Tick
 
@@ -1340,30 +1376,9 @@
             Dim activeID As Integer = GetActiveProcessID()
             If activeID = scalaPID OrElse activeID = AltPP?.Id OrElse
                 (My.Settings.gameOnOverview AndAlso New AstoniaProcess(Process.GetProcessById(activeID)).HasClassNameIn(My.Settings.className)) Then
-                Dim fcol As Color = If(My.Settings.DarkMode, Colors.LightText, SystemColors.ControlText)
-                lblTitle.ForeColor = fcol
-                btnMax.ForeColor = fcol
-                btnMin.ForeColor = fcol
-                btnStart.ForeColor = fcol
-                cboAlt.ForeColor = fcol
-                cmbResolution.ForeColor = fcol
-                If btnQuit.Contains(MousePosition) Then
-                    btnQuit.ForeColor = Color.White
-                Else
-                    btnQuit.ForeColor = fcol
-                End If
+                setActive(True)
             Else 'inactive
-                lblTitle.ForeColor = Color.FromArgb(&HFF666666)
-                btnMax.ForeColor = Color.FromArgb(&HFF666666)
-                btnMin.ForeColor = Color.FromArgb(&HFF666666)
-                btnStart.ForeColor = Color.FromArgb(&HFF666666)
-                cboAlt.ForeColor = Color.FromArgb(&HFF666666)
-                cmbResolution.ForeColor = Color.FromArgb(&HFF666666)
-                If btnQuit.Contains(MousePosition) Then
-                    btnQuit.ForeColor = Color.White
-                Else
-                    btnQuit.ForeColor = Color.FromArgb(&HFF666666)
-                End If
+                setActive(False)
             End If
             If (activeID = scalaPID OrElse Process.GetProcessById(activeID).IsClassNameIn(My.Settings.className)) Then
                 If My.Settings.SwitchToOverview Then
