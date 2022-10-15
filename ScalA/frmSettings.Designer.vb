@@ -104,6 +104,8 @@ Partial NotInheritable Class FrmSettings
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
         Me.txtClass = New System.Windows.Forms.TextBox()
+        Me.btnGrabCurrent = New System.Windows.Forms.Button()
+        Me.btnAddCurrentRes = New System.Windows.Forms.Button()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -377,6 +379,7 @@ Partial NotInheritable Class FrmSettings
         '
         'grpReserveSpace
         '
+        Me.grpReserveSpace.Controls.Add(Me.btnGrabCurrent)
         Me.grpReserveSpace.Controls.Add(Me.NumBorderBot)
         Me.grpReserveSpace.Controls.Add(Me.NumBorderRight)
         Me.grpReserveSpace.Controls.Add(Me.NumBorderTop)
@@ -487,6 +490,7 @@ Partial NotInheritable Class FrmSettings
         '
         'tabResolutions
         '
+        Me.tabResolutions.Controls.Add(Me.btnAddCurrentRes)
         Me.tabResolutions.Controls.Add(Me.btnRestore)
         Me.tabResolutions.Controls.Add(Me.btnSort)
         Me.tabResolutions.Controls.Add(Me.btnGenerate)
@@ -967,6 +971,26 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass.TabIndex = 9
         Me.txtClass.Text = "MAINWNDMOAC | 䅍义乗䵄䅏C"
         '
+        'btnGrabCurrent
+        '
+        Me.btnGrabCurrent.Image = Global.ScalA.My.Resources.Resources.scrollbar_arrow_small_hot
+        Me.btnGrabCurrent.Location = New System.Drawing.Point(196, 5)
+        Me.btnGrabCurrent.Name = "btnGrabCurrent"
+        Me.btnGrabCurrent.Size = New System.Drawing.Size(17, 12)
+        Me.btnGrabCurrent.TabIndex = 30
+        Me.ttSettings.SetToolTip(Me.btnGrabCurrent, "Grab borders from current position")
+        Me.btnGrabCurrent.UseVisualStyleBackColor = True
+        '
+        'btnAddCurrentRes
+        '
+        Me.btnAddCurrentRes.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
+        Me.btnAddCurrentRes.Location = New System.Drawing.Point(170, 67)
+        Me.btnAddCurrentRes.Name = "btnAddCurrentRes"
+        Me.btnAddCurrentRes.Size = New System.Drawing.Size(75, 23)
+        Me.btnAddCurrentRes.TabIndex = 6
+        Me.btnAddCurrentRes.Text = "Add Current"
+        Me.btnAddCurrentRes.UseVisualStyleBackColor = True
+        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1079,4 +1103,6 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents NumExtraMax As NumericUpDown
     Friend WithEvents chkOverViewIsGame As CheckBox
     Friend WithEvents ChkDark As CheckBox
+    Friend WithEvents btnGrabCurrent As Button
+    Friend WithEvents btnAddCurrentRes As Button
 End Class

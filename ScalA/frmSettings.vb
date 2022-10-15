@@ -574,6 +574,48 @@ Public NotInheritable Class FrmSettings
         performingBorderAdjust = False
     End Sub
 
+    Private Sub btnGrabCurrent_Click(sender As Object, e As EventArgs) Handles btnGrabCurrent.Click
+        Dim bounds = FrmMain.Bounds
+        Dim workarea = Screen.FromControl(FrmMain).WorkingArea
+        Debug.Print($"b {bounds} wa {workarea}")
+        NumBorderTop.Value = Math.Max(0, (bounds.Top - workarea.Top) * 1000 / workarea.Height)
+        NumBorderLeft.Value = Math.Max(0, (bounds.Left - workarea.Left) * 1000 / workarea.Width)
+        NumBorderRight.Value = Math.Max(0, (workarea.Right - bounds.Right) * 1000 / workarea.Width)
+        NumBorderBot.Value = Math.Max(0, (workarea.Bottom - bounds.Bottom) * 1000 / workarea.Height)
+    End Sub
+
+    Private Sub btnAddCurrentRes_Click(sender As Object, e As EventArgs) Handles btnAddCurrentRes.Click
+        Dim res As String = FrmMain.cmbResolution.Items(FrmMain.cmbResolution.SelectedIndex)
+        Debug.Print(res)
+        If txtResolutions.Lines.Contains(res) Then
+            Debug.Print("already present")
+            txtResolutions.SelectionStart = txtResolutions.Text.IndexOf(res)
+            txtResolutions.SelectionLength = res.Length
+            txtResolutions.ScrollToCaret()
+            txtResolutions.Focus()
+            Exit Sub
+        End If
+        Dim resos As List(Of String) = txtResolutions.Lines.ToList
+        Dim idx As Integer = 0
+        For Each line In resos
+            If Val(line) < Val(res) Then
+                idx += 1
+                Continue For
+            End If
+            If Val(line) = Val(res) AndAlso Val(line.Split("x")(1)) < Val(res.Split("x")(1)) Then
+                idx += 1
+                Continue For
+            End If
+            resos.Insert(idx, res)
+            Exit For
+        Next
+        txtResolutions.Lines = resos.ToArray
+        txtResolutions.SelectionStart = Math.Max(0, txtResolutions.GetFirstCharIndexFromLine(idx))
+        txtResolutions.SelectionLength = res.Length
+        txtResolutions.ScrollToCaret()
+        txtResolutions.Focus()
+    End Sub
+
     Private Sub TxtShortcuts_PreviewKeyDown(sender As TextBox, e As PreviewKeyDownEventArgs) Handles txtStoKey.PreviewKeyDown, txtCycleKeyUp.PreviewKeyDown, txtCycleKeyDown.PreviewKeyDown
         Debug.Print(e.KeyCode)
         If e.KeyCode = 16 OrElse 'shift
