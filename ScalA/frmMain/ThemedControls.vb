@@ -451,7 +451,7 @@ Public NotInheritable Class ThemedStartButton
             End Using
         End If
         If Image IsNot Nothing Then
-            g.DrawImage(Image, New Rectangle(0, 1, Me.Width, Me.Height - 1), Image.GetBounds(GraphicsUnit.Pixel), GraphicsUnit.Pixel)
+            g.DrawImage(Image, New Rectangle(1, 2, Me.Width - 2, Me.Height - 3), Image.GetBounds(GraphicsUnit.Pixel), GraphicsUnit.Pixel)
         Else
             Using p = New Pen(textColor, 1)
                 Dim modRect = New Rectangle(rect.Left + 4, rect.Top + 4, rect.Width - 9, rect.Height - 9)
