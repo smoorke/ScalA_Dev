@@ -246,3 +246,9 @@ Fixed start button not displaying shield icon when ScalA is running as admin.
 Fixed quit button glitching black text when mouse leaves its bounds in dark theme.
 Fixed themed comboboxes glitching selected item background, position and ellipsis. 
 Other minor dark theme UI improvements.
+
+**ScalA 1.1.2**
+Fixed cycling with ScalA minimized.
+Fixed shield icon centering and size.
+Improved responsiveness when resizing by border when an alt is selected.
+Added grab current borders and add current resolution buttons to settings.
