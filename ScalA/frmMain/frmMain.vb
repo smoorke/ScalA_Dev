@@ -1,8 +1,4 @@
-﻿Imports System.Runtime.InteropServices
-
-Partial Public NotInheritable Class FrmMain
-
-
+﻿Partial Public NotInheritable Class FrmMain
 
     Public AltPP As New AstoniaProcess()
     'Private WndClass() As String = {"MAINWNDMOAC", "䅍义乗䵄䅏C"}
@@ -1372,35 +1368,31 @@ Partial Public NotInheritable Class FrmMain
 
     Private Async Sub TmrActive_Tick(sender As Timer, e As EventArgs) Handles tmrActive.Tick
 
-        Try
-            Dim activeID As Integer = GetActiveProcessID()
-            Dim hasCName As Boolean = Process.GetProcessById(activeID).IsClassNameIn(My.Settings.className)
-            If activeID = scalaPID OrElse activeID = AltPP?.Id OrElse
-                (My.Settings.gameOnOverview AndAlso hasCName) Then
-                setActive(True)
-            Else 'inactive
-                setActive(False)
-            End If
-            If (activeID = scalaPID OrElse hasCName) Then
-                If My.Settings.SwitchToOverview Then
-                    Hotkey.RegisterHotkey(Me, 1, Hotkey.KeyModifier.NoRepeat Or My.Settings.StoCtrl Or My.Settings.StoShift Or My.Settings.StoAlt, My.Settings.StoKey)
-                Else
-                    Hotkey.UnregHotkey(Me, 1)
-                End If
-                If My.Settings.CycleAlt Then
-                    Hotkey.RegisterHotkey(Me, 2, Hotkey.KeyModifier.NoRepeat Or My.Settings.CycleAltKeyFwd Or My.Settings.CycleShiftKeyFwd Or My.Settings.CycleCtrlKeyFwd, My.Settings.CycleKeyFwd)
-                    Hotkey.RegisterHotkey(Me, 3, Hotkey.KeyModifier.NoRepeat Or My.Settings.CycleAltKeyBwd Or My.Settings.CycleShiftKeyBwd Or My.Settings.CycleCtrlKeyBwd, My.Settings.CycleKeyBwd)
-                Else
-                    Hotkey.UnregHotkey(Me, 2)
-                    Hotkey.UnregHotkey(Me, 3)
-                End If
-            Else
-                Hotkey.UnregHotkey(Me)
-            End If
-        Catch ex As Exception
+        Dim activeID As Integer = GetActiveProcessID() ' this returns 0 when switching tasks
+        Dim hasCName As Boolean = Process.GetProcessById(activeID).IsClassNameIn(My.Settings.className)
+        If activeID = scalaPID OrElse activeID = AltPP?.Id OrElse
+                (My.Settings.gameOnOverview AndAlso
+                pnlOverview.Controls.OfType(Of AButton).Any(Function(ab) ab.Visible AndAlso ab.Tag IsNot Nothing AndAlso ab.Tag.id = activeID)) Then ' is on overview
+            setActive(True)
+        ElseIf activeID <> 0 Then 'inactive
             setActive(False)
+        End If
+        If (activeID = scalaPID OrElse hasCName) Then
+            If My.Settings.SwitchToOverview Then
+                Hotkey.RegisterHotkey(Me, 1, Hotkey.KeyModifier.NoRepeat Or My.Settings.StoCtrl Or My.Settings.StoShift Or My.Settings.StoAlt, My.Settings.StoKey)
+            Else
+                Hotkey.UnregHotkey(Me, 1)
+            End If
+            If My.Settings.CycleAlt Then
+                Hotkey.RegisterHotkey(Me, 2, Hotkey.KeyModifier.NoRepeat Or My.Settings.CycleAltKeyFwd Or My.Settings.CycleShiftKeyFwd Or My.Settings.CycleCtrlKeyFwd, My.Settings.CycleKeyFwd)
+                Hotkey.RegisterHotkey(Me, 3, Hotkey.KeyModifier.NoRepeat Or My.Settings.CycleAltKeyBwd Or My.Settings.CycleShiftKeyBwd Or My.Settings.CycleCtrlKeyBwd, My.Settings.CycleKeyBwd)
+            Else
+                Hotkey.UnregHotkey(Me, 2)
+                Hotkey.UnregHotkey(Me, 3)
+            End If
+        Else
             Hotkey.UnregHotkey(Me)
-        End Try
+        End If
 
         If IPC.RequestActivation Then
             IPC.RequestActivation = 0
