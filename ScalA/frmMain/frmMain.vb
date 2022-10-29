@@ -1399,8 +1399,7 @@
             Debug.Print("IPC.requestActivation")
 
             If Me.WindowState = FormWindowState.Minimized Then
-                'SendMessage(ScalaHandle, WM_SYSCOMMAND, If(wasMaximized, SC_MAXIMIZE, SC_RESTORE), IntPtr.Zero)
-                WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, If(wasMaximized, SC_MAXIMIZE, SC_RESTORE), IntPtr.Zero))
+                WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero))
             End If
 
             Me.TopMost = True
@@ -1544,6 +1543,7 @@
         If WindowState <> FormWindowState.Maximized Then
             FrmSizeBorder.Opacity = If(sender.Checked, 1, 0.01)
         End If
+        FrmBehind.BackColor = If(sender.Checked, Color.Cyan, Color.Black)
     End Sub
 #End If
 

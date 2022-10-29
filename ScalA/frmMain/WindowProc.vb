@@ -113,8 +113,18 @@ Partial NotInheritable Class FrmMain
                 Dim width As Integer = LOWORD(m.LParam)
                 Dim height As Integer = HIWORD(m.LParam)
                 Debug.Print($"WM_SIZE {m.WParam} {width}x{height}")
+                If m.WParam = 1 Then
+                    FrmBehind.Opacity = 0
+                Else
+#If DEBUG Then
+                    FrmBehind.Opacity = If(chkDebug.Checked, 1, 0.01)
+#Else
+                    FrmBehind.Opacity = 0.01
+#End If
+                End If
                 If m.WParam = 2 Then 'maximized
                     ReZoom(New Drawing.Size(width, height))
+                    FrmBehind.Size = New Size(width, height)
                 End If
                 If Me.Location = prevLoc Then
                     If Not sizeMoveBusy Then
@@ -156,16 +166,11 @@ Partial NotInheritable Class FrmMain
                 '    Exit Sub
                 'End If
                 Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
-                If winpos.x <> 0 AndAlso winpos.y <> 0 AndAlso FrmBehind IsNot Nothing Then
-                    'Dim wr As Rectangle
-                    'GetWindowRect(FrmCaptureClickBehind.Handle, wr)
-                    'Dim ptt As Point
-                    'ClientToScreen(FrmCaptureClickBehind.Handle, ptt)
-                    'Dim bordersize = ptt.X - wr.Left
-                    'Dim captionsize = ptt.Y - wr.Top
-                    'FrmCaptureClickBehind.Location = New Point(winpos.x - bordersize, winpos.y - 3)
-                    'FrmCaptureClickBehind.ClientSize = New Size(winpos.cx, winpos.cy - captionsize)
+                If caption_Mousedown Then
                     FrmBehind.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
+                    Debug.Print($"szb{FrmSizeBorder.Bounds} fbh{FrmBehind.Bounds}")
+                End If
+                If FrmSizeBorder IsNot Nothing And Me.WindowState = FormWindowState.Normal Then
                     FrmSizeBorder.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
                 End If
                 If wasMaximized AndAlso caption_Mousedown AndAlso Not posChangeBusy Then
