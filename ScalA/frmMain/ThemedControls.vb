@@ -12,9 +12,11 @@ Public NotInheritable Class ThemedComboBox
             Return _ForeColor
         End Get
         Set(value As Color)
-            _ForeColor = value
-            _buffer = Nothing
-            Invalidate()
+            If ForeColor <> value Then
+                _ForeColor = value
+                _buffer = Nothing
+                Invalidate()
+            End If
         End Set
     End Property
     <Browsable(False)>
