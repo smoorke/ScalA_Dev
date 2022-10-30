@@ -381,6 +381,7 @@
             tmrTick.Start()
             moveBusy = False
         End If
+        FrmBehind.Bounds = Me.Bounds
     End Sub
 
     Public Sub ApplyTheme()
@@ -1544,6 +1545,7 @@
             FrmSizeBorder.Opacity = If(sender.Checked, 1, 0.01)
         End If
         FrmBehind.BackColor = If(sender.Checked, Color.Cyan, Color.Black)
+        FrmBehind.Opacity = If(sender.Checked, 1, 0.01)
     End Sub
 #End If
 
