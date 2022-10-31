@@ -618,7 +618,12 @@ Module ProcessExtensions
             wndClass(i) = Trim(wndClass(i))
         Next
         'Debug.Print("""" & wndClass(0) & """")
-        Return wndClass.Contains(pp.GetWindowClass())
+        Try
+            Return wndClass.Contains(pp.GetWindowClass())
+        Catch
+            Debug.Print("Execption IsClassNameIn")
+            Return False
+        End Try
     End Function
     <Runtime.InteropServices.DllImport("user32.dll", CharSet:=Runtime.InteropServices.CharSet.Auto)>
     Private Sub GetClassName(ByVal hWnd As System.IntPtr, ByVal lpClassName As System.Text.StringBuilder, ByVal nMaxCount As Integer)
