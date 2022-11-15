@@ -216,6 +216,7 @@ Public NotInheritable Class FrmSettings
 
             FrmMain.zooms = resList.ToArray
             FrmMain.cmbResolution.Items.Clear()
+            FrmMain.cmbResolution.Items.Add($"{FrmMain.pbZoom.Width}x{FrmMain.pbZoom.Height}")
             For Each sz As Size In resList
                 FrmMain.cmbResolution.Items.Add(sz.Width & "x" & sz.Height)
             Next
