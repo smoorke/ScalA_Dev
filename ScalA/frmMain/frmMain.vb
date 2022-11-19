@@ -1142,7 +1142,6 @@
         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
         Me.WindowState = FormWindowState.Minimized
         AstoniaProcess.RestorePos(True)
-        SysMenu.Disable(SC_MOVE)
         'suppressWM_MOVEcwp = False
     End Sub
     Private Sub BtnAlt_Click(sender As AButton, e As EventArgs) ' Handles AButton.click
@@ -1294,7 +1293,6 @@
             sender.Text = "🗗"
             ttMain.SetToolTip(sender, "Restore")
             wasMaximized = True
-            SysMenu.Disable(SC_MOVE)
             FrmSizeBorder.Opacity = 0
         Else 'go normal
             Me.WindowState = FormWindowState.Normal
@@ -1305,7 +1303,6 @@
             ReZoom(My.Settings.resol)
             'wasMaximized = True
             AOshowEqLock = False
-            SysMenu.Enable(SC_MOVE)
             FrmSizeBorder.Opacity = If(chkDebug.Checked, 1, 0.01)
         End If
         If cboAlt.SelectedIndex > 0 Then

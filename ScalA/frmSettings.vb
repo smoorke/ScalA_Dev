@@ -176,6 +176,8 @@ Public NotInheritable Class FrmSettings
         FrmMain.cmbResolution.Enabled = Not sender.Checked
         tmrAlign.Enabled = sender.Checked
         chkDoAlign.Enabled = Not sender.Checked
+        FrmMain.btnMin.Enabled = Not sender.Checked
+        FrmMain.btnMax.Enabled = Not sender.Checked
     End Sub
 
 

@@ -49,7 +49,6 @@ Partial NotInheritable Class FrmMain
                             Me.WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero))
                             Exit Sub
                         End If
-                        SysMenu.Enable(SC_MOVE)
                         suppressWM_MOVEcwp = True
                         MyBase.DefWndProc(m)
                         Me.Invalidate()
@@ -62,7 +61,6 @@ Partial NotInheritable Class FrmMain
                             Me.Location = RestoreLoc
                         End If
                         btnMax.PerformClick()
-                        SysMenu.Disable(SC_MOVE)
                         Debug.Print("wasMax " & wasMaximized)
                         m.Result = 0
                     Case SC_MINIMIZE
@@ -75,7 +73,6 @@ Partial NotInheritable Class FrmMain
                         End If
                         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
                         AstoniaProcess.RestorePos(True)
-                        SysMenu.Disable(SC_MOVE)
                     Case SC_SIZE
                         SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, SC_SIZE, IntPtr.Zero)
                         m.Result = 0
@@ -196,9 +193,6 @@ Partial NotInheritable Class FrmMain
                     pnlTitleBar.Width = winpos.cx - pnlButtons.Width - pnlSys.Width
                     Debug.Print($"winpos location {New Point(winpos.x, winpos.y)}")
                     Debug.Print($"winpos size {New Size(winpos.cx, winpos.cy)}")
-                    'handle sysmenu max/restore worng
-                    SysMenu.Disable(SC_RESTORE)
-                    SysMenu.Enable(SC_MAXIMIZE)
                     'System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                     FrmSizeBorder.Opacity = If(chkDebug.Checked, 1, 0.01)
                     posChangeBusy = False
@@ -224,12 +218,27 @@ Partial NotInheritable Class FrmMain
                 SysMenu.Visible = False
             Case WM_INITMENU
                 Debug.Print($"WM_INITMENU {m.WParam} {SysMenu.Handle}")
-                If Me.WindowState = FormWindowState.Normal Then
-                    SysMenu.Enable(SC_SIZE)
-                    SysMenu.Enable(SC_MOVE)
-                Else
+                If FrmSettings.chkDoAlign.Checked Then
                     SysMenu.Disable(SC_SIZE)
                     SysMenu.Disable(SC_MOVE)
+                    SysMenu.Disable(SC_RESTORE)
+                    SysMenu.Disable(SC_MAXIMIZE)
+                    SysMenu.Disable(SC_MINIMIZE)
+                Else
+                    If Me.WindowState = FormWindowState.Minimized Then
+                        SysMenu.Disable(SC_MINIMIZE)
+                    Else
+                        SysMenu.Enable(SC_MINIMIZE)
+                    End If
+                    If Me.WindowState = FormWindowState.Normal Then
+                        SysMenu.Enable(SC_SIZE)
+                        SysMenu.Enable(SC_MOVE)
+                        SysMenu.Enable(SC_MAXIMIZE)
+                    Else
+                        SysMenu.Enable(SC_RESTORE)
+                        SysMenu.Disable(SC_SIZE)
+                        SysMenu.Disable(SC_MOVE)
+                    End If
                 End If
 #If DEBUG Then
 

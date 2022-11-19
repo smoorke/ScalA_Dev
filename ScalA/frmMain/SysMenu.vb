@@ -29,6 +29,7 @@
     Public Sub Show(pos As Point)
         'Me.Visible = True 'handled in wndproc
         Debug.Print($"SysMenu.Show {pos}")
+
         Dim cmd As Integer = TrackPopupMenuEx(Me.Handle, TPM_RIGHTBUTTON Or TPM_RETURNCMD, pos.X, pos.Y, _form.Handle, Nothing)
         'Me.Visible = False 'handled in wndproc
         If cmd > 0 Then
@@ -114,8 +115,6 @@ Partial NotInheritable Class FrmMain
 
             pbZoom.Visible = False
             AButton.ActiveOverview = False
-
-            If Me.WindowState = FormWindowState.Normal Then SysMenu.Enable(SC_SIZE)
 
             SysMenu.Show(sender.PointToScreen(e.Location))
 
