@@ -252,3 +252,9 @@ Fixed cycling with ScalA minimized.
 Fixed shield icon centering and size.
 Improved responsiveness when resizing by border when an alt is selected.
 Added grab current borders and add current resolution buttons to settings.
+
+**ScalA 1.1.3**
+Fixed active overview titlebar displaying as active when a blacklisted alt is active.
+Fixed changing resolution list would mess up combobox until program restart.
+Fixed click capture when maximized.
+Minor performance improvements.
