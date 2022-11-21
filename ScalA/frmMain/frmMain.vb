@@ -376,6 +376,11 @@
     End Sub
     Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         Debug.Print("FrmMain_Shown")
+        If Not Screen.AllScreens.Any(Function(s) s.WorkingArea.Contains(Me.Location)) Then
+            Debug.Print("location out of bounds")
+            Dim msWA As Rectangle = Screen.PrimaryScreen.WorkingArea
+            Me.Location = New Point(Math.Max(msWA.Left, (msWA.Width - Me.Width) / 2), Math.Max(msWA.Top, (msWA.Height - Me.Height) / 2))
+        End If
         suppressWM_MOVEcwp = False
         If cboAlt.SelectedIndex > 0 Then
             tmrTick.Start()
