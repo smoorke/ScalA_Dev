@@ -80,7 +80,12 @@
         UpdateTitle()
         If that.SelectedIndex = 0 Then
             'AltPP = Nothing
-            If Not My.Settings.gameOnOverview Then AppActivate(scalaPID)
+            If Not My.Settings.gameOnOverview Then
+                Try
+                    AppActivate(scalaPID)
+                Catch
+                End Try
+            End If
             pnlOverview.SuspendLayout()
             pnlOverview.Show()
             Dim visbut = UpdateButtonLayout(AstoniaProcess.Enumerate(blackList).Count)
