@@ -97,8 +97,6 @@ Partial NotInheritable Class FrmMain
         SysMenu = New SysMenu(Me)
         If SysMenu Then
             With SysMenu
-                .Enable(SC_SIZE)
-                .Disable(SC_RESTORE)
                 'remove alt-F4 from close item
                 .Rename(SC_CLOSE, "&Close ScalA")
                 .SetDefault(SC_CLOSE)
