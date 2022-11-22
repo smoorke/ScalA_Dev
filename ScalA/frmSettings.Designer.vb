@@ -51,6 +51,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkCycleOnClose = New System.Windows.Forms.CheckBox()
         Me.ChkSingleInstance = New System.Windows.Forms.CheckBox()
         Me.grpReserveSpace = New System.Windows.Forms.GroupBox()
+        Me.btnGrabCurrent = New System.Windows.Forms.Button()
         Me.NumBorderBot = New System.Windows.Forms.NumericUpDown()
         Me.NumBorderRight = New System.Windows.Forms.NumericUpDown()
         Me.NumBorderTop = New System.Windows.Forms.NumericUpDown()
@@ -60,6 +61,7 @@ Partial NotInheritable Class FrmSettings
         Me.ChkDark = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
+        Me.btnAddCurrentRes = New System.Windows.Forms.Button()
         Me.btnRestore = New System.Windows.Forms.Button()
         Me.btnSort = New System.Windows.Forms.Button()
         Me.btnGenerate = New System.Windows.Forms.Button()
@@ -104,8 +106,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
         Me.txtClass = New System.Windows.Forms.TextBox()
-        Me.btnGrabCurrent = New System.Windows.Forms.Button()
-        Me.btnAddCurrentRes = New System.Windows.Forms.Button()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -365,8 +365,6 @@ Partial NotInheritable Class FrmSettings
         'ChkSingleInstance
         '
         Me.ChkSingleInstance.AutoSize = True
-        Me.ChkSingleInstance.Checked = True
-        Me.ChkSingleInstance.CheckState = System.Windows.Forms.CheckState.Checked
         Me.ChkSingleInstance.Location = New System.Drawing.Point(172, 39)
         Me.ChkSingleInstance.Name = "ChkSingleInstance"
         Me.ChkSingleInstance.Size = New System.Drawing.Size(99, 17)
@@ -400,6 +398,16 @@ Partial NotInheritable Class FrmSettings
         Me.grpReserveSpace.Text = "Reserve Border"
         Me.ttSettings.SetToolTip(Me.grpReserveSpace, "Reserve a border around ScalA when Maximized" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Doesn't apply untill you Re-Maximiz" &
         "e" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: Values are promille")
+        '
+        'btnGrabCurrent
+        '
+        Me.btnGrabCurrent.Image = Global.ScalA.My.Resources.Resources.scrollbar_arrow_small_hot
+        Me.btnGrabCurrent.Location = New System.Drawing.Point(196, 5)
+        Me.btnGrabCurrent.Name = "btnGrabCurrent"
+        Me.btnGrabCurrent.Size = New System.Drawing.Size(17, 12)
+        Me.btnGrabCurrent.TabIndex = 30
+        Me.ttSettings.SetToolTip(Me.btnGrabCurrent, "Grab borders from current position")
+        Me.btnGrabCurrent.UseVisualStyleBackColor = True
         '
         'NumBorderBot
         '
@@ -502,6 +510,16 @@ Partial NotInheritable Class FrmSettings
         Me.tabResolutions.TabIndex = 0
         Me.tabResolutions.Text = "Resolutions"
         Me.tabResolutions.UseVisualStyleBackColor = True
+        '
+        'btnAddCurrentRes
+        '
+        Me.btnAddCurrentRes.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
+        Me.btnAddCurrentRes.Location = New System.Drawing.Point(170, 67)
+        Me.btnAddCurrentRes.Name = "btnAddCurrentRes"
+        Me.btnAddCurrentRes.Size = New System.Drawing.Size(75, 23)
+        Me.btnAddCurrentRes.TabIndex = 6
+        Me.btnAddCurrentRes.Text = "Add Current"
+        Me.btnAddCurrentRes.UseVisualStyleBackColor = True
         '
         'btnRestore
         '
@@ -970,26 +988,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass.Size = New System.Drawing.Size(182, 20)
         Me.txtClass.TabIndex = 9
         Me.txtClass.Text = "MAINWNDMOAC | 䅍义乗䵄䅏C"
-        '
-        'btnGrabCurrent
-        '
-        Me.btnGrabCurrent.Image = Global.ScalA.My.Resources.Resources.scrollbar_arrow_small_hot
-        Me.btnGrabCurrent.Location = New System.Drawing.Point(196, 5)
-        Me.btnGrabCurrent.Name = "btnGrabCurrent"
-        Me.btnGrabCurrent.Size = New System.Drawing.Size(17, 12)
-        Me.btnGrabCurrent.TabIndex = 30
-        Me.ttSettings.SetToolTip(Me.btnGrabCurrent, "Grab borders from current position")
-        Me.btnGrabCurrent.UseVisualStyleBackColor = True
-        '
-        'btnAddCurrentRes
-        '
-        Me.btnAddCurrentRes.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAddCurrentRes.Location = New System.Drawing.Point(170, 67)
-        Me.btnAddCurrentRes.Name = "btnAddCurrentRes"
-        Me.btnAddCurrentRes.Size = New System.Drawing.Size(75, 23)
-        Me.btnAddCurrentRes.TabIndex = 6
-        Me.btnAddCurrentRes.Text = "Add Current"
-        Me.btnAddCurrentRes.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
