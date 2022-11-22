@@ -1145,6 +1145,7 @@
             Debug.Print("restoreLoc " & RestoreLoc.ToString)
         End If
         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
+        AppActivate(scalaPID)
         Me.WindowState = FormWindowState.Minimized
         AstoniaProcess.RestorePos(True)
         'suppressWM_MOVEcwp = False

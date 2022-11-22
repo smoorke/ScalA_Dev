@@ -72,6 +72,7 @@ Partial NotInheritable Class FrmMain
                             Debug.Print("restoreLoc " & RestoreLoc.ToString)
                         End If
                         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
+                        AppActivate(scalaPID)
                         AstoniaProcess.RestorePos(True)
                     Case SC_SIZE
                         SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, SC_SIZE, IntPtr.Zero)
@@ -110,7 +111,7 @@ Partial NotInheritable Class FrmMain
                 Dim width As Integer = LOWORD(m.LParam)
                 Dim height As Integer = HIWORD(m.LParam)
                 Debug.Print($"WM_SIZE {m.WParam} {width}x{height}")
-                If m.WParam = 1 Then
+                If m.WParam = 1 Then ' minimized
                     FrmBehind.Opacity = 0
                 Else
 #If DEBUG Then
