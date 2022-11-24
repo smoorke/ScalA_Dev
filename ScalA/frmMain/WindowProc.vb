@@ -58,7 +58,7 @@ Partial NotInheritable Class FrmMain
                         Debug.Print("SC_MAXIMIZE " & m.LParam.ToString)
                         If Me.WindowState = FormWindowState.Minimized Then
                             Me.WindowState = FormWindowState.Normal
-                            Me.Location = RestoreLoc
+                            'Me.Location = RestoreLoc
                         End If
                         btnMax.PerformClick()
                         Debug.Print("wasMax " & wasMaximized)
@@ -67,10 +67,10 @@ Partial NotInheritable Class FrmMain
                         Debug.Print("SC_MINIMIZE")
                         wasMaximized = (Me.WindowState = FormWindowState.Maximized)
                         Debug.Print("wasMax " & wasMaximized)
-                        If Not wasMaximized Then
-                            RestoreLoc = Me.Location
-                            Debug.Print("restoreLoc " & RestoreLoc.ToString)
-                        End If
+                        'If Not wasMaximized Then
+                        '    RestoreLoc = Me.Location
+                        '    Debug.Print("restoreLoc " & RestoreLoc.ToString)
+                        'End If
                         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
                         AppActivate(scalaPID)
                         AstoniaProcess.RestorePos(True)

@@ -1146,10 +1146,10 @@
         Debug.Print("btnMin_Click")
         'suppressWM_MOVEcwp = True
         wasMaximized = (Me.WindowState = FormWindowState.Maximized)
-        If Not wasMaximized Then
-            RestoreLoc = Me.Location
-            Debug.Print("restoreLoc " & RestoreLoc.ToString)
-        End If
+        'If Not wasMaximized Then
+        '    RestoreLoc = Me.Location
+        '    Debug.Print("restoreLoc " & RestoreLoc.ToString)
+        'End If
         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
         AppActivate(scalaPID)
         Me.WindowState = FormWindowState.Minimized
@@ -1211,19 +1211,19 @@
         End If
     End Sub
 
-    Private _restoreLoc As Point
-    ''' <summary>
-    ''' Used to set Scala to the right position when restoring from maximized state
-    ''' </summary>
-    Private Property RestoreLoc As Point
-        Get
-            Return _restoreLoc
-        End Get
-        Set(ByVal value As Point)
-            _restoreLoc = value
-            Debug.Print($"Set restoreloc to {value}")
-        End Set
-    End Property
+    'Private _restoreLoc As Point
+    '''' <summary>
+    '''' Used to set Scala to the right position when restoring from maximized state
+    '''' </summary>
+    'Private Property RestoreLoc As Point
+    '    Get
+    '        Return _restoreLoc
+    '    End Get
+    '    Set(ByVal value As Point)
+    '        _restoreLoc = value
+    '        Debug.Print($"Set restoreloc to {value}")
+    '    End Set
+    'End Property
 
     Dim prevWA As Rectangle
     Private Sub BtnMax_Click(sender As Button, e As EventArgs) Handles btnMax.Click
@@ -1295,10 +1295,10 @@
                                                scrn.WorkingArea.Width - leftBorder - rightborder,
                                                scrn.WorkingArea.Height - topBorder - botBorder)
             Debug.Print("new maxbound " & MaximizedBounds.ToString)
-            If Me.WindowState = FormWindowState.Normal Then
-                RestoreLoc = Me.Location
-                Debug.Print("restoreLoc " & RestoreLoc.ToString)
-            End If
+            'If Me.WindowState = FormWindowState.Normal Then
+            '    RestoreLoc = Me.Location
+            '    Debug.Print("restoreLoc " & RestoreLoc.ToString)
+            'End If
             Me.WindowState = FormWindowState.Maximized
             sender.Text = "🗗"
             Me.Invalidate()
