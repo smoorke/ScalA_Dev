@@ -232,6 +232,7 @@ Partial NotInheritable Class FrmMain
                         SysMenu.Enable(SC_MINIMIZE)
                     End If
                     If Me.WindowState = FormWindowState.Normal Then
+                        SysMenu.Disable(SC_RESTORE)
                         SysMenu.Enable(SC_SIZE)
                         SysMenu.Enable(SC_MOVE)
                         SysMenu.Enable(SC_MAXIMIZE)
