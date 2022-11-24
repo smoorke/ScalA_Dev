@@ -1291,18 +1291,17 @@
             Debug.Print($"botborder {botBorder}")
 
             Me.MaximizedBounds = New Rectangle(scrn.WorkingArea.Left - scrn.Bounds.Left + leftBorder,
-                                                   scrn.WorkingArea.Top - scrn.Bounds.Top + topBorder,
-                                                   scrn.WorkingArea.Width - leftBorder - rightborder,
-                                                   scrn.WorkingArea.Height - topBorder - botBorder)
+                                               scrn.WorkingArea.Top - scrn.Bounds.Top + topBorder,
+                                               scrn.WorkingArea.Width - leftBorder - rightborder,
+                                               scrn.WorkingArea.Height - topBorder - botBorder)
             Debug.Print("new maxbound " & MaximizedBounds.ToString)
             If Me.WindowState = FormWindowState.Normal Then
                 RestoreLoc = Me.Location
                 Debug.Print("restoreLoc " & RestoreLoc.ToString)
             End If
-            Me.Location = scrn.WorkingArea.Location
             Me.WindowState = FormWindowState.Maximized
-            'ReZoom(New Size(Me.MaximizedBounds.Width, Me.MaximizedBounds.Height))
             sender.Text = "🗗"
+            Me.Invalidate()
             ttMain.SetToolTip(sender, "Restore")
             wasMaximized = True
             FrmSizeBorder.Opacity = 0
@@ -1310,7 +1309,7 @@
             Me.WindowState = FormWindowState.Normal
             sender.Text = "⧠"
             ttMain.SetToolTip(sender, "Maximize")
-            Me.Location = RestoreLoc
+            'Me.Location = RestoreLoc
             'wasMaximized = False
             ReZoom(My.Settings.resol)
             'wasMaximized = True
