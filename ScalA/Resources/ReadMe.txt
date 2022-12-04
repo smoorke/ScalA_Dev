@@ -258,3 +258,10 @@ Fixed active overview titlebar displaying as active when a blacklisted alt is ac
 Fixed changing resolution list would mess up combobox until program restart.
 Fixed click capture when maximized.
 Minor performance improvements.
+
+**ScalA 1.1.4**
+Disabled min/maximizing when aligning.
+Fixed ScalA opening off screen when monitor layout changed.
+Minimizing ScalA makes it show on taskbar when an alt is selected.
+Switching to overview will immediately show ScalA in the taskbar.
+  (note: active overview will override this behavior)
