@@ -876,6 +876,7 @@ Partial Public NotInheritable Class FrmMain
 
         pp = New Process With {.StartInfo = New ProcessStartInfo With {.FileName = tmpDir & bat,
                                                                        .Arguments = """" & sender.Tag & """",
+                                                                       .WorkingDirectory = System.IO.Path.GetDirectoryName(sender.Tag),
                                                                        .WindowStyle = ProcessWindowStyle.Hidden,
                                                                        .CreateNoWindow = True}}
         Try
