@@ -644,6 +644,7 @@ Partial Public NotInheritable Class FrmMain
                          If hndl <> IntPtr.Zero Then Exit While
                      End While
                      SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                     Threading.Thread.Sleep(50)
                      Try
                          AppActivate(scalaPID)
                      Catch
@@ -654,26 +655,19 @@ Partial Public NotInheritable Class FrmMain
         Dim screenWA = Screen.FromPoint(MousePosition).WorkingArea
         Dim dialogLeft = Math.Min(Math.Max(screenWA.Left, MousePosition.X - 177), screenWA.Right - 370)
         Dim dialogTop = Math.Min(Math.Max(screenWA.Top, MousePosition.Y - 76), screenWA.Bottom - 152)
-        Dim toName As String = InputBox("Enter new name", title, currentName, dialogLeft, dialogTop)
+        Dim toName As String = InputBox("Enter new name", title, currentName, dialogLeft, dialogTop).TrimEnd
         renameOpen = False
         Debug.Print($"Rename to {toName}")
         If toName <> "" AndAlso currentName <> toName Then
-            'Dim newpath = path.Substring(0, path.TrimEnd("\").LastIndexOf("\")) & "\" & newname
             Debug.Print($"oldpath: {Path}")
-            'Debug.Print($"newpath: {newpath}")
-            Try
-                If Path.EndsWith("\") Then
-                    FileIO.FileSystem.RenameDirectory(Path, toName)
-                Else
-                    Dim targetname As String = toName
-                    If {".lnk", ".url"}.Contains(System.IO.Path.GetExtension(Path).ToLower) Then targetname &= System.IO.Path.GetExtension(Path)
-                    FileIO.FileSystem.RenameFile(Path, targetname)
-                End If
-            Catch
-                MessageBox.Show(Me, $"Error renaming {currentName} to {toName}!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            End Try
-            Debug.Print($"renamed to {toName}")
-            'IO.File.Move(path,  newname)
+            If {".lnk", ".url"}.Contains(System.IO.Path.GetExtension(Path).ToLower) Then toName &= System.IO.Path.GetExtension(Path)
+            If Path.EndsWith("\") Then Path = System.IO.Path.GetDirectoryName(Path)
+            Debug.Print($"newpath: {System.IO.Path.GetDirectoryName(Path) & "\" & toName}")
+            If Not MoveFileW(Path, System.IO.Path.GetDirectoryName(Path) & "\" & toName) Then
+                MessageBox.Show(Me, $"Error renaming ""{currentName}""{vbCrLf}  to ""{toName}""", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Else
+                Debug.Print($"renamed to ""{toName}""")
+            End If
         End If
     End Sub
 

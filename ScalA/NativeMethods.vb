@@ -752,4 +752,8 @@ Module NativeMethods
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>
     Public Function PostMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByVal lParam As IntPtr) As Boolean : End Function
 
+
+    <DllImport("kernel32.dll", SetLastError:=True, CharSet:=CharSet.Auto)>
+    Public Function MoveFileW(ExistingFileName As String, NewFileName As String) As Boolean : End Function
+
 End Module
