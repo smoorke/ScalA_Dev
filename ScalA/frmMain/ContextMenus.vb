@@ -661,7 +661,8 @@ Partial Public NotInheritable Class FrmMain
         If toName <> "" AndAlso currentName <> toName Then
             Debug.Print($"oldpath: {Path}")
             If {".lnk", ".url"}.Contains(System.IO.Path.GetExtension(Path).ToLower) Then toName &= System.IO.Path.GetExtension(Path)
-            If Path.EndsWith("\") Then Path = System.IO.Path.GetDirectoryName(Path)
+            'If Path.EndsWith("\") Then Path = System.IO.Path.GetDirectoryName(Path)
+            If Path.EndsWith("\") Then Path = Path.TrimEnd("\")
             Debug.Print($"newpath: {System.IO.Path.GetDirectoryName(Path) & "\" & toName}")
             If Not MoveFileW(Path, System.IO.Path.GetDirectoryName(Path) & "\" & toName) Then
                 Dim sb As New System.Text.StringBuilder(1024)
