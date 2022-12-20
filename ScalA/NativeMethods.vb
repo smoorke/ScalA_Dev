@@ -1,4 +1,5 @@
 ﻿Imports System.Runtime.InteropServices
+Imports System.Text
 
 Module NativeMethods
     Public Const SHGFI_ICON As Integer = &H100
@@ -755,5 +756,13 @@ Module NativeMethods
 
     <DllImport("kernel32.dll", SetLastError:=True, CharSet:=CharSet.Auto)>
     Public Function MoveFileW(ExistingFileName As String, NewFileName As String) As Boolean : End Function
+
+    <DllImport("Kernel32", SetLastError:=True, CharSet:=CharSet.Unicode)>
+    Public Function FormatMessage(ByVal dwFlags As Format_Message, ByVal lpSource As IntPtr, ByVal dwMessageId As Integer, ByVal dwLanguageId As Integer, lpBuffer As StringBuilder, ByVal nSize As Integer, ByVal Arguments As IntPtr) As Integer : End Function
+    Enum Format_Message
+        FORMAT_MESSAGE_IGNORE_INSERTS = &H200
+        FORMAT_MESSAGE_FROM_SYSTEM = &H1000
+        FORMAT_MESSAGE_FROM_HMODULE = &H800
+    End Enum
 
 End Module

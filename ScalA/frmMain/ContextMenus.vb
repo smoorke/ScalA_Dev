@@ -664,7 +664,10 @@ Partial Public NotInheritable Class FrmMain
             If Path.EndsWith("\") Then Path = System.IO.Path.GetDirectoryName(Path)
             Debug.Print($"newpath: {System.IO.Path.GetDirectoryName(Path) & "\" & toName}")
             If Not MoveFileW(Path, System.IO.Path.GetDirectoryName(Path) & "\" & toName) Then
-                MessageBox.Show(Me, $"Error renaming ""{currentName}""{vbCrLf}  to ""{toName}""", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Dim sb As New System.Text.StringBuilder(1024)
+                FormatMessage(Format_Message.FORMAT_MESSAGE_FROM_SYSTEM Or Format_Message.FORMAT_MESSAGE_IGNORE_INSERTS, 0,
+                              Err.LastDllError, 0, sb, sb.Capacity, Nothing)
+                MessageBox.Show(Me, $"Error renaming ""{currentName}"" to ""{toName}""{vbCrLf}{sb}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Else
                 Debug.Print($"renamed to ""{toName}""")
             End If
