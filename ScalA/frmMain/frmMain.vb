@@ -597,6 +597,9 @@
                 Task.Run(Sub()
                              Try
                                  If Not AltPP?.IsRunning Then Exit Sub
+                                 Dim ci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
+                                 GetCursorInfo(ci)
+                                 If ci.flags = 0 Then Exit Sub
                                  swpBusy = True
                                  Dim flags = swpFlags
                                  If Not AltPP?.IsActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
@@ -947,6 +950,9 @@
                         AOBusy = True
                         Task.Run(Sub()
                                      Try
+                                         Dim ci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
+                                         GetCursorInfo(ci)
+                                         If ci.flags = 0 Then Exit Sub
                                          AOBusy = True
                                          Dim flags = swpFlags
                                          If Not but.Tag?.isActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
