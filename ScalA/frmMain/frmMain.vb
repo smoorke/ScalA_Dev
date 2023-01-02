@@ -137,11 +137,6 @@
 
             AltPP.SavePos(rcW.Location)
 
-            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 262, Integer).Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0), 25)
-            ' PnlEqLock.Size = New Size(CType(rcC.Width / 2 + 122, Integer).Map(rcC.Width, rcC.Width / 2, zooms(cmbResolution.SelectedIndex).Width, zooms(cmbResolution.SelectedIndex).Width / 2),
-            PnlEqLock.Size = New Size(524.Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0),
-                                      45.Map(0, rcC.Height, 0, zooms(cmbResolution.SelectedIndex).Height))
-
             AltPP.Activate()
             Dim ptt As Point
 
@@ -727,12 +722,19 @@
     Private Sub DoEqLock(newSize As Size)
         If rcC.Width = 0 Then
             PnlEqLock.Location = New Point(138.Map(800, 0, newSize.Width, 0), 25)
-            PnlEqLock.Size = New Size(524.Map(800, 0, newSize.Width, 0),
-                                  45.Map(0, 600, 0, newSize.Height))
+            PnlEqLock.Size = New Size(524.Map(0, 800, 0, newSize.Width),
+                                       45.Map(0, 600, 0, newSize.Height))
         Else
-            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 262, Integer).Map(rcC.Width, 0, newSize.Width, 0), 25)
-            PnlEqLock.Size = New Size(524.Map(rcC.Width, 0, newSize.Width, 0),
-                                      45.Map(0, rcC.Height, 0, newSize.Height))
+#If True Then
+            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 262.Map(0, 800, 0, rcC.Width), Integer).Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0), 25)
+
+            PnlEqLock.Size = New Size(524.Map(0, 800, 0, rcC.Width).Map(0, rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width),
+                                       45.Map(0, 600, 0, zooms(cmbResolution.SelectedIndex).Height))
+#Else
+            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 262, Integer).Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0), 25)
+            PnlEqLock.Size = New Size(524.Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0),
+                                       45.Map(0, rcC.Height, 0, zooms(cmbResolution.SelectedIndex).Height))
+#End If
         End If
     End Sub
 
@@ -937,9 +939,9 @@
 
                         eqLockShown = True
 
-                        PnlEqLock.Location = but.ThumbRECT.Location + New Point((rccB.Width \ 2 - 248).Map(0, rccB.Width, 0, but.ThumbRECT.Width - but.ThumbRECT.Left), 0)
-                        PnlEqLock.Size = New Size(524.Map(rccB.Width, 0, but.ThumbRECT.Width - but.ThumbRECT.Left, 0),
-                                                   45.Map(0, rccB.Height, 0, but.ThumbRECT.Height - but.ThumbRECT.Top))
+                        PnlEqLock.Location = but.ThumbRECT.Location + New Point((rccB.Width \ 2 - 262.Map(0, 400, 0, rccB.Width / 2)).Map(0, rccB.Width, 0, but.ThumbRECT.Width - but.ThumbRECT.Left), 0)
+                        PnlEqLock.Size = New Size(524.Map(0, 800, 0, but.ThumbRECT.Width - but.ThumbRECT.Left),
+                                                   45.Map(0, 600, 0, but.ThumbRECT.Height - but.ThumbRECT.Top))
 
                         Dim AstClientOffsetB = New Size(pttB.X - rcwB.Left, pttB.Y - rcwB.Top)
 
