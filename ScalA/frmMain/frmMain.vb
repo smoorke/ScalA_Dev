@@ -726,10 +726,15 @@
                                        45.Map(0, 600, 0, newSize.Height))
         Else
 #If True Then
-            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 262.Map(0, 800, 0, rcC.Width), Integer).Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0), 25)
+            Dim zoom As Size = My.Settings.resol
+            If cmbResolution.SelectedIndex > 0 Then
+                zoom = zooms(cmbResolution.SelectedIndex - 1)
+            End If
+            Debug.Print($"DoEqLock zoom ${zoom}")
+            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 262.Map(0, 800, 0, rcC.Width), Integer).Map(rcC.Width, 0, zoom.Width, 0), 25)
 
-            PnlEqLock.Size = New Size(524.Map(0, 800, 0, rcC.Width).Map(0, rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width),
-                                       45.Map(0, 600, 0, zooms(cmbResolution.SelectedIndex).Height))
+            PnlEqLock.Size = New Size(524.Map(0, 800, 0, rcC.Width).Map(0, rcC.Width, 0, zoom.Width),
+                                       45.Map(0, 600, 0, zoom.Height))
 #Else
             PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 262, Integer).Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0), 25)
             PnlEqLock.Size = New Size(524.Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0),
