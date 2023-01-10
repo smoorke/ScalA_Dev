@@ -136,7 +136,11 @@
         Get
             Const GWL_EXSTYLE = -20
             Const WS_EX_TOPMOST = 8L
-            Return (GetWindowLong(_proc?.MainWindowHandle, GWL_EXSTYLE) And WS_EX_TOPMOST) = WS_EX_TOPMOST
+            Try
+                Return (GetWindowLong(_proc?.MainWindowHandle, GWL_EXSTYLE) And WS_EX_TOPMOST) = WS_EX_TOPMOST
+            Catch
+                Return False
+            End Try
         End Get
     End Property
 
