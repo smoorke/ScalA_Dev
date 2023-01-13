@@ -40,11 +40,16 @@ Partial Public NotInheritable Class FrmMain
 
     Public Sub UpdateThumb(opacity As Byte)
         Dim twp As DWM_THUMBNAIL_PROPERTIES
-        twp.dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY + DwmThumbnailFlags.DWM_TNP_RECTDESTINATION + DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY + DwmThumbnailFlags.DWM_TNP_VISIBLE
+        twp.dwFlags = DwmThumbnailFlags.DWM_TNP_RECTSOURCE Or
+                      DwmThumbnailFlags.DWM_TNP_OPACITY Or
+                      DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or
+                      DwmThumbnailFlags.DWM_TNP_VISIBLE
+        'DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY 
         twp.opacity = opacity
         twp.fVisible = True
+        twp.rcSource = New Rectangle(AstClientOffset.Width, AstClientOffset.Height, rcC.Width + AstClientOffset.Width, rcC.Height + AstClientOffset.Height)
         twp.rcDestination = New Rectangle(pbZoom.Left, pbZoom.Top, pbZoom.Right, pbZoom.Bottom)
-        twp.fSourceClientAreaOnly = True
+        'twp.fSourceClientAreaOnly = True
 
         DwmUpdateThumbnailProperties(thumb, twp)
     End Sub
@@ -55,11 +60,16 @@ Partial Public NotInheritable Class FrmMain
                      Dim timer As Stopwatch = Stopwatch.StartNew
 
                      Dim twp As DWM_THUMBNAIL_PROPERTIES
-                     twp.dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY + DwmThumbnailFlags.DWM_TNP_RECTDESTINATION + DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY + DwmThumbnailFlags.DWM_TNP_VISIBLE
+                     twp.dwFlags = DwmThumbnailFlags.DWM_TNP_RECTSOURCE Or
+                                   DwmThumbnailFlags.DWM_TNP_OPACITY Or
+                                   DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or
+                                   DwmThumbnailFlags.DWM_TNP_VISIBLE
+
                      twp.fVisible = True
                      twp.opacity = If(chkDebug.Checked, 128, 255)
                      twp.rcDestination = startRC
-                     twp.fSourceClientAreaOnly = True
+                     twp.rcSource = New Rectangle(AstClientOffset.Width, AstClientOffset.Height, rcC.Width + AstClientOffset.Width, rcC.Height + AstClientOffset.Height)
+                     'twp.fSourceClientAreaOnly = True
 
                      'DwmUpdateThumbnailProperties(thumb, twp)
 

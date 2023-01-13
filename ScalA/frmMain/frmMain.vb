@@ -1,4 +1,6 @@
-﻿Partial Public NotInheritable Class FrmMain
+﻿Imports ScalA.NativeMethods
+
+Partial Public NotInheritable Class FrmMain
 
     Public AltPP As New AstoniaProcess()
     'Private WndClass() As String = {"MAINWNDMOAC", "䅍义乗䵄䅏C"}
@@ -144,6 +146,8 @@
             ClientToScreen(AltPP.MainWindowHandle, ptt)
 
             AstClientOffset = New Size(ptt.X - rcW.Left, ptt.Y - rcW.Top)
+
+            Debug.Print($"AstClientOffset:{AstClientOffset}")
 
             SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle) ' have Client always be beneath ScalA (set Scala to be owned by client)
             '                                                                  note SetParent() doesn't work.
@@ -846,6 +850,10 @@
                 but.Tag = ap
                 but.Text = ap.Name
 
+                Dim rcwB As New Rectangle
+                Dim rccB As New Rectangle
+                GetClientRect(ap?.MainWindowHandle, rccB)
+                GetWindowRect(ap?.MainWindowHandle, rcwB)
 
                 If ap?.IsActive() Then
                     but.Font = New Font("Microsoft Sans Serif", 8.25, FontStyle.Bold)
@@ -885,13 +893,23 @@
                 End If
 
                 rectDic(apID) = but.ThumbRECT
+
+
+                Dim pttB As New Point
+                ClientToScreen(ap?.MainWindowHandle, pttB)
+
+                Dim ACO = New Size(pttB.X - rcwB.Left, pttB.Y - rcwB.Top)
+
+                ' Debug.Print($"ACO {ap.Name}:{ACO}")
+
                 Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
-                                   .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION,
+                                   .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_RECTSOURCE Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION,
                                    .opacity = opaDict.GetValueOrDefault(apID, If(chkDebug.Checked, 128, 255)),
-                                   .fSourceClientAreaOnly = True,
                                    .fVisible = True,
-                                   .rcDestination = rectDic(apID)
+                                   .rcDestination = rectDic(apID),
+                                   .rcSource = New Rectangle(ACO.Width, ACO.Height, rccB.Width + ACO.Width, rccB.Height + ACO.Height)
                                }
+                '.fSourceClientAreaOnly = True,
                 DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
 
                 If My.Settings.gameOnOverview Then 'todo move this to seperate timer and make async
@@ -900,8 +918,7 @@
                     'SendMessage(ap.MainWindowHandle, WM_PAINT, IntPtr.Zero, IntPtr.Zero)
                     'RedrawWindow(ap.MainWindowHandle, Nothing, Nothing, RedrawWindowFlags.Invalidate Or RedrawWindowFlags.InternalPaint)
 
-                    Dim rccB As Rectangle
-                    GetClientRect(ap?.MainWindowHandle, rccB)
+
 
                     Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
                     GetCursorInfo(pci)
@@ -936,8 +953,8 @@
                             SetWindowLong(Me.Handle, GWL_HWNDPARENT, ap?.MainWindowHandle)
                         End If
 
-                        Dim rcwB As Rectangle
-                        Dim pttB As Point
+                        'Dim rcwB As Rectangle
+                        'Dim pttB As Point
 
                         GetWindowRect(ap.MainWindowHandle, rcwB)
                         ClientToScreen(ap.MainWindowHandle, pttB)
