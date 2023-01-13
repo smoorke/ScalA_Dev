@@ -771,7 +771,7 @@
     Private Sub Cycle(Optional up As Boolean = False)
         tmrTick.Enabled = False
         'PostMessage(AltPP.MainWindowHandle, WM_RBUTTONUP, 0, 0)'couses look to be sent when cycle hotkey contains ctrl
-        PostMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0)
+        'PostMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0)'causes alt to attack when hotkey contains ctrl
         PopDropDown(cboAlt)
         AstoniaProcess.RestorePos(True)
         If Me.WindowState = FormWindowState.Minimized Then
@@ -1006,7 +1006,7 @@
         End If
 
 
-        If eqLockShown AndAlso My.Settings.LockEq Then
+        If eqLockShown AndAlso My.Settings.LockEq AndAlso My.Settings.gameOnOverview Then
             AOshowEqLock = True
         Else
             AOshowEqLock = False
