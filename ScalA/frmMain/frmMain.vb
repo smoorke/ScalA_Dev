@@ -417,6 +417,7 @@ Partial Public NotInheritable Class FrmMain
 
         Dim bBc As Color = If(My.Settings.DarkMode, Color.DarkGray, Color.FromArgb(&HFFE1E1E1))
         Task.Run(Sub() Parallel.ForEach(pnlOverview.Controls.OfType(Of AButton), Sub(but) but.BackColor = bBc))
+        PnlEqLock.BackColor = bBc
 
         Dim bFaBc As Color = If(My.Settings.DarkMode, Color.FromArgb(60, 63, 65), Color.FromKnownColor(KnownColor.Control))
         For Each but As Button In pnlButtons.Controls.OfType(Of Button)
