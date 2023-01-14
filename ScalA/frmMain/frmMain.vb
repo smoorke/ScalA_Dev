@@ -145,10 +145,6 @@ Partial Public NotInheritable Class FrmMain
             Debug.Print("ClientToScreen")
             ClientToScreen(AltPP.MainWindowHandle, ptt)
 
-            AstClientOffset = New Size(ptt.X - rcW.Left, ptt.Y - rcW.Top)
-
-            Debug.Print($"AstClientOffset:{AstClientOffset}")
-
             SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle) ' have Client always be beneath ScalA (set Scala to be owned by client)
             '                                                                  note SetParent() doesn't work.
 
@@ -199,8 +195,6 @@ Partial Public NotInheritable Class FrmMain
         End If
 
     End Sub
-
-    Public AstClientOffset As New Size(0, 0)
 
     Public Resizing As Boolean
 
@@ -588,8 +582,8 @@ Partial Public NotInheritable Class FrmMain
 
             Dim ptZ As Point = Me.PointToScreen(pbZoom.Location)
 
-            newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AstClientOffset.Width - My.Settings.offset.X
-            newY = MousePosition.Y.Map(ptZ.Y, ptZ.Y + pbZoom.Height, ptZ.Y, ptZ.Y + pbZoom.Height - rcC.Height) - AstClientOffset.Height - My.Settings.offset.Y
+            newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AltPP.ClientOffset.X - My.Settings.offset.X
+            newY = MousePosition.Y.Map(ptZ.Y, ptZ.Y + pbZoom.Height, ptZ.Y, ptZ.Y + pbZoom.Height - rcC.Height) - AltPP.ClientOffset.Y - My.Settings.offset.Y
 
             If Not swpBusy AndAlso Not moveBusy AndAlso Not Resizing Then
                 swpBusy = True
@@ -603,7 +597,7 @@ Partial Public NotInheritable Class FrmMain
                                  Dim flags = swpFlags
                                  If Not AltPP?.IsActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
                                  If AltPP?.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
-                                 Dim pt As Point = MousePosition - New Point(newX + AstClientOffset.Width, newY + AstClientOffset.Height)
+                                 Dim pt As Point = MousePosition - New Point(newX + AltPP.ClientOffset.X, newY + AltPP.ClientOffset.Y)
                                  If prevWMMMpt <> MousePosition Then
                                      SendMessage(AltPP?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                  End If
@@ -983,7 +977,7 @@ Partial Public NotInheritable Class FrmMain
                                          Dim flags = swpFlags
                                          If Not but.Tag?.isActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
                                          'If but.Tag?.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
-                                         Dim pt As Point = MousePosition - New Point(newXB + AstClientOffset.Width, newYB + AstClientOffset.Height)
+                                         Dim pt As Point = MousePosition - New Point(newXB + ap.ClientOffset.X, newYB + ap.ClientOffset.Y)
                                          If prevWMMMpt <> MousePosition Then
                                              SendMessage(but.Tag?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                          End If

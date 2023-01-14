@@ -47,7 +47,8 @@ Partial Public NotInheritable Class FrmMain
         'DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY 
         twp.opacity = opacity
         twp.fVisible = True
-        twp.rcSource = New Rectangle(AstClientOffset.Width, AstClientOffset.Height, rcC.Width + AstClientOffset.Width, rcC.Height + AstClientOffset.Height)
+        'twp.rcSource = New Rectangle(AltPP.ClientOffset.X, AltPP.ClientOffset.Y, rcC.Width + AltPP.ClientOffset.X, rcC.Height + AltPP.ClientOffset.Y)
+        twp.rcSource = AltPP.rcSource()
         twp.rcDestination = New Rectangle(pbZoom.Left, pbZoom.Top, pbZoom.Right, pbZoom.Bottom)
         'twp.fSourceClientAreaOnly = True
 
@@ -68,7 +69,8 @@ Partial Public NotInheritable Class FrmMain
                      twp.fVisible = True
                      twp.opacity = If(chkDebug.Checked, 128, 255)
                      twp.rcDestination = startRC
-                     twp.rcSource = New Rectangle(AstClientOffset.Width, AstClientOffset.Height, rcC.Width + AstClientOffset.Width, rcC.Height + AstClientOffset.Height)
+                     twp.rcSource = AltPP.rcSource()
+                     ' New Rectangle(AltPP.ClientOffset.X, AltPP.ClientOffset.Y, rcC.Width + AltPP.ClientOffset.X, rcC.Height + AltPP.ClientOffset.Y)
                      'twp.fSourceClientAreaOnly = True
 
                      'DwmUpdateThumbnailProperties(thumb, twp)

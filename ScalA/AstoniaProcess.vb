@@ -6,10 +6,10 @@
         _proc = process
     End Sub
 
-    Private _rcc As Rectangle
+    Private _rcc? As Rectangle
     Public ReadOnly Property ClientRect() As Rectangle
         Get
-            If _rcc <> New Rectangle Then
+            If _rcc IsNot Nothing Then
                 Return _rcc
             Else
                 Debug.Print("called get ClientRect")
@@ -53,16 +53,15 @@
         Me._wasTopmost = Me.IsTopMost()
     End Sub
 
-    Private _CO As Point
+    Private _CO? As Point
     Public ReadOnly Property ClientOffset() As Point
         Get
-            If _CO <> New Point Then
+            If _CO IsNot Nothing Then
                 Return _CO
             Else
-                Debug.Print("called get ClientOffset")
-                Dim ptt As Point
+                Dim ptt As New Point
                 ClientToScreen(_proc?.MainWindowHandle, ptt)
-                Dim rcW As Rectangle
+                Dim rcW As New Rectangle
                 GetWindowRect(_proc?.MainWindowHandle, rcW)
 
                 _CO = New Point(ptt.X - rcW.Left, ptt.Y - rcW.Top)
@@ -70,6 +69,21 @@
             End If
         End Get
     End Property
+
+    Private _rcSource? As Rectangle
+    Public ReadOnly Property rcSource() As Rectangle
+        Get
+            If _rcSource IsNot Nothing Then
+                Return _rcSource
+            Else
+                _rcSource = New Rectangle(ClientOffset.X, ClientOffset.Y, ClientRect.Width + ClientOffset.X, ClientRect.Height + ClientOffset.Y)
+                Return _rcSource
+            End If
+        End Get
+    End Property
+
+
+
     Public Function CenterBehind(centerOn As Control, Optional extraSWPFlags As UInteger = 0) As Boolean
         If centerOn.RectangleToScreen(centerOn.Bounds).Contains(Form.MousePosition) Then Return False
         Dim pt As Point = centerOn.PointToScreen(New Point(centerOn.Width / 2, centerOn.Height / 2))
@@ -235,7 +249,7 @@
                 End If
                 Debug.Print($"ExeIconCacheMiss {Me.Name} {ID} {path}")
                 Dim ico = Icon.ExtractAssociatedIcon(path)
-                exeIconCache(ID) = New Tuple(Of Icon, String)(ico, Me.Name)
+                exeIconCache(ID) = New Tuple(Of Icon, String)(ico, Me.Name) 'todo fix exception here
                 pathIcnCache(path) = ico
                 Return ico
             End If

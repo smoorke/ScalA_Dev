@@ -158,8 +158,8 @@ Public NotInheritable Class FrmSettings
             Dim ptz As Point = FrmMain.pbZoom.PointToScreen(New Point)
             'FrmMain.AltPP.CenterBehind(FrmMain.pbZoom)
             SetWindowPos(FrmMain.AltPP.MainWindowHandle, FrmMain.ScalaHandle,
-                                ptz.X - FrmMain.AstClientOffset.Width,
-                                ptz.Y - FrmMain.AstClientOffset.Height,
+                                ptz.X - FrmMain.AltPP.ClientOffset.X,
+                                ptz.Y - FrmMain.AltPP.ClientOffset.Y,
                                 -1, -1,
                                 SetWindowPosFlags.IgnoreResize)
 
