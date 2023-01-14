@@ -122,7 +122,7 @@ Partial Public NotInheritable Class FrmMain
 
         If Not AltPP?.Id = 0 Then
 
-
+            Dim rcW As New Rectangle
             GetWindowRect(AltPP.MainWindowHandle, rcW)
             GetClientRect(AltPP.MainWindowHandle, rcC)
 
@@ -140,10 +140,8 @@ Partial Public NotInheritable Class FrmMain
             AltPP.SavePos(rcW.Location)
 
             AltPP.Activate()
-            Dim ptt As New Point
 
             Debug.Print("ClientToScreen")
-            ClientToScreen(AltPP.MainWindowHandle, ptt)
 
             SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle) ' have Client always be beneath ScalA (set Scala to be owned by client)
             '                                                                  note SetParent() doesn't work.
@@ -521,7 +519,7 @@ Partial Public NotInheritable Class FrmMain
         Return ProcessID
     End Function
 
-    Dim rcW As Rectangle ' windowrect
+    'Dim rcW As Rectangle ' windowrect
     Dim rcC As Rectangle ' clientrect
     Public newX As Integer
     Public newY As Integer
