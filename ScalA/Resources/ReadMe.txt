@@ -265,3 +265,12 @@ Fixed ScalA opening off screen when monitor layout changed.
 Minimizing ScalA makes it show on taskbar when an alt is selected.
 Switching to overview will immediately show ScalA in the taskbar.
   (note: active overview will override this behavior)
+
+**Scala 1.2.0**
+Increased sharpness of ScalA.
+Fixed sizeborder wrong after double click on maximized caption.
+Fixed working directory for executables started using quicklaunch.
+Fixed QuickLaunch renaming and changing capitalization only would result in an error.
+Added Windows error message to messagebox when rename fails.
+Reduced jumping when scrolling inv/depot by thumb buttons.
+Other minor bugfixes.
