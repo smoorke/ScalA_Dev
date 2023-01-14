@@ -140,7 +140,7 @@ Partial Public NotInheritable Class FrmMain
             AltPP.SavePos(rcW.Location)
 
             AltPP.Activate()
-            Dim ptt As Point
+            Dim ptt As New Point
 
             Debug.Print("ClientToScreen")
             ClientToScreen(AltPP.MainWindowHandle, ptt)
