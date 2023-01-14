@@ -14,6 +14,7 @@
             Else
                 Debug.Print("called get ClientRect")
                 Dim rcc As New Rectangle
+                If _proc Is Nothing Then Return New Rectangle
                 GetClientRect(_proc.MainWindowHandle, rcc)
                 _rcc = rcc
                 Return rcc
@@ -60,7 +61,10 @@
                 Return _CO
             Else
                 Dim ptt As New Point
-                ClientToScreen(_proc?.MainWindowHandle, ptt)
+                If _proc Is Nothing Then
+                    Return New Point
+                End If
+                ClientToScreen(_proc.MainWindowHandle, ptt)
                 Dim rcW As New Rectangle
                 GetWindowRect(_proc?.MainWindowHandle, rcW)
 
