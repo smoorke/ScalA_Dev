@@ -956,8 +956,8 @@ Partial Public NotInheritable Class FrmMain
                         'Dim rcwB As Rectangle
                         'Dim pttB As Point
 
-                        GetWindowRect(ap.MainWindowHandle, rcwB)
-                        ClientToScreen(ap.MainWindowHandle, pttB)
+                        'GetWindowRect(ap.MainWindowHandle, rcwB)
+                        'ClientToScreen(ap.MainWindowHandle, pttB)
 
                         ap.SavePos(rcwB.Location, False)
 
