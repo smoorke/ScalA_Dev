@@ -24,6 +24,7 @@ Partial Public NotInheritable Class FrmMain
 
         updatingCombobox = False
         sender.EndUpdate()
+        sender.DropDownHeight = sender.ItemHeight * sender.Items.Count + 2
     End Sub
 
     Private Sub CboAlt_DropDown(sender As ComboBox, e As EventArgs) Handles cboAlt.DropDown
