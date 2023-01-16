@@ -724,11 +724,12 @@ Partial Public NotInheritable Class FrmMain
                                        45.Map(0, 600, 0, newSize.Height))
         Else
 #If True Then
-            Dim zoom As Size = My.Settings.resol
+            'Dim zoom As Size = My.Settings.resol
+            Dim zoom As Size = newSize
             If cmbResolution.SelectedIndex > 0 Then
                 zoom = zooms(cmbResolution.SelectedIndex - 1)
             End If
-            Debug.Print($"DoEqLock zoom ${zoom}")
+            Debug.Print($"DoEqLock zoom {zoom}")
             PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 262.Map(0, 800, 0, rcC.Width), Integer).Map(rcC.Width, 0, zoom.Width, 0), 25)
 
             PnlEqLock.Size = New Size(524.Map(0, 800, 0, rcC.Width).Map(0, rcC.Width, 0, zoom.Width),
