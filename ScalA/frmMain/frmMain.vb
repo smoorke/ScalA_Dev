@@ -1348,6 +1348,7 @@ Partial Public NotInheritable Class FrmMain
         End If
         moveBusy = False
         suppressWM_MOVEcwp = False
+        FrmSizeBorder.Bounds = Me.Bounds
     End Sub
 
     Private Sub BtnStart_Click(sender As Button, e As EventArgs) Handles btnStart.Click
@@ -1520,7 +1521,7 @@ Partial Public NotInheritable Class FrmMain
     Private Sub Title_MouseDoubleClick(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.DoubleClick, lblTitle.DoubleClick
         Debug.Print("title_DoubleClick")
         If e.Button = MouseButtons.Left Then btnMax.PerformClick()
-        FrmSizeBorder.Bounds = Me.Bounds
+        'FrmSizeBorder.Bounds = Me.Bounds
     End Sub
 
 
