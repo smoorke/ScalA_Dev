@@ -274,3 +274,9 @@ Fixed QuickLaunch renaming and changing capitalization only would result in an e
 Added Windows error message to messagebox when rename fails.
 Reduced jumping when scrolling inv/depot by thumb buttons.
 Other minor bugfixes.
+
+**ScalA 1.2.1**
+Added preliminary support for new client. (I fully expect eqlock and big healthbars to still be broken)
+Fixed Alt Combobox DropDown scrollbar when number of alts increased since last time it opened.
+Fixed Sizingborder being wrong after maximizing/restoring.
+Fixed EqLock being wrong when maximized.
