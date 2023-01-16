@@ -230,6 +230,9 @@ Partial Public NotInheritable Class FrmMain
         If New Version(My.Settings.SettingsVersion) < My.Application.Info.Version Then
             My.Settings.Upgrade()
             My.Settings.SettingsVersion = My.Application.Info.Version.ToString
+            If Not My.Settings.className.Contains("SDL_app") Then
+                My.Settings.className &= " | SDL_app"
+            End If
             My.Settings.Save()
             zooms = GetResolutions()
             topSortList = My.Settings.topSort.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries).ToList
