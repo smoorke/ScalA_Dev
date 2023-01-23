@@ -9,7 +9,7 @@
     Private _rcc? As Rectangle
     Public ReadOnly Property ClientRect() As Rectangle
         Get
-            If _rcc IsNot Nothing Then
+            If _rcc IsNot Nothing AndAlso _rcc <> New Rectangle Then
                 Return _rcc
             Else
                 Debug.Print("called get ClientRect")
@@ -57,19 +57,26 @@
     Private _CO? As Point
     Public ReadOnly Property ClientOffset() As Point
         Get
-            If _CO IsNot Nothing Then
+            If _CO IsNot Nothing AndAlso ClientOffset <> New Point Then
                 Return _CO
             Else
-                Dim ptt As New Point
                 If _proc Is Nothing Then
                     Return New Point
                 End If
-                ClientToScreen(_proc.MainWindowHandle, ptt)
-                Dim rcW As New Rectangle
-                GetWindowRect(_proc?.MainWindowHandle, rcW)
+                Try
+                    If _proc.HasExited Then
+                        Return New Point
+                    End If
+                    Dim ptt As New Point
+                    ClientToScreen(_proc.MainWindowHandle, ptt)
+                    Dim rcW As New Rectangle
+                    GetWindowRect(_proc?.MainWindowHandle, rcW)
 
-                _CO = New Point(ptt.X - rcW.Left, ptt.Y - rcW.Top)
-                Return _CO
+                    _CO = New Point(ptt.X - rcW.Left, ptt.Y - rcW.Top)
+                    Return _CO
+                Catch ex As Exception
+                    Return New Point
+                End Try
             End If
         End Get
     End Property
@@ -77,9 +84,12 @@
     Private _rcSource? As Rectangle
     Public ReadOnly Property rcSource() As Rectangle
         Get
-            If _rcSource IsNot Nothing Then
+            If _rcSource IsNot Nothing AndAlso _rcSource <> New Rectangle Then
                 Return _rcSource
             Else
+                If ClientRect = New Rectangle Then
+                    Return New Rectangle(ClientOffset.X, ClientOffset.Y, 800 + ClientOffset.X, 600 + ClientOffset.Y)
+                End If
                 _rcSource = New Rectangle(ClientOffset.X, ClientOffset.Y, ClientRect.Width + ClientOffset.X, ClientRect.Height + ClientOffset.Y)
                 Return _rcSource
             End If
@@ -235,8 +245,8 @@
     '    Return Me.Name()
     'End Function
 
-    Shared ReadOnly exeIconCache As New Dictionary(Of Integer, Tuple(Of Icon, String)) 'PID, icon, name
-    Shared ReadOnly pathIcnCache As New Dictionary(Of String, Icon) 'path, icon
+    Shared ReadOnly exeIconCache As New Concurrent.ConcurrentDictionary(Of Integer, Tuple(Of Icon, String)) 'PID, icon, name
+    Shared ReadOnly pathIcnCache As New Concurrent.ConcurrentDictionary(Of String, Icon) 'path, icon
     Public Function GetIcon(Optional invalidateCache As Boolean = False) As Icon
         If invalidateCache Then
             exeIconCache.Clear()
@@ -249,12 +259,14 @@
             Else
                 Dim path As String = _proc.Path()
                 If pathIcnCache.ContainsKey(path) Then
+                    exeIconCache.tryAdd(ID, New Tuple(Of Icon, String)(pathIcnCache(path), Me.Name))
                     Return pathIcnCache(path)
                 End If
                 Debug.Print($"ExeIconCacheMiss {Me.Name} {ID} {path}")
                 Dim ico = Icon.ExtractAssociatedIcon(path)
-                exeIconCache(ID) = New Tuple(Of Icon, String)(ico, Me.Name) 'todo fix exception here
-                pathIcnCache(path) = ico
+                'exeIconCache(ID) = New Tuple(Of Icon, String)(ico, Me.Name) 'todo fix exception here
+                exeIconCache.tryAdd(ID, New Tuple(Of Icon, String)(ico, Me.Name))
+                pathIcnCache.tryAdd(path, ico)
                 Return ico
             End If
         Catch
