@@ -88,6 +88,8 @@ Public NotInheritable Class FrmSettings
 
         ChkDark.Checked = My.Settings.DarkMode
 
+        cboScalingMode.SelectedIndex = My.Settings.scalingmode
+
     End Sub
 
     Protected Overrides Sub WndProc(ByRef m As Message)
@@ -315,6 +317,12 @@ Public NotInheritable Class FrmSettings
             FrmMain.ApplyTheme()
         End If
 
+        If cboScalingMode.SelectedIndex <> My.Settings.ScalingMode Then
+            My.Settings.ScalingMode = cboScalingMode.SelectedIndex
+            If Not FrmMain.pnlOverview.Visible Then
+                FrmMain.UpdateThumb(If(FrmMain.chkDebug.Checked, 128, 255))
+            End If
+        End If
         BtnTest_Click(Nothing, Nothing) 'apply sorting & black/whitlelist, note: .PerformClick() doesn't work as button may not be visible
 
         Hotkey.UnregHotkey(FrmMain)
@@ -618,6 +626,7 @@ Public NotInheritable Class FrmSettings
         txtResolutions.ScrollToCaret()
         txtResolutions.Focus()
     End Sub
+
 
     Private Sub TxtShortcuts_PreviewKeyDown(sender As TextBox, e As PreviewKeyDownEventArgs) Handles txtStoKey.PreviewKeyDown, txtCycleKeyUp.PreviewKeyDown, txtCycleKeyDown.PreviewKeyDown
         Debug.Print(e.KeyCode)

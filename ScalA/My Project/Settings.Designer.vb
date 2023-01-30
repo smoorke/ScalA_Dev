@@ -535,6 +535,18 @@ Namespace My
                 Me("DarkMode") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property ScalingMode() As Integer
+            Get
+                Return CType(Me("ScalingMode"),Integer)
+            End Get
+            Set
+                Me("ScalingMode") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

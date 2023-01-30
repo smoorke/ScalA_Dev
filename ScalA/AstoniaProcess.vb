@@ -1,4 +1,6 @@
-﻿Public NotInheritable Class AstoniaProcess
+﻿Imports System.Security.Cryptography
+
+Public NotInheritable Class AstoniaProcess
 
     Private ReadOnly _proc As Process
 
@@ -82,8 +84,22 @@
     End Property
 
     Private _rcSource? As Rectangle
-    Public ReadOnly Property rcSource() As Rectangle
-        Get
+    Public Function rcSource(TargetSZ As Size) As Rectangle
+
+        Dim mode = My.Settings.ScalingMode
+        Debug.Print($"rcSource target {TargetSZ}")
+        If mode = 0 Then
+            Dim compsz As Size = TargetSZ
+            If (compsz.Width / ClientRect.Width >= 2) AndAlso
+               (compsz.Height / ClientRect.Height >= 2) Then
+                mode = 2
+            Else
+                mode = 1
+            End If
+        End If
+        If mode = 1 Then 'blurred
+            Return ClientRect
+        ElseIf mode = 2 Then 'pixel
             If _rcSource IsNot Nothing AndAlso _rcSource <> New Rectangle Then
                 Return _rcSource
             Else
@@ -93,8 +109,9 @@
                 _rcSource = New Rectangle(ClientOffset.X, ClientOffset.Y, ClientRect.Width + ClientOffset.X, ClientRect.Height + ClientOffset.Y)
                 Return _rcSource
             End If
-        End Get
-    End Property
+        End If
+
+    End Function
 
 
 
@@ -259,13 +276,13 @@
             Else
                 Dim path As String = _proc.Path()
                 If pathIcnCache.ContainsKey(path) Then
-                    exeIconCache.tryAdd(ID, New Tuple(Of Icon, String)(pathIcnCache(path), Me.Name))
+                    exeIconCache.TryAdd(ID, New Tuple(Of Icon, String)(pathIcnCache(path), Me.Name))
                     Return pathIcnCache(path)
                 End If
                 Debug.Print($"ExeIconCacheMiss {Me.Name} {ID} {path}")
                 Dim ico = Icon.ExtractAssociatedIcon(path)
                 'exeIconCache(ID) = New Tuple(Of Icon, String)(ico, Me.Name) 'todo fix exception here
-                exeIconCache.tryAdd(ID, New Tuple(Of Icon, String)(ico, Me.Name))
+                exeIconCache.TryAdd(ID, New Tuple(Of Icon, String)(ico, Me.Name))
                 pathIcnCache.tryAdd(path, ico)
                 Return ico
             End If

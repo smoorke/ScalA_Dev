@@ -165,7 +165,7 @@ Partial Public NotInheritable Class FrmMain
             Next
             startThumbsDict.Clear()
 
-            Debug.Print("updateThumb")
+            Debug.Print($"updateThumb pbzoom {pbZoom.Size}")
             If rectDic.ContainsKey(item.Id) Then
                 AnimateThumb(rectDic(item.Id), New Rectangle(pbZoom.Left, pbZoom.Top, pbZoom.Right, pbZoom.Bottom))
             Else
@@ -659,7 +659,7 @@ Partial Public NotInheritable Class FrmMain
 
     Public Sub ReZoom(newSize As Size)
         Debug.Print($"reZoom {newSize}")
-        Me.SuspendLayout()
+        'Me.SuspendLayout()
         suppressResChange = True
         If Me.WindowState <> FormWindowState.Maximized Then
             Me.Size = New Size(newSize.Width + 2, newSize.Height + pnlTitleBar.Height + 1)
@@ -686,7 +686,7 @@ Partial Public NotInheritable Class FrmMain
 
         cmbResolution.Items(0) = $"{pbZoom.Size.Width}x{pbZoom.Size.Height}"
         suppressResChange = False
-        Me.ResumeLayout(True)
+        'Me.ResumeLayout(True)
 
         If cboAlt.SelectedIndex <> 0 Then
             Debug.Print("updateThumb")
@@ -901,10 +901,11 @@ Partial Public NotInheritable Class FrmMain
                 ' Debug.Print($"ACO {ap.Name}:{ACO}")
 
                 Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
-                                   .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_RECTSOURCE Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION,
+                                   .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_RECTSOURCE Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY,
                                    .opacity = opaDict.GetValueOrDefault(apID, If(chkDebug.Checked, 128, 255)),
                                    .fVisible = True,
                                    .rcDestination = rectDic(apID),
+                                   .fSourceClientAreaOnly = False,
                                    .rcSource = New Rectangle(ACO.Width, ACO.Height, rccB.Width + ACO.Width, rccB.Height + ACO.Height)
                                }
                 '.fSourceClientAreaOnly = True,

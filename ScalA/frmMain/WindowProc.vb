@@ -306,7 +306,7 @@ Partial NotInheritable Class FrmMain
             Case &H2A1 ' WM_MOUSEHOVER 
             Case &H2A3 ' WM_MOUSELEAVE
 
-            Case &HC0D9 To &HC1D9 ' unknown
+            Case &HC0D9 To &HC1E3 ' unknown
 
             Case Else
                 Debug.Print($"Unhandeld WM_ 0x{m.Msg:X8} &H{m.Msg:X8}")

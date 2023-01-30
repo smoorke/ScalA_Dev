@@ -39,6 +39,7 @@ Partial NotInheritable Class FrmSettings
         Dim Label13 As System.Windows.Forms.Label
         Dim Label14 As System.Windows.Forms.Label
         Dim Label6 As System.Windows.Forms.Label
+        Dim Label15 As System.Windows.Forms.Label
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmSettings))
         Me.txtQuickLaunchPath = New System.Windows.Forms.TextBox()
         Me.btnOpenFolderDialog = New System.Windows.Forms.Button()
@@ -61,6 +62,7 @@ Partial NotInheritable Class FrmSettings
         Me.ChkDark = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
+        Me.cboScalingMode = New System.Windows.Forms.ComboBox()
         Me.btnAddCurrentRes = New System.Windows.Forms.Button()
         Me.btnRestore = New System.Windows.Forms.Button()
         Me.btnSort = New System.Windows.Forms.Button()
@@ -122,6 +124,7 @@ Partial NotInheritable Class FrmSettings
         Label13 = New System.Windows.Forms.Label()
         Label14 = New System.Windows.Forms.Label()
         Label6 = New System.Windows.Forms.Label()
+        Label15 = New System.Windows.Forms.Label()
         grpQLPath.SuspendLayout()
         Me.cmsQLFolder.SuspendLayout()
         Me.grpReserveSpace.SuspendLayout()
@@ -321,6 +324,16 @@ Partial NotInheritable Class FrmSettings
         Label6.TabIndex = 28
         Label6.Text = "Extra Columns/Rows"
         '
+        'Label15
+        '
+        Label15.AutoSize = True
+        Label15.Location = New System.Drawing.Point(200, 14)
+        Label15.Name = "Label15"
+        Label15.Size = New System.Drawing.Size(72, 13)
+        Label15.TabIndex = 7
+        Label15.Text = "Scaling Mode"
+        Me.ttSettings.SetToolTip(Label15, "Auto will use pixel mode when scaling factor is 2x or more.")
+        '
         'btnOK
         '
         Me.btnOK.Location = New System.Drawing.Point(141, 166)
@@ -498,6 +511,8 @@ Partial NotInheritable Class FrmSettings
         '
         'tabResolutions
         '
+        Me.tabResolutions.Controls.Add(Me.cboScalingMode)
+        Me.tabResolutions.Controls.Add(Label15)
         Me.tabResolutions.Controls.Add(Me.btnAddCurrentRes)
         Me.tabResolutions.Controls.Add(Me.btnRestore)
         Me.tabResolutions.Controls.Add(Me.btnSort)
@@ -511,10 +526,21 @@ Partial NotInheritable Class FrmSettings
         Me.tabResolutions.Text = "Resolutions"
         Me.tabResolutions.UseVisualStyleBackColor = True
         '
+        'cboScalingMode
+        '
+        Me.cboScalingMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cboScalingMode.FormattingEnabled = True
+        Me.cboScalingMode.Items.AddRange(New Object() {"Auto", "Blurred", "Pixelated"})
+        Me.cboScalingMode.Location = New System.Drawing.Point(200, 30)
+        Me.cboScalingMode.Name = "cboScalingMode"
+        Me.cboScalingMode.Size = New System.Drawing.Size(97, 21)
+        Me.cboScalingMode.TabIndex = 8
+        Me.ttSettings.SetToolTip(Me.cboScalingMode, "Auto will use pixel mode when scaling factor is 2x or more.")
+        '
         'btnAddCurrentRes
         '
         Me.btnAddCurrentRes.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAddCurrentRes.Location = New System.Drawing.Point(170, 67)
+        Me.btnAddCurrentRes.Location = New System.Drawing.Point(105, 67)
         Me.btnAddCurrentRes.Name = "btnAddCurrentRes"
         Me.btnAddCurrentRes.Size = New System.Drawing.Size(75, 23)
         Me.btnAddCurrentRes.TabIndex = 6
@@ -523,7 +549,7 @@ Partial NotInheritable Class FrmSettings
         '
         'btnRestore
         '
-        Me.btnRestore.Location = New System.Drawing.Point(170, 104)
+        Me.btnRestore.Location = New System.Drawing.Point(105, 104)
         Me.btnRestore.Name = "btnRestore"
         Me.btnRestore.Size = New System.Drawing.Size(75, 23)
         Me.btnRestore.TabIndex = 5
@@ -532,7 +558,7 @@ Partial NotInheritable Class FrmSettings
         '
         'btnSort
         '
-        Me.btnSort.Location = New System.Drawing.Point(170, 38)
+        Me.btnSort.Location = New System.Drawing.Point(105, 38)
         Me.btnSort.Name = "btnSort"
         Me.btnSort.Size = New System.Drawing.Size(75, 23)
         Me.btnSort.TabIndex = 3
@@ -542,7 +568,7 @@ Partial NotInheritable Class FrmSettings
         'btnGenerate
         '
         Me.btnGenerate.ContextMenuStrip = Me.cmsGenerate
-        Me.btnGenerate.Location = New System.Drawing.Point(170, 9)
+        Me.btnGenerate.Location = New System.Drawing.Point(105, 9)
         Me.btnGenerate.Name = "btnGenerate"
         Me.btnGenerate.Size = New System.Drawing.Size(75, 23)
         Me.btnGenerate.TabIndex = 2
@@ -587,7 +613,7 @@ Partial NotInheritable Class FrmSettings
         '
         'txtResolutions
         '
-        Me.txtResolutions.Location = New System.Drawing.Point(70, 0)
+        Me.txtResolutions.Location = New System.Drawing.Point(5, 0)
         Me.txtResolutions.Multiline = True
         Me.txtResolutions.Name = "txtResolutions"
         Me.txtResolutions.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
@@ -1103,4 +1129,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents ChkDark As CheckBox
     Friend WithEvents btnGrabCurrent As Button
     Friend WithEvents btnAddCurrentRes As Button
+    Friend WithEvents cboScalingMode As ComboBox
 End Class

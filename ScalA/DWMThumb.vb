@@ -39,18 +39,38 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Public Sub UpdateThumb(opacity As Byte)
+        If AltPP?.Id = 0 Then Exit Sub
         Dim twp As DWM_THUMBNAIL_PROPERTIES
-        twp.dwFlags = DwmThumbnailFlags.DWM_TNP_RECTSOURCE Or
-                      DwmThumbnailFlags.DWM_TNP_OPACITY Or
+        twp.dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or
                       DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or
-                      DwmThumbnailFlags.DWM_TNP_VISIBLE
+                      DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY Or
+                      DwmThumbnailFlags.DWM_TNP_VISIBLE Or
+                      DwmThumbnailFlags.DWM_TNP_RECTSOURCE
         'DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY 
         twp.opacity = opacity
         twp.fVisible = True
         'twp.rcSource = New Rectangle(AltPP.ClientOffset.X, AltPP.ClientOffset.Y, rcC.Width + AltPP.ClientOffset.X, rcC.Height + AltPP.ClientOffset.Y)
-        twp.rcSource = AltPP.rcSource()
         twp.rcDestination = New Rectangle(pbZoom.Left, pbZoom.Top, pbZoom.Right, pbZoom.Bottom)
-        'twp.fSourceClientAreaOnly = True
+
+        Dim mode = My.Settings.ScalingMode
+        If My.Settings.ScalingMode = 0 Then
+            Dim compsz As Size = pbZoom.Size
+            Debug.Print($"UpdateThumb pbzoom {pbZoom.Size}")
+            If (compsz.Width / AltPP.ClientRect.Width >= 2) AndAlso
+               (compsz.Height / AltPP.ClientRect.Height >= 2) Then
+                mode = 2
+            Else
+                mode = 1
+            End If
+        End If
+
+        If mode = 1 Then
+            twp.fSourceClientAreaOnly = True
+        Else
+            twp.fSourceClientAreaOnly = False
+        End If
+        twp.rcSource = AltPP.rcSource(pbZoom.Size)
+
 
         DwmUpdateThumbnailProperties(thumb, twp)
     End Sub
@@ -61,17 +81,21 @@ Partial Public NotInheritable Class FrmMain
                      Dim timer As Stopwatch = Stopwatch.StartNew
 
                      Dim twp As DWM_THUMBNAIL_PROPERTIES
-                     twp.dwFlags = DwmThumbnailFlags.DWM_TNP_RECTSOURCE Or
-                                   DwmThumbnailFlags.DWM_TNP_OPACITY Or
+                     twp.dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or
                                    DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or
+                                   DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY Or
+                                   DwmThumbnailFlags.DWM_TNP_RECTSOURCE Or
                                    DwmThumbnailFlags.DWM_TNP_VISIBLE
+
+                     twp.fSourceClientAreaOnly = True
+
+                     twp.rcSource = AltPP.ClientRect
 
                      twp.fVisible = True
                      twp.opacity = If(chkDebug.Checked, 128, 255)
                      twp.rcDestination = startRC
-                     twp.rcSource = AltPP.rcSource()
+
                      ' New Rectangle(AltPP.ClientOffset.X, AltPP.ClientOffset.Y, rcC.Width + AltPP.ClientOffset.X, rcC.Height + AltPP.ClientOffset.Y)
-                     'twp.fSourceClientAreaOnly = True
 
                      'DwmUpdateThumbnailProperties(thumb, twp)
 
@@ -87,8 +111,7 @@ Partial Public NotInheritable Class FrmMain
 
                      timer.Stop()
 
-                     twp.rcDestination = endRC
-                     DwmUpdateThumbnailProperties(thumb, twp)
+                     UpdateThumb(If(chkDebug.Checked, 128, 255))
 
                  End Sub)
     End Sub
