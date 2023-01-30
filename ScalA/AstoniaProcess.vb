@@ -27,7 +27,7 @@ Public NotInheritable Class AstoniaProcess
     Private _restoreLoc As Point? = Nothing
     Private _wasTopmost As Boolean = False
 #Disable Warning IDE0140 ' Object creation can be simplified 'needs to be declared and assigned for parrallel.foreach
-    Private Shared ReadOnly _restoreDic As Dictionary(Of Integer, AstoniaProcess) = New Dictionary(Of Integer, AstoniaProcess)
+    Private Shared ReadOnly _restoreDic As Concurrent.ConcurrentDictionary(Of Integer, AstoniaProcess) = New Concurrent.ConcurrentDictionary(Of Integer, AstoniaProcess)
 #Enable Warning IDE0140 ' Object creation can be simplified
     Public Shared Sub RestorePos(Optional keep As Boolean = False)
         Parallel.ForEach(_restoreDic.Values,
@@ -52,7 +52,7 @@ Public NotInheritable Class AstoniaProcess
             pt = rc.Location
         End If
         If overwrite OrElse Not _restoreDic.ContainsKey(_proc.Id) Then Me._restoreLoc = pt
-        If Not _restoreDic.ContainsKey(_proc.Id) Then _restoreDic.Add(_proc.Id, Me)
+        If Not _restoreDic.ContainsKey(_proc.Id) Then _restoreDic.TryAdd(_proc.Id, Me)
         Me._wasTopmost = Me.IsTopMost()
     End Sub
 
