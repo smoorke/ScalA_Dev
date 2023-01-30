@@ -16,7 +16,7 @@
                 Dim rcc As New Rectangle
                 If _proc Is Nothing Then Return New Rectangle
                 GetClientRect(_proc.MainWindowHandle, rcc)
-                _rcc = rcc
+                If rcc <> New Rectangle Then _rcc = rcc
                 Return rcc
             End If
         End Get
