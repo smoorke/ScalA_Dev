@@ -627,6 +627,13 @@ Public NotInheritable Class FrmSettings
         txtResolutions.Focus()
     End Sub
 
+    Private Sub chkSwitchToOverview_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkSwitchToOverview.CheckedChanged
+        grpOverviewShortcut.Enabled = sender.Checked
+    End Sub
+
+    Private Sub chkCycleAlts_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkCycleAlts.CheckedChanged
+        grpCycleShortcut.Enabled = sender.Checked
+    End Sub
 
     Private Sub TxtShortcuts_PreviewKeyDown(sender As TextBox, e As PreviewKeyDownEventArgs) Handles txtStoKey.PreviewKeyDown, txtCycleKeyUp.PreviewKeyDown, txtCycleKeyDown.PreviewKeyDown
         Debug.Print(e.KeyCode)

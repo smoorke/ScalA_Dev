@@ -49,7 +49,6 @@ Partial NotInheritable Class FrmSettings
         Me.btnCancel = New System.Windows.Forms.Button()
         Me.tmrAlign = New System.Windows.Forms.Timer(Me.components)
         Me.ttSettings = New System.Windows.Forms.ToolTip(Me.components)
-        Me.chkCycleOnClose = New System.Windows.Forms.CheckBox()
         Me.ChkSingleInstance = New System.Windows.Forms.CheckBox()
         Me.grpReserveSpace = New System.Windows.Forms.GroupBox()
         Me.btnGrabCurrent = New System.Windows.Forms.Button()
@@ -59,10 +58,11 @@ Partial NotInheritable Class FrmSettings
         Me.NumBorderLeft = New System.Windows.Forms.NumericUpDown()
         Me.ChkLessRowCol = New System.Windows.Forms.CheckBox()
         Me.chkOverViewIsGame = New System.Windows.Forms.CheckBox()
+        Me.cboScalingMode = New System.Windows.Forms.ComboBox()
+        Me.chkCycleOnClose = New System.Windows.Forms.CheckBox()
         Me.ChkDark = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
-        Me.cboScalingMode = New System.Windows.Forms.ComboBox()
         Me.btnAddCurrentRes = New System.Windows.Forms.Button()
         Me.btnRestore = New System.Windows.Forms.Button()
         Me.btnSort = New System.Windows.Forms.Button()
@@ -364,17 +364,6 @@ Partial NotInheritable Class FrmSettings
         Me.ttSettings.InitialDelay = 500
         Me.ttSettings.ReshowDelay = 100
         '
-        'chkCycleOnClose
-        '
-        Me.chkCycleOnClose.AutoSize = True
-        Me.chkCycleOnClose.Location = New System.Drawing.Point(20, 69)
-        Me.chkCycleOnClose.Name = "chkCycleOnClose"
-        Me.chkCycleOnClose.Size = New System.Drawing.Size(96, 17)
-        Me.chkCycleOnClose.TabIndex = 4
-        Me.chkCycleOnClose.Text = "Cycle on Close"
-        Me.ttSettings.SetToolTip(Me.chkCycleOnClose, "Closing an alt will cycle to the next one.")
-        Me.chkCycleOnClose.UseVisualStyleBackColor = True
-        '
         'ChkSingleInstance
         '
         Me.ChkSingleInstance.AutoSize = True
@@ -483,10 +472,32 @@ Partial NotInheritable Class FrmSettings
         Me.ttSettings.SetToolTip(Me.chkOverViewIsGame, "Have overview thumbnails function as game.")
         Me.chkOverViewIsGame.UseVisualStyleBackColor = True
         '
+        'cboScalingMode
+        '
+        Me.cboScalingMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cboScalingMode.FormattingEnabled = True
+        Me.cboScalingMode.Items.AddRange(New Object() {"Auto", "Blurred", "Pixelated"})
+        Me.cboScalingMode.Location = New System.Drawing.Point(200, 30)
+        Me.cboScalingMode.Name = "cboScalingMode"
+        Me.cboScalingMode.Size = New System.Drawing.Size(97, 21)
+        Me.cboScalingMode.TabIndex = 8
+        Me.ttSettings.SetToolTip(Me.cboScalingMode, "Auto will use pixel mode when scaling factor is 2x or more.")
+        '
+        'chkCycleOnClose
+        '
+        Me.chkCycleOnClose.AutoSize = True
+        Me.chkCycleOnClose.Location = New System.Drawing.Point(161, 57)
+        Me.chkCycleOnClose.Name = "chkCycleOnClose"
+        Me.chkCycleOnClose.Size = New System.Drawing.Size(96, 17)
+        Me.chkCycleOnClose.TabIndex = 16
+        Me.chkCycleOnClose.Text = "Cycle on Close"
+        Me.ttSettings.SetToolTip(Me.chkCycleOnClose, "Closing an alt will cycle to the next one.")
+        Me.chkCycleOnClose.UseVisualStyleBackColor = True
+        '
         'ChkDark
         '
         Me.ChkDark.AutoSize = True
-        Me.ChkDark.Location = New System.Drawing.Point(114, 69)
+        Me.ChkDark.Location = New System.Drawing.Point(20, 69)
         Me.ChkDark.Name = "ChkDark"
         Me.ChkDark.Size = New System.Drawing.Size(85, 17)
         Me.ChkDark.TabIndex = 5
@@ -525,17 +536,6 @@ Partial NotInheritable Class FrmSettings
         Me.tabResolutions.TabIndex = 0
         Me.tabResolutions.Text = "Resolutions"
         Me.tabResolutions.UseVisualStyleBackColor = True
-        '
-        'cboScalingMode
-        '
-        Me.cboScalingMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.cboScalingMode.FormattingEnabled = True
-        Me.cboScalingMode.Items.AddRange(New Object() {"Auto", "Blurred", "Pixelated"})
-        Me.cboScalingMode.Location = New System.Drawing.Point(200, 30)
-        Me.cboScalingMode.Name = "cboScalingMode"
-        Me.cboScalingMode.Size = New System.Drawing.Size(97, 21)
-        Me.cboScalingMode.TabIndex = 8
-        Me.ttSettings.SetToolTip(Me.cboScalingMode, "Auto will use pixel mode when scaling factor is 2x or more.")
         '
         'btnAddCurrentRes
         '
@@ -624,6 +624,9 @@ Partial NotInheritable Class FrmSettings
         '
         'tabHotkeys
         '
+        Me.tabHotkeys.Controls.Add(Me.chkCycleOnClose)
+        Me.tabHotkeys.Controls.Add(Me.chkSwitchToOverview)
+        Me.tabHotkeys.Controls.Add(Me.chkCycleAlts)
         Me.tabHotkeys.Controls.Add(Me.grpCycleShortcut)
         Me.tabHotkeys.Controls.Add(Me.grpOverviewShortcut)
         Me.tabHotkeys.Location = New System.Drawing.Point(4, 25)
@@ -640,7 +643,6 @@ Partial NotInheritable Class FrmSettings
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleDownAlt)
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleDownCtrl)
         Me.grpCycleShortcut.Controls.Add(Me.txtCycleKeyDown)
-        Me.grpCycleShortcut.Controls.Add(Me.chkCycleAlts)
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleUpAlt)
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleUpCtrl)
         Me.grpCycleShortcut.Controls.Add(Me.txtCycleKeyUp)
@@ -653,7 +655,7 @@ Partial NotInheritable Class FrmSettings
         'chkCycleDownShift
         '
         Me.chkCycleDownShift.AutoSize = True
-        Me.chkCycleDownShift.Location = New System.Drawing.Point(84, 47)
+        Me.chkCycleDownShift.Location = New System.Drawing.Point(84, 43)
         Me.chkCycleDownShift.Name = "chkCycleDownShift"
         Me.chkCycleDownShift.Size = New System.Drawing.Size(47, 17)
         Me.chkCycleDownShift.TabIndex = 15
@@ -664,7 +666,7 @@ Partial NotInheritable Class FrmSettings
         'chkCycleUpShift
         '
         Me.chkCycleUpShift.AutoSize = True
-        Me.chkCycleUpShift.Location = New System.Drawing.Point(84, 26)
+        Me.chkCycleUpShift.Location = New System.Drawing.Point(84, 20)
         Me.chkCycleUpShift.Name = "chkCycleUpShift"
         Me.chkCycleUpShift.Size = New System.Drawing.Size(47, 17)
         Me.chkCycleUpShift.TabIndex = 14
@@ -675,7 +677,7 @@ Partial NotInheritable Class FrmSettings
         'chkCycleDownAlt
         '
         Me.chkCycleDownAlt.AutoSize = True
-        Me.chkCycleDownAlt.Location = New System.Drawing.Point(46, 47)
+        Me.chkCycleDownAlt.Location = New System.Drawing.Point(46, 43)
         Me.chkCycleDownAlt.Name = "chkCycleDownAlt"
         Me.chkCycleDownAlt.Size = New System.Drawing.Size(38, 17)
         Me.chkCycleDownAlt.TabIndex = 13
@@ -686,7 +688,7 @@ Partial NotInheritable Class FrmSettings
         'chkCycleDownCtrl
         '
         Me.chkCycleDownCtrl.AutoSize = True
-        Me.chkCycleDownCtrl.Location = New System.Drawing.Point(6, 47)
+        Me.chkCycleDownCtrl.Location = New System.Drawing.Point(6, 43)
         Me.chkCycleDownCtrl.Name = "chkCycleDownCtrl"
         Me.chkCycleDownCtrl.Size = New System.Drawing.Size(41, 17)
         Me.chkCycleDownCtrl.TabIndex = 12
@@ -696,7 +698,7 @@ Partial NotInheritable Class FrmSettings
         '
         'txtCycleKeyDown
         '
-        Me.txtCycleKeyDown.Location = New System.Drawing.Point(134, 45)
+        Me.txtCycleKeyDown.Location = New System.Drawing.Point(134, 41)
         Me.txtCycleKeyDown.Name = "txtCycleKeyDown"
         Me.txtCycleKeyDown.Size = New System.Drawing.Size(74, 20)
         Me.txtCycleKeyDown.TabIndex = 11
@@ -705,18 +707,18 @@ Partial NotInheritable Class FrmSettings
         'chkCycleAlts
         '
         Me.chkCycleAlts.AutoSize = True
-        Me.chkCycleAlts.Location = New System.Drawing.Point(0, 4)
+        Me.chkCycleAlts.Location = New System.Drawing.Point(48, 57)
         Me.chkCycleAlts.Name = "chkCycleAlts"
-        Me.chkCycleAlts.Size = New System.Drawing.Size(122, 17)
+        Me.chkCycleAlts.Size = New System.Drawing.Size(102, 17)
         Me.chkCycleAlts.TabIndex = 10
         Me.chkCycleAlts.TabStop = False
-        Me.chkCycleAlts.Text = "Cycle Alts Up/Down"
+        Me.chkCycleAlts.Text = "Cycle Up/Down"
         Me.chkCycleAlts.UseVisualStyleBackColor = True
         '
         'chkCycleUpAlt
         '
         Me.chkCycleUpAlt.AutoSize = True
-        Me.chkCycleUpAlt.Location = New System.Drawing.Point(46, 26)
+        Me.chkCycleUpAlt.Location = New System.Drawing.Point(46, 20)
         Me.chkCycleUpAlt.Name = "chkCycleUpAlt"
         Me.chkCycleUpAlt.Size = New System.Drawing.Size(38, 17)
         Me.chkCycleUpAlt.TabIndex = 9
@@ -727,7 +729,7 @@ Partial NotInheritable Class FrmSettings
         'chkCycleUpCtrl
         '
         Me.chkCycleUpCtrl.AutoSize = True
-        Me.chkCycleUpCtrl.Location = New System.Drawing.Point(6, 26)
+        Me.chkCycleUpCtrl.Location = New System.Drawing.Point(6, 20)
         Me.chkCycleUpCtrl.Name = "chkCycleUpCtrl"
         Me.chkCycleUpCtrl.Size = New System.Drawing.Size(41, 17)
         Me.chkCycleUpCtrl.TabIndex = 8
@@ -737,7 +739,7 @@ Partial NotInheritable Class FrmSettings
         '
         'txtCycleKeyUp
         '
-        Me.txtCycleKeyUp.Location = New System.Drawing.Point(134, 24)
+        Me.txtCycleKeyUp.Location = New System.Drawing.Point(134, 18)
         Me.txtCycleKeyUp.Name = "txtCycleKeyUp"
         Me.txtCycleKeyUp.Size = New System.Drawing.Size(74, 20)
         Me.txtCycleKeyUp.TabIndex = 7
@@ -749,7 +751,6 @@ Partial NotInheritable Class FrmSettings
         Me.grpOverviewShortcut.Controls.Add(Me.txtStoKey)
         Me.grpOverviewShortcut.Controls.Add(Me.chkStoAlt)
         Me.grpOverviewShortcut.Controls.Add(Me.chkStoCtrl)
-        Me.grpOverviewShortcut.Controls.Add(Me.chkSwitchToOverview)
         Me.grpOverviewShortcut.Location = New System.Drawing.Point(46, 8)
         Me.grpOverviewShortcut.Name = "grpOverviewShortcut"
         Me.grpOverviewShortcut.Size = New System.Drawing.Size(214, 45)
@@ -800,7 +801,7 @@ Partial NotInheritable Class FrmSettings
         'chkSwitchToOverview
         '
         Me.chkSwitchToOverview.AutoSize = True
-        Me.chkSwitchToOverview.Location = New System.Drawing.Point(0, 0)
+        Me.chkSwitchToOverview.Location = New System.Drawing.Point(48, 6)
         Me.chkSwitchToOverview.Name = "chkSwitchToOverview"
         Me.chkSwitchToOverview.Size = New System.Drawing.Size(118, 17)
         Me.chkSwitchToOverview.TabIndex = 2
@@ -902,7 +903,6 @@ Partial NotInheritable Class FrmSettings
         '
         Me.tabMisc.Controls.Add(Me.ChkDark)
         Me.tabMisc.Controls.Add(Me.chkDoAlign)
-        Me.tabMisc.Controls.Add(Me.chkCycleOnClose)
         Me.tabMisc.Controls.Add(Me.grpAlign)
         Me.tabMisc.Controls.Add(Me.txtExe)
         Me.tabMisc.Controls.Add(Me.chkTopMost)
@@ -1045,6 +1045,7 @@ Partial NotInheritable Class FrmSettings
         Me.tabResolutions.PerformLayout()
         Me.cmsGenerate.ResumeLayout(False)
         Me.tabHotkeys.ResumeLayout(False)
+        Me.tabHotkeys.PerformLayout()
         Me.grpCycleShortcut.ResumeLayout(False)
         Me.grpCycleShortcut.PerformLayout()
         Me.grpOverviewShortcut.ResumeLayout(False)
@@ -1108,7 +1109,6 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents X720169ToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents FromToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents DummyToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents chkCycleOnClose As CheckBox
     Friend WithEvents tabSortAndBL As TabPage
     Friend WithEvents btnHelp As Button
     Friend WithEvents txtBotSort As TextBox
@@ -1130,4 +1130,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents btnGrabCurrent As Button
     Friend WithEvents btnAddCurrentRes As Button
     Friend WithEvents cboScalingMode As ComboBox
+    Friend WithEvents chkCycleOnClose As CheckBox
 End Class
