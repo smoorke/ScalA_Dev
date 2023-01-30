@@ -1,5 +1,7 @@
-﻿Imports System.Runtime.InteropServices
+﻿Imports System.Net.Http
+Imports System.Runtime.InteropServices
 Imports System.Text
+Imports Microsoft.VisualBasic.FileIO
 
 Public NotInheritable Class FrmSettings
     Public SysMenu As New SysMenu(Me)
@@ -88,7 +90,9 @@ Public NotInheritable Class FrmSettings
 
         ChkDark.Checked = My.Settings.DarkMode
 
-        cboScalingMode.SelectedIndex = My.Settings.scalingmode
+        cboScalingMode.SelectedIndex = My.Settings.ScalingMode
+
+        chkCheckForUpdate.Checked = My.Settings.CheckForUpdate
 
     End Sub
 
@@ -323,6 +327,9 @@ Public NotInheritable Class FrmSettings
                 FrmMain.UpdateThumb(If(FrmMain.chkDebug.Checked, 128, 255))
             End If
         End If
+
+        My.Settings.CheckForUpdate = chkCheckForUpdate.Checked
+
         BtnTest_Click(Nothing, Nothing) 'apply sorting & black/whitlelist, note: .PerformClick() doesn't work as button may not be visible
 
         Hotkey.UnregHotkey(FrmMain)

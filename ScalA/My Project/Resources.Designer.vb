@@ -215,6 +215,16 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Looks up a localized resource of type System.Byte[].
+        '''</summary>
+        Friend ReadOnly Property ScalA_Updater() As Byte()
+            Get
+                Dim obj As Object = ResourceManager.GetObject("ScalA_Updater", resourceCulture)
+                Return CType(obj,Byte())
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
         Friend ReadOnly Property scrollbar_arrow_small_hot() As System.Drawing.Bitmap

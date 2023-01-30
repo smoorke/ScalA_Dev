@@ -74,13 +74,14 @@ Partial NotInheritable Class FrmSettings
         Me.DummyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.txtResolutions = New System.Windows.Forms.TextBox()
         Me.tabHotkeys = New System.Windows.Forms.TabPage()
+        Me.chkSwitchToOverview = New System.Windows.Forms.CheckBox()
+        Me.chkCycleAlts = New System.Windows.Forms.CheckBox()
         Me.grpCycleShortcut = New System.Windows.Forms.GroupBox()
         Me.chkCycleDownShift = New System.Windows.Forms.CheckBox()
         Me.chkCycleUpShift = New System.Windows.Forms.CheckBox()
         Me.chkCycleDownAlt = New System.Windows.Forms.CheckBox()
         Me.chkCycleDownCtrl = New System.Windows.Forms.CheckBox()
         Me.txtCycleKeyDown = New System.Windows.Forms.TextBox()
-        Me.chkCycleAlts = New System.Windows.Forms.CheckBox()
         Me.chkCycleUpAlt = New System.Windows.Forms.CheckBox()
         Me.chkCycleUpCtrl = New System.Windows.Forms.CheckBox()
         Me.txtCycleKeyUp = New System.Windows.Forms.TextBox()
@@ -89,7 +90,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtStoKey = New System.Windows.Forms.TextBox()
         Me.chkStoAlt = New System.Windows.Forms.CheckBox()
         Me.chkStoCtrl = New System.Windows.Forms.CheckBox()
-        Me.chkSwitchToOverview = New System.Windows.Forms.CheckBox()
         Me.tabSortAndBL = New System.Windows.Forms.TabPage()
         Me.btnTest = New System.Windows.Forms.Button()
         Me.btnHelp = New System.Windows.Forms.Button()
@@ -99,6 +99,7 @@ Partial NotInheritable Class FrmSettings
         Me.tabMaximized = New System.Windows.Forms.TabPage()
         Me.NumExtraMax = New System.Windows.Forms.NumericUpDown()
         Me.tabMisc = New System.Windows.Forms.TabPage()
+        Me.chkCheckForUpdate = New System.Windows.Forms.CheckBox()
         Me.chkDoAlign = New System.Windows.Forms.CheckBox()
         Me.grpAlign = New System.Windows.Forms.GroupBox()
         Me.btnResetAlign = New System.Windows.Forms.Button()
@@ -497,11 +498,11 @@ Partial NotInheritable Class FrmSettings
         'ChkDark
         '
         Me.ChkDark.AutoSize = True
-        Me.ChkDark.Location = New System.Drawing.Point(20, 69)
+        Me.ChkDark.Location = New System.Drawing.Point(13, 69)
         Me.ChkDark.Name = "ChkDark"
-        Me.ChkDark.Size = New System.Drawing.Size(85, 17)
+        Me.ChkDark.Size = New System.Drawing.Size(79, 17)
         Me.ChkDark.TabIndex = 5
-        Me.ChkDark.Text = "Dark Theme"
+        Me.ChkDark.Text = "Dark Mode"
         Me.ChkDark.UseVisualStyleBackColor = True
         '
         'tbcSettings
@@ -636,6 +637,28 @@ Partial NotInheritable Class FrmSettings
         Me.tabHotkeys.Text = "Hotkeys"
         Me.tabHotkeys.UseVisualStyleBackColor = True
         '
+        'chkSwitchToOverview
+        '
+        Me.chkSwitchToOverview.AutoSize = True
+        Me.chkSwitchToOverview.Location = New System.Drawing.Point(48, 6)
+        Me.chkSwitchToOverview.Name = "chkSwitchToOverview"
+        Me.chkSwitchToOverview.Size = New System.Drawing.Size(118, 17)
+        Me.chkSwitchToOverview.TabIndex = 2
+        Me.chkSwitchToOverview.TabStop = False
+        Me.chkSwitchToOverview.Text = "Switch to Overview"
+        Me.chkSwitchToOverview.UseVisualStyleBackColor = True
+        '
+        'chkCycleAlts
+        '
+        Me.chkCycleAlts.AutoSize = True
+        Me.chkCycleAlts.Location = New System.Drawing.Point(48, 57)
+        Me.chkCycleAlts.Name = "chkCycleAlts"
+        Me.chkCycleAlts.Size = New System.Drawing.Size(102, 17)
+        Me.chkCycleAlts.TabIndex = 10
+        Me.chkCycleAlts.TabStop = False
+        Me.chkCycleAlts.Text = "Cycle Up/Down"
+        Me.chkCycleAlts.UseVisualStyleBackColor = True
+        '
         'grpCycleShortcut
         '
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleDownShift)
@@ -703,17 +726,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtCycleKeyDown.Size = New System.Drawing.Size(74, 20)
         Me.txtCycleKeyDown.TabIndex = 11
         Me.txtCycleKeyDown.TabStop = False
-        '
-        'chkCycleAlts
-        '
-        Me.chkCycleAlts.AutoSize = True
-        Me.chkCycleAlts.Location = New System.Drawing.Point(48, 57)
-        Me.chkCycleAlts.Name = "chkCycleAlts"
-        Me.chkCycleAlts.Size = New System.Drawing.Size(102, 17)
-        Me.chkCycleAlts.TabIndex = 10
-        Me.chkCycleAlts.TabStop = False
-        Me.chkCycleAlts.Text = "Cycle Up/Down"
-        Me.chkCycleAlts.UseVisualStyleBackColor = True
         '
         'chkCycleUpAlt
         '
@@ -797,17 +809,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkStoCtrl.TabStop = False
         Me.chkStoCtrl.Text = "Ctrl"
         Me.chkStoCtrl.UseVisualStyleBackColor = True
-        '
-        'chkSwitchToOverview
-        '
-        Me.chkSwitchToOverview.AutoSize = True
-        Me.chkSwitchToOverview.Location = New System.Drawing.Point(48, 6)
-        Me.chkSwitchToOverview.Name = "chkSwitchToOverview"
-        Me.chkSwitchToOverview.Size = New System.Drawing.Size(118, 17)
-        Me.chkSwitchToOverview.TabIndex = 2
-        Me.chkSwitchToOverview.TabStop = False
-        Me.chkSwitchToOverview.Text = "Switch to Overview"
-        Me.chkSwitchToOverview.UseVisualStyleBackColor = True
         '
         'tabSortAndBL
         '
@@ -901,17 +902,18 @@ Partial NotInheritable Class FrmSettings
         '
         'tabMisc
         '
-        Me.tabMisc.Controls.Add(Me.ChkDark)
         Me.tabMisc.Controls.Add(Me.chkDoAlign)
         Me.tabMisc.Controls.Add(Me.grpAlign)
         Me.tabMisc.Controls.Add(Me.txtExe)
-        Me.tabMisc.Controls.Add(Me.chkTopMost)
-        Me.tabMisc.Controls.Add(Me.chkRoundCorners)
         Me.tabMisc.Controls.Add(grpQLPath)
         Me.tabMisc.Controls.Add(Label3)
         Me.tabMisc.Controls.Add(Me.txtClass)
         Me.tabMisc.Controls.Add(Me.chkOverViewIsGame)
         Me.tabMisc.Controls.Add(Me.ChkSingleInstance)
+        Me.tabMisc.Controls.Add(Me.chkCheckForUpdate)
+        Me.tabMisc.Controls.Add(Me.ChkDark)
+        Me.tabMisc.Controls.Add(Me.chkTopMost)
+        Me.tabMisc.Controls.Add(Me.chkRoundCorners)
         Me.tabMisc.Location = New System.Drawing.Point(4, 25)
         Me.tabMisc.Name = "tabMisc"
         Me.tabMisc.Padding = New System.Windows.Forms.Padding(3)
@@ -919,6 +921,17 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc.TabIndex = 1
         Me.tabMisc.Text = "Misc"
         Me.tabMisc.UseVisualStyleBackColor = True
+        '
+        'chkCheckForUpdate
+        '
+        Me.chkCheckForUpdate.AutoSize = True
+        Me.chkCheckForUpdate.Location = New System.Drawing.Point(89, 69)
+        Me.chkCheckForUpdate.Name = "chkCheckForUpdate"
+        Me.chkCheckForUpdate.Size = New System.Drawing.Size(113, 17)
+        Me.chkCheckForUpdate.TabIndex = 23
+        Me.chkCheckForUpdate.Text = "Check For Update"
+        Me.ttSettings.SetToolTip(Me.chkCheckForUpdate, "Check for Updates when ScalA starts.")
+        Me.chkCheckForUpdate.UseVisualStyleBackColor = True
         '
         'chkDoAlign
         '
@@ -989,7 +1002,7 @@ Partial NotInheritable Class FrmSettings
         'chkTopMost
         '
         Me.chkTopMost.AutoSize = True
-        Me.chkTopMost.Location = New System.Drawing.Point(20, 54)
+        Me.chkTopMost.Location = New System.Drawing.Point(13, 54)
         Me.chkTopMost.Name = "chkTopMost"
         Me.chkTopMost.Size = New System.Drawing.Size(98, 17)
         Me.chkTopMost.TabIndex = 3
@@ -999,7 +1012,7 @@ Partial NotInheritable Class FrmSettings
         'chkRoundCorners
         '
         Me.chkRoundCorners.AutoSize = True
-        Me.chkRoundCorners.Location = New System.Drawing.Point(20, 39)
+        Me.chkRoundCorners.Location = New System.Drawing.Point(13, 39)
         Me.chkRoundCorners.Name = "chkRoundCorners"
         Me.chkRoundCorners.Size = New System.Drawing.Size(109, 17)
         Me.chkRoundCorners.TabIndex = 2
@@ -1131,4 +1144,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents btnAddCurrentRes As Button
     Friend WithEvents cboScalingMode As ComboBox
     Friend WithEvents chkCycleOnClose As CheckBox
+    Friend WithEvents chkCheckForUpdate As CheckBox
 End Class

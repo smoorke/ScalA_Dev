@@ -4,17 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1803FD5E-FA7C-4CF3-A9D3-5BBC3DB5A940}</ProjectGuid>
+    <ProjectGuid>{075F88A1-76CE-4B9F-B750-D7654ECF3678}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <StartupObject>ScalA.My.MyApplication</StartupObject>
-    <RootNamespace>ScalA</RootNamespace>
-    <AssemblyName>ScalA</AssemblyName>
+    <StartupObject>ScalA_Updater.FrmUpdaterMain</StartupObject>
+    <RootNamespace>ScalA_Updater</RootNamespace>
+    <AssemblyName>ScalA_Updater</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <MyType>WindowsForms</MyType>
+    <MyType>WindowsFormsWithCustomSubMain</MyType>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -23,12 +22,8 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\Debug\</OutputPath>
-    <DocumentationFile>ScalA.xml</DocumentationFile>
-    <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</NoWarn>
-    <WarningsAsErrors>
-    </WarningsAsErrors>
-    <Prefer32Bit>true</Prefer32Bit>
-    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <DocumentationFile>ScalA_Updater.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -37,11 +32,8 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>ScalA.xml</DocumentationFile>
-    <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</NoWarn>
-    <WarningsAsErrors>
-    </WarningsAsErrors>
-    <RemoveIntegerChecks>true</RemoveIntegerChecks>
+    <DocumentationFile>ScalA_Updater.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <OptionExplicit>On</OptionExplicit>
@@ -56,23 +48,13 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\moa3.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
+    <ApplicationIcon>moa3.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Ookii.Dialogs.WinForms, Version=1.0.0.0, Culture=neutral, PublicKeyToken=66aa232afad40158, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ookii.Dialogs.WinForms.1.2.0\lib\net45\Ookii.Dialogs.WinForms.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
-    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Management" />
-    <Reference Include="System.Security" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -94,44 +76,13 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AButton.vb" />
-    <Compile Include="ApplicationEvents.vb" />
-    <Compile Include="AstoniaProcess.vb" />
-    <Compile Include="CustomColorTable.vb" />
-    <Compile Include="CustomStringSorter.vb" />
-    <Compile Include="DWMThumb.vb" />
-    <Compile Include="Extensions.vb" />
-    <Compile Include="frmMain\ContextMenus.vb" />
-    <Compile Include="frmMain\frmBehind.Designer.vb">
-      <DependentUpon>frmBehind.vb</DependentUpon>
-    </Compile>
-    <Compile Include="frmMain\frmBehind.vb">
+    <Compile Include="FrmUpdaterMain.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmMain\FrmSizeBorder.Designer.vb">
-      <DependentUpon>FrmSizeBorder.vb</DependentUpon>
-    </Compile>
-    <Compile Include="frmMain\FrmSizeBorder.vb">
+    <Compile Include="FrmUpdaterMain.Designer.vb">
+      <DependentUpon>FrmUpdaterMain.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmMain\SysMenu.vb" />
-    <Compile Include="frmMain\ThemedControls.vb" />
-    <Compile Include="frmMain\WindowProc.vb" />
-    <Compile Include="frmSettings.Designer.vb">
-      <DependentUpon>frmSettings.vb</DependentUpon>
-    </Compile>
-    <Compile Include="frmSettings.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmMain\frmMain.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmMain\frmMain.Designer.vb">
-      <DependentUpon>frmMain.vb</DependentUpon>
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Hotkey.vb" />
-    <Compile Include="IPC.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -148,21 +99,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="NativeMethods.vb" />
     <Compile Include="SystemUtitlity.vb" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="frmMain\frmBehind.resx">
-      <DependentUpon>frmBehind.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmMain\FrmSizeBorder.resx">
-      <DependentUpon>FrmSizeBorder.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmSettings.resx">
-      <DependentUpon>frmSettings.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmMain\frmMain.resx">
-      <DependentUpon>frmMain.vb</DependentUpon>
+    <EmbeddedResource Include="FrmUpdaterMain.resx">
+      <DependentUpon>FrmUpdaterMain.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
@@ -172,7 +113,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="My Project\app.manifest" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
@@ -185,23 +125,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ScalA_Updater.exe" />
-    <None Include="Resources\scrollbar_arrow_small_hot.png" />
-    <None Include="Resources\cornerNE.png" />
-    <None Include="Resources\cornerNW.png" />
-    <None Include="Resources\cornerSE.png" />
-    <None Include="Resources\cornerSW.png" />
-    <None Include="Resources\About.png" />
-    <Content Include="Resources\moa3.ico" />
-    <None Include="Resources\F12.png" />
-    <None Include="Resources\moa3.png" />
-    <Content Include="Resources\ReadMe.txt" />
-    <None Include="Resources\Add.png" />
-    <Content Include="Resources\gear_wheel.png" />
-    <None Include="Resources\AsInvoker.bat" />
-    <None Include="Resources\Ookii.Dialogs.WinForms.dll" />
-    <None Include="packages.config" />
-    <None Include="Resources\message.png" />
+    <Content Include="moa3.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy $(TargetDir)$(TargetFileName) $(SolutionDir)$(SolutionName)\Resources</PostBuildEvent>
+  </PropertyGroup>
 </Project>

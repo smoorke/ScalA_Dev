@@ -1,4 +1,6 @@
-﻿Imports ScalA.NativeMethods
+﻿Imports System.Net.Http
+Imports Microsoft.VisualBasic.FileIO
+Imports ScalA.NativeMethods
 
 Partial Public NotInheritable Class FrmMain
 
@@ -334,6 +336,7 @@ Partial Public NotInheritable Class FrmMain
         test.Items.Add(New ToolStripMenuItem("isBelow", Nothing, AddressOf dBug.IsBelow))
         Static extraitem As New ToolStripMenuItem($"movebusy {moveBusy}")
         test.Items.Add(extraitem)
+        test.Items.Add(New ToolStripMenuItem("Update", Nothing, AddressOf dBug.EnableUpdate))
         chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()
                                      Debug.Print("test Opening")
@@ -388,6 +391,81 @@ Partial Public NotInheritable Class FrmMain
             moveBusy = False
         End If
         FrmBehind.Bounds = Me.Bounds
+        If My.Settings.CheckForUpdate Then
+            updateToVersionTask = UpdateCheck()
+        End If
+    End Sub
+    Friend Shared updateToVersionTask As Task(Of String)
+    Friend Shared ReadOnly client As HttpClient = New HttpClient()
+    Friend Shared Async Function UpdateCheck() As Task(Of String)
+        Try
+            Using response As HttpResponseMessage = Await client.GetAsync("https://github.com/smoorke/ScalA/releases/download/ScalA/version")
+                response.EnsureSuccessStatusCode()
+                Dim responseBody As String = Await response.Content.ReadAsStringAsync()
+
+                If New Version(responseBody) > My.Application.Info.Version Then
+                    FrmMain.pnlUpdate.Visible = True
+                Else
+                    FrmMain.pnlUpdate.Visible = False
+                End If
+
+                Return responseBody
+            End Using
+        Catch ex As Exception
+            FrmMain.pnlUpdate.Visible = False
+            Return "Error"
+        End Try
+    End Function
+    Friend Shared Async Sub UpdateDownload()
+        Try
+            Using response As HttpResponseMessage = Await client.GetAsync("https://github.com/smoorke/ScalA/releases/download/ScalA/ScalA.exe")
+                response.EnsureSuccessStatusCode()
+                Dim responseBody As Byte() = Await response.Content.ReadAsByteArrayAsync()
+
+                If Not FileIO.FileSystem.DirectoryExists(SpecialDirectories.Temp & "\ScalA\") Then
+                    FileIO.FileSystem.CreateDirectory(SpecialDirectories.Temp & "\ScalA\")
+                End If
+
+                FileIO.FileSystem.WriteAllBytes(SpecialDirectories.Temp & "\ScalA\ScalA.exe", responseBody, False)
+
+            End Using
+        Catch e As Exception
+            MessageBox.Show("Error" & vbCrLf & e.Message)
+        End Try
+    End Sub
+
+    Friend Shared Sub pbUpdateAvailable_Click(sender As PictureBox, e As MouseEventArgs) Handles pbUpdateAvailable.MouseDown
+
+        If e.Button <> MouseButtons.Left Then Exit Sub
+
+        'todo replace with custom dialog
+        If MessageBox.Show(FrmMain, "A ScalA update is available." & vbCrLf &
+                            $"Would you like to update to v{updateToVersionTask.Result}?",
+                           "Update Available", MessageBoxButtons.YesNo) = DialogResult.No Then
+            Exit Sub
+        End If
+        UpdateDownload()
+        My.Settings.Save()
+        FrmMain.tmrOverview.Stop()
+        FrmMain.tmrTick.Stop()
+        Try
+            If Not FileIO.FileSystem.DirectoryExists(SpecialDirectories.Temp & "\ScalA\") Then
+                FileIO.FileSystem.CreateDirectory(SpecialDirectories.Temp & "\ScalA\")
+            End If
+            FileIO.FileSystem.WriteAllBytes(SpecialDirectories.Temp & "\ScalA\ScalA_Updater.exe", My.Resources.ScalA_Updater, False)
+            Process.Start(New ProcessStartInfo With {
+                                       .FileName = SpecialDirectories.Temp & "\ScalA\ScalA_Updater.exe",
+                                       .Arguments = $"""{Environment.GetCommandLineArgs(0)}""",
+                                       .Verb = "runas"
+                          })
+            End
+        Catch
+        End Try
+        If FrmMain.cboAlt.SelectedIndex = 0 Then
+            FrmMain.tmrOverview.Start()
+        Else
+            FrmMain.tmrTick.Start()
+        End If
     End Sub
 
     Public Sub ApplyTheme()
@@ -1685,6 +1763,7 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
+
 End Class
 
 #If DEBUG Then
@@ -1729,6 +1808,9 @@ Module dBug
         Debug.Print($"isBelow {FrmMain.AltPP?.IsBelow(FrmMain.Handle)}")
     End Sub
 
+    Friend Sub EnableUpdate(sender As Object, e As EventArgs)
+        FrmMain.pnlUpdate.Visible = True
+    End Sub
 End Module
 
 #End If

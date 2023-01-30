@@ -35,6 +35,8 @@ Partial NotInheritable Class FrmMain
         Me.cmbResolution = New ScalA.ThemedComboBox()
         Me.cboAlt = New ScalA.ThemedComboBox()
         Me.pnlTitleBar = New System.Windows.Forms.Panel()
+        Me.pnlUpdate = New System.Windows.Forms.Panel()
+        Me.pbUpdateAvailable = New System.Windows.Forms.PictureBox()
         Me.ChkEqLock = New System.Windows.Forms.CheckBox()
         Me.chkDebug = New System.Windows.Forms.CheckBox()
         Me.lblTitle = New System.Windows.Forms.Label()
@@ -74,6 +76,8 @@ Partial NotInheritable Class FrmMain
         Me.pnlSys.SuspendLayout()
         Me.cmsQuickLaunch.SuspendLayout()
         Me.pnlTitleBar.SuspendLayout()
+        Me.pnlUpdate.SuspendLayout()
+        CType(Me.pbUpdateAvailable, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.pnlButtons.SuspendLayout()
         Me.cmsAlt.SuspendLayout()
         Me.pnlOverview.SuspendLayout()
@@ -170,6 +174,7 @@ Partial NotInheritable Class FrmMain
         'pnlTitleBar
         '
         Me.pnlTitleBar.BackColor = System.Drawing.SystemColors.Control
+        Me.pnlTitleBar.Controls.Add(Me.pnlUpdate)
         Me.pnlTitleBar.Controls.Add(Me.ChkEqLock)
         Me.pnlTitleBar.Controls.Add(Me.chkDebug)
         Me.pnlTitleBar.Controls.Add(Me.lblTitle)
@@ -177,6 +182,30 @@ Partial NotInheritable Class FrmMain
         Me.pnlTitleBar.Name = "pnlTitleBar"
         Me.pnlTitleBar.Size = New System.Drawing.Size(641, 25)
         Me.pnlTitleBar.TabIndex = 14
+        '
+        'pnlUpdate
+        '
+        Me.pnlUpdate.Controls.Add(Me.pbUpdateAvailable)
+        Me.pnlUpdate.Dock = System.Windows.Forms.DockStyle.Right
+        Me.pnlUpdate.Location = New System.Drawing.Point(580, 0)
+        Me.pnlUpdate.Margin = New System.Windows.Forms.Padding(0)
+        Me.pnlUpdate.Name = "pnlUpdate"
+        Me.pnlUpdate.Size = New System.Drawing.Size(24, 25)
+        Me.pnlUpdate.TabIndex = 14
+        Me.pnlUpdate.Visible = False
+        '
+        'pbUpdateAvailable
+        '
+        Me.pbUpdateAvailable.BackgroundImage = Global.ScalA.My.Resources.Resources.About
+        Me.pbUpdateAvailable.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
+        Me.pbUpdateAvailable.Location = New System.Drawing.Point(3, 6)
+        Me.pbUpdateAvailable.Margin = New System.Windows.Forms.Padding(0)
+        Me.pbUpdateAvailable.Name = "pbUpdateAvailable"
+        Me.pbUpdateAvailable.Size = New System.Drawing.Size(20, 19)
+        Me.pbUpdateAvailable.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
+        Me.pbUpdateAvailable.TabIndex = 14
+        Me.pbUpdateAvailable.TabStop = False
+        Me.ttMain.SetToolTip(Me.pbUpdateAvailable, "An Update is Available")
         '
         'ChkEqLock
         '
@@ -502,6 +531,8 @@ Partial NotInheritable Class FrmMain
         Me.cmsQuickLaunch.ResumeLayout(False)
         Me.pnlTitleBar.ResumeLayout(False)
         Me.pnlTitleBar.PerformLayout()
+        Me.pnlUpdate.ResumeLayout(False)
+        CType(Me.pbUpdateAvailable, System.ComponentModel.ISupportInitialize).EndInit()
         Me.pnlButtons.ResumeLayout(False)
         Me.cmsAlt.ResumeLayout(False)
         Me.pnlOverview.ResumeLayout(False)
@@ -556,4 +587,6 @@ Partial NotInheritable Class FrmMain
     Public WithEvents cmbResolution As ThemedComboBox
     Friend WithEvents cboAlt As ThemedComboBox
     Friend WithEvents btnStart As ThemedStartButton
+    Friend WithEvents pnlUpdate As Panel
+    Friend WithEvents pbUpdateAvailable As PictureBox
 End Class
