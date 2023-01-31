@@ -446,6 +446,7 @@ Partial Public NotInheritable Class FrmMain
         End If
         UpdateDownload()
         My.Settings.Save()
+        AstoniaProcess.RestorePos()
         FrmMain.tmrOverview.Stop()
         FrmMain.tmrTick.Stop()
         Try
