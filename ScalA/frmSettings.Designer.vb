@@ -60,6 +60,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkOverViewIsGame = New System.Windows.Forms.CheckBox()
         Me.cboScalingMode = New System.Windows.Forms.ComboBox()
         Me.chkCycleOnClose = New System.Windows.Forms.CheckBox()
+        Me.chkCheckForUpdate = New System.Windows.Forms.CheckBox()
         Me.ChkDark = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
@@ -99,16 +100,15 @@ Partial NotInheritable Class FrmSettings
         Me.tabMaximized = New System.Windows.Forms.TabPage()
         Me.NumExtraMax = New System.Windows.Forms.NumericUpDown()
         Me.tabMisc = New System.Windows.Forms.TabPage()
-        Me.chkCheckForUpdate = New System.Windows.Forms.CheckBox()
         Me.chkDoAlign = New System.Windows.Forms.CheckBox()
         Me.grpAlign = New System.Windows.Forms.GroupBox()
         Me.btnResetAlign = New System.Windows.Forms.Button()
         Me.numXoffset = New System.Windows.Forms.NumericUpDown()
         Me.numYoffset = New System.Windows.Forms.NumericUpDown()
         Me.txtExe = New System.Windows.Forms.TextBox()
+        Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
-        Me.txtClass = New System.Windows.Forms.TextBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -477,7 +477,7 @@ Partial NotInheritable Class FrmSettings
         '
         Me.cboScalingMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cboScalingMode.FormattingEnabled = True
-        Me.cboScalingMode.Items.AddRange(New Object() {"Auto", "Blurred", "Pixelated"})
+        Me.cboScalingMode.Items.AddRange(New Object() {"Auto", "Blur", "Pixel"})
         Me.cboScalingMode.Location = New System.Drawing.Point(200, 30)
         Me.cboScalingMode.Name = "cboScalingMode"
         Me.cboScalingMode.Size = New System.Drawing.Size(97, 21)
@@ -494,6 +494,17 @@ Partial NotInheritable Class FrmSettings
         Me.chkCycleOnClose.Text = "Cycle on Close"
         Me.ttSettings.SetToolTip(Me.chkCycleOnClose, "Closing an alt will cycle to the next one.")
         Me.chkCycleOnClose.UseVisualStyleBackColor = True
+        '
+        'chkCheckForUpdate
+        '
+        Me.chkCheckForUpdate.AutoSize = True
+        Me.chkCheckForUpdate.Location = New System.Drawing.Point(89, 69)
+        Me.chkCheckForUpdate.Name = "chkCheckForUpdate"
+        Me.chkCheckForUpdate.Size = New System.Drawing.Size(113, 17)
+        Me.chkCheckForUpdate.TabIndex = 23
+        Me.chkCheckForUpdate.Text = "Check For Update"
+        Me.ttSettings.SetToolTip(Me.chkCheckForUpdate, "Check for Updates when ScalA starts.")
+        Me.chkCheckForUpdate.UseVisualStyleBackColor = True
         '
         'ChkDark
         '
@@ -922,17 +933,6 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc.Text = "Misc"
         Me.tabMisc.UseVisualStyleBackColor = True
         '
-        'chkCheckForUpdate
-        '
-        Me.chkCheckForUpdate.AutoSize = True
-        Me.chkCheckForUpdate.Location = New System.Drawing.Point(89, 69)
-        Me.chkCheckForUpdate.Name = "chkCheckForUpdate"
-        Me.chkCheckForUpdate.Size = New System.Drawing.Size(113, 17)
-        Me.chkCheckForUpdate.TabIndex = 23
-        Me.chkCheckForUpdate.Text = "Check For Update"
-        Me.ttSettings.SetToolTip(Me.chkCheckForUpdate, "Check for Updates when ScalA starts.")
-        Me.chkCheckForUpdate.UseVisualStyleBackColor = True
-        '
         'chkDoAlign
         '
         Me.chkDoAlign.AutoSize = True
@@ -999,6 +999,15 @@ Partial NotInheritable Class FrmSettings
         Me.txtExe.TabIndex = 8
         Me.txtExe.Text = "moac | new"
         '
+        'txtClass
+        '
+        Me.txtClass.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.txtClass.Location = New System.Drawing.Point(12, 110)
+        Me.txtClass.Name = "txtClass"
+        Me.txtClass.Size = New System.Drawing.Size(182, 20)
+        Me.txtClass.TabIndex = 9
+        Me.txtClass.Text = "MAINWNDMOAC | 䅍义乗䵄䅏C"
+        '
         'chkTopMost
         '
         Me.chkTopMost.AutoSize = True
@@ -1018,15 +1027,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.TabIndex = 2
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
-        '
-        'txtClass
-        '
-        Me.txtClass.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtClass.Location = New System.Drawing.Point(12, 110)
-        Me.txtClass.Name = "txtClass"
-        Me.txtClass.Size = New System.Drawing.Size(182, 20)
-        Me.txtClass.TabIndex = 9
-        Me.txtClass.Text = "MAINWNDMOAC | 䅍义乗䵄䅏C"
         '
         'FrmSettings
         '
