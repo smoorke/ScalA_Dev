@@ -1,3 +1,6 @@
+**ScalA 1.2.2.1**
+Fixed Updater Dialog not showing correct version.
+
 **ScalA 1.2.2**
 Fixed incorrect caching of Astonia Client Window Bounds.
 Made new Scaling mode optional and added Auto Scaling Mode.
