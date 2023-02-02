@@ -191,30 +191,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to **Welcome to ScalA**
-        '''
-        '''more info can be found on resurgence discord
-        '''https://discord.com/channels/741168805966905374/818886441185837077
-        '''
-        '''To show the shortcut creation submenu hold ctrl when opening quicklaunch or it&apos;s subfolders.
-        '''
-        '''
-        '''
-        '''**ScalA 0.7.6**
-        '''Added icons to quicklaunch menu.
-        '''Settings now has options to specify astonia exe names and windowclass as pipe(|) separated lists.
-        '''
-        '''**ScalA 0.7.8**
-        '''Fixed critical bug if selected folder for quicklaunch didn&apos;t exist anymore.
-        '''Fixed bug introduced in 0. [rest of string was truncated]&quot;;.
-        '''</summary>
-        Friend ReadOnly Property ReadMe() As String
-            Get
-                Return ResourceManager.GetString("ReadMe", resourceCulture)
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized resource of type System.Byte[].
         '''</summary>
         Friend ReadOnly Property ScalA_Updater() As Byte()

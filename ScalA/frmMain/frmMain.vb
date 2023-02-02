@@ -320,11 +320,6 @@ Partial Public NotInheritable Class FrmMain
             System.IO.Directory.CreateDirectory(progdata)
             System.IO.Directory.CreateDirectory(progdata & "\Example Folder")
         End If
-        'copy readme to progdata
-        If Not FileIO.FileSystem.FileExists(progdata & "\ReadMe.txt") OrElse My.Resources.ReadMe.Length <> FileIO.FileSystem.GetFileInfo(progdata & "\ReadMe.txt").Length Then
-            Debug.Print("Readme is diffrent or nonexistant")
-            FileIO.FileSystem.WriteAllText(progdata & "\ReadMe.txt", My.Resources.ReadMe, False, System.Text.Encoding.ASCII)
-        End If
 
 #If DEBUG Then
         chkDebug.Visible = True
@@ -433,22 +428,38 @@ Partial Public NotInheritable Class FrmMain
             MessageBox.Show("Error" & vbCrLf & e.Message)
         End Try
     End Sub
+    Friend Shared Async Sub LogDownload()
+        Try
+            Using response As HttpResponseMessage = Await client.GetAsync("https://github.com/smoorke/ScalA/releases/download/ScalA/ChangeLog.txt")
+                response.EnsureSuccessStatusCode()
+                Dim responseBody As Byte() = Await response.Content.ReadAsByteArrayAsync()
 
-    Friend Shared Sub pbUpdateAvailable_Click(sender As PictureBox, e As MouseEventArgs) Handles pbUpdateAvailable.MouseDown
+                If Not FileIO.FileSystem.DirectoryExists(SpecialDirectories.Temp & "\ScalA\") Then
+                    FileIO.FileSystem.CreateDirectory(SpecialDirectories.Temp & "\ScalA\")
+                End If
+
+                FileIO.FileSystem.WriteAllBytes(SpecialDirectories.Temp & "\ScalA\ChangeLog.txt", responseBody, False)
+
+            End Using
+        Catch e As Exception
+
+        End Try
+    End Sub
+    Private Sub pbUpdateAvailable_Click(sender As PictureBox, e As MouseEventArgs) Handles pbUpdateAvailable.MouseDown
 
         If e.Button <> MouseButtons.Left Then Exit Sub
 
-        'todo replace with custom dialog
-        If MessageBox.Show(FrmMain, "A ScalA update is available." & vbCrLf &
-                            $"Would you like to update to v{updateToVersionTask.Result}?",
-                           "Update Available", MessageBoxButtons.YesNo) = DialogResult.No Then
+        LogDownload()
+
+        If UpdateDialog.ShowDialog(Me) <> DialogResult.OK Then
             Exit Sub
         End If
+
         UpdateDownload()
         My.Settings.Save()
         AstoniaProcess.RestorePos()
-        FrmMain.tmrOverview.Stop()
-        FrmMain.tmrTick.Stop()
+        tmrOverview.Stop()
+        tmrTick.Stop()
         Try
             If Not FileIO.FileSystem.DirectoryExists(SpecialDirectories.Temp & "\ScalA\") Then
                 FileIO.FileSystem.CreateDirectory(SpecialDirectories.Temp & "\ScalA\")
@@ -462,10 +473,10 @@ Partial Public NotInheritable Class FrmMain
             End
         Catch
         End Try
-        If FrmMain.cboAlt.SelectedIndex = 0 Then
-            FrmMain.tmrOverview.Start()
+        If cboAlt.SelectedIndex = 0 Then
+            tmrOverview.Start()
         Else
-            FrmMain.tmrTick.Start()
+            tmrTick.Start()
         End If
     End Sub
 

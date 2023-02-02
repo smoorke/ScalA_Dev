@@ -539,7 +539,6 @@ Partial Public NotInheritable Class FrmMain
         If Not FileIO.FileSystem.DirectoryExists(My.Settings.links) Then
             System.IO.Directory.CreateDirectory(My.Settings.links)
             System.IO.Directory.CreateDirectory(My.Settings.links & "\Example Folder")
-            FileIO.FileSystem.WriteAllText(My.Settings.links & "\ReadMe.txt", My.Resources.ReadMe, False)
         End If
 
 

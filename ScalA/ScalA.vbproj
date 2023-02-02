@@ -150,6 +150,12 @@
     </Compile>
     <Compile Include="NativeMethods.vb" />
     <Compile Include="SystemUtitlity.vb" />
+    <Compile Include="UpdateDialog.Designer.vb">
+      <DependentUpon>UpdateDialog.vb</DependentUpon>
+    </Compile>
+    <Compile Include="UpdateDialog.vb">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="frmMain\frmBehind.resx">
@@ -169,6 +175,9 @@
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UpdateDialog.resx">
+      <DependentUpon>UpdateDialog.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -195,7 +204,6 @@
     <Content Include="Resources\moa3.ico" />
     <None Include="Resources\F12.png" />
     <None Include="Resources\moa3.png" />
-    <Content Include="Resources\ReadMe.txt" />
     <None Include="Resources\Add.png" />
     <Content Include="Resources\gear_wheel.png" />
     <None Include="Resources\AsInvoker.bat" />
