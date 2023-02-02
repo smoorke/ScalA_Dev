@@ -1,3 +1,9 @@
+**ScalA 1.2.2**
+Fixed incorrect caching of Astonia Client Window Bounds.
+Made new Scaling mode optional and added Auto Scaling Mode.
+Moved Cycle on Close Setting to Hotkey Tab.
+Added Update Checker and Updater.
+
 **ScalA 1.2.1**
 Added preliminary support for new client. (I fully expect eqlock and big healthbars to still be broken)
 Fixed Alt Combobox DropDown scrollbar when number of alts increased since last time it opened.
@@ -19,12 +25,6 @@ Fixed ScalA opening off screen when monitor layout changed.
 Minimizing ScalA makes it show on taskbar when an alt is selected.
 Switching to overview will immediately show ScalA in the taskbar.
   (note: active overview will override this behavior)
-
-**ScalA 1.1.3**
-Fixed active overview titlebar displaying as active when a blacklisted alt is active.
-Fixed changing resolution list would mess up combobox until program restart.
-Fixed click capture when maximized.
-Minor performance improvements.
 
 **ScalA 1.1.3**
 Fixed active overview titlebar displaying as active when a blacklisted alt is active.
