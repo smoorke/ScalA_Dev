@@ -869,22 +869,25 @@ Partial Public NotInheritable Class FrmMain
             Exit Sub
         End If
 
-        Dim pp As Process
-
         Dim bat As String = "\AsInvoker.bat"
         Dim tmpDir As String = FileIO.SpecialDirectories.Temp & "\ScalA"
 
         If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
-        If Not FileIO.FileSystem.FileExists(tmpDir & bat) Then FileIO.FileSystem.WriteAllText(tmpDir & bat, My.Resources.AsInvoker, False)
+        If Not FileIO.FileSystem.FileExists(tmpDir & bat) OrElse
+           Not FileIO.FileSystem.GetFileInfo(tmpDir & bat).Length = My.Resources.AsInvoker.Length Then
+            FileIO.FileSystem.WriteAllText(tmpDir & bat, My.Resources.AsInvoker, False, System.Text.Encoding.ASCII)
+        End If
 
-        pp = New Process With {.StartInfo = New ProcessStartInfo With {.FileName = tmpDir & bat,
+        Dim pp As Process = New Process With {.StartInfo = New ProcessStartInfo With {.FileName = tmpDir & bat,
                                                                        .Arguments = """" & sender.Tag & """",
                                                                        .WorkingDirectory = System.IO.Path.GetDirectoryName(sender.Tag),
                                                                        .WindowStyle = ProcessWindowStyle.Hidden,
                                                                        .CreateNoWindow = True}}
+
         Try
             pp.Start()
-        Catch
+        Catch ex As Exception
+            Debug.Print($"pp.start {ex.Message}")
         Finally
             pp.Dispose()
         End Try
