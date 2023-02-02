@@ -387,12 +387,12 @@ Partial Public NotInheritable Class FrmMain
         End If
         FrmBehind.Bounds = Me.Bounds
         If My.Settings.CheckForUpdate Then
-            updateToVersionTask = UpdateCheck()
+            UpdateCheck()
         End If
     End Sub
-    Friend Shared updateToVersionTask As Task(Of String)
+    Friend Shared updateToVersion As String = "Error"
     Friend Shared ReadOnly client As HttpClient = New HttpClient()
-    Friend Shared Async Function UpdateCheck() As Task(Of String)
+    Friend Shared Async Sub UpdateCheck()
         Try
             Using response As HttpResponseMessage = Await client.GetAsync("https://github.com/smoorke/ScalA/releases/download/ScalA/version")
                 response.EnsureSuccessStatusCode()
@@ -403,14 +403,13 @@ Partial Public NotInheritable Class FrmMain
                 Else
                     FrmMain.pnlUpdate.Visible = False
                 End If
-
-                Return responseBody
+                updateToVersion = responseBody
             End Using
         Catch ex As Exception
             FrmMain.pnlUpdate.Visible = False
-            Return "Error"
+            updateToVersion = "Error"
         End Try
-    End Function
+    End Sub
     Friend Shared Async Sub UpdateDownload()
         Try
             Using response As HttpResponseMessage = Await client.GetAsync("https://github.com/smoorke/ScalA/releases/download/ScalA/ScalA.exe")

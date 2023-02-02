@@ -18,4 +18,8 @@ Public Class UpdateDialog
         Catch
         End Try
     End Sub
+
+    Private Sub UpdateDialog_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Label2.Text = $"Would you like to update to v{FrmMain.updateToVersion}?"
+    End Sub
 End Class
