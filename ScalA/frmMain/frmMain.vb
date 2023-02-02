@@ -331,7 +331,7 @@ Partial Public NotInheritable Class FrmMain
         test.Items.Add(New ToolStripMenuItem("isBelow", Nothing, AddressOf dBug.IsBelow))
         Static extraitem As New ToolStripMenuItem($"movebusy {moveBusy}")
         test.Items.Add(extraitem)
-        test.Items.Add(New ToolStripMenuItem("Update", Nothing, AddressOf dBug.EnableUpdate))
+        test.Items.Add(New ToolStripMenuItem("Update", Nothing, AddressOf dBug.ToggleUpdate))
         chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()
                                      Debug.Print("test Opening")
@@ -1819,8 +1819,8 @@ Module dBug
         Debug.Print($"isBelow {FrmMain.AltPP?.IsBelow(FrmMain.Handle)}")
     End Sub
 
-    Friend Sub EnableUpdate(sender As Object, e As EventArgs)
-        FrmMain.pnlUpdate.Visible = True
+    Friend Sub ToggleUpdate(sender As Object, e As EventArgs)
+        FrmMain.pnlUpdate.Visible = Not FrmMain.pnlUpdate.Visible
     End Sub
 End Module
 
