@@ -35,10 +35,10 @@ Partial NotInheritable Class FrmMain
         Me.cmbResolution = New ScalA.ThemedComboBox()
         Me.cboAlt = New ScalA.ThemedComboBox()
         Me.pnlTitleBar = New System.Windows.Forms.Panel()
+        Me.chkDebug = New System.Windows.Forms.CheckBox()
         Me.pnlUpdate = New System.Windows.Forms.Panel()
         Me.pbUpdateAvailable = New System.Windows.Forms.PictureBox()
         Me.ChkEqLock = New System.Windows.Forms.CheckBox()
-        Me.chkDebug = New System.Windows.Forms.CheckBox()
         Me.lblTitle = New System.Windows.Forms.Label()
         Me.pnlButtons = New System.Windows.Forms.Panel()
         Me.btnMin = New System.Windows.Forms.Button()
@@ -134,6 +134,7 @@ Partial NotInheritable Class FrmMain
         '
         'cmsQuickLaunch
         '
+        Me.cmsQuickLaunch.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.cmsQuickLaunch.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DummyToolStripMenuItem})
         Me.cmsQuickLaunch.Name = "cmsBlank"
         Me.cmsQuickLaunch.Size = New System.Drawing.Size(138, 26)
@@ -174,14 +175,28 @@ Partial NotInheritable Class FrmMain
         'pnlTitleBar
         '
         Me.pnlTitleBar.BackColor = System.Drawing.SystemColors.Control
+        Me.pnlTitleBar.Controls.Add(Me.chkDebug)
         Me.pnlTitleBar.Controls.Add(Me.pnlUpdate)
         Me.pnlTitleBar.Controls.Add(Me.ChkEqLock)
-        Me.pnlTitleBar.Controls.Add(Me.chkDebug)
         Me.pnlTitleBar.Controls.Add(Me.lblTitle)
         Me.pnlTitleBar.Location = New System.Drawing.Point(270, 0)
         Me.pnlTitleBar.Name = "pnlTitleBar"
         Me.pnlTitleBar.Size = New System.Drawing.Size(641, 25)
         Me.pnlTitleBar.TabIndex = 14
+        '
+        'chkDebug
+        '
+        Me.chkDebug.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.chkDebug.AutoSize = True
+        Me.chkDebug.CheckAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.chkDebug.Location = New System.Drawing.Point(545, 6)
+        Me.chkDebug.Name = "chkDebug"
+        Me.chkDebug.Size = New System.Drawing.Size(32, 17)
+        Me.chkDebug.TabIndex = 11
+        Me.chkDebug.TabStop = False
+        Me.chkDebug.Text = "0"
+        Me.chkDebug.UseVisualStyleBackColor = True
+        Me.chkDebug.Visible = False
         '
         'pnlUpdate
         '
@@ -224,18 +239,6 @@ Partial NotInheritable Class FrmMain
         Me.ChkEqLock.Text = "🔒"
         Me.ttMain.SetToolTip(Me.ChkEqLock, "EQ Lock" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Disable Left Click on worn gear" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Hold Alt or Shift-Key to override")
         Me.ChkEqLock.UseVisualStyleBackColor = True
-        '
-        'chkDebug
-        '
-        Me.chkDebug.AutoSize = True
-        Me.chkDebug.Location = New System.Drawing.Point(384, 6)
-        Me.chkDebug.Name = "chkDebug"
-        Me.chkDebug.Size = New System.Drawing.Size(32, 17)
-        Me.chkDebug.TabIndex = 11
-        Me.chkDebug.TabStop = False
-        Me.chkDebug.Text = "0"
-        Me.chkDebug.UseVisualStyleBackColor = True
-        Me.chkDebug.Visible = False
         '
         'lblTitle
         '
@@ -327,6 +330,7 @@ Partial NotInheritable Class FrmMain
         '
         'cmsAlt
         '
+        Me.cmsAlt.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.cmsAlt.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SelectToolStripMenuItem, ToolStripSeparator1, Me.SortSubToolStripMenuItem, Me.TopMostToolStripMenuItem, ToolStripSeparator2, Me.CloseToolStripMenuItem})
         Me.cmsAlt.Name = "cmsAlt"
         Me.cmsAlt.Size = New System.Drawing.Size(153, 104)

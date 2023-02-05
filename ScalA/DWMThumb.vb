@@ -63,13 +63,21 @@ Partial Public NotInheritable Class FrmMain
                 mode = 1
             End If
         End If
+        Dim rcDWM As RECT
+        DwmGetWindowAttribute(AltPP.MainWindowHandle, 9, rcDWM, System.Runtime.InteropServices.Marshal.SizeOf(rcDWM))
+        Dim rcW As RECT
+        GetWindowRect(AltPP.MainWindowHandle, rcW)
+        If rcDWM.right - rcDWM.left > rcW.right - rcW.left Then 'handle windows scaling
+            Debug.Print("not 100% scaling")
+            mode = 1
+        End If
 
         If mode = 1 Then
             twp.fSourceClientAreaOnly = True
         Else
             twp.fSourceClientAreaOnly = False
         End If
-        twp.rcSource = AltPP.rcSource(pbZoom.Size)
+        twp.rcSource = AltPP.rcSource(pbZoom.Size, mode)
 
 
         DwmUpdateThumbnailProperties(thumb, twp)

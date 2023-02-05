@@ -190,7 +190,7 @@ Partial NotInheritable Class FrmMain
                     ReZoom(New Drawing.Size(winpos.cx - 2, winpos.cy - pnlTitleBar.Height - 1))
                     cmbResolution.SelectedIndex = My.Settings.zoom
 
-                    AltPP?.CenterBehind(pbZoom)
+                    AltPP?.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition)
                     pnlTitleBar.Width = winpos.cx - pnlButtons.Width - pnlSys.Width
                     Debug.Print($"winpos location {New Point(winpos.x, winpos.y)}")
                     Debug.Print($"winpos size {New Size(winpos.cx, winpos.cy)}")
@@ -306,7 +306,7 @@ Partial NotInheritable Class FrmMain
             Case &H2A1 ' WM_MOUSEHOVER 
             Case &H2A3 ' WM_MOUSELEAVE
 
-            Case &HC0D9 To &HC1E3 ' unknown
+            Case &HC0D9 To &HC200 ' unknown
 
             Case Else
                 Debug.Print($"Unhandeld WM_ 0x{m.Msg:X8} &H{m.Msg:X8}")

@@ -27,32 +27,49 @@ Module NativeMethods
         Public dwFlags As UInteger
     End Structure
 
-    <StructLayout(LayoutKind.Sequential)>
-    Structure RECT
-        Public Left As Integer
-        Public Top As Integer
-        Public Right As Integer
-        Public Bottom As Integer
-        Public Sub New(ByVal Rectangle As Rectangle)
-            Me.New(Rectangle.Left, Rectangle.Top, Rectangle.Right, Rectangle.Bottom)
-        End Sub
-        Public Sub New(ByVal Left As Integer, ByVal Top As Integer, ByVal Right As Integer, ByVal Bottom As Integer)
-            Me.Left = Left
-            Me.Top = Top
-            Me.Right = Right
-            Me.Bottom = Bottom
-        End Sub
-        Public Function ToRectangle() As Rectangle
-            Return Rectangle.FromLTRB(Me.Left, Me.Top, Me.Right, Me.Bottom)
-        End Function
-        Public Overrides Function ToString() As String
-            Return $"L={Me.Left},T={Me.Top},R={Me.Right},B={Me.Bottom}"
-        End Function
-    End Structure
+    '<StructLayout(LayoutKind.Sequential)>
+    'Structure RECT
+    '    Public Left As Integer
+    '    Public Top As Integer
+    '    Public Right As Integer
+    '    Public Bottom As Integer
+    '    Public Sub New(ByVal Rectangle As Rectangle)
+    '        Me.New(Rectangle.Left, Rectangle.Top, Rectangle.Right, Rectangle.Bottom)
+    '    End Sub
+    '    Public Sub New(ByVal Left As Integer, ByVal Top As Integer, ByVal Right As Integer, ByVal Bottom As Integer)
+    '        Me.Left = Left
+    '        Me.Top = Top
+    '        Me.Right = Right
+    '        Me.Bottom = Bottom
+    '    End Sub
+    '    Public Function ToRectangle() As Rectangle
+    '        Return Rectangle.FromLTRB(Me.Left, Me.Top, Me.Right, Me.Bottom)
+    '    End Function
+    '    Public Overrides Function ToString() As String
+    '        Return $"L={Me.Left},T={Me.Top},R={Me.Right},B={Me.Bottom}"
+    '    End Function
+    'End Structure
+
     <Runtime.CompilerServices.Extension>
     Public Function ToRECT(Rectangle As Rectangle) As RECT
-        Return New RECT(Rectangle)
+        Dim rc As RECT
+        rc.left = Rectangle.Left
+        rc.top = Rectangle.Top
+        rc.right = Rectangle.Right
+        rc.bottom = Rectangle.Bottom
+        Return rc
     End Function
+
+    <Runtime.CompilerServices.Extension>
+    Public Function ToRectangle(rc As RECT) As Rectangle
+        Return Rectangle.FromLTRB(rc.left, rc.top, rc.right, rc.bottom)
+    End Function
+
+    Public Structure RECT
+        Public left, top, right, bottom As Integer
+    End Structure
+
+
     <Runtime.CompilerServices.Extension>
     Public Function LOWORD(param As IntPtr) As Short
         Return CType(param, Integer) And &HFFFF
@@ -422,6 +439,9 @@ Module NativeMethods
     <DllImport("user32.dll")>
     Public Function GetWindowRect(ByVal hWnd As IntPtr, ByRef lpRect As Rectangle) As Boolean : End Function
     <DllImport("user32.dll")>
+    Public Function GetWindowRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As Boolean : End Function
+
+    <DllImport("user32.dll")>
     Public Function GetClientRect(ByVal hWnd As IntPtr, ByRef lpRect As Rectangle) As Boolean : End Function
     <DllImport("user32.dll")>
     Public Function ClientToScreen(ByVal hWnd As IntPtr, ByRef lpPoint As Point) As Boolean : End Function
@@ -431,6 +451,49 @@ Module NativeMethods
     Public Function GetForegroundWindow() As IntPtr : End Function
     <DllImport("user32.dll")>
     Public Function GetWindowThreadProcessId(ByVal hWnd As IntPtr, <Out()> ByRef lpdwProcessId As UInteger) As UInteger : End Function
+
+    '<DllImport("dwmapi.dll")>
+    'Public Function DwmGetWindowAttribute(hwnd As IntPtr, dwAttribute As Integer, <Out()> pvAttribute As RECT, cbAttribute As Integer) As Integer : End Function
+
+    Public Declare Function DwmGetWindowAttribute Lib "dwmapi" (ByVal hwnd As IntPtr, ByVal dwAttribute As Integer, ByRef pvAttribute As RECT, ByVal cbAttribute As Integer) As Integer
+
+    <DllImport("gdi32.dll")>
+    Public Function GetDeviceCaps(ByVal hDC As IntPtr, ByVal nIndex As Integer) As Integer : End Function
+    <DllImport("user32.dll")>
+    Public Function GetDC(ByVal hwnd As IntPtr) As IntPtr : End Function
+    <DllImport("user32.dll")>
+    Public Function ReleaseDC(ByVal hWnd As IntPtr, ByVal hDC As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
+    End Function
+
+
+    <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Unicode)>
+    Public Enum DWMWINDOWATTRIBUTE
+        DWMWA_NCRENDERING_ENABLED
+        DWMWA_NCRENDERING_POLICY
+        DWMWA_TRANSITIONS_FORCEDISABLED
+        DWMWA_ALLOW_NCPAINT
+        DWMWA_CAPTION_BUTTON_BOUNDS
+        DWMWA_NONCLIENT_RTL_LAYOUT
+        DWMWA_FORCE_ICONIC_REPRESENTATION
+        DWMWA_FLIP3D_POLICY
+        DWMWA_EXTENDED_FRAME_BOUNDS
+        DWMWA_HAS_ICONIC_BITMAP
+        DWMWA_DISALLOW_PEEK
+        DWMWA_EXCLUDED_FROM_PEEK
+        DWMWA_CLOAK
+        DWMWA_CLOAKED
+        DWMWA_FREEZE_REPRESENTATION
+        DWMWA_PASSIVE_UPDATE_MODE
+        DWMWA_USE_HOSTBACKDROPBRUSH
+        DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+        DWMWA_WINDOW_CORNER_PREFERENCE = 33
+        DWMWA_BORDER_COLOR
+        DWMWA_CAPTION_COLOR
+        DWMWA_TEXT_COLOR
+        DWMWA_VISIBLE_FRAME_BORDER_THICKNESS
+        DWMWA_SYSTEMBACKDROP_TYPE
+        DWMWA_LAST
+    End Enum
 #Region " SetWindowPos "
 
     Enum SWP_HWND As Integer

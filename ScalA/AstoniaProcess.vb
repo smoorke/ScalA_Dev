@@ -1,4 +1,5 @@
-﻿Imports System.Security.Cryptography
+﻿Imports System.Runtime.InteropServices
+Imports System.Security.Cryptography
 
 Public NotInheritable Class AstoniaProcess
 
@@ -6,6 +7,12 @@ Public NotInheritable Class AstoniaProcess
 
     Public Sub New(Optional process As Process = Nothing)
         _proc = process
+    End Sub
+
+    Public Sub ResetCache()
+        _rcc = Nothing
+        _CO = Nothing
+        _rcSource = Nothing
     End Sub
 
     Private _rcc? As Rectangle
@@ -59,9 +66,10 @@ Public NotInheritable Class AstoniaProcess
     Private _CO? As Point
     Public ReadOnly Property ClientOffset() As Point
         Get
-            If _CO IsNot Nothing AndAlso ClientOffset <> New Point Then
+            If _CO IsNot Nothing AndAlso _CO <> New Point Then
                 Return _CO
             Else
+                Debug.Print($"co {_CO}")
                 If _proc Is Nothing Then
                     Return New Point
                 End If
@@ -71,12 +79,12 @@ Public NotInheritable Class AstoniaProcess
                     End If
                     Dim ptt As New Point
                     ClientToScreen(_proc.MainWindowHandle, ptt)
-                    Dim rcW As New Rectangle
+                    Dim rcW As New RECT
                     GetWindowRect(_proc?.MainWindowHandle, rcW)
-
-                    _CO = New Point(ptt.X - rcW.Left, ptt.Y - rcW.Top)
+                    _CO = New Point(ptt.X - rcW.left, ptt.Y - rcW.top)
                     Return _CO
                 Catch ex As Exception
+                    Debug.Print($"ex on CO {ex.Message}")
                     Return New Point
                 End Try
             End If
@@ -84,28 +92,25 @@ Public NotInheritable Class AstoniaProcess
     End Property
 
     Private _rcSource? As Rectangle
-    Public Function rcSource(TargetSZ As Size) As Rectangle
+    Public Function rcSource(TargetSZ As Size, mode As Integer) As Rectangle
 
-        Dim mode = My.Settings.ScalingMode
-        Debug.Print($"rcSource target {TargetSZ}")
-        If mode = 0 Then
-            Dim compsz As Size = TargetSZ
-            If (compsz.Width / ClientRect.Width >= 2) AndAlso
-               (compsz.Height / ClientRect.Height >= 2) Then
-                mode = 2
-            Else
-                mode = 1
-            End If
-        End If
+        'Dim mode = My.Settings.ScalingMode
+        'Debug.Print($"rcSource target {TargetSZ}")
+        'If mode = 0 Then
+        '    Dim compsz As Size = TargetSZ
+        '    If (compsz.Width / ClientRect.Width >= 2) AndAlso
+        '       (compsz.Height / ClientRect.Height >= 2) Then
+        '        mode = 2
+        '    Else
+        '        mode = 1
+        '    End If
+        'End If
         If mode = 1 Then 'blurred
             Return ClientRect
         ElseIf mode = 2 Then 'pixel
             If _rcSource IsNot Nothing AndAlso _rcSource <> New Rectangle Then
                 Return _rcSource
             Else
-                If ClientRect = New Rectangle Then
-                    Return New Rectangle(ClientOffset.X, ClientOffset.Y, 800 + ClientOffset.X, 600 + ClientOffset.Y)
-                End If
                 _rcSource = New Rectangle(ClientOffset.X, ClientOffset.Y, ClientRect.Width + ClientOffset.X, ClientRect.Height + ClientOffset.Y)
                 Return _rcSource
             End If
@@ -126,7 +131,7 @@ Public NotInheritable Class AstoniaProcess
                                 x - ClientRect.Width / 2 - ClientOffset.X - My.Settings.offset.X,
                                 y - ClientRect.Height / 2 - ClientOffset.Y - My.Settings.offset.Y,
                                 -1, -1,
-                                SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.ASyncWindowPosition Or extraSWPFlags)
+                                SetWindowPosFlags.IgnoreResize Or extraSWPFlags)
         Catch
             Return False
         End Try
@@ -339,6 +344,8 @@ Public NotInheritable Class AstoniaProcess
     Private Shared Function PrintWindow(ByVal hwnd As IntPtr, ByVal hDC As IntPtr, ByVal nFlags As UInteger) As Boolean : End Function
     <System.Runtime.InteropServices.DllImport("user32.dll")>
     Private Shared Function GetClientRect(ByVal hWnd As IntPtr, ByRef lpRect As Rectangle) As Boolean : End Function
+    <System.Runtime.InteropServices.DllImport("user32.dll")>
+    Private Shared Function GetClientRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As Boolean : End Function
 
     Public Function GetClientBitmap() As Bitmap
         If _proc Is Nothing Then Return Nothing

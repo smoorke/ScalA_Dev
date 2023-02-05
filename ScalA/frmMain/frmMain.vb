@@ -56,7 +56,7 @@ Partial Public NotInheritable Class FrmMain
     Private ReadOnly restoreParent As UInteger = GetWindowLong(Me.Handle, GWL_HWNDPARENT)
     Private prevItem As New AstoniaProcess()
     Private updatingCombobox As Boolean = False
-    Private Async Sub CboAlt_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboAlt.SelectedIndexChanged
+    Private Async Sub CboAlt_SelectedIndexChanged(sender As ComboBox, e As EventArgs) Handles cboAlt.SelectedIndexChanged
 
         If updatingCombobox Then
             Exit Sub
@@ -65,8 +65,6 @@ Partial Public NotInheritable Class FrmMain
         Debug.Print($"CboAlt_SelectedIndexChanged {sender.SelectedIndex}")
 
         'btnAlt1.Focus()
-
-        Dim that As ComboBox = CType(sender, ComboBox)
 
         'If AltPP IsNot Nothing AndAlso AltPP.Id <> 0 AndAlso AltPP.Equals(CType(that.SelectedItem, AstoniaProcess)) Then
         '    AltPP.Activate()
@@ -81,9 +79,10 @@ Partial Public NotInheritable Class FrmMain
 
         SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
         AstoniaProcess.RestorePos()
-        AltPP = that.SelectedItem
+        AltPP = sender.SelectedItem
         UpdateTitle()
-        If that.SelectedIndex = 0 Then
+
+        If sender.SelectedIndex = 0 Then
             'AltPP = Nothing
             If Not My.Settings.gameOnOverview Then
                 Try
@@ -102,9 +101,9 @@ Partial Public NotInheritable Class FrmMain
             pnlOverview.ResumeLayout()
             tmrOverview.Enabled = True
             tmrTick.Enabled = False
-            If prevItem.Id <> 0 Then startThumbsDict(prevItem.Id) = thumb
+            If prevItem.Id <> 0 Then DwmUnregisterThumbnail(thumb)
             sysTrayIcon.Icon = My.Resources.moa3
-            prevItem = CType(that.SelectedItem, AstoniaProcess)
+            prevItem = CType(sender.SelectedItem, AstoniaProcess)
             PnlEqLock.Visible = False
             AOshowEqLock = False
             Exit Sub
@@ -116,14 +115,17 @@ Partial Public NotInheritable Class FrmMain
 
 
         If Not AltPP?.IsRunning Then
-            Dim idx As Integer = that.SelectedIndex
-            that.Items.RemoveAt(idx)
-            that.SelectedIndex = Math.Min(idx, that.Items.Count - 1)
+            Dim idx As Integer = sender.SelectedIndex
+            sender.Items.RemoveAt(idx)
+            sender.SelectedIndex = Math.Min(idx, sender.Items.Count - 1)
             Exit Sub
         End If
 
 
         If Not AltPP?.Id = 0 Then
+
+
+            AltPP.ResetCache()
 
             Dim rcW As New Rectangle
             GetWindowRect(AltPP.MainWindowHandle, rcW)
@@ -142,17 +144,15 @@ Partial Public NotInheritable Class FrmMain
 
             AltPP.SavePos(rcW.Location)
 
-            AltPP.Activate()
+            AltPP.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition)
 
-            Debug.Print("ClientToScreen")
-
-            SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle) ' have Client always be beneath ScalA (set Scala to be owned by client)
-            '                                                                  note SetParent() doesn't work.
+            Debug.Print("tmrTick.Enabled")
+            tmrTick.Enabled = True
 
             Debug.Print("AltPPTopMost " & AltPP.IsTopMost.ToString)
             Debug.Print("SelfTopMost " & Process.GetCurrentProcess.IsTopMost.ToString)
 
-            Dim item As AstoniaProcess = CType(that.SelectedItem, AstoniaProcess)
+            Dim item As AstoniaProcess = CType(sender.SelectedItem, AstoniaProcess)
             If Not startThumbsDict.ContainsKey(item.Id) Then
                 Debug.Print("createThumb")
                 CreateThumb()
@@ -174,9 +174,31 @@ Partial Public NotInheritable Class FrmMain
                 UpdateThumb(If(chkDebug.Checked, 128, 255))
             End If
             rectDic.Clear()
-            AltPP?.Activate()
             sysTrayIcon.Icon = AltPP?.GetIcon
-            AltPP?.CenterBehind(pbZoom)
+
+            Dim rcDWM As RECT
+            DwmGetWindowAttribute(Me.Handle, 9, rcDWM, System.Runtime.InteropServices.Marshal.SizeOf(rcDWM))
+            Dim rcSW As RECT
+            GetWindowRect(Me.Handle, rcSW)
+            If rcDWM.right - rcDWM.left > rcSW.right - rcSW.left Then 'scala is scaled
+                Debug.Print("not 100% windows scaling")
+                Dim rcAW As RECT
+                GetWindowRect(AltPP.MainWindowHandle, rcAW)
+                Dim rcADWM As RECT
+                Do 'looped delay to see if alt is scaled
+                    Debug.Print("Scaling delay")
+                    Await Task.Delay(16)
+                    DwmGetWindowAttribute(AltPP.MainWindowHandle, 9, rcADWM, System.Runtime.InteropServices.Marshal.SizeOf(rcADWM))
+                    Debug.Print($"{rcADWM.right - rcADWM.left} > {rcAW.right - rcAW.left} = {rcADWM.right - rcADWM.left > rcAW.right - rcAW.left}")
+                Loop Until rcADWM.right - rcADWM.left > rcAW.right - rcAW.left
+            Else
+                Debug.Print("100% windows scaling")
+            End If
+
+            SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle) ' have Client always be beneath ScalA (set Scala to be owned by client)
+            '                                                                  note SetParent() doesn't work.
+
+            AltPP?.Activate()
 
             moveBusy = False
         Else 'AltPP.Id = 0
@@ -184,12 +206,11 @@ Partial Public NotInheritable Class FrmMain
 
         End If
 
-        Debug.Print("tmrTick.Enabled")
-        tmrTick.Enabled = True
-        DoEqLock(pbZoom.Size)
-        prevItem = that.SelectedItem
 
-        If that.SelectedIndex > 0 Then
+        DoEqLock(pbZoom.Size)
+        prevItem = sender.SelectedItem
+
+        If sender.SelectedIndex > 0 Then
             pbZoom.Visible = True
         Else
             AButton.ActiveOverview = My.Settings.gameOnOverview
@@ -990,14 +1011,12 @@ Partial Public NotInheritable Class FrmMain
                 ' Debug.Print($"ACO {ap.Name}:{ACO}")
 
                 Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
-                                   .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_RECTSOURCE Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY,
+                                   .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY,
                                    .opacity = opaDict.GetValueOrDefault(apID, If(chkDebug.Checked, 128, 255)),
                                    .fVisible = True,
                                    .rcDestination = rectDic(apID),
-                                   .fSourceClientAreaOnly = False,
-                                   .rcSource = New Rectangle(ACO.Width, ACO.Height, rccB.Width + ACO.Width, rccB.Height + ACO.Height)
-                               }
-                '.fSourceClientAreaOnly = True,
+                                   .fSourceClientAreaOnly = True}
+
                 DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
 
                 If My.Settings.gameOnOverview Then 'todo move this to seperate timer and make async
@@ -1774,7 +1793,37 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
+    Private Sub BtnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
 
+    End Sub
+
+    Private Sub Various_MouseUp(sender As Object, e As MouseEventArgs) Handles pnlSys.MouseUp, pnlButtons.MouseUp, MyBase.MouseUp, cmbResolution.MouseUp, ChkEqLock.MouseUp, cboAlt.MouseUp, btnStart.MouseUp, btnQuit.MouseUp
+
+    End Sub
+
+    Private Sub CmbResolution_DropDown(sender As Object, e As EventArgs) Handles cmbResolution.DropDown
+
+    End Sub
+
+    Private Sub CmbResolution_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cmbResolution.SelectedIndexChanged
+
+    End Sub
+
+    Private Sub ComboBoxes_DropDownClosed(sender As Object, e As EventArgs) Handles cmbResolution.DropDownClosed, cboAlt.DropDownClosed
+
+    End Sub
+
+    Private Sub CmbResolution_MouseDown(sender As Object, e As MouseEventArgs) Handles cmbResolution.MouseDown
+
+    End Sub
+
+    Private Sub CboAlt_DropDown(sender As Object, e As EventArgs) Handles cboAlt.DropDown
+
+    End Sub
+
+    Private Sub CboAlt_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboAlt.SelectedIndexChanged
+
+    End Sub
 End Class
 
 #If DEBUG Then
