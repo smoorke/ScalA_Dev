@@ -63,12 +63,12 @@ Partial Public NotInheritable Class FrmMain
                 mode = 1
             End If
         End If
-        Dim rcDWM As RECT
-        DwmGetWindowAttribute(AltPP.MainWindowHandle, 9, rcDWM, System.Runtime.InteropServices.Marshal.SizeOf(rcDWM))
-        Dim rcW As RECT
-        GetWindowRect(AltPP.MainWindowHandle, rcW)
-        If rcDWM.right - rcDWM.left > rcW.right - rcW.left Then 'handle windows scaling
-            Debug.Print("not 100% scaling")
+        'Dim rcDWM As RECT
+        'DwmGetWindowAttribute(AltPP.MainWindowHandle, 9, rcDWM, System.Runtime.InteropServices.Marshal.SizeOf(rcDWM))
+        'Dim rcW As RECT
+        'GetWindowRect(AltPP.MainWindowHandle, rcW)
+        If Me.WindowsScaling <> 100 Then 'handle windows scaling
+            Debug.Print("Not 100% scaling: pixel mode disabled")
             mode = 1
         End If
 

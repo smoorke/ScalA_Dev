@@ -118,10 +118,17 @@ Public NotInheritable Class AstoniaProcess
 
     End Function
 
+    Public Function WindowsScaling() As Integer
+        Const DWMWA_EXTENDED_FRAME_BOUNDS As Integer = 9
+        Dim rcFrame As RECT
+        DwmGetWindowAttribute(Me.MainWindowHandle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
+        Dim rcWind As RECT
+        GetWindowRect(Me.MainWindowHandle, rcWind)
+        Return Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25 + 25
+    End Function
 
-
-    Public Function CenterBehind(centerOn As Control, Optional extraSWPFlags As UInteger = 0) As Boolean
-        If centerOn.RectangleToScreen(centerOn.Bounds).Contains(Form.MousePosition) Then Return False
+    Public Function CenterBehind(centerOn As Control, Optional extraSWPFlags As UInteger = 0, Optional force As Boolean = False) As Boolean
+        If Not force AndAlso centerOn.RectangleToScreen(centerOn.Bounds).Contains(Form.MousePosition) Then Return False
         Dim pt As Point = centerOn.PointToScreen(New Point(centerOn.Width / 2, centerOn.Height / 2))
         Return CenterWindowPos(centerOn.FindForm.Handle, pt.X, pt.Y, extraSWPFlags)
     End Function

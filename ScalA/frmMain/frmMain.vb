@@ -90,7 +90,7 @@ Partial Public NotInheritable Class FrmMain
                 Catch
                 End Try
             End If
-            pnlOverview.SuspendLayout()
+            'pnlOverview.SuspendLayout()
             pnlOverview.Show()
             Dim visbut = UpdateButtonLayout(AstoniaProcess.Enumerate(blackList).Count)
             For Each but As AButton In visbut.Where(Function(b) b.Text <> "")
@@ -98,7 +98,7 @@ Partial Public NotInheritable Class FrmMain
                 but.BackgroundImage = Nothing
                 but.Text = String.Empty
             Next
-            pnlOverview.ResumeLayout()
+            'pnlOverview.ResumeLayout()
             tmrOverview.Enabled = True
             tmrTick.Enabled = False
             If prevItem.Id <> 0 Then DwmUnregisterThumbnail(thumb)
@@ -176,23 +176,33 @@ Partial Public NotInheritable Class FrmMain
             rectDic.Clear()
             sysTrayIcon.Icon = AltPP?.GetIcon
 
-            Dim rcDWM As RECT
-            DwmGetWindowAttribute(Me.Handle, 9, rcDWM, System.Runtime.InteropServices.Marshal.SizeOf(rcDWM))
-            Dim rcSW As RECT
-            GetWindowRect(Me.Handle, rcSW)
-            If rcDWM.right - rcDWM.left > rcSW.right - rcSW.left Then 'scala is scaled
-                Debug.Print("not 100% windows scaling")
-                Dim rcAW As RECT
-                GetWindowRect(AltPP.MainWindowHandle, rcAW)
-                Dim rcADWM As RECT
-                Do 'looped delay to see if alt is scaled
-                    Debug.Print("Scaling delay")
-                    Await Task.Delay(16)
-                    DwmGetWindowAttribute(AltPP.MainWindowHandle, 9, rcADWM, System.Runtime.InteropServices.Marshal.SizeOf(rcADWM))
-                    Debug.Print($"{rcADWM.right - rcADWM.left} > {rcAW.right - rcAW.left} = {rcADWM.right - rcADWM.left > rcAW.right - rcAW.left}")
-                Loop Until rcADWM.right - rcADWM.left > rcAW.right - rcAW.left
-            Else
-                Debug.Print("100% windows scaling")
+            Dim ScalAWinScaling = Me.WindowsScaling()
+
+            Debug.Print($"{ScalAWinScaling}% ScalA windows scaling")
+            Debug.Print($"{AltPP.WindowsScaling}% altPP windows scaling")
+
+            Dim failcounter = 0
+            If AltPP.WindowsScaling <> ScalAWinScaling Then 'scala is scaled diffrent than Alt
+                Const timeout As Integer = 500
+                Dim sw As Stopwatch = Stopwatch.StartNew()
+                Do 'looped delay until alt is scaled same
+                    AltPP.CenterBehind(pbZoom, Nothing, True)
+                    Debug.Print($"Scaling Delay {sw.ElapsedMilliseconds}ms {ScalAWinScaling}% vs {AltPP.WindowsScaling}")
+                    If sw.ElapsedMilliseconds > timeout Then
+                        sw.Stop()
+                        Debug.Print($"Scaling Delay Timeout! {failcounter}")
+                        AstoniaProcess.RestorePos(True)
+                        Await Task.Delay(16)
+                        sw = Stopwatch.StartNew()
+                        failcounter += 1
+                    End If
+                Loop Until ScalAWinScaling = AltPP.WindowsScaling OrElse failcounter >= 3
+                If failcounter >= 3 Then
+                    cboAlt.SelectedIndex = 0
+                    Exit Sub
+                End If
+                AltPP.ResetCache()
+                UpdateThumb(If(chkDebug.Checked, 128, 255))
             End If
 
             SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle) ' have Client always be beneath ScalA (set Scala to be owned by client)
@@ -217,6 +227,14 @@ Partial Public NotInheritable Class FrmMain
         End If
 
     End Sub
+    Public Function WindowsScaling() As Integer
+        Const DWMWA_EXTENDED_FRAME_BOUNDS As Integer = 9
+        Dim rcFrame As RECT
+        DwmGetWindowAttribute(ScalaHandle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
+        Dim rcWind As RECT
+        GetWindowRect(ScalaHandle, rcWind)
+        Return Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25
+    End Function
 
     Public Resizing As Boolean
 

@@ -452,10 +452,10 @@ Module NativeMethods
     <DllImport("user32.dll")>
     Public Function GetWindowThreadProcessId(ByVal hWnd As IntPtr, <Out()> ByRef lpdwProcessId As UInteger) As UInteger : End Function
 
-    '<DllImport("dwmapi.dll")>
-    'Public Function DwmGetWindowAttribute(hwnd As IntPtr, dwAttribute As Integer, <Out()> pvAttribute As RECT, cbAttribute As Integer) As Integer : End Function
+    <DllImport("dwmapi.dll")>
+    Public Function DwmGetWindowAttribute(hwnd As IntPtr, dwAttribute As Integer, ByRef pvAttribute As RECT, cbAttribute As Integer) As Integer : End Function
 
-    Public Declare Function DwmGetWindowAttribute Lib "dwmapi" (ByVal hwnd As IntPtr, ByVal dwAttribute As Integer, ByRef pvAttribute As RECT, ByVal cbAttribute As Integer) As Integer
+    'Public Declare Function DwmGetWindowAttribute Lib "dwmapi" (ByVal hwnd As IntPtr, ByVal dwAttribute As Integer, ByRef pvAttribute As RECT, ByVal cbAttribute As Integer) As Integer
 
     <DllImport("gdi32.dll")>
     Public Function GetDeviceCaps(ByVal hDC As IntPtr, ByVal nIndex As Integer) As Integer : End Function
@@ -762,6 +762,8 @@ Module NativeMethods
 
     Public Const WM_WINDOWPOSCHANGING = &H46
     Public Const WM_WINDOWPOSCHANGED = &H47
+
+    Public Const WM_DISPLAYCHANGE = &H7E
 
     Public Const WM_NCHITTEST As Integer = &H84
     Public Const WM_NCLBUTTONDOWN As Integer = &HA1

@@ -3,6 +3,7 @@
 End Class
 
 Partial NotInheritable Class FrmMain
+    Dim SuppressReschangeCounter As Integer = 0
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case Hotkey.WM_HOTKEY
@@ -200,17 +201,30 @@ Partial NotInheritable Class FrmMain
                     Exit Sub
                 End If
             Case WM_WININICHANGE '&H1A
-                If m.LParam = IntPtr.Zero AndAlso Me.WindowState = FormWindowState.Maximized Then
-                    Debug.Print($"WM_WININICHANGE {m.LParam}")
-                    'handle taskbar changing
-                    Dim newWA = Screen.FromPoint(Me.Location + New Point(Me.Width / 2, Me.Height / 2)).WorkingArea
-                    'only do adjustment when size change or moved from top/bottom to sides
-                    If newWA.Height <> prevWA.Height OrElse newWA.Width <> prevWA.Width Then
-                        Debug.Print($"Taskbar changed {prevWA}->{newWA}")
-                        Me.WindowState = FormWindowState.Normal
-                        btnMax.PerformClick()
+                If SuppressReschangeCounter > 0 Then
+                    Debug.Print($"ReschangeCounter {SuppressReschangeCounter}")
+                    SuppressReschangeCounter -= 1
+                Else
+                    If m.LParam = IntPtr.Zero AndAlso Me.WindowState = FormWindowState.Maximized Then
+                        Debug.Print($"WM_WININICHANGE {m.LParam}")
+                        'handle taskbar changing
+                        Dim newWA = Screen.FromPoint(Me.Location + New Point(Me.Width / 2, Me.Height / 2)).WorkingArea
+                        'only do adjustment when size change or moved from top/bottom to sides
+                        If newWA.Height <> prevWA.Height OrElse newWA.Width <> prevWA.Width Then
+                            Debug.Print($"Taskbar changed {prevWA}->{newWA}")
+                            Me.WindowState = FormWindowState.Normal
+                            btnMax.PerformClick() 'todo replace with gracefull resizing
+                        End If
                     End If
                 End If
+            Case WM_DISPLAYCHANGE
+                Debug.Print($"WM_DISPLAYCHANGE w {m.WParam} w {m.LParam} {LOWORD(m.LParam)} {HIWORD(m.LParam)}")
+                If Me.WindowState = FormWindowState.Maximized Then SuppressReschangeCounter = 2
+                'If Me.WindowState = FormWindowState.Maximized Then
+                '    Me.WindowState = FormWindowState.Minimized
+                '    Threading.Thread.Sleep(250)
+                '    btnMax.PerformClick()
+                'End If
             Case WM_ENTERMENULOOP
                 Debug.Print($"WM_ENTERMENULOOP {cmsQuickLaunch.Visible}")
                 SysMenu.Visible = Not cmsQuickLaunch.Visible
