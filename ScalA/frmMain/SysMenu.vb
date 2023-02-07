@@ -81,9 +81,9 @@
 
     Public Function Contains(pt As Point) As Boolean
         If Not Me.Visible Then Return False
-        Dim rc As Rectangle
-        GetWindowRect(FindWindow("#32768", Nothing), rc) 'todo: rewrite signature and codebase to use RECT instead of rectangle 
-        Return Rectangle.FromLTRB(rc.X, rc.Y, rc.Width, rc.Height).Contains(pt)
+        Dim rc As RECT
+        GetWindowRect(FindWindow("#32768", Nothing), rc)
+        Return rc.ToRectangle.Contains(pt)
     End Function
 
 End Class

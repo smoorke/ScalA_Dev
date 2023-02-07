@@ -27,46 +27,29 @@ Module NativeMethods
         Public dwFlags As UInteger
     End Structure
 
-    '<StructLayout(LayoutKind.Sequential)>
-    'Structure RECT
-    '    Public Left As Integer
-    '    Public Top As Integer
-    '    Public Right As Integer
-    '    Public Bottom As Integer
-    '    Public Sub New(ByVal Rectangle As Rectangle)
-    '        Me.New(Rectangle.Left, Rectangle.Top, Rectangle.Right, Rectangle.Bottom)
-    '    End Sub
-    '    Public Sub New(ByVal Left As Integer, ByVal Top As Integer, ByVal Right As Integer, ByVal Bottom As Integer)
-    '        Me.Left = Left
-    '        Me.Top = Top
-    '        Me.Right = Right
-    '        Me.Bottom = Bottom
-    '    End Sub
-    '    Public Function ToRectangle() As Rectangle
-    '        Return Rectangle.FromLTRB(Me.Left, Me.Top, Me.Right, Me.Bottom)
-    '    End Function
-    '    Public Overrides Function ToString() As String
-    '        Return $"L={Me.Left},T={Me.Top},R={Me.Right},B={Me.Bottom}"
-    '    End Function
-    'End Structure
-
     <Runtime.CompilerServices.Extension>
-    Public Function ToRECT(Rectangle As Rectangle) As RECT
-        Dim rc As RECT
-        rc.left = Rectangle.Left
-        rc.top = Rectangle.Top
-        rc.right = Rectangle.Right
-        rc.bottom = Rectangle.Bottom
-        Return rc
+    Public Function ToRECT(rct As Rectangle) As RECT
+        Return New RECT(rct)
     End Function
 
-    <Runtime.CompilerServices.Extension>
-    Public Function ToRectangle(rc As RECT) As Rectangle
-        Return Rectangle.FromLTRB(rc.left, rc.top, rc.right, rc.bottom)
-    End Function
-
+    <StructLayout(LayoutKind.Sequential)>
     Public Structure RECT
         Public left, top, right, bottom As Integer
+        Public Sub New(left As Integer, top As Integer, right As Integer, bottom As Integer)
+            Me.left = left
+            Me.top = top
+            Me.right = right
+            Me.bottom = bottom
+        End Sub
+        Public Sub New(ByVal rct As Rectangle)
+            Me.New(rct.Left, rct.Top, rct.Right, rct.Bottom)
+        End Sub
+        Public Function ToRectangle() As Rectangle
+            Return Rectangle.FromLTRB(Me.left, Me.top, Me.right, Me.bottom)
+        End Function
+        Public Overrides Function ToString() As String
+            Return $"{{{Me.left},{Me.top},{Me.right},{Me.bottom}}}"
+        End Function
     End Structure
 
 
@@ -444,6 +427,8 @@ Module NativeMethods
     <DllImport("user32.dll")>
     Public Function GetClientRect(ByVal hWnd As IntPtr, ByRef lpRect As Rectangle) As Boolean : End Function
     <DllImport("user32.dll")>
+    Public Function GetClientRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As Boolean : End Function
+    <DllImport("user32.dll")>
     Public Function ClientToScreen(ByVal hWnd As IntPtr, ByRef lpPoint As Point) As Boolean : End Function
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function ScreenToClient(ByVal hWnd As IntPtr, ByRef lpPoint As Point) As Boolean : End Function
@@ -465,35 +450,6 @@ Module NativeMethods
     Public Function ReleaseDC(ByVal hWnd As IntPtr, ByVal hDC As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
     End Function
 
-
-    <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Unicode)>
-    Public Enum DWMWINDOWATTRIBUTE
-        DWMWA_NCRENDERING_ENABLED
-        DWMWA_NCRENDERING_POLICY
-        DWMWA_TRANSITIONS_FORCEDISABLED
-        DWMWA_ALLOW_NCPAINT
-        DWMWA_CAPTION_BUTTON_BOUNDS
-        DWMWA_NONCLIENT_RTL_LAYOUT
-        DWMWA_FORCE_ICONIC_REPRESENTATION
-        DWMWA_FLIP3D_POLICY
-        DWMWA_EXTENDED_FRAME_BOUNDS
-        DWMWA_HAS_ICONIC_BITMAP
-        DWMWA_DISALLOW_PEEK
-        DWMWA_EXCLUDED_FROM_PEEK
-        DWMWA_CLOAK
-        DWMWA_CLOAKED
-        DWMWA_FREEZE_REPRESENTATION
-        DWMWA_PASSIVE_UPDATE_MODE
-        DWMWA_USE_HOSTBACKDROPBRUSH
-        DWMWA_USE_IMMERSIVE_DARK_MODE = 20
-        DWMWA_WINDOW_CORNER_PREFERENCE = 33
-        DWMWA_BORDER_COLOR
-        DWMWA_CAPTION_COLOR
-        DWMWA_TEXT_COLOR
-        DWMWA_VISIBLE_FRAME_BORDER_THICKNESS
-        DWMWA_SYSTEMBACKDROP_TYPE
-        DWMWA_LAST
-    End Enum
 #Region " SetWindowPos "
 
     Enum SWP_HWND As Integer
