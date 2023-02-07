@@ -3,7 +3,7 @@
 End Class
 
 Partial NotInheritable Class FrmMain
-    Dim SuppressReschangeCounter As Integer = 0
+    Dim SuppressWININICHANGECounter As Integer = 0
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case Hotkey.WM_HOTKEY
@@ -107,6 +107,8 @@ Partial NotInheritable Class FrmMain
                 End If
             Case WM_EXITSIZEMOVE
                 Debug.Print($"WM_EXITSIZEMOVE")
+                UpdateThumb(If(chkDebug.Checked, 128, 255))
+                Me.Invalidate()
                 moveBusy = False
             Case WM_SIZE ' = &h0005
                 Dim width As Integer = LOWORD(m.LParam)
@@ -167,7 +169,7 @@ Partial NotInheritable Class FrmMain
                 Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
                 If caption_Mousedown Then
                     FrmBehind.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
-                    Debug.Print($"szb{FrmSizeBorder.Bounds} fbh{FrmBehind.Bounds}")
+                    'Debug.Print($"szb{FrmSizeBorder.Bounds} fbh{FrmBehind.Bounds}")
                 End If
                 If FrmSizeBorder IsNot Nothing And Me.WindowState = FormWindowState.Normal Then
                     FrmSizeBorder.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
@@ -201,9 +203,9 @@ Partial NotInheritable Class FrmMain
                     Exit Sub
                 End If
             Case WM_WININICHANGE '&H1A
-                If SuppressReschangeCounter > 0 Then
-                    Debug.Print($"ReschangeCounter {SuppressReschangeCounter}")
-                    SuppressReschangeCounter -= 1
+                If SuppressWININICHANGECounter > 0 Then
+                    Debug.Print($"ReschangeCounter {SuppressWININICHANGECounter}")
+                    SuppressWININICHANGECounter -= 1
                 Else
                     If m.LParam = IntPtr.Zero AndAlso Me.WindowState = FormWindowState.Maximized Then
                         Debug.Print($"WM_WININICHANGE {m.LParam}")
@@ -219,12 +221,11 @@ Partial NotInheritable Class FrmMain
                 End If
             Case WM_DISPLAYCHANGE
                 Debug.Print($"WM_DISPLAYCHANGE w {m.WParam} w {m.LParam} {LOWORD(m.LParam)} {HIWORD(m.LParam)}")
-                If Me.WindowState = FormWindowState.Maximized Then SuppressReschangeCounter = 2
-                'If Me.WindowState = FormWindowState.Maximized Then
-                '    Me.WindowState = FormWindowState.Minimized
-                '    Threading.Thread.Sleep(250)
-                '    btnMax.PerformClick()
-                'End If
+                If Me.WindowState = FormWindowState.Maximized Then SuppressWININICHANGECounter = 2
+                Task.Run(Sub()
+                             Threading.Thread.Sleep(5000)
+                             SuppressWININICHANGECounter = 0
+                         End Sub)
             Case WM_ENTERMENULOOP
                 Debug.Print($"WM_ENTERMENULOOP {cmsQuickLaunch.Visible}")
                 SysMenu.Visible = Not cmsQuickLaunch.Visible
