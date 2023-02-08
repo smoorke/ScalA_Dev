@@ -108,6 +108,7 @@ Partial NotInheritable Class FrmMain
             Case WM_EXITSIZEMOVE
                 Debug.Print($"WM_EXITSIZEMOVE")
                 UpdateThumb(If(chkDebug.Checked, 128, 255))
+                AltPP?.ResetCache()
                 Me.Invalidate()
                 moveBusy = False
             Case WM_SIZE ' = &h0005
@@ -221,6 +222,7 @@ Partial NotInheritable Class FrmMain
                 End If
             Case WM_DISPLAYCHANGE
                 Debug.Print($"WM_DISPLAYCHANGE w {m.WParam} w {m.LParam} {LOWORD(m.LParam)} {HIWORD(m.LParam)}")
+                AltPP?.ResetCache()
                 If Me.WindowState = FormWindowState.Maximized Then SuppressWININICHANGECounter = 2
                 Task.Run(Sub()
                              Threading.Thread.Sleep(5000)

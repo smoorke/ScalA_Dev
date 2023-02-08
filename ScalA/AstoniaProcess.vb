@@ -69,7 +69,6 @@ Public NotInheritable Class AstoniaProcess
             If _CO IsNot Nothing AndAlso _CO <> New Point Then
                 Return _CO
             Else
-                Debug.Print($"co {_CO}")
                 If _proc Is Nothing Then
                     Return New Point
                 End If
@@ -80,8 +79,16 @@ Public NotInheritable Class AstoniaProcess
                     Dim ptt As New Point
                     ClientToScreen(_proc.MainWindowHandle, ptt)
                     Dim rcW As New RECT
-                    GetWindowRect(_proc?.MainWindowHandle, rcW)
-                    _CO = New Point(ptt.X - rcW.left, ptt.Y - rcW.top)
+                    GetWindowRect(_proc.MainWindowHandle, rcW)
+                    Dim extrapixel As Integer = 0
+                    Select Case Me.WindowsScaling
+                        Case 125
+                            extrapixel = 1
+                        Case 175
+                            extrapixel = 1
+                    End Select
+                    _CO = New Point(ptt.X - rcW.left, ptt.Y - rcW.top + extrapixel)
+                    Debug.Print($"co {_CO}")
                     Return _CO
                 Catch ex As Exception
                     Debug.Print($"ex on CO {ex.Message}")
@@ -463,7 +470,7 @@ Public NotInheritable Class AstoniaProcess
                                "Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Error) _
                = DialogResult.Cancel Then Return
             My.Settings.Save()
-            FrmMain.RestartSelf()
+            FrmMain.RestartSelf(True)
             End 'program
             Return
         End If

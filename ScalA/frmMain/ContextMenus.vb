@@ -453,7 +453,7 @@ Partial Public NotInheritable Class FrmMain
                                "Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Error) _
                = DialogResult.Cancel Then Exit Sub
             My.Settings.Save()
-            RestartSelf()
+            RestartSelf(True)
             End 'program
             Exit Sub
         End If

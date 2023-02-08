@@ -812,6 +812,13 @@ Partial Public NotInheritable Class FrmMain
 
         End If
 
+        'If Me.WindowsScaling = 175 Then
+        '    pbZoom.Top = pnlTitleBar.Height - 1
+        '    pbZoom.Height = newSize.Height + 1
+        '    If Me.WindowState = FormWindowState.Maximized Then
+        '        pbZoom.Height -= pnlTitleBar.Height
+        '    End If
+        'End If
         cmbResolution.Items(0) = $"{pbZoom.Size.Width}x{pbZoom.Size.Height}"
         suppressResChange = False
         'Me.ResumeLayout(True)
