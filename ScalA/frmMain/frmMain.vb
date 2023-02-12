@@ -1550,7 +1550,7 @@ Partial Public NotInheritable Class FrmMain
             hasCName = False
         End Try
         If activeID = scalaPID OrElse activeID = AltPP?.Id OrElse
-                (My.Settings.gameOnOverview AndAlso
+                (My.Settings.gameOnOverview AndAlso pnlOverview.Visible AndAlso
                 pnlOverview.Controls.OfType(Of AButton).Any(Function(ab) ab.Visible AndAlso ab.Tag IsNot Nothing AndAlso ab.Tag.id = activeID)) Then ' is on overview
             setActive(True)
         ElseIf activeID <> 0 Then 'inactive
