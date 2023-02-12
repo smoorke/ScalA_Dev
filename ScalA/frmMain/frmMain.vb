@@ -92,7 +92,7 @@ Partial Public NotInheritable Class FrmMain
             End If
             'pnlOverview.SuspendLayout()
             pnlOverview.Show()
-            Dim visbut = UpdateButtonLayout(AstoniaProcess.Enumerate(blackList).Count)
+            Dim visbut = UpdateButtonLayout(AstoniaProcess.Enumerate(blackList, True, True).Count)
             For Each but As AButton In visbut.Where(Function(b) b.Text <> "")
                 but.Image = Nothing
                 but.BackgroundImage = Nothing

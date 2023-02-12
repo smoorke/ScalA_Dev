@@ -342,7 +342,8 @@ Public NotInheritable Class AstoniaProcess
     Private Shared _ProcCache As IEnumerable(Of AstoniaProcess) = Enumerable.Empty(Of AstoniaProcess)
     Private Shared _CacheCounter As Integer = 0
 
-    Public Shared Function Enumerate(blacklist As IEnumerable(Of String), Optional useCache As Boolean = False) As IEnumerable(Of AstoniaProcess)
+    Public Shared Function Enumerate(blacklist As IEnumerable(Of String), Optional useCache As Boolean = False, Optional resetCacheFirst As Boolean = False) As IEnumerable(Of AstoniaProcess)
+        If resetCacheFirst Then _CacheCounter = 0
         If useCache Then
             If _CacheCounter = 0 Then
                 _ProcCache = EnumProcessesByNameArray(My.Settings.exe.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries), blacklist)
