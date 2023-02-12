@@ -1543,7 +1543,12 @@ Partial Public NotInheritable Class FrmMain
     Private Async Sub TmrActive_Tick(sender As Timer, e As EventArgs) Handles tmrActive.Tick
 
         Dim activeID As Integer = GetActiveProcessID() ' this returns 0 when switching tasks
-        Dim hasCName As Boolean = Process.GetProcessById(activeID).IsClassNameIn(My.Settings.className)
+        Dim hasCName As Boolean
+        Try
+            hasCName = Process.GetProcessById(activeID).IsClassNameIn(My.Settings.className)
+        Catch
+            hasCName = False
+        End Try
         If activeID = scalaPID OrElse activeID = AltPP?.Id OrElse
                 (My.Settings.gameOnOverview AndAlso
                 pnlOverview.Controls.OfType(Of AButton).Any(Function(ab) ab.Visible AndAlso ab.Tag IsNot Nothing AndAlso ab.Tag.id = activeID)) Then ' is on overview
