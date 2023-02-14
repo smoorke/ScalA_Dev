@@ -32,7 +32,7 @@ Module NativeMethods
         Return New RECT(rct)
     End Function
 
-    <StructLayout(LayoutKind.Sequential)>
+    <System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)>
     Public Structure RECT
         Public left, top, right, bottom As Integer
         Public Sub New(left As Integer, top As Integer, right As Integer, bottom As Integer)

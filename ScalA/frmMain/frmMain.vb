@@ -227,13 +227,24 @@ Partial Public NotInheritable Class FrmMain
         End If
 
     End Sub
+    Private Const DWMWA_EXTENDED_FRAME_BOUNDS As Integer = 9
     Public Function WindowsScaling() As Integer
-        Const DWMWA_EXTENDED_FRAME_BOUNDS As Integer = 9
         Dim rcFrame As RECT
         DwmGetWindowAttribute(ScalaHandle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
         Dim rcWind As RECT
         GetWindowRect(ScalaHandle, rcWind)
         Return Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25
+    End Function
+
+    Public Function GetScaling(hWnd As IntPtr) As Integer
+        Dim rcFrame As RECT
+        DwmGetWindowAttribute(hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
+        Dim rcWind As RECT
+        GetWindowRect(hWnd, rcWind)
+        Dim rcClient As RECT
+        GetClientRect(hWnd, rcClient)
+        Dim hasBorder As Boolean = rcWind.top <> rcClient.top
+        Return Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25 + If(hasBorder, 0, 25)
     End Function
 
     Public Resizing As Boolean
