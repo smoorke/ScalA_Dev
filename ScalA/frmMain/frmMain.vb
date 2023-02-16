@@ -382,6 +382,7 @@ Partial Public NotInheritable Class FrmMain
         Static extraitem As New ToolStripMenuItem($"movebusy {moveBusy}")
         test.Items.Add(extraitem)
         test.Items.Add(New ToolStripMenuItem("Update", Nothing, AddressOf dBug.ToggleUpdate))
+        test.Items.Add(New ToolStripMenuItem("Scaling", Nothing, AddressOf dBug.ScreenScaling))
         chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()
                                      Debug.Print("test Opening")
@@ -1911,6 +1912,12 @@ Module dBug
 
     Friend Sub ToggleUpdate(sender As Object, e As EventArgs)
         FrmMain.pnlUpdate.Visible = Not FrmMain.pnlUpdate.Visible
+    End Sub
+
+    Friend Sub ScreenScaling(sender As Object, e As EventArgs)
+        For Each scrn As Screen In Screen.AllScreens
+            Debug.Print(scrn.ScalingPercent)
+        Next
     End Sub
 End Module
 

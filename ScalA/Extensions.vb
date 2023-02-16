@@ -136,5 +136,29 @@ Module Extensions
     Public Function Map(this As Integer, fromMin As Integer, fromMax As Integer, toMin As Integer, toMax As Integer) As Integer
         Return toMin + ((this - fromMin) * (toMax - toMin) / (fromMax - fromMin))
     End Function
+    Private Const DWMWA_EXTENDED_FRAME_BOUNDS = 9
+    <System.Runtime.CompilerServices.Extension()>
+    Public Function ScalingPercent(scrn As Screen) As Integer
+        Dim grab As New Form With {
+            .FormBorderStyle = FormBorderStyle.None,
+            .TransparencyKey = Color.Red,
+            .BackColor = Color.Red,
+            .ShowInTaskbar = False,
+            .StartPosition = FormStartPosition.Manual,
+            .Location = scrn.Bounds.Location
+            }
+        AddHandler grab.Shown, Sub()
+                                   grab.Location += New Point(1, 1) 'need to update the location so the frame changes
+                                   Dim rcFrame As RECT
+                                   DwmGetWindowAttribute(grab.Handle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
+                                   Dim rcWind As RECT
+                                   GetWindowRect(grab.Handle, rcWind)
+                                   grab.Tag = Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25
+                                   grab.Close()
+                               End Sub
+        grab.ShowDialog()
+        Return grab.Tag
+    End Function
+
 
 End Module
