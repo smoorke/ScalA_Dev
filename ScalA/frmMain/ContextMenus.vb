@@ -54,7 +54,7 @@ Partial Public NotInheritable Class FrmMain
         SelectToolStripMenuItem.Image = pp.GetIcon?.ToBitmap
         SelectToolStripMenuItem.Tag = pp
 
-        TopMostToolStripMenuItem.Checked = pp.IsTopMost()
+        TopMostToolStripMenuItem.Checked = pp.TopMost()
         TopMostToolStripMenuItem.Tag = pp
 
         SortSubToolStripMenuItem.Tag = pp

@@ -60,7 +60,7 @@ Public NotInheritable Class AstoniaProcess
         End If
         If overwrite OrElse Not _restoreDic.ContainsKey(_proc.Id) Then Me._restoreLoc = pt
         If Not _restoreDic.ContainsKey(_proc.Id) Then _restoreDic.TryAdd(_proc.Id, Me)
-        Me._wasTopmost = Me.IsTopMost()
+        Me._wasTopmost = Me.TopMost()
     End Sub
 
     Private _CO? As Point
@@ -193,19 +193,27 @@ Public NotInheritable Class AstoniaProcess
             End Try
         End Get
     End Property
-
+    Const GWL_EXSTYLE = -20
+    Const WS_EX_TOPMOST = 8L
     <System.Runtime.InteropServices.DllImport("user32.dll")>
     Private Shared Function GetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer) As Long : End Function
-    Public ReadOnly Property IsTopMost() As Boolean
+    Public Property TopMost() As Boolean
         Get
-            Const GWL_EXSTYLE = -20
-            Const WS_EX_TOPMOST = 8L
+
             Try
                 Return (GetWindowLong(_proc?.MainWindowHandle, GWL_EXSTYLE) And WS_EX_TOPMOST) = WS_EX_TOPMOST
             Catch
                 Return False
             End Try
         End Get
+        Set(value As Boolean)
+            Try
+                SetWindowPos(Me.MainWindowHandle, If(value, SWP_HWND.TOPMOST, SWP_HWND.NOTOPMOST),
+                                                  -1, -1, -1, -1,
+                                                  SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+            Catch
+            End Try
+        End Set
     End Property
 
     Public Function IsRunning() As Boolean

@@ -149,8 +149,12 @@ Partial Public NotInheritable Class FrmMain
             Debug.Print("tmrTick.Enabled")
             tmrTick.Enabled = True
 
-            Debug.Print("AltPPTopMost " & AltPP.IsTopMost.ToString)
+            Debug.Print("AltPPTopMost " & AltPP.TopMost.ToString)
             Debug.Print("SelfTopMost " & Process.GetCurrentProcess.IsTopMost.ToString)
+
+            If My.Settings.topmost Then
+                AltPP.TopMost = True
+            End If
 
             Dim item As AstoniaProcess = CType(sender.SelectedItem, AstoniaProcess)
             If Not startThumbsDict.ContainsKey(item.Id) Then
