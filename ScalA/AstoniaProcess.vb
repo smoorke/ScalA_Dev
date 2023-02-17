@@ -1,5 +1,5 @@
-﻿Imports System.Runtime.InteropServices
-Imports System.Security.Cryptography
+﻿Imports System.IO.MemoryMappedFiles
+Imports System.Runtime.InteropServices
 
 Public NotInheritable Class AstoniaProcess
 
@@ -310,7 +310,7 @@ Public NotInheritable Class AstoniaProcess
                 Dim ico = Icon.ExtractAssociatedIcon(path)
                 'exeIconCache(ID) = New Tuple(Of Icon, String)(ico, Me.Name) 'todo fix exception here
                 exeIconCache.TryAdd(ID, New Tuple(Of Icon, String)(ico, Me.Name))
-                pathIcnCache.tryAdd(path, ico)
+                pathIcnCache.TryAdd(path, ico)
                 Return ico
             End If
         Catch
@@ -397,9 +397,46 @@ Public NotInheritable Class AstoniaProcess
         End Try
     End Function
     Private Shared ReadOnly validColors As Integer() = {&HFFFF0000, &HFFFF0400, &HFFFF7B29, &HFFFF7D29, &HFF297BFF, &HFF297DFF, &HFF000000, &HFF000400, &HFFFFFFFF} 'red, orange, lightblue, black, white (troy,base)
-
+    Public isSDL As Boolean = True
+    <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Auto, Pack:=0)>
+    Structure SharedMem_Bars
+        Dim hitp, shield, endur, mana As Byte
+    End Structure
     Public Function GetHealthbar(Optional width As Integer = 75, Optional height As Integer = 15) As Bitmap
         Static Dim bmp As New Bitmap(width, height)
+
+        'struct sharedmem {
+        '    unsigned int pid; 0
+        '    Char hp, shield,end, mana; 4 5 6 7
+        If isSDL Then
+            Static map As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"MOAC{Me.Id}", 7)
+            Static va As MemoryMappedViewAccessor = map.CreateViewAccessor()
+            If va.ReadInt32(0) = Me.Id Then
+                Dim bars(4) As Byte
+                va.ReadArray(Of Byte)(4, bars, 0, 4)
+                Using g As Graphics = Graphics.FromImage(bmp)
+                    Static br As New SolidBrush(Color.FromArgb(&HFFFF0400))
+                    Static bo As New SolidBrush(Color.FromArgb(&HFFFF7D29))
+                    Static by As New SolidBrush(Color.FromArgb(186, 186, 30))
+                    Static bl As New SolidBrush(Color.FromArgb(217, 217, 30))
+                    Static bb As New SolidBrush(Color.FromArgb(&HFF297DFF))
+                    g.Clear(Color.Black)
+                    If bars(3) = 255 Then
+                        g.FillRectangle(br, New Rectangle(0, 0, bars(0) / 100 * width, height / 5 * 2))
+                        g.FillRectangle(bo, New Rectangle(0, height / 5 * 2, bars(1) / 100 * width, height / 5 * 2))
+                        g.FillRectangle(If(My.Settings.DarkMode, by, bl), New Rectangle(0, height / 5 * 4, bars(2) / 100 * width, height / 5))
+                    Else
+                        g.FillRectangle(br, New Rectangle(0, 0, bars(0) / 100 * width, height / 3))
+                        g.FillRectangle(bo, New Rectangle(0, height / 3, bars(1) / 100 * width, height / 3))
+                        g.FillRectangle(bb, New Rectangle(0, height / 3 * 2, bars(3) / 100 * width, height / 3))
+                    End If
+                End Using
+                Return bmp
+            Else
+                isSDL = False
+            End If
+        End If
+
         Using g As Graphics = Graphics.FromImage(bmp), grab As Bitmap = GetClientBitmap()
 
             If grab Is Nothing Then Return Nothing

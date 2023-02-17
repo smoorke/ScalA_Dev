@@ -1,4 +1,5 @@
-﻿Imports System.Net.Http
+﻿Imports System.IO.MemoryMappedFiles
+Imports System.Net.Http
 Imports Microsoft.VisualBasic.FileIO
 Imports ScalA.NativeMethods
 
@@ -387,6 +388,8 @@ Partial Public NotInheritable Class FrmMain
         test.Items.Add(extraitem)
         test.Items.Add(New ToolStripMenuItem("Update", Nothing, AddressOf dBug.ToggleUpdate))
         test.Items.Add(New ToolStripMenuItem("Scaling", Nothing, AddressOf dBug.ScreenScaling))
+        test.Items.Add(New ToolStripMenuItem("Shared Mem", Nothing, AddressOf dBug.SharedMem))
+
         chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()
                                      Debug.Print("test Opening")
@@ -1922,6 +1925,20 @@ Module dBug
         For Each scrn As Screen In Screen.AllScreens
             Debug.Print(scrn.ScalingPercent)
         Next
+    End Sub
+    'struct sharedmem {
+    '    unsigned int pid; 0
+    '    Char hp, shield,end, mana; 4 5 6 7
+    '    Char * base; 8
+    '    int key, isprite, offX, offY; 16 20 24 28
+    '    int flags, fsprite; 32 36
+    '    Char swapped; 37
+    '} __attribute__((packed));
+    Friend Sub SharedMem(sender As Object, e As EventArgs)
+        Dim map As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"MOAC{FrmMain.AltPP?.Id}", 37)
+        Dim va As MemoryMappedViewAccessor = map.CreateViewAccessor()
+        Debug.Print($"shmem {va.ReadInt32(0)} id {FrmMain.AltPP?.Id}")
+        Debug.Print($"hp {va.ReadByte(4)} shield {va.ReadByte(5)} end {va.ReadByte(6)} mana {va.ReadByte(7)}")
     End Sub
 End Module
 
