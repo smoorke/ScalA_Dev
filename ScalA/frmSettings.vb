@@ -260,7 +260,11 @@ Public NotInheritable Class FrmSettings
         Me.chkDoAlign.Checked = False
 
         My.Settings.topmost = chkTopMost.Checked
+
         FrmMain.TopMost = chkTopMost.Checked
+        If FrmMain.cboAlt.SelectedIndex > 0 Then
+            FrmMain.AltPP.TopMost = chkTopMost.Checked
+        End If
 
         My.Settings.gameOnOverview = chkOverViewIsGame.Checked
 

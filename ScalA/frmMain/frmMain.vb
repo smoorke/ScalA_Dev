@@ -106,6 +106,7 @@ Partial Public NotInheritable Class FrmMain
             prevItem = CType(sender.SelectedItem, AstoniaProcess)
             PnlEqLock.Visible = False
             AOshowEqLock = False
+            Me.TopMost = My.Settings.topmost
             Exit Sub
         Else
             pnlOverview.Hide()
@@ -149,7 +150,7 @@ Partial Public NotInheritable Class FrmMain
             Debug.Print("tmrTick.Enabled")
             tmrTick.Enabled = True
 
-            Debug.Print("AltPPTopMost " & AltPP.IsTopMost.ToString)
+            Debug.Print("AltPPTopMost " & AltPP.TopMost.ToString)
             Debug.Print("SelfTopMost " & Process.GetCurrentProcess.IsTopMost.ToString)
 
             Dim item As AstoniaProcess = CType(sender.SelectedItem, AstoniaProcess)
@@ -207,6 +208,9 @@ Partial Public NotInheritable Class FrmMain
 
             SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle) ' have Client always be beneath ScalA (set Scala to be owned by client)
             '                                                                  note SetParent() doesn't work.
+            If My.Settings.topmost Then
+                AltPP.TopMost = True
+            End If
 
             AltPP?.Activate()
 
