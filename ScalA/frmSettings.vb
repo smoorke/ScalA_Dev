@@ -506,7 +506,7 @@ Public NotInheritable Class FrmSettings
 
 
 
-    Private Function GCD(p, q) As Integer
+    Private Function GCD(p As Integer, q As Integer) As Integer
         If q = 0 Then Return p
         Dim r As Integer = p Mod q
         Return GCD(q, r)

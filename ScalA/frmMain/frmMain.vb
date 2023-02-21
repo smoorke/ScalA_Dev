@@ -1934,10 +1934,10 @@ Module dBug
             Debug.Print($"{scrn.DeviceName} {scrn.Bounds} {tsk.Result}")
         Next
 
-        Debug.Print("---")
+        Debug.Print("-T-")
         Dim tsks = Screen.AllScreens.Select(Of Task)(Function(scrn) scrn.ScalingPercentTask).ToList
         Await Task.WhenAll(tsks)
-        tsks.ForEach(Sub(tsk As Task(Of Integer)) Debug.Print($"{tsk.Result}"))
+        tsks.ForEach(Sub(tsk As Task(Of Integer)) Debug.Print($"{tsk.Result}%"))
 
     End Sub
     'struct sharedmem {
