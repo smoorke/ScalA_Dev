@@ -922,7 +922,7 @@ Partial Public NotInheritable Class FrmMain
     Dim wasMaximized As Boolean = False
     Dim posChangeBusy As Boolean = False
     Public moveBusy As Boolean = False
-    Dim suppressWM_MOVEcwp = False
+    Dim suppressWM_MOVEcwp As Boolean = False
 
     Private Sub Cycle(Optional up As Boolean = False)
         tmrTick.Enabled = False
@@ -1204,7 +1204,7 @@ Partial Public NotInheritable Class FrmMain
         If but Is Nothing Then Exit Sub
         but.BackgroundImage = bm
     End Sub
-    Private Function GetNextPerfectSquare(num As Integer)
+    Private Function GetNextPerfectSquare(num As Integer) As Integer
         Dim nextN As Integer = Math.Floor(Math.Sqrt(num)) + 1
         If nextN > 6 Then nextN = 6
         Return nextN * nextN
