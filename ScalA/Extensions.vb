@@ -1,5 +1,6 @@
 ﻿Imports System.Runtime.CompilerServices
 Imports System.Runtime.InteropServices
+Imports System.Threading
 
 Module Extensions
     ''' <summary>
@@ -139,7 +140,7 @@ Module Extensions
     Private Const DWMWA_EXTENDED_FRAME_BOUNDS = 9
     <System.Runtime.CompilerServices.Extension()>
     Public Function ScalingPercent(scrn As Screen) As Integer
-        Dim grab As New Form With {
+        Dim grab As New InactiveForm With {
             .FormBorderStyle = FormBorderStyle.None,
             .TransparencyKey = Color.Red,
             .BackColor = Color.Red,
@@ -159,6 +160,11 @@ Module Extensions
         grab.ShowDialog()
         Return grab.Tag
     End Function
-
-
+    Private Class InactiveForm : Inherits Form
+        Protected Overloads Overrides ReadOnly Property ShowWithoutActivation() As Boolean
+            Get
+                Return True
+            End Get
+        End Property
+    End Class
 End Module
