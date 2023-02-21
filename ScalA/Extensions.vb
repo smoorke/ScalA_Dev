@@ -1,6 +1,5 @@
 ﻿Imports System.Runtime.CompilerServices
 Imports System.Runtime.InteropServices
-Imports System.Threading
 
 Module Extensions
     ''' <summary>
