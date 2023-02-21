@@ -160,6 +160,30 @@ Module Extensions
         grab.ShowDialog()
         Return grab.Tag
     End Function
+    <System.Runtime.CompilerServices.Extension()>
+    Public Function ScalingPercentTask(scrn As Screen) As Task(Of Integer)
+        Dim grab As New InactiveForm With {
+           .FormBorderStyle = FormBorderStyle.None,
+           .TransparencyKey = Color.Red,
+           .BackColor = Color.Red,
+           .ShowInTaskbar = False,
+           .StartPosition = FormStartPosition.Manual,
+           .Location = scrn.Bounds.Location
+           }
+        Dim tcs As New TaskCompletionSource(Of Integer)
+        AddHandler grab.Shown, Sub()
+                                   grab.Location += New Point(1, 1) 'need to update the location so the frame changes
+                                   Dim rcFrame As RECT
+                                   DwmGetWindowAttribute(grab.Handle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
+                                   Dim rcWind As RECT
+                                   GetWindowRect(grab.Handle, rcWind)
+                                   tcs.SetResult(Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25)
+                                   grab.Close()
+                               End Sub
+        grab.Show()
+        Return tcs.Task
+    End Function
+
     Private Class InactiveForm : Inherits Form
         Protected Overloads Overrides ReadOnly Property ShowWithoutActivation() As Boolean
             Get

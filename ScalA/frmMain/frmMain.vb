@@ -1921,10 +1921,24 @@ Module dBug
         FrmMain.pnlUpdate.Visible = Not FrmMain.pnlUpdate.Visible
     End Sub
 
-    Friend Sub ScreenScaling(sender As Object, e As EventArgs)
+    Friend Async Sub ScreenScaling(sender As Object, e As EventArgs)
+
         For Each scrn As Screen In Screen.AllScreens
-            Debug.Print(scrn.ScalingPercent)
+            Debug.Print($"{scrn.DeviceName} {scrn.Bounds} {scrn.ScalingPercent}")
         Next
+
+        Debug.Print("---")
+        For Each scrn As Screen In Screen.AllScreens
+            Dim tsk = scrn.ScalingPercentTask
+            Await tsk
+            Debug.Print($"{scrn.DeviceName} {scrn.Bounds} {tsk.Result}")
+        Next
+
+        Debug.Print("---")
+        Dim tsks = Screen.AllScreens.Select(Of Task)(Function(scrn) scrn.ScalingPercentTask).ToList
+        Await Task.WhenAll(tsks)
+        tsks.ForEach(Sub(tsk As Task(Of Integer)) Debug.Print($"{tsk.Result}"))
+
     End Sub
     'struct sharedmem {
     '    unsigned int pid; 0
