@@ -540,7 +540,28 @@ Public NotInheritable Class AstoniaProcess
             Next
         End If
 
+        Dim newargs As New List(Of String)
+        Dim whFlagSet As Boolean = False
 
+        For Each arg As String In arguments.Split("-".ToCharArray, StringSplitOptions.RemoveEmptyEntries)
+            Dim item As String = arg.Trim
+            If item.StartsWith("w") OrElse item.StartsWith("w") Then
+                whFlagSet = True
+            End If
+            If item.StartsWith("o") AndAlso item.Length > 1 Then
+                Dim value As Integer = Val(arg.Substring(1))
+                If value And 256 = 256 Then 'fullscreen flag is set
+                    item = $"o{value - 256}"
+                End If
+            End If
+            newargs.Add(item)
+        Next
+        If Not whFlagSet Then
+            newargs.Add("w800")
+        End If
+
+        arguments = Strings.Join(newargs.ToArray, " -")
+        Debug.Print($"args {arguments}")
 
         Dim exepath As String = ""
         Try
@@ -564,7 +585,7 @@ Public NotInheritable Class AstoniaProcess
             oLink = CreateObject("WScript.Shell").CreateShortcut(shortcutlink)
 
             oLink.TargetPath = exepath
-            oLink.Arguments = arguments.Trim() & " -w800"
+            oLink.Arguments = arguments.Trim()
             oLink.WorkingDirectory = workdir
             oLink.WindowStyle = 1
             oLink.Save()
