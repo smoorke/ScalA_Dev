@@ -540,14 +540,24 @@ Public NotInheritable Class AstoniaProcess
         Catch
 
         End Try
+        'Dim workdir As String = exepath.Substring(0, exepath.LastIndexOf("\")) 'todo: replace with function found at https://stackoverflow.com/a/23842609/7433250
+        Dim workdir = _proc.GetCurrentDirectory()
+
+        Debug.Print($"wd {workdir}")
+
+        If workdir.EndsWith("bin") Then
+            workdir = workdir.Substring(0, workdir.LastIndexOf("\"))
+        End If
+
+
         Dim oLink As Object
         Try
 
             oLink = CreateObject("WScript.Shell").CreateShortcut(shortcutlink)
 
             oLink.TargetPath = exepath
-            oLink.Arguments = arguments.Trim() & " -w"
-            oLink.WorkingDirectory = exepath.Substring(0, exepath.LastIndexOf("\"))
+            oLink.Arguments = arguments.Trim() & " -w800"
+            oLink.WorkingDirectory = workdir
             oLink.WindowStyle = 1
             oLink.Save()
         Catch ex As Exception
@@ -556,7 +566,8 @@ Public NotInheritable Class AstoniaProcess
 
         Dim targetName As String = Me.Name
 
-        SendMessage(_proc.MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
+        'SendMessage(_proc.MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
+        _proc.Kill()
 
         Dim pp As Process
 

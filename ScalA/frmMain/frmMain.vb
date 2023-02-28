@@ -133,11 +133,16 @@ Partial Public NotInheritable Class FrmMain
             GetWindowRect(AltPP.MainWindowHandle, rcW)
             GetClientRect(AltPP.MainWindowHandle, rcC)
 
+            Dim ptC As Point
+            ClientToScreen(AltPP.MainWindowHandle, ptC)
+
             Debug.Print($"rcW:{rcW}")
             Debug.Print($"rcC:{rcC}")
+            Debug.Print($"ptC:{ptC}")
 
             'check if target is running as windowed. if not ask to run it with -w
-            If rcC.Width = 0 AndAlso rcC.Height = 0 Then
+            If rcC.Width = 0 AndAlso rcC.Height = 0 OrElse
+               rcC.X = ptC.X AndAlso rcC.Y = ptC.Y Then
                 'MessageBox.Show("Client is not running in windowed mode", "Error")
                 Await AltPP.ReOpenAsWindowed()
                 'cboAlt.SelectedIndex = 0
