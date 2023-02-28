@@ -399,21 +399,29 @@ Public NotInheritable Class AstoniaProcess
     Private Shared ReadOnly validColors As Integer() = {&HFFFF0000, &HFFFF0400, &HFFFF7B29, &HFFFF7D29, &HFF297BFF, &HFF297DFF, &HFF000000, &HFF000400, &HFFFFFFFF} 'red, orange, lightblue, black, white (troy,base)
     Public isSDL As Boolean = True
     <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Auto, Pack:=0)>
-    Structure SharedMem_Bars
-        Dim hitp, shield, endur, mana As Byte
+    Structure MoacSharedMem
+        Dim pID As UInt32
+        Dim hp, shield, [end], mana As Byte
+        Dim base As UInt64
+        Dim key, isprite, offX, offY As Integer
+        Dim flags, fsprite As Integer
+        Dim swapped As Byte
     End Structure
     Public Function GetHealthbar(Optional width As Integer = 75, Optional height As Integer = 15) As Bitmap
-        Static Dim bmp As New Bitmap(width, height)
+        Dim bmp As New Bitmap(width, height)
 
         'struct sharedmem {
         '    unsigned int pid; 0
         '    Char hp, shield,end, mana; 4 5 6 7
         If isSDL Then
-            Static map As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"MOAC{Me.Id}", 7)
-            Static va As MemoryMappedViewAccessor = map.CreateViewAccessor()
-            If va.ReadInt32(0) = Me.Id Then
-                Dim bars(4) As Byte
-                va.ReadArray(Of Byte)(4, bars, 0, 4)
+            Static shm As MoacSharedMem
+            Static map As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"MOAC{Me.Id}", Marshal.SizeOf(shm))
+            Static va As MemoryMappedViewAccessor = map.CreateViewAccessor(0, Marshal.SizeOf(shm), MemoryMappedFileAccess.Read)
+            va.Read(0, shm)
+            'If va.ReadInt32(0) = Me.Id Then
+            If shm.pID = Me.Id Then
+                'Dim bars(4) As Byte
+                'va.ReadArray(Of Byte)(4, bars, 0, 4)
                 Using g As Graphics = Graphics.FromImage(bmp)
                     Static br As New SolidBrush(Color.FromArgb(&HFFFF0400))
                     Static bo As New SolidBrush(Color.FromArgb(&HFFFF7D29))
@@ -421,14 +429,14 @@ Public NotInheritable Class AstoniaProcess
                     Static bl As New SolidBrush(Color.FromArgb(217, 217, 30))
                     Static bb As New SolidBrush(Color.FromArgb(&HFF297DFF))
                     g.Clear(Color.Black)
-                    If bars(3) = 255 Then
-                        g.FillRectangle(br, New Rectangle(0, 0, bars(0) / 100 * width, height / 5 * 2))
-                        g.FillRectangle(bo, New Rectangle(0, height / 5 * 2, bars(1) / 100 * width, height / 5 * 2))
-                        g.FillRectangle(If(My.Settings.DarkMode, by, bl), New Rectangle(0, height / 5 * 4, bars(2) / 100 * width, height / 5))
+                    If shm.mana = 255 Then
+                        g.FillRectangle(br, New Rectangle(0, 0, shm.hp / 100 * width, height / 5 * 2))
+                        g.FillRectangle(bo, New Rectangle(0, height / 5 * 2, shm.shield / 100 * width, height / 5 * 2))
+                        g.FillRectangle(If(My.Settings.DarkMode, by, bl), New Rectangle(0, height / 5 * 4, shm.end / 100 * width, height / 5))
                     Else
-                        g.FillRectangle(br, New Rectangle(0, 0, bars(0) / 100 * width, height / 3))
-                        g.FillRectangle(bo, New Rectangle(0, height / 3, bars(1) / 100 * width, height / 3))
-                        g.FillRectangle(bb, New Rectangle(0, height / 3 * 2, bars(3) / 100 * width, height / 3))
+                        g.FillRectangle(br, New Rectangle(0, 0, shm.hp / 100 * width, height / 3))
+                        g.FillRectangle(bo, New Rectangle(0, height / 3, shm.shield / 100 * width, height / 3))
+                        g.FillRectangle(bb, New Rectangle(0, height / 3 * 2, shm.mana / 100 * width, height / 3))
                     End If
                 End Using
                 Return bmp
