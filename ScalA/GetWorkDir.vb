@@ -2,7 +2,7 @@
 Imports System.Runtime.CompilerServices
 Imports System.ComponentModel
 
-Public Enum PROCESSINFOCLASS
+Public Enum PROCESSINFOCLASS As Integer
     ProcessBasicInformation = 0
     ProcessWow64Information = 26
 End Enum
@@ -177,6 +177,7 @@ Module ProcessUtilities
 
     <DllImport("ntdll.dll")>
     Private Function NtQueryInformationProcess(ByVal ProcessHandle As IntPtr, ByVal ProcessInformationClass As Integer, ByRef ProcessInformation As PROCESS_BASIC_INFORMATION, ByVal ProcessInformationLength As Integer, ByVal ReturnLength As IntPtr) As Integer : End Function
+    <DllImport("ntdll.dll")>
     Private Function NtQueryInformationProcess(ByVal ProcessHandle As IntPtr, ByVal ProcessInformationClass As Integer, ByRef ProcessInformation As IntPtr, ByVal ProcessInformationLength As Integer, ByVal ReturnLength As IntPtr) As Integer : End Function
     <DllImport("kernel32.dll", SetLastError:=True)>
     Private Function ReadProcessMemory(ByVal hProcess As IntPtr, ByVal lpBaseAddress As IntPtr, ByRef lpBuffer As IntPtr, ByVal dwSize As IntPtr, ByVal lpNumberOfBytesRead As IntPtr) As Boolean : End Function
@@ -186,7 +187,7 @@ Module ProcessUtilities
     Private Function ReadProcessMemory(ByVal hProcess As IntPtr, ByVal lpBaseAddress As IntPtr, ByRef lpBuffer As UNICODE_STRING_32, ByVal dwSize As IntPtr, ByVal lpNumberOfBytesRead As IntPtr) As Boolean : End Function
     <DllImport("kernel32.dll", SetLastError:=True)>
     Private Function ReadProcessMemory(ByVal hProcess As IntPtr, ByVal lpBaseAddress As IntPtr,
-    <MarshalAs(UnmanagedType.LPWStr)> ByVal lpBuffer As String, ByVal dwSize As IntPtr, ByVal lpNumberOfBytesRead As IntPtr) As Boolean : End Function
+        <MarshalAs(UnmanagedType.LPWStr)> ByVal lpBuffer As String, ByVal dwSize As IntPtr, ByVal lpNumberOfBytesRead As IntPtr) As Boolean : End Function
     <DllImport("kernel32.dll", SetLastError:=True)>
     Private Function OpenProcess(ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Boolean, ByVal dwProcessId As Integer) As IntPtr : End Function
     <DllImport("kernel32.dll")>
@@ -199,5 +200,5 @@ Module ProcessUtilities
     Private Function NtWow64ReadVirtualMemory64(ByVal hProcess As IntPtr, ByVal lpBaseAddress As Long, ByRef lpBuffer As UNICODE_STRING_WOW64, ByVal dwSize As Long, ByVal lpNumberOfBytesRead As IntPtr) As Integer : End Function
     <DllImport("ntdll.dll")>
     Private Function NtWow64ReadVirtualMemory64(ByVal hProcess As IntPtr, ByVal lpBaseAddress As Long,
-    <MarshalAs(UnmanagedType.LPWStr)> ByVal lpBuffer As String, ByVal dwSize As Long, ByVal lpNumberOfBytesRead As IntPtr) As Integer : End Function
+        <MarshalAs(UnmanagedType.LPWStr)> ByVal lpBuffer As String, ByVal dwSize As Long, ByVal lpNumberOfBytesRead As IntPtr) As Integer : End Function
 End Module
