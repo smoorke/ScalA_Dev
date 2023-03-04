@@ -134,7 +134,6 @@ Partial NotInheritable Class FrmMain
         '
         'cmsQuickLaunch
         '
-        Me.cmsQuickLaunch.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.cmsQuickLaunch.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DummyToolStripMenuItem})
         Me.cmsQuickLaunch.Name = "cmsBlank"
         Me.cmsQuickLaunch.Size = New System.Drawing.Size(138, 26)
@@ -142,7 +141,7 @@ Partial NotInheritable Class FrmMain
         'DummyToolStripMenuItem
         '
         Me.DummyToolStripMenuItem.Name = "DummyToolStripMenuItem"
-        Me.DummyToolStripMenuItem.Size = New System.Drawing.Size(137, 22)
+        Me.DummyToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.DummyToolStripMenuItem.Text = "--Dummy--"
         '
         'cmbResolution
@@ -330,7 +329,6 @@ Partial NotInheritable Class FrmMain
         '
         'cmsAlt
         '
-        Me.cmsAlt.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.cmsAlt.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SelectToolStripMenuItem, ToolStripSeparator1, Me.SortSubToolStripMenuItem, Me.TopMostToolStripMenuItem, ToolStripSeparator2, Me.CloseToolStripMenuItem})
         Me.cmsAlt.Name = "cmsAlt"
         Me.cmsAlt.Size = New System.Drawing.Size(153, 104)
