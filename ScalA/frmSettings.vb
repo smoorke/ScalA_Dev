@@ -94,6 +94,7 @@ Public NotInheritable Class FrmSettings
 
         chkCheckForUpdate.Checked = My.Settings.CheckForUpdate
 
+        chkStartupMax.Checked = My.Settings.StartMaximized
     End Sub
 
     Protected Overrides Sub WndProc(ByRef m As Message)
@@ -338,6 +339,7 @@ Public NotInheritable Class FrmSettings
 
         Hotkey.UnregHotkey(FrmMain)
 
+        My.Settings.StartMaximized = chkStartupMax.Checked
         My.Settings.Save()
 
         FrmSizeBorder.Invalidate()

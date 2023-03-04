@@ -109,6 +109,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
+        Me.chkStartupMax = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -185,12 +186,12 @@ Partial NotInheritable Class FrmSettings
         Me.cmsQLFolder.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.cmsQLFolder.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenInExplorerToolStripMenuItem})
         Me.cmsQLFolder.Name = "cmsQLFolder"
-        Me.cmsQLFolder.Size = New System.Drawing.Size(217, 28)
+        Me.cmsQLFolder.Size = New System.Drawing.Size(184, 26)
         '
         'OpenInExplorerToolStripMenuItem
         '
         Me.OpenInExplorerToolStripMenuItem.Name = "OpenInExplorerToolStripMenuItem"
-        Me.OpenInExplorerToolStripMenuItem.Size = New System.Drawing.Size(216, 24)
+        Me.OpenInExplorerToolStripMenuItem.Size = New System.Drawing.Size(183, 22)
         Me.OpenInExplorerToolStripMenuItem.Text = "Open in File Explorer"
         '
         'Label3
@@ -198,7 +199,7 @@ Partial NotInheritable Class FrmSettings
         Label3.AutoSize = True
         Label3.Location = New System.Drawing.Point(166, 92)
         Label3.Name = "Label3"
-        Label3.Size = New System.Drawing.Size(30, 15)
+        Label3.Size = New System.Drawing.Size(27, 13)
         Label3.TabIndex = 18
         Label3.Text = ".exe"
         '
@@ -207,7 +208,7 @@ Partial NotInheritable Class FrmSettings
         Label2.AutoSize = True
         Label2.Location = New System.Drawing.Point(6, 41)
         Label2.Name = "Label2"
-        Label2.Size = New System.Drawing.Size(14, 15)
+        Label2.Size = New System.Drawing.Size(14, 13)
         Label2.TabIndex = 7
         Label2.Text = "Y"
         '
@@ -216,14 +217,14 @@ Partial NotInheritable Class FrmSettings
         Label1.AutoSize = True
         Label1.Location = New System.Drawing.Point(6, 20)
         Label1.Name = "Label1"
-        Label1.Size = New System.Drawing.Size(15, 15)
+        Label1.Size = New System.Drawing.Size(14, 13)
         Label1.TabIndex = 6
         Label1.Text = "X"
         '
         'ToolStripSeparator1
         '
         ToolStripSeparator1.Name = "ToolStripSeparator1"
-        ToolStripSeparator1.Size = New System.Drawing.Size(183, 6)
+        ToolStripSeparator1.Size = New System.Drawing.Size(155, 6)
         '
         'Label4
         '
@@ -231,7 +232,7 @@ Partial NotInheritable Class FrmSettings
         Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Label4.Location = New System.Drawing.Point(52, 3)
         Label4.Name = "Label4"
-        Label4.Size = New System.Drawing.Size(24, 13)
+        Label4.Size = New System.Drawing.Size(18, 9)
         Label4.TabIndex = 3
         Label4.Text = "Top"
         '
@@ -241,7 +242,7 @@ Partial NotInheritable Class FrmSettings
         Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Label5.Location = New System.Drawing.Point(212, 3)
         Label5.Name = "Label5"
-        Label5.Size = New System.Drawing.Size(40, 13)
+        Label5.Size = New System.Drawing.Size(29, 9)
         Label5.TabIndex = 4
         Label5.Text = "Bottom"
         '
@@ -250,7 +251,7 @@ Partial NotInheritable Class FrmSettings
         Label7.AutoSize = True
         Label7.Location = New System.Drawing.Point(5, 39)
         Label7.Name = "Label7"
-        Label7.Size = New System.Drawing.Size(28, 15)
+        Label7.Size = New System.Drawing.Size(26, 13)
         Label7.TabIndex = 0
         Label7.Text = "Top"
         '
@@ -259,7 +260,7 @@ Partial NotInheritable Class FrmSettings
         Label8.AutoSize = True
         Label8.Location = New System.Drawing.Point(5, 20)
         Label8.Name = "Label8"
-        Label8.Size = New System.Drawing.Size(27, 15)
+        Label8.Size = New System.Drawing.Size(25, 13)
         Label8.TabIndex = 1
         Label8.Text = "Left"
         '
@@ -268,7 +269,7 @@ Partial NotInheritable Class FrmSettings
         Label9.AutoSize = True
         Label9.Location = New System.Drawing.Point(107, 20)
         Label9.Name = "Label9"
-        Label9.Size = New System.Drawing.Size(36, 15)
+        Label9.Size = New System.Drawing.Size(32, 13)
         Label9.TabIndex = 2
         Label9.Text = "Right"
         '
@@ -277,7 +278,7 @@ Partial NotInheritable Class FrmSettings
         Label10.AutoSize = True
         Label10.Location = New System.Drawing.Point(107, 39)
         Label10.Name = "Label10"
-        Label10.Size = New System.Drawing.Size(25, 15)
+        Label10.Size = New System.Drawing.Size(23, 13)
         Label10.TabIndex = 3
         Label10.Text = "Bot"
         '
@@ -286,7 +287,7 @@ Partial NotInheritable Class FrmSettings
         Label11.AutoSize = True
         Label11.Location = New System.Drawing.Point(86, 20)
         Label11.Name = "Label11"
-        Label11.Size = New System.Drawing.Size(20, 15)
+        Label11.Size = New System.Drawing.Size(18, 13)
         Label11.TabIndex = 8
         Label11.Text = "‰"
         '
@@ -295,7 +296,7 @@ Partial NotInheritable Class FrmSettings
         Label12.AutoSize = True
         Label12.Location = New System.Drawing.Point(86, 39)
         Label12.Name = "Label12"
-        Label12.Size = New System.Drawing.Size(20, 15)
+        Label12.Size = New System.Drawing.Size(18, 13)
         Label12.TabIndex = 9
         Label12.Text = "‰"
         '
@@ -304,7 +305,7 @@ Partial NotInheritable Class FrmSettings
         Label13.AutoSize = True
         Label13.Location = New System.Drawing.Point(188, 20)
         Label13.Name = "Label13"
-        Label13.Size = New System.Drawing.Size(20, 15)
+        Label13.Size = New System.Drawing.Size(18, 13)
         Label13.TabIndex = 10
         Label13.Text = "‰"
         '
@@ -313,16 +314,16 @@ Partial NotInheritable Class FrmSettings
         Label14.AutoSize = True
         Label14.Location = New System.Drawing.Point(188, 39)
         Label14.Name = "Label14"
-        Label14.Size = New System.Drawing.Size(20, 15)
+        Label14.Size = New System.Drawing.Size(18, 13)
         Label14.TabIndex = 11
         Label14.Text = "‰"
         '
         'Label6
         '
         Label6.AutoSize = True
-        Label6.Location = New System.Drawing.Point(86, 104)
+        Label6.Location = New System.Drawing.Point(15, 107)
         Label6.Name = "Label6"
-        Label6.Size = New System.Drawing.Size(121, 15)
+        Label6.Size = New System.Drawing.Size(106, 13)
         Label6.TabIndex = 28
         Label6.Text = "Extra Columns/Rows"
         '
@@ -331,7 +332,7 @@ Partial NotInheritable Class FrmSettings
         Label15.AutoSize = True
         Label15.Location = New System.Drawing.Point(200, 14)
         Label15.Name = "Label15"
-        Label15.Size = New System.Drawing.Size(83, 15)
+        Label15.Size = New System.Drawing.Size(72, 13)
         Label15.TabIndex = 7
         Label15.Text = "Scaling Mode"
         Me.ttSettings.SetToolTip(Label15, "Auto will use Pixel Mode when scaling factor is 2x or more." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: Pixel Mode is " &
@@ -372,7 +373,7 @@ Partial NotInheritable Class FrmSettings
         Me.ChkSingleInstance.AutoSize = True
         Me.ChkSingleInstance.Location = New System.Drawing.Point(172, 39)
         Me.ChkSingleInstance.Name = "ChkSingleInstance"
-        Me.ChkSingleInstance.Size = New System.Drawing.Size(113, 19)
+        Me.ChkSingleInstance.Size = New System.Drawing.Size(99, 17)
         Me.ChkSingleInstance.TabIndex = 6
         Me.ChkSingleInstance.Text = "Single Instance"
         Me.ttSettings.SetToolTip(Me.ChkSingleInstance, "Running ScalA for a 2nd time or more will bring an" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  already open ScalA from the" &
@@ -455,9 +456,9 @@ Partial NotInheritable Class FrmSettings
         Me.ChkLessRowCol.AutoSize = True
         Me.ChkLessRowCol.Checked = True
         Me.ChkLessRowCol.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.ChkLessRowCol.Location = New System.Drawing.Point(87, 82)
+        Me.ChkLessRowCol.Location = New System.Drawing.Point(18, 85)
         Me.ChkLessRowCol.Name = "ChkLessRowCol"
-        Me.ChkLessRowCol.Size = New System.Drawing.Size(155, 19)
+        Me.ChkLessRowCol.Size = New System.Drawing.Size(136, 17)
         Me.ChkLessRowCol.TabIndex = 4
         Me.ChkLessRowCol.Text = "One Less Row/Column"
         Me.ttSettings.SetToolTip(Me.ChkLessRowCol, "When Width is bigger than Height have one less Row " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "If Height is bigger than Wid" &
@@ -469,7 +470,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkOverViewIsGame.AutoSize = True
         Me.chkOverViewIsGame.Location = New System.Drawing.Point(172, 54)
         Me.chkOverViewIsGame.Name = "chkOverViewIsGame"
-        Me.chkOverViewIsGame.Size = New System.Drawing.Size(115, 19)
+        Me.chkOverViewIsGame.Size = New System.Drawing.Size(107, 17)
         Me.chkOverViewIsGame.TabIndex = 7
         Me.chkOverViewIsGame.Text = "Active Overview "
         Me.ttSettings.SetToolTip(Me.chkOverViewIsGame, "Have overview thumbnails function as game.")
@@ -492,7 +493,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkCycleOnClose.AutoSize = True
         Me.chkCycleOnClose.Location = New System.Drawing.Point(161, 57)
         Me.chkCycleOnClose.Name = "chkCycleOnClose"
-        Me.chkCycleOnClose.Size = New System.Drawing.Size(109, 19)
+        Me.chkCycleOnClose.Size = New System.Drawing.Size(96, 17)
         Me.chkCycleOnClose.TabIndex = 16
         Me.chkCycleOnClose.Text = "Cycle on Close"
         Me.ttSettings.SetToolTip(Me.chkCycleOnClose, "Closing an alt will cycle to the next one.")
@@ -503,7 +504,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkCheckForUpdate.AutoSize = True
         Me.chkCheckForUpdate.Location = New System.Drawing.Point(89, 69)
         Me.chkCheckForUpdate.Name = "chkCheckForUpdate"
-        Me.chkCheckForUpdate.Size = New System.Drawing.Size(127, 19)
+        Me.chkCheckForUpdate.Size = New System.Drawing.Size(113, 17)
         Me.chkCheckForUpdate.TabIndex = 23
         Me.chkCheckForUpdate.Text = "Check For Update"
         Me.ttSettings.SetToolTip(Me.chkCheckForUpdate, "Check for Updates when ScalA starts.")
@@ -514,7 +515,7 @@ Partial NotInheritable Class FrmSettings
         Me.ChkDark.AutoSize = True
         Me.ChkDark.Location = New System.Drawing.Point(13, 69)
         Me.ChkDark.Name = "ChkDark"
-        Me.ChkDark.Size = New System.Drawing.Size(90, 19)
+        Me.ChkDark.Size = New System.Drawing.Size(79, 17)
         Me.ChkDark.TabIndex = 5
         Me.ChkDark.Text = "Dark Mode"
         Me.ChkDark.UseVisualStyleBackColor = True
@@ -595,20 +596,20 @@ Partial NotInheritable Class FrmSettings
         Me.cmsGenerate.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.cmsGenerate.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.X60043ToolStripMenuItem, Me.X720169ToolStripMenuItem, ToolStripSeparator1, Me.FromToolStripMenuItem})
         Me.cmsGenerate.Name = "cmsGenerate"
-        Me.cmsGenerate.Size = New System.Drawing.Size(187, 88)
+        Me.cmsGenerate.Size = New System.Drawing.Size(159, 88)
         Me.cmsGenerate.Tag = "800x600 (4:3)"
         '
         'X60043ToolStripMenuItem
         '
         Me.X60043ToolStripMenuItem.Name = "X60043ToolStripMenuItem"
-        Me.X60043ToolStripMenuItem.Size = New System.Drawing.Size(186, 26)
+        Me.X60043ToolStripMenuItem.Size = New System.Drawing.Size(158, 26)
         Me.X60043ToolStripMenuItem.Tag = "800x600 (4:3)"
         Me.X60043ToolStripMenuItem.Text = "800x600 (4:3)"
         '
         'X720169ToolStripMenuItem
         '
         Me.X720169ToolStripMenuItem.Name = "X720169ToolStripMenuItem"
-        Me.X720169ToolStripMenuItem.Size = New System.Drawing.Size(186, 26)
+        Me.X720169ToolStripMenuItem.Size = New System.Drawing.Size(158, 26)
         Me.X720169ToolStripMenuItem.Tag = "1280x720 (16:9)"
         Me.X720169ToolStripMenuItem.Text = "1280x720 (16:9)"
         '
@@ -617,14 +618,14 @@ Partial NotInheritable Class FrmSettings
         Me.FromToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DummyToolStripMenuItem})
         Me.FromToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.moa31
         Me.FromToolStripMenuItem.Name = "FromToolStripMenuItem"
-        Me.FromToolStripMenuItem.Size = New System.Drawing.Size(186, 26)
+        Me.FromToolStripMenuItem.Size = New System.Drawing.Size(158, 26)
         Me.FromToolStripMenuItem.Text = "From"
         '
         'DummyToolStripMenuItem
         '
         Me.DummyToolStripMenuItem.Enabled = False
         Me.DummyToolStripMenuItem.Name = "DummyToolStripMenuItem"
-        Me.DummyToolStripMenuItem.Size = New System.Drawing.Size(154, 26)
+        Me.DummyToolStripMenuItem.Size = New System.Drawing.Size(125, 22)
         Me.DummyToolStripMenuItem.Text = "(Dummy)"
         '
         'txtResolutions
@@ -657,7 +658,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkSwitchToOverview.AutoSize = True
         Me.chkSwitchToOverview.Location = New System.Drawing.Point(48, 6)
         Me.chkSwitchToOverview.Name = "chkSwitchToOverview"
-        Me.chkSwitchToOverview.Size = New System.Drawing.Size(130, 19)
+        Me.chkSwitchToOverview.Size = New System.Drawing.Size(118, 17)
         Me.chkSwitchToOverview.TabIndex = 2
         Me.chkSwitchToOverview.TabStop = False
         Me.chkSwitchToOverview.Text = "Switch to Overview"
@@ -668,7 +669,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkCycleAlts.AutoSize = True
         Me.chkCycleAlts.Location = New System.Drawing.Point(48, 57)
         Me.chkCycleAlts.Name = "chkCycleAlts"
-        Me.chkCycleAlts.Size = New System.Drawing.Size(112, 19)
+        Me.chkCycleAlts.Size = New System.Drawing.Size(102, 17)
         Me.chkCycleAlts.TabIndex = 10
         Me.chkCycleAlts.TabStop = False
         Me.chkCycleAlts.Text = "Cycle Up/Down"
@@ -695,7 +696,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkCycleDownShift.AutoSize = True
         Me.chkCycleDownShift.Location = New System.Drawing.Point(84, 43)
         Me.chkCycleDownShift.Name = "chkCycleDownShift"
-        Me.chkCycleDownShift.Size = New System.Drawing.Size(53, 19)
+        Me.chkCycleDownShift.Size = New System.Drawing.Size(47, 17)
         Me.chkCycleDownShift.TabIndex = 15
         Me.chkCycleDownShift.TabStop = False
         Me.chkCycleDownShift.Text = "Shift"
@@ -706,7 +707,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkCycleUpShift.AutoSize = True
         Me.chkCycleUpShift.Location = New System.Drawing.Point(84, 20)
         Me.chkCycleUpShift.Name = "chkCycleUpShift"
-        Me.chkCycleUpShift.Size = New System.Drawing.Size(53, 19)
+        Me.chkCycleUpShift.Size = New System.Drawing.Size(47, 17)
         Me.chkCycleUpShift.TabIndex = 14
         Me.chkCycleUpShift.TabStop = False
         Me.chkCycleUpShift.Text = "Shift"
@@ -717,7 +718,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkCycleDownAlt.AutoSize = True
         Me.chkCycleDownAlt.Location = New System.Drawing.Point(46, 43)
         Me.chkCycleDownAlt.Name = "chkCycleDownAlt"
-        Me.chkCycleDownAlt.Size = New System.Drawing.Size(42, 19)
+        Me.chkCycleDownAlt.Size = New System.Drawing.Size(38, 17)
         Me.chkCycleDownAlt.TabIndex = 13
         Me.chkCycleDownAlt.TabStop = False
         Me.chkCycleDownAlt.Text = "Alt"
@@ -728,7 +729,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkCycleDownCtrl.AutoSize = True
         Me.chkCycleDownCtrl.Location = New System.Drawing.Point(6, 43)
         Me.chkCycleDownCtrl.Name = "chkCycleDownCtrl"
-        Me.chkCycleDownCtrl.Size = New System.Drawing.Size(47, 19)
+        Me.chkCycleDownCtrl.Size = New System.Drawing.Size(41, 17)
         Me.chkCycleDownCtrl.TabIndex = 12
         Me.chkCycleDownCtrl.TabStop = False
         Me.chkCycleDownCtrl.Text = "Ctrl"
@@ -747,7 +748,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkCycleUpAlt.AutoSize = True
         Me.chkCycleUpAlt.Location = New System.Drawing.Point(46, 20)
         Me.chkCycleUpAlt.Name = "chkCycleUpAlt"
-        Me.chkCycleUpAlt.Size = New System.Drawing.Size(42, 19)
+        Me.chkCycleUpAlt.Size = New System.Drawing.Size(38, 17)
         Me.chkCycleUpAlt.TabIndex = 9
         Me.chkCycleUpAlt.TabStop = False
         Me.chkCycleUpAlt.Text = "Alt"
@@ -758,7 +759,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkCycleUpCtrl.AutoSize = True
         Me.chkCycleUpCtrl.Location = New System.Drawing.Point(6, 20)
         Me.chkCycleUpCtrl.Name = "chkCycleUpCtrl"
-        Me.chkCycleUpCtrl.Size = New System.Drawing.Size(47, 19)
+        Me.chkCycleUpCtrl.Size = New System.Drawing.Size(41, 17)
         Me.chkCycleUpCtrl.TabIndex = 8
         Me.chkCycleUpCtrl.TabStop = False
         Me.chkCycleUpCtrl.Text = "Ctrl"
@@ -789,7 +790,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkStoShift.AutoSize = True
         Me.chkStoShift.Location = New System.Drawing.Point(84, 21)
         Me.chkStoShift.Name = "chkStoShift"
-        Me.chkStoShift.Size = New System.Drawing.Size(53, 19)
+        Me.chkStoShift.Size = New System.Drawing.Size(47, 17)
         Me.chkStoShift.TabIndex = 7
         Me.chkStoShift.TabStop = False
         Me.chkStoShift.Text = "Shift"
@@ -808,7 +809,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkStoAlt.AutoSize = True
         Me.chkStoAlt.Location = New System.Drawing.Point(46, 21)
         Me.chkStoAlt.Name = "chkStoAlt"
-        Me.chkStoAlt.Size = New System.Drawing.Size(42, 19)
+        Me.chkStoAlt.Size = New System.Drawing.Size(38, 17)
         Me.chkStoAlt.TabIndex = 5
         Me.chkStoAlt.TabStop = False
         Me.chkStoAlt.Text = "Alt"
@@ -819,7 +820,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkStoCtrl.AutoSize = True
         Me.chkStoCtrl.Location = New System.Drawing.Point(6, 21)
         Me.chkStoCtrl.Name = "chkStoCtrl"
-        Me.chkStoCtrl.Size = New System.Drawing.Size(47, 19)
+        Me.chkStoCtrl.Size = New System.Drawing.Size(41, 17)
         Me.chkStoCtrl.TabIndex = 3
         Me.chkStoCtrl.TabStop = False
         Me.chkStoCtrl.Text = "Ctrl"
@@ -888,13 +889,14 @@ Partial NotInheritable Class FrmSettings
         Me.chkWhitelist.AutoSize = True
         Me.chkWhitelist.Location = New System.Drawing.Point(115, -1)
         Me.chkWhitelist.Name = "chkWhitelist"
-        Me.chkWhitelist.Size = New System.Drawing.Size(75, 19)
+        Me.chkWhitelist.Size = New System.Drawing.Size(66, 17)
         Me.chkWhitelist.TabIndex = 6
         Me.chkWhitelist.Text = "Whitelist"
         Me.chkWhitelist.UseVisualStyleBackColor = True
         '
         'tabMaximized
         '
+        Me.tabMaximized.Controls.Add(Me.chkStartupMax)
         Me.tabMaximized.Controls.Add(Me.ChkLessRowCol)
         Me.tabMaximized.Controls.Add(Me.NumExtraMax)
         Me.tabMaximized.Controls.Add(Label6)
@@ -908,7 +910,7 @@ Partial NotInheritable Class FrmSettings
         '
         'NumExtraMax
         '
-        Me.NumExtraMax.Location = New System.Drawing.Point(193, 102)
+        Me.NumExtraMax.Location = New System.Drawing.Point(122, 105)
         Me.NumExtraMax.Maximum = New Decimal(New Integer() {9, 0, 0, 0})
         Me.NumExtraMax.Name = "NumExtraMax"
         Me.NumExtraMax.Size = New System.Drawing.Size(40, 20)
@@ -943,7 +945,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkDoAlign.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.chkDoAlign.Location = New System.Drawing.Point(200, 70)
         Me.chkDoAlign.Name = "chkDoAlign"
-        Me.chkDoAlign.Size = New System.Drawing.Size(84, 19)
+        Me.chkDoAlign.Size = New System.Drawing.Size(66, 16)
         Me.chkDoAlign.TabIndex = 10
         Me.chkDoAlign.Text = "Alignment"
         Me.chkDoAlign.UseVisualStyleBackColor = True
@@ -999,7 +1001,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtExe.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtExe.Location = New System.Drawing.Point(12, 89)
         Me.txtExe.Name = "txtExe"
-        Me.txtExe.Size = New System.Drawing.Size(154, 23)
+        Me.txtExe.Size = New System.Drawing.Size(154, 20)
         Me.txtExe.TabIndex = 8
         Me.txtExe.Text = "moac | new"
         '
@@ -1008,7 +1010,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtClass.Location = New System.Drawing.Point(12, 110)
         Me.txtClass.Name = "txtClass"
-        Me.txtClass.Size = New System.Drawing.Size(182, 23)
+        Me.txtClass.Size = New System.Drawing.Size(182, 20)
         Me.txtClass.TabIndex = 9
         Me.txtClass.Text = "MAINWNDMOAC | 䅍义乗䵄䅏C"
         '
@@ -1017,7 +1019,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkTopMost.AutoSize = True
         Me.chkTopMost.Location = New System.Drawing.Point(13, 54)
         Me.chkTopMost.Name = "chkTopMost"
-        Me.chkTopMost.Size = New System.Drawing.Size(109, 19)
+        Me.chkTopMost.Size = New System.Drawing.Size(98, 17)
         Me.chkTopMost.TabIndex = 3
         Me.chkTopMost.Text = "Always On Top"
         Me.chkTopMost.UseVisualStyleBackColor = True
@@ -1027,10 +1029,20 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.AutoSize = True
         Me.chkRoundCorners.Location = New System.Drawing.Point(13, 39)
         Me.chkRoundCorners.Name = "chkRoundCorners"
-        Me.chkRoundCorners.Size = New System.Drawing.Size(126, 19)
+        Me.chkRoundCorners.Size = New System.Drawing.Size(109, 17)
         Me.chkRoundCorners.TabIndex = 2
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
+        '
+        'chkStartupMax
+        '
+        Me.chkStartupMax.AutoSize = True
+        Me.chkStartupMax.Location = New System.Drawing.Point(171, 85)
+        Me.chkStartupMax.Name = "chkStartupMax"
+        Me.chkStartupMax.Size = New System.Drawing.Size(100, 17)
+        Me.chkStartupMax.TabIndex = 29
+        Me.chkStartupMax.Text = "Start Maximized"
+        Me.chkStartupMax.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
@@ -1149,4 +1161,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents cboScalingMode As ComboBox
     Friend WithEvents chkCycleOnClose As CheckBox
     Friend WithEvents chkCheckForUpdate As CheckBox
+    Friend WithEvents chkStartupMax As CheckBox
 End Class

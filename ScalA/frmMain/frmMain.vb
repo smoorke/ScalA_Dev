@@ -115,7 +115,6 @@ Partial Public NotInheritable Class FrmMain
             PnlEqLock.Visible = True
         End If
 
-
         If Not AltPP?.IsRunning Then
             Dim idx As Integer = sender.SelectedIndex
             sender.Items.RemoveAt(idx)
@@ -443,6 +442,9 @@ Partial Public NotInheritable Class FrmMain
             Debug.Print("location out of bounds")
             Dim msWA As Rectangle = Screen.PrimaryScreen.WorkingArea
             Me.Location = New Point(Math.Max(msWA.Left, (msWA.Width - Me.Width) / 2), Math.Max(msWA.Top, (msWA.Height - Me.Height) / 2))
+        End If
+        If My.Settings.StartMaximized Then
+            btnMax.PerformClick()
         End If
         If cboAlt.SelectedIndex > 0 Then
             tmrTick.Start()
