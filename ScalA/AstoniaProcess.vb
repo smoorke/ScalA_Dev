@@ -500,6 +500,10 @@ Public NotInheritable Class AstoniaProcess
         Return bmp
     End Function
 
+    Friend Function GetCurrentDirectory() As String
+        Return _proc?.GetCurrentDirectory
+    End Function
+
     Private alreadylaunched As Boolean = False
     Friend Async Function ReOpenAsWindowed() As Task
 

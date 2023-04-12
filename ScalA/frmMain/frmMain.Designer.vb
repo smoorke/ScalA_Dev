@@ -141,7 +141,7 @@ Partial NotInheritable Class FrmMain
         'DummyToolStripMenuItem
         '
         Me.DummyToolStripMenuItem.Name = "DummyToolStripMenuItem"
-        Me.DummyToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.DummyToolStripMenuItem.Size = New System.Drawing.Size(137, 22)
         Me.DummyToolStripMenuItem.Text = "--Dummy--"
         '
         'cmbResolution

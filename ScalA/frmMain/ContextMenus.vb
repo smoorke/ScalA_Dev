@@ -501,7 +501,8 @@ Partial Public NotInheritable Class FrmMain
 
             oLink.TargetPath = exepath
             oLink.Arguments = arguments.Trim()
-            oLink.WorkingDirectory = exepath.Substring(0, exepath.LastIndexOf("\"))
+            oLink.WorkingDirectory = alt.GetCurrentDirectory
+            'oLink.WorkingDirectory = exepath.Substring(0, exepath.LastIndexOf("\"))
             oLink.WindowStyle = 1
             oLink.Save()
         Catch ex As Exception
