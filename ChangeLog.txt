@@ -1,3 +1,11 @@
+**ScalA 1.2.4**
+Fixed switching to overview glitching incorrect number of buttons.
+Fixed bigger healthbars for SDL clients.
+Fixed creating shortcuts in quicklaunch for SDL clients would set incorrect workdir.
+Fixed some other bugs relating to SDL clients.
+Fixed an exception when closing alts.
+Added start maximized setting.
+
 **ScalA 1.2.3**
 Disabled pixel scaling mode when Windows Scaling is not set at 100%.
 
