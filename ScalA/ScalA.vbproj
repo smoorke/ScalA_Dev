@@ -62,10 +62,6 @@
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Ookii.Dialogs.WinForms, Version=1.0.0.0, Culture=neutral, PublicKeyToken=66aa232afad40158, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ookii.Dialogs.WinForms.1.2.0\lib\net45\Ookii.Dialogs.WinForms.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -101,6 +97,7 @@
     <Compile Include="CustomStringSorter.vb" />
     <Compile Include="DWMThumb.vb" />
     <Compile Include="Extensions.vb" />
+    <Compile Include="FolderPicker.vb" />
     <Compile Include="frmMain\ContextMenus.vb" />
     <Compile Include="frmMain\frmBehind.Designer.vb">
       <DependentUpon>frmBehind.vb</DependentUpon>
@@ -208,8 +205,6 @@
     <None Include="Resources\Add.png" />
     <Content Include="Resources\gear_wheel.png" />
     <None Include="Resources\AsInvoker.bat" />
-    <None Include="Resources\Ookii.Dialogs.WinForms.dll" />
-    <None Include="packages.config" />
     <None Include="Resources\message.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />

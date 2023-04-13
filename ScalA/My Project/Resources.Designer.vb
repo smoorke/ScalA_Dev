@@ -183,16 +183,6 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized resource of type System.Byte[].
         '''</summary>
-        Friend ReadOnly Property Ookii_Dialogs_WinForms() As Byte()
-            Get
-                Dim obj As Object = ResourceManager.GetObject("Ookii_Dialogs_WinForms", resourceCulture)
-                Return CType(obj,Byte())
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized resource of type System.Byte[].
-        '''</summary>
         Friend ReadOnly Property ScalA_Updater() As Byte()
             Get
                 Dim obj As Object = ResourceManager.GetObject("ScalA_Updater", resourceCulture)

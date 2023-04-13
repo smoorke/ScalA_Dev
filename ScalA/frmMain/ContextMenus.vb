@@ -903,6 +903,28 @@ Partial Public NotInheritable Class FrmMain
         Debug.Print("changeLinksDir")
         Me.TopMost = False
         'Using fb As New FolderBrowserDialog
+
+        Try
+            Dim fp As New FolderPicker With {
+                .Title = "Select Folder Containing Your Shortcuts - ScalA",
+                .Multiselect = False,
+                .InputPath = My.Settings.links}
+            If fp.ShowDialog(Me) = True Then
+                If fp.ResultPath = System.IO.Path.GetPathRoot(fp.ResultPath) AndAlso
+                        MessageBox.Show("Warning: Selecting a root path is not recommended" & vbCrLf &
+                                        $"Are you sure you want to use {fp.ResultPath}?", "Warning",
+                                        MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.No Then Throw New Exception("dummy")
+                If My.Settings.links <> fp.ResultPath Then
+                    My.Settings.links = fp.ResultPath
+                    UpdateWatchers(My.Settings.links)
+                End If
+            End If
+        Catch
+        Finally
+            Me.TopMost = My.Settings.topmost
+        End Try
+
+#If 0 Then
         Try
             Using fb As New Ookii.Dialogs.WinForms.VistaFolderBrowserDialog
                 fb.Description = "Select Folder Containing Your Shortcuts - ScalA"
@@ -926,6 +948,7 @@ Partial Public NotInheritable Class FrmMain
         Finally
             Me.TopMost = My.Settings.topmost
         End Try
+#End If
     End Sub
 
     ReadOnly watchers As New List(Of System.IO.FileSystemWatcher)

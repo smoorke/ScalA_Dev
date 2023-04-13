@@ -406,7 +406,25 @@ Public NotInheritable Class FrmSettings
         Debug.Print("changeLinksDir")
         Me.TopMost = False
 
+        Try
+            Dim fp As New FolderPicker With {
+                .Title = "Select Folder Containing Your Shortcuts - ScalA",
+                .Multiselect = False,
+                .InputPath = current}
+            If fp.ShowDialog(Me) = True Then
+                If fp.ResultPath = System.IO.Path.GetPathRoot(fp.ResultPath) AndAlso
+                        MessageBox.Show("Warning: Selecting a root path is not recommended" & vbCrLf &
+                                        $"Are you sure you want to use {fp.ResultPath}?", "Warning",
+                                        MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.No Then Throw New Exception("dummy")
+                Return fp.ResultPath
+            End If
+        Catch
+        Finally
+            Me.TopMost = My.Settings.topmost
+        End Try
+        Return current
 
+#If 0 Then
         'Using fb As New FolderBrowserDialog
         Try
             Using fb As New Ookii.Dialogs.WinForms.VistaFolderBrowserDialog
@@ -435,6 +453,7 @@ Public NotInheritable Class FrmSettings
             Me.TopMost = My.Settings.topmost
         End Try
         Return current
+#End If
     End Function
 
     Private Sub TxtQuickLaunchPath_DoubleClick(sender As Object, e As EventArgs) Handles txtQuickLaunchPath.DoubleClick
