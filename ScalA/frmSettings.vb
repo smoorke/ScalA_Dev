@@ -410,7 +410,7 @@ Public NotInheritable Class FrmSettings
             Dim fp As New FolderPicker With {
                 .Title = "Select Folder Containing Your Shortcuts - ScalA",
                 .Multiselect = False,
-                .InputPath = current}
+                .InputPath = IO.Path.GetFullPath(current)}
             If fp.ShowDialog(Me) = True Then
                 If fp.ResultPath = System.IO.Path.GetPathRoot(fp.ResultPath) AndAlso
                         MessageBox.Show("Warning: Selecting a root path is not recommended" & vbCrLf &
