@@ -545,7 +545,7 @@ Partial Public NotInheritable Class FrmMain
         End If
 
 
-        sender.Items.AddRange(ParseDir(My.Settings.links & "\").ToArray)
+        sender.Items.AddRange(ParseDir(My.Settings.links.TrimEnd("\") & "\").ToArray)
 
         If My.Computer.Keyboard.CtrlKeyDown Then
             sender.Items.Add(New ToolStripSeparator())
