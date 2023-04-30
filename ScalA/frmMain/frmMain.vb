@@ -475,7 +475,7 @@ Partial Public NotInheritable Class FrmMain
             updateToVersion = "Error"
         End Try
     End Sub
-    Friend Shared Async Sub UpdateDownload()
+    Friend Shared Async Function UpdateDownload() As Task
         Try
             Using response As HttpResponseMessage = Await client.GetAsync("https://github.com/smoorke/ScalA/releases/download/ScalA/ScalA.exe")
                 response.EnsureSuccessStatusCode()
@@ -491,7 +491,7 @@ Partial Public NotInheritable Class FrmMain
         Catch e As Exception
             MessageBox.Show("Error" & vbCrLf & e.Message)
         End Try
-    End Sub
+    End Function
     Friend Shared Async Sub LogDownload()
         Try
             Using response As HttpResponseMessage = Await client.GetAsync("https://github.com/smoorke/ScalA/releases/download/ScalA/ChangeLog.txt")
@@ -506,10 +506,10 @@ Partial Public NotInheritable Class FrmMain
 
             End Using
         Catch e As Exception
-
+            MessageBox.Show("Error" & vbCrLf & e.Message)
         End Try
     End Sub
-    Private Sub pbUpdateAvailable_Click(sender As PictureBox, e As MouseEventArgs) Handles pbUpdateAvailable.MouseDown
+    Private Async Sub pbUpdateAvailable_Click(sender As PictureBox, e As MouseEventArgs) Handles pbUpdateAvailable.MouseDown
 
         If e.Button <> MouseButtons.Left Then Exit Sub
 
@@ -519,7 +519,7 @@ Partial Public NotInheritable Class FrmMain
             Exit Sub
         End If
 
-        UpdateDownload()
+        Await UpdateDownload()
         My.Settings.Save()
         AstoniaProcess.RestorePos()
         tmrOverview.Stop()
