@@ -98,6 +98,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtTopSort = New System.Windows.Forms.TextBox()
         Me.chkWhitelist = New System.Windows.Forms.CheckBox()
         Me.tabMaximized = New System.Windows.Forms.TabPage()
+        Me.chkStartupMax = New System.Windows.Forms.CheckBox()
         Me.NumExtraMax = New System.Windows.Forms.NumericUpDown()
         Me.tabMisc = New System.Windows.Forms.TabPage()
         Me.chkDoAlign = New System.Windows.Forms.CheckBox()
@@ -109,7 +110,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
-        Me.chkStartupMax = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -224,7 +224,7 @@ Partial NotInheritable Class FrmSettings
         'ToolStripSeparator1
         '
         ToolStripSeparator1.Name = "ToolStripSeparator1"
-        ToolStripSeparator1.Size = New System.Drawing.Size(155, 6)
+        ToolStripSeparator1.Size = New System.Drawing.Size(151, 6)
         '
         'Label4
         '
@@ -593,23 +593,22 @@ Partial NotInheritable Class FrmSettings
         '
         'cmsGenerate
         '
-        Me.cmsGenerate.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.cmsGenerate.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.X60043ToolStripMenuItem, Me.X720169ToolStripMenuItem, ToolStripSeparator1, Me.FromToolStripMenuItem})
         Me.cmsGenerate.Name = "cmsGenerate"
-        Me.cmsGenerate.Size = New System.Drawing.Size(159, 88)
+        Me.cmsGenerate.Size = New System.Drawing.Size(155, 76)
         Me.cmsGenerate.Tag = "800x600 (4:3)"
         '
         'X60043ToolStripMenuItem
         '
         Me.X60043ToolStripMenuItem.Name = "X60043ToolStripMenuItem"
-        Me.X60043ToolStripMenuItem.Size = New System.Drawing.Size(158, 26)
+        Me.X60043ToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.X60043ToolStripMenuItem.Tag = "800x600 (4:3)"
         Me.X60043ToolStripMenuItem.Text = "800x600 (4:3)"
         '
         'X720169ToolStripMenuItem
         '
         Me.X720169ToolStripMenuItem.Name = "X720169ToolStripMenuItem"
-        Me.X720169ToolStripMenuItem.Size = New System.Drawing.Size(158, 26)
+        Me.X720169ToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.X720169ToolStripMenuItem.Tag = "1280x720 (16:9)"
         Me.X720169ToolStripMenuItem.Text = "1280x720 (16:9)"
         '
@@ -618,7 +617,7 @@ Partial NotInheritable Class FrmSettings
         Me.FromToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DummyToolStripMenuItem})
         Me.FromToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.moa31
         Me.FromToolStripMenuItem.Name = "FromToolStripMenuItem"
-        Me.FromToolStripMenuItem.Size = New System.Drawing.Size(158, 26)
+        Me.FromToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.FromToolStripMenuItem.Text = "From"
         '
         'DummyToolStripMenuItem
@@ -908,6 +907,16 @@ Partial NotInheritable Class FrmSettings
         Me.tabMaximized.Text = "Maximized"
         Me.tabMaximized.UseVisualStyleBackColor = True
         '
+        'chkStartupMax
+        '
+        Me.chkStartupMax.AutoSize = True
+        Me.chkStartupMax.Location = New System.Drawing.Point(171, 85)
+        Me.chkStartupMax.Name = "chkStartupMax"
+        Me.chkStartupMax.Size = New System.Drawing.Size(100, 17)
+        Me.chkStartupMax.TabIndex = 29
+        Me.chkStartupMax.Text = "Start Maximized"
+        Me.chkStartupMax.UseVisualStyleBackColor = True
+        '
         'NumExtraMax
         '
         Me.NumExtraMax.Location = New System.Drawing.Point(122, 105)
@@ -1033,16 +1042,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.TabIndex = 2
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
-        '
-        'chkStartupMax
-        '
-        Me.chkStartupMax.AutoSize = True
-        Me.chkStartupMax.Location = New System.Drawing.Point(171, 85)
-        Me.chkStartupMax.Name = "chkStartupMax"
-        Me.chkStartupMax.Size = New System.Drawing.Size(100, 17)
-        Me.chkStartupMax.TabIndex = 29
-        Me.chkStartupMax.Text = "Start Maximized"
-        Me.chkStartupMax.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '

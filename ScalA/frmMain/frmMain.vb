@@ -534,6 +534,7 @@ Partial Public NotInheritable Class FrmMain
                                        .Arguments = $"""{Environment.GetCommandLineArgs(0)}""",
                                        .Verb = "runas"
                           })
+            sysTrayIcon.Visible = False
             End
         Catch
         End Try
