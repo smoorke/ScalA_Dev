@@ -143,6 +143,7 @@ Partial Public NotInheritable Class FrmMain
             If rcC.Width = 0 AndAlso rcC.Height = 0 OrElse
                rcC.X = ptC.X AndAlso rcC.Y = ptC.Y Then
                 'MessageBox.Show("Client is not running in windowed mode", "Error")
+                Debug.Print("Astonia Not Windowed")
                 Await AltPP.ReOpenAsWindowed()
                 'cboAlt.SelectedIndex = 0
                 Exit Sub

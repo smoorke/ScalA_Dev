@@ -545,24 +545,25 @@ Public NotInheritable Class AstoniaProcess
         End If
 
         Dim newargs As New List(Of String)
-        Dim whFlagSet As Boolean = False
 
         For Each arg As String In arguments.Split("-".ToCharArray, StringSplitOptions.RemoveEmptyEntries)
             Dim item As String = arg.Trim
-            If item.StartsWith("w") OrElse item.StartsWith("w") Then
-                whFlagSet = True
+            If item.StartsWith("w") OrElse item.StartsWith("h") Then
+                Continue For
             End If
             If item.StartsWith("o") AndAlso item.Length > 1 Then
                 Dim value As Integer = Val(arg.Substring(1))
-                If value And 256 = 256 Then 'fullscreen flag is set
-                    item = $"o{value - 256}"
-                End If
+
+                If (value And 8) = 8 Then value -= 8 'remove compact bot flag
+                If (value And 256) = 256 Then value -= 256 'remove fullscreen flag
+
+                item = $"o{value}"
             End If
             newargs.Add(item)
         Next
-        If Not whFlagSet Then
-            newargs.Add("w800")
-        End If
+
+        newargs.Add("w800")
+        newargs.Add("h600")
 
         arguments = Strings.Join(newargs.ToArray, " -")
         Debug.Print($"args {arguments}")
