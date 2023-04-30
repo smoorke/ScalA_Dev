@@ -1,3 +1,10 @@
+**ScalA 1.2.5**
+Fixed Entering a QuickLaunch path with a trailing slash failing to load icons.
+Allowed relative path in QuickLaunch path.
+Fixed Updater Failing on slow connections.
+Fixed SysTray ghost icon on updating.
+Fixed ScalA breaking when client is in fake fullscreen (client resolution same as primary monitor)
+
 **ScalA 1.2.4**
 Fixed switching to overview glitching incorrect number of buttons.
 Fixed bigger healthbars for SDL clients.
