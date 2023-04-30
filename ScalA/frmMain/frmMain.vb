@@ -492,7 +492,7 @@ Partial Public NotInheritable Class FrmMain
             MessageBox.Show("Error" & vbCrLf & e.Message)
         End Try
     End Function
-    Friend Shared Async Sub LogDownload()
+    Friend Shared Async Function LogDownload() As Task
         Try
             Using response As HttpResponseMessage = Await client.GetAsync("https://github.com/smoorke/ScalA/releases/download/ScalA/ChangeLog.txt")
                 response.EnsureSuccessStatusCode()
@@ -508,12 +508,12 @@ Partial Public NotInheritable Class FrmMain
         Catch e As Exception
             MessageBox.Show("Error" & vbCrLf & e.Message)
         End Try
-    End Sub
+    End Function
     Private Async Sub pbUpdateAvailable_Click(sender As PictureBox, e As MouseEventArgs) Handles pbUpdateAvailable.MouseDown
 
         If e.Button <> MouseButtons.Left Then Exit Sub
 
-        LogDownload()
+        Await LogDownload()
 
         If UpdateDialog.ShowDialog(Me) <> DialogResult.OK Then
             Exit Sub
