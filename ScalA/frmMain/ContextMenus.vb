@@ -393,11 +393,11 @@ Partial Public NotInheritable Class FrmMain
 
         Debug.Print($"rootFolder: {rootFolder}")
 
-        Dim newfolderPath = rootFolder & "New Folder\"
+        Dim newfolderPath = IO.Path.Combine(rootFolder, "New Folder")
 
         Dim i As Integer = 2
         While IO.Directory.Exists(newfolderPath)
-            newfolderPath = rootFolder & $"New Folder ({i})\"
+            newfolderPath = IO.Path.Combine(rootFolder, $"New Folder ({i})")
             i += 1
         End While
 
