@@ -378,7 +378,7 @@ Public NotInheritable Class AstoniaProcess
 
             If rcc.Width = 0 OrElse rcc.Height = 0 Then Return Nothing
 
-            Static Dim bmp As New Bitmap(rcc.Width, rcc.Height)
+            Dim bmp As New Bitmap(rcc.Width, rcc.Height)
 
             Using gBM As Graphics = Graphics.FromImage(bmp)
                 Dim hdcBm As IntPtr

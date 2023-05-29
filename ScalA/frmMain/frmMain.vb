@@ -963,9 +963,9 @@ Partial Public NotInheritable Class FrmMain
         If requestedindex > 0 Then tmrTick.Start()
     End Sub
 
-    ReadOnly startThumbsDict As New Dictionary(Of Integer, IntPtr)
-    ReadOnly opaDict As New Dictionary(Of Integer, Byte)
-    ReadOnly rectDic As New Dictionary(Of Integer, Rectangle)
+    ReadOnly startThumbsDict As New Concurrent.ConcurrentDictionary(Of Integer, IntPtr)
+    ReadOnly opaDict As New Concurrent.ConcurrentDictionary(Of Integer, Byte)
+    ReadOnly rectDic As New Concurrent.ConcurrentDictionary(Of Integer, Rectangle)
 
     Const dimmed As Byte = 240
     Private TickCounter As Integer = 0
@@ -981,7 +981,6 @@ Partial Public NotInheritable Class FrmMain
             Exit Sub
         End If
 
-        'Debug.Print("tmrStartup.Tick")
 #If DEBUG Then
         chkDebug.Text = TickCounter
 #End If
@@ -1193,8 +1192,8 @@ Partial Public NotInheritable Class FrmMain
         For Each ppid As Integer In startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList 'tolist needed as we mutate the thumbsdict
             Debug.Print("unregister thumb " & startThumbsDict(ppid).ToString)
             DwmUnregisterThumbnail(startThumbsDict(ppid))
-            startThumbsDict.Remove(ppid)
-            rectDic.Remove(ppid)
+            startThumbsDict.TryRemove(ppid, Nothing)
+            rectDic.TryRemove(ppid, Nothing)
         Next
 
         pnlOverview.ResumeLayout()
@@ -1293,7 +1292,7 @@ Partial Public NotInheritable Class FrmMain
                 but.Visible = False
                 but.Text = ""
                 DwmUnregisterThumbnail(startThumbsDict.GetValueOrDefault(but.Tag?.id, IntPtr.Zero))
-                startThumbsDict.Remove(but.Tag?.id)
+                startThumbsDict.TryRemove(but.Tag?.id, Nothing)
                 but.Tag = Nothing
             End If
             i += 1

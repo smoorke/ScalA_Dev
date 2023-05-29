@@ -17,7 +17,12 @@ Module Extensions
         If source.TryGetValue(Key, found) Then Return found
         Return defaultValue
     End Function
-
+    <Extension()>
+    Public Function GetValueOrDefault(Of TKey, TValue)(source As Concurrent.ConcurrentDictionary(Of TKey, TValue), Key As TKey, Optional defaultValue As TValue = CType(Nothing, TValue)) As TValue
+        Dim found As TValue
+        If source.TryGetValue(Key, found) Then Return found
+        Return defaultValue
+    End Function
 
     <DllImport("user32.dll")>
     Private Function GetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer) As UInteger
