@@ -1506,6 +1506,7 @@ Partial Public NotInheritable Class FrmMain
             'wasMaximized = True
             AOshowEqLock = False
             FrmSizeBorder.Opacity = If(chkDebug.Checked, 1, 0.01)
+            FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, FrmSizeBorder.Opacity, 0)
         End If
         If cboAlt.SelectedIndex > 0 Then
             SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
@@ -1752,6 +1753,7 @@ Partial Public NotInheritable Class FrmMain
         End If
         FrmBehind.BackColor = If(sender.Checked, Color.Cyan, Color.Black)
         FrmBehind.Opacity = If(sender.Checked, 1, 0.01)
+        FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, FrmSizeBorder.Opacity, 0)
     End Sub
 #End If
 

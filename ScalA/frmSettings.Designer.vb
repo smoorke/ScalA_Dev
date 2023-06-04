@@ -110,6 +110,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
+        Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -538,6 +539,7 @@ Partial NotInheritable Class FrmSettings
         '
         'tabResolutions
         '
+        Me.tabResolutions.Controls.Add(Me.ChkSizeBorder)
         Me.tabResolutions.Controls.Add(Me.cboScalingMode)
         Me.tabResolutions.Controls.Add(Label15)
         Me.tabResolutions.Controls.Add(Me.btnAddCurrentRes)
@@ -1043,6 +1045,16 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
+        'ChkSizeBorder
+        '
+        Me.ChkSizeBorder.AutoSize = True
+        Me.ChkSizeBorder.Location = New System.Drawing.Point(204, 58)
+        Me.ChkSizeBorder.Name = "ChkSizeBorder"
+        Me.ChkSizeBorder.Size = New System.Drawing.Size(88, 17)
+        Me.ChkSizeBorder.TabIndex = 9
+        Me.ChkSizeBorder.Text = "Sizing Border"
+        Me.ChkSizeBorder.UseVisualStyleBackColor = True
+        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1161,4 +1173,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents chkCycleOnClose As CheckBox
     Friend WithEvents chkCheckForUpdate As CheckBox
     Friend WithEvents chkStartupMax As CheckBox
+    Friend WithEvents ChkSizeBorder As CheckBox
 End Class

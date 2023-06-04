@@ -200,6 +200,7 @@ Partial NotInheritable Class FrmMain
                     Debug.Print($"winpos size {New Size(winpos.cx, winpos.cy)}")
                     'System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                     FrmSizeBorder.Opacity = If(chkDebug.Checked, 1, 0.01)
+                    FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, FrmSizeBorder.Opacity, 0)
                     posChangeBusy = False
                     Exit Sub
                 End If
