@@ -1,3 +1,7 @@
+**ScalA 1.2.6**
+Added setting to disable the Sizing Border.
+Fixed bug in directory creation when using the submenu in root of quicklaunch when opening QL with ctrl held.
+
 **ScalA 1.2.5**
 Fixed Entering a QuickLaunch path with a trailing slash failing to load icons.
 Allowed relative path in QuickLaunch path.

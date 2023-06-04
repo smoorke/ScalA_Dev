@@ -69,9 +69,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FrmUpdaterMain.vb">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="FrmUpdaterMain.vb" />
     <Compile Include="FrmUpdaterMain.Designer.vb">
       <DependentUpon>FrmUpdaterMain.vb</DependentUpon>
       <SubType>Form</SubType>

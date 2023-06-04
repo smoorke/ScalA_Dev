@@ -455,6 +455,7 @@ Partial Public NotInheritable Class FrmMain
         If My.Settings.CheckForUpdate Then
             UpdateCheck()
         End If
+        FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, 0.01, 0)
     End Sub
     Friend Shared updateToVersion As String = "Error"
     Friend Shared ReadOnly client As HttpClient = New HttpClient()
