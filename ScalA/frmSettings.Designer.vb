@@ -111,6 +111,9 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
+        Me.cmsRestore = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.LastSavedToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.DefaultToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -148,6 +151,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpAlign.SuspendLayout()
         CType(Me.numXoffset, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.cmsRestore.SuspendLayout()
         Me.SuspendLayout()
         '
         'grpQLPath
@@ -577,6 +581,7 @@ Partial NotInheritable Class FrmSettings
         '
         'btnRestore
         '
+        Me.btnRestore.ContextMenuStrip = Me.cmsRestore
         Me.btnRestore.Location = New System.Drawing.Point(105, 104)
         Me.btnRestore.Name = "btnRestore"
         Me.btnRestore.Size = New System.Drawing.Size(75, 23)
@@ -1055,6 +1060,25 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
+        'cmsRestore
+        '
+        Me.cmsRestore.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.LastSavedToolStripMenuItem, Me.DefaultToolStripMenuItem})
+        Me.cmsRestore.Name = "cmsRestore"
+        Me.cmsRestore.ShowImageMargin = False
+        Me.cmsRestore.Size = New System.Drawing.Size(156, 70)
+        '
+        'LastSavedToolStripMenuItem
+        '
+        Me.LastSavedToolStripMenuItem.Name = "LastSavedToolStripMenuItem"
+        Me.LastSavedToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.LastSavedToolStripMenuItem.Text = "Last Saved"
+        '
+        'DefaultToolStripMenuItem
+        '
+        Me.DefaultToolStripMenuItem.Name = "DefaultToolStripMenuItem"
+        Me.DefaultToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.DefaultToolStripMenuItem.Text = "Default"
+        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1101,6 +1125,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpAlign.PerformLayout()
         CType(Me.numXoffset, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.cmsRestore.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -1174,4 +1199,7 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents chkCheckForUpdate As CheckBox
     Friend WithEvents chkStartupMax As CheckBox
     Friend WithEvents ChkSizeBorder As CheckBox
+    Friend WithEvents cmsRestore As ContextMenuStrip
+    Friend WithEvents LastSavedToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents DefaultToolStripMenuItem As ToolStripMenuItem
 End Class

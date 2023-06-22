@@ -497,7 +497,7 @@ Public NotInheritable Class FrmSettings
 
 
     Private Sub BtnRestore_Click(sender As Object, e As EventArgs) Handles btnRestore.Click
-        txtResolutions.Text = My.Settings.PropertyValues("resolutions").Property.DefaultValue
+        cmsRestore.Show(sender, sender.PointToClient(MousePosition))
     End Sub
 
     Private Sub BtnGenerate_Click(sender As Button, e As EventArgs) Handles btnGenerate.Click
@@ -670,6 +670,14 @@ Public NotInheritable Class FrmSettings
 
     Private Sub chkCycleAlts_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkCycleAlts.CheckedChanged
         grpCycleShortcut.Enabled = sender.Checked
+    End Sub
+
+    Private Sub DefaultToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DefaultToolStripMenuItem.Click
+        txtResolutions.Text = My.Settings.PropertyValues("resolutions").Property.DefaultValue
+    End Sub
+
+    Private Sub LastSavedToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles LastSavedToolStripMenuItem.Click
+        txtResolutions.Text = My.Settings.resolutions
     End Sub
 
     Private Sub TxtShortcuts_PreviewKeyDown(sender As TextBox, e As PreviewKeyDownEventArgs) Handles txtStoKey.PreviewKeyDown, txtCycleKeyUp.PreviewKeyDown, txtCycleKeyDown.PreviewKeyDown
