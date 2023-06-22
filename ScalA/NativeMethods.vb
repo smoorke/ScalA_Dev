@@ -583,13 +583,16 @@ Module NativeMethods
     Public Function GetCursorInfo(ByRef pci As CURSORINFO) As Boolean : End Function
 
 
-
+    <DllImport("user32.dll")>
+    Public Function GetMenuItemCount(hMenu As IntPtr) As Integer : End Function
+    <DllImport("user32.dll")>
+    Public Function SetMenuItemBitmaps(hMenu As IntPtr, uPosition As UInteger, uFlags As UInteger, hBitmapUnchecked As IntPtr, hBitmapChecked As IntPtr) As Integer : End Function
     <DllImport("user32.dll")>
     Public Function GetSystemMenu(ByVal hwnd As IntPtr, ByVal bRevert As Boolean) As Integer : End Function
     <DllImport("user32.dll")>
     Public Function ModifyMenuA(hMenu As Integer, uItem As Integer, fByPos As Integer, newID As Integer, lpNewIem As String) As Boolean : End Function
-    <DllImport("user32.dll")>
-    Public Function SetMenuItemBitmaps(hMenu As Integer, uitem As Integer, fByPos As Integer, hBitmapUnchecked As Integer, hBitmapChecked As Integer) As Boolean : End Function
+    '<DllImport("user32.dll")>
+    'Public Function SetMenuItemBitmaps(hMenu As Integer, uitem As Integer, fByPos As Integer, hBitmapUnchecked As Integer, hBitmapChecked As Integer) As Boolean : End Function
     <DllImport("gdi32.dll")>
     Public Function DeleteObject(hObject As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean : End Function
     <DllImport("user32.dll")>
@@ -703,6 +706,9 @@ Module NativeMethods
     Public Const MF_BYCOMMAND = &H0
     Public Const MF_BYPOSITION = &H400
     Public Const MF_SEPARATOR = &H800
+    Public Const MF_GRAYED As UInteger = &H1
+    Public Const MF_BITMAP As UInteger = &H4
+    Public Const MF_OWNERDRAW As UInteger = &H100
 
     Public Const HTCAPTION As Integer = 2
 
