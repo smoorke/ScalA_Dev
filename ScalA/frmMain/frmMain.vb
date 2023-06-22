@@ -124,7 +124,7 @@ Partial Public NotInheritable Class FrmMain
 
 
         If Not AltPP?.Id = 0 Then
-
+            If AltPP.IsMinimized Then AltPP.Restore()
 
             AltPP.ResetCache()
 
@@ -148,7 +148,6 @@ Partial Public NotInheritable Class FrmMain
                 'cboAlt.SelectedIndex = 0
                 Exit Sub
             End If
-
             AltPP.SavePos(rcW.Location)
 
             AltPP.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition)
@@ -1933,6 +1932,13 @@ Module dBug
         Dim va As MemoryMappedViewAccessor = map.CreateViewAccessor()
         Debug.Print($"shmem {va.ReadInt32(0)} id {FrmMain.AltPP?.Id}")
         Debug.Print($"hp {va.ReadByte(4)} shield {va.ReadByte(5)} end {va.ReadByte(6)} mana {va.ReadByte(7)}")
+    End Sub
+
+    Friend Sub DebugAlt(sender As ToolStripMenuItem, e As EventArgs)
+        Dim alt As AstoniaProcess = sender.Tag
+        Debug.Print($"DebugAlt {alt.Name}")
+        Debug.Print($"client rc {alt.ClientRect}")
+        Debug.Print($"window rc {alt.WindowRect}")
     End Sub
 End Module
 

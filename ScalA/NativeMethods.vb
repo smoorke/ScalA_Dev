@@ -417,6 +417,25 @@ Module NativeMethods
         ''' <summary>Specifies a window that has a border with a raised edge.</summary>
         WS_EX_WINDOWEDGE = &H100
     End Enum
+
+    <DllImport("user32.dll")>
+    Public Function IsIconic(hWnd As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean : End Function
+    <StructLayout(LayoutKind.Sequential)>
+    Public Structure WINDOWPLACEMENT
+        Public length As Integer
+        Public flags As Integer
+        Public showCmd As Integer
+        Public minPosition As Point
+        Public maxPosition As Point
+        Public normalPosition As RECT
+    End Structure
+    <DllImport("user32.dll")>
+    Public Function SetWindowPlacement(ByVal hWnd As IntPtr, ByRef lpwndpl As WINDOWPLACEMENT) As Boolean : End Function
+
+    <DllImport("user32.dll")>
+    Public Function ShowWindow(Hwnd As IntPtr, iCmdShow As Integer) As Integer : End Function
+
+
     <DllImport("user32.dll")>
     Public Function InvalidateRect(hWnd As IntPtr, lpRect As IntPtr, bErase As Boolean) As Boolean : End Function
     <DllImport("user32.dll")>

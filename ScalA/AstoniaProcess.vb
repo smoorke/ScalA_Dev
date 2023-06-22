@@ -1,4 +1,5 @@
 ﻿Imports System.IO.MemoryMappedFiles
+Imports System.Net.NetworkInformation
 Imports System.Runtime.InteropServices
 
 Public NotInheritable Class AstoniaProcess
@@ -30,6 +31,22 @@ Public NotInheritable Class AstoniaProcess
             End If
         End Get
     End Property
+    Public ReadOnly Property WindowRect() As Rectangle
+        Get
+            Dim rcw As New Rectangle
+            If _proc Is Nothing Then Return New Rectangle
+            GetWindowRect(_proc.MainWindowHandle, rcw)
+            Return rcw
+        End Get
+    End Property
+
+    Public Function IsMinimized()
+        Return IsIconic(_proc.MainWindowHandle)
+    End Function
+
+    Public Function Restore()
+        Return ShowWindow(_proc.MainWindowHandle, 9)
+    End Function
 
     Private _restoreLoc As Point? = Nothing
     Private _wasTopmost As Boolean = False

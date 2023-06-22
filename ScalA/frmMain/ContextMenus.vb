@@ -50,6 +50,16 @@ Partial Public NotInheritable Class FrmMain
 
         Dim pp As AstoniaProcess = sender.SourceControl.Tag
 
+#If 0 Then
+#If DEBUG Then
+        Static DebugToolStripMenuItem As ToolStripMenuItem = Nothing
+        If DebugToolStripMenuItem Is Nothing Then
+            DebugToolStripMenuItem = New ToolStripMenuItem("Debug", Nothing, AddressOf dBug.DebugAlt)
+            sender.Items.Insert(0, DebugToolStripMenuItem)
+        End If
+        DebugToolStripMenuItem.Tag = pp
+#End If
+#End If
         SelectToolStripMenuItem.Text = "Select " & pp.Name
         SelectToolStripMenuItem.Image = pp.GetIcon?.ToBitmap
         SelectToolStripMenuItem.Tag = pp
