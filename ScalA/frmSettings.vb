@@ -1,7 +1,4 @@
-﻿Imports System.Net.Http
-Imports System.Runtime.InteropServices
-Imports System.Text
-Imports Microsoft.VisualBasic.FileIO
+﻿Imports System.Text
 
 Public NotInheritable Class FrmSettings
     Public SysMenu As New SysMenu(Me)
@@ -545,7 +542,7 @@ Public NotInheritable Class FrmSettings
     Private Sub FromToolStripMenuItem_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) Handles FromToolStripMenuItem.DropDownOpening
         sender.DropDownItems.Clear()
 
-        For Each ap As AstoniaProcess In AstoniaProcess.Enumerate()
+        For Each ap As AstoniaProcess In AstoniaProcess.Enumerate().OrderBy(Function(p) p.Name)
 
             Dim rcC As Rectangle
             GetClientRect(ap.MainWindowHandle, rcC)
