@@ -1011,8 +1011,8 @@ Partial Public NotInheritable Class FrmMain
                 but.Tag = ap
                 but.Text = ap.Name
 
-                Dim rcwB As New Rectangle = ap?.windowrect
-                Dim rccB As New Rectangle = ap?.clientrect
+                Dim rcwB As Rectangle = ap?.WindowRect
+                Dim rccB As Rectangle = ap?.ClientRect
                 'GetClientRect(ap?.MainWindowHandle, rccB)
                 'GetWindowRect(ap?.MainWindowHandle, rcwB)
 
