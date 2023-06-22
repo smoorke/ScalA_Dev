@@ -525,8 +525,8 @@ Public NotInheritable Class FrmSettings
         Dim x = baseRes.Width
         Dim y = baseRes.Height
         While x < 4400
-            x += baseRes.Width / gcd * 25
-            y += baseRes.Height / gcd * 25
+            x += baseRes.Width / gcd * 20
+            y += baseRes.Height / gcd * 20
             sb.AppendLine($"{x}x{y}")
         End While
 
