@@ -128,9 +128,10 @@ Partial Public NotInheritable Class FrmMain
 
             AltPP.ResetCache()
 
-            Dim rcW As New Rectangle
-            GetWindowRect(AltPP.MainWindowHandle, rcW)
-            GetClientRect(AltPP.MainWindowHandle, rcC)
+            Dim rcW As Rectangle = AltPP.WindowRect
+            rcC = AltPP.ClientRect
+            'GetWindowRect(AltPP.MainWindowHandle, rcW)
+            'GetClientRect(AltPP.MainWindowHandle, rcC)
 
             Dim ptC As Point
             ClientToScreen(AltPP.MainWindowHandle, ptC)
@@ -1010,10 +1011,10 @@ Partial Public NotInheritable Class FrmMain
                 but.Tag = ap
                 but.Text = ap.Name
 
-                Dim rcwB As New Rectangle
-                Dim rccB As New Rectangle
-                GetClientRect(ap?.MainWindowHandle, rccB)
-                GetWindowRect(ap?.MainWindowHandle, rcwB)
+                Dim rcwB As New Rectangle = ap?.windowrect
+                Dim rccB As New Rectangle = ap?.clientrect
+                'GetClientRect(ap?.MainWindowHandle, rccB)
+                'GetWindowRect(ap?.MainWindowHandle, rcwB)
 
                 If ap?.IsActive() Then
                     but.Font = New Font("Microsoft Sans Serif", 8.25, FontStyle.Bold)
