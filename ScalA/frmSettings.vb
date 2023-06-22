@@ -500,7 +500,7 @@ Public NotInheritable Class FrmSettings
 
 
     Private Sub BtnRestore_Click(sender As Object, e As EventArgs) Handles btnRestore.Click
-        txtResolutions.Text = My.Settings.resolutions
+        txtResolutions.Text = My.Settings.PropertyValues("resolutions").Property.DefaultValue
     End Sub
 
     Private Sub BtnGenerate_Click(sender As Button, e As EventArgs) Handles btnGenerate.Click
