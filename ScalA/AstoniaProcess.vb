@@ -295,11 +295,20 @@ Public NotInheritable Class AstoniaProcess
         Try
             Return classes.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries) _
                       .Select(Function(wc) Strings.Trim(wc)) _
-                      .Contains(GetWindowClass(_proc?.MainWindowHandle))
+                      .Contains(Me.WindowClass)
         Catch
             Return False
         End Try
     End Function
+
+    Private _wc As String
+    Public ReadOnly Property WindowClass() As String
+        Get
+            If _wc <> String.Empty Then Return _wc
+            _wc = GetWindowClass(_proc?.MainWindowHandle)
+            Return _wc
+        End Get
+    End Property
 
     'Public Overrides Function ToString() As String
     '    If _proc Is Nothing Then Return "Someone"
