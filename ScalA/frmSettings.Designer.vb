@@ -64,6 +64,7 @@ Partial NotInheritable Class FrmSettings
         Me.ChkDark = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
+        Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
         Me.btnAddCurrentRes = New System.Windows.Forms.Button()
         Me.btnRestore = New System.Windows.Forms.Button()
         Me.btnSort = New System.Windows.Forms.Button()
@@ -110,7 +111,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
-        Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -555,6 +555,16 @@ Partial NotInheritable Class FrmSettings
         Me.tabResolutions.Text = "Resolutions"
         Me.tabResolutions.UseVisualStyleBackColor = True
         '
+        'ChkSizeBorder
+        '
+        Me.ChkSizeBorder.AutoSize = True
+        Me.ChkSizeBorder.Location = New System.Drawing.Point(204, 58)
+        Me.ChkSizeBorder.Name = "ChkSizeBorder"
+        Me.ChkSizeBorder.Size = New System.Drawing.Size(88, 17)
+        Me.ChkSizeBorder.TabIndex = 9
+        Me.ChkSizeBorder.Text = "Sizing Border"
+        Me.ChkSizeBorder.UseVisualStyleBackColor = True
+        '
         'btnAddCurrentRes
         '
         Me.btnAddCurrentRes.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
@@ -842,7 +852,7 @@ Partial NotInheritable Class FrmSettings
         Me.tabSortAndBL.Padding = New System.Windows.Forms.Padding(3)
         Me.tabSortAndBL.Size = New System.Drawing.Size(308, 136)
         Me.tabSortAndBL.TabIndex = 3
-        Me.tabSortAndBL.Text = "Sort"
+        Me.tabSortAndBL.Text = "Sorting"
         Me.tabSortAndBL.UseVisualStyleBackColor = True
         '
         'btnTest
@@ -1044,16 +1054,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.TabIndex = 2
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
-        '
-        'ChkSizeBorder
-        '
-        Me.ChkSizeBorder.AutoSize = True
-        Me.ChkSizeBorder.Location = New System.Drawing.Point(204, 58)
-        Me.ChkSizeBorder.Name = "ChkSizeBorder"
-        Me.ChkSizeBorder.Size = New System.Drawing.Size(88, 17)
-        Me.ChkSizeBorder.TabIndex = 9
-        Me.ChkSizeBorder.Text = "Sizing Border"
-        Me.ChkSizeBorder.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
