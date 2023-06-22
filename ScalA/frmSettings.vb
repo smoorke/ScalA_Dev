@@ -544,8 +544,7 @@ Public NotInheritable Class FrmSettings
 
         For Each ap As AstoniaProcess In AstoniaProcess.Enumerate().OrderBy(Function(p) p.Name)
 
-            Dim rcC As Rectangle
-            GetClientRect(ap.MainWindowHandle, rcC)
+            Dim rcC As Rectangle = ap.ClientRect
 
             Dim baseRes As New Size(rcC.Width, rcC.Height)
             Dim gcd As Integer = Me.GCD(baseRes.Width, baseRes.Height)
