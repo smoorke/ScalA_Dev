@@ -1,5 +1,4 @@
 ﻿Imports System.IO.MemoryMappedFiles
-Imports System.Net.NetworkInformation
 Imports System.Runtime.InteropServices
 
 Public NotInheritable Class AstoniaProcess
@@ -25,7 +24,7 @@ Public NotInheritable Class AstoniaProcess
                 Debug.Print("called get ClientRect")
                 Dim rcc As New Rectangle
                 If _proc Is Nothing Then Return New Rectangle
-                GetClientRect(_proc.MainWindowHandle, rcc)
+                GetClientRect(Me.MainWindowHandle, rcc)
                 If rcc <> New Rectangle Then _rcc = rcc
                 Return rcc
             End If
@@ -35,17 +34,20 @@ Public NotInheritable Class AstoniaProcess
         Get
             Dim rcw As New Rectangle
             If _proc Is Nothing Then Return New Rectangle
-            GetWindowRect(_proc.MainWindowHandle, rcw)
+
+            GetWindowRect(Me.MainWindowHandle, rcw)
+
             Return rcw
         End Get
     End Property
 
     Public Function IsMinimized()
-        Return IsIconic(_proc.MainWindowHandle)
+        If _proc Is Nothing Then Return False
+        Return IsIconic(Me.MainWindowHandle)
     End Function
 
     Public Function Restore()
-        Return ShowWindow(_proc.MainWindowHandle, 9)
+        Return ShowWindow(Me.MainWindowHandle, 9)
     End Function
 
     Private _restoreLoc As Point? = Nothing
@@ -677,7 +679,6 @@ Public NotInheritable Class AstoniaProcess
 
         alreadylaunched = False
     End Function
-
 
 End Class
 

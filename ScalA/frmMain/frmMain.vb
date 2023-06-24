@@ -696,7 +696,10 @@ Partial Public NotInheritable Class FrmMain
         If Not AltPP?.IsRunning() Then
             Debug.Print("Not AltPP?.IsRunning()")
             If Not My.Settings.CycleOnClose Then
-                AppActivate(scalaPID)
+                Try
+                    AppActivate(scalaPID)
+                Catch
+                End Try
                 Me.Activate()
                 BringToFront()
                 tmrTick.Enabled = False
