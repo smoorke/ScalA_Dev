@@ -736,6 +736,7 @@ Module NativeMethods
 
     Public Const WM_PAINT = &HF
 
+    Public Const WM_SHOWWINDOW = &H18
     Public Const WM_WININICHANGE = &H1A
 
     Public Const WM_CANCELMODE = &H1F

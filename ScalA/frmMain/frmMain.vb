@@ -1606,7 +1606,11 @@ Partial Public NotInheritable Class FrmMain
             IPC.RequestActivation = 0
             Debug.Print("IPC.requestActivation")
 
-            If Me.WindowState = FormWindowState.Minimized Then
+            If AltPP?.IsMinimized Then
+                AltPP.Restore()
+            End If
+
+            If Me.WindowState = FormWindowState.Minimized OrElse IsIconic(ScalaHandle) Then
                 WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero))
             End If
 

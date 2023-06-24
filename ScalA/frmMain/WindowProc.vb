@@ -161,6 +161,16 @@ Partial NotInheritable Class FrmMain
                 '    m.Result = 0
                 '    Exit Sub
                 'End If
+            Case WM_SHOWWINDOW
+                Debug.Print($"WM_SHOWWINDOW {m.WParam} {m.LParam}")
+                If m.WParam = 0 AndAlso m.LParam = 1 Then
+                    FrmBehind.Hide()
+                    FrmSizeBorder.Hide()
+                End If
+                If m.WParam = 1 AndAlso m.LParam = 3 Then
+                    FrmBehind.Show()
+                    FrmSizeBorder.Show(Me)
+                End If
             Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
                 'If posChangeBusy Then
                 '    Debug.Print("WM_WINDOWPOSCHANGED busy")
@@ -168,6 +178,7 @@ Partial NotInheritable Class FrmMain
                 '    Exit Sub
                 'End If
                 Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
+                Debug.Print($"WM_WINDOWPOSCHANGED {winpos.x} {winpos.y} {winpos.cx} {winpos.cy} {winpos.flags}")
                 If caption_Mousedown Then
                     FrmBehind.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
                     'Debug.Print($"szb{FrmSizeBorder.Bounds} fbh{FrmBehind.Bounds}")
