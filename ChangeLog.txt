@@ -1,3 +1,10 @@
+**ScalA 1.2.7**
+QuickLaunch now uses actual windows sorting method.
+When selecting a minimized client ScalA now correctly restores it.
+Generating a new list from 1280x720 option sets a better list of resolutions.
+Restore button in Resolution Settings now gives more options.
+Minor performance increase.
+
 **ScalA 1.2.6**
 Added setting to disable the Sizing Border.
 Fixed bug in directory creation when using the submenu in root of quicklaunch when opening QL with ctrl held.
