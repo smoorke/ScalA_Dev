@@ -1782,6 +1782,7 @@ Partial Public NotInheritable Class FrmMain
         '    ttMain.SetToolTip(btnMax, If(wasMaximized, "Restore", "Maximize"))
         '    If wasMaximized Then btnMax.PerformClick()
         'End If
+        If AltPP?.IsMinimized Then AltPP?.Restore()
         If Me.WindowState = FormWindowState.Minimized Then
             Me.WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, Nothing))
         End If
