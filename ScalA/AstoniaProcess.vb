@@ -41,13 +41,16 @@ Public NotInheritable Class AstoniaProcess
         End Get
     End Property
 
-    Public Function IsMinimized()
+    Public Function IsMinimized() As Boolean
         If _proc Is Nothing Then Return False
         Return IsIconic(Me.MainWindowHandle)
     End Function
 
-    Public Function Restore()
+    Public Function Restore() As Integer
         Return ShowWindow(Me.MainWindowHandle, 9)
+    End Function
+    Public Function Hide() As Integer
+        Return ShowWindow(Me.MainWindowHandle, SW_MINIMIZE)
     End Function
 
     Private _restoreLoc As Point? = Nothing
