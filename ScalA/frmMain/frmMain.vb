@@ -1630,7 +1630,7 @@ Partial Public NotInheritable Class FrmMain
 
         End If
         'Me.SuspendLayout()
-        If cboAlt.SelectedIndex <> 0 Then
+        If cboAlt.SelectedIndex <> 0 OrElse My.Settings.gameOnOverview Then
             If My.Settings.LockEq AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then
                 If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
                     If Not PnlEqLock.Visible Then
@@ -1663,7 +1663,7 @@ Partial Public NotInheritable Class FrmMain
                     ChkEqLock.Text = "🔓"
                 End If
             End If
-        ElseIf Not My.settings.gameOnOverview Then
+        Else
             PnlEqLock.Visible = False
         End If
         'Me.ResumeLayout()
