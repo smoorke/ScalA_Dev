@@ -170,6 +170,12 @@ Partial NotInheritable Class FrmMain
                 If m.WParam = 1 AndAlso m.LParam = 3 Then
                     FrmBehind.Show()
                     FrmSizeBorder.Show(Me)
+                    If Me.WindowState = FormWindowState.Maximized Then Task.Run(Sub()
+                                                                                    Threading.Thread.Sleep(150)
+                                                                                    Me.Invoke(Sub()
+                                                                                                  btnMax.PerformClick()
+                                                                                              End Sub)
+                                                                                End Sub)
                 End If
             Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
                 'If posChangeBusy Then
