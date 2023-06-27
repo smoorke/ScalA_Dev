@@ -1612,9 +1612,7 @@ Partial Public NotInheritable Class FrmMain
                 AltPP.Restore()
             End If
 
-            If Me.WindowState = FormWindowState.Minimized OrElse IsIconic(ScalaHandle) Then
-                WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero))
-            End If
+            ShowWindow(ScalaHandle, SW_SHOW)
 
             Me.TopMost = True
             Me.BringToFront()

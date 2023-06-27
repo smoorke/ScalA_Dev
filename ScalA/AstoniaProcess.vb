@@ -21,7 +21,7 @@ Public NotInheritable Class AstoniaProcess
             If _rcc IsNot Nothing AndAlso _rcc <> New Rectangle Then
                 Return _rcc
             Else
-                Debug.Print("called get ClientRect")
+                'Debug.Print("called get ClientRect")
                 Dim rcc As New Rectangle
                 If _proc Is Nothing Then Return New Rectangle
                 GetClientRect(Me.MainWindowHandle, rcc)
@@ -220,7 +220,7 @@ Public NotInheritable Class AstoniaProcess
         Get
 
             Try
-                Return (GetWindowLong(_proc?.MainWindowHandle, GWL_EXSTYLE) And WS_EX_TOPMOST) = WS_EX_TOPMOST
+                Return (GetWindowLong(Me.MainWindowHandle, GWL_EXSTYLE) And WS_EX_TOPMOST) = WS_EX_TOPMOST
             Catch
                 Return False
             End Try
