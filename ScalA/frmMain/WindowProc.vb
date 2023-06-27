@@ -39,6 +39,7 @@ Partial NotInheritable Class FrmMain
                         Debug.Print("SC_RESTORE " & m.LParam.ToString)
                         SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
                         'Me.ShowInTaskbar = False
+                        If AltPP?.IsMinimized Then AltPP.Restore()
                         moveBusy = False
                         If WindowState = FormWindowState.Maximized Then
                             btnMax.PerformClick()
