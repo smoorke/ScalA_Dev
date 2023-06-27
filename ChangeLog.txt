@@ -1,3 +1,10 @@
+**ScalA 1.2.8**
+Fixed Minimizing by Clicking the Astonia Client in Taskbar leaving behind invisible Sizeborder and Clickguard.
+Fixed Relaunching ScalA with SingleInstance doesn't restore ScalA when Minimized by above method.
+Fixed Restoring ScalA by double clicking SysTray icon doesn't restore selected Astonia client minimized by above method.
+Fixed Eqlock sometimes showing up erroneously on overview.
+Other Bugfixes pertaining to min/maximizing.
+
 **ScalA 1.2.7**
 QuickLaunch now uses actual windows sorting method.
 When selecting a minimized client ScalA now correctly restores it.
