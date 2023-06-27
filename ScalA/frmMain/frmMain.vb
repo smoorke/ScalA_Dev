@@ -84,7 +84,6 @@ Partial Public NotInheritable Class FrmMain
         UpdateTitle()
 
         If sender.SelectedIndex = 0 Then
-            'AltPP = Nothing
             If Not My.Settings.gameOnOverview Then
                 Try
                     AppActivate(scalaPID)
@@ -1633,16 +1632,17 @@ Partial Public NotInheritable Class FrmMain
 
         End If
         'Me.SuspendLayout()
-        If My.Settings.LockEq AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then
-            If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
-                If Not PnlEqLock.Visible Then
-                    If Not pnlOverview.Visible AndAlso Not My.Settings.gameOnOverview Then
-                        PnlEqLock.Visible = True
-                    Else
-                        PnlEqLock.Visible = AOshowEqLock OrElse Not pnlOverview.Visible
+        If cboAlt.SelectedIndex <> 0 Then
+            If My.Settings.LockEq AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then
+                If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
+                    If Not PnlEqLock.Visible Then
+                        If Not pnlOverview.Visible AndAlso Not My.Settings.gameOnOverview Then
+                            PnlEqLock.Visible = True
+                        Else
+                            PnlEqLock.Visible = AOshowEqLock OrElse Not pnlOverview.Visible
+                        End If
                     End If
-                End If
-                If PnlEqLock.Visible AndAlso
+                    If PnlEqLock.Visible AndAlso
                    Not (cmsQuickLaunch.Visible OrElse cmsAlt.Visible) AndAlso
                    Not (FrmSettings.cmsGenerate.Visible OrElse FrmSettings.cmsQLFolder.Visible) AndAlso
                    Not FrmSettings.Contains(MousePosition) AndAlso
@@ -1651,19 +1651,22 @@ Partial Public NotInheritable Class FrmMain
                    Not cmbResolution.DropDownContains(MousePosition) AndAlso
                    Not SysMenu.Contains(MousePosition) AndAlso
                    Not FrmSettings.SysMenu.Contains(MousePosition) Then
-                    Cursor.Current = Cursors.No
-                ElseIf SysMenu.Contains(MousePosition) OrElse FrmSettings.SysMenu.Contains(MousePosition) Then
-                    Cursor.Current = Cursors.Default
+                        Cursor.Current = Cursors.No
+                    ElseIf SysMenu.Contains(MousePosition) OrElse FrmSettings.SysMenu.Contains(MousePosition) Then
+                        Cursor.Current = Cursors.Default
+                    End If
+                End If
+                ChkEqLock.CheckState = CheckState.Checked
+                ChkEqLock.Text = "🔒"
+            Else
+                PnlEqLock.Visible = False
+                If My.Settings.LockEq Then
+                    ChkEqLock.CheckState = CheckState.Indeterminate
+                    ChkEqLock.Text = "🔓"
                 End If
             End If
-            ChkEqLock.CheckState = CheckState.Checked
-            ChkEqLock.Text = "🔒"
-        Else
+        ElseIf Not My.settings.gameOnOverview Then
             PnlEqLock.Visible = False
-            If My.Settings.LockEq Then
-                ChkEqLock.CheckState = CheckState.Indeterminate
-                ChkEqLock.Text = "🔓"
-            End If
         End If
         'Me.ResumeLayout()
         ''locked 🔒
