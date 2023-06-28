@@ -1,7 +1,7 @@
 ﻿Imports System.IO.MemoryMappedFiles
 Imports System.Runtime.InteropServices
 
-Public NotInheritable Class AstoniaProcess
+Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
     Private ReadOnly _proc As Process
 
@@ -428,7 +428,21 @@ Public NotInheritable Class AstoniaProcess
         End Try
     End Function
     Private Shared ReadOnly validColors As Integer() = {&HFFFF0000, &HFFFF0400, &HFFFF7B29, &HFFFF7D29, &HFF297BFF, &HFF297DFF, &HFF000000, &HFF000400, &HFFFFFFFF} 'red, orange, lightblue, black, white (troy,base)
-    Public isSDL As Boolean = True
+    Private _isSDL? As Boolean = Nothing
+    Public ReadOnly Property isSDL() As Boolean
+        Get
+            If _isSDL Is Nothing Then
+                va.Read(0, shm)
+                If shm.pID = Me.Id Then
+                    _isSDL = True
+                Else
+                    _isSDL = False
+                End If
+                'Debug.Print($"isSDL {Me.Name} {_isSDL} {shm.pID} {Me.Id}")
+            End If
+            Return _isSDL
+        End Get
+    End Property
     <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Auto, Pack:=0)>
     Structure MoacSharedMem
         Dim pID As UInt32
@@ -438,42 +452,55 @@ Public NotInheritable Class AstoniaProcess
         Dim flags, fsprite As Integer
         Dim swapped As Byte
     End Structure
+    Private shm As MoacSharedMem
+    Private _map As MemoryMappedFile = Nothing
+    Private ReadOnly Property map As MemoryMappedFile
+        Get
+            If _map Is Nothing Then
+                _map = MemoryMappedFile.CreateOrOpen($"MOAC{Me.Id}", Marshal.SizeOf(shm))
+            End If
+            Return _map
+        End Get
+    End Property
+    Private _va As MemoryMappedViewAccessor = Nothing
+    Private ReadOnly Property va As MemoryMappedViewAccessor
+        Get
+            If _va Is Nothing Then
+                _va = map.CreateViewAccessor(0, Marshal.SizeOf(shm), MemoryMappedFileAccess.Read)
+            End If
+            Return _va
+        End Get
+    End Property
+
     Public Function GetHealthbar(Optional width As Integer = 75, Optional height As Integer = 15) As Bitmap
         Dim bmp As New Bitmap(width, height)
 
         'struct sharedmem {
         '    unsigned int pid; 0
         '    Char hp, shield,end, mana; 4 5 6 7
-        If isSDL Then
-            Static shm As MoacSharedMem
-            Static map As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"MOAC{Me.Id}", Marshal.SizeOf(shm))
-            Static va As MemoryMappedViewAccessor = map.CreateViewAccessor(0, Marshal.SizeOf(shm), MemoryMappedFileAccess.Read)
+        If Me.isSDL Then
             va.Read(0, shm)
-            'If va.ReadInt32(0) = Me.Id Then
-            If shm.pID = Me.Id Then
-                'Dim bars(4) As Byte
-                'va.ReadArray(Of Byte)(4, bars, 0, 4)
-                Using g As Graphics = Graphics.FromImage(bmp)
-                    Static br As New SolidBrush(Color.FromArgb(&HFFFF0400))
-                    Static bo As New SolidBrush(Color.FromArgb(&HFFFF7D29))
-                    Static by As New SolidBrush(Color.FromArgb(186, 186, 30))
-                    Static bl As New SolidBrush(Color.FromArgb(217, 217, 30))
-                    Static bb As New SolidBrush(Color.FromArgb(&HFF297DFF))
-                    g.Clear(Color.Black)
-                    If shm.mana = 255 Then
-                        g.FillRectangle(br, New Rectangle(0, 0, shm.hp / 100 * width, height / 5 * 2))
-                        g.FillRectangle(bo, New Rectangle(0, height / 5 * 2, shm.shield / 100 * width, height / 5 * 2))
-                        g.FillRectangle(If(My.Settings.DarkMode, by, bl), New Rectangle(0, height / 5 * 4, shm.end / 100 * width, height / 5))
-                    Else
-                        g.FillRectangle(br, New Rectangle(0, 0, shm.hp / 100 * width, height / 3))
-                        g.FillRectangle(bo, New Rectangle(0, height / 3, shm.shield / 100 * width, height / 3))
-                        g.FillRectangle(bb, New Rectangle(0, height / 3 * 2, shm.mana / 100 * width, height / 3))
-                    End If
-                End Using
-                Return bmp
-            Else
-                isSDL = False
-            End If
+
+            'Dim bars(4) As Byte
+            'va.ReadArray(Of Byte)(4, bars, 0, 4)
+            Using g As Graphics = Graphics.FromImage(bmp)
+                Static br As New SolidBrush(Color.FromArgb(&HFFFF0400))
+                Static bo As New SolidBrush(Color.FromArgb(&HFFFF7D29))
+                Static by As New SolidBrush(Color.FromArgb(186, 186, 30))
+                Static bl As New SolidBrush(Color.FromArgb(217, 217, 30))
+                Static bb As New SolidBrush(Color.FromArgb(&HFF297DFF))
+                g.Clear(Color.Black)
+                If shm.mana = 255 Then
+                    g.FillRectangle(br, New Rectangle(0, 0, shm.hp / 100 * width, height / 5 * 2))
+                    g.FillRectangle(bo, New Rectangle(0, height / 5 * 2, shm.shield / 100 * width, height / 5 * 2))
+                    g.FillRectangle(If(My.Settings.DarkMode, by, bl), New Rectangle(0, height / 5 * 4, shm.end / 100 * width, height / 5))
+                Else
+                    g.FillRectangle(br, New Rectangle(0, 0, shm.hp / 100 * width, height / 3))
+                    g.FillRectangle(bo, New Rectangle(0, height / 3, shm.shield / 100 * width, height / 3))
+                    g.FillRectangle(bb, New Rectangle(0, height / 3 * 2, shm.mana / 100 * width, height / 3))
+                End If
+            End Using
+            Return bmp
         End If
 
         Using g As Graphics = Graphics.FromImage(bmp), grab As Bitmap = GetClientBitmap()
@@ -536,6 +563,8 @@ Public NotInheritable Class AstoniaProcess
     End Function
 
     Private alreadylaunched As Boolean = False
+    Private disposedValue As Boolean
+
     Friend Async Function ReOpenAsWindowed() As Task
 
         If alreadylaunched Then
@@ -683,6 +712,34 @@ Public NotInheritable Class AstoniaProcess
         alreadylaunched = False
     End Function
 
+    Private Sub Dispose(disposing As Boolean)
+        If Not disposedValue Then
+            If disposing Then
+                ' TODO: dispose managed state (managed objects)
+                _va?.Dispose()
+                _map?.Dispose()
+                _proc?.Dispose()
+
+            End If
+
+            ' TODO: free unmanaged resources (unmanaged objects) and override finalizer
+            ' TODO: set large fields to null
+            disposedValue = True
+        End If
+    End Sub
+
+    ' ' TODO: override finalizer only if 'Dispose(disposing As Boolean)' has code to free unmanaged resources
+    ' Protected Overrides Sub Finalize()
+    '     ' Do not change this code. Put cleanup code in 'Dispose(disposing As Boolean)' method
+    '     Dispose(disposing:=False)
+    '     MyBase.Finalize()
+    ' End Sub
+
+    Public Sub Dispose() Implements IDisposable.Dispose
+        ' Do not change this code. Put cleanup code in 'Dispose(disposing As Boolean)' method
+        Dispose(disposing:=True)
+        GC.SuppressFinalize(Me)
+    End Sub
 End Class
 
 NotInheritable Class AstoniaProcessSorter
