@@ -165,6 +165,11 @@ Partial NotInheritable Class FrmMain
             Case WM_SHOWWINDOW
                 Debug.Print($"WM_SHOWWINDOW {m.WParam} {m.LParam}")
                 If m.WParam = 0 AndAlso m.LParam = 1 Then
+                    Debug.Print($"AltPP?{{{AltPP?.Id}}}.isSDL{{{AltPP?.isSDL}}}")
+                    If Not AltPP?.isSDL Then
+                        Debug.Print("Not AltPP?.isSDL")
+                        SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
+                    End If
                     FrmBehind.Hide()
                     FrmSizeBorder.Hide()
                 End If
@@ -172,13 +177,13 @@ Partial NotInheritable Class FrmMain
                     FrmBehind.Show()
                     If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
                     If Me.WindowState = FormWindowState.Maximized Then Task.Run(Sub()
-                                                                                        Threading.Thread.Sleep(150)
-                                                                                        Me.Invoke(Sub()
-                                                                                                      btnMax.PerformClick()
-                                                                                                  End Sub)
-                                                                                    End Sub)
-                    End If
-                    Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
+                                                                                    Threading.Thread.Sleep(150)
+                                                                                    Me.Invoke(Sub()
+                                                                                                  btnMax.PerformClick()
+                                                                                              End Sub)
+                                                                                End Sub)
+                End If
+            Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
                 'If posChangeBusy Then
                 '    Debug.Print("WM_WINDOWPOSCHANGED busy")
                 '    m.Result = 0
