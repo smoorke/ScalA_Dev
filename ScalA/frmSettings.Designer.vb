@@ -67,6 +67,9 @@ Partial NotInheritable Class FrmSettings
         Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
         Me.btnAddCurrentRes = New System.Windows.Forms.Button()
         Me.btnRestore = New System.Windows.Forms.Button()
+        Me.cmsRestore = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.LastSavedToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.DefaultToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.btnSort = New System.Windows.Forms.Button()
         Me.btnGenerate = New System.Windows.Forms.Button()
         Me.cmsGenerate = New System.Windows.Forms.ContextMenuStrip(Me.components)
@@ -111,9 +114,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
-        Me.cmsRestore = New System.Windows.Forms.ContextMenuStrip(Me.components)
-        Me.LastSavedToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.DefaultToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ChkMinMin = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -140,6 +141,7 @@ Partial NotInheritable Class FrmSettings
         CType(Me.NumBorderLeft, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tbcSettings.SuspendLayout()
         Me.tabResolutions.SuspendLayout()
+        Me.cmsRestore.SuspendLayout()
         Me.cmsGenerate.SuspendLayout()
         Me.tabHotkeys.SuspendLayout()
         Me.grpCycleShortcut.SuspendLayout()
@@ -151,7 +153,6 @@ Partial NotInheritable Class FrmSettings
         Me.grpAlign.SuspendLayout()
         CType(Me.numXoffset, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.cmsRestore.SuspendLayout()
         Me.SuspendLayout()
         '
         'grpQLPath
@@ -589,6 +590,25 @@ Partial NotInheritable Class FrmSettings
         Me.btnRestore.Text = "Restore"
         Me.btnRestore.UseVisualStyleBackColor = True
         '
+        'cmsRestore
+        '
+        Me.cmsRestore.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.LastSavedToolStripMenuItem, Me.DefaultToolStripMenuItem})
+        Me.cmsRestore.Name = "cmsRestore"
+        Me.cmsRestore.ShowImageMargin = False
+        Me.cmsRestore.Size = New System.Drawing.Size(105, 48)
+        '
+        'LastSavedToolStripMenuItem
+        '
+        Me.LastSavedToolStripMenuItem.Name = "LastSavedToolStripMenuItem"
+        Me.LastSavedToolStripMenuItem.Size = New System.Drawing.Size(104, 22)
+        Me.LastSavedToolStripMenuItem.Text = "Last Saved"
+        '
+        'DefaultToolStripMenuItem
+        '
+        Me.DefaultToolStripMenuItem.Name = "DefaultToolStripMenuItem"
+        Me.DefaultToolStripMenuItem.Size = New System.Drawing.Size(104, 22)
+        Me.DefaultToolStripMenuItem.Text = "Default"
+        '
         'btnSort
         '
         Me.btnSort.Location = New System.Drawing.Point(105, 38)
@@ -912,6 +932,7 @@ Partial NotInheritable Class FrmSettings
         '
         'tabMaximized
         '
+        Me.tabMaximized.Controls.Add(Me.ChkMinMin)
         Me.tabMaximized.Controls.Add(Me.chkStartupMax)
         Me.tabMaximized.Controls.Add(Me.ChkLessRowCol)
         Me.tabMaximized.Controls.Add(Me.NumExtraMax)
@@ -921,7 +942,7 @@ Partial NotInheritable Class FrmSettings
         Me.tabMaximized.Name = "tabMaximized"
         Me.tabMaximized.Size = New System.Drawing.Size(308, 136)
         Me.tabMaximized.TabIndex = 4
-        Me.tabMaximized.Text = "Maximized"
+        Me.tabMaximized.Text = "Min/Max"
         Me.tabMaximized.UseVisualStyleBackColor = True
         '
         'chkStartupMax
@@ -1060,24 +1081,17 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
-        'cmsRestore
+        'ChkMinMin
         '
-        Me.cmsRestore.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.LastSavedToolStripMenuItem, Me.DefaultToolStripMenuItem})
-        Me.cmsRestore.Name = "cmsRestore"
-        Me.cmsRestore.ShowImageMargin = False
-        Me.cmsRestore.Size = New System.Drawing.Size(156, 70)
-        '
-        'LastSavedToolStripMenuItem
-        '
-        Me.LastSavedToolStripMenuItem.Name = "LastSavedToolStripMenuItem"
-        Me.LastSavedToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
-        Me.LastSavedToolStripMenuItem.Text = "Last Saved"
-        '
-        'DefaultToolStripMenuItem
-        '
-        Me.DefaultToolStripMenuItem.Name = "DefaultToolStripMenuItem"
-        Me.DefaultToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
-        Me.DefaultToolStripMenuItem.Text = "Default"
+        Me.ChkMinMin.AutoSize = True
+        Me.ChkMinMin.Location = New System.Drawing.Point(171, 107)
+        Me.ChkMinMin.Name = "ChkMinMin"
+        Me.ChkMinMin.Size = New System.Drawing.Size(104, 17)
+        Me.ChkMinMin.TabIndex = 30
+        Me.ChkMinMin.Text = "Min. on Minimize"
+        Me.ttSettings.SetToolTip(Me.ChkMinMin, "Minimizing ScalA will also Minimise Astonia" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: This has no effect on legacy c" &
+        "lients")
+        Me.ChkMinMin.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
@@ -1107,6 +1121,7 @@ Partial NotInheritable Class FrmSettings
         Me.tbcSettings.ResumeLayout(False)
         Me.tabResolutions.ResumeLayout(False)
         Me.tabResolutions.PerformLayout()
+        Me.cmsRestore.ResumeLayout(False)
         Me.cmsGenerate.ResumeLayout(False)
         Me.tabHotkeys.ResumeLayout(False)
         Me.tabHotkeys.PerformLayout()
@@ -1125,7 +1140,6 @@ Partial NotInheritable Class FrmSettings
         Me.grpAlign.PerformLayout()
         CType(Me.numXoffset, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.cmsRestore.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -1202,4 +1216,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents cmsRestore As ContextMenuStrip
     Friend WithEvents LastSavedToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents DefaultToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents ChkMinMin As CheckBox
 End Class

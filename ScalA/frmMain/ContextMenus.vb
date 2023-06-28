@@ -533,11 +533,10 @@ Partial Public NotInheritable Class FrmMain
             'show sysmenu
             Debug.Print("ShowSysMenu ")
             Dim pt As Point = sender.PointToClient(MousePosition)
-            Me.ShowSysMenu(sender, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
-
-            If cboAlt.SelectedIndex > 0 Then
+            If cboAlt.SelectedIndex <> 0 AndAlso My.Settings.MinMin Then
                 SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
             End If
+            Me.ShowSysMenu(sender, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
             e.Cancel = True
             Exit Sub
         End If

@@ -35,11 +35,18 @@
         If cmd > 0 Then
             Debug.Print("SendMessage " & cmd)
             '_form.WndProc(Message.Create(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)) 'cant call because protected
-            If cmd = SC_SIZE Then
-                SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
-            Else
-                SendMessage(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
-            End If
+            Select Case cmd
+                Case SC_SIZE
+                    SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
+                Case SC_MINIMIZE
+                    If _form Is FrmMain AndAlso My.Settings.MinMin AndAlso FrmMain.cboAlt.SelectedIndex <> 0 AndAlso FrmMain.AltPP?.isSDL Then
+                        FrmMain.AltPP.Hide()
+                    Else
+                        SendMessage(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
+                    End If
+                Case Else
+                    SendMessage(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
+            End Select
         End If
     End Sub
 

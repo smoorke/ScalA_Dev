@@ -69,13 +69,13 @@ Partial NotInheritable Class FrmMain
                         Debug.Print("SC_MINIMIZE")
                         wasMaximized = (Me.WindowState = FormWindowState.Maximized)
                         Debug.Print("wasMax " & wasMaximized)
-                        'If Not wasMaximized Then
-                        '    RestoreLoc = Me.Location
-                        '    Debug.Print("restoreLoc " & RestoreLoc.ToString)
-                        'End If
-                        SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
-                        AppActivate(scalaPID)
-                        AstoniaProcess.RestorePos(True)
+                        If My.Settings.MinMin AndAlso cboAlt.SelectedIndex <> 0 AndAlso AltPP?.isSDL Then
+                            AltPP.Hide()
+                        Else
+                            SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
+                            AppActivate(scalaPID)
+                            AstoniaProcess.RestorePos(True)
+                        End If
                     Case SC_SIZE
                         SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, SC_SIZE, IntPtr.Zero)
                         m.Result = 0
@@ -170,15 +170,15 @@ Partial NotInheritable Class FrmMain
                 End If
                 If m.WParam = 1 AndAlso m.LParam = 3 Then
                     FrmBehind.Show()
-                    FrmSizeBorder.Show(Me)
+                    If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
                     If Me.WindowState = FormWindowState.Maximized Then Task.Run(Sub()
-                                                                                    Threading.Thread.Sleep(150)
-                                                                                    Me.Invoke(Sub()
-                                                                                                  btnMax.PerformClick()
-                                                                                              End Sub)
-                                                                                End Sub)
-                End If
-            Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
+                                                                                        Threading.Thread.Sleep(150)
+                                                                                        Me.Invoke(Sub()
+                                                                                                      btnMax.PerformClick()
+                                                                                                  End Sub)
+                                                                                    End Sub)
+                    End If
+                    Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
                 'If posChangeBusy Then
                 '    Debug.Print("WM_WINDOWPOSCHANGED busy")
                 '    m.Result = 0

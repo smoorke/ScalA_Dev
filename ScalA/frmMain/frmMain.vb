@@ -1344,10 +1344,14 @@ Partial Public NotInheritable Class FrmMain
         '    RestoreLoc = Me.Location
         '    Debug.Print("restoreLoc " & RestoreLoc.ToString)
         'End If
-        SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
-        AppActivate(scalaPID)
-        Me.WindowState = FormWindowState.Minimized
-        AstoniaProcess.RestorePos(True)
+        If My.Settings.MinMin AndAlso cboAlt.SelectedIndex <> 0 AndAlso AltPP?.isSDL Then
+            AltPP.Hide()
+        Else
+            SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
+            AppActivate(scalaPID)
+            Me.WindowState = FormWindowState.Minimized
+            AstoniaProcess.RestorePos(True)
+        End If
         'suppressWM_MOVEcwp = False
     End Sub
     Private Sub BtnAlt_Click(sender As AButton, e As EventArgs) ' Handles AButton.click

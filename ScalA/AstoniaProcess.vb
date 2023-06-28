@@ -47,7 +47,7 @@ Public NotInheritable Class AstoniaProcess
     End Function
 
     Public Function Restore() As Integer
-        Return ShowWindow(Me.MainWindowHandle, 9)
+        Return ShowWindow(Me.MainWindowHandle, SW_RESTORE)
     End Function
     Public Function Hide() As Integer
         Return ShowWindow(Me.MainWindowHandle, SW_MINIMIZE)

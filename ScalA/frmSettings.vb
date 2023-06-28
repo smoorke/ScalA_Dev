@@ -95,6 +95,8 @@ Public NotInheritable Class FrmSettings
 
         ChkSizeBorder.Checked = My.Settings.SizingBorder
 
+        ChkMinMin.Checked = My.Settings.MinMin
+
     End Sub
 
     Protected Overrides Sub WndProc(ByRef m As Message)
@@ -345,6 +347,8 @@ Public NotInheritable Class FrmSettings
 
         FrmSizeBorder.Opacity = If(FrmMain.chkDebug.Checked, 1, 0.01)
         FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, FrmSizeBorder.Opacity, 0)
+
+        My.Settings.MinMin = ChkMinMin.Checked
 
         My.Settings.Save()
 
