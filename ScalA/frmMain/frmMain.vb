@@ -1081,7 +1081,6 @@ Partial Public NotInheritable Class FrmMain
                     'RedrawWindow(ap.MainWindowHandle, Nothing, Nothing, RedrawWindowFlags.Invalidate Or RedrawWindowFlags.InternalPaint)
 
 
-
                     Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
                     GetCursorInfo(pci)
                     If pci.flags <> 0 Then ' cursor is visible
@@ -1100,6 +1099,12 @@ Partial Public NotInheritable Class FrmMain
 
                     If Not AOBusy AndAlso but.ThumbContains(MousePosition) Then
                         AltPP = ap
+                        If ap.IsMinimized Then
+                            ap.Restore()
+                            ap.ResetCache()
+                            rcwB = ap?.WindowRect
+                            rccB = ap?.ClientRect
+                        End If
 
                         If pci.flags = 0 Then ' cursor is hidden
                             wasVisible = False
