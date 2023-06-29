@@ -1058,10 +1058,9 @@ Partial Public NotInheritable Class FrmMain
                 rectDic(apID) = but.ThumbRECT
 
 
-                Dim pttB As New Point
-                ClientToScreen(ap?.MainWindowHandle, pttB)
 
-                Dim ACO = New Size(pttB.X - rcwB.Left, pttB.Y - rcwB.Top)
+
+                'Dim ACO = New Size(pttB.X - rcwB.Left, pttB.Y - rcwB.Top)
 
                 ' Debug.Print($"ACO {ap.Name}:{ACO}")
 
@@ -1100,10 +1099,12 @@ Partial Public NotInheritable Class FrmMain
                     If Not AOBusy AndAlso but.ThumbContains(MousePosition) Then
                         AltPP = ap
                         If ap.IsMinimized Then
+                            Debug.Print($"before {rcwB} {rccB}")
                             ap.Restore()
                             ap.ResetCache()
                             rcwB = ap?.WindowRect
                             rccB = ap?.ClientRect
+                            Debug.Print($"after {rcwB} {rccB}")
                         End If
 
                         If pci.flags = 0 Then ' cursor is hidden
@@ -1134,6 +1135,8 @@ Partial Public NotInheritable Class FrmMain
                         PnlEqLock.Size = New Size(524.Map(0, 800, 0, but.ThumbRECT.Width - but.ThumbRECT.Left),
                                                    45.Map(0, 600, 0, but.ThumbRECT.Height - but.ThumbRECT.Top))
 
+                        Dim pttB As New Point
+                        ClientToScreen(ap?.MainWindowHandle, pttB)
                         Dim AstClientOffsetB = New Size(pttB.X - rcwB.Left, pttB.Y - rcwB.Top)
 
                         Dim ptZB = Me.PointToScreen(but.ThumbRECT.Location)
