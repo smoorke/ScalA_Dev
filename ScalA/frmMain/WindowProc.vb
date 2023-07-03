@@ -179,7 +179,9 @@ Partial NotInheritable Class FrmMain
                     FrmBehind.Hide()
                     FrmSizeBorder.Hide()
                     wasMaximized = (Me.WindowState = FormWindowState.Maximized)
+                    Me.DefWndProc(m)
                     Me.WindowState = FormWindowState.Minimized
+                    Exit Sub
                 End If
                 If m.WParam = 1 AndAlso m.LParam = 3 Then 'restore
                     FrmBehind.Show()
