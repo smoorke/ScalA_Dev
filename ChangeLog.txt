@@ -1,3 +1,9 @@
+**ScalA 1.2.9**
+Fixed Right clicking SysTray icon with a minimized client selected and ScalA minimized throws an exception.
+Fixed other bugs concerning SysMenu and minimized ScalA/Client.
+Fixed Active Overview throws exceptions with minimized clients.
+Added Minimize on Minimize setting. (With this on Minimizing ScalA wil also Minimize Client)
+
 **ScalA 1.2.8**
 Fixed Minimizing by Clicking the Astonia Client in Taskbar leaving behind invisible Sizeborder and Clickguard.
 Fixed Relaunching ScalA with SingleInstance doesn't restore ScalA when Minimized by above method.
