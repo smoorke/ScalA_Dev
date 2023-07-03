@@ -39,15 +39,18 @@ Partial NotInheritable Class FrmMain
                         Debug.Print("SC_RESTORE " & m.LParam.ToString)
                         SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
                         'Me.ShowInTaskbar = False
-                        If AltPP?.IsMinimized Then AltPP.Restore()
+                        If AltPP?.IsMinimized Then
+                            AltPP.Restore()
+                            If WindowState <> FormWindowState.Minimized Then Exit Sub
+                        End If
                         moveBusy = False
                         If WindowState = FormWindowState.Maximized Then
+                            Debug.Print("Restore clicking btnMax")
                             btnMax.PerformClick()
                             Exit Sub
                         End If
                         Debug.Print("wasMax " & wasMaximized)
                         If wasMaximized Then
-                            'PostMessage(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero)
                             Me.WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero))
                             Exit Sub
                         End If
@@ -58,6 +61,9 @@ Partial NotInheritable Class FrmMain
                         Exit Sub
                     Case SC_MAXIMIZE
                         Debug.Print("SC_MAXIMIZE " & m.LParam.ToString)
+                        If AltPP?.IsMinimized Then
+                            AltPP.Restore()
+                        End If
                         If Me.WindowState = FormWindowState.Minimized Then
                             Me.WindowState = FormWindowState.Normal
                             'Me.Location = RestoreLoc
@@ -164,7 +170,7 @@ Partial NotInheritable Class FrmMain
                 'End If
             Case WM_SHOWWINDOW
                 Debug.Print($"WM_SHOWWINDOW {m.WParam} {m.LParam}")
-                If m.WParam = 0 AndAlso m.LParam = 1 Then
+                If m.WParam = 0 AndAlso m.LParam = 1 Then 'minimize
                     Debug.Print($"AltPP?{{{AltPP?.Id}}}.isSDL{{{AltPP?.isSDL}}}")
                     If Not AltPP?.isSDL Then
                         Debug.Print("Not AltPP?.isSDL")
@@ -172,16 +178,12 @@ Partial NotInheritable Class FrmMain
                     End If
                     FrmBehind.Hide()
                     FrmSizeBorder.Hide()
+                    wasMaximized = (Me.WindowState = FormWindowState.Maximized)
+                    Me.WindowState = FormWindowState.Minimized
                 End If
-                If m.WParam = 1 AndAlso m.LParam = 3 Then
+                If m.WParam = 1 AndAlso m.LParam = 3 Then 'restore
                     FrmBehind.Show()
                     If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
-                    If Me.WindowState = FormWindowState.Maximized Then Task.Run(Sub()
-                                                                                    Threading.Thread.Sleep(150)
-                                                                                    Me.Invoke(Sub()
-                                                                                                  btnMax.PerformClick()
-                                                                                              End Sub)
-                                                                                End Sub)
                 End If
             Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
                 'If posChangeBusy Then
