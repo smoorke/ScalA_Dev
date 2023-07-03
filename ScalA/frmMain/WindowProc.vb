@@ -73,15 +73,9 @@ Partial NotInheritable Class FrmMain
                         m.Result = 0
                     Case SC_MINIMIZE
                         Debug.Print("SC_MINIMIZE")
-                        wasMaximized = (Me.WindowState = FormWindowState.Maximized)
-                        Debug.Print("wasMax " & wasMaximized)
-                        If My.Settings.MinMin AndAlso cboAlt.SelectedIndex <> 0 AndAlso AltPP?.isSDL Then
-                            AltPP.Hide()
-                        Else
-                            SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
-                            AppActivate(scalaPID)
-                            AstoniaProcess.RestorePos(True)
-                        End If
+                        btnMin.PerformClick()
+                        m.Result = 0
+                        Exit Sub
                     Case SC_SIZE
                         SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, SC_SIZE, IntPtr.Zero)
                         m.Result = 0
@@ -184,8 +178,13 @@ Partial NotInheritable Class FrmMain
                     Exit Sub
                 End If
                 If m.WParam = 1 AndAlso m.LParam = 3 Then 'restore
+                    Debug.Print($"wasMaximized {wasMaximized}")
                     FrmBehind.Show()
                     If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
+                    If wasMaximized Then Dim dummy = Task.Run(Sub()
+                                                                  Threading.Thread.Sleep(100)
+                                                                  Me.Invoke(Sub() btnMax.PerformClick())
+                                                              End Sub)
                 End If
             Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
                 'If posChangeBusy Then

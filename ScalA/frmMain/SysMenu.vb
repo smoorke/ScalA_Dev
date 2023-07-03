@@ -26,7 +26,7 @@
 
     Public Visible As Boolean
 
-    Public Sub Show(pos As Point)
+    Public Function Show(pos As Point) As Integer
         'Me.Visible = True 'handled in wndproc
         Debug.Print($"SysMenu.Show {pos}")
 
@@ -34,21 +34,15 @@
         'Me.Visible = False 'handled in wndproc
         If cmd > 0 Then
             Debug.Print("SendMessage " & cmd)
-            '_form.WndProc(Message.Create(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)) 'cant call because protected
             Select Case cmd
                 Case SC_SIZE
                     SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
-                Case SC_MINIMIZE
-                    If _form Is FrmMain AndAlso My.Settings.MinMin AndAlso FrmMain.cboAlt.SelectedIndex <> 0 AndAlso FrmMain.AltPP?.isSDL Then
-                        FrmMain.AltPP.Hide()
-                    Else
-                        SendMessage(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
-                    End If
                 Case Else
                     SendMessage(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
             End Select
         End If
-    End Sub
+        Return cmd
+    End Function
 
     Private Shared mii As New MENUITEMINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MENUITEMINFO))}
 
@@ -121,11 +115,13 @@ Partial NotInheritable Class FrmMain
             pbZoom.Visible = False
             AButton.ActiveOverview = False
 
-            SysMenu.Show(sender.PointToScreen(e.Location))
+            Dim ret = SysMenu.Show(sender.PointToScreen(e.Location))
 
             Await Task.Delay(200)
             If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse SysMenu.Visible Then Exit Sub
             Debug.Print($"ShowSysMenu awaited")
+
+            If ret <> SC_MINIMIZE OrElse My.Settings.MinMin Then SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
 
             If GetActiveProcessID() = scalaPID Then
                 Debug.Print($"ShowSysMenu activating {AltPP.Name}")

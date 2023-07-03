@@ -522,7 +522,7 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
-        SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
+        If Not My.Settings.MinMin Then SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
         UntrapMouse(MouseButtons.Right)
         Try
             AppActivate(scalaPID) 'fix right click drag bug
@@ -533,12 +533,8 @@ Partial Public NotInheritable Class FrmMain
         pbZoom.Visible = False
         AButton.ActiveOverview = False
         If My.Computer.Keyboard.ShiftKeyDown Then
-            'show sysmenu
             Debug.Print("ShowSysMenu ")
             Dim pt As Point = sender.PointToClient(MousePosition)
-            If cboAlt.SelectedIndex > 0 Then
-                SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
-            End If
             Me.ShowSysMenu(sender, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
             e.Cancel = True
             Exit Sub
