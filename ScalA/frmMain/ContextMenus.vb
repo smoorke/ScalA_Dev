@@ -522,7 +522,7 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
-        If Not My.Settings.MinMin Then SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
+        If Not My.Settings.MinMin OrElse Not AltPP?.isSDL Then SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
         UntrapMouse(MouseButtons.Right)
         Try
             AppActivate(scalaPID) 'fix right click drag bug
