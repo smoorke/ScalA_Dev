@@ -61,6 +61,7 @@ Partial NotInheritable Class FrmSettings
         Me.cboScalingMode = New System.Windows.Forms.ComboBox()
         Me.chkCycleOnClose = New System.Windows.Forms.CheckBox()
         Me.chkCheckForUpdate = New System.Windows.Forms.CheckBox()
+        Me.ChkMinMin = New System.Windows.Forms.CheckBox()
         Me.ChkDark = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
@@ -114,7 +115,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
-        Me.ChkMinMin = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -501,6 +501,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkCycleOnClose.Name = "chkCycleOnClose"
         Me.chkCycleOnClose.Size = New System.Drawing.Size(96, 17)
         Me.chkCycleOnClose.TabIndex = 16
+        Me.chkCycleOnClose.TabStop = False
         Me.chkCycleOnClose.Text = "Cycle on Close"
         Me.ttSettings.SetToolTip(Me.chkCycleOnClose, "Closing an alt will cycle to the next one.")
         Me.chkCycleOnClose.UseVisualStyleBackColor = True
@@ -515,6 +516,18 @@ Partial NotInheritable Class FrmSettings
         Me.chkCheckForUpdate.Text = "Check For Update"
         Me.ttSettings.SetToolTip(Me.chkCheckForUpdate, "Check for Updates when ScalA starts.")
         Me.chkCheckForUpdate.UseVisualStyleBackColor = True
+        '
+        'ChkMinMin
+        '
+        Me.ChkMinMin.AutoSize = True
+        Me.ChkMinMin.Location = New System.Drawing.Point(171, 107)
+        Me.ChkMinMin.Name = "ChkMinMin"
+        Me.ChkMinMin.Size = New System.Drawing.Size(104, 17)
+        Me.ChkMinMin.TabIndex = 30
+        Me.ChkMinMin.Text = "Min. on Minimize"
+        Me.ttSettings.SetToolTip(Me.ChkMinMin, "Minimizing ScalA will also Minimise Astonia" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: This has no effect on legacy c" &
+        "lients")
+        Me.ChkMinMin.UseVisualStyleBackColor = True
         '
         'ChkDark
         '
@@ -1080,18 +1093,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.TabIndex = 2
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
-        '
-        'ChkMinMin
-        '
-        Me.ChkMinMin.AutoSize = True
-        Me.ChkMinMin.Location = New System.Drawing.Point(171, 107)
-        Me.ChkMinMin.Name = "ChkMinMin"
-        Me.ChkMinMin.Size = New System.Drawing.Size(104, 17)
-        Me.ChkMinMin.TabIndex = 30
-        Me.ChkMinMin.Text = "Min. on Minimize"
-        Me.ttSettings.SetToolTip(Me.ChkMinMin, "Minimizing ScalA will also Minimise Astonia" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: This has no effect on legacy c" &
-        "lients")
-        Me.ChkMinMin.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
