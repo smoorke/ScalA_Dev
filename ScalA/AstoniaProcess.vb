@@ -290,7 +290,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End Try
     End Function
 
-
+    Private Shared classCache As String = String.Empty
+    Private Shared classCacheEnum As IEnumerable(Of String) = Enumerable.Empty(Of String)
     ''' <summary>
     ''' Returns True if WindowClass is in pipe seperated string of classes 
     ''' </summary>
@@ -298,9 +299,12 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     ''' <returns></returns>
     Public Function HasClassNameIn(classes As String) As Boolean
         Try
-            Return classes.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries) _
-                      .Select(Function(wc) Strings.Trim(wc)) _
-                      .Contains(Me.WindowClass)
+            If classCache.Length <> classes.Length AndAlso classCache <> classes Then
+                classCacheEnum = classes.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries) _
+                                        .Select(Function(wc) Strings.Trim(wc))
+                classCache = classes
+            End If
+            Return classCacheEnum.Contains(Me.WindowClass)
         Catch
             Return False
         End Try
@@ -309,7 +313,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Private _wc As String
     Public ReadOnly Property WindowClass() As String
         Get
-            If _wc <> String.Empty Then Return _wc
+            If Not String.IsNullOrEmpty(_wc) Then Return _wc
             _wc = GetWindowClass(_proc?.MainWindowHandle)
             Return _wc
         End Get
@@ -329,24 +333,36 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End If
         Try
             Dim ID As Integer = _proc?.Id
-            If exeIconCache.ContainsKey(ID) AndAlso (exeIconCache(ID).Item2 = Me.Name) Then
-                Return exeIconCache(ID).Item1
+            Dim exeIco As New Tuple(Of Icon, String)(Nothing, Nothing)
+
+            If ID > 0 AndAlso exeIconCache.TryGetValue(ID, exeIco) AndAlso exeIco.Item2 = Me.Name Then
+                Return exeIco.Item1
             Else
-                Dim path As String = _proc.Path()
-                If pathIcnCache.ContainsKey(path) Then
-                    exeIconCache.TryAdd(ID, New Tuple(Of Icon, String)(pathIcnCache(path), Me.Name))
-                    Return pathIcnCache(path)
-                End If
-                Debug.Print($"ExeIconCacheMiss {Me.Name} {ID} {path}")
-                Dim ico = Icon.ExtractAssociatedIcon(path)
-                'exeIconCache(ID) = New Tuple(Of Icon, String)(ico, Me.Name) 'todo fix exception here
-                exeIconCache.TryAdd(ID, New Tuple(Of Icon, String)(ico, Me.Name))
-                pathIcnCache.TryAdd(path, ico)
-                Return ico
+                exeIconCache.TryRemove(ID, Nothing)
             End If
-        Catch
-            Return Nothing
+
+            Dim path As String = _proc?.Path()
+
+            If Not String.IsNullOrEmpty(path) Then
+                Dim ico As Icon = Nothing
+                If pathIcnCache.TryGetValue(path, ico) Then
+                    exeIconCache.TryAdd(ID, New Tuple(Of Icon, String)(ico, Me.Name))
+                    Return ico
+                Else
+                    ico = Icon.ExtractAssociatedIcon(path)
+                    If ico IsNot Nothing Then
+                        exeIconCache.TryAdd(ID, New Tuple(Of Icon, String)(ico, Me.Name))
+                        pathIcnCache.TryAdd(path, ico)
+                    End If
+                    Return ico
+                End If
+            End If
+
+        Catch ex As Exception
+            Debug.Print($"Error retrieving icon: {ex.Message}")
         End Try
+
+        Return Nothing
     End Function
 
     Public Overrides Function Equals(obj As Object) As Boolean
@@ -863,10 +879,11 @@ Module ProcessExtensions
     ''' <returns></returns>
     <System.Runtime.CompilerServices.Extension()>
     Public Function IsClassNameIn(pp As Process, classes As String) As Boolean
-        Dim wndClass As String() = classes.Split({"|"}, StringSplitOptions.RemoveEmptyEntries)
-        For i As Integer = 0 To UBound(wndClass)
-            wndClass(i) = Trim(wndClass(i))
-        Next
+        Dim wndClass As IEnumerable(Of String) = classes.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries).Select(Function(wc) Trim(wc))
+
+        'For i As Integer = 0 To UBound(wndClass)
+        '    wndClass(i) = Trim(wndClass(i))
+        'Next
         'Debug.Print("""" & wndClass(0) & """")
         Try
             Return wndClass.Contains(pp.GetWindowClass())

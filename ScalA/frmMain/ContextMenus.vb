@@ -30,7 +30,7 @@ Partial Public NotInheritable Class FrmMain
             SetWindowPos(pp.MainWindowHandle, SWP_HWND.NOTOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
         End If
     End Sub
-    Private closeAllToolStripMenuItem As ToolStripMenuItem = Nothing
+    Private Shared closeAllToolStripMenuItem As ToolStripMenuItem = Nothing
     Private Sub CmsAlt_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsAlt.Opening
         If My.Computer.Keyboard.ShiftKeyDown OrElse My.Computer.Keyboard.CtrlKeyDown Then
             cmsQuickLaunch.Show(sender.SourceControl, sender.SourceControl.PointToClient(MousePosition))
@@ -240,7 +240,9 @@ Partial Public NotInheritable Class FrmMain
         End Try
     End Function
 
-    Private ReadOnly nsSorter As IComparer(Of String) = New CustomStringSorter
+    Private Shared ReadOnly nsSorter As IComparer(Of String) = New CustomStringSorter
+    Private Shared ReadOnly extensions As String() = {".exe", ".jar", ".lnk", ".url", ".txt"}
+    Private Shared ReadOnly hideExt As String() = {".lnk", ".url"}
     Private Function ParseDir(pth As String) As List(Of ToolStripItem)
         Dim menuItems As New List(Of ToolStripItem)
         Dim isEmpty As Boolean = True
@@ -285,7 +287,7 @@ Partial Public NotInheritable Class FrmMain
 
         Dim Files As New List(Of ToolStripItem)
         For Each fullLink As String In System.IO.Directory.EnumerateFiles(pth) _
-                                       .Where(Function(p) {".exe", ".jar", ".lnk", ".url", ".txt"}.Contains(System.IO.Path.GetExtension(p).ToLower))
+                                       .Where(Function(p) extensions.Contains(System.IO.Path.GetExtension(p).ToLower))
             'Debug.Print(System.IO.Path.GetFileName(fullLink))
 
             If Not My.Computer.Keyboard.CtrlKeyDown Then
@@ -298,7 +300,7 @@ Partial Public NotInheritable Class FrmMain
             If fullLink = Environment.GetCommandLineArgs(0) Then Continue For
 
             Dim linkName As String
-            If {".lnk", ".url"}.Contains(System.IO.Path.GetExtension(fullLink).ToLower) Then
+            If hideExt.Contains(System.IO.Path.GetExtension(fullLink).ToLower) Then
                 linkName = System.IO.Path.GetFileNameWithoutExtension(fullLink)
             Else
                 linkName = System.IO.Path.GetFileName(fullLink)
@@ -669,7 +671,7 @@ Partial Public NotInheritable Class FrmMain
         Debug.Print($"Rename to {toName}")
         If toName <> "" AndAlso currentName <> toName Then
             Debug.Print($"oldpath: {Path}")
-            If {".lnk", ".url"}.Contains(System.IO.Path.GetExtension(Path).ToLower) Then toName &= System.IO.Path.GetExtension(Path)
+            If hideExt.Contains(System.IO.Path.GetExtension(Path).ToLower) Then toName &= System.IO.Path.GetExtension(Path)
             'If Path.EndsWith("\") Then Path = System.IO.Path.GetDirectoryName(Path)
             If Path.EndsWith("\") Then Path = Path.TrimEnd("\")
             Debug.Print($"newpath: {System.IO.Path.GetDirectoryName(Path) & "\" & toName}")
@@ -1052,7 +1054,7 @@ Partial Public NotInheritable Class FrmMain
             If e.FullPath.ToLower.EndsWith("desktop.ini") Then
                 iconCache.TryRemove(e.FullPath.Substring(0, e.FullPath.LastIndexOf("\") + 1), Nothing)
             End If
-            If {".lnk", ".url"}.Contains(System.IO.Path.GetExtension(e.FullPath).ToLower) Then
+            If hideExt.Contains(System.IO.Path.GetExtension(e.FullPath).ToLower) Then
                 iconCache.TryRemove(e.FullPath, Nothing)
             End If
         End If
