@@ -738,7 +738,7 @@ Partial Public NotInheritable Class FrmMain
         cmsQuickLaunch.Close()
     End Sub
 
-    Private ReadOnly folderHbm As IntPtr = GetIcon(FileIO.SpecialDirectories.Temp).GetHbitmap(Color.Red)
+    Private ReadOnly folderHbm As IntPtr = foldericon.GetHbitmap(Color.Red)
     Private ReadOnly plusHbm As IntPtr = New Bitmap(My.Resources.Add, New Size(16, 16)).GetHbitmap(Color.Red)
 
     'Dim QlCtxIsOpen As Boolean = False 'to handle glitch in contextmenu when moving astonia window
