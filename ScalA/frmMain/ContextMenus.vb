@@ -388,7 +388,7 @@ Partial Public NotInheritable Class FrmMain
         sender.DropDownItems.Add(New ToolStripMenuItem("Folder", GetIcon(FileIO.SpecialDirectories.Temp), AddressOf Ql_NewFolder) With {.Tag = sender.Tag})
         sender.DropDownItems.Add(New ToolStripSeparator())
 
-        For Each alt As AstoniaProcess In AstoniaProcess.Enumerate(blackList)
+        For Each alt As AstoniaProcess In AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name)
             sender.DropDownItems.Add(New ToolStripMenuItem(alt.Name, alt.GetIcon?.ToBitmap, AddressOf CreateShortCut) With {
                                                .Tag = {alt, sender.Tag}}) ' sender.tag is parent menu location
         Next
@@ -785,7 +785,7 @@ Partial Public NotInheritable Class FrmMain
             Dim QlCtxNewMenuStaticItemsCount As Integer = QlCtxNewMenu.MenuItems.Count
 
             'dynamically add menuitems
-            Dim aplist As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).ToList
+            Dim aplist As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name).ToList
             For Each ap As AstoniaProcess In aplist
                 QlCtxNewMenu.MenuItems.Add(New MenuItem(ap.Name, AddressOf QlCtxNewAlt) With {.Tag = {ap, path}})
             Next
