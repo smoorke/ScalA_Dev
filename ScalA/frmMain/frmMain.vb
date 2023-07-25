@@ -1,5 +1,6 @@
 ﻿Imports System.IO.MemoryMappedFiles
 Imports System.Net.Http
+Imports System.Runtime.CompilerServices
 Imports Microsoft.VisualBasic.FileIO
 Imports ScalA.NativeMethods
 
@@ -388,16 +389,19 @@ Partial Public NotInheritable Class FrmMain
         test.Items.Add(New ToolStripMenuItem("ResumeLayout", Nothing, AddressOf dBug.Resumelayout))
         test.Items.Add(New ToolStripMenuItem("Button Info", Nothing, AddressOf dBug.ButtonInfo))
         test.Items.Add(New ToolStripMenuItem("isBelow", Nothing, AddressOf dBug.IsBelow))
-        Static extraitem As New ToolStripMenuItem($"movebusy {moveBusy}")
-        test.Items.Add(extraitem)
+        Static dynamicitem1 As New ToolStripMenuItem($"movebusy {moveBusy}")
+        test.Items.Add(dynamicitem1)
         test.Items.Add(New ToolStripMenuItem("Update", Nothing, AddressOf dBug.ToggleUpdate))
         test.Items.Add(New ToolStripMenuItem("Scaling", Nothing, AddressOf dBug.ScreenScaling))
         test.Items.Add(New ToolStripMenuItem("Shared Mem", Nothing, AddressOf dBug.SharedMem))
+        Static dynamicitem2 As New ToolStripMenuItem($"Aborder", Nothing, AddressOf dBug.toggeleborder)
+        test.Items.Add(dynamicitem2)
 
         chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()
                                      Debug.Print("test Opening")
-                                     extraitem.Text = $"movebusy {moveBusy}"
+                                     dynamicitem1.Text = $"movebusy {moveBusy}"
+                                     dynamicitem2.Text = $"Aborder {AltPP.hasBorder}"
                                      UntrapMouse(MouseButtons.Right)
                                      AppActivate(scalaPID)
                                  End Sub
@@ -1939,7 +1943,7 @@ Module dBug
         Debug.Print("-T-")
         Dim tsks = Screen.AllScreens.Select(Of Task)(Function(scrn) scrn.ScalingPercentTask).ToList
         Await Task.WhenAll(tsks)
-        tsks.ForEach(Sub(tsk As Task(Of Integer)) Debug.Print($"{tsk.Result}%"))
+        tsks.ForEach(Sub(tsk As Task(Of Tuple(Of Screen, Integer))) Debug.Print($"{tsk.Result.Item1} {tsk.Result.Item2}%"))
 
     End Sub
     'struct sharedmem {
@@ -1962,6 +1966,36 @@ Module dBug
         Debug.Print($"DebugAlt {alt.Name}")
         Debug.Print($"client rc {alt.ClientRect}")
         Debug.Print($"window rc {alt.WindowRect}")
+    End Sub
+
+    Friend Sub toggeleborder(sender As Object, e As EventArgs)
+        'Static restoreWS As WindowStyles = GetWindowLong(FrmMain.AltPP.MainWindowHandle, GWL_STYLE) 'todo replace with magic number? legacy/vs sdl?
+        'Debug.Print($"restorews {restoreWS}")
+        Dim restoreWS As WindowStyles
+        If FrmMain.AltPP.isSDL Then
+            restoreWS = WindowStyles.WS_MINIMIZEBOX Or
+                        WindowStyles.WS_SYSMENU Or
+                        WindowStyles.WS_CAPTION Or
+                        WindowStyles.WS_CLIPCHILDREN Or
+                        WindowStyles.WS_CLIPSIBLINGS Or WindowStyles.WS_VISIBLE
+        Else
+            restoreWS = WindowStyles.WS_CAPTION Or WindowStyles.WS_CLIPSIBLINGS Or WindowStyles.WS_VISIBLE Or WindowStyles.WS_POPUP
+        End If
+        If FrmMain.AltPP.hasBorder() Then
+            SetWindowLong(FrmMain.AltPP.MainWindowHandle, GWL_STYLE, WindowStyles.WS_POPUP Or WindowStyles.WS_VISIBLE)
+            SetWindowPos(FrmMain.AltPP.MainWindowHandle, SWP_HWND.TOP, -1, -1, -1, -1,
+                         SetWindowPosFlags.IgnoreZOrder Or
+                         SetWindowPosFlags.IgnoreMove Or
+                         SetWindowPosFlags.IgnoreResize Or
+                         SetWindowPosFlags.FrameChanged)
+        Else
+            SetWindowLong(FrmMain.AltPP.MainWindowHandle, GWL_STYLE, restoreWS)
+            SetWindowPos(FrmMain.AltPP.MainWindowHandle, SWP_HWND.TOP, -1, -1, -1, -1,
+                         SetWindowPosFlags.IgnoreZOrder Or
+                         SetWindowPosFlags.IgnoreMove Or
+                         SetWindowPosFlags.IgnoreResize Or
+                         SetWindowPosFlags.FrameChanged)
+        End If
     End Sub
 End Module
 

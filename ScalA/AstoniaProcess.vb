@@ -488,6 +488,10 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End Get
     End Property
 
+    Public Function hasBorder() As Boolean
+        Return GetWindowLong(Me.MainWindowHandle, GWL_STYLE) And WindowStyles.WS_BORDER
+    End Function
+
     Public Function GetHealthbar(Optional width As Integer = 75, Optional height As Integer = 15) As Bitmap
         Dim bmp As New Bitmap(width, height)
 

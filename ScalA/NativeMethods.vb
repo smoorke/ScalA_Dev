@@ -260,6 +260,7 @@ Module NativeMethods
     End Function
 
     Public Const GWL_HWNDPARENT As Integer = -8
+    Public Const GWL_STYLE As Integer = -16
     <Flags()>
     Public Enum WindowStyles As Long
         WS_BORDER = &H800000
