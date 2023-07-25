@@ -380,12 +380,12 @@ Partial Public NotInheritable Class FrmMain
         sender.DropDownItems.Clear()
         sender.DropDownItems.AddRange(ParseDir(sender.Tag).ToArray)
     End Sub
-
+    Private foldericon = GetIcon(FileIO.SpecialDirectories.Temp)
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
         Debug.Print("addshortcut.sendertag:" & sender.Tag)
         sender.DropDownItems.Clear()
 
-        sender.DropDownItems.Add(New ToolStripMenuItem("Folder", GetIcon(FileIO.SpecialDirectories.Temp), AddressOf Ql_NewFolder) With {.Tag = sender.Tag})
+        sender.DropDownItems.Add(New ToolStripMenuItem("Folder", foldericon, AddressOf Ql_NewFolder) With {.Tag = sender.Tag})
         sender.DropDownItems.Add(New ToolStripSeparator())
 
         For Each alt As AstoniaProcess In AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name)
