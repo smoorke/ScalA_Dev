@@ -600,7 +600,70 @@ Module NativeMethods
     End Structure
     <DllImport("shell32.dll", SetLastError:=True)>
     Public Function SHGetStockIconInfo(ssid As UInteger, uFlags As UInteger, ByRef pssi As SHSTOCKICONINFO) As Integer : End Function
+    Public Declare Function SendInput Lib "user32.dll" (nInputs As Integer, pInputs() As INPUT, cbSize As Integer) As UInteger
+    Public Enum InputType As UInteger
+        INPUT_MOUSE
+        INPUT_KEYBOARD
+        INPUT_HARDWARE
+    End Enum
+    <StructLayout(LayoutKind.Explicit)>
+    Structure InputUnion
+        <FieldOffset(0)> Public mi As MOUSEINPUT
+        <FieldOffset(0)> Public ki As KEYBDINPUT
+        <FieldOffset(0)> Public hi As HARDWAREINPUT
+    End Structure
+    Structure MOUSEINPUT
+        Public dx As Integer
+        Public dy As Integer
+        Public mouseData As Integer
+        Public dwFlags As Integer
+        Public time As Integer
+        Public dwExtraInfo As IntPtr
+    End Structure
+    Structure KEYBDINPUT
+        Public wVk As Short
+        Public wScan As Short
+        Public dwFlags As Integer
+        Public time As Integer
+        Public dwExtraInfo As IntPtr
+    End Structure
+    Structure HARDWAREINPUT
+        Public uMsg As Integer
+        Public wParamL As Short
+        Public wParamH As Short
+    End Structure
+    Structure INPUT
+        Public type As Integer
+        Public u As InputUnion
+    End Structure
 
+    <Flags>
+    Public Enum KeyEventF
+        KeyDown = &H0
+        ExtendedKey = &H1
+        KeyUp = &H2
+        Unicode = &H4
+        Scancode = &H8
+    End Enum
+    <Flags>
+    Public Enum MouseEventF
+        Move = &H1
+        LeftDown = &H2
+        LeftUp = &H4
+        RightDown = &H8
+        RightUp = &H10
+        MiddleDown = &H20
+        MiddleUp = &H40
+        XDown = &H80
+        XUp = &H100
+        Wheel = &H800
+        HWheel = &H1000
+        Move_NoCoalece = &H2000
+        VirtualDesk = &H4000
+        ABSOLUTE = &H8000
+    End Enum
+    <DllImport("user32.dll")>
+    Public Function GetMessageExtraInfo() As IntPtr : End Function
 
     <StructLayout(LayoutKind.Sequential)>
     Structure PT

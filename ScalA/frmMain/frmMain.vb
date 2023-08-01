@@ -1,6 +1,6 @@
 ﻿Imports System.IO.MemoryMappedFiles
 Imports System.Net.Http
-Imports System.Runtime.CompilerServices
+Imports System.Runtime.InteropServices
 Imports Microsoft.VisualBasic.FileIO
 Imports ScalA.NativeMethods
 
@@ -1554,6 +1554,7 @@ Partial Public NotInheritable Class FrmMain
     Public Shared topSortList As List(Of String) = My.Settings.topSort.Split(CType(vbCrLf, Char()), StringSplitOptions.RemoveEmptyEntries).ToList
     Public Shared botSortList As List(Of String) = My.Settings.botSort.Split(CType(vbCrLf, Char()), StringSplitOptions.RemoveEmptyEntries).ToList
     Public Shared blackList As List(Of String) = topSortList.Intersect(botSortList).ToList
+    Private EQLockClick As Boolean = False
 
     Private Sub setActive(active As Boolean)
         If active Then
@@ -1648,7 +1649,7 @@ Partial Public NotInheritable Class FrmMain
         End If
         'Me.SuspendLayout()
         If cboAlt.SelectedIndex <> 0 OrElse My.Settings.gameOnOverview Then
-            If My.Settings.LockEq AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then
+            If My.Settings.LockEq AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown AndAlso Not EQLockClick Then
                 If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
                     If Not PnlEqLock.Visible Then
                         If Not pnlOverview.Visible AndAlso Not My.Settings.gameOnOverview Then
@@ -1834,12 +1835,13 @@ Partial Public NotInheritable Class FrmMain
     Private Sub PnlEqLock_MouseDown(sender As Object, e As MouseEventArgs) Handles PnlEqLock.MouseDown
         Debug.Print($"pnlEqLock.MouseDown {e.Button}")
         If e.Button = MouseButtons.Right Then
+            Cursor.Current = Cursors.Default
             PnlEqLock.Visible = False
             PostMessage(AltPP.MainWindowHandle, WM_RBUTTONDOWN, 0, 0) 'to change cursor
         End If
         If e.Button = MouseButtons.Middle Then
+            Cursor.Current = Cursors.Default
             PnlEqLock.Visible = False
-
             SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, 0, 0) 'to change cursor and enable mmb
             'Threading.Thread.Sleep(tmrActive.Interval + 20)
 
@@ -1848,16 +1850,42 @@ Partial Public NotInheritable Class FrmMain
 
     Private Async Sub PnlEqLock_MouseUp(sender As Object, e As MouseEventArgs) Handles PnlEqLock.MouseUp
         Debug.Print($"pnlEqLock.MouseUp {e.Button} lock vis {PnlEqLock.Visible}")
-        If e.Button = MouseButtons.Right Then
-            PostMessage(AltPP.MainWindowHandle, WM_RBUTTONUP, 0, 0) ' to send rmb to client
-        End If
-        If e.Button = MouseButtons.Middle Then
-
-            SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, 0, 0)
-            Await Task.Delay(45)
-            If PnlEqLock.Contains(MousePosition) Then
-                SendMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0) 'send and untrap middlemouse. couses left click sometimes
-                Debug.Print("mmbug")
+        If Not AltPP?.isSDL Then
+            If e.Button = MouseButtons.Right Then
+                PostMessage(AltPP.MainWindowHandle, WM_RBUTTONUP, 0, 0) ' to send rmb to client
+            End If
+            If e.Button = MouseButtons.Middle Then
+                SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, 0, 0)
+                Await Task.Delay(45)
+                If PnlEqLock.Contains(MousePosition) Then
+                    SendMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0) 'send and untrap middlemouse. couses left click sometimes
+                    Debug.Print("mmbug")
+                End If
+            End If
+        Else 'isSDL
+            If (e.Button = MouseButtons.Right OrElse e.Button = MouseButtons.Middle) AndAlso PnlEqLock.Contains(MousePosition) Then
+                EQLockClick = True
+                PnlEqLock.Visible = False
+                Dim inpt() As INPUT = {
+                        New INPUT With {
+                            .type = InputType.INPUT_MOUSE,
+                            .u = New InputUnion With {
+                                .mi = New MOUSEINPUT
+                            }
+                        }
+                    }
+                If e.Button = MouseButtons.Right Then
+                    inpt(0).u.mi.dwFlags = MouseEventF.RightDown Or MouseEventF.RightUp
+                    SendInput(1, inpt, Marshal.SizeOf(GetType(INPUT)))
+                Else
+                    inpt(0).u.mi.dwFlags = MouseEventF.MiddleDown
+                    SendInput(1, inpt, Marshal.SizeOf(GetType(INPUT)))
+                    Await Task.Delay(50)
+                    inpt(0).u.mi.dwFlags = MouseEventF.MiddleUp
+                    SendInput(1, inpt, Marshal.SizeOf(GetType(INPUT)))
+                End If
+                Await Task.Delay(25)
+                EQLockClick = False
             End If
         End If
         Try
