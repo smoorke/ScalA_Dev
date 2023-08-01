@@ -904,8 +904,8 @@ Partial Public NotInheritable Class FrmMain
             End If
             Debug.Print($"DoEqLock zoom {zoom}")
             PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 262.Map(0, 800, 0, rcC.Width), Integer).Map(rcC.Width, 0, zoom.Width, 0), 25)
-
-            PnlEqLock.Size = New Size(524.Map(0, 800, 0, rcC.Width).Map(0, rcC.Width, 0, zoom.Width),
+            Dim excludGearLock As Integer = If(AltPP?.isSDL, 18, 0)
+            PnlEqLock.Size = New Size((524 - excludGearLock).Map(0, 800, 0, rcC.Width).Map(0, rcC.Width, 0, zoom.Width),
                                        45.Map(0, 600, 0, zoom.Height))
 #Else
             PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 262, Integer).Map(rcC.Width, 0, zooms(cmbResolution.SelectedIndex).Width, 0), 25)
