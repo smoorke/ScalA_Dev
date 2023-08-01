@@ -1957,22 +1957,20 @@ Module dBug
 
     Friend Async Sub ScreenScaling(sender As Object, e As EventArgs)
 
+        Dim sw As Stopwatch = Stopwatch.StartNew
         For Each scrn As Screen In Screen.AllScreens
             Debug.Print($"{scrn.DeviceName} {scrn.Bounds} {scrn.ScalingPercent}")
         Next
-
+        Debug.Print(sw.ElapsedMilliseconds)
         Debug.Print("---")
+        sw.Restart()
         For Each scrn As Screen In Screen.AllScreens
             Dim tsk = scrn.ScalingPercentTask
             Await tsk
             Debug.Print($"{scrn.DeviceName} {scrn.Bounds} {tsk.Result}")
         Next
-
-        Debug.Print("-T-")
-        Dim tsks = Screen.AllScreens.Select(Of Task)(Function(scrn) scrn.ScalingPercentTask).ToList
-        Await Task.WhenAll(tsks)
-        tsks.ForEach(Sub(tsk As Task(Of Tuple(Of Screen, Integer))) Debug.Print($"{tsk.Result.Item1} {tsk.Result.Item2}%"))
-
+        Debug.Print(sw.ElapsedMilliseconds)
+        sw.Stop()
     End Sub
     'struct sharedmem {
     '    unsigned int pid; 0
