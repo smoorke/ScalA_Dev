@@ -150,8 +150,10 @@ Partial NotInheritable Class FrmMain
                 If Me.cmbResolution.SelectedIndex > 0 Then Me.moveBusy = False
                 prevLoc = Me.Location
             Case WM_WINDOWPOSCHANGING
+                Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
+                Debug.Print($"WM_WINDOWPOSCHANGING {winpos.x} {winpos.y} {winpos.cx} {winpos.cy} {winpos.flags} {Me.WindowState} {m.WParam} {AltPP?.HasExited} {AltPP?.IsRunning}")
+
                 'If pnlButtons IsNot Nothing Then
-                '    Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
                 '    Dim posInfo As IntPtr = BeginDeferWindowPos(2)
                 '    DeferWindowPos(posInfo, ScalaHandle, Nothing, winpos.x, winpos.y, winpos.cx, winpos.cy, SetWindowPosFlags.DoNotSendChangingEvent)
                 '    DeferWindowPos(posInfo, pnlButtons.Handle, Nothing, winpos.cx - pnlButtons.Width, 0, -1, -1, SetWindowPosFlags.IgnoreResize)
@@ -193,7 +195,14 @@ Partial NotInheritable Class FrmMain
                 '    Exit Sub
                 'End If
                 Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
-                Debug.Print($"WM_WINDOWPOSCHANGED {winpos.x} {winpos.y} {winpos.cx} {winpos.cy} {winpos.flags}")
+                Debug.Print($"WM_WINDOWPOSCHANGED {winpos.x} {winpos.y} {winpos.cx} {winpos.cy} {winpos.flags} {Me.WindowState} {m.WParam} {AltPP?.HasExited} {AltPP?.IsRunning}")
+                If Me.WindowState = FormWindowState.Minimized AndAlso AltPP?.HasExited Then
+                    Debug.Print("Sending restore")
+                    Me.WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, Nothing))
+                    Me.Show()
+                    FrmBehind.Show()
+                    FrmSizeBorder.Show(Me)
+                End If
                 If caption_Mousedown Then
                     FrmBehind.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
                     'Debug.Print($"szb{FrmSizeBorder.Bounds} fbh{FrmBehind.Bounds}")

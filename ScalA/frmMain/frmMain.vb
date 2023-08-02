@@ -695,9 +695,12 @@ Partial Public NotInheritable Class FrmMain
                      SetWindowPosFlags.DoNotActivate Or
                      SetWindowPosFlags.ASyncWindowPosition
     Private Sub TmrTick_Tick(sender As Timer, e As EventArgs) Handles tmrTick.Tick
-
+        'Debug.Print($"ws {Me.WindowState}")
         If Not AltPP?.IsRunning() Then
-            Debug.Print("Not AltPP?.IsRunning()")
+            Debug.Print($"Not AltPP?.IsRunning() {Me.WindowState}")
+            Me.Show()
+            FrmBehind.Show()
+            If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
             If Not My.Settings.CycleOnClose Then
                 Try
                     AppActivate(scalaPID)
@@ -1365,6 +1368,7 @@ Partial Public NotInheritable Class FrmMain
             AstoniaProcess.RestorePos(True)
         End If
         Me.WindowState = FormWindowState.Minimized
+        Debug.Print($"WS {Me.WindowState}")
         'suppressWM_MOVEcwp = False
     End Sub
     Private Sub BtnAlt_Click(sender As AButton, e As EventArgs) ' Handles AButton.click
@@ -1437,11 +1441,13 @@ Partial Public NotInheritable Class FrmMain
     'End Property
 
     Dim prevWA As Rectangle
+    Dim restoreLoc As Point
     Private Sub BtnMax_Click(sender As Button, e As EventArgs) Handles btnMax.Click
         Debug.Print("btnMax_Click")
         suppressWM_MOVEcwp = True
         '🗖,🗗,⧠
         If Me.WindowState <> FormWindowState.Maximized Then
+            restoreLoc = Me.Location
             My.Settings.zoom = cmbResolution.SelectedIndex
             'go maximized
             Dim scrn As Screen = Screen.FromPoint(Me.Location + New Point(Me.Width / 2, Me.Height / 2))
@@ -1520,10 +1526,10 @@ Partial Public NotInheritable Class FrmMain
             Me.WindowState = FormWindowState.Normal
             sender.Text = "⧠"
             ttMain.SetToolTip(sender, "Maximize")
-            'Me.Location = RestoreLoc
             'wasMaximized = False
             ReZoom(My.Settings.resol)
             'wasMaximized = True
+            Me.Location = restoreLoc
             AOshowEqLock = False
             FrmSizeBorder.Opacity = If(chkDebug.Checked, 1, 0.01)
             FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, FrmSizeBorder.Opacity, 0)
@@ -1621,6 +1627,8 @@ Partial Public NotInheritable Class FrmMain
         Else
             Hotkey.UnregHotkey(Me)
         End If
+
+
 
         If IPC.RequestActivation Then
             IPC.RequestActivation = 0

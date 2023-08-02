@@ -760,6 +760,14 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Dispose(disposing:=True)
         GC.SuppressFinalize(Me)
     End Sub
+
+    Friend Function HasExited() As Boolean
+        Try
+            Return _proc?.HasExited
+        Catch ex As Exception
+            Return False
+        End Try
+    End Function
 End Class
 
 NotInheritable Class AstoniaProcessSorter

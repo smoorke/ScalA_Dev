@@ -109,7 +109,7 @@ Module NativeMethods
         Public y As Integer
         Public cx As Integer
         Public cy As Integer
-        Public flags As Integer
+        Public flags As SetWindowPosFlags
     End Structure
     <StructLayout(LayoutKind.Sequential)>
     Structure NCCALCSIZE_PARAMS
