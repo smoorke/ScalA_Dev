@@ -717,12 +717,10 @@ Partial Public NotInheritable Class FrmMain
             End If
         End If
 
+        If AltPP?.MainWindowTitle = "" Then Exit Sub
         UpdateTitle()
 
-
-        If Me.WindowState = FormWindowState.Minimized Then
-            Exit Sub
-        End If
+        If Me.WindowState = FormWindowState.Minimized Then Exit Sub
 
         Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
         GetCursorInfo(pci)
