@@ -768,11 +768,11 @@ Partial Public NotInheritable Class FrmMain
                                  If Not AltPP?.IsActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
                                  If AltPP?.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                                  Dim pt As Point = MousePosition - New Point(newX + AltPP.ClientOffset.X, newY + AltPP.ClientOffset.Y)
-                                 If prevWMMMpt <> MousePosition AndAlso Not AltPP?.isSDL Then
+                                 If prevWMMMpt <> MousePosition Then
                                      SendMessage(AltPP?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                  End If
                                  SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
-                                 If prevWMMMpt <> MousePosition AndAlso Not AltPP?.isSDL Then
+                                 If prevWMMMpt <> MousePosition Then
                                      SendMessage(AltPP?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                  End If
                                  prevWMMMpt = MousePosition
