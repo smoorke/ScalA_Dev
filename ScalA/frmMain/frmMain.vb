@@ -259,22 +259,26 @@ Partial Public NotInheritable Class FrmMain
 
     Public Resizing As Boolean
 
-    Private Sub UpdateTitle()
+    Private Function UpdateTitle() As Boolean
         Dim titleSuff As String = String.Empty
         Dim traytooltip As String = "ScalA"
         If AltPP?.IsRunning Then
             Try
-                titleSuff = " - " & AltPP.MainWindowTitle
-                traytooltip = AltPP.MainWindowTitle
+                Dim title As String = AltPP.MainWindowTitle
+                If title = "" Then Return False
+                titleSuff = " - " & title
+                traytooltip = title
             Catch e As Exception
+                Return False
             End Try
         End If
         Me.Text = "ScalA" & titleSuff
         sysTrayIcon.Text = traytooltip.Cap(63)
         With My.Application.Info.Version
-            lblTitle.Text = "- ScalA v" & .Major & "." & .Minor & "." & .Build & titleSuff
+            lblTitle.Text = $"- ScalA v{ .Major}.{ .Minor}.{ .Build}{titleSuff}"
         End With
-    End Sub
+        Return True
+    End Function
 
     Public Shared zooms() As Size = GetResolutions()
 
@@ -717,8 +721,7 @@ Partial Public NotInheritable Class FrmMain
             End If
         End If
 
-        If AltPP?.MainWindowTitle = "" Then Exit Sub
-        UpdateTitle()
+        If Not UpdateTitle() Then Exit Sub
 
         If Me.WindowState = FormWindowState.Minimized Then Exit Sub
 
@@ -765,11 +768,11 @@ Partial Public NotInheritable Class FrmMain
                                  If Not AltPP?.IsActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
                                  If AltPP?.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                                  Dim pt As Point = MousePosition - New Point(newX + AltPP.ClientOffset.X, newY + AltPP.ClientOffset.Y)
-                                 If prevWMMMpt <> MousePosition Then
+                                 If prevWMMMpt <> MousePosition AndAlso Not AltPP?.isSDL Then
                                      SendMessage(AltPP?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                  End If
                                  SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
-                                 If prevWMMMpt <> MousePosition Then
+                                 If prevWMMMpt <> MousePosition AndAlso Not AltPP?.isSDL Then
                                      SendMessage(AltPP?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                  End If
                                  prevWMMMpt = MousePosition
