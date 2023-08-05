@@ -34,7 +34,6 @@ Module Extensions
     ''' <returns></returns>
     <Extension()>
     Public Function IsTopMost(PP As Process) As Boolean
-        Const GWL_EXSTYLE = -20
         Const WS_EX_TOPMOST = 8L
         Return (GetWindowLong(PP.MainWindowHandle, GWL_EXSTYLE) And WS_EX_TOPMOST) = WS_EX_TOPMOST
     End Function
