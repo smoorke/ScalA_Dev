@@ -204,18 +204,52 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             End Try
         End Get
     End Property
+
+    'Private Shared ReadOnly nameCache As Concurrent.ConcurrentDictionary(Of Integer, String) = New Concurrent.ConcurrentDictionary(Of Integer, String)
+    'Public ReadOnly Property Name As String
+    '    Get
+    '        If _proc Is Nothing Then Return "Someone"
+    '        Try
+    '            _proc?.Refresh()
+    '            If _proc?.MainWindowTitle = "" Then
+    '                Return nameCache.GetValueOrDefault(_proc.Id, "Someone")
+    '            End If
+    '            Dim nam = Strings.Left(_proc?.MainWindowTitle, _proc?.MainWindowTitle.IndexOf(" - "))
+    '            Return nameCache.AddOrUpdate(_proc.Id, nam, Function() nam)
+    '        Catch
+    '            Return "Someone"
+    '        End Try
+    '    End Get
+    'End Property
+
+    Private Shared ReadOnly memCache As New System.Runtime.Caching.MemoryCache("nameCache")
+    Dim cacheItemPolicy As New System.Runtime.Caching.CacheItemPolicy() With {
+                    .SlidingExpiration = TimeSpan.FromMinutes(1) ' Cache for 1 minutes with sliding expiration
+                }
     Public ReadOnly Property Name As String
         Get
             If _proc Is Nothing Then Return "Someone"
             Try
                 _proc?.Refresh()
-                Return Strings.Left(_proc?.MainWindowTitle, _proc?.MainWindowTitle.IndexOf(" - "))
+                If _proc?.MainWindowTitle = "" Then
+                    Dim nm As String = DirectCast(memCache.Get(_proc.Id.ToString()), String)
+                    If nm IsNot Nothing Then
+                        Debug.Print($"name fail {nm} ""{Me.WindowClass}""")
+                        Return nm
+                    End If
+                    Return "Someone"
+                End If
+                Dim nam As String = Strings.Left(_proc?.MainWindowTitle, _proc?.MainWindowTitle.IndexOf(" - "))
+
+                memCache.Set(_proc.Id.ToString(), nam, cacheItemPolicy)
+                Return nam
             Catch
                 Return "Someone"
             End Try
         End Get
     End Property
-    Const GWL_EXSTYLE = -20
+
+
     Const WS_EX_TOPMOST = 8L
     <System.Runtime.InteropServices.DllImport("user32.dll")>
     Private Shared Function GetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer) As Long : End Function
@@ -388,7 +422,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     .Where(Function(ap)
                                Return Not blacklist.Contains(ap.Name) AndAlso
                                      (Not My.Settings.Whitelist OrElse FrmMain.topSortList.Concat(FrmMain.botSortList).Contains(ap.Name)) AndAlso
-                                      ap.HasClassNameIn(classes:=My.Settings.className)
+                                      ap.HasClassNameIn(My.Settings.className & " | #32768 | SysShadow")
                            End Function)
     End Function
     Public Shared Function Enumerate(Optional useCache As Boolean = False) As IEnumerable(Of AstoniaProcess)
