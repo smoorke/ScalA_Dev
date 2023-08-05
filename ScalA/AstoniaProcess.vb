@@ -223,9 +223,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     'End Property
 
     Private Shared ReadOnly memCache As New System.Runtime.Caching.MemoryCache("nameCache")
-    Dim cacheItemPolicy As New System.Runtime.Caching.CacheItemPolicy() With {
-                    .SlidingExpiration = TimeSpan.FromMinutes(1) ' Cache for 1 minutes with sliding expiration
-                }
+    Private Shared ReadOnly cacheItemPolicy As New System.Runtime.Caching.CacheItemPolicy With {
+                    .SlidingExpiration = TimeSpan.FromMinutes(1)} ' Cache for 1 minutes with sliding expiration
     Public ReadOnly Property Name As String
         Get
             If _proc Is Nothing Then Return "Someone"
