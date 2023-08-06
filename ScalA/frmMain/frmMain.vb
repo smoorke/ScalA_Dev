@@ -1138,9 +1138,9 @@ Partial Public NotInheritable Class FrmMain
                         ap.SavePos(rcwB.Location, False)
 
                         eqLockShown = True
-
+                        Dim excludGearLock As Integer = If(AltPP?.isSDL, 18, 0)
                         PnlEqLock.Location = but.ThumbRECT.Location + New Point((rccB.Width \ 2 - 262.Map(0, 400, 0, rccB.Width / 2)).Map(0, rccB.Width, 0, but.ThumbRECT.Width - but.ThumbRECT.Left), 0)
-                        PnlEqLock.Size = New Size(524.Map(0, 800, 0, but.ThumbRECT.Width - but.ThumbRECT.Left),
+                        PnlEqLock.Size = New Size((524 - excludGearLock).Map(0, 800, 0, but.ThumbRECT.Width - but.ThumbRECT.Left),
                                                    45.Map(0, 600, 0, but.ThumbRECT.Height - but.ThumbRECT.Top))
 
                         Dim pttB As New Point
