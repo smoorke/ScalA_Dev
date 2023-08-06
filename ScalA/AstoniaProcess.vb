@@ -224,23 +224,23 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
     Private Shared ReadOnly memCache As New System.Runtime.Caching.MemoryCache("nameCache")
     Private Shared ReadOnly cacheItemPolicy As New System.Runtime.Caching.CacheItemPolicy With {
-                    .SlidingExpiration = TimeSpan.FromMinutes(1)} ' Cache for 1 minutes with sliding expiration
+                    .SlidingExpiration = TimeSpan.FromMinutes(1)} ' Cache for 1 minute with sliding expiration
     Public ReadOnly Property Name As String
         Get
             If _proc Is Nothing Then Return "Someone"
             Try
-                _proc?.Refresh()
-                If _proc?.MainWindowTitle = "" Then
-                    Dim nm As String = DirectCast(memCache.Get(_proc.Id.ToString()), String)
-                    If nm IsNot Nothing Then
+                _proc.Refresh()
+                If _proc.MainWindowTitle = "" Then
+                    Dim nm As String = TryCast(memCache.Get(_proc.Id), String)
+                    If Not String.IsNullOrEmpty(nm) Then
                         Debug.Print($"name fail {nm} ""{Me.WindowClass}""")
                         Return nm
                     End If
                     Return "Someone"
                 End If
-                Dim nam As String = Strings.Left(_proc?.MainWindowTitle, _proc?.MainWindowTitle.IndexOf(" - "))
+                Dim nam As String = Strings.Left(_proc.MainWindowTitle, _proc.MainWindowTitle.IndexOf(" - "))
 
-                memCache.Set(_proc.Id.ToString(), nam, cacheItemPolicy)
+                memCache.Set(_proc.Id, nam, cacheItemPolicy)
                 Return nam
             Catch
                 Return "Someone"
@@ -324,23 +324,20 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     End Function
 
     Private Shared classCache As String = String.Empty
-    Private Shared classCacheEnum As IEnumerable(Of String) = Enumerable.Empty(Of String)
+    Private Shared classCacheSet As New HashSet(Of String)
     ''' <summary>
     ''' Returns True if WindowClass is in pipe seperated string of classes 
     ''' </summary>
     ''' <param name="classes">Pipe seperated string of classes</param>
     ''' <returns></returns>
     Public Function HasClassNameIn(classes As String) As Boolean
-        Try
-            If classCache.Length <> classes.Length AndAlso classCache <> classes Then
-                classCacheEnum = classes.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries) _
-                                        .Select(Function(wc) Strings.Trim(wc))
-                classCache = classes
-            End If
-            Return classCacheEnum.Contains(Me.WindowClass)
-        Catch
-            Return False
-        End Try
+        If classCache <> classes Then
+            classCacheSet.Clear()
+            classCacheSet = classes.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries) _
+                                   .Select(Function(wc) Strings.Trim(wc)).ToHashSet
+            classCache = classes
+        End If
+        Return classCacheSet.Contains(Me.WindowClass)
     End Function
 
     Private _wc As String
@@ -419,8 +416,9 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Next
         Return IEnum.Select(Function(p) New AstoniaProcess(p)) _
                     .Where(Function(ap)
-                               Return Not blacklist.Contains(ap.Name) AndAlso
-                                     (Not My.Settings.Whitelist OrElse FrmMain.topSortList.Concat(FrmMain.botSortList).Contains(ap.Name)) AndAlso
+                               Dim nam = ap.Name
+                               Return Not blacklist.Contains(nam) AndAlso
+                                     (Not My.Settings.Whitelist OrElse FrmMain.topSortList.Concat(FrmMain.botSortList).Contains(nam)) AndAlso
                                       ap.HasClassNameIn(My.Settings.className & " | #32768 | SysShadow")
                            End Function)
     End Function

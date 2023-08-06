@@ -265,7 +265,7 @@ Partial Public NotInheritable Class FrmMain
         If AltPP?.IsRunning Then
             Try
                 Dim title As String = AltPP.MainWindowTitle
-                If title = "" Then Return False
+                If String.IsNullOrEmpty(title) Then Return False
                 titleSuff = " - " & title
                 traytooltip = title
             Catch e As Exception
