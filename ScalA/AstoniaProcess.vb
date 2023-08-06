@@ -195,10 +195,13 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End Try
     End Sub
 
+    Private _mwhCache As IntPtr = IntPtr.Zero
     Public ReadOnly Property MainWindowHandle() As IntPtr
         Get
+            If _mwhCache <> IntPtr.Zero Then Return _mwhCache
             Try
-                Return If(_proc?.MainWindowHandle, IntPtr.Zero)
+                _mwhCache = If(_proc?.MainWindowHandle, IntPtr.Zero)
+                Return _mwhCache
             Catch
                 Return IntPtr.Zero
             End Try
