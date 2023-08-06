@@ -52,7 +52,7 @@ Partial Public NotInheritable Class FrmMain
         'twp.rcSource = New Rectangle(AltPP.ClientOffset.X, AltPP.ClientOffset.Y, rcC.Width + AltPP.ClientOffset.X, rcC.Height + AltPP.ClientOffset.Y)
         twp.rcDestination = New Rectangle(pbZoom.Left, pbZoom.Top, pbZoom.Right, pbZoom.Bottom)
 
-        Dim mode = My.Settings.ScalingMode
+        Dim mode = My.Settings.ScalingMode '0 auto, 1 blur, 2 pixel
         If My.Settings.ScalingMode = 0 Then
             Dim compsz As Size = pbZoom.Size
             Debug.Print($"UpdateThumb pbzoom {pbZoom.Size}")
@@ -63,12 +63,9 @@ Partial Public NotInheritable Class FrmMain
                 mode = 1
             End If
         End If
-        'Dim rcDWM As RECT
-        'DwmGetWindowAttribute(AltPP.MainWindowHandle, 9, rcDWM, System.Runtime.InteropServices.Marshal.SizeOf(rcDWM))
-        'Dim rcW As RECT
-        'GetWindowRect(AltPP.MainWindowHandle, rcW)
+
         If Me.WindowsScaling <> 100 Then 'handle windows scaling
-            Debug.Print("Not 100% scaling: pixel mode disabled")
+            Debug.Print("scaling not 100: pixel mode disabled")
             mode = 1
         End If
 
