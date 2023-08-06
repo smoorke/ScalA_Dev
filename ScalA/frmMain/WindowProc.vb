@@ -201,7 +201,7 @@ Partial NotInheritable Class FrmMain
                     Me.WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, Nothing))
                     Me.Show()
                     FrmBehind.Show()
-                    FrmSizeBorder.Show(Me)
+                    If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
                 End If
                 If caption_Mousedown Then
                     FrmBehind.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
