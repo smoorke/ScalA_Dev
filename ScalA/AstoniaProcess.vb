@@ -77,7 +77,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public Sub SavePos(Optional pt As Point? = Nothing, Optional overwrite As Boolean = True)
         If pt Is Nothing Then
             Dim rc As Rectangle
-            GetWindowRect(_proc.MainWindowHandle, rc)
+            GetWindowRect(Me.MainWindowHandle, rc)
             pt = rc.Location
         End If
         If overwrite OrElse Not _restoreDic.ContainsKey(_proc.Id) Then Me._restoreLoc = pt
@@ -99,9 +99,9 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                         Return New Point
                     End If
                     Dim ptt As New Point
-                    ClientToScreen(_proc.MainWindowHandle, ptt)
+                    ClientToScreen(Me.MainWindowHandle, ptt)
                     Dim rcW As New RECT
-                    GetWindowRect(_proc.MainWindowHandle, rcW)
+                    GetWindowRect(Me.MainWindowHandle, rcW)
                     Dim extrapixel As Integer = 0
                     Select Case Me.WindowsScaling
                         Case 125
@@ -163,7 +163,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     End Function
     Public Function CenterWindowPos(hWndInsertAfter As IntPtr, x As Integer, y As Integer, Optional extraSWPFlags As UInteger = 0) As Boolean
         Try
-            Return SetWindowPos(_proc?.MainWindowHandle, hWndInsertAfter,
+            Return SetWindowPos(Me.MainWindowHandle, hWndInsertAfter,
                                 x - ClientRect.Width / 2 - ClientOffset.X - My.Settings.offset.X,
                                 y - ClientRect.Height / 2 - ClientOffset.Y - My.Settings.offset.Y,
                                 -1, -1,
@@ -242,7 +242,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     Return "Someone"
                 End If
                 Dim nam As String = Strings.Left(_proc.MainWindowTitle, _proc.MainWindowTitle.IndexOf(" - "))
-
+                
                 memCache.Set(_proc.Id, nam, cacheItemPolicy)
                 Return nam
             Catch
@@ -251,15 +251,11 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End Get
     End Property
 
-
-    Const WS_EX_TOPMOST = 8L
-    <System.Runtime.InteropServices.DllImport("user32.dll")>
-    Private Shared Function GetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer) As Long : End Function
     Public Property TopMost() As Boolean
         Get
 
             Try
-                Return (GetWindowLong(Me.MainWindowHandle, GWL_EXSTYLE) And WS_EX_TOPMOST) = WS_EX_TOPMOST
+                Return (GetWindowLong(Me.MainWindowHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST
             Catch
                 Return False
             End Try
@@ -347,7 +343,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public ReadOnly Property WindowClass() As String
         Get
             If Not String.IsNullOrEmpty(_wc) Then Return _wc
-            _wc = GetWindowClass(_proc?.MainWindowHandle)
+            _wc = GetWindowClass(Me.MainWindowHandle)
             Return _wc
         End Get
     End Property
@@ -455,7 +451,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         If _proc Is Nothing Then Return Nothing
         Try
             Dim rcc As Rectangle
-            If Not GetClientRect(_proc.MainWindowHandle, rcc) Then Return Nothing 'GetClientRect fails if astonia is running fullscreen and is tabbed out
+            If Not GetClientRect(Me.MainWindowHandle, rcc) Then Return Nothing 'GetClientRect fails if astonia is running fullscreen and is tabbed out
 
             If rcc.Width = 0 OrElse rcc.Height = 0 Then Return Nothing
 
@@ -469,7 +465,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     Debug.Print("GetHdc error")
                     Return Nothing
                 End Try
-                PrintWindow(_proc.MainWindowHandle, hdcBm, 1)
+                PrintWindow(Me.MainWindowHandle, hdcBm, 1)
                 gBM.ReleaseHdc()
             End Using
             Return bmp
@@ -714,7 +710,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
         Dim targetName As String = Me.Name
 
-        'SendMessage(_proc.MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
+        'SendMessage(Me.MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
         _proc.Kill()
 
         Dim pp As Process
