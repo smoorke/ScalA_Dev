@@ -128,6 +128,8 @@ Partial NotInheritable Class FrmMain
                 If m.WParam = 2 Then 'maximized
                     ReZoom(New Drawing.Size(width, height))
                     FrmBehind.Size = New Size(width, height)
+                    btnMax.Text = "🗗"
+                    ttMain.SetToolTip(btnMax, "Restore")
                 End If
                 If Me.Location = prevLoc Then
                     If Not sizeMoveBusy Then
