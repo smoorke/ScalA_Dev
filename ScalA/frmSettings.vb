@@ -350,6 +350,8 @@ Public NotInheritable Class FrmSettings
 
         My.Settings.MinMin = ChkMinMin.Checked
 
+        FrmMain.tmrOverview.Interval = If(My.Settings.gameOnOverview, 33, 133)
+
         My.Settings.Save()
 
         FrmSizeBorder.Invalidate()

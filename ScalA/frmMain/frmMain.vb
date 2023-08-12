@@ -442,6 +442,9 @@ Partial Public NotInheritable Class FrmMain
         cmsQuickLaunch.Renderer = cmsAlt.Renderer
 
         If My.Settings.DarkMode Then ApplyTheme()
+
+        tmrOverview.Interval = If(My.Settings.gameOnOverview, 33, 133)
+
     End Sub
     Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         Debug.Print("FrmMain_Shown")
