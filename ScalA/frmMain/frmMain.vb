@@ -79,7 +79,7 @@ Partial Public NotInheritable Class FrmMain
 
         TickCounter = 0
 
-        SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
+        SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
         AstoniaProcess.RestorePos()
         AltPP = sender.SelectedItem
         UpdateTitle()
@@ -212,7 +212,7 @@ Partial Public NotInheritable Class FrmMain
                 UpdateThumb(If(chkDebug.Checked, 128, 255))
             End If
 
-            SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle) ' have Client always be beneath ScalA (set Scala to be owned by client)
+            SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle) ' have Client always be beneath ScalA (set Scala to be owned by client)
             '                                                                  note SetParent() doesn't work.
             If My.Settings.topmost Then
                 AltPP.TopMost = True
@@ -629,7 +629,7 @@ Partial Public NotInheritable Class FrmMain
                 sender.Capture = False
                 tmrTick.Stop()
                 caption_Mousedown = True
-                Dim msg As Message = Message.Create(Me.Handle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
+                Dim msg As Message = Message.Create(ScalaHandle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
                 Debug.Print("WM_NCLBUTTONDOWN")
                 Me.WndProc(msg)
                 caption_Mousedown = False
@@ -951,7 +951,7 @@ Partial Public NotInheritable Class FrmMain
         PopDropDown(cboAlt)
         AstoniaProcess.RestorePos(True)
         If Me.WindowState = FormWindowState.Minimized Then
-            SendMessage(Me.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
+            SendMessage(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
         End If
         Dim requestedindex = cboAlt.SelectedIndex + If(up, -1, 1)
         If requestedindex < 1 Then
@@ -1058,7 +1058,7 @@ Partial Public NotInheritable Class FrmMain
 
                 If Not startThumbsDict.ContainsKey(apID) Then
                     Dim thumbid As IntPtr = IntPtr.Zero
-                    DwmRegisterThumbnail(Me.Handle, ap.MainWindowHandle, thumbid)
+                    DwmRegisterThumbnail(ScalaHandle, ap.MainWindowHandle, thumbid)
                     startThumbsDict(apID) = thumbid
                     Debug.Print($"registered thumb {startThumbsDict(apID)} {ap.Name} {apID}")
                 End If
@@ -1124,9 +1124,9 @@ Partial Public NotInheritable Class FrmMain
                         thumbContainedMouse = True
 
                         If cmsQuickLaunch.Visible OrElse cmsAlt.Visible Then
-                            SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
+                            SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
                         Else
-                            SetWindowLong(Me.Handle, GWL_HWNDPARENT, ap?.MainWindowHandle)
+                            SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap?.MainWindowHandle)
                         End If
 
                         'Dim rcwB As Rectangle
@@ -1193,9 +1193,9 @@ Partial Public NotInheritable Class FrmMain
             eqLockShown = False
             Dim active = GetForegroundWindow()
             Dim activePP = alts.FirstOrDefault(Function(ap) ap.MainWindowHandle = active)
-            If activePP IsNot Nothing AndAlso Not activePP.IsBelow(Me.Handle) Then
+            If activePP IsNot Nothing AndAlso Not activePP.IsBelow(ScalaHandle) Then
                 SetWindowLong(ScalaHandle, GWL_HWNDPARENT, active)
-                SetWindowPos(active, Me.Handle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+                SetWindowPos(active, ScalaHandle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
                 SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
             End If
         End If
@@ -1536,7 +1536,7 @@ Partial Public NotInheritable Class FrmMain
             FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, FrmSizeBorder.Opacity, 0)
         End If
         If cboAlt.SelectedIndex > 0 Then
-            SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
+            SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
             AltPP?.CenterBehind(pbZoom)
         End If
         moveBusy = False
@@ -1799,7 +1799,7 @@ Partial Public NotInheritable Class FrmMain
         If e.Button = MouseButtons.Right Then Exit Sub
         'If Me.WindowState = FormWindowState.Minimized Then
         '    Me.Location = RestoreLoc
-        '    SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle) 'hides scala from taskbar
+        '    SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle) 'hides scala from taskbar
         '    suppressWM_MOVEcwp = True
         '    Me.WindowState = If(wasMaximized, FormWindowState.Maximized, FormWindowState.Normal)
         '    suppressWM_MOVEcwp = False

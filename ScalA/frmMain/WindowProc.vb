@@ -22,7 +22,7 @@ Partial NotInheritable Class FrmMain
                             '    End If
                             'End If
                             If Me.WindowState = FormWindowState.Minimized Then
-                                SendMessage(Me.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
+                                SendMessage(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
                             End If
                             Me.Activate()
                             Me.BringToFront()
@@ -37,7 +37,7 @@ Partial NotInheritable Class FrmMain
                 Select Case m.WParam
                     Case SC_RESTORE
                         Debug.Print("SC_RESTORE " & m.LParam.ToString)
-                        SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
+                        SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
                         'Me.ShowInTaskbar = False
                         If AltPP?.IsMinimized Then
                             AltPP.Restore()
@@ -170,7 +170,7 @@ Partial NotInheritable Class FrmMain
                     Debug.Print($"AltPP?{{{AltPP?.Id}}}.isSDL{{{AltPP?.isSDL}}}")
                     If Not AltPP?.isSDL Then
                         Debug.Print("Not AltPP?.isSDL")
-                        SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
+                        SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
                     End If
                     FrmBehind.Hide()
                     FrmSizeBorder.Hide()

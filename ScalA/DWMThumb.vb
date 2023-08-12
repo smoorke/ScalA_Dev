@@ -33,7 +33,7 @@ Partial Public NotInheritable Class FrmMain
 
         If AltPP IsNot Nothing Then
             DwmUnregisterThumbnail(thumb)
-            DwmRegisterThumbnail(Me.Handle, AltPP.MainWindowHandle, thumb)
+            DwmRegisterThumbnail(ScalaHandle, AltPP.MainWindowHandle, thumb)
         End If
 
     End Sub

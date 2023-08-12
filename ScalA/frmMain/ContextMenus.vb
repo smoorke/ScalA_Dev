@@ -44,7 +44,7 @@ Partial Public NotInheritable Class FrmMain
             e.Cancel = True
             Exit Sub
         End If
-        SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
+        SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
         UntrapMouse(MouseButtons.Right)
         AppActivate(scalaPID) 'fix right click drag bug
 
@@ -524,7 +524,7 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
-        If Not My.Settings.MinMin OrElse Not AltPP?.isSDL Then SetWindowLong(Me.Handle, GWL_HWNDPARENT, restoreParent)
+        If Not My.Settings.MinMin OrElse Not AltPP?.isSDL Then SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
         UntrapMouse(MouseButtons.Right)
         Try
             AppActivate(scalaPID) 'fix right click drag bug
@@ -600,7 +600,7 @@ Partial Public NotInheritable Class FrmMain
         '    'SetWindowPos(AltPP.MainWindowHandle, -2, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
         '    If sender.SourceControl IsNot Nothing AndAlso AltPP.Id <> 0 AndAlso Not renameOpen Then
         '        Try
-        '            SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
+        '            SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
         '            AppActivate(AltPP.Id)
         '        Catch
         '        End Try
@@ -609,7 +609,7 @@ Partial Public NotInheritable Class FrmMain
         If cboAlt.SelectedIndex > 0 Then
             If (AltPP?.IsActive OrElse GetActiveProcessID() = scalaPID) AndAlso e.CloseReason <> ToolStripDropDownCloseReason.AppClicked Then
                 AppActivate(scalaPID) 'Fixes astona popping to front
-                SetWindowLong(Me.Handle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
+                SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
                 AltPP?.Activate()
             End If
         End If
@@ -814,7 +814,7 @@ Partial Public NotInheritable Class FrmMain
             Next
             Debug.Print($"purgeList.Count {purgeList.Count}")
 
-            TrackPopupMenuEx(QlCtxMenu.Handle, TPM_RECURSE Or TPM_RIGHTBUTTON, MousePosition.X, MousePosition.Y, Me.Handle, Nothing)
+            TrackPopupMenuEx(QlCtxMenu.Handle, TPM_RECURSE Or TPM_RIGHTBUTTON, MousePosition.X, MousePosition.Y, ScalaHandle, Nothing)
 
             sender.BackColor = Color.Transparent
 
