@@ -93,8 +93,8 @@ Partial NotInheritable Class FrmMain
 #If DEBUG Then
                     pbZoom.Visible = True
 #End If
-                    If Not suppressWM_MOVEcwp Then
-                        'Debug.Print($"moveBusy true")
+                    If Not suppressWM_MOVEcwp AndAlso Not wasMaximized Then
+                        Debug.Print($"WM_MOVE {Me.WindowState}")
                         moveBusy = True
                         Task.Run(Sub()
                                      'Exit Sub
