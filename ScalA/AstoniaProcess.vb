@@ -913,6 +913,9 @@ Module ProcessExtensions
 
         Return processPath
     End Function
+    Private classCache As String = String.Empty
+    Private classCacheSet As New HashSet(Of String)
+    Private ReadOnly pipe As Char() = {"|"c}
     ''' <summary>
     ''' Checks if a processes classname is in pipe separated string
     ''' </summary>
@@ -920,27 +923,13 @@ Module ProcessExtensions
     ''' <param name="classes"></param>
     ''' <returns></returns>
     <System.Runtime.CompilerServices.Extension()>
-    Public Function IsClassNameIn(pp As Process, classes As String) As Boolean
-        Dim wndClass As IEnumerable(Of String) = classes.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries).Select(Function(wc) Trim(wc))
-
-        'For i As Integer = 0 To UBound(wndClass)
-        '    wndClass(i) = Trim(wndClass(i))
-        'Next
-        'Debug.Print("""" & wndClass(0) & """")
-        Try
-            Return wndClass.Contains(pp.GetWindowClass())
-        Catch
-            Debug.Print("Execption IsClassNameIn")
-            Return False
-        End Try
-    End Function
-    <Runtime.InteropServices.DllImport("user32.dll", CharSet:=Runtime.InteropServices.CharSet.Auto)>
-    Private Sub GetClassName(ByVal hWnd As System.IntPtr, ByVal lpClassName As System.Text.StringBuilder, ByVal nMaxCount As Integer)
-    End Sub
-    <Runtime.CompilerServices.Extension()>
-    Private Function GetWindowClass(pp As Process) As String
-        Dim sClassName As New System.Text.StringBuilder("", 256)
-        Call GetClassName(pp.MainWindowHandle, sClassName, 256)
-        Return sClassName.ToString
+    Public Function HasClassNameIn(pp As Process, classes As String) As Boolean
+        If classCache <> classes Then
+            classCacheSet.Clear()
+            classCacheSet = classes.Split(pipe, StringSplitOptions.RemoveEmptyEntries) _
+                                   .Select(Function(wc) Strings.Trim(wc)).ToHashSet
+            classCache = classes
+        End If
+        Return classCacheSet.Contains(GetWindowClass(pp.MainWindowHandle))
     End Function
 End Module

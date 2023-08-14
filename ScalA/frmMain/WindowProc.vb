@@ -12,7 +12,7 @@ Partial NotInheritable Class FrmMain
                         'only preform switch when astonia or scala Is active
                         Dim activeID = GetActiveProcessID()
                         Debug.Print("aID " & activeID & " selfPID " & scalaPID)
-                        If activeID = scalaPID OrElse Process.GetProcessById(activeID).IsClassNameIn(My.Settings.className) Then
+                        If activeID = scalaPID OrElse Process.GetProcessById(activeID).HasClassNameIn(My.Settings.className) Then
                             'If Me.WindowState = FormWindowState.Minimized Then
                             '    Me.WindowState = FormWindowState.Normal
                             '    If wasMaximized Then

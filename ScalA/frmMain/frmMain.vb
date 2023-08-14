@@ -1604,7 +1604,7 @@ Partial Public NotInheritable Class FrmMain
         Dim activeID As Integer = GetActiveProcessID() ' this returns 0 when switching tasks
         Dim hasCName As Boolean
         Try
-            hasCName = Process.GetProcessById(activeID).IsClassNameIn(My.Settings.className)
+            hasCName = Process.GetProcessById(activeID).HasClassNameIn(My.Settings.className)
         Catch
             hasCName = False
         End Try
