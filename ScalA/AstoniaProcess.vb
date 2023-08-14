@@ -324,6 +324,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
     Private Shared classCache As String = String.Empty
     Private Shared classCacheSet As New HashSet(Of String)
+    Private Shared ReadOnly pipe As Char() = {"|"c}
     ''' <summary>
     ''' Returns True if WindowClass is in pipe seperated string of classes 
     ''' </summary>
@@ -332,7 +333,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public Function HasClassNameIn(classes As String) As Boolean
         If classCache <> classes Then
             classCacheSet.Clear()
-            classCacheSet = classes.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries) _
+            classCacheSet = classes.Split(pipe, StringSplitOptions.RemoveEmptyEntries) _
                                    .Select(Function(wc) Strings.Trim(wc)).ToHashSet
             classCache = classes
         End If
@@ -431,13 +432,13 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         If resetCacheFirst Then _CacheCounter = 0
         If useCache Then
             If _CacheCounter = 0 Then
-                _ProcCache = EnumProcessesByNameArray(My.Settings.exe.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries), blacklist)
+                _ProcCache = EnumProcessesByNameArray(My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries), blacklist)
             End If
             _CacheCounter += 1
             If _CacheCounter > 5 Then _CacheCounter = 0
             Return _ProcCache
         End If
-        Return EnumProcessesByNameArray(My.Settings.exe.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries), blacklist)
+        Return EnumProcessesByNameArray(My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries), blacklist)
     End Function
 
     <System.Runtime.InteropServices.DllImport("user32.dll", SetLastError:=True)>
@@ -647,7 +648,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             'arguments = arguments.Substring(1) 'skipped with startindex
             arguments = arguments.Substring(arguments.IndexOf("""", 1) + 1)
         Else
-            For Each exe As String In My.Settings.exe.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries)
+            For Each exe As String In My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries)
                 If arguments.ToLower.StartsWith(exe.Trim) Then
                     arguments = arguments.Substring(exe.Trim.Length + 4)
                 End If

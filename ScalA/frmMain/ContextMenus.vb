@@ -435,7 +435,7 @@ Partial Public NotInheritable Class FrmMain
         CreateNewFolder(sender.Tag)
 
     End Sub
-
+    Private Shared ReadOnly pipe As Char() = {"|"c}
     Private Sub CreateShortCut(sender As ToolStripMenuItem, e As EventArgs)
 
         Debug.Print($"CreateShortCut")
@@ -475,7 +475,7 @@ Partial Public NotInheritable Class FrmMain
             'arguments = arguments.Substring(1) 'skipped with startindex
             arguments = arguments.Substring(arguments.IndexOf("""", 1) + 1)
         Else
-            For Each exe As String In My.Settings.exe.Split({"|"c}, StringSplitOptions.RemoveEmptyEntries)
+            For Each exe As String In My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries)
                 If arguments.ToLower.StartsWith(exe.Trim) Then
                     arguments = arguments.Substring(exe.Trim.Length + 4)
                 End If

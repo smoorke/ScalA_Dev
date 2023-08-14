@@ -254,7 +254,7 @@ Module NativeMethods
     <System.Runtime.InteropServices.DllImport("user32.dll", CharSet:=System.Runtime.InteropServices.CharSet.Auto)>
     Public Function GetClassName(ByVal hWnd As System.IntPtr, ByVal lpClassName As System.Text.StringBuilder, ByVal nMaxCount As Integer) As Integer : End Function
     Public Function GetWindowClass(ByVal hwnd As IntPtr) As String
-        Dim sClassName As New System.Text.StringBuilder("", 256)
+        Static sClassName As New System.Text.StringBuilder("", 256)
         Call GetClassName(hwnd, sClassName, 256)
         Return sClassName.ToString
     End Function
