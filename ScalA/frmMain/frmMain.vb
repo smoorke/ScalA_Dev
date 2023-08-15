@@ -443,7 +443,7 @@ Partial Public NotInheritable Class FrmMain
 
         If My.Settings.DarkMode Then ApplyTheme()
 
-        tmrOverview.Interval = If(My.Settings.gameOnOverview, 33, 133)
+        tmrOverview.Interval = If(My.Settings.gameOnOverview, 33, 66)
 
     End Sub
     Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
@@ -1043,14 +1043,17 @@ Partial Public NotInheritable Class FrmMain
                                  If localTick = localAPC OrElse but.BackgroundImage Is Nothing Then
                                      Using ico As Bitmap = ap.GetIcon?.ToBitmap
                                          If ico IsNot Nothing Then
-                                             but.BeginInvoke(updateButtonBackgroundImage, {but, New Bitmap(ico, New Size(16, 16))})
+                                             'but.Invoke(updateButtonBackgroundImage, {but, New Bitmap(ico, New Size(16, 16))})
+                                             but.BackgroundImage = New Bitmap(ico, New Size(16, 16))
                                          Else
-                                             but.BeginInvoke(updateButtonBackgroundImage, {but, Nothing})
+                                             'but.Invoke(updateButtonBackgroundImage, {but, Nothing})
+                                             but.BackgroundImage = Nothing
                                          End If
                                      End Using
                                  End If
                                  If localTick = localAPC OrElse but.Image Is Nothing Then
-                                     Me.BeginInvoke(updateButtonImage, {but, ap.GetHealthbar()})
+                                     'Me.Invoke(updateButtonImage, {but, ap.GetHealthbar()})
+                                     but.Image = ap.GetHealthbar
                                  End If
                              End Sub)
                 End If
@@ -1299,12 +1302,15 @@ Partial Public NotInheritable Class FrmMain
         If newSZ.Width * numCols > pbZoom.Width Then widthTooMuch = True
         If newSZ.Height * numRows > pbZoom.Height Then heightTooMuch = True
 
-        Dim visButtons As New List(Of AButton)
+        Dim totalButtons = numCols * numRows
 
         Dim i = If(My.Settings.hideMessage, 1, 2)
+
+        Dim visButtons As New List(Of AButton)
+
         For Each but As AButton In pnlOverview.Controls.OfType(Of AButton)
 
-            If i <= numCols * numRows Then
+            If i <= totalButtons Then
                 but.Size = newSZ
                 If widthTooMuch AndAlso i Mod numCols = 0 Then but.Width -= If((pbZoom.Size.Width / numCols) Mod 1 < 0.5, 1, 2) 'last column
                 If heightTooMuch AndAlso i > (numRows - 1) * numRows Then but.Height -= 1 'last row

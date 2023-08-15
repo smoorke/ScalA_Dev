@@ -236,6 +236,7 @@ Partial Public NotInheritable Class FrmMain
                 Return bm
             End Function)
         Catch
+            Debug.Print("GetIcon Exception")
             Return Nothing
         End Try
     End Function
@@ -353,13 +354,10 @@ Partial Public NotInheritable Class FrmMain
     Private Sub DeferredIconLoading(items As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
         Try
             Task.Run(Sub()
-                         Try
-                             Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested),
+                         Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested),
                                           Sub(it As ToolStripItem)
-                                              Me.BeginInvoke(updateToolstripImage, {it, GetIcon(it.Tag)})
+                                              Me.Invoke(updateToolstripImage, {it, GetIcon(it.Tag)})
                                           End Sub)
-                         Catch
-                         End Try
                      End Sub, ct)
         Catch ex As System.Threading.Tasks.TaskCanceledException
             Debug.Print("deferredIconLoading Task canceled")
@@ -738,7 +736,7 @@ Partial Public NotInheritable Class FrmMain
         cmsQuickLaunch.Close()
     End Sub
 
-    Private ReadOnly folderHbm As IntPtr = foldericon.GetHbitmap(Color.Red)
+    Private ReadOnly folderHbm As IntPtr = foldericon?.GetHbitmap(Color.Red)
     Private ReadOnly plusHbm As IntPtr = New Bitmap(My.Resources.Add, New Size(16, 16)).GetHbitmap(Color.Red)
 
     'Dim QlCtxIsOpen As Boolean = False 'to handle glitch in contextmenu when moving astonia window

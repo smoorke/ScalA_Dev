@@ -350,7 +350,7 @@ Public NotInheritable Class FrmSettings
 
         My.Settings.MinMin = ChkMinMin.Checked
 
-        FrmMain.tmrOverview.Interval = If(My.Settings.gameOnOverview, 33, 133)
+        FrmMain.tmrOverview.Interval = If(My.Settings.gameOnOverview, 33, 66)
 
         My.Settings.Save()
 

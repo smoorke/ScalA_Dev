@@ -1,4 +1,5 @@
-﻿Imports System.IO.MemoryMappedFiles
+﻿Imports System.ComponentModel.Design
+Imports System.IO.MemoryMappedFiles
 Imports System.Runtime.InteropServices
 
 Public NotInheritable Class AstoniaProcess : Implements IDisposable
@@ -169,6 +170,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                                 -1, -1,
                                 SetWindowPosFlags.IgnoreResize Or extraSWPFlags)
         Catch
+            Debug.Print("CenterWindowPos exception")
             Return False
         End Try
     End Function
@@ -191,7 +193,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Try
             AppActivate(_proc.Id)
         Catch ex As Exception
-
+            Debug.Print("activate exception")
         End Try
     End Sub
 
@@ -203,6 +205,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 _mwhCache = If(_proc?.MainWindowHandle, IntPtr.Zero)
                 Return _mwhCache
             Catch
+                Debug.Print("MainWindowHandle exeption")
                 Return IntPtr.Zero
             End Try
         End Get
@@ -242,7 +245,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     Return "Someone"
                 End If
                 Dim nam As String = Strings.Left(_proc.MainWindowTitle, _proc.MainWindowTitle.IndexOf(" - "))
-                
+
                 memCache.Set(_proc.Id, nam, cacheItemPolicy)
                 Return nam
             Catch
@@ -318,6 +321,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             _proc?.Refresh()
             Return _proc?.MainWindowTitle
         Catch
+            Debug.Print("MainWindowTitle exception")
             Return ""
         End Try
     End Function
@@ -435,7 +439,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 _ProcCache = EnumProcessesByNameArray(My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries), blacklist)
             End If
             _CacheCounter += 1
-            If _CacheCounter > 5 Then _CacheCounter = 0
+            If _CacheCounter > 10 Then _CacheCounter = 0
             Return _ProcCache
         End If
         Return EnumProcessesByNameArray(My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries), blacklist)
@@ -794,8 +798,10 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
     Friend Function HasExited() As Boolean
         Try
+            If _proc Is Nothing Then Return True
             Return _proc?.HasExited
         Catch ex As Exception
+            Debug.Print("HasExited Exception")
             Return False
         End Try
     End Function

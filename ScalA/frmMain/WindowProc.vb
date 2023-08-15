@@ -142,6 +142,7 @@ Partial NotInheritable Class FrmMain
                                                         Me.Top + pbZoom.Top + (pbZoom.Height / 2),
                                                         SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder)
                                      Catch
+                                         Debug.Print("WM_SIZE Except")
                                      Finally
                                          sizeMoveBusy = False
                                          ' moveBusy = False
