@@ -1,5 +1,4 @@
-﻿Imports System.ComponentModel.Design
-Imports System.IO.MemoryMappedFiles
+﻿Imports System.IO.MemoryMappedFiles
 Imports System.Runtime.InteropServices
 
 Public NotInheritable Class AstoniaProcess : Implements IDisposable

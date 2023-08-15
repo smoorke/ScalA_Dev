@@ -320,7 +320,7 @@ Partial NotInheritable Class FrmMain
         'tmrOverview
         '
         Me.tmrOverview.Enabled = True
-        Me.tmrOverview.Interval = 333
+        Me.tmrOverview.Interval = 33
         '
         'tmrActive
         '
