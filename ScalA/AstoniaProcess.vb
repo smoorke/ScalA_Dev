@@ -47,7 +47,9 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     End Function
 
     Public Function Restore() As Integer
-        Return ShowWindow(Me.MainWindowHandle, SW_RESTORE)
+        Dim ret As Integer = ShowWindow(Me.MainWindowHandle, SW_RESTORE)
+        Me.ResetCache()
+        Return ret
     End Function
     Public Function Hide() As Integer
         Return ShowWindow(Me.MainWindowHandle, SW_MINIMIZE)

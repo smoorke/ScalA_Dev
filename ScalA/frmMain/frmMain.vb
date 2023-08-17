@@ -126,7 +126,7 @@ Partial Public NotInheritable Class FrmMain
         If Not AltPP?.Id = 0 Then
             If AltPP.IsMinimized Then AltPP.Restore()
 
-            AltPP.ResetCache()
+            'AltPP.ResetCache()
 
             Dim rcW As Rectangle = AltPP.WindowRect
             rcC = AltPP.ClientRect
@@ -1025,11 +1025,6 @@ Partial Public NotInheritable Class FrmMain
                 but.AP = ap
                 but.Text = ap.Name
 
-                Dim rcwB As Rectangle = ap.WindowRect
-                Dim rccB As Rectangle = ap.ClientRect
-                'GetClientRect(ap?.MainWindowHandle, rccB)
-                'GetWindowRect(ap?.MainWindowHandle, rcwB)
-
                 If ap.IsActive() Then
                     but.Font = New Font("Microsoft Sans Serif", 8.25, FontStyle.Bold)
                     but.Select()
@@ -1110,7 +1105,7 @@ Partial Public NotInheritable Class FrmMain
                             Debug.Print("scrollthumb released")
                             If storedY <> pci.ptScreenpos.y Then
                                 Debug.Print("scrollthumb moved")
-                                Dim factor As Double = but.ThumbRectangle.Height / rccB.Height
+                                Dim factor As Double = but.ThumbRectangle.Height / ap.ClientRect.Height
                                 Dim movedY As Integer = storedY + ((pci.ptScreenpos.y - storedY) * factor)
                                 Cursor.Position = New Point(pci.ptScreenpos.x, movedY)
                             End If
@@ -1121,10 +1116,11 @@ Partial Public NotInheritable Class FrmMain
 
                     If Not AOBusy AndAlso but.ThumbContains(MousePosition) Then
                         AltPP = ap
+                        Dim rcwB As Rectangle = ap.WindowRect
+                        Dim rccB As Rectangle = ap.ClientRect
                         If ap.IsMinimized Then
                             Debug.Print($"before {rcwB} {rccB}")
                             ap.Restore()
-                            ap.ResetCache()
                             rcwB = ap.WindowRect
                             rccB = ap.ClientRect
                             Debug.Print($"after {rcwB} {rccB}")
