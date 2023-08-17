@@ -40,7 +40,14 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             Return rcw
         End Get
     End Property
-
+    Public Sub CloseOrKill()
+        Try
+            Dim dummy = _proc.HasExited() 'test to see if proc is elevated
+            _proc.CloseMainWindow()
+        Catch ex As System.ComponentModel.Win32Exception
+            _proc.Kill()
+        End Try
+    End Sub
     Public Function IsMinimized() As Boolean
         If _proc Is Nothing Then Return False
         Return IsIconic(Me.MainWindowHandle)

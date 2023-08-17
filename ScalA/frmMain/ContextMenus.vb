@@ -7,13 +7,7 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub CloseToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseToolStripMenuItem.Click
         'PostMessage(CType(sender.Tag, AstoniaProcess).MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
-        Dim proc = Process.GetProcessById(CType(sender.Tag, AstoniaProcess).Id)
-        Try
-            Dim dummy = proc.HasExited() 'test to see if proc is elevated
-            proc.CloseMainWindow()
-        Catch ex As Exception
-            proc.Kill()
-        End Try
+        CType(sender.Tag, AstoniaProcess)?.CloseOrKill()
     End Sub
 
     Private Sub SelectToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles SelectToolStripMenuItem.Click
@@ -194,7 +188,7 @@ Partial Public NotInheritable Class FrmMain
         For Each pp As AstoniaProcess In AstoniaProcess.Enumerate().Where(Function(p As AstoniaProcess) p.Name = "Someone")
             If sender.Tag?.id = pp.Id AndAlso sender.Tag?.name = "Someone" Then Continue For
             'PostMessage(pp.MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
-            Process.GetProcessById(pp.Id).Kill()
+            pp.CloseOrKill()
         Next
 
     End Sub
