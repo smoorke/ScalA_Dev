@@ -18,7 +18,7 @@ Module Extensions
         Return defaultValue
     End Function
     <Extension()>
-    Public Function GetValueOrDefault(Of TKey, TValue)(source As Concurrent.ConcurrentDictionary(Of TKey, TValue), Key As TKey, Optional defaultValue As TValue = CType(Nothing, TValue)) As TValue
+    Public Function GetValueOrDefault(Of TKey, TValue)(source As Concurrent.ConcurrentDictionary(Of TKey, TValue), Key As TKey, Optional defaultValue As TValue = Nothing) As TValue
         Dim found As TValue
         If source.TryGetValue(Key, found) Then Return found
         Return defaultValue

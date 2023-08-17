@@ -977,9 +977,10 @@ Partial Public NotInheritable Class FrmMain
         If requestedindex > 0 Then tmrTick.Start()
     End Sub
 
-    ReadOnly startThumbsDict As New Concurrent.ConcurrentDictionary(Of Integer, IntPtr)
-    ReadOnly opaDict As New Concurrent.ConcurrentDictionary(Of Integer, Byte)
-    ReadOnly rectDic As New Concurrent.ConcurrentDictionary(Of Integer, Rectangle)
+    Shared ReadOnly startThumbsDict As New Concurrent.ConcurrentDictionary(Of Integer, IntPtr)
+    Shared ReadOnly opaDict As New Concurrent.ConcurrentDictionary(Of Integer, Byte)
+    Shared ReadOnly rectDic As New Concurrent.ConcurrentDictionary(Of Integer, Rectangle)
+    Shared ReadOnly swDict As New Concurrent.ConcurrentDictionary(Of Integer, Stopwatch)
 
     Const dimmed As Byte = 240
     Private TickCounter As Integer = 0
@@ -1020,16 +1021,16 @@ Partial Public NotInheritable Class FrmMain
             If apCounter < alts.Count AndAlso (butCounter <= topCount OrElse butCounter > skipCount) Then 'buttons with alts
 
                 Dim ap As AstoniaProcess = alts(apCounter)
-                Dim apID As Integer = ap?.Id
-                but.Tag = ap
+                Dim apID As Integer = ap.Id
+                but.AP = ap
                 but.Text = ap.Name
 
-                Dim rcwB As Rectangle = ap?.WindowRect
-                Dim rccB As Rectangle = ap?.ClientRect
+                Dim rcwB As Rectangle = ap.WindowRect
+                Dim rccB As Rectangle = ap.ClientRect
                 'GetClientRect(ap?.MainWindowHandle, rccB)
                 'GetWindowRect(ap?.MainWindowHandle, rcwB)
 
-                If ap?.IsActive() Then
+                If ap.IsActive() Then
                     but.Font = New Font("Microsoft Sans Serif", 8.25, FontStyle.Bold)
                     but.Select()
                 Else
@@ -1040,7 +1041,7 @@ Partial Public NotInheritable Class FrmMain
                     Dim localAPC = apCounter
                     Dim localTick = TickCounter
                     Task.Run(Sub()
-                                 If localTick = localAPC OrElse but.BackgroundImage Is Nothing Then
+                                 If (localTick = localAPC AndAlso ap.Id <> but.pidCache) OrElse but.BackgroundImage Is Nothing Then
                                      Using ico As Bitmap = ap.GetIcon?.ToBitmap
                                          If ico IsNot Nothing Then
                                              'but.Invoke(updateButtonBackgroundImage, {but, New Bitmap(ico, New Size(16, 16))})
@@ -1049,12 +1050,20 @@ Partial Public NotInheritable Class FrmMain
                                              'but.Invoke(updateButtonBackgroundImage, {but, Nothing})
                                              but.BackgroundImage = Nothing
                                          End If
+                                         but.pidCache = ap.Id
                                      End Using
                                  End If
-                                 If localTick = localAPC OrElse but.Image Is Nothing Then
+
+                                 Dim sw = swDict.GetOrAdd(ap.Id, Stopwatch.StartNew)
+                                 If sw.ElapsedMilliseconds < 42 AndAlso but.Image IsNot Nothing Then
+                                     Exit Sub
+                                 End If
+
+                                 If (localTick = localAPC) OrElse but.Image Is Nothing Then
                                      'Me.Invoke(updateButtonImage, {but, ap.GetHealthbar()})
                                      but.Image = ap.GetHealthbar
                                  End If
+                                 sw.Restart()
                              End Sub)
                 End If
 
@@ -1097,7 +1106,7 @@ Partial Public NotInheritable Class FrmMain
                     Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
                     GetCursorInfo(pci)
                     If pci.flags <> 0 Then ' cursor is visible
-                        If Not wasVisible AndAlso ap?.IsActive() Then
+                        If Not wasVisible AndAlso ap.IsActive() Then
                             Debug.Print("scrollthumb released")
                             If storedY <> pci.ptScreenpos.y Then
                                 Debug.Print("scrollthumb moved")
@@ -1116,8 +1125,8 @@ Partial Public NotInheritable Class FrmMain
                             Debug.Print($"before {rcwB} {rccB}")
                             ap.Restore()
                             ap.ResetCache()
-                            rcwB = ap?.WindowRect
-                            rccB = ap?.ClientRect
+                            rcwB = ap.WindowRect
+                            rccB = ap.ClientRect
                             Debug.Print($"after {rcwB} {rccB}")
                         End If
 
@@ -1132,7 +1141,7 @@ Partial Public NotInheritable Class FrmMain
                         If cmsQuickLaunch.Visible OrElse cmsAlt.Visible Then
                             SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
                         Else
-                            SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap?.MainWindowHandle)
+                            SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap.MainWindowHandle)
                         End If
 
                         'Dim rcwB As Rectangle
@@ -1165,15 +1174,15 @@ Partial Public NotInheritable Class FrmMain
                                          If ci.flags = 0 Then Exit Sub
                                          AOBusy = True
                                          Dim flags = swpFlags
-                                         If Not but.Tag?.isActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
+                                         If Not but.AP.IsActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
                                          'If but.Tag?.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                                          Dim pt As Point = MousePosition - New Point(newXB + ap.ClientOffset.X, newYB + ap.ClientOffset.Y)
                                          If prevWMMMpt <> MousePosition Then
-                                             SendMessage(but.Tag?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
+                                             SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                          End If
-                                         SetWindowPos(but.Tag?.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
+                                         SetWindowPos(but.AP.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
                                          If prevWMMMpt <> MousePosition Then
-                                             SendMessage(but.Tag?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
+                                             SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                          End If
                                          prevWMMMpt = MousePosition
                                      Catch ex As Exception
@@ -1186,10 +1195,11 @@ Partial Public NotInheritable Class FrmMain
                 End If 'gameonoverview
             Else ' buttons w/o alts
                 but.Text = String.Empty
-                but.Tag = Nothing 'New AstoniaProcess(Nothing)
+                but.AP = Nothing 'New AstoniaProcess(Nothing)
                 but.ContextMenuStrip = cmsQuickLaunch
                 but.BackgroundImage = Nothing
                 but.Image = Nothing
+                but.pidCache = 0
             End If
         Next but
 
@@ -1219,6 +1229,11 @@ Partial Public NotInheritable Class FrmMain
             DwmUnregisterThumbnail(startThumbsDict(ppid))
             startThumbsDict.TryRemove(ppid, Nothing)
             rectDic.TryRemove(ppid, Nothing)
+            Dim sw As Stopwatch = Nothing
+            If swDict.TryRemove(ppid, sw) Then
+                sw.Stop()
+                sw = Nothing
+            End If
         Next
 
         pnlOverview.ResumeLayout()
@@ -1319,18 +1334,20 @@ Partial Public NotInheritable Class FrmMain
             Else
                 but.Visible = False
                 but.Text = ""
-                DwmUnregisterThumbnail(startThumbsDict.GetValueOrDefault(but.Tag?.id, IntPtr.Zero))
-                startThumbsDict.TryRemove(but.Tag?.id, Nothing)
-                but.Tag = Nothing
-            End If
-            i += 1
+                If but.AP IsNot Nothing Then
+                    DwmUnregisterThumbnail(startThumbsDict.GetValueOrDefault(but.AP.Id, IntPtr.Zero))
+                    startThumbsDict.TryRemove(but.AP.Id, Nothing)
+                End If
+                but.AP = Nothing
+                End If
+                i += 1
         Next
 
         pnlMessage.Size = newSZ
         pbMessage.Size = newSZ
         chkHideMessage.Location = New Point(pnlMessage.Width - chkHideMessage.Width, pnlMessage.Height - chkHideMessage.Height)
 
-        pnlOverview.ResumeLayout()
+        pnlOverview.ResumeLayout(True)
 
         Return visButtons
     End Function
@@ -1393,35 +1410,35 @@ Partial Public NotInheritable Class FrmMain
         End If
         tmrOverview.Enabled = False
         Debug.Print("tmrStartup.stop")
-        If Not cboAlt.Items.Contains(sender.Tag) Then
+        If Not cboAlt.Items.Contains(sender.AP) Then
             PopDropDown(cboAlt)
         End If
-        cboAlt.SelectedItem = sender.Tag
+        cboAlt.SelectedItem = sender.AP
     End Sub
     Private Sub BtnAlt_MouseDown(sender As AButton, e As MouseEventArgs) ' handles AButton.mousedown
         Debug.Print($"MouseDown {e.Button}")
-        If sender.Tag Is Nothing Then Exit Sub
+        If sender.AP Is Nothing Then Exit Sub
         Select Case e.Button
             Case MouseButtons.XButton1, MouseButtons.XButton2
                 sender.Select()
-                CType(sender.Tag, AstoniaProcess).Activate()
+                sender.AP.Activate()
             Case MouseButtons.Left
                 If e.Clicks = 2 Then
-                    If Not cboAlt.Items.Contains(sender.Tag) Then
+                    If Not cboAlt.Items.Contains(sender.AP) Then
                         PopDropDown(cboAlt)
                     End If
-                    cboAlt.SelectedItem = sender.Tag
+                    cboAlt.SelectedItem = sender.AP
                 End If
         End Select
     End Sub
     Private Sub BtnAlt_MouseEnter(sender As AButton, e As EventArgs) ' Handles AButton.MouseEnter
         If My.Settings.gameOnOverview Then Exit Sub
-        If sender.Tag Is Nothing Then Exit Sub
-        opaDict(CType(sender.Tag, AstoniaProcess)?.Id) = dimmed
+        If sender.AP Is Nothing Then Exit Sub
+        opaDict(sender.AP.Id) = dimmed
     End Sub
     Private Sub BtnAlt_MouseLeave(sender As AButton, e As EventArgs) ' Handles AButton.MouseLeave
-        If sender.Tag Is Nothing Then Exit Sub
-        opaDict(CType(sender.Tag, AstoniaProcess)?.Id) = If(chkDebug.Checked, 128, 255)
+        If sender.AP Is Nothing Then Exit Sub
+        opaDict(sender.AP.Id) = If(chkDebug.Checked, 128, 255)
     End Sub
 
     Private Sub ChkHideMessage_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkHideMessage.CheckedChanged
@@ -1560,7 +1577,7 @@ Partial Public NotInheritable Class FrmMain
         AstoniaProcess.RestorePos(True)
         cboAlt.SelectedIndex = 0
         If prevAlt.Id <> 0 Then
-            pnlOverview.Controls.OfType(Of AButton).FirstOrDefault(Function(ab As AButton) ab.Tag?.id = prevAlt?.Id)?.Select()
+            pnlOverview.Controls.OfType(Of AButton).FirstOrDefault(Function(ab As AButton) ab.AP IsNot Nothing AndAlso ab.AP.Id = prevAlt.Id)?.Select()
         Else
             pnlOverview.Controls.OfType(Of AButton).First().Select()
         End If
@@ -1616,7 +1633,7 @@ Partial Public NotInheritable Class FrmMain
         End Try
         If activeID = scalaPID OrElse activeID = AltPP?.Id OrElse
                 (My.Settings.gameOnOverview AndAlso pnlOverview.Visible AndAlso
-                pnlOverview.Controls.OfType(Of AButton).Any(Function(ab) ab.Visible AndAlso ab.Tag IsNot Nothing AndAlso ab.Tag.id = activeID)) Then ' is on overview
+                pnlOverview.Controls.OfType(Of AButton).Any(Function(ab) ab.Visible AndAlso ab.AP IsNot Nothing AndAlso ab.AP.Id = activeID)) Then ' is on overview
             setActive(True)
         ElseIf activeID <> 0 Then 'inactive
             setActive(False)

@@ -27,6 +27,9 @@ Public NotInheritable Class AButton
         Me.BackColor = If(My.Settings.DarkMode, Color.DarkGray, Color.FromArgb(&HFFE1E1E1))
     End Sub
 
+    Public pidCache As Integer
+    Public AP As AstoniaProcess
+
     Private _passthrough As Rectangle
     Public ReadOnly Property ThumbRectangle() As Rectangle
         Get

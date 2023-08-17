@@ -54,7 +54,7 @@ Partial Public NotInheritable Class FrmMain
         UntrapMouse(MouseButtons.Right)
         AppActivate(scalaPID) 'fix right click drag bug
 
-        Dim pp As AstoniaProcess = sender.SourceControl.Tag
+        Dim pp As AstoniaProcess = CType(sender.SourceControl, AButton).AP
 
 #If 0 Then
 #If DEBUG Then
