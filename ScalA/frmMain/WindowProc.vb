@@ -210,7 +210,7 @@ Partial NotInheritable Class FrmMain
                     FrmBehind.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
                     'Debug.Print($"szb{FrmSizeBorder.Bounds} fbh{FrmBehind.Bounds}")
                 End If
-                If FrmSizeBorder IsNot Nothing And Me.WindowState = FormWindowState.Normal Then
+                If FrmSizeBorder IsNot Nothing AndAlso Me.WindowState = FormWindowState.Normal Then
                     FrmSizeBorder.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
                 End If
                 If wasMaximized AndAlso caption_Mousedown AndAlso Not posChangeBusy Then
