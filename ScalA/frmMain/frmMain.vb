@@ -762,21 +762,21 @@ Partial Public NotInheritable Class FrmMain
                 swpBusy = True
                 Task.Run(Sub()
                              Try
-                                 If Not AltPP?.IsRunning Then Exit Sub
+                                 If AltPP Is Nothing OrElse Not AltPP.IsRunning Then Exit Sub
                                  Dim ci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
                                  GetCursorInfo(ci)
                                  If ci.flags = 0 Then Exit Sub
                                  swpBusy = True
                                  Dim flags = swpFlags
-                                 If Not AltPP?.IsActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
-                                 If AltPP?.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
+                                 If Not AltPP.IsActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
+                                 If AltPP.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                                  Dim pt As Point = MousePosition - New Point(newX + AltPP.ClientOffset.X, newY + AltPP.ClientOffset.Y)
                                  If prevWMMMpt <> MousePosition Then
-                                     SendMessage(AltPP?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
+                                     SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                  End If
-                                 SetWindowPos(AltPP?.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
+                                 SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
                                  If prevWMMMpt <> MousePosition Then
-                                     SendMessage(AltPP?.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
+                                     SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                  End If
                                  prevWMMMpt = MousePosition
                              Catch ex As Exception
@@ -1878,51 +1878,31 @@ Partial Public NotInheritable Class FrmMain
 
         End If
     End Sub
-
+    Private Shared MouseInput() As INPUT = {
+                    New INPUT With {   '.type = InputType.INPUT_MOUSE, 'INPUT_MOUSE is 0 so we can omit
+                            .u = New InputUnion With {.mi = New MOUSEINPUT}
+                    }
+    }
+    Private Shared Sub SendMouseInput(flags As MouseEventF)
+        MouseInput(0).u.mi.dwFlags = flags
+        SendInput(1, MouseInput, Marshal.SizeOf(GetType(INPUT)))
+    End Sub
     Private Async Sub PnlEqLock_MouseUp(sender As Object, e As MouseEventArgs) Handles PnlEqLock.MouseUp
         Debug.Print($"pnlEqLock.MouseUp {e.Button} lock vis {PnlEqLock.Visible}")
-        If Not AltPP?.isSDL Then
+        If (e.Button = MouseButtons.Right OrElse e.Button = MouseButtons.Middle) AndAlso PnlEqLock.Contains(MousePosition) Then
+            EQLockClick = True
+            PnlEqLock.Visible = False
             If e.Button = MouseButtons.Right Then
-                PostMessage(AltPP.MainWindowHandle, WM_RBUTTONUP, 0, 0) ' to send rmb to client
+                SendMouseInput(MouseEventF.RightDown Or MouseEventF.RightUp)
+            Else
+                SendMouseInput(MouseEventF.MiddleDown)
+                Await Task.Delay(50)
+                SendMouseInput(MouseEventF.MiddleUp)
             End If
-            If e.Button = MouseButtons.Middle Then
-                SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, 0, 0)
-                Await Task.Delay(45)
-                If PnlEqLock.Contains(MousePosition) Then
-                    SendMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0) 'send and untrap middlemouse. couses left click sometimes
-                    Debug.Print("mmbug")
-                End If
-            End If
-        Else 'isSDL
-            If (e.Button = MouseButtons.Right OrElse e.Button = MouseButtons.Middle) AndAlso PnlEqLock.Contains(MousePosition) Then
-                EQLockClick = True
-                PnlEqLock.Visible = False
-                Dim inpt() As INPUT = {
-                        New INPUT With {
-                            .type = InputType.INPUT_MOUSE,
-                            .u = New InputUnion With {
-                                .mi = New MOUSEINPUT
-                            }
-                        }
-                    }
-                If e.Button = MouseButtons.Right Then
-                    inpt(0).u.mi.dwFlags = MouseEventF.RightDown Or MouseEventF.RightUp
-                    SendInput(1, inpt, Marshal.SizeOf(GetType(INPUT)))
-                Else
-                    inpt(0).u.mi.dwFlags = MouseEventF.MiddleDown
-                    SendInput(1, inpt, Marshal.SizeOf(GetType(INPUT)))
-                    Await Task.Delay(50)
-                    inpt(0).u.mi.dwFlags = MouseEventF.MiddleUp
-                    SendInput(1, inpt, Marshal.SizeOf(GetType(INPUT)))
-                End If
-                Await Task.Delay(25)
-                EQLockClick = False
-            End If
+            Await Task.Delay(25)
+            EQLockClick = False
         End If
-        Try
-            Dim unused = Task.Run(Sub() AltPP.Activate())
-        Catch
-        End Try
+        Await Task.Run(Sub() AltPP.Activate())
     End Sub
 
     Private Sub PnlEqLock_MouseHover(sender As Panel, e As MouseEventArgs) Handles PnlEqLock.MouseMove
