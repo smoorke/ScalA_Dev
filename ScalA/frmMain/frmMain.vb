@@ -1970,15 +1970,19 @@ Module dBug
 
         Dim sw As Stopwatch = Stopwatch.StartNew
         For Each scrn As Screen In Screen.AllScreens
-            Debug.Print($"{scrn.DeviceName} {scrn.Bounds} {scrn.ScalingPercent}")
+            Debug.Print($"{scrn.DeviceName} {scrn.Bounds} {scrn.ScalingPercent}%")
         Next
         Debug.Print(sw.ElapsedMilliseconds)
-        Debug.Print("---")
+        Debug.Print("-PFE-")
+        sw.Restart()
+        Parallel.ForEach(Screen.AllScreens, Sub(scrn As Screen)
+                                                Debug.Print($"{scrn.DeviceName} {scrn.Bounds} {scrn.ScalingPercent}%")
+                                            End Sub)
+        Debug.Print(sw.ElapsedMilliseconds)
+        Debug.Print("-TSK-")
         sw.Restart()
         For Each scrn As Screen In Screen.AllScreens
-            Dim tsk = scrn.ScalingPercentTask
-            Await tsk
-            Debug.Print($"{scrn.DeviceName} {scrn.Bounds} {tsk.Result}")
+            Debug.Print($"{scrn.DeviceName} {scrn.Bounds} {Await scrn.ScalingPercentTask}%")
         Next
         Debug.Print(sw.ElapsedMilliseconds)
         sw.Stop()
