@@ -366,21 +366,22 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     '    Return Me.Name()
     'End Function
 
-    Shared ReadOnly exeIconCache As New Concurrent.ConcurrentDictionary(Of Integer, Tuple(Of Icon, String)) 'PID, icon, name
+    Shared ReadOnly nameIconCache As New Concurrent.ConcurrentDictionary(Of Integer, ValueTuple(Of Icon, String)) 'PID, icon, name
     Shared ReadOnly pathIcnCache As New Concurrent.ConcurrentDictionary(Of String, Icon) 'path, icon
     Public Function GetIcon(Optional invalidateCache As Boolean = False) As Icon
         If invalidateCache Then
-            exeIconCache.Clear()
+            nameIconCache.Clear()
             pathIcnCache.Clear()
         End If
         Try
             Dim ID As Integer = _proc?.Id
-            Dim exeIco As New Tuple(Of Icon, String)(Nothing, Nothing)
 
-            If ID > 0 AndAlso exeIconCache.TryGetValue(ID, exeIco) AndAlso exeIco.Item2 = Me.Name Then
-                Return exeIco.Item1
+            Dim namIco As (ico As Icon, name As String) = (Nothing, Nothing)
+
+            If ID > 0 AndAlso nameIconCache.TryGetValue(ID, namIco) AndAlso namIco.name = Me.Name Then
+                Return namIco.ico
             Else
-                exeIconCache.TryRemove(ID, Nothing)
+                nameIconCache.TryRemove(ID, Nothing)
             End If
 
             Dim path As String = _proc?.Path()
@@ -388,12 +389,12 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             If Not String.IsNullOrEmpty(path) Then
                 Dim ico As Icon = Nothing
                 If pathIcnCache.TryGetValue(path, ico) Then
-                    exeIconCache.TryAdd(ID, New Tuple(Of Icon, String)(ico, Me.Name))
+                    nameIconCache.TryAdd(ID, (ico, Me.Name))
                     Return ico
                 Else
                     ico = Icon.ExtractAssociatedIcon(path)
                     If ico IsNot Nothing Then
-                        exeIconCache.TryAdd(ID, New Tuple(Of Icon, String)(ico, Me.Name))
+                        nameIconCache.TryAdd(ID, (ico, Me.Name))
                         pathIcnCache.TryAdd(path, ico)
                     End If
                     Return ico
