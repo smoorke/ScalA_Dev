@@ -384,7 +384,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 nameIconCache.TryRemove(ID, Nothing)
             End If
 
-            Dim path As String = _proc?.Path()
+            Dim path As String = Me.Path()
 
             If Not String.IsNullOrEmpty(path) Then
                 Dim ico As Icon = Nothing
@@ -406,6 +406,12 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End Try
 
         Return Nothing
+    End Function
+
+    Dim pathCache As String = Nothing
+    Private Function Path() As String
+        If String.IsNullOrEmpty(pathCache) Then pathCache = _proc?.Path()
+        Return pathCache
     End Function
 
     Public Overrides Function Equals(obj As Object) As Boolean
