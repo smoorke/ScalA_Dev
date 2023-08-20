@@ -337,16 +337,18 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Private Shared classCache As String = String.Empty
     Private Shared classCacheSet As New HashSet(Of String)
     Private Shared ReadOnly pipe As Char() = {"|"c}
+    Private Shared ReadOnly sysMenClass As String() = {"#32768", "SysShadow"}
     ''' <summary>
-    ''' Returns True if WindowClass is in pipe seperated string of classes 
+    ''' Returns True if WindowClass is in My.settings.className 
     ''' </summary>
-    ''' <param name="classes">Pipe seperated string of classes</param>
     ''' <returns></returns>
-    Public Function HasClassNameIn(classes As String) As Boolean
+    ''' 
+    Public Function IsAstoniaClass() As Boolean
+        Dim classes = My.Settings.className
         If classCache <> classes Then
             classCacheSet.Clear()
             classCacheSet = classes.Split(pipe, StringSplitOptions.RemoveEmptyEntries) _
-                                   .Select(Function(wc) Strings.Trim(wc)).ToHashSet
+                                   .Select(Function(wc) Strings.Trim(wc)).Concat(sysMenClass).ToHashSet
             classCache = classes
         End If
         Return classCacheSet.Contains(Me.WindowClass)
@@ -429,7 +431,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     'End Operator
     Private Shared exeCache As IEnumerable(Of String) = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
     Private Shared exeSettingCache As String = My.Settings.exe
-    Private Shared Function EnumProcessesByNameArray(blacklist As IEnumerable(Of String)) As IEnumerable(Of AstoniaProcess)
+
+    Private Shared Function ListProcesses(blacklist As IEnumerable(Of String)) As List(Of AstoniaProcess)
         'todo move updating cache to frmSettings
         If exeSettingCache <> My.Settings.exe Then
             exeCache = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
@@ -440,26 +443,26 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                                Dim nam = ap.Name
                                Return Not blacklist.Contains(nam) AndAlso
                                      (Not My.Settings.Whitelist OrElse FrmMain.topSortList.Concat(FrmMain.botSortList).Contains(nam)) AndAlso
-                                      ap.HasClassNameIn(My.Settings.className & " | #32768 | SysShadow")
-                           End Function)
+                                      ap.IsAstoniaClass()
+                           End Function).ToList
     End Function
     Public Shared Function Enumerate(Optional useCache As Boolean = False) As IEnumerable(Of AstoniaProcess)
         Return AstoniaProcess.Enumerate({}, useCache)
     End Function
-    Private Shared _ProcCache As IEnumerable(Of AstoniaProcess) = Enumerable.Empty(Of AstoniaProcess)
+    Private Shared _ProcCache As New List(Of AstoniaProcess)
     Private Shared _CacheCounter As Integer = 0
 
     Public Shared Function Enumerate(blacklist As IEnumerable(Of String), Optional useCache As Boolean = False, Optional resetCacheFirst As Boolean = False) As IEnumerable(Of AstoniaProcess)
         If resetCacheFirst Then _CacheCounter = 0
         If useCache Then
             If _CacheCounter = 0 Then
-                _ProcCache = EnumProcessesByNameArray(blacklist).ToList
+                _ProcCache = ListProcesses(blacklist)
             End If
             _CacheCounter += 1
             If _CacheCounter > 5 Then _CacheCounter = 0
             Return _ProcCache
         End If
-        Return EnumProcessesByNameArray(blacklist)
+        Return ListProcesses(blacklist)
     End Function
 
     <System.Runtime.InteropServices.DllImport("user32.dll", SetLastError:=True)>
