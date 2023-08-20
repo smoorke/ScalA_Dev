@@ -356,7 +356,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public ReadOnly Property WindowClass() As String
         Get
             If Not String.IsNullOrEmpty(_wc) Then Return _wc
-            _wc = GetWindowClass(Me.MainWindowHandle)
+            If Me.MainWindowHandle <> IntPtr.Zero Then _wc = GetWindowClass(Me.MainWindowHandle)
             Return _wc
         End Get
     End Property
@@ -427,13 +427,14 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     '    Debug.Print("AP <>")
     '    Return Not left.Equals(right)
     'End Operator
-
-    Private Shared Function EnumProcessesByNameArray(strings() As String, blacklist As IEnumerable(Of String)) As IEnumerable(Of AstoniaProcess)
-        Dim IEnum As IEnumerable(Of Process) = Enumerable.Empty(Of Process)
-        For Each exe As String In strings
-            IEnum = IEnum.Concat(Process.GetProcessesByName(Trim(exe)))
-        Next
-        Return IEnum.Select(Function(p) New AstoniaProcess(p)) _
+    Private Shared exeCache As IEnumerable(Of Process) = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).SelectMany(Of Process)(Function(s) Process.GetProcessesByName(s.Trim))
+    Private Shared exeSettingCache As String = My.Settings.exe
+    Private Shared Function EnumProcessesByNameArray(blacklist As IEnumerable(Of String)) As IEnumerable(Of AstoniaProcess)
+        'todo move updating cache to frmSettings
+        If exeSettingCache <> My.Settings.exe Then
+            exeCache = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).SelectMany(Of Process)(Function(s) Process.GetProcessesByName(s.Trim))
+        End If
+        Return exeCache.Select(Function(p) New AstoniaProcess(p)) _
                     .Where(Function(ap)
                                Dim nam = ap.Name
                                Return Not blacklist.Contains(nam) AndAlso
@@ -451,13 +452,13 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         If resetCacheFirst Then _CacheCounter = 0
         If useCache Then
             If _CacheCounter = 0 Then
-                _ProcCache = EnumProcessesByNameArray(My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries), blacklist)
+                _ProcCache = EnumProcessesByNameArray(blacklist)
             End If
             _CacheCounter += 1
-            If _CacheCounter > 10 Then _CacheCounter = 0
+            If _CacheCounter > 100 Then _CacheCounter = 0
             Return _ProcCache
         End If
-        Return EnumProcessesByNameArray(My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries), blacklist)
+        Return EnumProcessesByNameArray(blacklist)
     End Function
 
     <System.Runtime.InteropServices.DllImport("user32.dll", SetLastError:=True)>
