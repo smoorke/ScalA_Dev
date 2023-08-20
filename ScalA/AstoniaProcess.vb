@@ -427,14 +427,15 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     '    Debug.Print("AP <>")
     '    Return Not left.Equals(right)
     'End Operator
-    Private Shared exeCache As IEnumerable(Of Process) = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).SelectMany(Of Process)(Function(s) Process.GetProcessesByName(s.Trim))
+    Private Shared exeCache As IEnumerable(Of String) = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
     Private Shared exeSettingCache As String = My.Settings.exe
     Private Shared Function EnumProcessesByNameArray(blacklist As IEnumerable(Of String)) As IEnumerable(Of AstoniaProcess)
         'todo move updating cache to frmSettings
         If exeSettingCache <> My.Settings.exe Then
-            exeCache = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).SelectMany(Of Process)(Function(s) Process.GetProcessesByName(s.Trim))
+            exeCache = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
         End If
-        Return exeCache.Select(Function(p) New AstoniaProcess(p)) _
+
+        Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p) New AstoniaProcess(p))) _
                     .Where(Function(ap)
                                Dim nam = ap.Name
                                Return Not blacklist.Contains(nam) AndAlso
@@ -452,10 +453,10 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         If resetCacheFirst Then _CacheCounter = 0
         If useCache Then
             If _CacheCounter = 0 Then
-                _ProcCache = EnumProcessesByNameArray(blacklist)
+                _ProcCache = EnumProcessesByNameArray(blacklist).ToList
             End If
             _CacheCounter += 1
-            If _CacheCounter > 100 Then _CacheCounter = 0
+            If _CacheCounter > 5 Then _CacheCounter = 0
             Return _ProcCache
         End If
         Return EnumProcessesByNameArray(blacklist)
