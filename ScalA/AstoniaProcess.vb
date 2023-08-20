@@ -916,22 +916,17 @@ Module ProcessExtensions
     Public Function Path(ByVal this As Process) As String
         Dim processPath As String = ""
 
-        ' The new QueryLimitedInformation flag is only available on Windows Vista and up.
-        If Environment.OSVersion.Version.Major >= 6 Then
-            Dim processHandle As IntPtr = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, False, this?.Id)
-            Try
-                If Not processHandle = IntPtr.Zero Then
-                    Dim buffer As New System.Text.StringBuilder(1024)
-                    If QueryFullProcessImageName(processHandle, 0, buffer, buffer.Capacity) Then
-                        processPath = buffer.ToString()
-                    End If
+        Dim processHandle As IntPtr = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, False, this?.Id)
+        Try
+            If Not processHandle = IntPtr.Zero Then
+                Dim buffer As New System.Text.StringBuilder(1024)
+                If QueryFullProcessImageName(processHandle, 0, buffer, buffer.Capacity) Then
+                    processPath = buffer.ToString()
                 End If
-            Finally
-                CloseHandle(processHandle)
-            End Try
-        Else
-            processPath = this.MainModule.FileName
-        End If
+            End If
+        Finally
+            CloseHandle(processHandle)
+        End Try
 
         Return processPath
     End Function

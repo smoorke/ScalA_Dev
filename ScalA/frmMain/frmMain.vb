@@ -285,6 +285,11 @@ Partial Public NotInheritable Class FrmMain
     Private Sub FrmMain_Load(sender As Form, e As EventArgs) Handles MyBase.Load
         CheckForIllegalCrossThreadCalls = True
 
+        If Environment.OSVersion.Version.Major < 6 Then
+            MessageBox.Show("ScalA requires Windows Vista or later", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            End
+        End If
+
         If My.Settings.SingleInstance AndAlso IPC.AlreadyOpen Then
             IPC.RequestActivation = True
             End
