@@ -257,6 +257,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 memCache.Set(_proc.Id, nam, cacheItemPolicy)
                 Return nam
             Catch
+                Debug.Print("Name exception")
                 Return "Someone"
             End Try
         End Get
@@ -418,7 +419,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
     Public Overrides Function Equals(obj As Object) As Boolean
         Dim proc2 As AstoniaProcess = TryCast(obj, AstoniaProcess)
-        Debug.Print($"obj {proc2?._proc?.Id} eqals _proc {_proc?.Id}")
+        'Debug.Print($"obj {proc2?._proc?.Id} eqals _proc {_proc?.Id}")
         Return proc2?._proc IsNot Nothing AndAlso Me._proc IsNot Nothing AndAlso proc2._proc.Id = Me._proc.Id AndAlso proc2.Name = Me.Name
     End Function
     'Public Shared Operator =(left As AstoniaProcess, right As AstoniaProcess) As Boolean
@@ -432,13 +433,13 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Private Shared exeCache As IEnumerable(Of String) = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
     Private Shared exeSettingCache As String = My.Settings.exe
 
-    Private Shared Function ListProcesses(blacklist As IEnumerable(Of String)) As List(Of AstoniaProcess)
+    Private Shared Function ListProcesses(blacklist As IEnumerable(Of String), useCache As Boolean) As List(Of AstoniaProcess)
         'todo move updating cache to frmSettings
         If exeSettingCache <> My.Settings.exe Then
             exeCache = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
         End If
 
-        Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p) New AstoniaProcess(p))) _
+        Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p) If(useCache, GetFromCache(p), New AstoniaProcess(p)))) _
                     .Where(Function(ap)
                                Dim nam = ap.Name
                                Return Not blacklist.Contains(nam) AndAlso
@@ -451,18 +452,31 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     End Function
     Private Shared _ProcCache As New List(Of AstoniaProcess)
     Private Shared _CacheCounter As Integer = 0
+    Private Shared Function GetFromCache(p As Process) As AstoniaProcess
+
+        Return If(_ProcCache.FirstOrDefault(Function(ap)
+                                                If ap.HasExited Then Return False
+                                                Return ap.Id = p.Id
+                                            End Function), New AstoniaProcess(p))
+    End Function
 
     Public Shared Function Enumerate(blacklist As IEnumerable(Of String), Optional useCache As Boolean = False, Optional resetCacheFirst As Boolean = False) As IEnumerable(Of AstoniaProcess)
-        If resetCacheFirst Then _CacheCounter = 0
+        If resetCacheFirst Then
+            _CacheCounter = 0
+            _ProcCache.Clear()
+        End If
         If useCache Then
             If _CacheCounter = 0 Then
-                _ProcCache = ListProcesses(blacklist)
+                _ProcCache = ListProcesses(blacklist, True)
             End If
             _CacheCounter += 1
-            If _CacheCounter > 5 Then _CacheCounter = 0
+            If _CacheCounter > 5 Then
+                _CacheCounter = 0
+                _ProcCache.RemoveAll(Function(ap) ap.HasExited)
+            End If
             Return _ProcCache
         End If
-        Return ListProcesses(blacklist)
+        Return ListProcesses(blacklist, False)
     End Function
 
     <System.Runtime.InteropServices.DllImport("user32.dll", SetLastError:=True)>
@@ -815,14 +829,16 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Dispose(disposing:=True)
         GC.SuppressFinalize(Me)
     End Sub
-
+    Dim Elevated As Boolean = False
     Friend Function HasExited() As Boolean
         Try
             If _proc Is Nothing Then Return True
-            Return _proc?.HasExited
+            If Elevated Then Return Not _proc.HasExitedSafe
+            Return _proc.HasExited
         Catch ex As Exception
             Debug.Print("HasExited Exception")
-            Return False
+            Elevated = True
+            Return Not _proc.HasExitedSafe
         End Try
     End Function
 End Class
@@ -899,8 +915,10 @@ Module ProcessExtensions
     <System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError:=True)>
     Private Function CloseHandle(hHandle As IntPtr) As Boolean
     End Function
+    <System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError:=True)>
+    Private Function GetExitCodeProcess(hHandle As IntPtr, ByRef eCode As Integer) As Boolean : End Function
     Enum ProcessAccessFlags As UInteger
-        All = &H1F0FFF
+        All = &H1FFFFF
         Terminate = &H1
         CreateThread = &H2
         VMOperation = &H8
@@ -912,6 +930,17 @@ Module ProcessExtensions
         QueryLimitedInformation = &H1000
         Synchronize = &H100000
     End Enum
+    <System.Runtime.CompilerServices.Extension()>
+    Public Function HasExitedSafe(ByVal this As Process) As Boolean
+        Dim exitCode As Integer = 0
+        Dim processHandle As IntPtr = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, False, this.Id)
+        Try
+            If processHandle <> IntPtr.Zero AndAlso GetExitCodeProcess(processHandle, exitCode) Then Return exitCode <> 259
+        Finally
+            CloseHandle(processHandle)
+        End Try
+        Return True
+    End Function
     ''' <summary>
     ''' Returns the executable path of a process.
     ''' </summary>
