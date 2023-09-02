@@ -445,6 +445,7 @@ Partial Public NotInheritable Class FrmMain
 
         cmsAlt.Renderer = New ToolStripProfessionalRenderer(New CustomColorTable)
         cmsQuickLaunch.Renderer = cmsAlt.Renderer
+        cmsQuit.Renderer = cmsAlt.Renderer
 
         If My.Settings.DarkMode Then ApplyTheme()
 
@@ -1340,8 +1341,8 @@ Partial Public NotInheritable Class FrmMain
                     startThumbsDict.TryRemove(but.AP.Id, Nothing)
                 End If
                 but.AP = Nothing
-                End If
-                i += 1
+            End If
+            i += 1
         Next
 
         pnlMessage.Size = newSZ

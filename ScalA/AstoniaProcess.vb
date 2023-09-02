@@ -41,6 +41,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End Get
     End Property
     Public Sub CloseOrKill()
+        If _proc Is Nothing Then Exit Sub
         Try
             Dim dummy = _proc.HasExited() 'test to see if proc is elevated
             _proc.CloseMainWindow()

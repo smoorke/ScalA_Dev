@@ -5,6 +5,56 @@ Public NotInheritable Class ContextMenus
 End Class
 Partial Public NotInheritable Class FrmMain
 
+#Region "cmsQuit"
+    Private Sub CloseScalAToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseScalAToolStripMenuItem.Click
+        btnQuit.PerformClick()
+    End Sub
+
+    Private Sub CloseAstoniaToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseAstoniaToolStripMenuItem.Click
+        AltPP?.CloseOrKill()
+    End Sub
+
+    Private Async Sub CloseBothToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseBothToolStripMenuItem.Click
+        AltPP?.CloseOrKill()
+        Await Task.Run(Sub()
+                           While Not AltPP?.HasExited()
+                               Threading.Thread.Sleep(50)
+                           End While
+                       End Sub)
+        btnQuit.PerformClick()
+    End Sub
+
+    Private Async Sub CloseAllToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseAllToolStripMenuItem.Click
+        Parallel.ForEach(AstoniaProcess.Enumerate(False), Sub(ap) ap.CloseOrKill())
+        Await Task.Run(Sub()
+                           While AstoniaProcess.Enumerate(False).Count > 0
+                               Threading.Thread.Sleep(50)
+                           End While
+                       End Sub)
+        btnQuit.PerformClick()
+    End Sub
+
+    Private Sub cmsQuit_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuit.Opening
+        If cboAlt.SelectedIndex = 0 Then
+            CloseAstoniaToolStripMenuItem.Visible = False
+            CloseBothToolStripMenuItem.Visible = False
+        Else
+            CloseAstoniaToolStripMenuItem.Text = $"Close {AltPP.Name}"
+            CloseBothToolStripMenuItem.Text = $"Close {AltPP.Name} && ScalA"
+            CloseAstoniaToolStripMenuItem.Visible = True
+            CloseBothToolStripMenuItem.Visible = True
+        End If
+
+        If AstoniaProcess.Enumerate(False).Count = 0 Then
+            CloseAllSeparator.Visible = False
+            CloseAllToolStripMenuItem.Visible = False
+        Else
+            CloseAllSeparator.Visible = True
+            CloseAllToolStripMenuItem.Visible = True
+        End If
+    End Sub
+#End Region
+
     Private Sub CloseToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseToolStripMenuItem.Click
         'PostMessage(CType(sender.Tag, AstoniaProcess).MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
         CType(sender.Tag, AstoniaProcess)?.CloseOrKill()
@@ -30,7 +80,7 @@ Partial Public NotInheritable Class FrmMain
             SetWindowPos(pp.MainWindowHandle, SWP_HWND.NOTOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
         End If
     End Sub
-    Private Shared closeAllToolStripMenuItem As ToolStripMenuItem = Nothing
+    Private Shared closeAllIdleToolStripMenuItem As ToolStripMenuItem = Nothing
     Private Sub CmsAlt_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsAlt.Opening
         If My.Computer.Keyboard.ShiftKeyDown OrElse My.Computer.Keyboard.CtrlKeyDown Then
             cmsQuickLaunch.Show(sender.SourceControl, sender.SourceControl.PointToClient(MousePosition))
@@ -69,8 +119,8 @@ Partial Public NotInheritable Class FrmMain
 
         SortSubToolStripMenuItem.Tag = pp
 
-        If sender.Items.Contains(closeAllToolStripMenuItem) Then
-            sender.Items.Remove(closeAllToolStripMenuItem)
+        If sender.Items.Contains(CloseAllToolStripMenuItem) Then
+            sender.Items.Remove(CloseAllToolStripMenuItem)
         End If
 
         sender.Items.RemoveAt(sender.Items.Count - 1)
@@ -80,8 +130,8 @@ Partial Public NotInheritable Class FrmMain
         Dim somecount As Integer = AstoniaProcess.Enumerate().Count(Function(p) p.Name = "Someone")
         Debug.Print($"somecount {somecount}")
         If somecount > 0 AndAlso Not (other = "Other " AndAlso somecount = 1) Then
-            closeAllToolStripMenuItem = sender.Items.Add($"Close All {other}Someone", My.Resources.F12, AddressOf CloseAllIdle_Click)
-            closeAllToolStripMenuItem.Tag = pp
+            CloseAllToolStripMenuItem = sender.Items.Add($"Close All {other}Someone", My.Resources.F12, AddressOf CloseAllIdle_Click)
+            CloseAllToolStripMenuItem.Tag = pp
         End If
     End Sub
 
@@ -1057,5 +1107,6 @@ Partial Public NotInheritable Class FrmMain
             End If
         End If
     End Sub
+
 
 End Class

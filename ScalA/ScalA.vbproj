@@ -200,6 +200,9 @@
     <None Include="Resources\cornerSE.png" />
     <None Include="Resources\cornerSW.png" />
     <None Include="Resources\About.png" />
+    <None Include="Resources\Close.png" />
+    <None Include="Resources\CloseAll.png" />
+    <None Include="Resources\CloseBoth.png" />
     <Content Include="Resources\moa3.ico" />
     <None Include="Resources\F12.png" />
     <None Include="Resources\moa3.png" />

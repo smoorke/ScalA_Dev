@@ -44,6 +44,12 @@ Partial NotInheritable Class FrmMain
         Me.btnMin = New System.Windows.Forms.Button()
         Me.btnMax = New System.Windows.Forms.Button()
         Me.btnQuit = New System.Windows.Forms.Button()
+        Me.cmsQuit = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.CloseScalAToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.CloseAstoniaToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.CloseBothToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.CloseAllSeparator = New System.Windows.Forms.ToolStripSeparator()
+        Me.CloseAllToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.tmrTick = New System.Windows.Forms.Timer(Me.components)
         Me.tmrOverview = New System.Windows.Forms.Timer(Me.components)
         Me.tmrActive = New System.Windows.Forms.Timer(Me.components)
@@ -79,6 +85,7 @@ Partial NotInheritable Class FrmMain
         Me.pnlUpdate.SuspendLayout()
         CType(Me.pbUpdateAvailable, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.pnlButtons.SuspendLayout()
+        Me.cmsQuit.SuspendLayout()
         Me.cmsAlt.SuspendLayout()
         Me.pnlOverview.SuspendLayout()
         Me.pnlMessage.SuspendLayout()
@@ -297,6 +304,7 @@ Partial NotInheritable Class FrmMain
         '
         'btnQuit
         '
+        Me.btnQuit.ContextMenuStrip = Me.cmsQuit
         Me.btnQuit.Dock = System.Windows.Forms.DockStyle.Right
         Me.btnQuit.FlatAppearance.BorderColor = System.Drawing.SystemColors.Control
         Me.btnQuit.FlatAppearance.BorderSize = 0
@@ -312,6 +320,45 @@ Partial NotInheritable Class FrmMain
         Me.btnQuit.Text = "╳"
         Me.ttMain.SetToolTip(Me.btnQuit, "Close ScalA")
         Me.btnQuit.UseVisualStyleBackColor = True
+        '
+        'cmsQuit
+        '
+        Me.cmsQuit.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CloseScalAToolStripMenuItem, Me.CloseAstoniaToolStripMenuItem, Me.CloseBothToolStripMenuItem, Me.CloseAllSeparator, Me.CloseAllToolStripMenuItem})
+        Me.cmsQuit.Name = "cmsQuit"
+        Me.cmsQuit.Size = New System.Drawing.Size(182, 98)
+        '
+        'CloseScalAToolStripMenuItem
+        '
+        Me.CloseScalAToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.Close
+        Me.CloseScalAToolStripMenuItem.Name = "CloseScalAToolStripMenuItem"
+        Me.CloseScalAToolStripMenuItem.Size = New System.Drawing.Size(181, 22)
+        Me.CloseScalAToolStripMenuItem.Text = "Close ScalA"
+        '
+        'CloseAstoniaToolStripMenuItem
+        '
+        Me.CloseAstoniaToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.F12
+        Me.CloseAstoniaToolStripMenuItem.Name = "CloseAstoniaToolStripMenuItem"
+        Me.CloseAstoniaToolStripMenuItem.Size = New System.Drawing.Size(181, 22)
+        Me.CloseAstoniaToolStripMenuItem.Text = "Close Astonia"
+        '
+        'CloseBothToolStripMenuItem
+        '
+        Me.CloseBothToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.CloseBoth
+        Me.CloseBothToolStripMenuItem.Name = "CloseBothToolStripMenuItem"
+        Me.CloseBothToolStripMenuItem.Size = New System.Drawing.Size(181, 22)
+        Me.CloseBothToolStripMenuItem.Text = "Close Name && Scala"
+        '
+        'CloseAllSeparator
+        '
+        Me.CloseAllSeparator.Name = "CloseAllSeparator"
+        Me.CloseAllSeparator.Size = New System.Drawing.Size(178, 6)
+        '
+        'CloseAllToolStripMenuItem
+        '
+        Me.CloseAllToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.CloseAll
+        Me.CloseAllToolStripMenuItem.Name = "CloseAllToolStripMenuItem"
+        Me.CloseAllToolStripMenuItem.Size = New System.Drawing.Size(181, 22)
+        Me.CloseAllToolStripMenuItem.Text = "Close All && ScalA"
         '
         'tmrTick
         '
@@ -536,6 +583,7 @@ Partial NotInheritable Class FrmMain
         Me.pnlUpdate.ResumeLayout(False)
         CType(Me.pbUpdateAvailable, System.ComponentModel.ISupportInitialize).EndInit()
         Me.pnlButtons.ResumeLayout(False)
+        Me.cmsQuit.ResumeLayout(False)
         Me.cmsAlt.ResumeLayout(False)
         Me.pnlOverview.ResumeLayout(False)
         Me.pnlMessage.ResumeLayout(False)
@@ -591,4 +639,10 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents btnStart As ThemedStartButton
     Friend WithEvents pnlUpdate As Panel
     Friend WithEvents pbUpdateAvailable As PictureBox
+    Friend WithEvents cmsQuit As ContextMenuStrip
+    Friend WithEvents CloseScalAToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents CloseAstoniaToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents CloseAllSeparator As ToolStripSeparator
+    Friend WithEvents CloseAllToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents CloseBothToolStripMenuItem As ToolStripMenuItem
 End Class
