@@ -248,7 +248,7 @@ Partial Public NotInheritable Class FrmMain
         Dim menuItems As New List(Of ToolStripItem)
         Dim isEmpty As Boolean = True
         'Const ICONTIMEOUT = 50
-        Const TOTALTIMEOUT = 3000
+        Const TOTALTIMEOUT = 2000
         Dim timedout As Boolean = False
 
         Dim watch As Stopwatch = Stopwatch.StartNew()
@@ -321,7 +321,7 @@ Partial Public NotInheritable Class FrmMain
         Next
 
         menuItems = Dirs.OrderBy(Function(d) d.Text, nsSorter).Concat(
-                   Files.OrderBy(Function(f) f.Text, nsSorter)).ToList
+                   Files.OrderBy(Function(f) f.Tag, nsSorter)).ToList
 
         If timedout Then
             menuItems.Add(New ToolStripMenuItem("<TimedOut>") With {.Enabled = False})
