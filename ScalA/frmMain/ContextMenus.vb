@@ -26,11 +26,16 @@ Partial Public NotInheritable Class FrmMain
 
     Private Async Sub CloseAllToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseAllToolStripMenuItem.Click
         Parallel.ForEach(AstoniaProcess.Enumerate(False), Sub(ap) ap.CloseOrKill())
+        Dim cts As New Threading.CancellationTokenSource()
+        cts.CancelAfter(500)
+        Dim ct = cts.Token
         Await Task.Run(Sub()
-                           While AstoniaProcess.Enumerate(False).Count > 0
-                               Threading.Thread.Sleep(50)
+                           Dim exes = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
+                           While Not ct.IsCancellationRequested AndAlso
+                                   exes.SelectMany(Function(s As String) Process.GetProcessesByName(s).Select(Function(p) p.HasClassNameIn(My.Settings.className))).Count > 0
+                               Threading.Thread.Sleep(34)
                            End While
-                       End Sub)
+                       End Sub, ct)
         btnQuit.PerformClick()
     End Sub
 
