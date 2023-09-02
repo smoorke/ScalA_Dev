@@ -1623,7 +1623,19 @@ Partial Public NotInheritable Class FrmMain
             cmbResolution.ForeColor = Color.FromArgb(&HFF666666)
         End If
     End Sub
-
+    Private Sub CloseErrorDialog()
+        Try
+            Dim errorHwnd = FindWindow("#32770", "error")
+            If errorHwnd Then
+                If FindWindowEx(errorHwnd, Nothing, "Static", "Copy new->moac failed: 32") Then
+                    Dim butHandle = FindWindowEx(errorHwnd, Nothing, "Button", "OK")
+                    SendMessage(butHandle, &HF5, IntPtr.Zero, IntPtr.Zero)
+                    Debug.Print("Error dialog closed")
+                End If
+            End If
+        Catch
+        End Try
+    End Sub
     Private Async Sub TmrActive_Tick(sender As Timer, e As EventArgs) Handles tmrActive.Tick
 
         Dim activeID As Integer = GetActiveProcessID() ' this returns 0 when switching tasks
@@ -1725,20 +1737,7 @@ Partial Public NotInheritable Class FrmMain
         ''locked 🔒
         ''unlocked 🔓
 
-        'close error dialog
-        Dim dummy = Task.Run(Sub()
-                                 Try
-                                     Dim errorHwnd = FindWindow("#32770", "error")
-                                     If errorHwnd Then
-                                         If FindWindowEx(errorHwnd, Nothing, "Static", "Copy new->moac failed: 32") Then
-                                             Dim butHandle = FindWindowEx(errorHwnd, Nothing, "Button", "OK")
-                                             SendMessage(butHandle, &HF5, IntPtr.Zero, IntPtr.Zero)
-                                             Debug.Print("Error dialog closed")
-                                         End If
-                                     End If
-                                 Catch
-                                 End Try
-                             End Sub)
+        Dim dummy = Task.Run(Sub() CloseErrorDialog())
 
         Dim setbehind As IntPtr = AltPP?.MainWindowHandle
 
@@ -1924,6 +1923,37 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
+    Private Sub BtnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
+
+    End Sub
+
+    Private Sub Various_MouseUp(sender As Object, e As MouseEventArgs) Handles pnlSys.MouseUp, pnlButtons.MouseUp, MyBase.MouseUp, cmbResolution.MouseUp, ChkEqLock.MouseUp, cboAlt.MouseUp, btnStart.MouseUp, btnQuit.MouseUp
+
+    End Sub
+
+    Private Sub CmbResolution_DropDown(sender As Object, e As EventArgs) Handles cmbResolution.DropDown
+
+    End Sub
+
+    Private Sub CmbResolution_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cmbResolution.SelectedIndexChanged
+
+    End Sub
+
+    Private Sub ComboBoxes_DropDownClosed(sender As Object, e As EventArgs) Handles cmbResolution.DropDownClosed, cboAlt.DropDownClosed
+
+    End Sub
+
+    Private Sub CmbResolution_MouseDown(sender As Object, e As MouseEventArgs) Handles cmbResolution.MouseDown
+
+    End Sub
+
+    Private Sub CboAlt_DropDown(sender As Object, e As EventArgs) Handles cboAlt.DropDown
+
+    End Sub
+
+    Private Sub CboAlt_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboAlt.SelectedIndexChanged
+
+    End Sub
 End Class
 
 #If DEBUG Then

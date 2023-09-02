@@ -47,6 +47,7 @@ Partial NotInheritable Class FrmMain
         Me.cmsQuit = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.CloseScalAToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CloseAstoniaToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.CloseAllIdleToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CloseBothToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CloseAllSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.CloseAllToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -323,9 +324,9 @@ Partial NotInheritable Class FrmMain
         '
         'cmsQuit
         '
-        Me.cmsQuit.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CloseScalAToolStripMenuItem, Me.CloseAstoniaToolStripMenuItem, Me.CloseBothToolStripMenuItem, Me.CloseAllSeparator, Me.CloseAllToolStripMenuItem})
+        Me.cmsQuit.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CloseScalAToolStripMenuItem, Me.CloseAstoniaToolStripMenuItem, Me.CloseAllIdleToolStripMenuItem, Me.CloseBothToolStripMenuItem, Me.CloseAllSeparator, Me.CloseAllToolStripMenuItem})
         Me.cmsQuit.Name = "cmsQuit"
-        Me.cmsQuit.Size = New System.Drawing.Size(182, 98)
+        Me.cmsQuit.Size = New System.Drawing.Size(182, 120)
         '
         'CloseScalAToolStripMenuItem
         '
@@ -340,6 +341,13 @@ Partial NotInheritable Class FrmMain
         Me.CloseAstoniaToolStripMenuItem.Name = "CloseAstoniaToolStripMenuItem"
         Me.CloseAstoniaToolStripMenuItem.Size = New System.Drawing.Size(181, 22)
         Me.CloseAstoniaToolStripMenuItem.Text = "Close Astonia"
+        '
+        'CloseAllIdleToolStripMenuItem
+        '
+        Me.CloseAllIdleToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.moreF12
+        Me.CloseAllIdleToolStripMenuItem.Name = "CloseAllIdleToolStripMenuItem"
+        Me.CloseAllIdleToolStripMenuItem.Size = New System.Drawing.Size(181, 22)
+        Me.CloseAllIdleToolStripMenuItem.Text = "Close All Someone"
         '
         'CloseBothToolStripMenuItem
         '
@@ -645,4 +653,5 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents CloseAllSeparator As ToolStripSeparator
     Friend WithEvents CloseAllToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents CloseBothToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents CloseAllIdleToolStripMenuItem As ToolStripMenuItem
 End Class

@@ -27,6 +27,8 @@ Partial Public NotInheritable Class FrmMain
     Private Async Sub CloseAllToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseAllToolStripMenuItem.Click
         tmrOverview.Stop()
         tmrTick.Stop()
+        tmrActive.Stop()
+        WindowState = FormWindowState.Minimized
         Dim procs = AstoniaProcess.Enumerate(False).ToList
         Parallel.ForEach(procs, Sub(ap) ap.CloseOrKill())
 
@@ -36,11 +38,11 @@ Partial Public NotInheritable Class FrmMain
         Await Task.Run(Sub()
                            While Not ct.IsCancellationRequested AndAlso
                                procs.Any(Function(ap As AstoniaProcess) Not ap.HasExited)
+                               CloseErrorDialog()
                                Threading.Thread.Sleep(34)
                            End While
                        End Sub, ct)
         btnQuit.PerformClick()
-        End
     End Sub
 
     Private Sub cmsQuit_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuit.Opening
@@ -53,14 +55,21 @@ Partial Public NotInheritable Class FrmMain
             CloseAstoniaToolStripMenuItem.Visible = True
             CloseBothToolStripMenuItem.Visible = True
         End If
-
-        If AstoniaProcess.Enumerate(False).Count = 0 Then
+        Dim aps = AstoniaProcess.Enumerate(False).ToList
+        If aps.Count <= 1 Then
             CloseAllSeparator.Visible = False
             CloseAllToolStripMenuItem.Visible = False
         Else
             CloseAllSeparator.Visible = True
             CloseAllToolStripMenuItem.Visible = True
         End If
+        If aps.Any(Function(ap) ap.Name = "Someone") Then
+            CloseAllIdleToolStripMenuItem.Visible = True
+        Else
+            CloseAllIdleToolStripMenuItem.Visible = False
+        End If
+
+
     End Sub
 #End Region
 
@@ -89,7 +98,7 @@ Partial Public NotInheritable Class FrmMain
             SetWindowPos(pp.MainWindowHandle, SWP_HWND.NOTOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
         End If
     End Sub
-    Private Shared closeAllIdleToolStripMenuItem As ToolStripMenuItem = Nothing
+    Private Shared closeAllIdleTSMI As ToolStripMenuItem = Nothing
     Private Sub CmsAlt_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsAlt.Opening
         If My.Computer.Keyboard.ShiftKeyDown OrElse My.Computer.Keyboard.CtrlKeyDown Then
             cmsQuickLaunch.Show(sender.SourceControl, sender.SourceControl.PointToClient(MousePosition))
@@ -242,7 +251,7 @@ Partial Public NotInheritable Class FrmMain
         apSorter = New AstoniaProcessSorter(topSortList, botSortList)
 
     End Sub
-    Private Sub CloseAllIdle_Click(sender As ToolStripMenuItem, e As EventArgs) 'Handles closeAllToolStripMenuItem.click
+    Private Sub CloseAllIdle_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseAllIdleToolStripMenuItem.Click
 
         For Each pp As AstoniaProcess In AstoniaProcess.Enumerate().Where(Function(p As AstoniaProcess) p.Name = "Someone")
             If sender.Tag?.id = pp.Id AndAlso sender.Tag?.name = "Someone" Then Continue For

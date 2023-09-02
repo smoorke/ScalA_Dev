@@ -834,12 +834,12 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Friend Function HasExited() As Boolean
         Try
             If _proc Is Nothing Then Return True
-            If Elevated Then Return Not _proc.HasExitedSafe
+            If Elevated Then Return _proc.HasExitedSafe
             Return _proc.HasExited
         Catch ex As Exception
             Debug.Print("HasExited Exception")
             Elevated = True
-            Return Not _proc.HasExitedSafe
+            Return _proc.HasExitedSafe
         End Try
     End Function
 End Class
