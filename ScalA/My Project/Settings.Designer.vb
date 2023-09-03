@@ -595,6 +595,66 @@ Namespace My
                 Me("MinMin") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property CloseAll() As Boolean
+            Get
+                Return CType(Me("CloseAll"),Boolean)
+            End Get
+            Set
+                Me("CloseAll") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("2")>  _
+        Public Property CloseAllCtrl() As Integer
+            Get
+                Return CType(Me("CloseAllCtrl"),Integer)
+            End Get
+            Set
+                Me("CloseAllCtrl") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("4")>  _
+        Public Property CloseAllShift() As Integer
+            Get
+                Return CType(Me("CloseAllShift"),Integer)
+            End Get
+            Set
+                Me("CloseAllShift") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property CloseAllAlt() As Integer
+            Get
+                Return CType(Me("CloseAllAlt"),Integer)
+            End Get
+            Set
+                Me("CloseAllAlt") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("123")>  _
+        Public Property CloseAllKey() As Integer
+            Get
+                Return CType(Me("CloseAllKey"),Integer)
+            End Get
+            Set
+                Me("CloseAllKey") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

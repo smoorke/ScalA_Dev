@@ -7,6 +7,7 @@ Partial NotInheritable Class FrmMain
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case Hotkey.WM_HOTKEY
+                Debug.Print($"Hotkey {m.WParam} pressed")
                 Select Case m.WParam
                     Case 1 'ctrl-tab
                         'only preform switch when astonia or scala Is active
@@ -32,6 +33,8 @@ Partial NotInheritable Class FrmMain
                         Cycle()
                     Case 3 'ctrl-shift-space
                         Cycle(True)
+                    Case 4
+                        CloseAllToolStripMenuItem_Click(New ToolStripMenuItem, New EventArgs)
                 End Select
             Case WM_SYSCOMMAND
                 Select Case m.WParam

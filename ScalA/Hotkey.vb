@@ -8,7 +8,7 @@
     Private Declare Function UnregisterHotKey Lib "user32" (ByVal hwnd As IntPtr, ByVal id As Integer) As Integer
 
     Public Const WM_HOTKEY As Integer = &H312
-
+    <Flags()>
     Enum KeyModifier
         None = 0
         Alt = &H1
@@ -25,7 +25,8 @@
     Public Shared Sub RegisterHotkey(ByRef sourceForm As Form, ByVal hotkeyID As Integer, ByVal modifier As KeyModifier, ByVal triggerKey As Keys)
         Try
             If Not _HotkeyList.Contains(hotkeyID) Then
-                RegisterHotKey(sourceForm.Handle, hotkeyID, modifier, triggerKey)
+                Dim ret = RegisterHotKey(sourceForm.Handle, hotkeyID, modifier, triggerKey)
+                Debug.Print($"regHK {hotkeyID} {modifier} {triggerKey} {ret}")
                 _HotkeyList.Add(hotkeyID)
             End If
         Catch ex As Exception

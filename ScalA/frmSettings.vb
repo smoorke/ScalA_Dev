@@ -62,12 +62,20 @@ Public NotInheritable Class FrmSettings
 
         txtCycleKeyUp.Text = keyNames(My.Settings.CycleKeyBwd)
         txtCycleKeyDown.Text = keyNames(My.Settings.CycleKeyFwd)
+        txtCloseAll.Text = keyNames(My.Settings.CloseAllKey)
 
         StoKey = My.Settings.StoKey
         CycleKeyDown = My.Settings.CycleKeyFwd
         CycleKeyUp = My.Settings.CycleKeyBwd
+        CloseAllKey = My.Settings.CloseAllKey
 
         chkCycleOnClose.Checked = My.Settings.CycleOnClose
+
+        chkCAALt.Checked = My.Settings.CloseAllAlt
+        chkCACtrl.Checked = My.Settings.CloseAllCtrl
+        chkCAShift.Checked = My.Settings.CloseAllShift
+
+        chkCloseAll.Checked = My.Settings.CloseAll
 
         txtTopSort.Text = My.Settings.topSort
         txtBotSort.Text = My.Settings.botSort
@@ -300,7 +308,7 @@ Public NotInheritable Class FrmSettings
         My.Settings.CycleKeyBwd = CycleKeyUp
 
         My.Settings.CycleAltKeyFwd = If(chkCycleDownAlt.Checked, Hotkey.KeyModifier.Alt, 0)
-        My.Settings.CycleShiftKeyFwd = If(chkCycleDownShift.Checked, Hotkey.KeyModifier.Shift, 0)
+        My.Settings.CycleShiftKeyFwd = If(chkCycleDownShift.Checked, Hotkey.KeyModifier.Alt, 0)
         My.Settings.CycleCtrlKeyFwd = If(chkCycleDownCtrl.Checked, Hotkey.KeyModifier.Control, 0)
 
         My.Settings.CycleAltKeyBwd = If(chkCycleUpAlt.Checked, Hotkey.KeyModifier.Alt, 0)
@@ -308,6 +316,13 @@ Public NotInheritable Class FrmSettings
         My.Settings.CycleCtrlKeyBwd = If(chkCycleUpCtrl.Checked, Hotkey.KeyModifier.Control, 0)
 
         My.Settings.CycleOnClose = chkCycleOnClose.Checked
+
+        My.Settings.CloseAll = chkCloseAll.Checked
+        My.Settings.CloseAllKey = CloseAllKey
+
+        My.Settings.CloseAllAlt = If(chkCAALt.Checked, Hotkey.KeyModifier.Alt, 0)
+        My.Settings.CloseAllShift = If(chkCAShift.Checked, Hotkey.KeyModifier.Shift, 0)
+        My.Settings.CloseAllCtrl = If(chkCACtrl.Checked, Hotkey.KeyModifier.Control, 0)
 
         My.Settings.topSort = txtTopSort.Text
         My.Settings.botSort = txtBotSort.Text
@@ -499,7 +514,7 @@ Public NotInheritable Class FrmSettings
                                     "", "", "", "", "", "", "", "", "", "", "", "[", "\", "]", "²", "", ' 208-223
                                     "", "", "\", "", "", "", "", "", "", "", "", "", "", "", "", "", ' 224-239
                                     "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""} ' 240-255
-    Dim StoKey, CycleKeyUp, CycleKeyDown As Integer
+    Dim StoKey, CycleKeyUp, CycleKeyDown, CloseAllKey As Integer
 
 
     Private Sub BtnRestore_Click(sender As Object, e As EventArgs) Handles btnRestore.Click
@@ -678,15 +693,23 @@ Public NotInheritable Class FrmSettings
         grpCycleShortcut.Enabled = sender.Checked
     End Sub
 
+    Private Sub chkCloseAll_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkCloseAll.CheckedChanged
+        grpCloseAllShortcut.Enabled = sender.Checked
+    End Sub
+
     Private Sub DefaultToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DefaultToolStripMenuItem.Click
         txtResolutions.Text = My.Settings.PropertyValues("resolutions").Property.DefaultValue
+    End Sub
+
+    Private Sub chkCloseAll_CheckedChanged(sender As Object, e As EventArgs)
+
     End Sub
 
     Private Sub LastSavedToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles LastSavedToolStripMenuItem.Click
         txtResolutions.Text = My.Settings.resolutions
     End Sub
 
-    Private Sub TxtShortcuts_PreviewKeyDown(sender As TextBox, e As PreviewKeyDownEventArgs) Handles txtStoKey.PreviewKeyDown, txtCycleKeyUp.PreviewKeyDown, txtCycleKeyDown.PreviewKeyDown
+    Private Sub TxtShortcuts_PreviewKeyDown(sender As TextBox, e As PreviewKeyDownEventArgs) Handles txtStoKey.PreviewKeyDown, txtCycleKeyUp.PreviewKeyDown, txtCycleKeyDown.PreviewKeyDown, txtCloseAll.PreviewKeyDown
         Debug.Print(e.KeyCode)
         If e.KeyCode = 16 OrElse 'shift
            e.KeyCode = 17 OrElse 'ctrl
@@ -705,10 +728,13 @@ Public NotInheritable Class FrmSettings
                 CycleKeyDown = e.KeyCode
             Case txtCycleKeyUp.Name
                 CycleKeyUp = e.KeyCode
+            Case txtCloseAll.Name
+                CloseAllKey = e.KeyCode
         End Select
+        Debug.Print($"key: {e.KeyCode}")
     End Sub
 
-    Private Sub TextBox1_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtStoKey.KeyPress, txtCycleKeyUp.KeyPress, txtCycleKeyDown.KeyPress
+    Private Sub TextBox1_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtStoKey.KeyPress, txtCycleKeyUp.KeyPress, txtCycleKeyDown.KeyPress, txtCloseAll.KeyPress
         e.Handled = True
     End Sub
 

@@ -80,6 +80,11 @@ Partial NotInheritable Class FrmSettings
         Me.DummyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.txtResolutions = New System.Windows.Forms.TextBox()
         Me.tabHotkeys = New System.Windows.Forms.TabPage()
+        Me.grpCloseAllShortcut = New System.Windows.Forms.GroupBox()
+        Me.chkCAShift = New System.Windows.Forms.CheckBox()
+        Me.txtCloseAll = New System.Windows.Forms.TextBox()
+        Me.chkCAALt = New System.Windows.Forms.CheckBox()
+        Me.chkCACtrl = New System.Windows.Forms.CheckBox()
         Me.chkSwitchToOverview = New System.Windows.Forms.CheckBox()
         Me.chkCycleAlts = New System.Windows.Forms.CheckBox()
         Me.grpCycleShortcut = New System.Windows.Forms.GroupBox()
@@ -115,6 +120,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
+        Me.chkCloseAll = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -144,6 +150,7 @@ Partial NotInheritable Class FrmSettings
         Me.cmsRestore.SuspendLayout()
         Me.cmsGenerate.SuspendLayout()
         Me.tabHotkeys.SuspendLayout()
+        Me.grpCloseAllShortcut.SuspendLayout()
         Me.grpCycleShortcut.SuspendLayout()
         Me.grpOverviewShortcut.SuspendLayout()
         Me.tabSortAndBL.SuspendLayout()
@@ -203,7 +210,7 @@ Partial NotInheritable Class FrmSettings
         'Label3
         '
         Label3.AutoSize = True
-        Label3.Location = New System.Drawing.Point(166, 92)
+        Label3.Location = New System.Drawing.Point(166, 140)
         Label3.Name = "Label3"
         Label3.Size = New System.Drawing.Size(27, 13)
         Label3.TabIndex = 18
@@ -327,7 +334,7 @@ Partial NotInheritable Class FrmSettings
         'Label6
         '
         Label6.AutoSize = True
-        Label6.Location = New System.Drawing.Point(15, 107)
+        Label6.Location = New System.Drawing.Point(15, 129)
         Label6.Name = "Label6"
         Label6.Size = New System.Drawing.Size(106, 13)
         Label6.TabIndex = 28
@@ -336,7 +343,7 @@ Partial NotInheritable Class FrmSettings
         'Label15
         '
         Label15.AutoSize = True
-        Label15.Location = New System.Drawing.Point(200, 14)
+        Label15.Location = New System.Drawing.Point(200, 36)
         Label15.Name = "Label15"
         Label15.Size = New System.Drawing.Size(72, 13)
         Label15.TabIndex = 7
@@ -346,7 +353,7 @@ Partial NotInheritable Class FrmSettings
         '
         'btnOK
         '
-        Me.btnOK.Location = New System.Drawing.Point(141, 166)
+        Me.btnOK.Location = New System.Drawing.Point(141, 214)
         Me.btnOK.Name = "btnOK"
         Me.btnOK.Size = New System.Drawing.Size(77, 23)
         Me.btnOK.TabIndex = 2
@@ -357,7 +364,7 @@ Partial NotInheritable Class FrmSettings
         'btnCancel
         '
         Me.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnCancel.Location = New System.Drawing.Point(224, 166)
+        Me.btnCancel.Location = New System.Drawing.Point(224, 214)
         Me.btnCancel.Name = "btnCancel"
         Me.btnCancel.Size = New System.Drawing.Size(77, 23)
         Me.btnCancel.TabIndex = 3
@@ -377,7 +384,7 @@ Partial NotInheritable Class FrmSettings
         'ChkSingleInstance
         '
         Me.ChkSingleInstance.AutoSize = True
-        Me.ChkSingleInstance.Location = New System.Drawing.Point(172, 39)
+        Me.ChkSingleInstance.Location = New System.Drawing.Point(12, 90)
         Me.ChkSingleInstance.Name = "ChkSingleInstance"
         Me.ChkSingleInstance.Size = New System.Drawing.Size(99, 17)
         Me.ChkSingleInstance.TabIndex = 6
@@ -402,7 +409,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpReserveSpace.Controls.Add(Label14)
         Me.grpReserveSpace.Controls.Add(Label13)
         Me.grpReserveSpace.Controls.Add(Label12)
-        Me.grpReserveSpace.Location = New System.Drawing.Point(49, 9)
+        Me.grpReserveSpace.Location = New System.Drawing.Point(49, 31)
         Me.grpReserveSpace.Name = "grpReserveSpace"
         Me.grpReserveSpace.Size = New System.Drawing.Size(212, 67)
         Me.grpReserveSpace.TabIndex = 2
@@ -462,7 +469,7 @@ Partial NotInheritable Class FrmSettings
         Me.ChkLessRowCol.AutoSize = True
         Me.ChkLessRowCol.Checked = True
         Me.ChkLessRowCol.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.ChkLessRowCol.Location = New System.Drawing.Point(18, 85)
+        Me.ChkLessRowCol.Location = New System.Drawing.Point(18, 107)
         Me.ChkLessRowCol.Name = "ChkLessRowCol"
         Me.ChkLessRowCol.Size = New System.Drawing.Size(136, 17)
         Me.ChkLessRowCol.TabIndex = 4
@@ -474,7 +481,7 @@ Partial NotInheritable Class FrmSettings
         'chkOverViewIsGame
         '
         Me.chkOverViewIsGame.AutoSize = True
-        Me.chkOverViewIsGame.Location = New System.Drawing.Point(172, 54)
+        Me.chkOverViewIsGame.Location = New System.Drawing.Point(159, 44)
         Me.chkOverViewIsGame.Name = "chkOverViewIsGame"
         Me.chkOverViewIsGame.Size = New System.Drawing.Size(107, 17)
         Me.chkOverViewIsGame.TabIndex = 7
@@ -487,7 +494,7 @@ Partial NotInheritable Class FrmSettings
         Me.cboScalingMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cboScalingMode.FormattingEnabled = True
         Me.cboScalingMode.Items.AddRange(New Object() {"Auto", "Blur", "Pixel"})
-        Me.cboScalingMode.Location = New System.Drawing.Point(200, 30)
+        Me.cboScalingMode.Location = New System.Drawing.Point(200, 52)
         Me.cboScalingMode.Name = "cboScalingMode"
         Me.cboScalingMode.Size = New System.Drawing.Size(97, 21)
         Me.cboScalingMode.TabIndex = 8
@@ -509,7 +516,7 @@ Partial NotInheritable Class FrmSettings
         'chkCheckForUpdate
         '
         Me.chkCheckForUpdate.AutoSize = True
-        Me.chkCheckForUpdate.Location = New System.Drawing.Point(89, 69)
+        Me.chkCheckForUpdate.Location = New System.Drawing.Point(12, 113)
         Me.chkCheckForUpdate.Name = "chkCheckForUpdate"
         Me.chkCheckForUpdate.Size = New System.Drawing.Size(113, 17)
         Me.chkCheckForUpdate.TabIndex = 23
@@ -520,7 +527,7 @@ Partial NotInheritable Class FrmSettings
         'ChkMinMin
         '
         Me.ChkMinMin.AutoSize = True
-        Me.ChkMinMin.Location = New System.Drawing.Point(171, 107)
+        Me.ChkMinMin.Location = New System.Drawing.Point(171, 129)
         Me.ChkMinMin.Name = "ChkMinMin"
         Me.ChkMinMin.Size = New System.Drawing.Size(104, 17)
         Me.ChkMinMin.TabIndex = 30
@@ -532,7 +539,7 @@ Partial NotInheritable Class FrmSettings
         'ChkDark
         '
         Me.ChkDark.AutoSize = True
-        Me.ChkDark.Location = New System.Drawing.Point(13, 69)
+        Me.ChkDark.Location = New System.Drawing.Point(159, 67)
         Me.ChkDark.Name = "ChkDark"
         Me.ChkDark.Size = New System.Drawing.Size(79, 17)
         Me.ChkDark.TabIndex = 5
@@ -551,7 +558,7 @@ Partial NotInheritable Class FrmSettings
         Me.tbcSettings.Multiline = True
         Me.tbcSettings.Name = "tbcSettings"
         Me.tbcSettings.SelectedIndex = 0
-        Me.tbcSettings.Size = New System.Drawing.Size(316, 165)
+        Me.tbcSettings.Size = New System.Drawing.Size(316, 212)
         Me.tbcSettings.TabIndex = 14
         Me.tbcSettings.TabStop = False
         '
@@ -568,7 +575,7 @@ Partial NotInheritable Class FrmSettings
         Me.tabResolutions.Location = New System.Drawing.Point(4, 25)
         Me.tabResolutions.Name = "tabResolutions"
         Me.tabResolutions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabResolutions.Size = New System.Drawing.Size(308, 136)
+        Me.tabResolutions.Size = New System.Drawing.Size(308, 183)
         Me.tabResolutions.TabIndex = 0
         Me.tabResolutions.Text = "Resolutions"
         Me.tabResolutions.UseVisualStyleBackColor = True
@@ -576,7 +583,7 @@ Partial NotInheritable Class FrmSettings
         'ChkSizeBorder
         '
         Me.ChkSizeBorder.AutoSize = True
-        Me.ChkSizeBorder.Location = New System.Drawing.Point(204, 58)
+        Me.ChkSizeBorder.Location = New System.Drawing.Point(204, 80)
         Me.ChkSizeBorder.Name = "ChkSizeBorder"
         Me.ChkSizeBorder.Size = New System.Drawing.Size(88, 17)
         Me.ChkSizeBorder.TabIndex = 9
@@ -586,7 +593,7 @@ Partial NotInheritable Class FrmSettings
         'btnAddCurrentRes
         '
         Me.btnAddCurrentRes.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAddCurrentRes.Location = New System.Drawing.Point(105, 67)
+        Me.btnAddCurrentRes.Location = New System.Drawing.Point(105, 89)
         Me.btnAddCurrentRes.Name = "btnAddCurrentRes"
         Me.btnAddCurrentRes.Size = New System.Drawing.Size(75, 23)
         Me.btnAddCurrentRes.TabIndex = 6
@@ -596,7 +603,7 @@ Partial NotInheritable Class FrmSettings
         'btnRestore
         '
         Me.btnRestore.ContextMenuStrip = Me.cmsRestore
-        Me.btnRestore.Location = New System.Drawing.Point(105, 104)
+        Me.btnRestore.Location = New System.Drawing.Point(105, 126)
         Me.btnRestore.Name = "btnRestore"
         Me.btnRestore.Size = New System.Drawing.Size(75, 23)
         Me.btnRestore.TabIndex = 5
@@ -624,7 +631,7 @@ Partial NotInheritable Class FrmSettings
         '
         'btnSort
         '
-        Me.btnSort.Location = New System.Drawing.Point(105, 38)
+        Me.btnSort.Location = New System.Drawing.Point(105, 60)
         Me.btnSort.Name = "btnSort"
         Me.btnSort.Size = New System.Drawing.Size(75, 23)
         Me.btnSort.TabIndex = 3
@@ -634,7 +641,7 @@ Partial NotInheritable Class FrmSettings
         'btnGenerate
         '
         Me.btnGenerate.ContextMenuStrip = Me.cmsGenerate
-        Me.btnGenerate.Location = New System.Drawing.Point(105, 9)
+        Me.btnGenerate.Location = New System.Drawing.Point(105, 31)
         Me.btnGenerate.Name = "btnGenerate"
         Me.btnGenerate.Size = New System.Drawing.Size(75, 23)
         Me.btnGenerate.TabIndex = 2
@@ -683,13 +690,15 @@ Partial NotInheritable Class FrmSettings
         Me.txtResolutions.Multiline = True
         Me.txtResolutions.Name = "txtResolutions"
         Me.txtResolutions.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.txtResolutions.Size = New System.Drawing.Size(94, 135)
+        Me.txtResolutions.Size = New System.Drawing.Size(94, 183)
         Me.txtResolutions.TabIndex = 1
         Me.txtResolutions.Text = "800x600" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "1200x900" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "1600x1200" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2000x1500" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2400x1800" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "2800x2100" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "3200x2400" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "3600x27" &
     "00" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "4000x3000" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "4400x3300"
         '
         'tabHotkeys
         '
+        Me.tabHotkeys.Controls.Add(Me.chkCloseAll)
+        Me.tabHotkeys.Controls.Add(Me.grpCloseAllShortcut)
         Me.tabHotkeys.Controls.Add(Me.chkCycleOnClose)
         Me.tabHotkeys.Controls.Add(Me.chkSwitchToOverview)
         Me.tabHotkeys.Controls.Add(Me.chkCycleAlts)
@@ -697,10 +706,63 @@ Partial NotInheritable Class FrmSettings
         Me.tabHotkeys.Controls.Add(Me.grpOverviewShortcut)
         Me.tabHotkeys.Location = New System.Drawing.Point(4, 25)
         Me.tabHotkeys.Name = "tabHotkeys"
-        Me.tabHotkeys.Size = New System.Drawing.Size(308, 136)
+        Me.tabHotkeys.Size = New System.Drawing.Size(308, 183)
         Me.tabHotkeys.TabIndex = 2
         Me.tabHotkeys.Text = "Hotkeys"
         Me.tabHotkeys.UseVisualStyleBackColor = True
+        '
+        'grpCloseAllShortcut
+        '
+        Me.grpCloseAllShortcut.Controls.Add(Me.chkCAShift)
+        Me.grpCloseAllShortcut.Controls.Add(Me.txtCloseAll)
+        Me.grpCloseAllShortcut.Controls.Add(Me.chkCAALt)
+        Me.grpCloseAllShortcut.Controls.Add(Me.chkCACtrl)
+        Me.grpCloseAllShortcut.Location = New System.Drawing.Point(46, 132)
+        Me.grpCloseAllShortcut.Name = "grpCloseAllShortcut"
+        Me.grpCloseAllShortcut.Size = New System.Drawing.Size(214, 45)
+        Me.grpCloseAllShortcut.TabIndex = 17
+        Me.grpCloseAllShortcut.TabStop = False
+        '
+        'chkCAShift
+        '
+        Me.chkCAShift.AutoSize = True
+        Me.chkCAShift.Location = New System.Drawing.Point(84, 21)
+        Me.chkCAShift.Name = "chkCAShift"
+        Me.chkCAShift.Size = New System.Drawing.Size(47, 17)
+        Me.chkCAShift.TabIndex = 22
+        Me.chkCAShift.TabStop = False
+        Me.chkCAShift.Text = "Shift"
+        Me.chkCAShift.UseVisualStyleBackColor = True
+        '
+        'txtCloseAll
+        '
+        Me.txtCloseAll.Location = New System.Drawing.Point(134, 18)
+        Me.txtCloseAll.Name = "txtCloseAll"
+        Me.txtCloseAll.Size = New System.Drawing.Size(74, 20)
+        Me.txtCloseAll.TabIndex = 21
+        Me.txtCloseAll.TabStop = False
+        '
+        'chkCAALt
+        '
+        Me.chkCAALt.AutoSize = True
+        Me.chkCAALt.Location = New System.Drawing.Point(46, 21)
+        Me.chkCAALt.Name = "chkCAALt"
+        Me.chkCAALt.Size = New System.Drawing.Size(38, 17)
+        Me.chkCAALt.TabIndex = 20
+        Me.chkCAALt.TabStop = False
+        Me.chkCAALt.Text = "Alt"
+        Me.chkCAALt.UseVisualStyleBackColor = True
+        '
+        'chkCACtrl
+        '
+        Me.chkCACtrl.AutoSize = True
+        Me.chkCACtrl.Location = New System.Drawing.Point(6, 21)
+        Me.chkCACtrl.Name = "chkCACtrl"
+        Me.chkCACtrl.Size = New System.Drawing.Size(41, 17)
+        Me.chkCACtrl.TabIndex = 19
+        Me.chkCACtrl.TabStop = False
+        Me.chkCACtrl.Text = "Ctrl"
+        Me.chkCACtrl.UseVisualStyleBackColor = True
         '
         'chkSwitchToOverview
         '
@@ -888,7 +950,7 @@ Partial NotInheritable Class FrmSettings
         Me.tabSortAndBL.Margin = New System.Windows.Forms.Padding(0)
         Me.tabSortAndBL.Name = "tabSortAndBL"
         Me.tabSortAndBL.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabSortAndBL.Size = New System.Drawing.Size(308, 136)
+        Me.tabSortAndBL.Size = New System.Drawing.Size(308, 183)
         Me.tabSortAndBL.TabIndex = 3
         Me.tabSortAndBL.Text = "Sorting"
         Me.tabSortAndBL.UseVisualStyleBackColor = True
@@ -919,7 +981,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtBotSort.Multiline = True
         Me.txtBotSort.Name = "txtBotSort"
         Me.txtBotSort.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.txtBotSort.Size = New System.Drawing.Size(130, 120)
+        Me.txtBotSort.Size = New System.Drawing.Size(130, 168)
         Me.txtBotSort.TabIndex = 1
         Me.txtBotSort.Text = "Someone"
         '
@@ -929,7 +991,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtTopSort.Multiline = True
         Me.txtTopSort.Name = "txtTopSort"
         Me.txtTopSort.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.txtTopSort.Size = New System.Drawing.Size(130, 120)
+        Me.txtTopSort.Size = New System.Drawing.Size(130, 168)
         Me.txtTopSort.TabIndex = 0
         Me.txtTopSort.Text = "Someone"
         '
@@ -953,7 +1015,7 @@ Partial NotInheritable Class FrmSettings
         Me.tabMaximized.Controls.Add(Me.grpReserveSpace)
         Me.tabMaximized.Location = New System.Drawing.Point(4, 25)
         Me.tabMaximized.Name = "tabMaximized"
-        Me.tabMaximized.Size = New System.Drawing.Size(308, 136)
+        Me.tabMaximized.Size = New System.Drawing.Size(308, 183)
         Me.tabMaximized.TabIndex = 4
         Me.tabMaximized.Text = "Min/Max"
         Me.tabMaximized.UseVisualStyleBackColor = True
@@ -961,7 +1023,7 @@ Partial NotInheritable Class FrmSettings
         'chkStartupMax
         '
         Me.chkStartupMax.AutoSize = True
-        Me.chkStartupMax.Location = New System.Drawing.Point(171, 85)
+        Me.chkStartupMax.Location = New System.Drawing.Point(171, 107)
         Me.chkStartupMax.Name = "chkStartupMax"
         Me.chkStartupMax.Size = New System.Drawing.Size(100, 17)
         Me.chkStartupMax.TabIndex = 29
@@ -970,7 +1032,7 @@ Partial NotInheritable Class FrmSettings
         '
         'NumExtraMax
         '
-        Me.NumExtraMax.Location = New System.Drawing.Point(122, 105)
+        Me.NumExtraMax.Location = New System.Drawing.Point(122, 127)
         Me.NumExtraMax.Maximum = New Decimal(New Integer() {9, 0, 0, 0})
         Me.NumExtraMax.Name = "NumExtraMax"
         Me.NumExtraMax.Size = New System.Drawing.Size(40, 20)
@@ -994,7 +1056,7 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc.Location = New System.Drawing.Point(4, 25)
         Me.tabMisc.Name = "tabMisc"
         Me.tabMisc.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabMisc.Size = New System.Drawing.Size(308, 136)
+        Me.tabMisc.Size = New System.Drawing.Size(308, 183)
         Me.tabMisc.TabIndex = 1
         Me.tabMisc.Text = "Misc"
         Me.tabMisc.UseVisualStyleBackColor = True
@@ -1003,7 +1065,7 @@ Partial NotInheritable Class FrmSettings
         '
         Me.chkDoAlign.AutoSize = True
         Me.chkDoAlign.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkDoAlign.Location = New System.Drawing.Point(200, 70)
+        Me.chkDoAlign.Location = New System.Drawing.Point(200, 121)
         Me.chkDoAlign.Name = "chkDoAlign"
         Me.chkDoAlign.Size = New System.Drawing.Size(66, 16)
         Me.chkDoAlign.TabIndex = 10
@@ -1018,7 +1080,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpAlign.Controls.Add(Label1)
         Me.grpAlign.Controls.Add(Me.numYoffset)
         Me.grpAlign.Enabled = False
-        Me.grpAlign.Location = New System.Drawing.Point(200, 70)
+        Me.grpAlign.Location = New System.Drawing.Point(200, 121)
         Me.grpAlign.Name = "grpAlign"
         Me.grpAlign.Size = New System.Drawing.Size(100, 62)
         Me.grpAlign.TabIndex = 21
@@ -1059,7 +1121,7 @@ Partial NotInheritable Class FrmSettings
         'txtExe
         '
         Me.txtExe.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtExe.Location = New System.Drawing.Point(12, 89)
+        Me.txtExe.Location = New System.Drawing.Point(12, 137)
         Me.txtExe.Name = "txtExe"
         Me.txtExe.Size = New System.Drawing.Size(154, 20)
         Me.txtExe.TabIndex = 8
@@ -1068,7 +1130,7 @@ Partial NotInheritable Class FrmSettings
         'txtClass
         '
         Me.txtClass.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtClass.Location = New System.Drawing.Point(12, 110)
+        Me.txtClass.Location = New System.Drawing.Point(12, 163)
         Me.txtClass.Name = "txtClass"
         Me.txtClass.Size = New System.Drawing.Size(182, 20)
         Me.txtClass.TabIndex = 9
@@ -1077,7 +1139,7 @@ Partial NotInheritable Class FrmSettings
         'chkTopMost
         '
         Me.chkTopMost.AutoSize = True
-        Me.chkTopMost.Location = New System.Drawing.Point(13, 54)
+        Me.chkTopMost.Location = New System.Drawing.Point(12, 67)
         Me.chkTopMost.Name = "chkTopMost"
         Me.chkTopMost.Size = New System.Drawing.Size(98, 17)
         Me.chkTopMost.TabIndex = 3
@@ -1087,19 +1149,29 @@ Partial NotInheritable Class FrmSettings
         'chkRoundCorners
         '
         Me.chkRoundCorners.AutoSize = True
-        Me.chkRoundCorners.Location = New System.Drawing.Point(13, 39)
+        Me.chkRoundCorners.Location = New System.Drawing.Point(12, 44)
         Me.chkRoundCorners.Name = "chkRoundCorners"
         Me.chkRoundCorners.Size = New System.Drawing.Size(109, 17)
         Me.chkRoundCorners.TabIndex = 2
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
+        'chkCloseAll
+        '
+        Me.chkCloseAll.AutoSize = True
+        Me.chkCloseAll.Location = New System.Drawing.Point(49, 131)
+        Me.chkCloseAll.Name = "chkCloseAll"
+        Me.chkCloseAll.Size = New System.Drawing.Size(66, 17)
+        Me.chkCloseAll.TabIndex = 19
+        Me.chkCloseAll.Text = "Close All"
+        Me.chkCloseAll.UseVisualStyleBackColor = True
+        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
-        Me.ClientSize = New System.Drawing.Size(314, 198)
+        Me.ClientSize = New System.Drawing.Size(314, 244)
         Me.Controls.Add(Me.tbcSettings)
         Me.Controls.Add(Me.btnCancel)
         Me.Controls.Add(Me.btnOK)
@@ -1126,6 +1198,8 @@ Partial NotInheritable Class FrmSettings
         Me.cmsGenerate.ResumeLayout(False)
         Me.tabHotkeys.ResumeLayout(False)
         Me.tabHotkeys.PerformLayout()
+        Me.grpCloseAllShortcut.ResumeLayout(False)
+        Me.grpCloseAllShortcut.PerformLayout()
         Me.grpCycleShortcut.ResumeLayout(False)
         Me.grpCycleShortcut.PerformLayout()
         Me.grpOverviewShortcut.ResumeLayout(False)
@@ -1218,4 +1292,10 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents LastSavedToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents DefaultToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ChkMinMin As CheckBox
+    Friend WithEvents grpCloseAllShortcut As GroupBox
+    Friend WithEvents chkCAShift As CheckBox
+    Friend WithEvents txtCloseAll As TextBox
+    Friend WithEvents chkCAALt As CheckBox
+    Friend WithEvents chkCACtrl As CheckBox
+    Friend WithEvents chkCloseAll As CheckBox
 End Class
