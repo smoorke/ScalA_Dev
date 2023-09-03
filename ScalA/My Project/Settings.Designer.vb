@@ -655,6 +655,18 @@ Namespace My
                 Me("CloseAllKey") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property Theme() As Integer
+            Get
+                Return CType(Me("Theme"),Integer)
+            End Get
+            Set
+                Me("Theme") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

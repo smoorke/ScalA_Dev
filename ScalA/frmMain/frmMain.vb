@@ -447,7 +447,28 @@ Partial Public NotInheritable Class FrmMain
         cmsQuickLaunch.Renderer = cmsAlt.Renderer
         cmsQuit.Renderer = cmsAlt.Renderer
 
-        If My.Settings.DarkMode Then ApplyTheme()
+        If My.Settings.Theme = 0 Then 'undefined, system, light, dark
+            If My.Settings.DarkMode Then
+                My.Settings.Theme = 3
+            Else
+                My.Settings.Theme = 1
+            End If
+        End If
+
+        Dim darkmode As Boolean = False
+        If My.Settings.Theme = 1 Then
+            Using key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\Microsoft\Windows\CurrentVersion\Themes\Personalize")
+                Dim value = key?.GetValue("AppsUseLightTheme")
+                If value IsNot Nothing AndAlso value = 0 Then
+                    darkmode = True
+                End If
+            End Using
+        End If
+        If My.Settings.Theme = 3 Then
+            darkmode = True
+        End If
+
+        ApplyTheme(darkmode)
 
         tmrOverview.Interval = If(My.Settings.gameOnOverview, 33, 66)
 
@@ -563,8 +584,9 @@ Partial Public NotInheritable Class FrmMain
         End If
     End Sub
 
-    Public Sub ApplyTheme()
-        If My.Settings.DarkMode Then
+    Public Sub ApplyTheme(darkmode As Boolean)
+        My.Settings.DarkMode = darkmode
+        If darkmode Then
             pnlOverview.BackColor = Color.Gray
             pnlButtons.BackColor = Color.FromArgb(60, 63, 65)
             pnlSys.BackColor = Color.FromArgb(60, 63, 65)
@@ -590,18 +612,18 @@ Partial Public NotInheritable Class FrmMain
 #End If
         End If
 
-        Dim bBc As Color = If(My.Settings.DarkMode, Color.DarkGray, Color.FromArgb(&HFFE1E1E1))
+        Dim bBc As Color = If(darkmode, Color.DarkGray, Color.FromArgb(&HFFE1E1E1))
         Task.Run(Sub() Parallel.ForEach(pnlOverview.Controls.OfType(Of AButton), Sub(but) but.BackColor = bBc))
         PnlEqLock.BackColor = bBc
 
-        Dim bFaBc As Color = If(My.Settings.DarkMode, Color.FromArgb(60, 63, 65), Color.FromKnownColor(KnownColor.Control))
+        Dim bFaBc As Color = If(darkmode, Color.FromArgb(60, 63, 65), Color.FromKnownColor(KnownColor.Control))
         For Each but As Button In pnlButtons.Controls.OfType(Of Button)
             but.FlatAppearance.BorderColor = bFaBc
         Next
 
-        cmbResolution.DarkTheme = My.Settings.DarkMode
-        cboAlt.DarkTheme = My.Settings.DarkMode
-        btnStart.DarkTheme = My.Settings.DarkMode
+        cmbResolution.DarkTheme = darkmode
+        cboAlt.DarkTheme = darkmode
+        btnStart.DarkTheme = darkmode
     End Sub
 
     Private Shared Function GetResolutions() As Size()
@@ -1928,6 +1950,13 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
+    Private Sub ChkEqLock_CheckedChanged(sender As Object, e As EventArgs) Handles ChkEqLock.CheckedChanged
+
+    End Sub
+
+    Private Sub Various_MouseUp(sender As Object, e As MouseEventArgs) Handles pnlSys.MouseUp, pnlButtons.MouseUp, MyBase.MouseUp, cmbResolution.MouseUp, ChkEqLock.MouseUp, cboAlt.MouseUp, btnStart.MouseUp, btnQuit.MouseUp
+
+    End Sub
 End Class
 
 #If DEBUG Then

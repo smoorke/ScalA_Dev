@@ -62,7 +62,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkCycleOnClose = New System.Windows.Forms.CheckBox()
         Me.chkCheckForUpdate = New System.Windows.Forms.CheckBox()
         Me.ChkMinMin = New System.Windows.Forms.CheckBox()
-        Me.ChkDark = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
@@ -80,6 +79,7 @@ Partial NotInheritable Class FrmSettings
         Me.DummyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.txtResolutions = New System.Windows.Forms.TextBox()
         Me.tabHotkeys = New System.Windows.Forms.TabPage()
+        Me.chkCloseAll = New System.Windows.Forms.CheckBox()
         Me.grpCloseAllShortcut = New System.Windows.Forms.GroupBox()
         Me.chkCAShift = New System.Windows.Forms.CheckBox()
         Me.txtCloseAll = New System.Windows.Forms.TextBox()
@@ -120,7 +120,8 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
-        Me.chkCloseAll = New System.Windows.Forms.CheckBox()
+        Me.Label16 = New System.Windows.Forms.Label()
+        Me.cmbTheme = New System.Windows.Forms.ComboBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -518,9 +519,9 @@ Partial NotInheritable Class FrmSettings
         Me.chkCheckForUpdate.AutoSize = True
         Me.chkCheckForUpdate.Location = New System.Drawing.Point(12, 113)
         Me.chkCheckForUpdate.Name = "chkCheckForUpdate"
-        Me.chkCheckForUpdate.Size = New System.Drawing.Size(113, 17)
+        Me.chkCheckForUpdate.Size = New System.Drawing.Size(165, 17)
         Me.chkCheckForUpdate.TabIndex = 23
-        Me.chkCheckForUpdate.Text = "Check For Update"
+        Me.chkCheckForUpdate.Text = "Check For Update on Startup"
         Me.ttSettings.SetToolTip(Me.chkCheckForUpdate, "Check for Updates when ScalA starts.")
         Me.chkCheckForUpdate.UseVisualStyleBackColor = True
         '
@@ -535,16 +536,6 @@ Partial NotInheritable Class FrmSettings
         Me.ttSettings.SetToolTip(Me.ChkMinMin, "Minimizing ScalA will also Minimise Astonia" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: This has no effect on legacy c" &
         "lients")
         Me.ChkMinMin.UseVisualStyleBackColor = True
-        '
-        'ChkDark
-        '
-        Me.ChkDark.AutoSize = True
-        Me.ChkDark.Location = New System.Drawing.Point(159, 67)
-        Me.ChkDark.Name = "ChkDark"
-        Me.ChkDark.Size = New System.Drawing.Size(79, 17)
-        Me.ChkDark.TabIndex = 5
-        Me.ChkDark.Text = "Dark Mode"
-        Me.ChkDark.UseVisualStyleBackColor = True
         '
         'tbcSettings
         '
@@ -710,6 +701,17 @@ Partial NotInheritable Class FrmSettings
         Me.tabHotkeys.TabIndex = 2
         Me.tabHotkeys.Text = "Hotkeys"
         Me.tabHotkeys.UseVisualStyleBackColor = True
+        '
+        'chkCloseAll
+        '
+        Me.chkCloseAll.AutoSize = True
+        Me.chkCloseAll.Location = New System.Drawing.Point(49, 131)
+        Me.chkCloseAll.Name = "chkCloseAll"
+        Me.chkCloseAll.Size = New System.Drawing.Size(152, 17)
+        Me.chkCloseAll.TabIndex = 19
+        Me.chkCloseAll.Text = "Close All Clients and ScalA"
+        Me.ttSettings.SetToolTip(Me.chkCloseAll, "Note: Whitelist setting from Sorting tab is in effect here")
+        Me.chkCloseAll.UseVisualStyleBackColor = True
         '
         'grpCloseAllShortcut
         '
@@ -1041,6 +1043,8 @@ Partial NotInheritable Class FrmSettings
         '
         'tabMisc
         '
+        Me.tabMisc.Controls.Add(Me.cmbTheme)
+        Me.tabMisc.Controls.Add(Me.Label16)
         Me.tabMisc.Controls.Add(Me.chkDoAlign)
         Me.tabMisc.Controls.Add(Me.grpAlign)
         Me.tabMisc.Controls.Add(Me.txtExe)
@@ -1050,7 +1054,6 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc.Controls.Add(Me.chkOverViewIsGame)
         Me.tabMisc.Controls.Add(Me.ChkSingleInstance)
         Me.tabMisc.Controls.Add(Me.chkCheckForUpdate)
-        Me.tabMisc.Controls.Add(Me.ChkDark)
         Me.tabMisc.Controls.Add(Me.chkTopMost)
         Me.tabMisc.Controls.Add(Me.chkRoundCorners)
         Me.tabMisc.Location = New System.Drawing.Point(4, 25)
@@ -1156,15 +1159,24 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
-        'chkCloseAll
+        'Label16
         '
-        Me.chkCloseAll.AutoSize = True
-        Me.chkCloseAll.Location = New System.Drawing.Point(49, 131)
-        Me.chkCloseAll.Name = "chkCloseAll"
-        Me.chkCloseAll.Size = New System.Drawing.Size(66, 17)
-        Me.chkCloseAll.TabIndex = 19
-        Me.chkCloseAll.Text = "Close All"
-        Me.chkCloseAll.UseVisualStyleBackColor = True
+        Me.Label16.AutoSize = True
+        Me.Label16.Location = New System.Drawing.Point(156, 68)
+        Me.Label16.Name = "Label16"
+        Me.Label16.Size = New System.Drawing.Size(40, 13)
+        Me.Label16.TabIndex = 24
+        Me.Label16.Text = "Theme"
+        '
+        'cmbTheme
+        '
+        Me.cmbTheme.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cmbTheme.FormattingEnabled = True
+        Me.cmbTheme.Items.AddRange(New Object() {"System", "Light", "Dark"})
+        Me.cmbTheme.Location = New System.Drawing.Point(200, 63)
+        Me.cmbTheme.Name = "cmbTheme"
+        Me.cmbTheme.Size = New System.Drawing.Size(82, 21)
+        Me.cmbTheme.TabIndex = 25
         '
         'FrmSettings
         '
@@ -1280,7 +1292,6 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents ChkLessRowCol As CheckBox
     Friend WithEvents NumExtraMax As NumericUpDown
     Friend WithEvents chkOverViewIsGame As CheckBox
-    Friend WithEvents ChkDark As CheckBox
     Friend WithEvents btnGrabCurrent As Button
     Friend WithEvents btnAddCurrentRes As Button
     Friend WithEvents cboScalingMode As ComboBox
@@ -1298,4 +1309,6 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents chkCAALt As CheckBox
     Friend WithEvents chkCACtrl As CheckBox
     Friend WithEvents chkCloseAll As CheckBox
+    Friend WithEvents cmbTheme As ComboBox
+    Friend WithEvents Label16 As Label
 End Class

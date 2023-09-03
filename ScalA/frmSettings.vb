@@ -93,7 +93,7 @@ Public NotInheritable Class FrmSettings
 
         NumExtraMax.Value = My.Settings.ExtraMaxColRow
 
-        ChkDark.Checked = My.Settings.DarkMode
+        cmbTheme.SelectedIndex = My.Settings.Theme - 1
 
         cboScalingMode.SelectedIndex = My.Settings.ScalingMode
 
@@ -338,10 +338,24 @@ Public NotInheritable Class FrmSettings
 
         My.Settings.OneLessRowCol = ChkLessRowCol.Checked
 
-        If ChkDark.Checked <> My.Settings.DarkMode Then
-            My.Settings.DarkMode = ChkDark.Checked
-            FrmMain.ApplyTheme()
+        If My.Settings.Theme <> cmbTheme.SelectedIndex + 1 Then
+            My.Settings.Theme = cmbTheme.SelectedIndex + 1
+
+            Dim darkmode As Boolean = False
+            If My.Settings.Theme = 1 Then
+                Using key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\Microsoft\Windows\CurrentVersion\Themes\Personalize")
+                    Dim value = key?.GetValue("AppsUseLightTheme")
+                    If value IsNot Nothing AndAlso value = 0 Then
+                        darkmode = True
+                    End If
+                End Using
+            End If
+            If My.Settings.Theme = 3 Then
+                darkmode = True
+            End If
+            FrmMain.ApplyTheme(darkmode)
         End If
+
 
         If cboScalingMode.SelectedIndex <> My.Settings.ScalingMode Then
             My.Settings.ScalingMode = cboScalingMode.SelectedIndex
@@ -699,10 +713,6 @@ Public NotInheritable Class FrmSettings
 
     Private Sub DefaultToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DefaultToolStripMenuItem.Click
         txtResolutions.Text = My.Settings.PropertyValues("resolutions").Property.DefaultValue
-    End Sub
-
-    Private Sub chkCloseAll_CheckedChanged(sender As Object, e As EventArgs)
-
     End Sub
 
     Private Sub LastSavedToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles LastSavedToolStripMenuItem.Click
