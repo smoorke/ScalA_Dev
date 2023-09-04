@@ -460,7 +460,9 @@ Partial Public NotInheritable Class FrmMain
         If My.Settings.Theme = 3 Then
             darkmode = True
         End If
-
+        If My.Settings.Theme = 2 Then
+            darkmode = False
+        End If
         ApplyTheme(darkmode)
 
         tmrOverview.Interval = If(My.Settings.gameOnOverview, 33, 66)

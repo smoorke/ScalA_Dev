@@ -346,6 +346,9 @@ Public NotInheritable Class FrmSettings
             If My.Settings.Theme = 3 Then
                 darkmode = True
             End If
+            If My.Settings.Theme = 2 Then
+                darkmode = False
+            End If
             FrmMain.ApplyTheme(darkmode)
         End If
 
