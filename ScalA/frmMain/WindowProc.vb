@@ -4,6 +4,7 @@ End Class
 
 Partial NotInheritable Class FrmMain
     Dim SuppressWININICHANGECounter As Integer = 0
+    Dim ThemeChanging As Boolean = False
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case Hotkey.WM_HOTKEY
@@ -301,6 +302,29 @@ Partial NotInheritable Class FrmMain
                         SysMenu.Disable(SC_MOVE)
                     End If
                 End If
+            Case WM_DWMCOLORIZATIONCOLORCHANGED
+                If Not ThemeChanging Then
+                    ThemeChanging = True
+                    If My.Settings.Theme = 1 Then
+                        Dim darkmode As Boolean = False
+                        Using key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\Microsoft\Windows\CurrentVersion\Themes\Personalize")
+                            Dim value = key?.GetValue("AppsUseLightTheme")
+                            If value IsNot Nothing AndAlso value = 0 Then
+                                darkmode = True
+                            End If
+                        End Using
+                        If darkmode <> My.Settings.DarkMode Then
+                            ApplyTheme(darkmode)
+                            Me.Invalidate()
+                            Debug.Print($"Theme Changed dark={darkmode}")
+                        End If
+                    End If
+                    Task.Run(Sub()
+                                 Threading.Thread.Sleep(10000)
+                                 ThemeChanging = False
+                             End Sub)
+                End If
+
 #If DEBUG Then
 
             Case &H6 ' WM_AACTIVATE

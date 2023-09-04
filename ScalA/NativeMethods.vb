@@ -862,6 +862,8 @@ Module NativeMethods
     Public Const WM_ENTERSIZEMOVE = &H231
     Public Const WM_EXITSIZEMOVE = &H232
 
+    Public Const WM_DWMCOLORIZATIONCOLORCHANGED = &H320
+
     Public Const SC_SIZE As Integer = &HF000
     Public Const SC_MOVE As Integer = &HF010
     Public Const SC_MINIMIZE As Integer = &HF020
