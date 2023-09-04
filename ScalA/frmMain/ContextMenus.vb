@@ -56,7 +56,7 @@ Partial Public NotInheritable Class FrmMain
             CloseBothToolStripMenuItem.Visible = True
         End If
         Dim aps = AstoniaProcess.Enumerate(False).ToList
-        If aps.Count <= 1 Then
+        If aps.Count = 0 OrElse (aps.Count = 1 AndAlso cboAlt.SelectedIndex > 0) Then
             CloseAllSeparator.Visible = False
             CloseAllToolStripMenuItem.Visible = False
         Else
