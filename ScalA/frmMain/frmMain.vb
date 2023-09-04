@@ -455,15 +455,8 @@ Partial Public NotInheritable Class FrmMain
             End If
         End If
 
-        Dim darkmode As Boolean = False
-        If My.Settings.Theme = 1 Then
-            Using key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\Microsoft\Windows\CurrentVersion\Themes\Personalize")
-                Dim value = key?.GetValue("AppsUseLightTheme")
-                If value IsNot Nothing AndAlso value = 0 Then
-                    darkmode = True
-                End If
-            End Using
-        End If
+        Dim darkmode As Boolean = WinUsingDarkTheme()
+
         If My.Settings.Theme = 3 Then
             darkmode = True
         End If

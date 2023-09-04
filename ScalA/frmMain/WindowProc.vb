@@ -306,13 +306,8 @@ Partial NotInheritable Class FrmMain
                 If Not ThemeChanging Then
                     ThemeChanging = True
                     If My.Settings.Theme = 1 Then
-                        Dim darkmode As Boolean = False
-                        Using key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\Microsoft\Windows\CurrentVersion\Themes\Personalize")
-                            Dim value = key?.GetValue("AppsUseLightTheme")
-                            If value IsNot Nothing AndAlso value = 0 Then
-                                darkmode = True
-                            End If
-                        End Using
+                        Dim darkmode As Boolean = WinUsingDarkTheme()
+
                         If darkmode <> My.Settings.DarkMode Then
                             ApplyTheme(darkmode)
                             Me.Invalidate()

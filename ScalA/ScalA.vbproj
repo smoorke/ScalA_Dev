@@ -129,6 +129,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GetWorkDir.vb" />
+    <Compile Include="Globals.vb" />
     <Compile Include="Hotkey.vb" />
     <Compile Include="IPC.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
