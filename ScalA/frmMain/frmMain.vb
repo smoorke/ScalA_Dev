@@ -1608,7 +1608,11 @@ Partial Public NotInheritable Class FrmMain
     Public Shared blackList As List(Of String) = topSortList.Intersect(botSortList).ToList
     Private EQLockClick As Boolean = False
 
-    Private Sub setActive(active As Boolean)
+    Public prevActive As Boolean = False
+    Private Sub setActive(active As Boolean, Optional force As Boolean = False)
+        If active = prevActive AndAlso Not force Then Exit Sub
+        If force Then active = prevActive
+        prevActive = active
         If active Then
             Dim fcol As Color = If(My.Settings.DarkMode, Colors.LightText, SystemColors.ControlText)
             lblTitle.ForeColor = fcol

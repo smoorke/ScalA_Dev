@@ -310,6 +310,7 @@ Partial NotInheritable Class FrmMain
 
                         If darkmode <> My.Settings.DarkMode Then
                             ApplyTheme(darkmode)
+                            setActive(True, True)
                             Me.Invalidate()
                             Debug.Print($"Theme Changed dark={darkmode}")
                         End If
