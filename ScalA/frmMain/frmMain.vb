@@ -1609,36 +1609,27 @@ Partial Public NotInheritable Class FrmMain
     Private EQLockClick As Boolean = False
 
     Private Sub setActive(active As Boolean)
-        If active Then
-            Dim fcol As Color = If(My.Settings.DarkMode, Colors.LightText, SystemColors.ControlText)
-            lblTitle.ForeColor = fcol
-            btnMax.ForeColor = fcol
-            btnMin.ForeColor = fcol
-            btnStart.ForeColor = fcol
-            cboAlt.ForeColor = fcol
-            cmbResolution.ForeColor = fcol
-            If btnQuit.Contains(MousePosition) Then
-                btnQuit.ForeColor = Color.White
+        Dim fcol As Color = Color.FromArgb(&HFF666666)
+        If active Then fcol = If(My.Settings.DarkMode, Colors.LightText, SystemColors.ControlText)
+        lblTitle.ForeColor = fcol
+        btnMax.ForeColor = fcol
+        btnMin.ForeColor = fcol
+        btnStart.ForeColor = fcol
+        cboAlt.ForeColor = fcol
+        cmbResolution.ForeColor = fcol
+        For Each but As Button In pnlButtons.Controls
+            If but.Contains(MousePosition) Then
+                If but Is btnQuit Then
+                    but.ForeColor = Color.White
+                Else
+                    but.ForeColor = If(My.Settings.DarkMode, Color.White, SystemColors.ControlText)
+                End If
             Else
-                btnQuit.ForeColor = fcol
+                but.ForeColor = fcol
             End If
-            cboAlt.ForeColor = fcol
-            cmbResolution.ForeColor = fcol
-        Else
-            lblTitle.ForeColor = Color.FromArgb(&HFF666666)
-            btnMax.ForeColor = Color.FromArgb(&HFF666666)
-            btnMin.ForeColor = Color.FromArgb(&HFF666666)
-            btnStart.ForeColor = Color.FromArgb(&HFF666666)
-            cboAlt.ForeColor = Color.FromArgb(&HFF666666)
-            cmbResolution.ForeColor = Color.FromArgb(&HFF666666)
-            If btnQuit.Contains(MousePosition) Then
-                btnQuit.ForeColor = Color.White
-            Else
-                btnQuit.ForeColor = Color.FromArgb(&HFF666666)
-            End If
-            cboAlt.ForeColor = Color.FromArgb(&HFF666666)
-            cmbResolution.ForeColor = Color.FromArgb(&HFF666666)
-        End If
+        Next
+        cboAlt.ForeColor = fcol
+        cmbResolution.ForeColor = fcol
     End Sub
     Private Sub CloseErrorDialog()
         Try

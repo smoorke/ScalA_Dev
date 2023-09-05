@@ -67,6 +67,18 @@ Module Extensions
     ' duplications due to hot path
 
     ''' <summary>
+    ''' Checks button contains a given point in screen coords
+    ''' </summary>
+    ''' <param name="but"></param>
+    ''' <param name="screenPt"></param>
+    ''' <returns></returns>
+
+    <Extension()>
+    Public Function Contains(but As Button, screenPt As Point) As Boolean
+        Return but.Parent.RectangleToScreen(but.Bounds).Contains(screenPt)
+    End Function
+
+    ''' <summary>
     ''' Checks if a form contains a given point in screen coords
     ''' </summary>
     ''' <param name="frm"></param>
