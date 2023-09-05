@@ -62,6 +62,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkCycleOnClose = New System.Windows.Forms.CheckBox()
         Me.chkCheckForUpdate = New System.Windows.Forms.CheckBox()
         Me.ChkMinMin = New System.Windows.Forms.CheckBox()
+        Me.chkCloseAll = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
@@ -79,7 +80,6 @@ Partial NotInheritable Class FrmSettings
         Me.DummyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.txtResolutions = New System.Windows.Forms.TextBox()
         Me.tabHotkeys = New System.Windows.Forms.TabPage()
-        Me.chkCloseAll = New System.Windows.Forms.CheckBox()
         Me.grpCloseAllShortcut = New System.Windows.Forms.GroupBox()
         Me.chkCAShift = New System.Windows.Forms.CheckBox()
         Me.txtCloseAll = New System.Windows.Forms.TextBox()
@@ -111,6 +111,8 @@ Partial NotInheritable Class FrmSettings
         Me.chkStartupMax = New System.Windows.Forms.CheckBox()
         Me.NumExtraMax = New System.Windows.Forms.NumericUpDown()
         Me.tabMisc = New System.Windows.Forms.TabPage()
+        Me.cmbTheme = New System.Windows.Forms.ComboBox()
+        Me.Label16 = New System.Windows.Forms.Label()
         Me.chkDoAlign = New System.Windows.Forms.CheckBox()
         Me.grpAlign = New System.Windows.Forms.GroupBox()
         Me.btnResetAlign = New System.Windows.Forms.Button()
@@ -120,8 +122,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
-        Me.Label16 = New System.Windows.Forms.Label()
-        Me.cmbTheme = New System.Windows.Forms.ComboBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -537,6 +537,18 @@ Partial NotInheritable Class FrmSettings
         "lients")
         Me.ChkMinMin.UseVisualStyleBackColor = True
         '
+        'chkCloseAll
+        '
+        Me.chkCloseAll.AutoSize = True
+        Me.chkCloseAll.Location = New System.Drawing.Point(49, 131)
+        Me.chkCloseAll.Name = "chkCloseAll"
+        Me.chkCloseAll.Size = New System.Drawing.Size(152, 17)
+        Me.chkCloseAll.TabIndex = 19
+        Me.chkCloseAll.TabStop = False
+        Me.chkCloseAll.Text = "Close All Clients and ScalA"
+        Me.ttSettings.SetToolTip(Me.chkCloseAll, "Note: Whitelist setting from Sorting tab is in effect here")
+        Me.chkCloseAll.UseVisualStyleBackColor = True
+        '
         'tbcSettings
         '
         Me.tbcSettings.Appearance = System.Windows.Forms.TabAppearance.FlatButtons
@@ -701,17 +713,6 @@ Partial NotInheritable Class FrmSettings
         Me.tabHotkeys.TabIndex = 2
         Me.tabHotkeys.Text = "Hotkeys"
         Me.tabHotkeys.UseVisualStyleBackColor = True
-        '
-        'chkCloseAll
-        '
-        Me.chkCloseAll.AutoSize = True
-        Me.chkCloseAll.Location = New System.Drawing.Point(49, 131)
-        Me.chkCloseAll.Name = "chkCloseAll"
-        Me.chkCloseAll.Size = New System.Drawing.Size(152, 17)
-        Me.chkCloseAll.TabIndex = 19
-        Me.chkCloseAll.Text = "Close All Clients and ScalA"
-        Me.ttSettings.SetToolTip(Me.chkCloseAll, "Note: Whitelist setting from Sorting tab is in effect here")
-        Me.chkCloseAll.UseVisualStyleBackColor = True
         '
         'grpCloseAllShortcut
         '
@@ -1064,6 +1065,25 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc.Text = "Misc"
         Me.tabMisc.UseVisualStyleBackColor = True
         '
+        'cmbTheme
+        '
+        Me.cmbTheme.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cmbTheme.FormattingEnabled = True
+        Me.cmbTheme.Items.AddRange(New Object() {"System", "Light", "Dark"})
+        Me.cmbTheme.Location = New System.Drawing.Point(200, 63)
+        Me.cmbTheme.Name = "cmbTheme"
+        Me.cmbTheme.Size = New System.Drawing.Size(82, 21)
+        Me.cmbTheme.TabIndex = 25
+        '
+        'Label16
+        '
+        Me.Label16.AutoSize = True
+        Me.Label16.Location = New System.Drawing.Point(156, 68)
+        Me.Label16.Name = "Label16"
+        Me.Label16.Size = New System.Drawing.Size(40, 13)
+        Me.Label16.TabIndex = 24
+        Me.Label16.Text = "Theme"
+        '
         'chkDoAlign
         '
         Me.chkDoAlign.AutoSize = True
@@ -1158,25 +1178,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.TabIndex = 2
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
-        '
-        'Label16
-        '
-        Me.Label16.AutoSize = True
-        Me.Label16.Location = New System.Drawing.Point(156, 68)
-        Me.Label16.Name = "Label16"
-        Me.Label16.Size = New System.Drawing.Size(40, 13)
-        Me.Label16.TabIndex = 24
-        Me.Label16.Text = "Theme"
-        '
-        'cmbTheme
-        '
-        Me.cmbTheme.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.cmbTheme.FormattingEnabled = True
-        Me.cmbTheme.Items.AddRange(New Object() {"System", "Light", "Dark"})
-        Me.cmbTheme.Location = New System.Drawing.Point(200, 63)
-        Me.cmbTheme.Name = "cmbTheme"
-        Me.cmbTheme.Size = New System.Drawing.Size(82, 21)
-        Me.cmbTheme.TabIndex = 25
         '
         'FrmSettings
         '
