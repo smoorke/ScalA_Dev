@@ -832,9 +832,9 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     End Sub
     Dim Elevated As Boolean = False
     Friend Function HasExited() As Boolean
+        If _proc Is Nothing Then Return True
+        If Elevated Then Return _proc.HasExitedSafe
         Try
-            If _proc Is Nothing Then Return True
-            If Elevated Then Return _proc.HasExitedSafe
             Return _proc.HasExited
         Catch ex As Exception
             Debug.Print("HasExited Exception")
