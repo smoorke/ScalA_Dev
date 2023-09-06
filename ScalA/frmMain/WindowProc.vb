@@ -307,15 +307,15 @@ Partial NotInheritable Class FrmMain
                     ThemeChanging = True
                     If My.Settings.Theme = 1 Then
                         Dim darkmode As Boolean = WinUsingDarkTheme()
+                        Debug.Print($"Theme Changing dark={darkmode}")
 
                         If darkmode <> My.Settings.DarkMode Then
                             ApplyTheme(darkmode)
                             Me.Invalidate()
-                            Debug.Print($"Theme Changed dark={darkmode}")
                         End If
                     End If
                     Task.Run(Sub()
-                                 Threading.Thread.Sleep(10000)
+                                 Threading.Thread.Sleep(7500)
                                  ThemeChanging = False
                              End Sub)
                 End If
