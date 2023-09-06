@@ -259,7 +259,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 Return nam
             Catch
                 Debug.Print("Name exception")
-                Return "Someone"
+                Return String.Empty
             End Try
         End Get
     End Property
@@ -443,7 +443,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p) If(useCache, GetFromCache(p), New AstoniaProcess(p)))) _
                     .Where(Function(ap)
                                Dim nam = ap.Name
-                               Return Not blacklist.Contains(nam) AndAlso
+                               Return Not String.IsNullOrEmpty(nam) AndAlso Not blacklist.Contains(nam) AndAlso
                                      (Not My.Settings.Whitelist OrElse FrmMain.topSortList.Concat(FrmMain.botSortList).Contains(nam)) AndAlso
                                       ap.IsAstoniaClass()
                            End Function).ToList
