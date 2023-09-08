@@ -1,4 +1,5 @@
-﻿Imports System.Text
+﻿Imports System.ComponentModel
+Imports System.Text
 
 Public NotInheritable Class FrmSettings
     Public SysMenu As New SysMenu(Me)
@@ -7,6 +8,8 @@ Public NotInheritable Class FrmSettings
 
         Me.Owner = FrmMain
         If FrmMain.WindowState <> FormWindowState.Minimized Then Me.CenterToParent()
+
+        FrmMain.tmrHotkeys.Stop()
 
         If Me.Tag IsNot Nothing Then
             For Each TabPage As TabPage In tbcSettings.TabPages
@@ -105,6 +108,10 @@ Public NotInheritable Class FrmSettings
 
         ChkMinMin.Checked = My.Settings.MinMin
 
+
+        validate_hotkey(New Object, New EventArgs)
+
+        Hotkey.UnregHotkey(Me)
     End Sub
 
     Protected Overrides Sub WndProc(ByRef m As Message)
@@ -206,6 +213,7 @@ Public NotInheritable Class FrmSettings
         'btnTest.PerformClick()
         BtnTest_Click(Nothing, Nothing)
         My.Settings.Whitelist = restoreWhitelist
+        FrmMain.tmrHotkeys.Start()
         Me.Close()
     End Sub
 
@@ -380,6 +388,9 @@ Public NotInheritable Class FrmSettings
         My.Settings.Save()
 
         FrmSizeBorder.Invalidate()
+
+        Hotkey.UnregHotkey(Me)
+        FrmMain.tmrHotkeys.Start()
 
         Me.Close()
     End Sub
@@ -744,4 +755,60 @@ Public NotInheritable Class FrmSettings
         e.Handled = True
     End Sub
 
+    Private Sub validate_hotkey(sender As Object, e As EventArgs) Handles _
+                    chkSwitchToOverview.CheckedChanged, chkCycleOnClose.CheckedChanged, chkCloseAll.CheckedChanged,
+                    chkStoAlt.CheckedChanged, chkStoCtrl.CheckedChanged, chkStoShift.CheckedChanged, txtStoKey.KeyUp,
+                    chkCycleAlts.CheckedChanged, chkCycleUpAlt.CheckedChanged, chkCycleUpCtrl.CheckedChanged, chkCycleUpShift.CheckedChanged, txtCycleKeyUp.KeyUp,
+                    chkCycleDownAlt.CheckedChanged, chkCycleDownCtrl.CheckedChanged, chkCycleDownShift.CheckedChanged, txtCycleKeyDown.KeyUp,
+                    chkCloseAll.CheckedChanged, chkCAALt.CheckedChanged, chkCACtrl.CheckedChanged, chkCAShift.CheckedChanged, txtCloseAll.KeyUp
+        Dim modi As Hotkey.KeyModifier
+        Hotkey.UnregHotkey(FrmMain)
+
+        If chkSwitchToOverview.Checked Then
+            modi = Hotkey.KeyModifier.None
+            If chkStoAlt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
+            If chkStoCtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
+            If chkStoShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
+            If Hotkey.RegisterHotkey(Me, 1, modi, StoKey) Then
+                txtStoKey.ForeColor = Color.Black
+            Else
+                txtStoKey.ForeColor = Color.Red
+            End If
+        End If
+
+        If chkCycleAlts.Checked Then
+            modi = Hotkey.KeyModifier.None
+            If chkCycleDownAlt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
+            If chkCycleDownCtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
+            If chkCycleDownShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
+            If Hotkey.RegisterHotkey(Me, 3, modi, CycleKeyDown) Then
+                txtCycleKeyDown.ForeColor = Color.Black
+            Else
+                txtCycleKeyDown.ForeColor = Color.Red
+            End If
+
+            modi = Hotkey.KeyModifier.None
+            If chkCycleUpAlt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
+            If chkCycleUpCtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
+            If chkCycleUpShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
+            If Hotkey.RegisterHotkey(Me, 2, modi, CycleKeyUp) Then
+                txtCycleKeyUp.ForeColor = Color.Black
+            Else
+                txtCycleKeyUp.ForeColor = Color.Red
+            End If
+        End If
+
+        If chkCloseAll.Checked Then
+            modi = Hotkey.KeyModifier.None
+            If chkCAALt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
+            If chkCACtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
+            If chkCAShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
+            If Hotkey.RegisterHotkey(Me, 4, modi, CloseAllKey) Then
+                txtCloseAll.ForeColor = Color.Black
+            Else
+                txtCloseAll.ForeColor = Color.Red
+            End If
+        End If
+        Hotkey.UnregHotkey(Me)
+    End Sub
 End Class

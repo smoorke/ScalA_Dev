@@ -190,10 +190,11 @@ Partial NotInheritable Class FrmMain
                     Debug.Print($"wasMaximized {wasMaximized}")
                     FrmBehind.Show()
                     If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
-                    If wasMaximized Then Dim dummy = Task.Run(Sub()
-                                                                  Threading.Thread.Sleep(100)
-                                                                  Me.Invoke(Sub() btnMax.PerformClick())
-                                                              End Sub)
+                    Dim dummy = Task.Run(Sub()
+                                             Threading.Thread.Sleep(100)
+                                             If wasMaximized Then Me.Invoke(Sub() btnMax.PerformClick())
+                                         End Sub)
+
                 End If
             Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
                 'If posChangeBusy Then

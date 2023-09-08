@@ -76,6 +76,7 @@ Partial NotInheritable Class FrmMain
         Me.cornerSE = New System.Windows.Forms.PictureBox()
         Me.PnlEqLock = New System.Windows.Forms.Panel()
         Me.ttMain = New System.Windows.Forms.ToolTip(Me.components)
+        Me.tmrHotkeys = New System.Windows.Forms.Timer(Me.components)
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         NoneSortSeperator1 = New System.Windows.Forms.ToolStripSeparator()
         NoneSortSeperator2 = New System.Windows.Forms.ToolStripSeparator()
@@ -559,6 +560,10 @@ Partial NotInheritable Class FrmMain
         '
         Me.ttMain.ShowAlways = True
         '
+        'tmrHotkeys
+        '
+        Me.tmrHotkeys.Enabled = True
+        '
         'FrmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -654,4 +659,5 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents CloseAllToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents CloseBothToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents CloseAllIdleToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents tmrHotkeys As Timer
 End Class
