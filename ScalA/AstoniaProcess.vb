@@ -458,10 +458,10 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Private Shared _CacheCounter As Integer = 0
     Private Shared Function GetFromCache(p As Process) As AstoniaProcess
 
-        Return If(_ProcCache.FirstOrDefault(Function(ap)
-                                                If ap.HasExited Then Return False
-                                                Return ap.Id = p.Id
-                                            End Function), New AstoniaProcess(p))
+        Return If(_ProcCache.Find(Function(ap)
+                                      If ap.HasExited Then Return False
+                                      Return ap.Id = p.Id
+                                  End Function), New AstoniaProcess(p))
     End Function
 
     Public Shared Function Enumerate(blacklist As IEnumerable(Of String), Optional useCache As Boolean = False, Optional resetCacheFirst As Boolean = False) As IEnumerable(Of AstoniaProcess)

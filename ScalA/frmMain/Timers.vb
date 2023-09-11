@@ -215,7 +215,7 @@ Partial NotInheritable Class FrmMain
 
         Dim thumbContainedMouse As Boolean = False
         If My.Settings.gameOnOverview AndAlso Not caption_Mousedown Then
-            Dim but As AButton = visibleButtons.FirstOrDefault(Function(ab) ab.pidCache > 0 AndAlso ab.ThumbContains(MousePosition))
+            Dim but As AButton = visibleButtons.Find(Function(ab) ab.pidCache > 0 AndAlso ab.ThumbContains(MousePosition))
             If but IsNot Nothing Then
                 Dim ap = but.AP
                 Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
@@ -322,7 +322,9 @@ Partial NotInheritable Class FrmMain
         If Not thumbContainedMouse AndAlso My.Settings.gameOnOverview Then
             eqLockShown = False
             Dim active = GetForegroundWindow()
-            Dim activePP = alts.FirstOrDefault(Function(ap) ap.MainWindowHandle = active)
+            'Dim activePP = alts.FirstOrDefault(Function(ap) ap.MainWindowHandle = active)
+            Dim activePP = alts.Find(Function(ap) ap.MainWindowHandle = active)
+
             If activePP IsNot Nothing AndAlso Not activePP.IsBelow(ScalaHandle) Then
                 SetWindowLong(ScalaHandle, GWL_HWNDPARENT, active)
                 SetWindowPos(active, ScalaHandle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
@@ -354,7 +356,8 @@ Partial NotInheritable Class FrmMain
         TickCounter += 1
         If TickCounter >= visibleButtons.Count Then TickCounter = 0
     End Sub
-
+#Region "TmrOverview_Tick_Old"
+#If 0 Then
     Private Sub TmrOverview_Tick_Old(sender As Timer, e As EventArgs)
 
         If Me.WindowState = FormWindowState.Minimized Then
@@ -601,5 +604,6 @@ Partial NotInheritable Class FrmMain
         TickCounter += 1
         If TickCounter >= visibleButtons.Count Then TickCounter = 0
     End Sub
-
+#End If
+#End Region
 End Class
