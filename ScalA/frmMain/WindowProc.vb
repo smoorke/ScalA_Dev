@@ -97,7 +97,7 @@ Partial NotInheritable Class FrmMain
 #If DEBUG Then
                     pbZoom.Visible = True
 #End If
-                    If Not suppressWM_MOVEcwp AndAlso Not wasMaximized Then
+                    If Not suppressWM_MOVEcwp AndAlso Not wasMaximized AndAlso cboAlt.SelectedIndex > 0 Then
                         Debug.Print($"WM_MOVE {Me.WindowState}")
                         moveBusy = True
                         Task.Run(Sub()
@@ -135,7 +135,7 @@ Partial NotInheritable Class FrmMain
                     btnMax.Text = "🗗"
                     ttMain.SetToolTip(btnMax, "Restore")
                 End If
-                If Me.Location = prevLoc Then
+                If Me.Location = prevLoc AndAlso cboAlt.SelectedIndex > 0 Then
                     If Not sizeMoveBusy Then
                         sizeMoveBusy = True
                         moveBusy = True
@@ -237,7 +237,7 @@ Partial NotInheritable Class FrmMain
                     ReZoom(New Drawing.Size(winpos.cx - 2, winpos.cy - pnlTitleBar.Height - 1))
                     cmbResolution.SelectedIndex = My.Settings.zoom
 
-                    AltPP?.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition)
+                    If cboAlt.SelectedIndex > 0 Then AltPP?.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition)
                     pnlTitleBar.Width = winpos.cx - pnlButtons.Width - pnlSys.Width
                     Debug.Print($"winpos location {New Point(winpos.x, winpos.y)}")
                     Debug.Print($"winpos size {New Size(winpos.cx, winpos.cy)}")
