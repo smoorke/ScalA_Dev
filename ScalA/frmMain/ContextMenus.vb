@@ -75,11 +75,11 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub CloseToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseToolStripMenuItem.Click
         'PostMessage(CType(sender.Tag, AstoniaProcess).MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
-        CType(sender.Tag, AstoniaProcess)?.CloseOrKill()
+        DirectCast(sender.Tag, AstoniaProcess)?.CloseOrKill()
     End Sub
 
     Private Sub SelectToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles SelectToolStripMenuItem.Click
-        Dim pp As AstoniaProcess = CType(sender.Tag, AstoniaProcess)
+        Dim pp As AstoniaProcess = DirectCast(sender.Tag, AstoniaProcess)
         If pp Is Nothing Then Exit Sub
         Debug.Print("SelectToolStrip: " & pp.Name)
         If Not cboAlt.Items.Contains(pp) Then
@@ -89,7 +89,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub TopMostToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles TopMostToolStripMenuItem.Click
-        Dim pp As AstoniaProcess = CType(sender.Tag, AstoniaProcess)
+        Dim pp As AstoniaProcess = DirectCast(sender.Tag, AstoniaProcess)
         If pp Is Nothing Then Exit Sub
         Debug.Print("Topmost " & Not sender.Checked)
         If Not sender.Checked Then
@@ -116,7 +116,7 @@ Partial Public NotInheritable Class FrmMain
         UntrapMouse(MouseButtons.Right)
         AppActivate(scalaPID) 'fix right click drag bug
 
-        Dim pp As AstoniaProcess = CType(sender.SourceControl, AButton).AP
+        Dim pp As AstoniaProcess = DirectCast(sender.SourceControl, AButton).AP
 
 #If 0 Then
 #If DEBUG Then
@@ -507,7 +507,7 @@ Partial Public NotInheritable Class FrmMain
         Debug.Print($"CreateShortCut")
         Debug.Print($"sender.text {sender.Text}")
 
-        Dim alt As AstoniaProcess = CType(sender.Tag(0), AstoniaProcess)
+        Dim alt As AstoniaProcess = DirectCast(sender.Tag(0), AstoniaProcess)
         Dim ShortCutPath As String = sender.Tag(1)
         Dim ShortCutName As String = sender.Text
         If ShortCutName = "Someone" Then Exit Sub
@@ -862,7 +862,7 @@ Partial Public NotInheritable Class FrmMain
             ModifyMenuA(QlCtxMenu.Handle, 0, MF_BYPOSITION, GetMenuItemID(QlCtxMenu.Handle, 0), $"{name}")
             Dim hbm = IntPtr.Zero
             If sender.Image IsNot Nothing Then
-                hbm = CType(sender.Image, Bitmap).GetHbitmap(Color.Red)
+                hbm = DirectCast(sender.Image, Bitmap).GetHbitmap(Color.Red)
                 SetMenuItemBitmaps(QlCtxMenu.Handle, 0, MF_BYPOSITION, hbm, Nothing)
             End If
 
@@ -873,7 +873,7 @@ Partial Public NotInheritable Class FrmMain
 
             Dim i = QlCtxNewMenuStaticItemsCount
             For Each item As MenuItem In QlCtxNewMenu.MenuItems.OfType(Of MenuItem).Skip(i).Where(Function(m) m.Tag IsNot Nothing)
-                Dim althbm As IntPtr = New Bitmap(CType(item.Tag(0), AstoniaProcess).GetIcon?.ToBitmap, New Size(16, 16)).GetHbitmap(Color.Red)
+                Dim althbm As IntPtr = New Bitmap(DirectCast(item.Tag(0), AstoniaProcess).GetIcon?.ToBitmap, New Size(16, 16)).GetHbitmap(Color.Red)
                 purgeList.Add(althbm)
                 SetMenuItemBitmaps(QlCtxNewMenu.Handle, i, MF_BYPOSITION, althbm, Nothing)
                 i += 1

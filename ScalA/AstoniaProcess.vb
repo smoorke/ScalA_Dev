@@ -5,6 +5,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
     Private ReadOnly _proc As Process
 
+    'Public thumbID As IntPtr
+
     Public Sub New(Optional process As Process = Nothing)
         _proc = process
     End Sub
@@ -185,12 +187,13 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     End Function
 
 
-    'Public Shared Narrowing Operator CType(ByVal d As AstoniaProcess) As Process
-    '    Return d?._proc
-    'End Operator
-    'Public Shared Widening Operator CType(ByVal b As Process) As AstoniaProcess
-    '    Return New AstoniaProcess(b)
-    'End Operator
+    Public Shared Narrowing Operator CType(ByVal d As AstoniaProcess) As Process
+        Return d?._proc
+    End Operator
+    Public Shared Widening Operator CType(ByVal b As Process) As AstoniaProcess
+        Return GetFromCache(b)
+    End Operator
+
     Public ReadOnly Property Id As Integer
         Get
             Return If(_proc?.Id, 0)

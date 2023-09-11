@@ -43,13 +43,7 @@ Public NotInheritable Class AButton
     End Property
     Public ReadOnly Property ThumbContains(screenPt As Point) As Boolean
         Get
-            Dim clientpt As Point = Me.FindForm.PointToClient(screenPt)
-            If New Rectangle(ThumbRECT.X, ThumbRECT.Y, ThumbRECT.Width - ThumbRECT.X, ThumbRECT.Height - ThumbRECT.Y).Contains(clientpt) Then
-                'Debug.Print($"contains = True")
-                Return True
-            Else
-                Return False
-            End If
+            Return Me.ThumbRectangle.Contains(Me.PointToClient(screenPt))
         End Get
     End Property
 

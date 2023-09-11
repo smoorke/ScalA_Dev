@@ -204,8 +204,6 @@ Public NotInheritable Class FrmSettings
         FrmMain.btnMax.Enabled = Not sender.Checked
     End Sub
 
-
-
     Private Sub BtnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
         Me.chkDoAlign.Checked = False
         Me.txtTopSort.Text = My.Settings.topSort

@@ -114,6 +114,7 @@
     </Compile>
     <Compile Include="frmMain\SysMenu.vb" />
     <Compile Include="frmMain\ThemedControls.vb" />
+    <Compile Include="frmMain\Timers.vb" />
     <Compile Include="frmMain\WindowProc.vb" />
     <Compile Include="frmSettings.Designer.vb">
       <DependentUpon>frmSettings.vb</DependentUpon>

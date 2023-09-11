@@ -55,11 +55,11 @@ Module NativeMethods
 
     <Runtime.CompilerServices.Extension>
     Public Function LOWORD(param As IntPtr) As Short
-        Return CType(param, Integer) And &HFFFF
+        Return CInt(param) And &HFFFF
     End Function
     <Runtime.CompilerServices.Extension>
     Public Function HIWORD(param As IntPtr) As Short
-        Return (CType(param, Integer) And &HFFFF0000) >> 16
+        Return (CInt(param) And &HFFFF0000) >> 16
     End Function
 
 
