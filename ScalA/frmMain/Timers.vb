@@ -213,9 +213,9 @@ Partial NotInheritable Class FrmMain
                              End If
                          End Sub)
 
-        If My.Settings.gameOnOverview Then
-            For Each but As AButton In visibleButtons.Where(Function(ab) ab.pidCache > 0 AndAlso ab.ThumbContains(MousePosition))
-
+        If My.Settings.gameOnOverview AndAlso Not caption_Mousedown Then
+            Dim but As AButton = visibleButtons.FirstOrDefault(Function(ab) ab.pidCache > 0 AndAlso ab.ThumbContains(MousePosition))
+            If but IsNot Nothing Then
                 Dim ap = but.AP
                 Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
                 GetCursorInfo(pci)
@@ -315,7 +315,7 @@ Partial NotInheritable Class FrmMain
                                  End Try
                              End Sub)
                 End If
-            Next
+            End If
         End If
 
         ' Dim purgeList As List(Of Integer) = startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList
