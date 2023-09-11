@@ -138,7 +138,7 @@ Partial NotInheritable Class FrmMain
         'Dim apCounter = 0
         'Dim butCounter = 0
         Dim eqLockShown = False
-        'Dim thumbContainedMouse As Boolean = False
+
 
         Parallel.ForEach(visibleButtons, New ParallelOptions With {.MaxDegreeOfParallelism = -1},
                          Sub(but As AButton, ls As ParallelLoopState, butCounter As Integer)
@@ -213,6 +213,7 @@ Partial NotInheritable Class FrmMain
                              End If
                          End Sub)
 
+        Dim thumbContainedMouse As Boolean = False
         If My.Settings.gameOnOverview AndAlso Not caption_Mousedown Then
             Dim but As AButton = visibleButtons.FirstOrDefault(Function(ab) ab.pidCache > 0 AndAlso ab.ThumbContains(MousePosition))
             If but IsNot Nothing Then
@@ -233,7 +234,7 @@ Partial NotInheritable Class FrmMain
                     wasVisible = True
                 End If
 
-                If Not AOBusy AndAlso but.ThumbContains(MousePosition) Then
+                If Not AOBusy Then
                     AltPP = ap
                     Dim rcwB As Rectangle = ap.WindowRect
                     Dim rccB As Rectangle = ap.ClientRect
@@ -251,7 +252,7 @@ Partial NotInheritable Class FrmMain
                         ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
                     End If
 
-                    'thumbContainedMouse = True
+                    thumbContainedMouse = True
 
                     If cmsQuickLaunch.Visible OrElse cmsAlt.Visible Then
                         SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
@@ -316,6 +317,24 @@ Partial NotInheritable Class FrmMain
                              End Sub)
                 End If
             End If
+        End If
+
+        If Not thumbContainedMouse AndAlso My.Settings.gameOnOverview Then
+            eqLockShown = False
+            Dim active = GetForegroundWindow()
+            Dim activePP = alts.FirstOrDefault(Function(ap) ap.MainWindowHandle = active)
+            If activePP IsNot Nothing AndAlso Not activePP.IsBelow(ScalaHandle) Then
+                SetWindowLong(ScalaHandle, GWL_HWNDPARENT, active)
+                SetWindowPos(active, ScalaHandle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+                SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
+            End If
+        End If
+
+
+        If eqLockShown AndAlso My.Settings.LockEq AndAlso My.Settings.gameOnOverview Then
+            AOshowEqLock = True
+        Else
+            AOshowEqLock = False
         End If
 
         ' Dim purgeList As List(Of Integer) = startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList
