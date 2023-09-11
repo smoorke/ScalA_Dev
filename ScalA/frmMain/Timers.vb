@@ -138,7 +138,7 @@ Partial NotInheritable Class FrmMain
         'Dim apCounter = 0
         'Dim butCounter = 0
         Dim eqLockShown = False
-        Dim thumbContainedMouse As Boolean = False
+        'Dim thumbContainedMouse As Boolean = False
 
         Parallel.ForEach(visibleButtons, New ParallelOptions With {.MaxDegreeOfParallelism = -1},
                          Sub(but As AButton, ls As ParallelLoopState, butCounter As Integer)
@@ -251,7 +251,7 @@ Partial NotInheritable Class FrmMain
                         ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
                     End If
 
-                    thumbContainedMouse = True
+                    'thumbContainedMouse = True
 
                     If cmsQuickLaunch.Visible OrElse cmsAlt.Visible Then
                         SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
