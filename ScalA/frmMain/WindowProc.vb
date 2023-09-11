@@ -91,6 +91,7 @@ Partial NotInheritable Class FrmMain
                 End Select
             Case WM_MOVE
                 'Debug.Print($"WM_MOVE {Me.WindowState}")
+                FrmBehind.Location = New LParamMap(m.LParam)
                 Me.Cursor = Cursors.Default
                 'frmCaptureClickBehind.Bounds = Me.RectangleToScreen(pbZoom.Bounds)
                 If AltPP?.IsRunning AndAlso Not FrmSettings.chkDoAlign.Checked AndAlso Me.WindowState <> FormWindowState.Minimized Then
@@ -117,9 +118,8 @@ Partial NotInheritable Class FrmMain
                 Me.Invalidate()
                 moveBusy = False
             Case WM_SIZE ' = &h0005
-                Dim width As Integer = LOWORD(m.LParam)
-                Dim height As Integer = HIWORD(m.LParam)
-                Debug.Print($"WM_SIZE {m.WParam} {width}x{height}")
+                Dim sz As Size = New LParamMap(m.LParam)
+                Debug.Print($"WM_SIZE {m.WParam} {sz}")
                 If m.WParam = 1 Then ' minimized
                     FrmBehind.Opacity = 0
                 Else
@@ -130,8 +130,8 @@ Partial NotInheritable Class FrmMain
 #End If
                 End If
                 If m.WParam = 2 Then 'maximized
-                    ReZoom(New Drawing.Size(width, height))
-                    FrmBehind.Size = New Size(width, height)
+                    ReZoom(sz)
+                    FrmBehind.Size = sz
                     btnMax.Text = "🗗"
                     ttMain.SetToolTip(btnMax, "Restore")
                 End If
@@ -265,8 +265,7 @@ Partial NotInheritable Class FrmMain
                     End If
                 End If
             Case WM_DISPLAYCHANGE
-                Debug.Print($"WM_DISPLAYCHANGE w {m.WParam} w {m.LParam} {LOWORD(m.LParam)} {HIWORD(m.LParam)}")
-                AltPP?.ResetCache()
+                Debug.Print($"WM_DISPLAYCHANGE w {m.WParam} w {m.LParam}")
                 If Me.WindowState = FormWindowState.Maximized Then SuppressWININICHANGECounter = 2
                 Task.Run(Sub()
                              Threading.Thread.Sleep(5000)

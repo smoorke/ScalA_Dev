@@ -52,15 +52,23 @@ Module NativeMethods
         End Function
     End Structure
 
+    <StructLayout(LayoutKind.Explicit)>
+    Public Structure LParamMap
+        Public Sub New(value As IntPtr)
+            lparam = value
+        End Sub
 
-    <Runtime.CompilerServices.Extension>
-    Public Function LOWORD(param As IntPtr) As Short
-        Return CInt(param) And &HFFFF
-    End Function
-    <Runtime.CompilerServices.Extension>
-    Public Function HIWORD(param As IntPtr) As Short
-        Return (CInt(param) And &HFFFF0000) >> 16
-    End Function
+        Public Shared Widening Operator CType(value As LParamMap) As Point
+            Return New Point(value.loword, value.hiword)
+        End Operator
+        Public Shared Widening Operator CType(value As LParamMap) As Size
+            Return New Size(value.loword, value.hiword)
+        End Operator
+
+        <FieldOffset(0)> Public lparam As IntPtr
+        <FieldOffset(0)> Public loword As Short
+        <FieldOffset(2)> Public hiword As Short
+    End Structure
 
 
     <StructLayout(LayoutKind.Sequential)>
