@@ -1,3 +1,11 @@
+**ScalA 1.3.5**
+Fixed Close Contextmenu doesn't show Close All item when only 1 client is detected.
+Fixed Pressing Tab when setting a hotkey selects Close All checkbox.
+Fixed Closing a client while on overview causes it to briefly show up as `Someone`.
+Fixed EQlock size is incorrect for non 4/3 aspect ratio clients.
+Hotkey settings will now display when an invalid hotkey is configured.
+Made Overview partially multithreaded.
+
 **ScalA 1.3.4**
 Theme switching will now take effect during a windows theme switch w/o having to restart ScalA.
 Fixed when user explicitly selected light theme ScalA would still use system theme.
