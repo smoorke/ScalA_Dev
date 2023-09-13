@@ -175,7 +175,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
     Private Sub SortSubToolStripMenuItem_MouseUp(sender As ToolStripMenuItem, e As MouseEventArgs) Handles SortSubToolStripMenuItem.MouseUp
         If e.Button = MouseButtons.Right Then
-            FrmSettings.Tag = "Sort"
+            FrmSettings.Tag = FrmSettings.tabSortAndBL
             FrmSettings.Show()
             FrmSettings.BringToFront()
             cmsAlt.Close()

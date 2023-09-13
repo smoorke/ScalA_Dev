@@ -667,6 +667,18 @@ Namespace My
                 Me("Theme") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property remeberSettingsTab() As Integer
+            Get
+                Return CType(Me("remeberSettingsTab"),Integer)
+            End Get
+            Set
+                Me("remeberSettingsTab") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

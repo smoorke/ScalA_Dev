@@ -11,14 +11,12 @@ Public NotInheritable Class FrmSettings
 
         FrmMain.tmrHotkeys.Stop()
 
-        If Me.Tag IsNot Nothing Then
-            For Each TabPage As TabPage In tbcSettings.TabPages
-                If TabPage.Text = Me.Tag Then
-                    tbcSettings.SelectedTab = TabPage
-                    Me.Tag = Nothing
-                    Exit For
-                End If
-            Next
+        If Me.Tag IsNot Nothing AndAlso TypeOf Me.Tag Is TabPage Then
+            tbcSettings.SelectedTab = Me.Tag
+            My.Settings.remeberSettingsTab = tbcSettings.SelectedIndex
+            Me.Tag = Nothing
+        Else
+            tbcSettings.SelectedIndex = My.Settings.remeberSettingsTab
         End If
 
         Me.TopMost = My.Settings.topmost
@@ -808,5 +806,9 @@ Public NotInheritable Class FrmSettings
             End If
         End If
         Hotkey.UnregHotkey(Me)
+    End Sub
+
+    Private Sub tbcSettings_SelectedIndexChanged(sender As TabControl, e As EventArgs) Handles tbcSettings.SelectedIndexChanged
+        My.Settings.remeberSettingsTab = sender.SelectedIndex
     End Sub
 End Class

@@ -725,7 +725,10 @@ Partial Public NotInheritable Class FrmMain
         End Get
     End Property
     Private Sub CmbResolution_MouseDown(sender As ComboBox, e As MouseEventArgs) Handles cmbResolution.MouseDown
-        If e.Button = MouseButtons.Right Then FrmSettings.Show()
+        If e.Button = MouseButtons.Right Then
+            FrmSettings.Tag = FrmSettings.tabResolutions
+            FrmSettings.Show()
+        End If
     End Sub
 
     Public suppressResChange As Boolean = False
@@ -1566,37 +1569,6 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
-    Private Sub BtnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
-
-    End Sub
-
-    Private Sub Various_MouseUp(sender As Object, e As MouseEventArgs) Handles pnlSys.MouseUp, pnlButtons.MouseUp, MyBase.MouseUp, cmbResolution.MouseUp, ChkEqLock.MouseUp, cboAlt.MouseUp, btnStart.MouseUp, btnQuit.MouseUp
-
-    End Sub
-
-    Private Sub CmbResolution_DropDown(sender As Object, e As EventArgs) Handles cmbResolution.DropDown
-
-    End Sub
-
-    Private Sub CmbResolution_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cmbResolution.SelectedIndexChanged
-
-    End Sub
-
-    Private Sub ComboBoxes_DropDownClosed(sender As Object, e As EventArgs) Handles cmbResolution.DropDownClosed, cboAlt.DropDownClosed
-
-    End Sub
-
-    Private Sub CmbResolution_MouseDown(sender As Object, e As MouseEventArgs) Handles cmbResolution.MouseDown
-
-    End Sub
-
-    Private Sub CboAlt_DropDown(sender As Object, e As EventArgs) Handles cboAlt.DropDown
-
-    End Sub
-
-    Private Sub CboAlt_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboAlt.SelectedIndexChanged
-
-    End Sub
 End Class
 
 #If DEBUG Then
