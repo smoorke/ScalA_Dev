@@ -203,13 +203,6 @@ Public NotInheritable Class FrmSettings
     End Sub
 
     Private Sub BtnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
-        Me.chkDoAlign.Checked = False
-        Me.txtTopSort.Text = My.Settings.topSort
-        Me.txtBotSort.Text = My.Settings.botSort
-        'btnTest.PerformClick()
-        BtnTest_Click(Nothing, Nothing)
-        My.Settings.Whitelist = restoreWhitelist
-        FrmMain.tmrHotkeys.Start()
         Me.Close()
     End Sub
 
@@ -389,6 +382,16 @@ Public NotInheritable Class FrmSettings
         FrmMain.tmrHotkeys.Start()
 
         Me.Close()
+    End Sub
+
+    Private Sub FrmSettings_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
+        Me.chkDoAlign.Checked = False
+        Me.txtTopSort.Text = My.Settings.topSort
+        Me.txtBotSort.Text = My.Settings.botSort
+        'btnTest.PerformClick()
+        BtnTest_Click(Nothing, Nothing)
+        My.Settings.Whitelist = restoreWhitelist
+        FrmMain.tmrHotkeys.Start()
     End Sub
 
     Dim rcAstOffsetBase As Rectangle
@@ -811,4 +814,6 @@ Public NotInheritable Class FrmSettings
     Private Sub tbcSettings_SelectedIndexChanged(sender As TabControl, e As EventArgs) Handles tbcSettings.SelectedIndexChanged
         My.Settings.remeberSettingsTab = sender.SelectedIndex
     End Sub
+
+
 End Class
