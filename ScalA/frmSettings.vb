@@ -122,7 +122,7 @@ Public NotInheritable Class FrmSettings
         MyBase.WndProc(m)
     End Sub
 
-    Private ReadOnly restoreWhitelist As Boolean = My.Settings.Whitelist
+    Private restoreWhitelist As Boolean = My.Settings.Whitelist
 
     'https://docs.microsoft.com/en-us/windows/win32/api/shellapi/ne-shellapi-shstockiconid
     Enum SIID As UInteger
@@ -360,6 +360,7 @@ Public NotInheritable Class FrmSettings
         My.Settings.CheckForUpdate = chkCheckForUpdate.Checked
 
         BtnTest_Click(Nothing, Nothing) 'apply sorting & black/whitlelist, note: .PerformClick() doesn't work as button may not be visible
+        restoreWhitelist = chkWhitelist.Checked
 
         Hotkey.UnregHotkey(FrmMain)
 
@@ -389,8 +390,8 @@ Public NotInheritable Class FrmSettings
         Me.txtTopSort.Text = My.Settings.topSort
         Me.txtBotSort.Text = My.Settings.botSort
         'btnTest.PerformClick()
+        chkWhitelist.Checked = restoreWhitelist
         BtnTest_Click(Nothing, Nothing)
-        My.Settings.Whitelist = restoreWhitelist
         FrmMain.tmrHotkeys.Start()
     End Sub
 
