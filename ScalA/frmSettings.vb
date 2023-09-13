@@ -122,7 +122,7 @@ Public NotInheritable Class FrmSettings
         MyBase.WndProc(m)
     End Sub
 
-    Private ReadOnly restoreWhitelist As Boolean = My.Settings.Whitelist
+    Private restoreWhitelist As Boolean = My.Settings.Whitelist
 
     'https://docs.microsoft.com/en-us/windows/win32/api/shellapi/ne-shellapi-shstockiconid
     Enum SIID As UInteger
@@ -200,10 +200,6 @@ Public NotInheritable Class FrmSettings
         chkDoAlign.Enabled = Not sender.Checked
         FrmMain.btnMin.Enabled = Not sender.Checked
         FrmMain.btnMax.Enabled = Not sender.Checked
-    End Sub
-
-    Private Sub BtnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
-        Me.Close()
     End Sub
 
     Private Function ParseResolutions() As Boolean
@@ -359,7 +355,7 @@ Public NotInheritable Class FrmSettings
 
         My.Settings.CheckForUpdate = chkCheckForUpdate.Checked
 
-        BtnTest_Click(Nothing, Nothing) 'apply sorting & black/whitlelist, note: .PerformClick() doesn't work as button may not be visible
+        restoreWhitelist = chkWhitelist.Checked
 
         Hotkey.UnregHotkey(FrmMain)
 
@@ -379,18 +375,19 @@ Public NotInheritable Class FrmSettings
         FrmSizeBorder.Invalidate()
 
         Hotkey.UnregHotkey(Me)
-        FrmMain.tmrHotkeys.Start()
 
         Me.Close()
     End Sub
-
+    Private Sub BtnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
+        Me.Close()
+    End Sub
     Private Sub FrmSettings_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
         Me.chkDoAlign.Checked = False
         Me.txtTopSort.Text = My.Settings.topSort
         Me.txtBotSort.Text = My.Settings.botSort
         'btnTest.PerformClick()
+        chkWhitelist.Checked = restoreWhitelist
         BtnTest_Click(Nothing, Nothing)
-        My.Settings.Whitelist = restoreWhitelist
         FrmMain.tmrHotkeys.Start()
     End Sub
 
