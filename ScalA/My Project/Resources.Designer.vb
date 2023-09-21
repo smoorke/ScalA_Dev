@@ -183,6 +183,16 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
+        Friend ReadOnly Property List() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("List", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
         Friend ReadOnly Property message() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("message", resourceCulture)
@@ -236,6 +246,16 @@ Namespace My.Resources
         Friend ReadOnly Property scrollbar_arrow_small_hot() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("scrollbar_arrow_small_hot", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property Sync() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("Sync", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property

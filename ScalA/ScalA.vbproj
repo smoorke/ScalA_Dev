@@ -195,6 +195,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Sync.png" />
     <None Include="Resources\moreF12.png" />
     <None Include="Resources\ScalA_Updater.exe" />
     <None Include="Resources\scrollbar_arrow_small_hot.png" />
@@ -206,6 +207,7 @@
     <None Include="Resources\Close.png" />
     <None Include="Resources\CloseAll.png" />
     <None Include="Resources\CloseBoth.png" />
+    <None Include="Resources\List.png" />
     <Content Include="Resources\moa3.ico" />
     <None Include="Resources\F12.png" />
     <None Include="Resources\moa3.png" />

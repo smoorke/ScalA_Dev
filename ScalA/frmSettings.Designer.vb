@@ -534,18 +534,20 @@ Partial NotInheritable Class FrmSettings
         '
         Me.cmsUpdate.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CheckNowToolStripMenuItem, Me.OpenChangelogToolStripMenuItem})
         Me.cmsUpdate.Name = "cmsUpdate"
-        Me.cmsUpdate.Size = New System.Drawing.Size(165, 48)
+        Me.cmsUpdate.Size = New System.Drawing.Size(181, 70)
         '
         'CheckNowToolStripMenuItem
         '
+        Me.CheckNowToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.Sync
         Me.CheckNowToolStripMenuItem.Name = "CheckNowToolStripMenuItem"
-        Me.CheckNowToolStripMenuItem.Size = New System.Drawing.Size(164, 22)
+        Me.CheckNowToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.CheckNowToolStripMenuItem.Text = "Check Now"
         '
         'OpenChangelogToolStripMenuItem
         '
+        Me.OpenChangelogToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.List
         Me.OpenChangelogToolStripMenuItem.Name = "OpenChangelogToolStripMenuItem"
-        Me.OpenChangelogToolStripMenuItem.Size = New System.Drawing.Size(164, 22)
+        Me.OpenChangelogToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.OpenChangelogToolStripMenuItem.Text = "Open Changelog"
         '
         'ChkMinMin
