@@ -168,16 +168,20 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Return Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25 + 25
     End Function
 
-    Public Function CenterBehind(centerOn As Control, Optional extraSWPFlags As UInteger = 0, Optional force As Boolean = False) As Boolean
+    Public Function CenterBehind(centerOn As Control, Optional extraSWPFlags As UInteger = 0, Optional force As Boolean = False, Optional fixThumb As Boolean = False) As Boolean
         If Not force AndAlso centerOn.RectangleToScreen(centerOn.Bounds).Contains(Form.MousePosition) Then Return False
         Dim pt As Point = centerOn.PointToScreen(New Point(centerOn.Width / 2, centerOn.Height / 2))
-        Return CenterWindowPos(centerOn.FindForm.Handle, pt.X, pt.Y, extraSWPFlags)
+        Return CenterWindowPos(centerOn.FindForm.Handle, pt.X, pt.Y, extraSWPFlags, fixThumb)
     End Function
-    Public Function CenterWindowPos(hWndInsertAfter As IntPtr, x As Integer, y As Integer, Optional extraSWPFlags As UInteger = 0) As Boolean
+    Public Function CenterWindowPos(hWndInsertAfter As IntPtr, x As Integer, y As Integer, Optional extraSWPFlags As UInteger = 0, Optional fixThumb As Boolean = False) As Boolean
         Try
+            y = y - ClientRect.Height / 2 - ClientOffset.Y - My.Settings.offset.Y
+            If fixThumb AndAlso y <= FrmMain.Location.Y Then
+                y = FrmMain.Location.Y + 1
+            End If
             Return SetWindowPos(Me.MainWindowHandle, hWndInsertAfter,
                                 x - ClientRect.Width / 2 - ClientOffset.X - My.Settings.offset.X,
-                                y - ClientRect.Height / 2 - ClientOffset.Y - My.Settings.offset.Y,
+                                y,
                                 -1, -1,
                                 SetWindowPosFlags.IgnoreResize Or extraSWPFlags)
         Catch

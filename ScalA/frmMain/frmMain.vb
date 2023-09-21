@@ -152,11 +152,7 @@ Partial Public NotInheritable Class FrmMain
             AltPP.SavePos(rcW.Location)
 
             'AltPP.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition)
-            If pbZoom.Height <= rcC.Height Then 'fix zoom breaking
-                SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, Me.Location.X - AltPP.ClientOffset.X + 1, Me.Location.Y + 1, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.ASyncWindowPosition)
-            Else
-                AltPP.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition, True)
-            End If
+            AltPP.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition, True, True)
 
             Debug.Print("tmrTick.Enabled")
             tmrTick.Enabled = True

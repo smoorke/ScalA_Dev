@@ -195,11 +195,7 @@ Partial NotInheritable Class FrmMain
                                              If wasMaximized Then Me.Invoke(Sub() btnMax.PerformClick())
                                          End Sub)
                     If AltPP IsNot Nothing Then 'fix thumb breaking
-                        If pbZoom.Height <= rcC.Height Then
-                            SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, Me.Location.X - AltPP.ClientOffset.X + 1, Me.Location.Y + 1, -1, -1, SetWindowPosFlags.IgnoreResize)
-                        Else
-                            AltPP.CenterBehind(pbZoom, 0, True)
-                        End If
+                        AltPP.CenterBehind(pbZoom, 0, True, True)
                         SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
                     End If
                     End If
