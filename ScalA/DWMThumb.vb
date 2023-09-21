@@ -20,6 +20,7 @@
     Public Declare Function DwmRegisterThumbnail Lib "dwmapi.dll" (ByVal Dest As IntPtr, ByVal Src As IntPtr, ByRef Thumb As IntPtr) As Integer
     Public Declare Function DwmUpdateThumbnailProperties Lib "dwmapi.dll" (ByVal hThumbnail As IntPtr, ByRef props As DWM_THUMBNAIL_PROPERTIES) As Integer
     Public Declare Function DwmUnregisterThumbnail Lib "dwmapi.dll" (ByVal Thumb As IntPtr) As Integer
+    Public Declare Function DwmQueryThumbnailSourceSize Lib "dwmapi.dll" (hThumbnail As IntPtr, ByRef pSize As Size) As Integer
 
 End Module
 
@@ -28,15 +29,17 @@ Public NotInheritable Class DWMAPI
 End Class
 
 Partial Public NotInheritable Class FrmMain
-    Dim thumb As IntPtr = IntPtr.Zero
-    Private Sub CreateThumb()
+    Public thumb As IntPtr = IntPtr.Zero
+    Public Function CreateThumb() As Integer
 
         If AltPP IsNot Nothing Then
-            DwmUnregisterThumbnail(thumb)
-            DwmRegisterThumbnail(ScalaHandle, AltPP.MainWindowHandle, thumb)
+            Dim oldThumb = thumb
+            Dim ret = DwmRegisterThumbnail(ScalaHandle, AltPP.MainWindowHandle, thumb)
+            DwmUnregisterThumbnail(oldThumb)
+            Return ret
         End If
-
-    End Sub
+        Return -1
+    End Function
 
     Public Sub UpdateThumb(opacity As Byte)
         If AltPP?.Id = 0 Then Exit Sub

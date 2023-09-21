@@ -194,8 +194,15 @@ Partial NotInheritable Class FrmMain
                                              Threading.Thread.Sleep(100)
                                              If wasMaximized Then Me.Invoke(Sub() btnMax.PerformClick())
                                          End Sub)
-
-                End If
+                    If AltPP IsNot Nothing Then 'fix thumb breaking
+                        If pbZoom.Height <= rcC.Height Then
+                            SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, Me.Location.X - AltPP.ClientOffset.X + 1, Me.Location.Y + 1, -1, -1, SetWindowPosFlags.IgnoreResize)
+                        Else
+                            AltPP.CenterBehind(pbZoom, 0, True)
+                        End If
+                        SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
+                    End If
+                    End If
             Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
                 'If posChangeBusy Then
                 '    Debug.Print("WM_WINDOWPOSCHANGED busy")

@@ -55,7 +55,7 @@ Partial Public NotInheritable Class FrmMain
 
 #End Region
 
-    Private ReadOnly restoreParent As UInteger = GetWindowLong(Me.Handle, GWL_HWNDPARENT)
+    Public ReadOnly restoreParent As UInteger = GetWindowLong(Me.Handle, GWL_HWNDPARENT)
     Private prevItem As New AstoniaProcess()
     Private updatingCombobox As Boolean = False
     Private Async Sub CboAlt_SelectedIndexChanged(sender As ComboBox, e As EventArgs) Handles cboAlt.SelectedIndexChanged
@@ -151,7 +151,12 @@ Partial Public NotInheritable Class FrmMain
             End If
             AltPP.SavePos(rcW.Location)
 
-            AltPP.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition)
+            'AltPP.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition)
+            If pbZoom.Height <= rcC.Height Then 'fix zoom breaking
+                SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, Me.Location.X - AltPP.ClientOffset.X + 1, Me.Location.Y + 1, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.ASyncWindowPosition)
+            Else
+                AltPP.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition, True)
+            End If
 
             Debug.Print("tmrTick.Enabled")
             tmrTick.Enabled = True
@@ -405,6 +410,8 @@ Partial Public NotInheritable Class FrmMain
         test.Items.Add(New ToolStripMenuItem("Shared Mem", Nothing, AddressOf dBug.SharedMem))
         Static dynamicitem2 As New ToolStripMenuItem($"Aborder", Nothing, AddressOf dBug.toggeleborder)
         test.Items.Add(dynamicitem2)
+        test.Items.Add(New ToolStripMenuItem("ThumbSize", Nothing, AddressOf dBug.querySize))
+        test.Items.Add(New ToolStripMenuItem("FudgeThumb", Nothing, AddressOf dBug.fudgeThumb))
 
         chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()
@@ -1688,6 +1695,25 @@ Module dBug
                          SetWindowPosFlags.IgnoreResize Or
                          SetWindowPosFlags.FrameChanged)
         End If
+    End Sub
+
+    Friend Sub querySize(sender As Object, e As EventArgs)
+        Dim sz As Size
+        Dim ret = DwmQueryThumbnailSourceSize(FrmMain.thumb, sz)
+        Debug.Print($"{ret} {sz}")
+    End Sub
+
+    Friend Sub fudgeThumb(sender As Object, e As EventArgs)
+
+        'Debug.Print($"create {FrmMain.CreateThumb()}")
+
+        'FrmMain.AnimateThumb(New Rectangle(FrmMain.PnlEqLock.Left, FrmMain.PnlEqLock.Top, FrmMain.PnlEqLock.Right, FrmMain.PnlEqLock.Bottom), New Rectangle(FrmMain.pbZoom.Left, FrmMain.pbZoom.Top, FrmMain.pbZoom.Right, FrmMain.pbZoom.Bottom), 2000)
+        'Await Task.Delay(50)
+        'FrmMain.AltPP.ResetCache()
+        'AppActivate(FrmMain.AltPP.Id)
+        SetWindowLong(FrmMain.ScalaHandle, GWL_HWNDPARENT, FrmMain.restoreParent)
+        FrmMain.AltPP.CenterBehind(FrmMain, 0, True)
+        SetWindowLong(FrmMain.ScalaHandle, GWL_HWNDPARENT, FrmMain.AltPP.MainWindowHandle)
     End Sub
 End Module
 
