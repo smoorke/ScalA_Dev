@@ -61,6 +61,9 @@ Partial NotInheritable Class FrmSettings
         Me.cboScalingMode = New System.Windows.Forms.ComboBox()
         Me.chkCycleOnClose = New System.Windows.Forms.CheckBox()
         Me.chkCheckForUpdate = New System.Windows.Forms.CheckBox()
+        Me.cmsUpdate = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.CheckNowToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.OpenChangelogToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ChkMinMin = New System.Windows.Forms.CheckBox()
         Me.chkCloseAll = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
@@ -146,6 +149,7 @@ Partial NotInheritable Class FrmSettings
         CType(Me.NumBorderRight, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumBorderTop, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumBorderLeft, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.cmsUpdate.SuspendLayout()
         Me.tbcSettings.SuspendLayout()
         Me.tabResolutions.SuspendLayout()
         Me.cmsRestore.SuspendLayout()
@@ -517,13 +521,32 @@ Partial NotInheritable Class FrmSettings
         'chkCheckForUpdate
         '
         Me.chkCheckForUpdate.AutoSize = True
+        Me.chkCheckForUpdate.ContextMenuStrip = Me.cmsUpdate
         Me.chkCheckForUpdate.Location = New System.Drawing.Point(12, 113)
         Me.chkCheckForUpdate.Name = "chkCheckForUpdate"
         Me.chkCheckForUpdate.Size = New System.Drawing.Size(165, 17)
         Me.chkCheckForUpdate.TabIndex = 23
         Me.chkCheckForUpdate.Text = "Check For Update on Startup"
-        Me.ttSettings.SetToolTip(Me.chkCheckForUpdate, "Check for Updates when ScalA starts.")
+        Me.ttSettings.SetToolTip(Me.chkCheckForUpdate, "Check for Updates when ScalA starts." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Right Click for more options.")
         Me.chkCheckForUpdate.UseVisualStyleBackColor = True
+        '
+        'cmsUpdate
+        '
+        Me.cmsUpdate.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CheckNowToolStripMenuItem, Me.OpenChangelogToolStripMenuItem})
+        Me.cmsUpdate.Name = "cmsUpdate"
+        Me.cmsUpdate.Size = New System.Drawing.Size(165, 48)
+        '
+        'CheckNowToolStripMenuItem
+        '
+        Me.CheckNowToolStripMenuItem.Name = "CheckNowToolStripMenuItem"
+        Me.CheckNowToolStripMenuItem.Size = New System.Drawing.Size(164, 22)
+        Me.CheckNowToolStripMenuItem.Text = "Check Now"
+        '
+        'OpenChangelogToolStripMenuItem
+        '
+        Me.OpenChangelogToolStripMenuItem.Name = "OpenChangelogToolStripMenuItem"
+        Me.OpenChangelogToolStripMenuItem.Size = New System.Drawing.Size(164, 22)
+        Me.OpenChangelogToolStripMenuItem.Text = "Open Changelog"
         '
         'ChkMinMin
         '
@@ -1204,6 +1227,7 @@ Partial NotInheritable Class FrmSettings
         CType(Me.NumBorderRight, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NumBorderTop, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NumBorderLeft, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.cmsUpdate.ResumeLayout(False)
         Me.tbcSettings.ResumeLayout(False)
         Me.tabResolutions.ResumeLayout(False)
         Me.tabResolutions.PerformLayout()
@@ -1312,4 +1336,7 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents chkCloseAll As CheckBox
     Friend WithEvents cmbTheme As ComboBox
     Friend WithEvents Label16 As Label
+    Friend WithEvents cmsUpdate As ContextMenuStrip
+    Friend WithEvents CheckNowToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents OpenChangelogToolStripMenuItem As ToolStripMenuItem
 End Class

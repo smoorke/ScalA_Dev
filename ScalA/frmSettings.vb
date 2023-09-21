@@ -1,4 +1,5 @@
 ﻿Imports System.ComponentModel
+Imports System.Net.Http
 Imports System.Text
 
 Public NotInheritable Class FrmSettings
@@ -745,6 +746,33 @@ Public NotInheritable Class FrmSettings
                 CloseAllKey = e.KeyCode
         End Select
         Debug.Print($"key: {e.KeyCode}")
+    End Sub
+    Private Async Sub CheckNowToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CheckNowToolStripMenuItem.Click
+        Try
+            Using response As HttpResponseMessage = Await FrmMain.client.GetAsync("https://github.com/smoorke/ScalA/releases/download/ScalA/version")
+                response.EnsureSuccessStatusCode()
+                Dim responseBody As String = Await response.Content.ReadAsStringAsync()
+
+                FrmMain.updateToVersion = responseBody
+                If New Version(responseBody) > My.Application.Info.Version Then
+                    FrmMain.pbUpdateAvailable_Click(FrmMain.pbUpdateAvailable, New MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0))
+                Else
+                    MessageBox.Show($"ScalA v{responseBody} is up to date", "No Update Available")
+                End If
+            End Using
+        Catch ex As Exception
+            FrmMain.pnlUpdate.Visible = False
+            FrmMain.updateToVersion = "Error"
+            MessageBox.Show("ScalA is unable to check for updates.", "Error")
+        End Try
+    End Sub
+
+    Private Async Sub OpenChangelogToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenChangelogToolStripMenuItem.Click
+        Await FrmMain.LogDownload
+        Try
+            Process.Start(New ProcessStartInfo(FileIO.SpecialDirectories.Temp & "\ScalA\ChangeLog.txt"))
+        Catch
+        End Try
     End Sub
 
     Private Sub TextBox1_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtStoKey.KeyPress, txtCycleKeyUp.KeyPress, txtCycleKeyDown.KeyPress, txtCloseAll.KeyPress

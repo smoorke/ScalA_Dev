@@ -546,7 +546,7 @@ Partial Public NotInheritable Class FrmMain
             MessageBox.Show("Error" & vbCrLf & e.Message)
         End Try
     End Function
-    Private Async Sub pbUpdateAvailable_Click(sender As PictureBox, e As MouseEventArgs) Handles pbUpdateAvailable.MouseDown
+    Friend Async Sub pbUpdateAvailable_Click(sender As PictureBox, e As MouseEventArgs) Handles pbUpdateAvailable.MouseDown
 
         If e.Button <> MouseButtons.Left Then Exit Sub
 
