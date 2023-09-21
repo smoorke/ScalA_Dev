@@ -1,4 +1,4 @@
-**Scala 1.3.6**
+**Scala 1.3.7**
 Fixed Closing Settings using x button stops hotkeys from working.
 Fixed zoom breaking when ScalA is set to approximately same as or lower resolution than client.
 Settings now remembers last opened Tab.
