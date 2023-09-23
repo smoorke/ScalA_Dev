@@ -125,6 +125,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
+        Me.ChkQLShowHidden = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -170,17 +171,18 @@ Partial NotInheritable Class FrmSettings
         'grpQLPath
         '
         grpQLPath.Controls.Add(Me.txtQuickLaunchPath)
+        grpQLPath.Controls.Add(Me.ChkQLShowHidden)
         grpQLPath.Controls.Add(Me.btnOpenFolderDialog)
         grpQLPath.Location = New System.Drawing.Point(7, -2)
         grpQLPath.Name = "grpQLPath"
         grpQLPath.Size = New System.Drawing.Size(291, 40)
         grpQLPath.TabIndex = 16
         grpQLPath.TabStop = False
-        grpQLPath.Text = "QuickLaunch Path"
+        grpQLPath.Text = "QuickLaunch"
         '
         'txtQuickLaunchPath
         '
-        Me.txtQuickLaunchPath.Location = New System.Drawing.Point(5, 13)
+        Me.txtQuickLaunchPath.Location = New System.Drawing.Point(5, 16)
         Me.txtQuickLaunchPath.Name = "txtQuickLaunchPath"
         Me.txtQuickLaunchPath.Size = New System.Drawing.Size(259, 20)
         Me.txtQuickLaunchPath.TabIndex = 0
@@ -192,7 +194,7 @@ Partial NotInheritable Class FrmSettings
         Me.btnOpenFolderDialog.FlatAppearance.BorderSize = 0
         Me.btnOpenFolderDialog.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnOpenFolderDialog.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-        Me.btnOpenFolderDialog.Location = New System.Drawing.Point(263, 13)
+        Me.btnOpenFolderDialog.Location = New System.Drawing.Point(263, 16)
         Me.btnOpenFolderDialog.Name = "btnOpenFolderDialog"
         Me.btnOpenFolderDialog.Size = New System.Drawing.Size(22, 20)
         Me.btnOpenFolderDialog.TabIndex = 1
@@ -534,20 +536,20 @@ Partial NotInheritable Class FrmSettings
         '
         Me.cmsUpdate.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CheckNowToolStripMenuItem, Me.OpenChangelogToolStripMenuItem})
         Me.cmsUpdate.Name = "cmsUpdate"
-        Me.cmsUpdate.Size = New System.Drawing.Size(181, 70)
+        Me.cmsUpdate.Size = New System.Drawing.Size(165, 48)
         '
         'CheckNowToolStripMenuItem
         '
         Me.CheckNowToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.Sync
         Me.CheckNowToolStripMenuItem.Name = "CheckNowToolStripMenuItem"
-        Me.CheckNowToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.CheckNowToolStripMenuItem.Size = New System.Drawing.Size(164, 22)
         Me.CheckNowToolStripMenuItem.Text = "Check Now"
         '
         'OpenChangelogToolStripMenuItem
         '
         Me.OpenChangelogToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.List
         Me.OpenChangelogToolStripMenuItem.Name = "OpenChangelogToolStripMenuItem"
-        Me.OpenChangelogToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.OpenChangelogToolStripMenuItem.Size = New System.Drawing.Size(164, 22)
         Me.OpenChangelogToolStripMenuItem.Text = "Open Changelog"
         '
         'ChkMinMin
@@ -1204,6 +1206,18 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
+        'ChkQLShowHidden
+        '
+        Me.ChkQLShowHidden.AutoSize = True
+        Me.ChkQLShowHidden.Location = New System.Drawing.Point(140, 1)
+        Me.ChkQLShowHidden.Name = "ChkQLShowHidden"
+        Me.ChkQLShowHidden.Size = New System.Drawing.Size(126, 17)
+        Me.ChkQLShowHidden.TabIndex = 26
+        Me.ChkQLShowHidden.Text = "Always Show Hidden"
+        Me.ttSettings.SetToolTip(Me.ChkQLShowHidden, "Always Show Hidden and System Items." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Hold Ctrl while opening QL or it's submenus" &
+        " to override when this setting is off.")
+        Me.ChkQLShowHidden.UseVisualStyleBackColor = True
+        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1341,4 +1355,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents cmsUpdate As ContextMenuStrip
     Friend WithEvents CheckNowToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents OpenChangelogToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents ChkQLShowHidden As CheckBox
 End Class

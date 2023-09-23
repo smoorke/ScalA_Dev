@@ -107,6 +107,7 @@ Public NotInheritable Class FrmSettings
 
         ChkMinMin.Checked = My.Settings.MinMin
 
+        ChkQLShowHidden.Checked = My.Settings.QLShowHidden
 
         validate_hotkey(New Object, New EventArgs)
 
@@ -368,6 +369,8 @@ Public NotInheritable Class FrmSettings
         FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, FrmSizeBorder.Opacity, 0)
 
         My.Settings.MinMin = ChkMinMin.Checked
+
+        My.Settings.QLShowHidden = ChkQLShowHidden.Checked
 
         FrmMain.tmrOverview.Interval = If(My.Settings.gameOnOverview, 33, 66)
 
@@ -757,13 +760,13 @@ Public NotInheritable Class FrmSettings
                 If New Version(responseBody) > My.Application.Info.Version Then
                     FrmMain.pbUpdateAvailable_Click(FrmMain.pbUpdateAvailable, New MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0))
                 Else
-                    MessageBox.Show($"ScalA v{responseBody} is up to date", "No Update Available")
+                    MessageBox.Show(Me, $"ScalA v{responseBody} is up to date", "No Update Available")
                 End If
             End Using
         Catch ex As Exception
             FrmMain.pnlUpdate.Visible = False
             FrmMain.updateToVersion = "Error"
-            MessageBox.Show("ScalA is unable to check for updates.", "Error")
+            MessageBox.Show(Me, "ScalA is unable to check for updates.", "Error")
         End Try
     End Sub
 

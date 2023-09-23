@@ -263,46 +263,46 @@ Partial Public NotInheritable Class FrmMain
 
     Private ReadOnly iconCache As New ConcurrentDictionary(Of String, Bitmap)
 
-    Private Function GetIcon(ByVal PathName As String) As Bitmap
+    Private Function GetIcon(ByVal PathName As String, transp As Boolean) As Bitmap
 
         If PathName Is Nothing Then Return Nothing
 
         Try
             Return iconCache.GetOrAdd(PathName,
-            Function()
+                   Function()
 
-                Debug.Print($"iconCahceMiss: {PathName}")
+                       Debug.Print($"iconCahceMiss: {PathName}")
 
-                Dim bm As Bitmap
-                Dim fi As New SHFILEINFOW
-                Dim ico As Icon
+                       Dim bm As Bitmap
+                       Dim fi As New SHFILEINFOW
+                       Dim ico As Icon
 
-                If PathName.EndsWith("\") Then
-                    SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_ICON Or SHGFI_SMALLICON)
-                    If fi.hIcon = IntPtr.Zero Then
-                        Debug.Print("hIcon empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
-                        Throw New Exception
-                    End If
-                    ico = Icon.FromHandle(fi.hIcon)
-                    bm = ico.ToBitmap
-                    DestroyIcon(fi.hIcon)
-                Else 'not a folder
-                    Dim list As IntPtr = SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_SYSICONINDEX Or SHGFI_SMALLICON)
-                    Dim hIcon As IntPtr = ImageList_GetIcon(list, fi.iIcon, 0)
-                    ImageList_Destroy(list)
-                    If hIcon = IntPtr.Zero Then
-                        Debug.Print("iconlist empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
-                        Throw New Exception
-                    End If
-                    ico = Icon.FromHandle(hIcon)
-                    bm = ico.ToBitmap
-                    DestroyIcon(hIcon)
-                End If
-                DestroyIcon(ico.Handle)
-                ico.Dispose()
+                       If PathName.EndsWith("\") Then
+                           SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_ICON Or SHGFI_SMALLICON)
+                           If fi.hIcon = IntPtr.Zero Then
+                               Debug.Print("hIcon empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
+                               Throw New Exception
+                           End If
+                           ico = Icon.FromHandle(fi.hIcon)
+                           bm = ico.ToBitmap
+                           DestroyIcon(fi.hIcon)
+                       Else 'not a folder
+                           Dim list As IntPtr = SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_SYSICONINDEX Or SHGFI_SMALLICON)
+                           Dim hIcon As IntPtr = ImageList_GetIcon(list, fi.iIcon, 0)
+                           ImageList_Destroy(list)
+                           If hIcon = IntPtr.Zero Then
+                               Debug.Print("iconlist empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
+                               Throw New Exception
+                           End If
+                           ico = Icon.FromHandle(hIcon)
+                           bm = ico.ToBitmap
+                           DestroyIcon(hIcon)
+                       End If
+                       DestroyIcon(ico.Handle)
+                       ico.Dispose()
 
-                Return bm
-            End Function)
+                       Return bm
+                   End Function).AsTransparent(If(transp, If(My.Settings.DarkMode, 0.4, 0.5), 1))
         Catch
             Debug.Print("GetIcon Exception")
             Return Nothing
@@ -325,12 +325,14 @@ Partial Public NotInheritable Class FrmMain
         Try
             For Each fullDirs As String In System.IO.Directory.EnumerateDirectories(pth)
 
-                If Not My.Computer.Keyboard.CtrlKeyDown Then
-                    Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullDirs).Attributes
+                Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullDirs).Attributes
+                If Not My.Computer.Keyboard.CtrlKeyDown AndAlso Not My.Settings.QLShowHidden Then
                     If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then Continue For
                 End If
+                Dim hidden As Boolean = False
+                If attr.HasFlag(System.IO.FileAttributes.Hidden) Then hidden = True
 
-                Dim smenu As New ToolStripMenuItem(System.IO.Path.GetFileName(fullDirs)) With {.Tag = fullDirs & "\"}
+                Dim smenu As New ToolStripMenuItem(System.IO.Path.GetFileName(fullDirs)) With {.Tag = {fullDirs & "\", hidden}}
 
                 smenu.DropDownItems.Add("(Dummy)").Enabled = False
                 smenu.DoubleClickEnabled = True
@@ -359,10 +361,12 @@ Partial Public NotInheritable Class FrmMain
                                        .Where(Function(p) extensions.Contains(System.IO.Path.GetExtension(p).ToLower))
             'Debug.Print(System.IO.Path.GetFileName(fullLink))
 
-            If Not My.Computer.Keyboard.CtrlKeyDown Then
-                Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullLink).Attributes
+            Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullLink).Attributes
+            If Not My.Computer.Keyboard.CtrlKeyDown AndAlso Not My.Settings.QLShowHidden Then
                 If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then Continue For
             End If
+            Dim hidden As Boolean = False
+            If attr.HasFlag(System.IO.FileAttributes.Hidden) Then hidden = True
 
             'don't add self to list
             If System.IO.Path.GetFileName(fullLink) = System.IO.Path.GetFileName(Environment.GetCommandLineArgs(0)) Then Continue For
@@ -375,7 +379,7 @@ Partial Public NotInheritable Class FrmMain
                 linkName = System.IO.Path.GetFileName(fullLink)
             End If
 
-            Dim item As New ToolStripMenuItem(linkName) With {.Tag = fullLink}
+            Dim item As New ToolStripMenuItem(linkName) With {.Tag = {fullLink, hidden}}
             AddHandler item.MouseDown, AddressOf QL_MouseDown
             'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
             'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
@@ -389,7 +393,7 @@ Partial Public NotInheritable Class FrmMain
         Next
 
         menuItems = Dirs.OrderBy(Function(d) d.Text, nsSorter).Concat(
-                   Files.OrderBy(Function(f) f.Tag, nsSorter)).ToList
+                   Files.OrderBy(Function(f) f.Tag(0), nsSorter)).ToList
 
         If timedout Then
             menuItems.Add(New ToolStripMenuItem("<TimedOut>") With {.Enabled = False})
@@ -418,13 +422,12 @@ Partial Public NotInheritable Class FrmMain
     Private Sub CmsQuickLaunchDropDown_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs)
         cts?.Cancel()
     End Sub
-
     Private Sub DeferredIconLoading(items As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
         Try
             Task.Run(Sub()
                          Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested),
                                           Sub(it As ToolStripItem)
-                                              Me.Invoke(updateToolstripImage, {it, GetIcon(it.Tag)})
+                                              Me.Invoke(updateToolstripImage, {it, GetIcon(it.Tag(0), it.Tag(1))})
                                           End Sub)
                      End Sub, ct)
         Catch ex As System.Threading.Tasks.TaskCanceledException
@@ -444,9 +447,9 @@ Partial Public NotInheritable Class FrmMain
         'Debug.Print($"ParseSubDir QlCtxIsOpen:{QlCtxIsOpen}")
         'If QlCtxIsOpen Then Exit Sub
         sender.DropDownItems.Clear()
-        sender.DropDownItems.AddRange(ParseDir(sender.Tag).ToArray)
+        sender.DropDownItems.AddRange(ParseDir(sender.Tag(0)).ToArray)
     End Sub
-    Private foldericon = GetIcon(FileIO.SpecialDirectories.Temp)
+    Private foldericon = GetIcon(FileIO.SpecialDirectories.Temp, False)
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
         Debug.Print("addshortcut.sendertag:" & sender.Tag)
         sender.DropDownItems.Clear()
@@ -699,7 +702,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub QlCtxRename(sender As MenuItem, e As EventArgs)
-        Dim Path As String = sender.Parent.Tag.Tag
+        Dim Path As String = sender.Parent.Tag.Tag(0)
         Dim Name As String = sender.Parent.Tag.text
 
         Debug.Print($"QlCtxRename {Path} {Name}")
@@ -755,7 +758,7 @@ Partial Public NotInheritable Class FrmMain
     Private Sub QlCtxDelete(sender As MenuItem, e As EventArgs)
         cmsQuickLaunch.Close()
 
-        Dim Path As String = sender.Parent.Tag.tag
+        Dim Path As String = sender.Parent.Tag.tag(0)
         Dim name As String = sender.Parent.Tag.Text
 
         Debug.Print($"Delete {Path}")
@@ -842,7 +845,7 @@ Partial Public NotInheritable Class FrmMain
 
 
 
-            Dim path As String = sender.Tag
+            Dim path As String = sender.Tag(0)
             Dim name As String = sender.Text
 
             QlCtxMenu.Tag = sender
@@ -891,7 +894,7 @@ Partial Public NotInheritable Class FrmMain
             Next
 
 
-        ElseIf Not sender.Tag.EndsWith("\") Then 'do not process click on dirs as they are handled by doubleclick
+        ElseIf Not sender.Tag(0).EndsWith("\") Then 'do not process click on dirs as they are handled by doubleclick
             Debug.Print("clicked not a dir")
             Task.Run(Sub() OpenLnk(sender, e))
             'cmsQuickLaunch.Close(ToolStripDropDownCloseReason.ItemClicked)
@@ -899,8 +902,8 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub OpenProps(ByVal sender As Object, ByVal e As MouseEventArgs) 'Handles smenu.MouseUp, item.MouseUp
-        Debug.Print($"OpenProps {sender.Tag} {sender.GetType}")
-        Dim pth As String = sender.Tag.ToString.TrimEnd("\")
+        Debug.Print($"OpenProps {sender.Tag(0)} {sender.GetType}")
+        Dim pth As String = sender.Tag(0).ToString.TrimEnd("\")
         If e.Button = MouseButtons.Right Then
             Dim sei As New SHELLEXECUTEINFO With {
                .cbSize = System.Runtime.InteropServices.Marshal.SizeOf(GetType(SHELLEXECUTEINFO)),
@@ -930,7 +933,7 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub DblClickDir(ByVal sender As ToolStripMenuItem, ByVal e As EventArgs) 'Handles smenu.DoubleClick
 
-        Dim pp As New Process With {.StartInfo = New ProcessStartInfo With {.FileName = sender.Tag}}
+        Dim pp As New Process With {.StartInfo = New ProcessStartInfo With {.FileName = sender.Tag(0)}}
 
         Try
             pp.Start()
@@ -940,7 +943,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub OpenLnk(ByVal sender As ToolStripItem, ByVal e As System.Windows.Forms.MouseEventArgs) 'handles item.MouseDown
-        Debug.Print("openLnk: " & sender.Tag)
+        Debug.Print("openLnk: " & sender.Tag(0))
         If e Is Nothing Then Exit Sub
         If e.Button = MouseButtons.Right Then
             'OpenProps(sender, e)
@@ -957,8 +960,8 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         Dim pp As Process = New Process With {.StartInfo = New ProcessStartInfo With {.FileName = tmpDir & bat,
-                                                                       .Arguments = """" & sender.Tag & """",
-                                                                       .WorkingDirectory = System.IO.Path.GetDirectoryName(sender.Tag),
+                                                                       .Arguments = """" & sender.Tag(0) & """",
+                                                                       .WorkingDirectory = System.IO.Path.GetDirectoryName(sender.Tag(0)),
                                                                        .WindowStyle = ProcessWindowStyle.Hidden,
                                                                        .CreateNoWindow = True}}
 
@@ -1126,5 +1129,29 @@ Partial Public NotInheritable Class FrmMain
         End If
     End Sub
 
-
 End Class
+Module ImageExtension
+    ''' <summary>
+    ''' Returns an image with desired opacity.
+    ''' </summary>
+    ''' <param name="img">source image</param>
+    ''' <param name="opacity">desired opacity</param>
+    ''' <returns>Nothing if an exception occurs or opacity is less than 0</returns>
+    <Runtime.CompilerServices.Extension()>
+    Public Function AsTransparent(ByVal img As Image, ByVal opacity As Single) As Image
+        If opacity >= 1.0F Then Return img
+        If opacity <= 0.0F Then Return Nothing
+        Try
+            Dim bmp = New Bitmap(img.Width, img.Height)
+            Using gfx = Graphics.FromImage(bmp), attr As New Imaging.ImageAttributes()
+                attr.SetColorMatrix(New Imaging.ColorMatrix With {.Matrix33 = opacity})
+                gfx.DrawImage(img, New Rectangle(0, 0, bmp.Width, bmp.Height),
+                              0, 0, img.Width, img.Height, GraphicsUnit.Pixel, attr)
+            End Using
+            Return bmp
+        Catch ex As Exception
+            Debug.Print($"Exception in AsTransparent {ex.Message}")
+            Return Nothing
+        End Try
+    End Function
+End Module
