@@ -69,7 +69,14 @@ Partial Public NotInheritable Class FrmMain
             CloseAllIdleToolStripMenuItem.Visible = False
         End If
 
+        ttMain.Hide(btnQuit)
+        pbZoom.Visible = False
+        AButton.ActiveOverview = False
 
+    End Sub
+
+    Private Sub cmsQuit_Closed(sender As Object, e As ToolStripDropDownClosedEventArgs) Handles cmsQuit.Closed
+        Dim unused = RestoreClicking()
     End Sub
 #End Region
 
@@ -419,7 +426,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Sub SetVisRecurse(col As ToolStripItemCollection)
-        Task.Run(Sub() Parallel.ForEach(col.Cast(Of ToolStripItem)(),
+        Task.Run(Sub() Parallel.ForEach(col.Cast(Of ToolStripItem),
             Sub(it)
                 If cantok.IsCancellationRequested Then Exit Sub
                 Me.BeginInvoke(Sub() it.Visible = True)
@@ -437,7 +444,7 @@ Partial Public NotInheritable Class FrmMain
             Task.Run(Sub()
                          Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested),
                                           Sub(it As ToolStripItem)
-                                              Me.Invoke(updateToolstripImage, {it, GetIcon(it.Tag(0), it.Tag(1))})
+                                              Me.BeginInvoke(updateToolstripImage, {it, GetIcon(it.Tag(0), it.Tag(1))})
                                           End Sub)
                      End Sub, ct)
         Catch ex As System.Threading.Tasks.TaskCanceledException
@@ -669,7 +676,7 @@ Partial Public NotInheritable Class FrmMain
 
     Dim cts As New Threading.CancellationTokenSource
     Dim cantok As Threading.CancellationToken = cts.Token
-    Private Async Sub CmsQuickLaunch_Closed(sender As ContextMenuStrip, e As ToolStripDropDownClosedEventArgs) Handles cmsQuickLaunch.Closed
+    Private Sub CmsQuickLaunch_Closed(sender As ContextMenuStrip, e As ToolStripDropDownClosedEventArgs) Handles cmsQuickLaunch.Closed
         cts.Cancel() 'cancel deferred icon loading and setvis
         ctrlshift_pressed = False
         'sender.Items.Clear() 'this couses menu to stutter opening
@@ -698,13 +705,7 @@ Partial Public NotInheritable Class FrmMain
                                  Threading.Thread.Sleep(50)
                                  SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
                              End Sub)
-        Await Task.Delay(200)
-        If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse SysMenu.Visible Then Exit Sub
-        If cboAlt.SelectedIndex > 0 Then
-            pbZoom.Visible = True
-        Else
-            AButton.ActiveOverview = My.Settings.gameOnOverview
-        End If
+        Dim unused = RestoreClicking()
     End Sub
 
     Private Sub QlCtxOpen(sender As MenuItem, e As EventArgs)

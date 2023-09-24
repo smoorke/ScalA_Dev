@@ -42,18 +42,22 @@ Partial Public NotInheritable Class FrmMain
         AButton.ActiveOverview = False
     End Sub
 
-    Private Async Sub ComboBoxes_DropDownClosed(sender As ComboBox, e As EventArgs) Handles cboAlt.DropDownClosed, cmbResolution.DropDownClosed
+    Private Sub ComboBoxes_DropDownClosed(sender As ComboBox, e As EventArgs) Handles cboAlt.DropDownClosed, cmbResolution.DropDownClosed
         moveBusy = False
-        Await Task.Delay(200)
-        If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse SysMenu.Visible Then Exit Sub
+        Dim unused = RestoreClicking()
+    End Sub
+
+#End Region
+    Private Async Function RestoreClicking() As Task(Of Boolean)
+        Await Task.Delay(150)
+        If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse cmsQuit.Visible OrElse SysMenu.Visible Then Return False
         If Not pnlOverview.Visible Then
             pbZoom.Visible = True
         Else
             AButton.ActiveOverview = My.Settings.gameOnOverview
         End If
-    End Sub
-
-#End Region
+        Return True
+    End Function
 
     Public ReadOnly restoreParent As UInteger = GetWindowLong(Me.Handle, GWL_HWNDPARENT)
     Private prevItem As New AstoniaProcess()

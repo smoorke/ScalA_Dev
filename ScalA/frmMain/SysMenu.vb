@@ -117,8 +117,8 @@ Partial NotInheritable Class FrmMain
 
             Dim ret = SysMenu.Show(sender.PointToScreen(e.Location))
 
-            Await Task.Delay(200)
-            If cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse cmsQuickLaunch.Visible OrElse cmsAlt.Visible OrElse SysMenu.Visible Then Exit Sub
+            If Not Await RestoreClicking() Then Exit Sub
+
             Debug.Print($"ShowSysMenu awaited")
 
             If ret <> SC_MINIMIZE OrElse My.Settings.MinMin Then SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
@@ -126,11 +126,6 @@ Partial NotInheritable Class FrmMain
             If GetActiveProcessID() = scalaPID Then
                 Debug.Print($"ShowSysMenu activating {AltPP.Name}")
                 AltPP?.Activate()
-            End If
-            If Not pnlOverview.Visible Then
-                pbZoom.Visible = True
-            Else
-                AButton.ActiveOverview = My.Settings.gameOnOverview
             End If
         End If
     End Sub
