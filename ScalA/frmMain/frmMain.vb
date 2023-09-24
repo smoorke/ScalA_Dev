@@ -156,7 +156,7 @@ Partial Public NotInheritable Class FrmMain
             AltPP.SavePos(rcW.Location)
 
             'AltPP.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition)
-            AltPP.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition, True, True)
+            AltPP.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition, False, True)
 
             Debug.Print("tmrTick.Enabled")
             tmrTick.Enabled = True
