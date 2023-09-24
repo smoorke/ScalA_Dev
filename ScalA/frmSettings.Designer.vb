@@ -42,6 +42,7 @@ Partial NotInheritable Class FrmSettings
         Dim Label15 As System.Windows.Forms.Label
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmSettings))
         Me.txtQuickLaunchPath = New System.Windows.Forms.TextBox()
+        Me.ChkQLShowHidden = New System.Windows.Forms.CheckBox()
         Me.btnOpenFolderDialog = New System.Windows.Forms.Button()
         Me.cmsQLFolder = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.OpenInExplorerToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -125,7 +126,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
-        Me.ChkQLShowHidden = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -187,6 +187,18 @@ Partial NotInheritable Class FrmSettings
         Me.txtQuickLaunchPath.Size = New System.Drawing.Size(259, 20)
         Me.txtQuickLaunchPath.TabIndex = 0
         Me.txtQuickLaunchPath.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'ChkQLShowHidden
+        '
+        Me.ChkQLShowHidden.AutoSize = True
+        Me.ChkQLShowHidden.Location = New System.Drawing.Point(140, 1)
+        Me.ChkQLShowHidden.Name = "ChkQLShowHidden"
+        Me.ChkQLShowHidden.Size = New System.Drawing.Size(126, 17)
+        Me.ChkQLShowHidden.TabIndex = 26
+        Me.ChkQLShowHidden.Text = "Always Show Hidden"
+        Me.ttSettings.SetToolTip(Me.ChkQLShowHidden, "Always Show Hidden and System Items." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Press Ctrl + Shift to override when this se" &
+        "tting is off.")
+        Me.ChkQLShowHidden.UseVisualStyleBackColor = True
         '
         'btnOpenFolderDialog
         '
@@ -1205,18 +1217,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.TabIndex = 2
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
-        '
-        'ChkQLShowHidden
-        '
-        Me.ChkQLShowHidden.AutoSize = True
-        Me.ChkQLShowHidden.Location = New System.Drawing.Point(140, 1)
-        Me.ChkQLShowHidden.Name = "ChkQLShowHidden"
-        Me.ChkQLShowHidden.Size = New System.Drawing.Size(126, 17)
-        Me.ChkQLShowHidden.TabIndex = 26
-        Me.ChkQLShowHidden.Text = "Always Show Hidden"
-        Me.ttSettings.SetToolTip(Me.ChkQLShowHidden, "Always Show Hidden and System Items." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Hold Ctrl while opening QL or it's submenus" &
-        " to override when this setting is off.")
-        Me.ChkQLShowHidden.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '

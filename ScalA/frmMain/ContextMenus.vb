@@ -326,13 +326,10 @@ Partial Public NotInheritable Class FrmMain
             For Each fullDirs As String In System.IO.Directory.EnumerateDirectories(pth)
 
                 Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullDirs).Attributes
-                If Not My.Computer.Keyboard.CtrlKeyDown AndAlso Not My.Settings.QLShowHidden Then
-                    If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then Continue For
-                End If
                 Dim hidden As Boolean = False
-                If attr.HasFlag(System.IO.FileAttributes.Hidden) Then hidden = True
+                If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then hidden = True
 
-                Dim smenu As New ToolStripMenuItem(System.IO.Path.GetFileName(fullDirs)) With {.Tag = {fullDirs & "\", hidden}}
+                Dim smenu As New ToolStripMenuItem(System.IO.Path.GetFileName(fullDirs)) With {.Tag = {fullDirs & "\", hidden}, .Visible = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden}
 
                 smenu.DropDownItems.Add("(Dummy)").Enabled = False
                 smenu.DoubleClickEnabled = True
@@ -362,11 +359,8 @@ Partial Public NotInheritable Class FrmMain
             'Debug.Print(System.IO.Path.GetFileName(fullLink))
 
             Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullLink).Attributes
-            If Not My.Computer.Keyboard.CtrlKeyDown AndAlso Not My.Settings.QLShowHidden Then
-                If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then Continue For
-            End If
             Dim hidden As Boolean = False
-            If attr.HasFlag(System.IO.FileAttributes.Hidden) Then hidden = True
+            If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then hidden = True
 
             'don't add self to list
             If System.IO.Path.GetFileName(fullLink) = System.IO.Path.GetFileName(Environment.GetCommandLineArgs(0)) Then Continue For
@@ -379,7 +373,7 @@ Partial Public NotInheritable Class FrmMain
                 linkName = System.IO.Path.GetFileName(fullLink)
             End If
 
-            Dim item As New ToolStripMenuItem(linkName) With {.Tag = {fullLink, hidden}}
+            Dim item As New ToolStripMenuItem(linkName) With {.Tag = {fullLink, hidden}, .Visible = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden}
             AddHandler item.MouseDown, AddressOf QL_MouseDown
             'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
             'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
@@ -401,13 +395,11 @@ Partial Public NotInheritable Class FrmMain
 
         If isEmpty Then menuItems.Add(New ToolStripMenuItem("(Empty)") With {.Enabled = False})
 
-        If My.Computer.Keyboard.CtrlKeyDown OrElse isEmpty Then
-            menuItems.Add(New ToolStripSeparator)
-            Dim addShortcutMenu As New ToolStripMenuItem("New", My.Resources.Add) With {.Tag = pth}
-            addShortcutMenu.DropDownItems.Add("(Dummy)").Enabled = False
-            AddHandler addShortcutMenu.DropDownOpening, AddressOf AddShortcutMenu_DropDownOpening
-            menuItems.Add(addShortcutMenu)
-        End If
+        menuItems.Add(New ToolStripSeparator With {.Visible = isEmpty OrElse ctrlshift_pressed})
+        Dim addShortcutMenu As New ToolStripMenuItem("New", My.Resources.Add) With {.Tag = pth, .Visible = isEmpty OrElse ctrlshift_pressed}
+        addShortcutMenu.DropDownItems.Add("(Dummy)").Enabled = False
+        AddHandler addShortcutMenu.DropDownOpening, AddressOf AddShortcutMenu_DropDownOpening
+        menuItems.Add(addShortcutMenu)
 
         cts?.Dispose()
         cts = New Threading.CancellationTokenSource
@@ -418,6 +410,24 @@ Partial Public NotInheritable Class FrmMain
         watch.Stop()
         Return menuItems
     End Function
+    Private ctrlshift_pressed As Boolean = False
+    Sub Application_Idle(sender As Object, e As EventArgs)
+        If cmsQuickLaunch.Visible AndAlso My.Computer.Keyboard.CtrlKeyDown AndAlso My.Computer.Keyboard.ShiftKeyDown AndAlso Not ctrlshift_pressed Then
+            ctrlshift_pressed = True
+            SetVisRecurse(cmsQuickLaunch.Items)
+        End If
+    End Sub
+
+    Sub SetVisRecurse(col As ToolStripItemCollection)
+        Task.Run(Sub() Parallel.ForEach(col.Cast(Of ToolStripItem)(),
+            Sub(it)
+                If cantok.IsCancellationRequested Then Exit Sub
+                Me.BeginInvoke(Sub() it.Visible = True)
+                If TypeOf it Is ToolStripMenuItem AndAlso DirectCast(it, ToolStripMenuItem).HasDropDownItems Then
+                    SetVisRecurse(DirectCast(it, ToolStripMenuItem).DropDownItems)
+                End If
+            End Sub), cantok)
+    End Sub
 
     Private Sub CmsQuickLaunchDropDown_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs)
         cts?.Cancel()
@@ -603,7 +613,7 @@ Partial Public NotInheritable Class FrmMain
         ttMain.Hide(btnStart)
         pbZoom.Visible = False
         AButton.ActiveOverview = False
-        If My.Computer.Keyboard.ShiftKeyDown Then
+        If My.Computer.Keyboard.ShiftKeyDown AndAlso Not My.Computer.Keyboard.CtrlKeyDown Then
             Debug.Print("ShowSysMenu ")
             Dim pt As Point = sender.PointToClient(MousePosition)
             Me.ShowSysMenu(sender, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
@@ -622,13 +632,14 @@ Partial Public NotInheritable Class FrmMain
             System.IO.Directory.CreateDirectory(My.Settings.links & "\Example Folder")
         End If
 
+        If My.Computer.Keyboard.CtrlKeyDown AndAlso My.Computer.Keyboard.ShiftKeyDown Then ctrlshift_pressed = True
 
         sender.Items.AddRange(ParseDir(IO.Path.GetFullPath(My.Settings.links)).ToArray)
 
-        If My.Computer.Keyboard.CtrlKeyDown Then
-            sender.Items.Add(New ToolStripSeparator())
-            sender.Items.Add("Select Folder", My.Resources.gear_wheel, AddressOf ChangeLinksDir)
-        End If
+        'If My.Computer.Keyboard.CtrlKeyDown Then
+        '    sender.Items.Add(New ToolStripSeparator())
+        '    sender.Items.Add("Select Folder", My.Resources.gear_wheel, AddressOf ChangeLinksDir)
+        'End If
 
         If AstoniaProcess.Enumerate().Any(Function(pp As AstoniaProcess) pp.Name = "Someone") Then
             If sender.SourceControl Is Nothing Then 'called from trayicon
@@ -659,7 +670,8 @@ Partial Public NotInheritable Class FrmMain
     Dim cts As New Threading.CancellationTokenSource
     Dim cantok As Threading.CancellationToken = cts.Token
     Private Async Sub CmsQuickLaunch_Closed(sender As ContextMenuStrip, e As ToolStripDropDownClosedEventArgs) Handles cmsQuickLaunch.Closed
-        cts.Cancel() 'cancel deferred icon loading
+        cts.Cancel() 'cancel deferred icon loading and setvis
+        ctrlshift_pressed = False
         'sender.Items.Clear() 'this couses menu to stutter opening
         Debug.Print("cmsQuickLaunch closed reason:" & e.CloseReason.ToString)
         'If AltPP IsNot Nothing AndAlso

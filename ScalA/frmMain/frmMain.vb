@@ -470,6 +470,8 @@ Partial Public NotInheritable Class FrmMain
 
         tmrOverview.Interval = If(My.Settings.gameOnOverview, 33, 66)
 
+        AddHandler Application.Idle, AddressOf Application_Idle
+
     End Sub
     Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         Debug.Print("FrmMain_Shown")
