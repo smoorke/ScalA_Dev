@@ -441,25 +441,17 @@ Partial Public NotInheritable Class FrmMain
     End Sub
     Private Sub DeferredIconLoading(items As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
         Try
-            Task.Run(Sub()
-                         Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested),
+            Task.Run(Sub() Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested),
                                           Sub(it As ToolStripItem)
-                                              Me.BeginInvoke(updateToolstripImage, {it, GetIcon(it.Tag(0), it.Tag(1))})
-                                          End Sub)
-                     End Sub, ct)
+                                              Dim ico = GetIcon(it.Tag(0), it.Tag(1))
+                                              Me.BeginInvoke(Sub() it.Image = ico)
+                                          End Sub), ct)
         Catch ex As System.Threading.Tasks.TaskCanceledException
             Debug.Print("deferredIconLoading Task canceled")
         Catch
             Debug.Print("deferredIconLoading general exception")
         End Try
     End Sub
-    Delegate Sub updateToolstripImageDelegate(item As ToolStripItem, bm As Bitmap)
-    Private Shared ReadOnly updateToolstripImage As New updateToolstripImageDelegate(AddressOf UpdateToolstripImageMethod)
-    Private Shared Sub UpdateToolstripImageMethod(item As ToolStripItem, bm As Bitmap)
-        If item Is Nothing Then Exit Sub
-        item.Image = bm
-    End Sub
-
     Private Sub ParseSubDir(sender As ToolStripMenuItem, e As EventArgs) ' Handles DummyToolStripMenuItem.DropDownOpening
         'Debug.Print($"ParseSubDir QlCtxIsOpen:{QlCtxIsOpen}")
         'If QlCtxIsOpen Then Exit Sub
