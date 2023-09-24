@@ -783,9 +783,9 @@ Public NotInheritable Class FrmSettings
     End Sub
 
     Private Sub validate_hotkey(sender As Object, e As EventArgs) Handles _
-                    chkSwitchToOverview.CheckedChanged, chkCycleOnClose.CheckedChanged, chkCloseAll.CheckedChanged,
+                    chkSwitchToOverview.CheckedChanged, chkCycleAlts.CheckedChanged, chkCloseAll.CheckedChanged,
                     chkStoAlt.CheckedChanged, chkStoCtrl.CheckedChanged, chkStoShift.CheckedChanged, txtStoKey.KeyUp,
-                    chkCycleAlts.CheckedChanged, chkCycleUpAlt.CheckedChanged, chkCycleUpCtrl.CheckedChanged, chkCycleUpShift.CheckedChanged, txtCycleKeyUp.KeyUp,
+                    chkCycleUpAlt.CheckedChanged, chkCycleUpCtrl.CheckedChanged, chkCycleUpShift.CheckedChanged, txtCycleKeyUp.KeyUp,
                     chkCycleDownAlt.CheckedChanged, chkCycleDownCtrl.CheckedChanged, chkCycleDownShift.CheckedChanged, txtCycleKeyDown.KeyUp,
                     chkCloseAll.CheckedChanged, chkCAALt.CheckedChanged, chkCACtrl.CheckedChanged, chkCAShift.CheckedChanged, txtCloseAll.KeyUp
         Dim modi As Hotkey.KeyModifier
