@@ -1124,9 +1124,10 @@ Partial Public NotInheritable Class FrmMain
         Debug.Print($"        Old: {e.OldFullPath}")
         Debug.Print($"        New: {e.FullPath}")
 
-        Dim item As Bitmap = Nothing
-        If iconCache.TryRemove(e.OldFullPath & "\", item) Then iconCache.TryAdd(e.FullPath & "\", item)
-
+        For Each key In iconCache.Keys.Where(Function(k) k.StartsWith(e.OldFullPath & "\"))
+            Dim item As Bitmap = Nothing
+            If iconCache.TryRemove(key, item) Then iconCache.TryAdd(key.Replace(e.OldFullPath, e.FullPath), item)
+        Next
     End Sub
     Private Sub OnRenamed(sender As System.IO.FileSystemWatcher, e As System.IO.RenamedEventArgs)
         Debug.Print($"Renamed File: {sender.NotifyFilter}")
