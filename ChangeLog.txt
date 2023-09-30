@@ -1,3 +1,9 @@
+**ScalA 1.3.9**
+Fixed Deleting a folder using QL contextmenu doesn't exclude hidden system file `desktop.ini` in it's count warning.
+Fixed Deleting a folder doesn't evict it's cached quicklaunch icon nor subitems in that folder.
+Fixed Renaming a folder similarly doesn't update it's cached subicons.
+Fixed Turning on Sizing Border when maximized erroneously enables it in maximized state.
+
 **Scala 1.3.8**
 Added Richt Click options to check for update settings.
 Added Setting to always show hidden items in QuickLaunch.
