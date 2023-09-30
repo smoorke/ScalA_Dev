@@ -1113,8 +1113,11 @@ Partial Public NotInheritable Class FrmMain
         Debug.Print($"      Type: {e.ChangeType}")
         Debug.Print($"      Path: {e.FullPath}")
 
-        If e.ChangeType = IO.WatcherChangeTypes.Deleted Then iconCache.TryRemove(e.FullPath & "\", Nothing)
-
+        If e.ChangeType = IO.WatcherChangeTypes.Deleted Then
+            For Each key In iconCache.Keys.Where(Function(k) k.StartsWith(e.FullPath & "\"))
+                iconCache.TryRemove(key, Nothing)
+            Next
+        End If
     End Sub
     Private Sub OnRenamedDir(sender As System.IO.FileSystemWatcher, e As System.IO.RenamedEventArgs)
         Debug.Print($"Renamed Dir: {sender.NotifyFilter}")
