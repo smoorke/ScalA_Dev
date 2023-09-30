@@ -364,8 +364,10 @@ Public NotInheritable Class FrmSettings
 
         My.Settings.SizingBorder = ChkSizeBorder.Checked
 
-        FrmSizeBorder.Opacity = If(FrmMain.chkDebug.Checked, 1, 0.01)
-        FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, FrmSizeBorder.Opacity, 0)
+        If FrmMain.WindowState <> FormWindowState.Maximized Then
+            FrmSizeBorder.Opacity = If(FrmMain.chkDebug.Checked, 1, 0.01)
+            FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, FrmSizeBorder.Opacity, 0)
+        End If
 
         My.Settings.MinMin = ChkMinMin.Checked
 
