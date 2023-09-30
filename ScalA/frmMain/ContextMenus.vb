@@ -772,7 +772,7 @@ Partial Public NotInheritable Class FrmMain
         If Path.EndsWith("\") Then
             Dim folderCount As Integer = System.IO.Directory.GetDirectories(Path, "*.*", IO.SearchOption.AllDirectories).Count
             Dim folS As String = If(folderCount = 1, "", "s")
-            Dim filesCount As Integer = System.IO.Directory.GetFiles(Path, "*.*", IO.SearchOption.AllDirectories).Count
+            Dim filesCount As Integer = System.IO.Directory.GetFiles(Path, "*.*", IO.SearchOption.AllDirectories).Where(Function(f) IO.Path.GetFileName(f.ToLower) <> "desktop.ini").Count
             Dim filS As String = If(filesCount = 1, "", "s")
             folderContentsMessage &= $"This folder contains {folderCount} folder{folS} and {filesCount} file{filS}."
             If MessageBox.Show($"Are you sure you want to move ""{name}"" to the Recycle Bin?" & folderContentsMessage,
