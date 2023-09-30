@@ -767,7 +767,7 @@ Partial Public NotInheritable Class FrmMain
         Dim name As String = sender.Parent.Tag.Text
 
         Debug.Print($"Delete {Path}")
-
+        Dim shiftdown = My.Computer.Keyboard.ShiftKeyDown
         Dim folderContentsMessage As String = vbCrLf
         If Path.EndsWith("\") Then
             Dim folderCount As Integer = System.IO.Directory.GetDirectories(Path, "*.*", IO.SearchOption.AllDirectories).Count
@@ -775,12 +775,16 @@ Partial Public NotInheritable Class FrmMain
             Dim filesCount As Integer = System.IO.Directory.GetFiles(Path, "*.*", IO.SearchOption.AllDirectories).Where(Function(f) IO.Path.GetFileName(f.ToLower) <> "desktop.ini").Count
             Dim filS As String = If(filesCount = 1, "", "s")
             folderContentsMessage &= $"This folder contains {folderCount} folder{folS} and {filesCount} file{filS}."
-            If MessageBox.Show($"Are you sure you want to move ""{name}"" to the Recycle Bin?" & folderContentsMessage,
+            If shiftdown OrElse MessageBox.Show($"Are you sure you want to move ""{name}"" to the Recycle Bin?" & folderContentsMessage,
                                        "Confirm Delete", MessageBoxButtons.YesNo) = DialogResult.Yes Then
-                My.Computer.FileSystem.DeleteDirectory(Path, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin, FileIO.UICancelOption.DoNothing)
+                My.Computer.FileSystem.DeleteDirectory(Path, FileIO.UIOption.OnlyErrorDialogs,
+                         If(shiftdown, FileIO.RecycleOption.DeletePermanently, FileIO.RecycleOption.SendToRecycleBin),
+                         FileIO.UICancelOption.DoNothing)
             End If
         Else
-            My.Computer.FileSystem.DeleteFile(Path, FileIO.UIOption.AllDialogs, FileIO.RecycleOption.SendToRecycleBin, FileIO.UICancelOption.DoNothing)
+            My.Computer.FileSystem.DeleteFile(Path, FileIO.UIOption.AllDialogs,
+                         If(shiftdown, FileIO.RecycleOption.DeletePermanently, FileIO.RecycleOption.SendToRecycleBin),
+                         FileIO.UICancelOption.DoNothing)
         End If
     End Sub
 
