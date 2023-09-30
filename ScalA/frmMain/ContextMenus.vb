@@ -1126,7 +1126,7 @@ Partial Public NotInheritable Class FrmMain
 
         For Each key In iconCache.Keys.Where(Function(k) k.StartsWith(e.OldFullPath & "\"))
             Dim item As Bitmap = Nothing
-            If iconCache.TryRemove(key, item) Then iconCache.TryAdd(key.Replace(e.OldFullPath, e.FullPath), item)
+            If iconCache.TryRemove(key, item) Then iconCache.TryAdd(key.Replace(e.OldFullPath & "\", e.FullPath & "\"), item)
         Next
     End Sub
     Private Sub OnRenamed(sender As System.IO.FileSystemWatcher, e As System.IO.RenamedEventArgs)
