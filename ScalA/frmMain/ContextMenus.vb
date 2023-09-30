@@ -268,7 +268,7 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
-    Private ReadOnly iconCache As New ConcurrentDictionary(Of String, Bitmap)
+    Friend ReadOnly iconCache As New ConcurrentDictionary(Of String, Bitmap)
 
     Private Function GetIcon(ByVal PathName As String, transp As Boolean) As Bitmap
 
@@ -1010,32 +1010,6 @@ Partial Public NotInheritable Class FrmMain
         Finally
             Me.TopMost = My.Settings.topmost
         End Try
-
-#If 0 Then
-        Try
-            Using fb As New Ookii.Dialogs.WinForms.VistaFolderBrowserDialog
-                fb.Description = "Select Folder Containing Your Shortcuts - ScalA"
-                fb.UseDescriptionForTitle = True
-                'fb.ShowNewFolderButton = False
-                fb.RootFolder = Environment.SpecialFolder.Desktop
-                fb.SelectedPath = My.Settings.links
-                If fb.ShowDialog() = DialogResult.OK Then
-                    ' Warning for Root folder with throw for dialog cancel
-                    If fb.SelectedPath = System.IO.Path.GetPathRoot(fb.SelectedPath) AndAlso
-                        MessageBox.Show("Warning: Selecting a root path is not recommended" & vbCrLf &
-                                        $"Are you sure you want to use {fb.SelectedPath}?", "Warning",
-                                        MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.No Then Throw New Exception("dummy")
-                    If My.Settings.links <> fb.SelectedPath Then
-                        My.Settings.links = fb.SelectedPath
-                        UpdateWatchers(My.Settings.links)
-                    End If
-                End If
-            End Using
-        Catch
-        Finally
-            Me.TopMost = My.Settings.topmost
-        End Try
-#End If
     End Sub
 
     ReadOnly watchers As New List(Of System.IO.FileSystemWatcher)

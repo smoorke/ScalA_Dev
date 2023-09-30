@@ -20,7 +20,6 @@ Public NotInheritable Class FrmSettings
             tbcSettings.SelectedIndex = My.Settings.remeberSettingsTab
         End If
 
-        Me.TopMost = My.Settings.topmost
         chkTopMost.Checked = My.Settings.topmost
         chkRoundCorners.Checked = My.Settings.roundCorners
         chkOverViewIsGame.Checked = My.Settings.gameOnOverview
@@ -256,10 +255,10 @@ Public NotInheritable Class FrmSettings
                 MessageBox.Show($"Directory {txtQuickLaunchPath.Text} does not exist!", "Error")
                 Exit Sub
             End If
+            FrmMain.iconCache.Clear()
+            My.Settings.links = txtQuickLaunchPath.Text
+            FrmMain.UpdateWatchers(My.Settings.links)
         End If
-
-        My.Settings.links = txtQuickLaunchPath.Text
-        FrmMain.UpdateWatchers(My.Settings.links)
 
         My.Settings.resolutions = txtResolutions.Text
 
@@ -452,7 +451,6 @@ Public NotInheritable Class FrmSettings
 
     Private Function ChangeLinksDir(current As String) As String
         Debug.Print("changeLinksDir")
-        Me.TopMost = False
 
         Try
             Dim fp As New FolderPicker With {
@@ -467,41 +465,8 @@ Public NotInheritable Class FrmSettings
                 Return fp.ResultPath
             End If
         Catch
-        Finally
-            Me.TopMost = My.Settings.topmost
         End Try
         Return current
-
-#If 0 Then
-        'Using fb As New FolderBrowserDialog
-        Try
-            Using fb As New Ookii.Dialogs.WinForms.VistaFolderBrowserDialog
-                fb.Description = "Select Folder Containing Your Shortcuts - ScalA"
-                fb.UseDescriptionForTitle = True
-                fb.ShowNewFolderButton = True
-                fb.RootFolder = Environment.SpecialFolder.Desktop
-                fb.SelectedPath = current
-
-                If fb.ShowDialog() = DialogResult.OK Then
-                    ' Warning for Root folder with throw for dialog cancel
-                    If fb.SelectedPath = System.IO.Path.GetPathRoot(fb.SelectedPath) AndAlso
-                        MessageBox.Show("Warning: Selecting a root path is not recommended" & vbCrLf &
-                                        $"Are you sure you want to use {fb.SelectedPath}?", "Warning",
-                                        MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.No Then Throw New Exception("dummy")
-                    'If My.Settings.links <> fb.SelectedPath Then
-                    '    My.Settings.links = fb.SelectedPath
-                    '    FrmMain.UpdateWatchers(My.Settings.links)
-                    'Else
-                    Return fb.SelectedPath
-                    'End If
-                End If
-            End Using
-        Catch
-        Finally
-            Me.TopMost = My.Settings.topmost
-        End Try
-        Return current
-#End If
     End Function
 
     Private Sub TxtQuickLaunchPath_DoubleClick(sender As Object, e As EventArgs) Handles txtQuickLaunchPath.DoubleClick
