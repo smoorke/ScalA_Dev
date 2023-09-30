@@ -1097,16 +1097,25 @@ Partial Public NotInheritable Class FrmMain
         }
 
         AddHandler dirWatcher.Renamed, AddressOf OnRenamedDir
+        AddHandler dirWatcher.Deleted, AddressOf OnDeleteDir
         dirWatcher.EnableRaisingEvents = True
 
         watchers.Add(dirWatcher)
 
 
     End Sub
+    Private Sub OnDeleteDir(sender As System.IO.FileSystemWatcher, e As System.IO.FileSystemEventArgs)
+        Debug.Print($"Delete Dir: {sender.NotifyFilter}")
+        Debug.Print($"      Type: {e.ChangeType}")
+        Debug.Print($"      Path: {e.FullPath}")
+
+        If e.ChangeType = IO.WatcherChangeTypes.Deleted Then iconCache.TryRemove(e.FullPath & "\", Nothing)
+
+    End Sub
     Private Sub OnRenamedDir(sender As System.IO.FileSystemWatcher, e As System.IO.RenamedEventArgs)
         Debug.Print($"Renamed Dir: {sender.NotifyFilter}")
-        Debug.Print($"    Old: {e.OldFullPath}")
-        Debug.Print($"    New: {e.FullPath}")
+        Debug.Print($"        Old: {e.OldFullPath}")
+        Debug.Print($"        New: {e.FullPath}")
 
         Dim item As Bitmap = Nothing
         If iconCache.TryRemove(e.OldFullPath & "\", item) Then iconCache.TryAdd(e.FullPath & "\", item)
@@ -1114,8 +1123,8 @@ Partial Public NotInheritable Class FrmMain
     End Sub
     Private Sub OnRenamed(sender As System.IO.FileSystemWatcher, e As System.IO.RenamedEventArgs)
         Debug.Print($"Renamed File: {sender.NotifyFilter}")
-        Debug.Print($"    Old: {e.OldFullPath}")
-        Debug.Print($"    New: {e.FullPath}")
+        Debug.Print($"         Old: {e.OldFullPath}")
+        Debug.Print($"         New: {e.FullPath}")
 
         Dim item As Bitmap = Nothing
         If iconCache.TryRemove(e.OldFullPath, item) Then iconCache.TryAdd(e.FullPath, item)
