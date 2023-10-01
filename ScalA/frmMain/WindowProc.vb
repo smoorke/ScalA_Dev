@@ -198,7 +198,7 @@ Partial NotInheritable Class FrmMain
                         AltPP.CenterBehind(pbZoom, 0, True, True)
                         SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
                     End If
-                    End If
+                End If
             Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
                 'If posChangeBusy Then
                 '    Debug.Print("WM_WINDOWPOSCHANGED busy")
@@ -322,7 +322,47 @@ Partial NotInheritable Class FrmMain
                                  ThemeChanging = False
                              End Sub)
                 End If
-
+            Case WM_KEYDOWN
+                Debug.Print($"WM_KEYDOWN {m.WParam} {m.LParam}")
+                Debug.Print($"ScanCode {(m.LParam.ToInt32() >> 16) And &HFF}")
+                If cboAlt.SelectedIndex > 0 Then
+                    AltPP.Activate()
+                    Dim key As Keys = m.WParam
+                    If Not AltPP.isSDL Then
+                        SendMessage(AltPP.MainWindowHandle, WM_KEYDOWN, key, IntPtr.Zero)
+                    Else
+                        Dim scan As UShort = (m.LParam.ToInt32() >> 16) And &HFF
+                        If key = Keys.Escape OrElse (key >= Keys.F1 AndAlso key <= Keys.F12) OrElse
+                           key = Keys.Back Then
+                            SendScanKey(scan)
+                        ElseIf key = Keys.Delete OrElse key = Keys.PageUp OrElse key = Keys.PageDown OrElse
+                               key = Keys.End OrElse key = Keys.Home Then
+                            SendScanKeyEx(scan)
+                        Else
+                            SendKey(key)
+                        End If
+                    End If
+                End If
+            Case WM_KEYUP
+                Debug.Print($"WM_KEYUP {m.WParam} {m.LParam}")
+                Debug.Print($"ScanCode {(m.LParam.ToInt32() >> 16) And &HFF}")
+                If cboAlt.SelectedIndex > 0 Then
+                    AltPP.Activate()
+                    Dim scan As UShort = (m.LParam.ToInt32() >> 16) And &HFF
+                    If scan = 28 Then
+                        If Not AltPP.isSDL Then
+                            SendKeys.Send("{ENTER}")
+                        Else
+                            SendScanKey(scan)
+                        End If
+                    End If
+                End If
+            Case WM_CHAR
+                'Debug.Print($"WM_CHAR {m.WParam} {m.LParam}")
+            Case WM_SYSKEYDOWN
+                If cboAlt.SelectedIndex > 0 Then
+                    AltPP.Activate()
+                End If
 #If DEBUG Then
 
             Case &H6 ' WM_AACTIVATE
@@ -369,8 +409,8 @@ Partial NotInheritable Class FrmMain
 
             Case &HA1 ' WM_NCLBUTTONDOWN
 
-            Case &H104 ' WM_SYSKEYDOWN
-            Case &H105 ' WM_SYSKEYUP
+           ' Case &H104 ' WM_SYSKEYDOWN
+            'Case &H105 ' WM_SYSKEYUP
 
             Case &H121 ' WM_ENTERIDLE
 
@@ -399,5 +439,5 @@ Partial NotInheritable Class FrmMain
 
     Dim prevLoc As Point
     Dim sizeMoveBusy As Boolean = False
-
+    Dim keyConverter As New KeysConverter()
 End Class

@@ -130,8 +130,8 @@ Module NativeMethods
     <DllImport("shell32.dll", EntryPoint:="SHGetFileInfoW", SetLastError:=True)>
     Public Function SHGetFileInfoW(<InAttribute(), MarshalAs(UnmanagedType.LPTStr)> ByVal pszPath As String, ByVal dwFileAttributes As Integer, ByRef psfi As SHFILEINFOW, ByVal cbFileInfo As Integer, ByVal uFlags As Integer) As Integer
     End Function
-
-
+    <DllImport("user32.dll")>
+    Public Function AllowSetForegroundWindow(dwProcessId As UInt32) As Integer : End Function
 
     <DllImport("user32.dll", EntryPoint:="DestroyIcon")>
     Public Function DestroyIcon(ByVal hIcon As System.IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
@@ -630,8 +630,8 @@ Module NativeMethods
         Public dwExtraInfo As IntPtr
     End Structure
     Structure KEYBDINPUT
-        Public wVk As Short
-        Public wScan As Short
+        Public wVk As UShort
+        Public wScan As UShort
         Public dwFlags As Integer
         Public time As Integer
         Public dwExtraInfo As IntPtr
@@ -838,6 +838,12 @@ Module NativeMethods
     Public Const WM_NCHITTEST As Integer = &H84
     Public Const WM_NCLBUTTONDOWN As Integer = &HA1
     Public Const WM_NCLBUTTONUP As Integer = &HA2
+
+    Public Const WM_KEYDOWN As Integer = &H100
+    Public Const WM_KEYUP = &H101
+    Public Const WM_CHAR As Integer = &H102
+
+    Public Const WM_SYSKEYDOWN = &H104
 
     Public Const WM_SYSCOMMAND = &H112
 

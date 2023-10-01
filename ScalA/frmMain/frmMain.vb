@@ -1266,7 +1266,7 @@ Partial Public NotInheritable Class FrmMain
         End If
     End Sub
 
-    Private ReadOnly scalaPID As Integer = Process.GetCurrentProcess().Id
+    Public Shared ReadOnly scalaPID As Integer = Process.GetCurrentProcess().Id
     Public Shared topSortList As List(Of String) = My.Settings.topSort.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries).ToList
     Public Shared botSortList As List(Of String) = My.Settings.botSort.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries).ToList
     Public Shared blackList As List(Of String) = topSortList.Intersect(botSortList).ToList
@@ -1538,15 +1538,7 @@ Partial Public NotInheritable Class FrmMain
 
         End If
     End Sub
-    Private Shared MouseInput() As INPUT = {
-                    New INPUT With {   '.type = InputType.INPUT_MOUSE, 'INPUT_MOUSE is 0 so we can omit
-                            .u = New InputUnion With {.mi = New MOUSEINPUT}
-                    }
-    }
-    Private Shared Sub SendMouseInput(flags As MouseEventF)
-        MouseInput(0).u.mi.dwFlags = flags
-        SendInput(1, MouseInput, Marshal.SizeOf(GetType(INPUT)))
-    End Sub
+
     Private Async Sub PnlEqLock_MouseUp(sender As Object, e As MouseEventArgs) Handles PnlEqLock.MouseUp
         Debug.Print($"pnlEqLock.MouseUp {e.Button} lock vis {PnlEqLock.Visible}")
         If (e.Button = MouseButtons.Right OrElse e.Button = MouseButtons.Middle) AndAlso PnlEqLock.Contains(MousePosition) Then
