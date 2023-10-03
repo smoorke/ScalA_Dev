@@ -358,7 +358,14 @@ Partial NotInheritable Class FrmMain
                     End If
                 End If
             Case WM_CHAR
-                'Debug.Print($"WM_CHAR {m.WParam} {m.LParam}")
+                Debug.Print($"WM_CHAR {m.WParam} {m.LParam}")
+                Debug.Print($"ScanCode {(m.LParam.ToInt32() >> 16) And &HFF}")
+                If cboAlt.SelectedIndex > 0 Then
+                    AltPP.Activate()
+                    If Not AltPP.isSDL Then
+                        SendMessage(AltPP.MainWindowHandle, WM_CHAR, m.WParam, IntPtr.Zero)
+                    End If
+                End If
             Case WM_SYSKEYDOWN
                 If cboAlt.SelectedIndex > 0 Then
                     AltPP.Activate()
