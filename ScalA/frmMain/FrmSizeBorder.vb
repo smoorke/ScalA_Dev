@@ -91,6 +91,7 @@
             FrmMain.ResumeLayout()
             FrmMain.Invalidate()
             FrmMain.Resizing = False
+            FrmMain.Activate()
         End If
     End Sub
 
