@@ -8,12 +8,12 @@ Module NativeMethods
     Public Const SHGFI_SYSICONINDEX As Integer = &H4000
 
     <DllImport("user32.dll", CharSet:=CharSet.Auto, ExactSpelling:=True)>
-    Public Function MonitorFromPoint(pt As Point, dwFlags As UInt32) As IntPtr : End Function
+    Public Function MonitorFromPoint(pt As Point, dwFlags As MONITORFLAGS) As IntPtr : End Function
 
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
     Public Function GetMonitorInfo(hmonitor As IntPtr, ByRef info As MonitorInfo) As Boolean : End Function
 
-    Public Enum MONITOR As UInt32
+    Public Enum MONITORFLAGS As UInt32
         DEFAULTTONULL = &H0
         DEFAULTTOPRIMARY = &H1
         DEFAULTTONEAREST = &H2
@@ -26,6 +26,15 @@ Module NativeMethods
         Public rcWork As RECT
         Public dwFlags As UInteger
     End Structure
+
+    <DllImport("user32.dll")>
+    Public Function SystemParametersInfo(uiAction As UInteger, uiParam As SPI,
+        ByRef pvParam As IntPtr, fWinIni As UInteger) As <MarshalAs(UnmanagedType.Bool)> Boolean
+    End Function
+
+    Enum SPI As UInteger
+        GETCLIENTAREAANIMATION = &H1042
+    End Enum
 
     <Runtime.CompilerServices.Extension>
     Public Function ToRECT(rct As Rectangle) As RECT

@@ -1,8 +1,7 @@
 ﻿Imports System.IO.MemoryMappedFiles
 Imports System.Net.Http
-Imports System.Runtime.InteropServices
 Imports Microsoft.VisualBasic.FileIO
-Imports ScalA.NativeMethods
+'Imports ScalA.NativeMethods
 
 Partial Public NotInheritable Class FrmMain
 
@@ -64,9 +63,7 @@ Partial Public NotInheritable Class FrmMain
     Private updatingCombobox As Boolean = False
     Private Async Sub CboAlt_SelectedIndexChanged(sender As ComboBox, e As EventArgs) Handles cboAlt.SelectedIndexChanged
 
-        If updatingCombobox Then
-            Exit Sub
-        End If
+        If updatingCombobox Then Exit Sub
 
         Debug.Print($"CboAlt_SelectedIndexChanged {sender.SelectedIndex}")
 
@@ -180,7 +177,7 @@ Partial Public NotInheritable Class FrmMain
             startThumbsDict.Clear()
 
             Debug.Print($"updateThumb pbzoom {pbZoom.Size}")
-            If rectDic.ContainsKey(item.Id) Then
+            If AnimsEnabled AndAlso rectDic.ContainsKey(item.Id) Then
                 AnimateThumb(rectDic(item.Id), New Rectangle(pbZoom.Left, pbZoom.Top, pbZoom.Right, pbZoom.Bottom))
             Else
                 UpdateThumb(If(chkDebug.Checked, 128, 255))
@@ -472,11 +469,16 @@ Partial Public NotInheritable Class FrmMain
         End If
         ApplyTheme(darkmode)
 
+        Debug.Print($"Anims {AnimsEnabled}")
+
         tmrOverview.Interval = If(My.Settings.gameOnOverview, 33, 66)
 
         AddHandler Application.Idle, AddressOf Application_Idle
 
     End Sub
+
+    Dim AnimsEnabled As Boolean = getAnimationsEnabled()
+
     Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         Debug.Print("FrmMain_Shown")
         suppressWM_MOVEcwp = False
@@ -873,7 +875,7 @@ Partial Public NotInheritable Class FrmMain
     ''' </summary>
     Private Sub UntrapMouse(button As MouseButtons)
         Dim activePID = GetActiveProcessID()
-        Debug.Print($"active {activePID} is AltPP.id {activePID = AltPP?.Id}")
+        'Debug.Print($"active {activePID} is AltPP.id {activePID = AltPP?.Id}")
         If activePID <> AltPP?.Id Then Exit Sub 'only when dragged from client
         Try
             'If My.Settings.gameOnOverview OrElse (Not pnlOverview.Visible AndAlso Not pbZoom.Contains(MousePosition)) Then

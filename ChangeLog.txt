@@ -5,7 +5,7 @@ Fixed Renaming a folder similarly doesn't update it's cached subicons.
 Fixed Turning on Sizing Border when maximized erroneously enables it in maximized state.
 
 **Scala 1.3.8**
-Added Richt Click options to check for update settings.
+Added Right Click options to check for update settings.
 Added Setting to always show hidden items in QuickLaunch.
   (Press Ctrl+Shift to show hidden items when this option is off)
 Dimmed QuickLaunch icons that are hidden.

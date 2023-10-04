@@ -26,7 +26,7 @@
         Try
             If Not _HotkeyList.Contains(hotkeyID) Then
                 Dim ret = RegisterHotKey(sourceForm.Handle, hotkeyID, modifier, triggerKey)
-                Debug.Print($"regHK {hotkeyID} {modifier} {triggerKey} {ret}")
+                'Debug.Print($"regHK {hotkeyID} {modifier} {triggerKey} {ret}")
                 _HotkeyList.Add(hotkeyID)
                 Return ret = 1
             End If

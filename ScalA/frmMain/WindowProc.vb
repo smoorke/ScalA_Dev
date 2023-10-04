@@ -99,7 +99,7 @@ Partial NotInheritable Class FrmMain
                     pbZoom.Visible = True
 #End If
                     If Not suppressWM_MOVEcwp AndAlso Not wasMaximized AndAlso cboAlt.SelectedIndex > 0 Then
-                        Debug.Print($"WM_MOVE {Me.WindowState}")
+                        'Debug.Print($"WM_MOVE {Me.WindowState}")
                         moveBusy = True
                         Task.Run(Sub()
                                      'Exit Sub
@@ -157,8 +157,8 @@ Partial NotInheritable Class FrmMain
                 If Me.cmbResolution.SelectedIndex > 0 Then Me.moveBusy = False
                 prevLoc = Me.Location
             Case WM_WINDOWPOSCHANGING
-                Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
-                Debug.Print($"WM_WINDOWPOSCHANGING {winpos.x} {winpos.y} {winpos.cx} {winpos.cy} {winpos.flags} {Me.WindowState} {m.WParam} {AltPP?.HasExited} {AltPP?.IsRunning}")
+                'Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
+                'Debug.Print($"WM_WINDOWPOSCHANGING {winpos.x} {winpos.y} {winpos.cx} {winpos.cy} {winpos.flags} {Me.WindowState} {m.WParam} {AltPP?.HasExited} {AltPP?.IsRunning}")
 
                 'If pnlButtons IsNot Nothing Then
                 '    Dim posInfo As IntPtr = BeginDeferWindowPos(2)
@@ -206,7 +206,7 @@ Partial NotInheritable Class FrmMain
                 '    Exit Sub
                 'End If
                 Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
-                Debug.Print($"WM_WINDOWPOSCHANGED {winpos.x} {winpos.y} {winpos.cx} {winpos.cy} {winpos.flags} {Me.WindowState} {m.WParam} {AltPP?.HasExited} {AltPP?.IsRunning}")
+                'Debug.Print($"WM_WINDOWPOSCHANGED {winpos.x} {winpos.y} {winpos.cx} {winpos.cy} {winpos.flags} {Me.WindowState} {m.WParam} {AltPP?.HasExited} {AltPP?.IsRunning}")
                 If Me.WindowState = FormWindowState.Minimized AndAlso AltPP?.HasExited AndAlso cboAlt.SelectedIndex <> 0 Then
                     Debug.Print("Sending restore")
                     Me.WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, Nothing))
@@ -251,12 +251,17 @@ Partial NotInheritable Class FrmMain
                     Exit Sub
                 End If
             Case WM_WININICHANGE '&H1A
+                Debug.Print($"WM_WININICHANGE {m.LParam} {m.WParam}")
+                Dim settingnname = Runtime.InteropServices.Marshal.PtrToStringAuto(m.LParam)
+                If settingnname = "VisualEffects" Then
+                    AnimsEnabled = getAnimationsEnabled()
+                    Debug.Print($"Animations {AnimsEnabled}")
+                End If
                 If SuppressWININICHANGECounter > 0 Then
                     Debug.Print($"ReschangeCounter {SuppressWININICHANGECounter}")
                     SuppressWININICHANGECounter -= 1
                 Else
                     If m.LParam = IntPtr.Zero AndAlso Me.WindowState = FormWindowState.Maximized Then
-                        Debug.Print($"WM_WININICHANGE {m.LParam}")
                         'handle taskbar changing
                         Dim newWA = Screen.FromPoint(Me.Location + New Point(Me.Width / 2, Me.Height / 2)).WorkingArea
                         'only do adjustment when size change or moved from top/bottom to sides
@@ -422,7 +427,7 @@ Partial NotInheritable Class FrmMain
             Case &H121 ' WM_ENTERIDLE
 
             Case &H200 ' WM_MOUSEMOVE
-                Debug.Print($"WM_MOUSEMOVE {Nothing} {Nothing}")
+                'Debug.Print($"WM_MOUSEMOVE {Nothing} {Nothing}")
 
             Case &H210 ' WM_PARENTNOTIFY 
             Case &H215 ' WM_CAPTURECHANGED
@@ -433,6 +438,8 @@ Partial NotInheritable Class FrmMain
 
             Case &H2A1 ' WM_MOUSEHOVER 
             Case &H2A3 ' WM_MOUSELEAVE
+
+            Case &H319 ' WM_APPCOMMAND
 
             Case &HC0D9 To &HC200 ' unknown
 

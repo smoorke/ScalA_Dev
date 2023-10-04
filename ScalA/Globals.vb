@@ -9,6 +9,14 @@
         Return False
     End Function
 
+    Public Function getAnimationsEnabled() As Boolean
+        Dim enabled As Boolean = False
+        If Not SystemParametersInfo(SPI.GETCLIENTAREAANIMATION, 0, enabled, 0) Then
+            Debug.Print("SystemParametersInfo SPI_GETCLIENTAREAANIMATION FAIL!")
+        End If
+        Return enabled
+    End Function
+
     Private ReadOnly KeyInput() As INPUT = {
                    New INPUT With {.type = InputType.INPUT_KEYBOARD,
                            .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown}}
