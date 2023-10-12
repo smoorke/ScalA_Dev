@@ -144,8 +144,8 @@ Partial Public NotInheritable Class FrmMain
 
         SortSubToolStripMenuItem.Tag = pp
 
-        If sender.Items.Contains(CloseAllToolStripMenuItem) Then
-            sender.Items.Remove(CloseAllToolStripMenuItem)
+        If sender.Items.Contains(closeAllIdleTSMI) Then
+            sender.Items.Remove(closeAllIdleTSMI)
         End If
 
         sender.Items.RemoveAt(sender.Items.Count - 1)
@@ -155,8 +155,8 @@ Partial Public NotInheritable Class FrmMain
         Dim somecount As Integer = AstoniaProcess.Enumerate().Count(Function(p) p.Name = "Someone")
         Debug.Print($"somecount {somecount}")
         If somecount > 0 AndAlso Not (other = "Other " AndAlso somecount = 1) Then
-            CloseAllToolStripMenuItem = sender.Items.Add($"Close All {other}Someone", My.Resources.F12, AddressOf CloseAllIdle_Click)
-            CloseAllToolStripMenuItem.Tag = pp
+            closeAllIdleTSMI = sender.Items.Add($"Close All {other}Someone", My.Resources.F12, AddressOf CloseAllIdle_Click)
+            closeAllIdleTSMI.Tag = pp
         End If
     End Sub
 
