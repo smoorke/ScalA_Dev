@@ -10,6 +10,7 @@ Partial NotInheritable Class FrmMain
     Public newX As Integer
     Public newY As Integer
     Public Shared ScalaHandle As IntPtr
+    Private storedX As Integer = 0
     Private storedY As Integer = 0
     Private wasVisible As Boolean = True
     Private Shared swpBusy As Boolean = False
@@ -50,12 +51,15 @@ Partial NotInheritable Class FrmMain
                 Debug.Print("scrollthumb released")
                 If storedY <> pci.ptScreenpos.y Then
                     Debug.Print("scrollthumb moved")
-                    Dim factor As Double = pbZoom.Height / rcC.Height
-                    Dim movedY As Integer = storedY + ((pci.ptScreenpos.y - storedY) * factor)
+                    Dim Xfactor As Double = pbZoom.Width / rcC.Width
+                    Dim Yfactor As Double = pbZoom.Height / rcC.Height
+                    Dim movedX As Integer = storedX + ((pci.ptScreenpos.x - storedX) * Xfactor)
+                    Dim movedY As Integer = storedY + ((pci.ptScreenpos.y - storedY) * Yfactor)
                     If movedY >= Me.Bottom Then movedY = Me.Bottom - 2
-                    Cursor.Position = New Point(pci.ptScreenpos.x, movedY)
+                    Cursor.Position = New Point(movedX, movedY)
                 End If
             End If
+            storedX = pci.ptScreenpos.x
             storedY = pci.ptScreenpos.y
             wasVisible = True
         End If
@@ -225,11 +229,14 @@ Partial NotInheritable Class FrmMain
                         Debug.Print("scrollthumb released")
                         If storedY <> pci.ptScreenpos.y Then
                             Debug.Print("scrollthumb moved")
-                            Dim factor As Double = but.ThumbRectangle.Height / ap.ClientRect.Height
-                            Dim movedY As Integer = storedY + ((pci.ptScreenpos.y - storedY) * factor)
-                            Cursor.Position = New Point(pci.ptScreenpos.x, movedY)
+                            Dim Xfactor As Double = but.ThumbRectangle.Width / ap.ClientRect.Width
+                            Dim Yfactor As Double = but.ThumbRectangle.Height / ap.ClientRect.Height
+                            Dim movedX As Integer = storedX + ((pci.ptScreenpos.x - storedX) * Xfactor)
+                            Dim movedY As Integer = storedY + ((pci.ptScreenpos.y - storedY) * Yfactor)
+                            Cursor.Position = New Point(movedX, movedY)
                         End If
                     End If
+                    storedX = pci.ptScreenpos.x
                     storedY = pci.ptScreenpos.y
                     wasVisible = True
                 End If
