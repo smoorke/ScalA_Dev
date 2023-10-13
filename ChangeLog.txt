@@ -1,3 +1,8 @@
+**ScalA 1.4.1**
+Fixed One of the Close All Someone ContextMenuItems erroneously calls Close All subroutine.
+Fixed Moving Questlog/Help pane doesn't set correct x position of cursor upon release of mousebutton.
+  (Note there is an Astonia client bug where dragging items with it initially inactive it behaves erratic)
+
 **ScalA 1.4.0**
 Fixed when selecting a client from the overview it intermittently doesn't receive focus.
 Fixed when done resizing by border or sysmenu selected client doesn't receive focus.
