@@ -49,7 +49,7 @@ Partial NotInheritable Class FrmMain
         If pci.flags <> 0 Then ' cursor is visible
             If Not wasVisible AndAlso AltPP?.IsActive() Then
                 Debug.Print("scrollthumb released")
-                If storedY <> pci.ptScreenpos.y Then
+                If storedY <> pci.ptScreenpos.y OrElse storedX <> pci.ptScreenpos.x Then
                     Debug.Print("scrollthumb moved")
                     Dim Xfactor As Double = pbZoom.Width / rcC.Width
                     Dim Yfactor As Double = pbZoom.Height / rcC.Height
@@ -57,6 +57,12 @@ Partial NotInheritable Class FrmMain
                     Dim movedY As Integer = storedY + ((pci.ptScreenpos.y - storedY) * Yfactor)
                     If movedY >= Me.Bottom Then movedY = Me.Bottom - 2
                     Cursor.Position = New Point(movedX, movedY)
+
+                    Dim bzB As Rectangle = Me.RectangleToScreen(pbZoom.Bounds)
+                    Dim ipt As New Point(movedX.Map(bzB.Left, bzB.Right, 0, rcC.Width),
+                                         movedY.Map(bzB.Top, bzB.Bottom, 0, rcC.Height))
+                    SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, Nothing, (ipt.Y << 16) + ipt.X) 'update client internal mousepos
+                    Debug.Print($"ipt {ipt}")
                 End If
             End If
             storedX = pci.ptScreenpos.x
@@ -222,18 +228,26 @@ Partial NotInheritable Class FrmMain
             If but IsNot Nothing Then
                 thumbContainedMouse = True
                 Dim ap = but.AP
+                Dim rcwB As Rectangle = ap.WindowRect
+                Dim rccB As Rectangle = ap.ClientRect
                 Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
                 GetCursorInfo(pci)
                 If pci.flags <> 0 Then ' cursor is visible
                     If Not wasVisible AndAlso ap.IsActive() Then
                         Debug.Print("scrollthumb released")
-                        If storedY <> pci.ptScreenpos.y Then
+                        If storedY <> pci.ptScreenpos.y OrElse storedX <> pci.ptScreenpos.x Then
                             Debug.Print("scrollthumb moved")
                             Dim Xfactor As Double = but.ThumbRectangle.Width / ap.ClientRect.Width
                             Dim Yfactor As Double = but.ThumbRectangle.Height / ap.ClientRect.Height
                             Dim movedX As Integer = storedX + ((pci.ptScreenpos.x - storedX) * Xfactor)
                             Dim movedY As Integer = storedY + ((pci.ptScreenpos.y - storedY) * Yfactor)
                             Cursor.Position = New Point(movedX, movedY)
+
+                            Dim bzB As Rectangle = but.RectangleToScreen(but.ThumbRectangle)
+                            Dim ipt As New Point(movedX.Map(bzB.Left, bzB.Right, 0, rccB.Width),
+                                                 movedY.Map(bzB.Top, bzB.Bottom, 0, rccB.Height))
+                            SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, Nothing, (ipt.Y << 16) + ipt.X) 'update client internal mousepos
+                            Debug.Print($"ipt {ipt}")
                         End If
                     End If
                     storedX = pci.ptScreenpos.x
@@ -243,8 +257,6 @@ Partial NotInheritable Class FrmMain
 
                 If Not AOBusy Then
                     AltPP = ap
-                    Dim rcwB As Rectangle = ap.WindowRect
-                    Dim rccB As Rectangle = ap.ClientRect
                     If ap.IsMinimized Then
                         Debug.Print($"before {rcwB} {rccB}")
                         ap.Restore()
