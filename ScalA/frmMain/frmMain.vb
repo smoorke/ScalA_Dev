@@ -1,7 +1,5 @@
 ﻿Imports System.IO.MemoryMappedFiles
 Imports System.Net.Http
-Imports Microsoft.VisualBasic.FileIO
-'Imports ScalA.NativeMethods
 
 Partial Public NotInheritable Class FrmMain
 
@@ -409,6 +407,7 @@ Partial Public NotInheritable Class FrmMain
         test.Items.Add(dynamicitem2)
         test.Items.Add(New ToolStripMenuItem("ThumbSize", Nothing, AddressOf dBug.querySize))
         test.Items.Add(New ToolStripMenuItem("FudgeThumb", Nothing, AddressOf dBug.fudgeThumb))
+        test.Items.Add(New ToolStripMenuItem("Check Self", Nothing, AddressOf dBug.CheckSelf))
 
         chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()
@@ -526,11 +525,11 @@ Partial Public NotInheritable Class FrmMain
                 response.EnsureSuccessStatusCode()
                 Dim responseBody As Byte() = Await response.Content.ReadAsByteArrayAsync()
 
-                If Not FileIO.FileSystem.DirectoryExists(SpecialDirectories.Temp & "\ScalA\") Then
-                    FileIO.FileSystem.CreateDirectory(SpecialDirectories.Temp & "\ScalA\")
+                If Not FileIO.FileSystem.DirectoryExists(FileIO.SpecialDirectories.Temp & "\ScalA\") Then
+                    FileIO.FileSystem.CreateDirectory(FileIO.SpecialDirectories.Temp & "\ScalA\")
                 End If
 
-                FileIO.FileSystem.WriteAllBytes(SpecialDirectories.Temp & "\ScalA\ScalA.exe", responseBody, False)
+                FileIO.FileSystem.WriteAllBytes(FileIO.SpecialDirectories.Temp & "\ScalA\ScalA.exe", responseBody, False)
 
             End Using
         Catch e As Exception
@@ -543,11 +542,11 @@ Partial Public NotInheritable Class FrmMain
                 response.EnsureSuccessStatusCode()
                 Dim responseBody As Byte() = Await response.Content.ReadAsByteArrayAsync()
 
-                If Not FileIO.FileSystem.DirectoryExists(SpecialDirectories.Temp & "\ScalA\") Then
-                    FileIO.FileSystem.CreateDirectory(SpecialDirectories.Temp & "\ScalA\")
+                If Not FileIO.FileSystem.DirectoryExists(FileIO.SpecialDirectories.Temp & "\ScalA\") Then
+                    FileIO.FileSystem.CreateDirectory(FileIO.SpecialDirectories.Temp & "\ScalA\")
                 End If
 
-                FileIO.FileSystem.WriteAllBytes(SpecialDirectories.Temp & "\ScalA\ChangeLog.txt", responseBody, False)
+                FileIO.FileSystem.WriteAllBytes(FileIO.SpecialDirectories.Temp & "\ScalA\ChangeLog.txt", responseBody, False)
 
             End Using
         Catch e As Exception
@@ -564,21 +563,31 @@ Partial Public NotInheritable Class FrmMain
             Exit Sub
         End If
 
-        Await UpdateDownload()
+        Dim MePath As String = Environment.GetCommandLineArgs(0)
+        Dim drive = Strings.Left(MePath, 2)
+        Dim sb As New Text.StringBuilder(512)
+        Dim len = sb.Capacity
+        Dim ret = WNetGetConnection(drive, sb, len)
+        If ret = 0 Then
+            MePath = MePath.Replace(drive, sb.ToString)
+        End If
+
         My.Settings.Save()
-        AstoniaProcess.RestorePos()
         tmrOverview.Stop()
         tmrTick.Stop()
+        Await UpdateDownload()
+        AstoniaProcess.RestorePos()
         Try
-            If Not FileIO.FileSystem.DirectoryExists(SpecialDirectories.Temp & "\ScalA\") Then
-                FileIO.FileSystem.CreateDirectory(SpecialDirectories.Temp & "\ScalA\")
+            If Not FileIO.FileSystem.DirectoryExists(FileIO.SpecialDirectories.Temp & "\ScalA\") Then
+                FileIO.FileSystem.CreateDirectory(FileIO.SpecialDirectories.Temp & "\ScalA\")
             End If
-            FileIO.FileSystem.WriteAllBytes(SpecialDirectories.Temp & "\ScalA\ScalA_Updater.exe", My.Resources.ScalA_Updater, False)
-            Process.Start(New ProcessStartInfo With {
-                                       .FileName = SpecialDirectories.Temp & "\ScalA\ScalA_Updater.exe",
-                                       .Arguments = $"""{Environment.GetCommandLineArgs(0)}""",
-                                       .Verb = "runas"
-                          })
+            FileIO.FileSystem.WriteAllBytes(FileIO.SpecialDirectories.Temp & "\ScalA\ScalA_Updater.exe", My.Resources.ScalA_Updater, False)
+            Dim si As New ProcessStartInfo With {
+                                       .FileName = FileIO.SpecialDirectories.Temp & "\ScalA\ScalA_Updater.exe",
+                                       .Arguments = $"""{MePath}"""
+                          }
+            If Not IsDirectoryWritable(IO.Path.GetDirectoryName(MePath)) Then si.Verb = "runas"
+            Process.Start(si)
             sysTrayIcon.Visible = False
             End
         Catch
@@ -854,9 +863,9 @@ Partial Public NotInheritable Class FrmMain
             Dim lockHeight = 45
             If rcC.Height >= 2000 Then
                 lockHeight += 120
-            ElseIf rcc.Height >= 1500 Then
+            ElseIf rcC.Height >= 1500 Then
                 lockHeight += 80
-            ElseIf rcc.Height >= 1000 Then
+            ElseIf rcC.Height >= 1000 Then
                 lockHeight += 40
             End If
             PnlEqLock.Size = New Size((524 - excludGearLock).Map(0, 800, 0, rcC.Width).Map(0, rcC.Width, 0, zoom.Width),
@@ -1467,7 +1476,13 @@ Partial Public NotInheritable Class FrmMain
 #If DEBUG Then
     Private Sub ChkDebug_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkDebug.CheckedChanged
         Debug.Print(Screen.GetWorkingArea(sender).ToString)
-        If Not pnlOverview.Visible Then UpdateThumb(If(sender.Checked, 122, 255))
+        If Not pnlOverview.Visible Then
+            UpdateThumb(If(sender.Checked, 122, 255))
+        Else
+            For Each but As AButton In pnlOverview.Controls.OfType(Of AButton)
+                but.Invalidate()
+            Next
+        End If
         If WindowState <> FormWindowState.Maximized Then
             FrmSizeBorder.Opacity = If(sender.Checked, 1, 0.01)
         End If
@@ -1710,6 +1725,21 @@ Module dBug
         SetWindowLong(FrmMain.ScalaHandle, GWL_HWNDPARENT, FrmMain.restoreParent)
         FrmMain.AltPP.CenterBehind(FrmMain, 0, True)
         SetWindowLong(FrmMain.ScalaHandle, GWL_HWNDPARENT, FrmMain.AltPP.MainWindowHandle)
+    End Sub
+
+
+    Friend Sub CheckSelf(sender As Object, e As EventArgs)
+
+        Dim path As String = Environment.GetCommandLineArgs()(0)
+        Debug.Print($"path: {path}")
+        Dim sb As New Text.StringBuilder(512)
+        Dim len = sb.Capacity
+        Dim ret = WNetGetConnection("c:", sb, len)
+
+        Debug.Print($"UNC: {ret} {len} ""{sb}""")
+        'Catch ex As Exception
+        '    Debug.Print(ex.Message)
+        'End Try
     End Sub
 End Module
 

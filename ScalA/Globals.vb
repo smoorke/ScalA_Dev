@@ -17,6 +17,17 @@
         Return enabled
     End Function
 
+    Public Function IsDirectoryWritable(dirPath As String, Optional throwOnFail As Boolean = False) As Boolean
+        Try
+            Using fs As IO.FileStream = IO.File.Create(IO.Path.Combine(dirPath, IO.Path.GetRandomFileName()), 1, IO.FileOptions.DeleteOnClose)
+            End Using
+            Return True
+        Catch
+            If throwOnFail Then Throw
+            Return False
+        End Try
+    End Function
+
     Private ReadOnly KeyInput() As INPUT = {
                    New INPUT With {.type = InputType.INPUT_KEYBOARD,
                            .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown}}

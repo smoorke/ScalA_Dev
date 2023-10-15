@@ -1,7 +1,11 @@
 ﻿Imports System.Runtime.InteropServices
-Imports System.Text
 
 Module NativeMethods
+
+    <DllImport("mpr.dll", CharSet:=CharSet.Unicode, SetLastError:=True)>
+    Public Function WNetGetConnection(<MarshalAs(UnmanagedType.LPTStr)> localName As String,
+        <MarshalAs(UnmanagedType.LPTStr)> remoteName As Text.StringBuilder, ByRef length As Integer) As Integer : End Function
+
     Public Const SHGFI_ICON As Integer = &H100
     Public Const SHGFI_LARGEICON As Integer = &H0
     Public Const SHGFI_SMALLICON As Integer = &H1
@@ -910,7 +914,7 @@ Module NativeMethods
     Public Function MoveFileW(ExistingFileName As String, NewFileName As String) As Boolean : End Function
 
     <DllImport("Kernel32", SetLastError:=True, CharSet:=CharSet.Unicode)>
-    Public Function FormatMessage(ByVal dwFlags As Format_Message, ByVal lpSource As IntPtr, ByVal dwMessageId As Integer, ByVal dwLanguageId As Integer, lpBuffer As StringBuilder, ByVal nSize As Integer, ByVal Arguments As IntPtr) As Integer : End Function
+    Public Function FormatMessage(ByVal dwFlags As Format_Message, ByVal lpSource As IntPtr, ByVal dwMessageId As Integer, ByVal dwLanguageId As Integer, lpBuffer As Text.StringBuilder, ByVal nSize As Integer, ByVal Arguments As IntPtr) As Integer : End Function
     Enum Format_Message
         FORMAT_MESSAGE_IGNORE_INSERTS = &H200
         FORMAT_MESSAGE_FROM_SYSTEM = &H1000
