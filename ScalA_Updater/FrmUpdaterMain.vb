@@ -8,7 +8,7 @@
         Try
             If args.Length = 1 Then Throw New ArgumentException("Incorrect Arguments Supplied")
             System.IO.File.Copy(FileIO.SpecialDirectories.Temp & "\ScalA\ScalA.exe", args(1), True)
-            ExecuteProcessUnElevated(args(1), "", IO.Directory.GetCurrentDirectory())
+            ExecuteProcessUnElevated(args(args.Length - 1), "", IO.Directory.GetCurrentDirectory())
             End
         Catch ex As Exception
             txtErrorMsg.Text = ex.Message
@@ -17,7 +17,7 @@
 
     Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
         Try
-            ExecuteProcessUnElevated(args(1), "", IO.Directory.GetCurrentDirectory())
+            ExecuteProcessUnElevated(args(Math.Max(1, args.Length - 1)), "", IO.Directory.GetCurrentDirectory())
         Catch
         Finally
             End

@@ -407,7 +407,6 @@ Partial Public NotInheritable Class FrmMain
         test.Items.Add(dynamicitem2)
         test.Items.Add(New ToolStripMenuItem("ThumbSize", Nothing, AddressOf dBug.querySize))
         test.Items.Add(New ToolStripMenuItem("FudgeThumb", Nothing, AddressOf dBug.fudgeThumb))
-        test.Items.Add(New ToolStripMenuItem("Check Self", Nothing, AddressOf dBug.CheckSelf))
 
         chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()
@@ -564,13 +563,14 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         Dim MePath As String = Environment.GetCommandLineArgs(0)
-        Dim drive = Strings.Left(MePath, 2)
-        Dim sb As New Text.StringBuilder(512)
+        Dim sb As New Text.StringBuilder(260)
         Dim len = sb.Capacity
-        Dim ret = WNetGetConnection(drive, sb, len)
-        If ret = 0 Then
-            MePath = MePath.Replace(drive, sb.ToString)
-        End If
+        Try
+            Dim drive = Strings.Left(MePath, 2)
+            If WNetGetConnection(drive, sb, len) = 0 Then MePath = MePath.Replace(drive, sb.ToString)
+        Catch
+            Debug.Print($"WNetGetConnection Exception")
+        End Try
 
         My.Settings.Save()
         tmrOverview.Stop()
@@ -587,6 +587,8 @@ Partial Public NotInheritable Class FrmMain
                                        .Arguments = $"""{MePath}"""
                           }
             If Not IsDirectoryWritable(IO.Path.GetDirectoryName(MePath)) Then si.Verb = "runas"
+            If MePath <> Environment.GetCommandLineArgs(0) Then si.Arguments &= $" ""{Environment.GetCommandLineArgs(0)}"""
+
             Process.Start(si)
             sysTrayIcon.Visible = False
             End
@@ -1725,21 +1727,6 @@ Module dBug
         SetWindowLong(FrmMain.ScalaHandle, GWL_HWNDPARENT, FrmMain.restoreParent)
         FrmMain.AltPP.CenterBehind(FrmMain, 0, True)
         SetWindowLong(FrmMain.ScalaHandle, GWL_HWNDPARENT, FrmMain.AltPP.MainWindowHandle)
-    End Sub
-
-
-    Friend Sub CheckSelf(sender As Object, e As EventArgs)
-
-        Dim path As String = Environment.GetCommandLineArgs()(0)
-        Debug.Print($"path: {path}")
-        Dim sb As New Text.StringBuilder(512)
-        Dim len = sb.Capacity
-        Dim ret = WNetGetConnection("c:", sb, len)
-
-        Debug.Print($"UNC: {ret} {len} ""{sb}""")
-        'Catch ex As Exception
-        '    Debug.Print(ex.Message)
-        'End Try
     End Sub
 End Module
 
