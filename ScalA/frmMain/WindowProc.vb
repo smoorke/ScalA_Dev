@@ -375,9 +375,13 @@ Partial NotInheritable Class FrmMain
                 If cboAlt.SelectedIndex > 0 Then
                     AltPP.Activate()
                 End If
+            Case WM_NCACTIVATE
+                Debug.Print("WM_NCACTIVATE")
+                setActive(True)
+                Me.Refresh()
 #If DEBUG Then
 
-            Case &H6 ' WM_AACTIVATE
+            Case &H6 ' WM_ACTIVATE
             Case &H7 ' WM_SETFOCUS
             Case &H8 ' WM_KILLFOCUS
             Case &HF ' WM_PAINT
@@ -417,7 +421,6 @@ Partial NotInheritable Class FrmMain
 
                 'End If
             Case &H84 ' WM_NCHITTEST
-            Case &H86 ' WM_NCACTIVATE
 
             Case &HA1 ' WM_NCLBUTTONDOWN
 

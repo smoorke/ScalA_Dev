@@ -849,6 +849,8 @@ Module NativeMethods
     Public Const WM_DISPLAYCHANGE = &H7E
 
     Public Const WM_NCHITTEST As Integer = &H84
+    Public Const WM_NCACTIVATE As Integer = &H86
+
     Public Const WM_NCLBUTTONDOWN As Integer = &HA1
     Public Const WM_NCLBUTTONUP As Integer = &HA2
 
