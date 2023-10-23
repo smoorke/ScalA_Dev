@@ -642,7 +642,7 @@ Public NotInheritable Class FrmSettings
     End Sub
 
     Private Sub btnAddCurrentRes_Click(sender As Object, e As EventArgs) Handles btnAddCurrentRes.Click
-        Dim res As String = FrmMain.cmbResolution.Items(FrmMain.cmbResolution.SelectedIndex)
+        Dim res As String = FrmMain.cmbResolution.SelectedItem
         Debug.Print(res)
         If txtResolutions.Lines.Contains(res) Then
             Debug.Print("already present")

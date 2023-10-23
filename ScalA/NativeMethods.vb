@@ -71,11 +71,24 @@ Module NativeMethods
             lparam = value
         End Sub
 
+        Public Sub New(lo As Short, hi As Short)
+            Me.loword = lo
+            Me.hiword = hi
+        End Sub
+
+        Public Sub New(pt As Point)
+            Me.loword = pt.X
+            Me.hiword = pt.Y
+        End Sub
+
         Public Shared Widening Operator CType(value As LParamMap) As Point
             Return New Point(value.loword, value.hiword)
         End Operator
         Public Shared Widening Operator CType(value As LParamMap) As Size
             Return New Size(value.loword, value.hiword)
+        End Operator
+        Public Shared Widening Operator CType(value As LParamMap) As IntPtr
+            Return value.lparam
         End Operator
 
         <FieldOffset(0)> Public lparam As IntPtr
@@ -829,6 +842,15 @@ Module NativeMethods
     Public Const MF_GRAYED As UInteger = &H1
     Public Const MF_BITMAP As UInteger = &H4
     Public Const MF_OWNERDRAW As UInteger = &H100
+
+
+    Public Const MK_LBUTTON = &H1   ' The left mouse button Is down.
+    Public Const MK_RBUTTON = &H2   ' The right mouse button Is down.
+    Public Const MK_SHIFT = &H4     ' The SHIFT key Is down.
+    Public Const MK_CONTROL = &H8   ' The CTRL key Is down.
+    Public Const MK_MBUTTON = &H10  ' The middle mouse button Is down.
+    Public Const MK_XBUTTON1 = &H20 ' The first X button Is down.
+    Public Const MK_XBUTTON2 = &H40 ' The second X button is down.
 
     Public Const HTCAPTION As Integer = 2
 

@@ -234,7 +234,7 @@ Partial NotInheritable Class FrmMain
                     wasMaximized = False
                     posChangeBusy = True
                     AOshowEqLock = False
-                    Me.Location = New Point(winpos.x, winpos.y)
+                    'Me.Location = New Point(winpos.x, winpos.y)
 
                     Me.WindowState = FormWindowState.Normal
                     ReZoom(New Drawing.Size(winpos.cx - 2, winpos.cy - pnlTitleBar.Height - 1))
