@@ -1283,7 +1283,7 @@ Partial Public NotInheritable Class FrmMain
     Public Shared topSortList As List(Of String) = My.Settings.topSort.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries).ToList
     Public Shared botSortList As List(Of String) = My.Settings.botSort.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries).ToList
     Public Shared blackList As List(Of String) = topSortList.Intersect(botSortList).ToList
-    Private EQLockClick As Boolean = False
+    'Private EQLockClick As Boolean = False
 
     Private Sub setActive(active As Boolean)
         Dim fcol As Color = Color.FromArgb(&HFF666666)
@@ -1366,7 +1366,7 @@ Partial Public NotInheritable Class FrmMain
         End If
         'Me.SuspendLayout()
         If cboAlt.SelectedIndex <> 0 OrElse My.Settings.gameOnOverview Then
-            If My.Settings.LockEq AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown AndAlso Not EQLockClick Then
+            If My.Settings.LockEq AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then 'AndAlso Not EQLockClick Then
                 If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
                     If Not PnlEqLock.Visible Then
                         If Not pnlOverview.Visible AndAlso Not My.Settings.gameOnOverview Then
@@ -1541,40 +1541,41 @@ Partial Public NotInheritable Class FrmMain
             AButton.ActiveOverview = My.Settings.gameOnOverview
         End If
     End Sub
-
+    Private Async Sub JiggerMouse()
+        prevWMMMpt = New Point
+        Cursor.Position += New Point(-1, -1)
+        Await Task.Delay(16)
+        prevWMMMpt = New Point
+        Cursor.Position += New Point(1, 1)
+    End Sub
     Private Sub PnlEqLock_MouseDown(sender As Panel, e As MouseEventArgs) Handles PnlEqLock.MouseDown
         Debug.Print($"pnlEqLock.MouseDown {e.Button}")
         If e.Button = MouseButtons.Right Then
             PnlEqLock.Visible = False
-            SendMessage(AltPP.MainWindowHandle, WM_RBUTTONDOWN, MK_RBUTTON, 0) 'to change cursor
-            Cursor.Position += New Point(1, 1)
-            Cursor.Position += New Point(-1, -1)
-            'Dim pt As Point = MousePosition
-            'ScreenToClient(AltPP.MainWindowHandle, PT)
-            'SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, MK_RBUTTON, New LParamMap(PT))
+            SendMessage(AltPP.MainWindowHandle, WM_RBUTTONDOWN, MouseButtons.ToWparam, 0) 'to change cursor
+            JiggerMouse()
         End If
         If e.Button = MouseButtons.Middle Then
             PnlEqLock.Visible = False
             SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, MK_MBUTTON, 0) 'to change cursor and enable mmb
-            Cursor.Position += New Point(1, 1)
-            Cursor.Position += New Point(-1, -1)
+            JiggerMouse()
         End If
     End Sub
 
     Private Async Sub PnlEqLock_MouseUp(sender As Object, e As MouseEventArgs) Handles PnlEqLock.MouseUp
         Debug.Print($"pnlEqLock.MouseUp {e.Button} lock vis {PnlEqLock.Visible}")
         If (e.Button = MouseButtons.Right OrElse e.Button = MouseButtons.Middle) AndAlso PnlEqLock.Contains(MousePosition) Then
-            EQLockClick = True
             PnlEqLock.Visible = False
-            If e.Button = MouseButtons.Right Then
-                SendMouseInput(MouseEventF.RightUp)
-            Else
-                SendMouseInput(MouseEventF.MiddleDown)
-                Await Task.Delay(50)
-                SendMouseInput(MouseEventF.MiddleUp)
+            If Not AltPP?.isSDL Then
+                If e.Button = MouseButtons.Right Then
+                    SendMessage(AltPP.MainWindowHandle, WM_RBUTTONUP, 0, 0)
+                Else
+                    SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, 0, 0)
+                    Await Task.Delay(50)
+                    SendMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0)
+                End If
+                Await Task.Delay(25)
             End If
-            Await Task.Delay(25)
-            EQLockClick = False
         End If
         Await Task.Run(Sub() AltPP.Activate())
     End Sub

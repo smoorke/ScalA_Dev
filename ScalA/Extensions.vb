@@ -207,4 +207,17 @@ Module Extensions
             Me.Location = scrn.Bounds.Location
         End Sub
     End Class
+
+    <System.Runtime.CompilerServices.Extension()>
+    Public Function ToWparam(mbs As MouseButtons) As Integer
+        Dim mfs As Integer
+        mfs = mfs Or If(mbs.HasFlag(MouseButtons.Left), MK_LBUTTON, 0)
+        mfs = mfs Or If(mbs.HasFlag(MouseButtons.Right), MK_RBUTTON, 0)
+        mfs = mfs Or If(mbs.HasFlag(MouseButtons.Middle), MK_MBUTTON, 0)
+        mfs = mfs Or If(mbs.HasFlag(MouseButtons.XButton1), MK_XBUTTON1, 0)
+        mfs = mfs Or If(mbs.HasFlag(MouseButtons.XButton2), MK_XBUTTON2, 0)
+        Return mfs
+    End Function
+
+
 End Module
