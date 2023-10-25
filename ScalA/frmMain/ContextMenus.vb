@@ -910,7 +910,7 @@ Partial Public NotInheritable Class FrmMain
         End If
     End Sub
 
-    Private Sub OpenProps(ByVal sender As Object, ByVal e As MouseEventArgs) 'Handles smenu.MouseUp, item.MouseUp
+    Private Sub OpenProps(ByVal sender As ToolStripMenuItem, ByVal e As MouseEventArgs) 'Handles smenu.MouseUp, item.MouseUp
         Debug.Print($"OpenProps {sender.Tag(0)} {sender.GetType}")
         Dim pth As String = sender.Tag(0).ToString.TrimEnd("\")
         If e.Button = MouseButtons.Right Then
@@ -921,22 +921,23 @@ Partial Public NotInheritable Class FrmMain
                .nShow = SW_SHOW,
                .fMask = SEE_MASK_INVOKEIDLIST
             }
-            ShellExecuteEx(sei) 'open properties
-            'set properties to topmost
-            Task.Run(Sub()
-                         Dim watch As Stopwatch = Stopwatch.StartNew()
-                         Dim WindowName As String = pth.ToLower.Substring(pth.LastIndexOf("\") + 1).Replace(".url", "").Replace(".lnk", "") & " Properties"
-                         'findwindow ignores case
-                         Dim hndl As IntPtr
-                         While watch.ElapsedMilliseconds < 2000
-                             Threading.Thread.Sleep(20)
-                             hndl = FindWindow("#32770", WindowName)
-                             Debug.Print($"findwindow {hndl}")
-                             If hndl <> IntPtr.Zero Then Exit While
-                         End While
-                         SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
-                         watch.Stop()
-                     End Sub)
+            cmsQuickLaunch.Close()
+            Task.Run(action:=Async Sub()
+                                 ShellExecuteEx(sei) 'open properties
+                                 'set properties to topmost
+                                 Dim watch As Stopwatch = Stopwatch.StartNew()
+                                 Dim WindowName As String = pth.ToLower.Substring(pth.LastIndexOf("\") + 1).Replace(".url", "").Replace(".lnk", "") & " Properties"
+                                 'findwindow ignores case
+                                 Dim hndl As IntPtr
+                                 While watch.ElapsedMilliseconds < 10000
+                                     Await Task.Delay(20)
+                                     hndl = FindWindow("#32770", WindowName)
+                                     Debug.Print($"findwindow {hndl}")
+                                     If hndl <> IntPtr.Zero Then Exit While
+                                 End While
+                                 SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                                 watch.Stop()
+                             End Sub)
         End If
     End Sub
 

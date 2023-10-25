@@ -913,6 +913,8 @@ Module NativeMethods
     Public Const WM_ENTERSIZEMOVE = &H231
     Public Const WM_EXITSIZEMOVE = &H232
 
+    Public Const WM_MOUSEHOVER = &H2A1
+
     Public Const WM_DWMCOLORIZATIONCOLORCHANGED = &H320
 
     Public Const SC_SIZE As Integer = &HF000

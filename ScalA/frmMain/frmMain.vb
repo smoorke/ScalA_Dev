@@ -1365,17 +1365,18 @@ Partial Public NotInheritable Class FrmMain
 
         End If
         'Me.SuspendLayout()
-        If cboAlt.SelectedIndex <> 0 OrElse My.Settings.gameOnOverview Then
-            If My.Settings.LockEq AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then 'AndAlso Not EQLockClick Then
-                If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
-                    If Not PnlEqLock.Visible Then
-                        If Not pnlOverview.Visible AndAlso Not My.Settings.gameOnOverview Then
-                            PnlEqLock.Visible = True
-                        Else
-                            PnlEqLock.Visible = AOshowEqLock OrElse Not pnlOverview.Visible
+        If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
+            If cboAlt.SelectedIndex <> 0 OrElse My.Settings.gameOnOverview Then
+                If My.Settings.LockEq AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then 'AndAlso Not EQLockClick Then
+                    If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
+                        If Not PnlEqLock.Visible Then
+                            If Not pnlOverview.Visible AndAlso Not My.Settings.gameOnOverview Then
+                                PnlEqLock.Visible = True
+                            Else
+                                PnlEqLock.Visible = AOshowEqLock OrElse Not pnlOverview.Visible
+                            End If
                         End If
-                    End If
-                    If PnlEqLock.Visible AndAlso
+                        If PnlEqLock.Visible AndAlso
                    Not (cmsQuickLaunch.Visible OrElse cmsAlt.Visible) AndAlso
                    Not (FrmSettings.cmsGenerate.Visible OrElse FrmSettings.cmsQLFolder.Visible) AndAlso
                    Not FrmSettings.Contains(MousePosition) AndAlso
@@ -1384,19 +1385,22 @@ Partial Public NotInheritable Class FrmMain
                    Not cmbResolution.DropDownContains(MousePosition) AndAlso
                    Not SysMenu.Contains(MousePosition) AndAlso
                    Not FrmSettings.SysMenu.Contains(MousePosition) Then
-                        Cursor.Current = Cursors.No
-                    ElseIf SysMenu.Contains(MousePosition) OrElse FrmSettings.SysMenu.Contains(MousePosition) Then
-                        Cursor.Current = Cursors.Default
+                            Cursor.Current = Cursors.No
+                        ElseIf SysMenu.Contains(MousePosition) OrElse FrmSettings.SysMenu.Contains(MousePosition) Then
+                            Cursor.Current = Cursors.Default
+                        End If
+                    End If
+                    ChkEqLock.CheckState = CheckState.Checked
+                    ChkEqLock.Text = "🔒"
+                Else
+                    PnlEqLock.Visible = False
+                    If My.Settings.LockEq Then
+                        ChkEqLock.CheckState = CheckState.Indeterminate
+                        ChkEqLock.Text = "🔓"
                     End If
                 End If
-                ChkEqLock.CheckState = CheckState.Checked
-                ChkEqLock.Text = "🔒"
             Else
                 PnlEqLock.Visible = False
-                If My.Settings.LockEq Then
-                    ChkEqLock.CheckState = CheckState.Indeterminate
-                    ChkEqLock.Text = "🔓"
-                End If
             End If
         Else
             PnlEqLock.Visible = False
@@ -1541,42 +1545,83 @@ Partial Public NotInheritable Class FrmMain
             AButton.ActiveOverview = My.Settings.gameOnOverview
         End If
     End Sub
+
+    Private Function WM_MM_GetWParam() As Integer
+        Dim wp As Integer
+        wp = wp Or If(MouseButtons.HasFlag(MouseButtons.Left), MK_LBUTTON, 0)
+        wp = wp Or If(MouseButtons.HasFlag(MouseButtons.Right), MK_RBUTTON, 0)
+        wp = wp Or If(MouseButtons.HasFlag(MouseButtons.Middle), MK_MBUTTON, 0)
+        wp = wp Or If(MouseButtons.HasFlag(MouseButtons.XButton1), MK_XBUTTON1, 0)
+        wp = wp Or If(MouseButtons.HasFlag(MouseButtons.XButton2), MK_XBUTTON2, 0)
+        wp = wp Or If(My.Computer.Keyboard.CtrlKeyDown, MK_CONTROL, 0)
+        wp = wp Or If(My.Computer.Keyboard.ShiftKeyDown, MK_SHIFT, 0)
+        Return wp
+    End Function
+
     Private Async Sub JiggerMouse()
         prevWMMMpt = New Point
         Cursor.Position += New Point(-1, -1)
-        Await Task.Delay(16)
+        Await Task.Delay(32)
         prevWMMMpt = New Point
         Cursor.Position += New Point(1, 1)
     End Sub
     Private Sub PnlEqLock_MouseDown(sender As Panel, e As MouseEventArgs) Handles PnlEqLock.MouseDown
         Debug.Print($"pnlEqLock.MouseDown {e.Button}")
+
+        Dim wparam As Integer = WM_MM_GetWParam()
+
+        Dim rc As Rectangle
+        GetClientRect(AltPP.MainWindowHandle, rc)
+
+        Dim mp As Point = sender.PointToClient(MousePosition)
+
+        Dim sx As Integer = rcC.Width / 2 - 262.Map(0, 800, 0, rcC.Width)
+
+        Dim excludGearLock As Integer = If(AltPP?.isSDL, 18, 0)
+        Dim dx As Integer = (524 - excludGearLock).Map(0, 800, 0, rcC.Width)
+
+        Dim mx As Integer = mp.X.Map(0, sender.Bounds.Width, sx, dx)
+
+        Dim lockHeight = 45
+        If rc.Height >= 2000 Then
+            lockHeight += 120
+        ElseIf rc.Height >= 1500 Then
+            lockHeight += 80
+        ElseIf rc.Height >= 1000 Then
+            lockHeight += 40
+        End If
+        Dim my As Integer = mp.Y.Map(0, sender.Bounds.Height, 0, lockHeight)
+
+        Debug.Print($"mx:{mx} my:{my}")
+
         If e.Button = MouseButtons.Right Then
             PnlEqLock.Visible = False
-            SendMessage(AltPP.MainWindowHandle, WM_RBUTTONDOWN, MouseButtons.ToWparam, 0) 'to change cursor
-            JiggerMouse()
+            SendMessage(AltPP.MainWindowHandle, WM_RBUTTONDOWN, wparam, (my << 16) + mx) 'to change cursor
+            sender.Capture = False
         End If
         If e.Button = MouseButtons.Middle Then
             PnlEqLock.Visible = False
-            SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, MK_MBUTTON, 0) 'to change cursor and enable mmb
-            JiggerMouse()
+            SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, wparam, (my << 16) + mx) 'to change cursor and enable mmb
+            sender.Capture = False
         End If
-    End Sub
 
+
+    End Sub
     Private Async Sub PnlEqLock_MouseUp(sender As Object, e As MouseEventArgs) Handles PnlEqLock.MouseUp
         Debug.Print($"pnlEqLock.MouseUp {e.Button} lock vis {PnlEqLock.Visible}")
-        If (e.Button = MouseButtons.Right OrElse e.Button = MouseButtons.Middle) AndAlso PnlEqLock.Contains(MousePosition) Then
-            PnlEqLock.Visible = False
-            If Not AltPP?.isSDL Then
-                If e.Button = MouseButtons.Right Then
-                    SendMessage(AltPP.MainWindowHandle, WM_RBUTTONUP, 0, 0)
-                Else
-                    SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, 0, 0)
-                    Await Task.Delay(50)
-                    SendMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0)
-                End If
-                Await Task.Delay(25)
-            End If
-        End If
+        'If (e.Button = MouseButtons.Right OrElse e.Button = MouseButtons.Middle) AndAlso PnlEqLock.Contains(MousePosition) Then
+        '    'EQLockClick = True
+        '    PnlEqLock.Visible = False
+        '    If e.Button = MouseButtons.Right Then
+        '        SendMouseInput(MouseEventF.RightUp)
+        '    Else
+        '        SendMouseInput(MouseEventF.MiddleDown)
+        '        Await Task.Delay(50)
+        '        SendMouseInput(MouseEventF.MiddleUp)
+        '    End If
+        '    Await Task.Delay(25)
+        '    'EQLockClick = False
+        'End If
         Await Task.Run(Sub() AltPP.Activate())
     End Sub
 

@@ -14,7 +14,7 @@ Partial NotInheritable Class FrmMain
     Private storedY As Integer = 0
     Private wasVisible As Boolean = True
     Private Shared swpBusy As Boolean = False
-    Const swpFlags = SetWindowPosFlags.IgnoreResize Or
+    Const swpFlags As SetWindowPosFlags = SetWindowPosFlags.IgnoreResize Or
                      SetWindowPosFlags.DoNotActivate Or
                      SetWindowPosFlags.ASyncWindowPosition
     Private Sub TmrTick_Tick(sender As Timer, e As EventArgs) Handles tmrTick.Tick
@@ -61,7 +61,7 @@ Partial NotInheritable Class FrmMain
                     Dim bzB As Rectangle = Me.RectangleToScreen(pbZoom.Bounds)
                     Dim ipt As New Point(movedX.Map(bzB.Left, bzB.Right, 0, rcC.Width),
                                          movedY.Map(bzB.Top, bzB.Bottom, 0, rcC.Height))
-                    SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, Nothing, (ipt.Y << 16) + ipt.X) 'update client internal mousepos
+                    SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, WM_MM_GetWParam, (ipt.Y << 16) + ipt.X) 'update client internal mousepos
                     Debug.Print($"ipt {ipt}")
                 End If
             End If
@@ -93,15 +93,17 @@ Partial NotInheritable Class FrmMain
                                  If ci.flags = 0 Then Exit Sub
                                  swpBusy = True
                                  Dim flags = swpFlags
-                                 If Not AltPP.IsActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
-                                 If AltPP.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
+                                 If Not AltPP.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
+                                 If AltPP.IsBelow(ScalaHandle) Then flags.SetFlag(SetWindowPosFlags.IgnoreZOrder)
                                  Dim pt As Point = MousePosition - New Point(newX + AltPP.ClientOffset.X, newY + AltPP.ClientOffset.Y)
+                                 Dim wparam = WM_MM_GetWParam()
+
                                  If prevWMMMpt <> MousePosition Then
-                                     SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
+                                     SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, wparam, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                  End If
                                  SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
                                  If prevWMMMpt <> MousePosition Then
-                                     SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
+                                     SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, wparam, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                  End If
                                  prevWMMMpt = MousePosition
                              Catch ex As Exception
@@ -307,15 +309,16 @@ Partial NotInheritable Class FrmMain
                                          If ci.flags = 0 Then Exit Sub
                                          AOBusy = True
                                          Dim flags = swpFlags
-                                         If Not but.AP.IsActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
+                                         If Not but.AP.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
                                          'If but.Tag?.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                                          Dim pt As Point = MousePosition - New Point(newXB + ap.ClientOffset.X, newYB + ap.ClientOffset.Y)
+                                         Dim wparam = WM_MM_GetWParam()
                                          If prevWMMMpt <> MousePosition Then
-                                             SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
+                                             SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                          End If
                                          SetWindowPos(but.AP.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
                                          If prevWMMMpt <> MousePosition Then
-                                             SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
+                                             SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, (pt.Y << 16) + pt.X) 'update client internal mousepos
                                          End If
                                          prevWMMMpt = MousePosition
                                      Catch ex As Exception
