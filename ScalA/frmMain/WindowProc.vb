@@ -329,14 +329,14 @@ Partial NotInheritable Class FrmMain
                 End If
             Case WM_KEYDOWN
                 Debug.Print($"WM_KEYDOWN {m.WParam} {m.LParam}")
-                Debug.Print($"ScanCode {(m.LParam.ToInt32() >> 16) And &HFF}")
+                Debug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
                 If cboAlt.SelectedIndex > 0 Then
                     AltPP.Activate()
                     Dim key As Keys = m.WParam
                     If Not AltPP.isSDL Then
                         SendMessage(AltPP.MainWindowHandle, WM_KEYDOWN, key, IntPtr.Zero)
                     Else
-                        Dim scan As UShort = (m.LParam.ToInt32() >> 16) And &HFF
+                        Dim scan As Byte = New LParamMap(m.LParam)
                         If key = Keys.Escape OrElse (key >= Keys.F1 AndAlso key <= Keys.F12) OrElse
                            key = Keys.Back Then
                             SendScanKey(scan)
@@ -350,10 +350,10 @@ Partial NotInheritable Class FrmMain
                 End If
             Case WM_KEYUP
                 Debug.Print($"WM_KEYUP {m.WParam} {m.LParam}")
-                Debug.Print($"ScanCode {(m.LParam.ToInt32() >> 16) And &HFF}")
+                Debug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
                 If cboAlt.SelectedIndex > 0 Then
                     AltPP.Activate()
-                    Dim scan As UShort = (m.LParam.ToInt32() >> 16) And &HFF
+                    Dim scan As Byte = New LParamMap(m.LParam)
                     If scan = 28 Then
                         If Not AltPP.isSDL Then
                             SendKeys.Send("{ENTER}")
@@ -364,7 +364,7 @@ Partial NotInheritable Class FrmMain
                 End If
             Case WM_CHAR
                 Debug.Print($"WM_CHAR {m.WParam} {m.LParam}")
-                Debug.Print($"ScanCode {(m.LParam.ToInt32() >> 16) And &HFF}")
+                Debug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
                 If cboAlt.SelectedIndex > 0 Then
                     AltPP.Activate()
                     If Not AltPP.isSDL Then

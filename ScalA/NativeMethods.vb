@@ -90,10 +90,15 @@ Module NativeMethods
         Public Shared Widening Operator CType(value As LParamMap) As IntPtr
             Return value.lparam
         End Operator
+        Public Shared Narrowing Operator CType(value As LParamMap) As Byte
+            Return value.scan
+        End Operator
+
 
         <FieldOffset(0)> Public lparam As IntPtr
         <FieldOffset(0)> Public loword As Short
         <FieldOffset(2)> Public hiword As Short
+        <FieldOffset(2)> Public scan As Byte
     End Structure
 
 

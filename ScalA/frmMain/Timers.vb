@@ -61,7 +61,7 @@ Partial NotInheritable Class FrmMain
                     Dim bzB As Rectangle = Me.RectangleToScreen(pbZoom.Bounds)
                     Dim ipt As New Point(movedX.Map(bzB.Left, bzB.Right, 0, rcC.Width),
                                          movedY.Map(bzB.Top, bzB.Bottom, 0, rcC.Height))
-                    SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, WM_MM_GetWParam, (ipt.Y << 16) + ipt.X) 'update client internal mousepos
+                    SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, WM_MM_GetWParam, New LParamMap(ipt)) 'update client internal mousepos
                     Debug.Print($"ipt {ipt}")
                 End If
             End If
@@ -97,13 +97,13 @@ Partial NotInheritable Class FrmMain
                                  If AltPP.IsBelow(ScalaHandle) Then flags.SetFlag(SetWindowPosFlags.IgnoreZOrder)
                                  Dim pt As Point = MousePosition - New Point(newX + AltPP.ClientOffset.X, newY + AltPP.ClientOffset.Y)
                                  Dim wparam = WM_MM_GetWParam()
-
+                                 Dim lparam = New LParamMap(pt)
                                  If prevWMMMpt <> MousePosition Then
-                                     SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, wparam, (pt.Y << 16) + pt.X) 'update client internal mousepos
+                                     SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
                                  End If
                                  SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
                                  If prevWMMMpt <> MousePosition Then
-                                     SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, wparam, (pt.Y << 16) + pt.X) 'update client internal mousepos
+                                     SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
                                  End If
                                  prevWMMMpt = MousePosition
                              Catch ex As Exception
@@ -248,7 +248,7 @@ Partial NotInheritable Class FrmMain
                             Dim bzB As Rectangle = but.RectangleToScreen(but.ThumbRectangle)
                             Dim ipt As New Point(movedX.Map(bzB.Left, bzB.Right, 0, rccB.Width),
                                                  movedY.Map(bzB.Top, bzB.Bottom, 0, rccB.Height))
-                            SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, Nothing, (ipt.Y << 16) + ipt.X) 'update client internal mousepos
+                            SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, WM_MM_GetWParam, New LParamMap(ipt)) 'update client internal mousepos
                             Debug.Print($"ipt {ipt}")
                         End If
                     End If
@@ -313,12 +313,13 @@ Partial NotInheritable Class FrmMain
                                          'If but.Tag?.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                                          Dim pt As Point = MousePosition - New Point(newXB + ap.ClientOffset.X, newYB + ap.ClientOffset.Y)
                                          Dim wparam = WM_MM_GetWParam()
+                                         Dim lparam = New LParamMap(pt)
                                          If prevWMMMpt <> MousePosition Then
-                                             SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, (pt.Y << 16) + pt.X) 'update client internal mousepos
+                                             SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
                                          End If
                                          SetWindowPos(but.AP.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
                                          If prevWMMMpt <> MousePosition Then
-                                             SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, (pt.Y << 16) + pt.X) 'update client internal mousepos
+                                             SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
                                          End If
                                          prevWMMMpt = MousePosition
                                      Catch ex As Exception

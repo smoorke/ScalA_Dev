@@ -1598,13 +1598,13 @@ Partial Public NotInheritable Class FrmMain
             PnlEqLock.Visible = False
             sender.Capture = False
             AltPP?.Activate()
-            SendMessage(AltPP.MainWindowHandle, WM_RBUTTONDOWN, wparam, (my << 16) + mx) 'to change cursor
+            SendMessage(AltPP.MainWindowHandle, WM_RBUTTONDOWN, wparam, New LParamMap(mx, my)) 'to change cursor
         End If
         If e.Button = MouseButtons.Middle Then
             PnlEqLock.Visible = False
             sender.Capture = False
             AltPP?.Activate()
-            SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, wparam, (my << 16) + mx) 'to change cursor and enable mmb
+            SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, wparam, New LParamMap(mx, my)) 'to change cursor and enable mmb
         End If
 
 
