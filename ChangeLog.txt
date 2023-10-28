@@ -1,3 +1,8 @@
+**ScalA 1.4.2**
+Fixed Updater Fails when ScalA is located on a network-mapped drive (eg. Z:\ScalA.exe)
+Fixed Clicking titlebar of inactive ScalA doesn't immediately update its text color.
+Fixed EqLock doesn't update cursor when holding right or middle mouse buttons.
+
 **ScalA 1.4.1**
 Fixed One of the Close All Someone ContextMenuItems erroneously calls Close All subroutine.
 Fixed Moving Questlog/Help pane doesn't set correct x position of cursor upon release of mousebutton.
