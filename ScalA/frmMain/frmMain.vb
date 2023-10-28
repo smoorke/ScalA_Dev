@@ -1596,32 +1596,35 @@ Partial Public NotInheritable Class FrmMain
 
         If e.Button = MouseButtons.Right Then
             PnlEqLock.Visible = False
-            SendMessage(AltPP.MainWindowHandle, WM_RBUTTONDOWN, wparam, (my << 16) + mx) 'to change cursor
             sender.Capture = False
+            AltPP?.Activate()
+            SendMessage(AltPP.MainWindowHandle, WM_RBUTTONDOWN, wparam, (my << 16) + mx) 'to change cursor
         End If
         If e.Button = MouseButtons.Middle Then
             PnlEqLock.Visible = False
-            SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, wparam, (my << 16) + mx) 'to change cursor and enable mmb
             sender.Capture = False
+            AltPP?.Activate()
+            SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, wparam, (my << 16) + mx) 'to change cursor and enable mmb
         End If
 
 
     End Sub
-    Private Async Sub PnlEqLock_MouseUp(sender As Object, e As MouseEventArgs) Handles PnlEqLock.MouseUp
+    Private Async Sub PnlEqLock_MouseUp(sender As Panel, e As MouseEventArgs) Handles PnlEqLock.MouseUp
         Debug.Print($"pnlEqLock.MouseUp {e.Button} lock vis {PnlEqLock.Visible}")
-        'If (e.Button = MouseButtons.Right OrElse e.Button = MouseButtons.Middle) AndAlso PnlEqLock.Contains(MousePosition) Then
-        '    'EQLockClick = True
-        '    PnlEqLock.Visible = False
-        '    If e.Button = MouseButtons.Right Then
-        '        SendMouseInput(MouseEventF.RightUp)
-        '    Else
-        '        SendMouseInput(MouseEventF.MiddleDown)
-        '        Await Task.Delay(50)
-        '        SendMouseInput(MouseEventF.MiddleUp)
-        '    End If
-        '    Await Task.Delay(25)
-        '    'EQLockClick = False
-        'End If
+        If (e.Button = MouseButtons.Right OrElse e.Button = MouseButtons.Middle) AndAlso PnlEqLock.Contains(MousePosition) Then
+            '    'EQLockClick = True
+            PnlEqLock.Visible = False
+            sender.Capture = False
+            If e.Button = MouseButtons.Right Then
+                SendMouseInput(MouseEventF.RightUp)
+            Else
+                '        SendMouseInput(MouseEventF.MiddleDown)
+                '        Await Task.Delay(50)
+                SendMouseInput(MouseEventF.MiddleUp)
+            End If
+            '    Await Task.Delay(25)
+            '    'EQLockClick = False
+        End If
         Await Task.Run(Sub() AltPP.Activate())
     End Sub
 
