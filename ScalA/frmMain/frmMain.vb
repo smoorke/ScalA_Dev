@@ -587,7 +587,7 @@ Partial Public NotInheritable Class FrmMain
                                        .Arguments = $"""{MePath}"""
                           }
             If Not IsDirectoryWritable(IO.Path.GetDirectoryName(MePath)) Then si.Verb = "runas"
-            If MePath <> Environment.GetCommandLineArgs(0) Then si.Arguments &= $" ""{Environment.GetCommandLineArgs(0)}"""
+            If MePath <> Environment.GetCommandLineArgs(0) Then si.Arguments &= $" ""{IO.Directory.GetCurrentDirectory().TrimEnd("\")}"" ""{Environment.GetCommandLineArgs(0)}"""
 
             Process.Start(si)
             sysTrayIcon.Visible = False
