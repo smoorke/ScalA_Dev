@@ -1312,7 +1312,8 @@ Partial Public NotInheritable Class FrmMain
         Try
             Dim errorHwnd = FindWindow("#32770", "error")
             If errorHwnd Then
-                If FindWindowEx(errorHwnd, Nothing, "Static", "Copy new->moac failed: 32") Then
+                If FindWindowEx(errorHwnd, Nothing, "Static", "Copy new->moac failed: 32") <> IntPtr.Zero OrElse
+                   FindWindowEx(errorHwnd, Nothing, "Static", "Copy new->moac failed: 5") <> IntPtr.Zero Then
                     Dim butHandle = FindWindowEx(errorHwnd, Nothing, "Button", "OK")
                     SendMessage(butHandle, &HF5, IntPtr.Zero, IntPtr.Zero)
                     Debug.Print("Error dialog closed")
