@@ -25,6 +25,7 @@ Partial NotInheritable Class FrmMain
             FrmBehind.Show()
             If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
             If Not My.Settings.CycleOnClose Then
+                SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
                 Try
                     AppActivate(scalaPID)
                 Catch
