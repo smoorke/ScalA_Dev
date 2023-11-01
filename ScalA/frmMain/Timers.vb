@@ -26,15 +26,18 @@ Partial NotInheritable Class FrmMain
             If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
             If Not My.Settings.CycleOnClose Then
                 SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
-                Try
-                    AppActivate(scalaPID)
-                Catch
-                End Try
                 Me.Activate()
                 BringToFront()
                 tmrTick.Enabled = False
                 cboAlt.SelectedIndex = 0
                 tmrOverview.Enabled = True
+                Try
+                    Task.Run(action:=Async Sub()
+                                         Await Task.Delay(16)
+                                         AppActivate(scalaPID)
+                                     End Sub)
+                Catch
+                End Try
                 Exit Sub
             Else 'CycleOnClose
                 Cycle()
