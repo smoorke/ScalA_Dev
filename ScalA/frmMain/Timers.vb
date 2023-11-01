@@ -33,7 +33,8 @@ Partial NotInheritable Class FrmMain
                 tmrOverview.Enabled = True
                 Try
                     Task.Run(action:=Async Sub()
-                                         Await Task.Delay(16)
+                                         Await Task.Delay(50)
+                                         AllowSetForegroundWindow(scalaPID)
                                          AppActivate(scalaPID)
                                      End Sub)
                 Catch
