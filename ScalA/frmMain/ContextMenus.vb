@@ -688,8 +688,8 @@ Partial Public NotInheritable Class FrmMain
         'End If
         If cboAlt.SelectedIndex > 0 Then
             If (AltPP?.IsActive OrElse GetActiveProcessID() = scalaPID) AndAlso e.CloseReason <> ToolStripDropDownCloseReason.AppClicked Then
-                SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
                 AppActivate(scalaPID) 'Fixes astona popping to front
+                SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
                 AltPP?.Activate()
             End If
         End If
