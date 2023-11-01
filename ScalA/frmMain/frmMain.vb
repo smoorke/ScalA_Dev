@@ -937,18 +937,18 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
 
-    Delegate Sub updateButtonImageDelegate(but As AButton, bm As Bitmap)
-    Private Shared ReadOnly updateButtonImage As New updateButtonImageDelegate(AddressOf UpdateButtonImageMethod)
-    Private Shared Sub UpdateButtonImageMethod(but As AButton, bm As Bitmap)
-        If but Is Nothing Then Exit Sub
-        but.Image = bm
-    End Sub
-    Delegate Sub updateButtonBackgroundImageDelegate(but As AButton, bm As Bitmap)
-    Private Shared ReadOnly updateButtonBackgroundImage As New updateButtonImageDelegate(AddressOf UpdateButtonBackgroundImageMethod)
-    Private Shared Sub UpdateButtonBackgroundImageMethod(but As AButton, bm As Bitmap)
-        If but Is Nothing Then Exit Sub
-        but.BackgroundImage = bm
-    End Sub
+    'Delegate Sub updateButtonImageDelegate(but As AButton, bm As Bitmap)
+    'Private Shared ReadOnly updateButtonImage As New updateButtonImageDelegate(AddressOf UpdateButtonImageMethod)
+    'Private Shared Sub UpdateButtonImageMethod(but As AButton, bm As Bitmap)
+    '    If but Is Nothing Then Exit Sub
+    '    but.Image = bm
+    'End Sub
+    'Delegate Sub updateButtonBackgroundImageDelegate(but As AButton, bm As Bitmap)
+    'Private Shared ReadOnly updateButtonBackgroundImage As New updateButtonImageDelegate(AddressOf UpdateButtonBackgroundImageMethod)
+    'Private Shared Sub UpdateButtonBackgroundImageMethod(but As AButton, bm As Bitmap)
+    '    If but Is Nothing Then Exit Sub
+    '    but.BackgroundImage = bm
+    'End Sub
     Private Function GetNextPerfectSquare(num As Integer) As Integer
         Dim nextN As Integer = Math.Floor(Math.Sqrt(num)) + 1
         If nextN > 6 Then nextN = 6
