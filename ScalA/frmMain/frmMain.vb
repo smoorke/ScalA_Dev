@@ -928,6 +928,7 @@ Partial Public NotInheritable Class FrmMain
             pbZoom.Hide()
             pnlOverview.Show()
             sysTrayIcon.Icon = My.Resources.moa3
+            SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
             'AppActivate(scalaPID)
             Exit Sub
         End If
