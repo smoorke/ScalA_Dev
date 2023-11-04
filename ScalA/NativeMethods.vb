@@ -38,7 +38,11 @@ Module NativeMethods
 
     Enum SPI As UInteger
         GETCLIENTAREAANIMATION = &H1042
+        GETFOREGROUNDLOCKTIMEOUT = &H2000
     End Enum
+
+    <DllImport("user32.dll")>
+    Public Function FlashWindow(hwnd As IntPtr, <MarshalAs(UnmanagedType.Bool)> bInvert As Boolean) As <MarshalAs(UnmanagedType.Bool)> Boolean : End Function
 
     <Runtime.CompilerServices.Extension>
     Public Function ToRECT(rct As Rectangle) As RECT

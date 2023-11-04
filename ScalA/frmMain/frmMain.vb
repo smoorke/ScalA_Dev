@@ -929,6 +929,8 @@ Partial Public NotInheritable Class FrmMain
             pnlOverview.Show()
             sysTrayIcon.Icon = My.Resources.moa3
             SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
+            FlashWindow(ScalaHandle, True) 'show on taskbar
+            FlashWindow(ScalaHandle, False) 'stop blink
             'AppActivate(scalaPID)
             Exit Sub
         End If

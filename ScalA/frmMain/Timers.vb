@@ -28,17 +28,30 @@ Partial NotInheritable Class FrmMain
                 SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
                 Me.Activate()
                 BringToFront()
+                FlashWindow(ScalaHandle, True) 'show on taskbar
+                FlashWindow(ScalaHandle, False) 'stop blink
                 tmrTick.Enabled = False
                 cboAlt.SelectedIndex = 0
                 tmrOverview.Enabled = True
-                Try
-                    Task.Run(action:=Async Sub()
-                                         Await Task.Delay(50)
-                                         AllowSetForegroundWindow(scalaPID)
-                                         AppActivate(scalaPID)
-                                     End Sub)
-                Catch
-                End Try
+                '                Dim timeout As UInteger
+                '                Dim ret = SystemParametersInfo(SPI.GETFOREGROUNDLOCKTIMEOUT, 0, timeout, 0)
+                '                timeout = Math.Max(100, timeout + 1)
+                '                Debug.Print($"timeout:{timeout} {ret}")
+                '                Try
+                '                    Task.Run(action:=Async Sub()
+                '                                         Await Task.Delay(timeout / 2)
+                '                                         AllowSetForegroundWindow(scalaPID)
+                '                                         AppActivate(Process.GetProcessesByName("Explorer").First().Id)
+                '                                         Await Task.Delay(timeout / 2)
+                '                                         AllowSetForegroundWindow(scalaPID)
+                '                                         AppActivate(scalaPID)
+                '                                         Me.Invoke(Sub() Me.Activate())
+                '                                     End Sub)
+                '                Catch ex As Exception
+                '#If DEBUG Then
+                '                    MessageBox.Show(ex.Message)
+                '#End If
+                '                End Try
                 Exit Sub
             Else 'CycleOnClose
                 Cycle()
