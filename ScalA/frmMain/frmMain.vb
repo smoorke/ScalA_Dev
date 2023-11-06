@@ -407,6 +407,7 @@ Partial Public NotInheritable Class FrmMain
         test.Items.Add(dynamicitem2)
         test.Items.Add(New ToolStripMenuItem("ThumbSize", Nothing, AddressOf dBug.querySize))
         test.Items.Add(New ToolStripMenuItem("FudgeThumb", Nothing, AddressOf dBug.fudgeThumb))
+        test.Items.Add(New ToolStripMenuItem("NudgeTaskbar", Nothing, AddressOf dBug.NudgeTaskbar))
 
         chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()
@@ -929,8 +930,9 @@ Partial Public NotInheritable Class FrmMain
             pnlOverview.Show()
             sysTrayIcon.Icon = My.Resources.moa3
             SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
-            FlashWindow(ScalaHandle, True) 'show on taskbar
-            FlashWindow(ScalaHandle, False) 'stop blink
+            Me.Activate()
+            'FlashWindow(ScalaHandle, True) 'show on taskbar
+            'FlashWindow(ScalaHandle, False) 'stop blink
             'AppActivate(scalaPID)
             Exit Sub
         End If
@@ -1783,6 +1785,14 @@ Module dBug
         SetWindowLong(FrmMain.ScalaHandle, GWL_HWNDPARENT, FrmMain.restoreParent)
         FrmMain.AltPP.CenterBehind(FrmMain, 0, True)
         SetWindowLong(FrmMain.ScalaHandle, GWL_HWNDPARENT, FrmMain.AltPP.MainWindowHandle)
+    End Sub
+
+    Friend Sub NudgeTaskbar(sender As Object, e As EventArgs)
+        SetWindowLong(FrmMain.ScalaHandle, GWL_HWNDPARENT, 0)
+        'Debug.Print("1:" & FlashWindow(FrmMain.ScalaHandle, True))
+        'Debug.Print("2:" & FlashWindow(FrmMain.ScalaHandle, False))
+        'AppActivate(FrmMain.scalaPID)
+        FrmMain.Activate()
     End Sub
 End Module
 

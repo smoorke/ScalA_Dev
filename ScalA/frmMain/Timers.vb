@@ -26,13 +26,14 @@ Partial NotInheritable Class FrmMain
             If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
             If Not My.Settings.CycleOnClose Then
                 SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
+                AllowSetForegroundWindow(scalaPID)
                 Me.Activate()
                 BringToFront()
-                FlashWindow(ScalaHandle, True) 'show on taskbar
-                FlashWindow(ScalaHandle, False) 'stop blink
-                tmrTick.Enabled = False
                 cboAlt.SelectedIndex = 0
                 tmrOverview.Enabled = True
+                tmrTick.Enabled = False
+                FlashWindow(ScalaHandle, True) 'show on taskbar
+                FlashWindow(ScalaHandle, False) 'stop blink
                 '                Dim timeout As UInteger
                 '                Dim ret = SystemParametersInfo(SPI.GETFOREGROUNDLOCKTIMEOUT, 0, timeout, 0)
                 '                timeout = Math.Max(100, timeout + 1)
