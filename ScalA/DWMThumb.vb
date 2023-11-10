@@ -47,8 +47,7 @@ Partial Public NotInheritable Class FrmMain
         twp.dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or
                       DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or
                       DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY Or
-                      DwmThumbnailFlags.DWM_TNP_VISIBLE Or
-                      DwmThumbnailFlags.DWM_TNP_RECTSOURCE
+                      DwmThumbnailFlags.DWM_TNP_VISIBLE
         'DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY 
         twp.opacity = opacity
         twp.fVisible = True
@@ -76,8 +75,9 @@ Partial Public NotInheritable Class FrmMain
             twp.fSourceClientAreaOnly = True
         Else
             twp.fSourceClientAreaOnly = False
+            twp.dwFlags = twp.dwFlags Or DwmThumbnailFlags.DWM_TNP_RECTSOURCE
+            twp.rcSource = AltPP.rcSource(pbZoom.Size, mode)
         End If
-        twp.rcSource = AltPP.rcSource(pbZoom.Size, mode)
 
 
         DwmUpdateThumbnailProperties(thumb, twp)
@@ -92,12 +92,11 @@ Partial Public NotInheritable Class FrmMain
                      twp.dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or
                                    DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or
                                    DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY Or
-                                   DwmThumbnailFlags.DWM_TNP_RECTSOURCE Or
                                    DwmThumbnailFlags.DWM_TNP_VISIBLE
 
                      twp.fSourceClientAreaOnly = True
 
-                     twp.rcSource = AltPP.ClientRect
+                     'twp.rcSource = AltPP.ClientRect
 
                      twp.fVisible = True
                      twp.opacity = If(chkDebug.Checked, 128, 255)

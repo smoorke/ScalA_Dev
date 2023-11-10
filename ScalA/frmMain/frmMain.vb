@@ -1782,9 +1782,21 @@ Module dBug
         'Await Task.Delay(50)
         'FrmMain.AltPP.ResetCache()
         'AppActivate(FrmMain.AltPP.Id)
-        SetWindowLong(FrmMain.ScalaHandle, GWL_HWNDPARENT, FrmMain.restoreParent)
-        FrmMain.AltPP.CenterBehind(FrmMain, 0, True)
-        SetWindowLong(FrmMain.ScalaHandle, GWL_HWNDPARENT, FrmMain.AltPP.MainWindowHandle)
+
+        Dim tp As New DWM_THUMBNAIL_PROPERTIES With {
+            .dwFlags = DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or
+            DwmThumbnailFlags.DWM_TNP_RECTSOURCE,
+            .rcSource = New Rectangle(0, 0, 800, 600),
+            .fSourceClientAreaOnly = True,
+            .rcDestination = New Rectangle(FrmMain.pbZoom.Left, FrmMain.pbZoom.Top, FrmMain.pbZoom.Right, FrmMain.pbZoom.Bottom)}
+        Dim ret = DwmUpdateThumbnailProperties(FrmMain.thumb, tp)
+        Dim rcc As New RECT
+        GetClientRect(FrmMain.AltPP.MainWindowHandle, rcc)
+        Debug.Print($"rcc:{rcc}")
+        Dim rcFrame As RECT
+        DwmGetWindowAttribute(FrmMain.AltPP.MainWindowHandle, 9, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
+        Debug.Print($"rcf:{rcFrame.ToRectangle}")
+
     End Sub
 
     Friend Sub NudgeTaskbar(sender As Object, e As EventArgs)
