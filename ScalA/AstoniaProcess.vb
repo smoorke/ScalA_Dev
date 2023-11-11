@@ -147,8 +147,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         '    End If
         'End If
         If mode = 1 Then 'blurred
-            Return ClientRect
-        ElseIf mode = 2 Then 'pixel
+            Return ClientRect 'todo handle non 100% scaling
+        ElseIf mode = 2 Then 'pixel note: does not support non 100% windows scaling
             If _rcSource IsNot Nothing AndAlso _rcSource <> New Rectangle Then
                 Return _rcSource
             Else

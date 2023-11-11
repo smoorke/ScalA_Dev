@@ -43,6 +43,7 @@ Partial Public NotInheritable Class FrmMain
 
     Public Sub UpdateThumb(opacity As Byte)
         If AltPP?.Id = 0 Then Exit Sub
+
         Dim twp As DWM_THUMBNAIL_PROPERTIES
         twp.dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or
                       DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or
@@ -79,8 +80,10 @@ Partial Public NotInheritable Class FrmMain
             twp.rcSource = AltPP.rcSource(pbZoom.Size, mode)
         End If
 
-
+        Dim oldThumb = thumb
+        Dim ret = DwmRegisterThumbnail(ScalaHandle, AltPP.MainWindowHandle, thumb)
         DwmUpdateThumbnailProperties(thumb, twp)
+        DwmUnregisterThumbnail(oldThumb)
     End Sub
 
 
