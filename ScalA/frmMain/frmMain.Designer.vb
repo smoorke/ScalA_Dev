@@ -29,11 +29,8 @@ Partial NotInheritable Class FrmMain
         Dim ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmMain))
         Me.pnlSys = New System.Windows.Forms.Panel()
-        Me.btnStart = New ScalA.ThemedStartButton()
         Me.cmsQuickLaunch = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.DummyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.cmbResolution = New ScalA.ThemedComboBox()
-        Me.cboAlt = New ScalA.ThemedComboBox()
         Me.pnlTitleBar = New System.Windows.Forms.Panel()
         Me.chkDebug = New System.Windows.Forms.CheckBox()
         Me.pnlUpdate = New System.Windows.Forms.Panel()
@@ -77,6 +74,9 @@ Partial NotInheritable Class FrmMain
         Me.PnlEqLock = New System.Windows.Forms.Panel()
         Me.ttMain = New System.Windows.Forms.ToolTip(Me.components)
         Me.tmrHotkeys = New System.Windows.Forms.Timer(Me.components)
+        Me.btnStart = New ScalA.ThemedStartButton()
+        Me.cmbResolution = New ScalA.ThemedComboBox()
+        Me.cboAlt = New ScalA.ThemedComboBox()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         NoneSortSeperator1 = New System.Windows.Forms.ToolStripSeparator()
         NoneSortSeperator2 = New System.Windows.Forms.ToolStripSeparator()
@@ -102,22 +102,22 @@ Partial NotInheritable Class FrmMain
         'ToolStripSeparator1
         '
         ToolStripSeparator1.Name = "ToolStripSeparator1"
-        ToolStripSeparator1.Size = New System.Drawing.Size(199, 6)
+        ToolStripSeparator1.Size = New System.Drawing.Size(149, 6)
         '
         'NoneSortSeperator1
         '
         NoneSortSeperator1.Name = "NoneSortSeperator1"
-        NoneSortSeperator1.Size = New System.Drawing.Size(178, 6)
+        NoneSortSeperator1.Size = New System.Drawing.Size(115, 6)
         '
         'NoneSortSeperator2
         '
         NoneSortSeperator2.Name = "NoneSortSeperator2"
-        NoneSortSeperator2.Size = New System.Drawing.Size(178, 6)
+        NoneSortSeperator2.Size = New System.Drawing.Size(115, 6)
         '
         'ToolStripSeparator2
         '
         ToolStripSeparator2.Name = "ToolStripSeparator2"
-        ToolStripSeparator2.Size = New System.Drawing.Size(199, 6)
+        ToolStripSeparator2.Size = New System.Drawing.Size(149, 6)
         '
         'pnlSys
         '
@@ -126,64 +126,21 @@ Partial NotInheritable Class FrmMain
         Me.pnlSys.Controls.Add(Me.cmbResolution)
         Me.pnlSys.Controls.Add(Me.cboAlt)
         Me.pnlSys.Location = New System.Drawing.Point(0, 0)
-        Me.pnlSys.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.pnlSys.Name = "pnlSys"
-        Me.pnlSys.Size = New System.Drawing.Size(394, 38)
+        Me.pnlSys.Size = New System.Drawing.Size(270, 25)
         Me.pnlSys.TabIndex = 13
-        '
-        'btnStart
-        '
-        Me.btnStart.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.btnStart.Font = New System.Drawing.Font("Courier New", 15.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnStart.Location = New System.Drawing.Point(3, 3)
-        Me.btnStart.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.btnStart.Name = "btnStart"
-        Me.btnStart.Padding = New System.Windows.Forms.Padding(8)
-        Me.btnStart.Size = New System.Drawing.Size(27, 27)
-        Me.btnStart.TabIndex = 15
-        Me.ttMain.SetToolTip(Me.btnStart, "Switch to Overview" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "RMB: QuickLaunch")
         '
         'cmsQuickLaunch
         '
-        Me.cmsQuickLaunch.ImageScalingSize = New System.Drawing.Size(24, 24)
         Me.cmsQuickLaunch.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DummyToolStripMenuItem})
         Me.cmsQuickLaunch.Name = "cmsBlank"
-        Me.cmsQuickLaunch.Size = New System.Drawing.Size(177, 36)
+        Me.cmsQuickLaunch.Size = New System.Drawing.Size(138, 26)
         '
         'DummyToolStripMenuItem
         '
         Me.DummyToolStripMenuItem.Name = "DummyToolStripMenuItem"
-        Me.DummyToolStripMenuItem.Size = New System.Drawing.Size(176, 32)
+        Me.DummyToolStripMenuItem.Size = New System.Drawing.Size(137, 22)
         Me.DummyToolStripMenuItem.Text = "--Dummy--"
-        '
-        'cmbResolution
-        '
-        Me.cmbResolution.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
-        Me.cmbResolution.DropDownHeight = 4096
-        Me.cmbResolution.FormattingEnabled = True
-        Me.cmbResolution.IntegralHeight = False
-        Me.cmbResolution.Location = New System.Drawing.Point(272, 3)
-        Me.cmbResolution.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.cmbResolution.Name = "cmbResolution"
-        Me.cmbResolution.Size = New System.Drawing.Size(118, 27)
-        Me.cmbResolution.TabIndex = 17
-        Me.ttMain.SetToolTip(Me.cmbResolution, "Change Resolution" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "RMB: Settings")
-        '
-        'cboAlt
-        '
-        Me.cboAlt.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.cboAlt.DisplayMember = "Name"
-        Me.cboAlt.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
-        Me.cboAlt.DropDownHeight = 4096
-        Me.cboAlt.FormattingEnabled = True
-        Me.cboAlt.IntegralHeight = False
-        Me.cboAlt.Location = New System.Drawing.Point(32, 3)
-        Me.cboAlt.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.cboAlt.Name = "cboAlt"
-        Me.cboAlt.Size = New System.Drawing.Size(238, 27)
-        Me.cboAlt.TabIndex = 16
-        Me.ttMain.SetToolTip(Me.cboAlt, "Select Astonia Client" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "RMB: QuickLaunch")
-        Me.cboAlt.ValueMember = "value"
         '
         'pnlTitleBar
         '
@@ -192,10 +149,9 @@ Partial NotInheritable Class FrmMain
         Me.pnlTitleBar.Controls.Add(Me.pnlUpdate)
         Me.pnlTitleBar.Controls.Add(Me.ChkEqLock)
         Me.pnlTitleBar.Controls.Add(Me.lblTitle)
-        Me.pnlTitleBar.Location = New System.Drawing.Point(394, 0)
-        Me.pnlTitleBar.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.pnlTitleBar.Location = New System.Drawing.Point(270, 0)
         Me.pnlTitleBar.Name = "pnlTitleBar"
-        Me.pnlTitleBar.Size = New System.Drawing.Size(962, 33)
+        Me.pnlTitleBar.Size = New System.Drawing.Size(641, 25)
         Me.pnlTitleBar.TabIndex = 14
         '
         'chkDebug
@@ -203,10 +159,9 @@ Partial NotInheritable Class FrmMain
         Me.chkDebug.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.chkDebug.AutoSize = True
         Me.chkDebug.CheckAlign = System.Drawing.ContentAlignment.MiddleRight
-        Me.chkDebug.Location = New System.Drawing.Point(822, 6)
-        Me.chkDebug.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.chkDebug.Location = New System.Drawing.Point(545, 6)
         Me.chkDebug.Name = "chkDebug"
-        Me.chkDebug.Size = New System.Drawing.Size(44, 24)
+        Me.chkDebug.Size = New System.Drawing.Size(32, 17)
         Me.chkDebug.TabIndex = 11
         Me.chkDebug.TabStop = False
         Me.chkDebug.Text = "0"
@@ -217,10 +172,10 @@ Partial NotInheritable Class FrmMain
         '
         Me.pnlUpdate.Controls.Add(Me.pbUpdateAvailable)
         Me.pnlUpdate.Dock = System.Windows.Forms.DockStyle.Right
-        Me.pnlUpdate.Location = New System.Drawing.Point(870, 0)
+        Me.pnlUpdate.Location = New System.Drawing.Point(580, 0)
         Me.pnlUpdate.Margin = New System.Windows.Forms.Padding(0)
         Me.pnlUpdate.Name = "pnlUpdate"
-        Me.pnlUpdate.Size = New System.Drawing.Size(36, 33)
+        Me.pnlUpdate.Size = New System.Drawing.Size(24, 25)
         Me.pnlUpdate.TabIndex = 14
         Me.pnlUpdate.Visible = False
         '
@@ -228,10 +183,10 @@ Partial NotInheritable Class FrmMain
         '
         Me.pbUpdateAvailable.BackgroundImage = Global.ScalA.My.Resources.Resources.About
         Me.pbUpdateAvailable.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
-        Me.pbUpdateAvailable.Location = New System.Drawing.Point(4, 6)
+        Me.pbUpdateAvailable.Location = New System.Drawing.Point(3, 6)
         Me.pbUpdateAvailable.Margin = New System.Windows.Forms.Padding(0)
         Me.pbUpdateAvailable.Name = "pbUpdateAvailable"
-        Me.pbUpdateAvailable.Size = New System.Drawing.Size(30, 27)
+        Me.pbUpdateAvailable.Size = New System.Drawing.Size(20, 19)
         Me.pbUpdateAvailable.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
         Me.pbUpdateAvailable.TabIndex = 14
         Me.pbUpdateAvailable.TabStop = False
@@ -246,14 +201,12 @@ Partial NotInheritable Class FrmMain
         Me.ChkEqLock.DataBindings.Add(New System.Windows.Forms.Binding("Checked", Global.ScalA.My.MySettings.Default, "LockEq", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
         Me.ChkEqLock.Dock = System.Windows.Forms.DockStyle.Right
         Me.ChkEqLock.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ChkEqLock.Location = New System.Drawing.Point(906, 0)
-        Me.ChkEqLock.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.ChkEqLock.Location = New System.Drawing.Point(604, 0)
         Me.ChkEqLock.Name = "ChkEqLock"
-        Me.ChkEqLock.Padding = New System.Windows.Forms.Padding(0, 0, 4, 0)
-        Me.ChkEqLock.Size = New System.Drawing.Size(56, 33)
+        Me.ChkEqLock.Padding = New System.Windows.Forms.Padding(0, 3, 3, 0)
+        Me.ChkEqLock.Size = New System.Drawing.Size(37, 25)
         Me.ChkEqLock.TabIndex = 12
         Me.ChkEqLock.Text = "🔒"
-        Me.ChkEqLock.TextAlign = System.Drawing.ContentAlignment.TopLeft
         Me.ttMain.SetToolTip(Me.ChkEqLock, "EQ Lock" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Disable Left Click on worn gear" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Hold Alt or Shift-Key to override")
         Me.ChkEqLock.UseVisualStyleBackColor = True
         '
@@ -261,10 +214,9 @@ Partial NotInheritable Class FrmMain
         '
         Me.lblTitle.AutoSize = True
         Me.lblTitle.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblTitle.Location = New System.Drawing.Point(-5, 4)
-        Me.lblTitle.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
+        Me.lblTitle.Location = New System.Drawing.Point(-2, 5)
         Me.lblTitle.Name = "lblTitle"
-        Me.lblTitle.Size = New System.Drawing.Size(119, 25)
+        Me.lblTitle.Size = New System.Drawing.Size(78, 15)
         Me.lblTitle.TabIndex = 3
         Me.lblTitle.Text = "- ScalA beta -"
         '
@@ -275,12 +227,11 @@ Partial NotInheritable Class FrmMain
         Me.pnlButtons.Controls.Add(Me.btnMax)
         Me.pnlButtons.Controls.Add(Me.btnQuit)
         Me.pnlButtons.Dock = System.Windows.Forms.DockStyle.Right
-        Me.pnlButtons.Location = New System.Drawing.Point(1376, 0)
-        Me.pnlButtons.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.pnlButtons.MaximumSize = New System.Drawing.Size(202, 28)
-        Me.pnlButtons.MinimumSize = New System.Drawing.Size(202, 28)
+        Me.pnlButtons.Location = New System.Drawing.Point(917, 0)
+        Me.pnlButtons.MaximumSize = New System.Drawing.Size(135, 23)
+        Me.pnlButtons.MinimumSize = New System.Drawing.Size(135, 23)
         Me.pnlButtons.Name = "pnlButtons"
-        Me.pnlButtons.Size = New System.Drawing.Size(202, 28)
+        Me.pnlButtons.Size = New System.Drawing.Size(135, 23)
         Me.pnlButtons.TabIndex = 7
         '
         'btnMin
@@ -290,10 +241,9 @@ Partial NotInheritable Class FrmMain
         Me.btnMin.FlatAppearance.BorderSize = 0
         Me.btnMin.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnMin.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnMin.Location = New System.Drawing.Point(-2, 0)
-        Me.btnMin.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.btnMin.Location = New System.Drawing.Point(0, 0)
         Me.btnMin.Name = "btnMin"
-        Me.btnMin.Size = New System.Drawing.Size(68, 28)
+        Me.btnMin.Size = New System.Drawing.Size(45, 23)
         Me.btnMin.TabIndex = 8
         Me.btnMin.TabStop = False
         Me.btnMin.Text = "⎯"
@@ -307,10 +257,9 @@ Partial NotInheritable Class FrmMain
         Me.btnMax.FlatAppearance.BorderSize = 0
         Me.btnMax.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnMax.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnMax.Location = New System.Drawing.Point(66, 0)
-        Me.btnMax.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.btnMax.Location = New System.Drawing.Point(45, 0)
         Me.btnMax.Name = "btnMax"
-        Me.btnMax.Size = New System.Drawing.Size(68, 28)
+        Me.btnMax.Size = New System.Drawing.Size(45, 23)
         Me.btnMax.TabIndex = 9
         Me.btnMax.TabStop = False
         Me.btnMax.Text = "⧠"
@@ -327,10 +276,9 @@ Partial NotInheritable Class FrmMain
         Me.btnQuit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red
         Me.btnQuit.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnQuit.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnQuit.Location = New System.Drawing.Point(134, 0)
-        Me.btnQuit.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.btnQuit.Location = New System.Drawing.Point(90, 0)
         Me.btnQuit.Name = "btnQuit"
-        Me.btnQuit.Size = New System.Drawing.Size(68, 28)
+        Me.btnQuit.Size = New System.Drawing.Size(45, 23)
         Me.btnQuit.TabIndex = 7
         Me.btnQuit.TabStop = False
         Me.btnQuit.Text = "╳"
@@ -339,49 +287,48 @@ Partial NotInheritable Class FrmMain
         '
         'cmsQuit
         '
-        Me.cmsQuit.ImageScalingSize = New System.Drawing.Size(24, 24)
         Me.cmsQuit.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CloseScalAToolStripMenuItem, Me.CloseAstoniaToolStripMenuItem, Me.CloseAllIdleToolStripMenuItem, Me.CloseBothToolStripMenuItem, Me.CloseAllSeparator, Me.CloseAllToolStripMenuItem})
         Me.cmsQuit.Name = "cmsQuit"
-        Me.cmsQuit.Size = New System.Drawing.Size(252, 170)
+        Me.cmsQuit.Size = New System.Drawing.Size(182, 120)
         '
         'CloseScalAToolStripMenuItem
         '
         Me.CloseScalAToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.Close
         Me.CloseScalAToolStripMenuItem.Name = "CloseScalAToolStripMenuItem"
-        Me.CloseScalAToolStripMenuItem.Size = New System.Drawing.Size(251, 32)
+        Me.CloseScalAToolStripMenuItem.Size = New System.Drawing.Size(181, 22)
         Me.CloseScalAToolStripMenuItem.Text = "Close ScalA"
         '
         'CloseAstoniaToolStripMenuItem
         '
         Me.CloseAstoniaToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.F12
         Me.CloseAstoniaToolStripMenuItem.Name = "CloseAstoniaToolStripMenuItem"
-        Me.CloseAstoniaToolStripMenuItem.Size = New System.Drawing.Size(251, 32)
+        Me.CloseAstoniaToolStripMenuItem.Size = New System.Drawing.Size(181, 22)
         Me.CloseAstoniaToolStripMenuItem.Text = "Close Astonia"
         '
         'CloseAllIdleToolStripMenuItem
         '
         Me.CloseAllIdleToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.moreF12
         Me.CloseAllIdleToolStripMenuItem.Name = "CloseAllIdleToolStripMenuItem"
-        Me.CloseAllIdleToolStripMenuItem.Size = New System.Drawing.Size(251, 32)
+        Me.CloseAllIdleToolStripMenuItem.Size = New System.Drawing.Size(181, 22)
         Me.CloseAllIdleToolStripMenuItem.Text = "Close All Someone"
         '
         'CloseBothToolStripMenuItem
         '
         Me.CloseBothToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.CloseBoth
         Me.CloseBothToolStripMenuItem.Name = "CloseBothToolStripMenuItem"
-        Me.CloseBothToolStripMenuItem.Size = New System.Drawing.Size(251, 32)
+        Me.CloseBothToolStripMenuItem.Size = New System.Drawing.Size(181, 22)
         Me.CloseBothToolStripMenuItem.Text = "Close Name && Scala"
         '
         'CloseAllSeparator
         '
         Me.CloseAllSeparator.Name = "CloseAllSeparator"
-        Me.CloseAllSeparator.Size = New System.Drawing.Size(248, 6)
+        Me.CloseAllSeparator.Size = New System.Drawing.Size(178, 6)
         '
         'CloseAllToolStripMenuItem
         '
         Me.CloseAllToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.CloseAll
         Me.CloseAllToolStripMenuItem.Name = "CloseAllToolStripMenuItem"
-        Me.CloseAllToolStripMenuItem.Size = New System.Drawing.Size(251, 32)
+        Me.CloseAllToolStripMenuItem.Size = New System.Drawing.Size(181, 22)
         Me.CloseAllToolStripMenuItem.Text = "Close All && ScalA"
         '
         'tmrTick
@@ -400,81 +347,80 @@ Partial NotInheritable Class FrmMain
         '
         'cmsAlt
         '
-        Me.cmsAlt.ImageScalingSize = New System.Drawing.Size(24, 24)
         Me.cmsAlt.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SelectToolStripMenuItem, ToolStripSeparator1, Me.SortSubToolStripMenuItem, Me.TopMostToolStripMenuItem, ToolStripSeparator2, Me.CloseToolStripMenuItem})
         Me.cmsAlt.Name = "cmsAlt"
-        Me.cmsAlt.Size = New System.Drawing.Size(203, 144)
+        Me.cmsAlt.Size = New System.Drawing.Size(153, 104)
         '
         'SelectToolStripMenuItem
         '
         Me.SelectToolStripMenuItem.Name = "SelectToolStripMenuItem"
         Me.SelectToolStripMenuItem.ShortcutKeyDisplayString = ""
-        Me.SelectToolStripMenuItem.Size = New System.Drawing.Size(202, 32)
+        Me.SelectToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.SelectToolStripMenuItem.Text = "Select"
         '
         'SortSubToolStripMenuItem
         '
         Me.SortSubToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TopFirstToolStripMenuItem, Me.TopLastToolStripMenuItem, NoneSortSeperator1, Me.NoneSortToolStripMenuItem, NoneSortSeperator2, Me.BotFirstToolStripMenuItem, Me.BotLastToolStripMenuItem})
         Me.SortSubToolStripMenuItem.Name = "SortSubToolStripMenuItem"
-        Me.SortSubToolStripMenuItem.Size = New System.Drawing.Size(202, 32)
+        Me.SortSubToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.SortSubToolStripMenuItem.Text = "Sort"
         '
         'TopFirstToolStripMenuItem
         '
         Me.TopFirstToolStripMenuItem.Name = "TopFirstToolStripMenuItem"
-        Me.TopFirstToolStripMenuItem.Size = New System.Drawing.Size(181, 34)
+        Me.TopFirstToolStripMenuItem.Size = New System.Drawing.Size(118, 22)
         Me.TopFirstToolStripMenuItem.Tag = "-2"
         Me.TopFirstToolStripMenuItem.Text = "Top First"
         '
         'TopLastToolStripMenuItem
         '
         Me.TopLastToolStripMenuItem.Name = "TopLastToolStripMenuItem"
-        Me.TopLastToolStripMenuItem.Size = New System.Drawing.Size(181, 34)
+        Me.TopLastToolStripMenuItem.Size = New System.Drawing.Size(118, 22)
         Me.TopLastToolStripMenuItem.Tag = "-1"
         Me.TopLastToolStripMenuItem.Text = "Top Last"
         '
         'NoneSortToolStripMenuItem
         '
         Me.NoneSortToolStripMenuItem.Name = "NoneSortToolStripMenuItem"
-        Me.NoneSortToolStripMenuItem.Size = New System.Drawing.Size(181, 34)
+        Me.NoneSortToolStripMenuItem.Size = New System.Drawing.Size(118, 22)
         Me.NoneSortToolStripMenuItem.Tag = "0"
         Me.NoneSortToolStripMenuItem.Text = "None"
         '
         'BotFirstToolStripMenuItem
         '
         Me.BotFirstToolStripMenuItem.Name = "BotFirstToolStripMenuItem"
-        Me.BotFirstToolStripMenuItem.Size = New System.Drawing.Size(181, 34)
+        Me.BotFirstToolStripMenuItem.Size = New System.Drawing.Size(118, 22)
         Me.BotFirstToolStripMenuItem.Tag = "1"
         Me.BotFirstToolStripMenuItem.Text = "Bot First"
         '
         'BotLastToolStripMenuItem
         '
         Me.BotLastToolStripMenuItem.Name = "BotLastToolStripMenuItem"
-        Me.BotLastToolStripMenuItem.Size = New System.Drawing.Size(181, 34)
+        Me.BotLastToolStripMenuItem.Size = New System.Drawing.Size(118, 22)
         Me.BotLastToolStripMenuItem.Tag = "2"
         Me.BotLastToolStripMenuItem.Text = "Bot Last"
         '
         'TopMostToolStripMenuItem
         '
         Me.TopMostToolStripMenuItem.Name = "TopMostToolStripMenuItem"
-        Me.TopMostToolStripMenuItem.Size = New System.Drawing.Size(202, 32)
+        Me.TopMostToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.TopMostToolStripMenuItem.Text = "Always On Top"
         '
         'CloseToolStripMenuItem
         '
         Me.CloseToolStripMenuItem.Name = "CloseToolStripMenuItem"
         Me.CloseToolStripMenuItem.ShortcutKeyDisplayString = ""
-        Me.CloseToolStripMenuItem.Size = New System.Drawing.Size(202, 32)
+        Me.CloseToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.CloseToolStripMenuItem.Text = "Close This"
         '
         'pnlOverview
         '
         Me.pnlOverview.BackColor = System.Drawing.SystemColors.Control
         Me.pnlOverview.Controls.Add(Me.pnlMessage)
-        Me.pnlOverview.Location = New System.Drawing.Point(1, 31)
+        Me.pnlOverview.Location = New System.Drawing.Point(1, 25)
         Me.pnlOverview.Margin = New System.Windows.Forms.Padding(0)
         Me.pnlOverview.Name = "pnlOverview"
-        Me.pnlOverview.Size = New System.Drawing.Size(1347, 1134)
+        Me.pnlOverview.Size = New System.Drawing.Size(898, 737)
         Me.pnlOverview.TabIndex = 10
         '
         'pnlMessage
@@ -484,16 +430,15 @@ Partial NotInheritable Class FrmMain
         Me.pnlMessage.Location = New System.Drawing.Point(0, 0)
         Me.pnlMessage.Margin = New System.Windows.Forms.Padding(0)
         Me.pnlMessage.Name = "pnlMessage"
-        Me.pnlMessage.Size = New System.Drawing.Size(300, 231)
+        Me.pnlMessage.Size = New System.Drawing.Size(200, 150)
         Me.pnlMessage.TabIndex = 13
         '
         'chkHideMessage
         '
         Me.chkHideMessage.AutoSize = True
-        Me.chkHideMessage.Location = New System.Drawing.Point(194, 205)
-        Me.chkHideMessage.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.chkHideMessage.Location = New System.Drawing.Point(129, 133)
         Me.chkHideMessage.Name = "chkHideMessage"
-        Me.chkHideMessage.Size = New System.Drawing.Size(101, 24)
+        Me.chkHideMessage.Size = New System.Drawing.Size(71, 17)
         Me.chkHideMessage.TabIndex = 11
         Me.chkHideMessage.Text = "Hide This"
         Me.chkHideMessage.UseVisualStyleBackColor = True
@@ -502,20 +447,18 @@ Partial NotInheritable Class FrmMain
         '
         Me.pbMessage.BackgroundImage = CType(resources.GetObject("pbMessage.BackgroundImage"), System.Drawing.Image)
         Me.pbMessage.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch
-        Me.pbMessage.Location = New System.Drawing.Point(4, 0)
-        Me.pbMessage.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.pbMessage.Location = New System.Drawing.Point(3, 0)
         Me.pbMessage.Name = "pbMessage"
-        Me.pbMessage.Size = New System.Drawing.Size(300, 231)
+        Me.pbMessage.Size = New System.Drawing.Size(200, 150)
         Me.pbMessage.TabIndex = 12
         Me.pbMessage.TabStop = False
         '
         'pbZoom
         '
         Me.pbZoom.BackColor = System.Drawing.Color.Magenta
-        Me.pbZoom.Location = New System.Drawing.Point(1, 31)
-        Me.pbZoom.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.pbZoom.Location = New System.Drawing.Point(1, 25)
         Me.pbZoom.Name = "pbZoom"
-        Me.pbZoom.Size = New System.Drawing.Size(1200, 923)
+        Me.pbZoom.Size = New System.Drawing.Size(800, 600)
         Me.pbZoom.TabIndex = 0
         Me.pbZoom.TabStop = False
         '
@@ -529,10 +472,9 @@ Partial NotInheritable Class FrmMain
         '
         Me.cornerNW.BackColor = System.Drawing.Color.Transparent
         Me.cornerNW.Image = Global.ScalA.My.Resources.Resources.cornerNW
-        Me.cornerNW.Location = New System.Drawing.Point(1360, 175)
-        Me.cornerNW.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.cornerNW.Location = New System.Drawing.Point(907, 114)
         Me.cornerNW.Name = "cornerNW"
-        Me.cornerNW.Size = New System.Drawing.Size(69, 63)
+        Me.cornerNW.Size = New System.Drawing.Size(46, 41)
         Me.cornerNW.TabIndex = 15
         Me.cornerNW.TabStop = False
         '
@@ -540,10 +482,9 @@ Partial NotInheritable Class FrmMain
         '
         Me.cornerNE.BackColor = System.Drawing.Color.Transparent
         Me.cornerNE.Image = Global.ScalA.My.Resources.Resources.cornerNE
-        Me.cornerNE.Location = New System.Drawing.Point(1438, 175)
-        Me.cornerNE.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.cornerNE.Location = New System.Drawing.Point(959, 114)
         Me.cornerNE.Name = "cornerNE"
-        Me.cornerNE.Size = New System.Drawing.Size(69, 63)
+        Me.cornerNE.Size = New System.Drawing.Size(46, 41)
         Me.cornerNE.TabIndex = 16
         Me.cornerNE.TabStop = False
         '
@@ -551,10 +492,9 @@ Partial NotInheritable Class FrmMain
         '
         Me.cornerSW.BackColor = System.Drawing.Color.Transparent
         Me.cornerSW.Image = Global.ScalA.My.Resources.Resources.cornerSW
-        Me.cornerSW.Location = New System.Drawing.Point(1360, 248)
-        Me.cornerSW.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.cornerSW.Location = New System.Drawing.Point(907, 161)
         Me.cornerSW.Name = "cornerSW"
-        Me.cornerSW.Size = New System.Drawing.Size(69, 63)
+        Me.cornerSW.Size = New System.Drawing.Size(46, 41)
         Me.cornerSW.TabIndex = 17
         Me.cornerSW.TabStop = False
         '
@@ -562,10 +502,9 @@ Partial NotInheritable Class FrmMain
         '
         Me.cornerSE.BackColor = System.Drawing.Color.Transparent
         Me.cornerSE.Image = Global.ScalA.My.Resources.Resources.cornerSE
-        Me.cornerSE.Location = New System.Drawing.Point(1438, 248)
-        Me.cornerSE.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.cornerSE.Location = New System.Drawing.Point(959, 161)
         Me.cornerSE.Name = "cornerSE"
-        Me.cornerSE.Size = New System.Drawing.Size(69, 63)
+        Me.cornerSE.Size = New System.Drawing.Size(46, 41)
         Me.cornerSE.TabIndex = 18
         Me.cornerSE.TabStop = False
         '
@@ -573,10 +512,9 @@ Partial NotInheritable Class FrmMain
         '
         Me.PnlEqLock.BackColor = System.Drawing.SystemColors.Control
         Me.PnlEqLock.Cursor = System.Windows.Forms.Cursors.No
-        Me.PnlEqLock.Location = New System.Drawing.Point(1173, 651)
-        Me.PnlEqLock.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.PnlEqLock.Location = New System.Drawing.Point(782, 423)
         Me.PnlEqLock.Name = "PnlEqLock"
-        Me.PnlEqLock.Size = New System.Drawing.Size(300, 83)
+        Me.PnlEqLock.Size = New System.Drawing.Size(200, 54)
         Me.PnlEqLock.TabIndex = 22
         Me.PnlEqLock.Visible = False
         '
@@ -588,12 +526,51 @@ Partial NotInheritable Class FrmMain
         '
         Me.tmrHotkeys.Enabled = True
         '
+        'btnStart
+        '
+        Me.btnStart.ContextMenuStrip = Me.cmsQuickLaunch
+        Me.btnStart.Font = New System.Drawing.Font("Courier New", 15.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnStart.Location = New System.Drawing.Point(2, 2)
+        Me.btnStart.Name = "btnStart"
+        Me.btnStart.Padding = New System.Windows.Forms.Padding(5)
+        Me.btnStart.Size = New System.Drawing.Size(21, 21)
+        Me.btnStart.TabIndex = 15
+        Me.ttMain.SetToolTip(Me.btnStart, "Switch to Overview" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "RMB: QuickLaunch")
+        '
+        'cmbResolution
+        '
+        Me.cmbResolution.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
+        Me.cmbResolution.DropDownHeight = 4096
+        Me.cmbResolution.FormattingEnabled = True
+        Me.cmbResolution.IntegralHeight = False
+        Me.cmbResolution.Location = New System.Drawing.Point(187, 2)
+        Me.cmbResolution.Name = "cmbResolution"
+        Me.cmbResolution.Size = New System.Drawing.Size(80, 21)
+        Me.cmbResolution.TabIndex = 17
+        Me.ttMain.SetToolTip(Me.cmbResolution, "Change Resolution" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "RMB: Settings")
+        '
+        'cboAlt
+        '
+        Me.cboAlt.ContextMenuStrip = Me.cmsQuickLaunch
+        Me.cboAlt.DisplayMember = "Name"
+        Me.cboAlt.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
+        Me.cboAlt.DropDownHeight = 4096
+        Me.cboAlt.FormattingEnabled = True
+        Me.cboAlt.IntegralHeight = False
+        Me.cboAlt.Location = New System.Drawing.Point(25, 2)
+        Me.cboAlt.Name = "cboAlt"
+        Me.cboAlt.Size = New System.Drawing.Size(160, 21)
+        Me.cboAlt.TabIndex = 16
+        Me.ttMain.SetToolTip(Me.cboAlt, "Select Astonia Client" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "RMB: QuickLaunch")
+        Me.cboAlt.ValueMember = "value"
+        '
         'FrmMain
         '
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.BackColor = System.Drawing.SystemColors.Control
-        Me.ClientSize = New System.Drawing.Size(1578, 1106)
+        Me.ClientSize = New System.Drawing.Size(1052, 855)
         Me.Controls.Add(Me.PnlEqLock)
         Me.Controls.Add(Me.pnlOverview)
         Me.Controls.Add(Me.pbZoom)
@@ -607,7 +584,6 @@ Partial NotInheritable Class FrmMain
         Me.DoubleBuffered = True
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-        Me.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.Name = "FrmMain"
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
