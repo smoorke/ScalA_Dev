@@ -157,11 +157,14 @@ Module dBug
         Dim rcc As RECT
         GetClientRect(FrmMain.AltPP.MainWindowHandle, rcc)
         Dim rcw As RECT
-        GetWindowRect(FrmMain.AltPP.MainWindowHandle, rcc)
+        GetWindowRect(FrmMain.AltPP.MainWindowHandle, rcw)
         Const DWMWA_EXTENDED_FRAME_BOUNDS As Integer = 9
         Dim rcf As RECT
         DwmGetWindowAttribute(FrmMain.AltPP.MainWindowHandle, DWMWA_EXTENDED_FRAME_BOUNDS, rcf, System.Runtime.InteropServices.Marshal.SizeOf(rcf))
         Debug.Print($"rcc {rcc.ToRectangle} rcw {rcw.ToRectangle} rcf {rcf.ToRectangle}")
+        Dim bordersize As Double = rcw.ToRectangle.Width - rcc.ToRectangle.Width
+        Debug.Print($"adWidh {Math.Round((rcc.ToRectangle.Width * 10).Map(0, rcw.ToRectangle.Width * 10, 0, rcf.ToRectangle.Width * 10) / 10 + bordersize + 0.2)}")
+        Debug.Print($"adHigh {Math.Round((rcc.ToRectangle.Height * 10).Map(0, rcw.ToRectangle.Height * 10, 0, rcf.ToRectangle.Height * 10) / 10 + bordersize / 2)}")
 
     End Sub
 
