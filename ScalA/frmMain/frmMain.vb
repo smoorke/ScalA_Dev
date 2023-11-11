@@ -1780,12 +1780,19 @@ Module dBug
         'FrmMain.AltPP.ResetCache()
         'AppActivate(FrmMain.AltPP.Id)
 
+        DwmUnregisterThumbnail(FrmMain.thumb)
+        DwmRegisterThumbnail(FrmMain.Handle, FrmMain.AltPP.MainWindowHandle, FrmMain.thumb)
+
         Dim tp As New DWM_THUMBNAIL_PROPERTIES With {
-            .dwFlags = DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or
-            DwmThumbnailFlags.DWM_TNP_RECTSOURCE,
-            .rcSource = New Rectangle(0, 0, 800, 600),
+            .dwFlags = DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or DwmThumbnailFlags.DWM_TNP_VISIBLE,
             .fSourceClientAreaOnly = True,
-            .rcDestination = New Rectangle(FrmMain.pbZoom.Left, FrmMain.pbZoom.Top, FrmMain.pbZoom.Right, FrmMain.pbZoom.Bottom)}
+            .rcDestination = New Rectangle(FrmMain.pbZoom.Left, FrmMain.pbZoom.Top, FrmMain.pbZoom.Right, FrmMain.pbZoom.Bottom),
+            .fVisible = True}
+
+        'tp.dwFlags = tp.dwFlags Or DwmThumbnailFlags.DWM_TNP_RECTSOURCE
+        'tp.rcSource = New Rectangle(0, 0, 0, 0)
+        'tp.rcSource = Nothing
+
         Dim ret = DwmUpdateThumbnailProperties(FrmMain.thumb, tp)
         Dim rcc As New RECT
         GetClientRect(FrmMain.AltPP.MainWindowHandle, rcc)
