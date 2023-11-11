@@ -1643,4 +1643,11 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
+    Private Sub ChkEqLock_CheckedChanged(sender As Object, e As EventArgs) Handles ChkEqLock.CheckedChanged
+
+    End Sub
+
+    Private Sub Various_MouseUp(sender As Object, e As MouseEventArgs) Handles pnlSys.MouseUp, pnlButtons.MouseUp, MyBase.MouseUp, cmbResolution.MouseUp, ChkEqLock.MouseUp, cboAlt.MouseUp, btnStart.MouseUp, btnQuit.MouseUp
+
+    End Sub
 End Class
