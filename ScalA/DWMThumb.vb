@@ -70,6 +70,7 @@ Partial Public NotInheritable Class FrmMain
         If Me.WindowsScaling <> 100 Then 'handle windows scaling
             Debug.Print("scaling not 100: pixel mode disabled")
             mode = 1
+            twp.rcDestination = New Rectangle(pbZoom.Left, pbZoom.Top - 1, pbZoom.Right, pbZoom.Bottom)
         End If
 
         If mode = 1 Then
