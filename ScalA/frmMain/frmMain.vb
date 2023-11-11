@@ -846,7 +846,7 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub DoEqLock(newSize As Size)
         If rcC.Width = 0 Then
-            PnlEqLock.Location = New Point(138.Map(800, 0, newSize.Width, 0), 25)
+            PnlEqLock.Location = New Point(138.Map(800, 0, newSize.Width, 0), pbZoom.Top)
             PnlEqLock.Size = New Size(524.Map(0, 800, 0, newSize.Width),
                                        45.Map(0, 600, 0, newSize.Height))
         Else
@@ -857,7 +857,7 @@ Partial Public NotInheritable Class FrmMain
                 zoom = zooms(cmbResolution.SelectedIndex - 1)
             End If
             Debug.Print($"DoEqLock zoom {zoom}")
-            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 262.Map(0, 800, 0, rcC.Width), Integer).Map(rcC.Width, 0, zoom.Width, 0), 25)
+            PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 262.Map(0, 800, 0, rcC.Width), Integer).Map(rcC.Width, 0, zoom.Width, 0), pbZoom.Top)
             Dim excludGearLock As Integer = If(AltPP?.isSDL, 18, 0)
             Dim lockHeight = 45
             If rcC.Height >= 2000 Then
