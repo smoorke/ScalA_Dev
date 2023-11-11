@@ -160,10 +160,7 @@ Partial Public NotInheritable Class FrmMain
             Debug.Print("SelfTopMost " & Process.GetCurrentProcess.IsTopMost.ToString)
 
             Dim item As AstoniaProcess = DirectCast(sender.SelectedItem, AstoniaProcess)
-            If Not startThumbsDict.ContainsKey(item.Id) Then
-                Debug.Print("createThumb")
-                CreateThumb()
-            Else
+            If startThumbsDict.ContainsKey(item.Id) Then
                 Debug.Print($"reassignThumb {item.Id} {startThumbsDict(item.Id)} {item.Name}")
                 thumb = startThumbsDict(item.Id)
             End If
