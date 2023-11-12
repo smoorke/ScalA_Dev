@@ -171,9 +171,11 @@ Partial Public NotInheritable Class FrmMain
             startThumbsDict.Clear()
 
             Debug.Print($"updateThumb pbzoom {pbZoom.Size}")
+            AltPP.CenterBehind(pbZoom, SetWindowPosFlags.DoNotActivate, True, True)
             If AnimsEnabled AndAlso rectDic.ContainsKey(item.Id) Then
                 AnimateThumb(rectDic(item.Id), New Rectangle(pbZoom.Left, pbZoom.Top, pbZoom.Right, pbZoom.Bottom))
             Else
+                prevMode = 0
                 UpdateThumb(If(chkDebug.Checked, 128, 255))
             End If
             rectDic.Clear()

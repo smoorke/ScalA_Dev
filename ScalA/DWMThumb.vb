@@ -40,7 +40,7 @@ Partial Public NotInheritable Class FrmMain
         End If
         Return -1
     End Function
-
+    Private prevMode As Integer = 0
     Public Sub UpdateThumb(opacity As Byte)
         If AltPP?.Id = 0 Then Exit Sub
 
@@ -81,10 +81,14 @@ Partial Public NotInheritable Class FrmMain
             twp.rcSource = AltPP.rcSource(pbZoom.Size, mode)
         End If
 
-        Dim oldThumb = thumb
-        Dim ret = DwmRegisterThumbnail(ScalaHandle, AltPP.MainWindowHandle, thumb)
+        If prevMode <> mode Then
+            Dim oldThumb = thumb
+            Dim ret = DwmRegisterThumbnail(ScalaHandle, AltPP.MainWindowHandle, thumb)
+            DwmUnregisterThumbnail(oldThumb)
+            prevMode = mode
+        End If
         DwmUpdateThumbnailProperties(thumb, twp)
-        DwmUnregisterThumbnail(oldThumb)
+        Debug.Print($"Thumb {thumb}")
     End Sub
 
 
