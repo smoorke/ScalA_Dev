@@ -350,6 +350,7 @@ Public NotInheritable Class FrmSettings
         If cboScalingMode.SelectedIndex <> My.Settings.ScalingMode Then
             My.Settings.ScalingMode = cboScalingMode.SelectedIndex
             If Not FrmMain.pnlOverview.Visible Then
+                FrmMain.AltPP?.CenterBehind(FrmMain.pbZoom, SetWindowPosFlags.DoNotActivate, True, True)
                 FrmMain.UpdateThumb(If(FrmMain.chkDebug.Checked, 128, 255))
             End If
         End If
