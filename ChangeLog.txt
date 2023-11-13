@@ -1,3 +1,7 @@
+**ScalA 1.4.4**
+Fixed Zoom is broken when scaling to a resolution smaller than client.
+Fixed When dragging maximized titlebar ScalA briefly glitches in wrong location.
+
 **ScalA 1.4.3**
 Fixed closing a selected client causing switching to overview sometimes it doesn't immediately make ScalA reappear on taskbar.
 Fixed broken zoom when windows scaling isn't set at 100%.
