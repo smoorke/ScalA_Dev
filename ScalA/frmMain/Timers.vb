@@ -638,4 +638,106 @@ Partial NotInheritable Class FrmMain
     End Sub
 #End If
 #End Region
+    Private activeID As Integer = 0
+    Private hasCName As Boolean = False
+    Private Async Sub TmrActive_Tick(sender As Timer, e As EventArgs) Handles tmrActive.Tick
+
+        activeID = GetActiveProcessID() ' this returns 0 when switching tasks
+        Try
+            hasCName = Process.GetProcessById(activeID).HasClassNameIn(My.Settings.className)
+        Catch
+            hasCName = False
+        End Try
+        If activeID = scalaPID OrElse activeID = AltPP?.Id OrElse
+                (My.Settings.gameOnOverview AndAlso pnlOverview.Visible AndAlso
+                pnlOverview.Controls.OfType(Of AButton).Any(Function(ab) ab.Visible AndAlso ab.AP IsNot Nothing AndAlso ab.AP.Id = activeID)) Then ' is on overview
+            setActive(True)
+        ElseIf activeID <> 0 Then 'inactive
+            setActive(False)
+        End If
+
+        If IPC.RequestActivation Then
+            IPC.RequestActivation = 0
+            Debug.Print("IPC.requestActivation")
+
+            If AltPP?.IsMinimized Then
+                AltPP.Restore()
+            End If
+
+            ShowWindow(ScalaHandle, SW_SHOW)
+
+            Me.TopMost = True
+            Me.BringToFront()
+            Await Task.Delay(100)
+            Me.TopMost = My.Settings.topmost
+
+            If Not pnlOverview.Visible Then
+                AltPP?.CenterBehind(pbZoom)
+                AltPP?.Activate()
+                Debug.Print($"{moveBusy} {swpBusy}")
+                moveBusy = False
+            Else
+                AppActivate(scalaPID)
+            End If
+
+        End If
+        'Me.SuspendLayout()
+        If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
+            If cboAlt.SelectedIndex <> 0 OrElse My.Settings.gameOnOverview Then
+                If My.Settings.LockEq AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then 'AndAlso Not EQLockClick Then
+                    If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
+                        If Not PnlEqLock.Visible Then
+                            If Not pnlOverview.Visible AndAlso Not My.Settings.gameOnOverview Then
+                                PnlEqLock.Visible = True
+                            Else
+                                PnlEqLock.Visible = AOshowEqLock OrElse Not pnlOverview.Visible
+                            End If
+                        End If
+                        If PnlEqLock.Visible AndAlso
+                   Not (cmsQuickLaunch.Visible OrElse cmsAlt.Visible) AndAlso
+                   Not (FrmSettings.cmsGenerate.Visible OrElse FrmSettings.cmsQLFolder.Visible) AndAlso
+                   Not FrmSettings.Contains(MousePosition) AndAlso
+                   PnlEqLock.Contains(MousePosition) AndAlso
+                   Not cboAlt.DropDownContains(MousePosition) AndAlso
+                   Not cmbResolution.DropDownContains(MousePosition) AndAlso
+                   Not SysMenu.Contains(MousePosition) AndAlso
+                   Not FrmSettings.SysMenu.Contains(MousePosition) Then
+                            Cursor.Current = Cursors.No
+                        ElseIf SysMenu.Contains(MousePosition) OrElse FrmSettings.SysMenu.Contains(MousePosition) Then
+                            Cursor.Current = Cursors.Default
+                        End If
+                    End If
+                    ChkEqLock.CheckState = CheckState.Checked
+                    ChkEqLock.Text = "🔒"
+                Else
+                    PnlEqLock.Visible = False
+                    If My.Settings.LockEq Then
+                        ChkEqLock.CheckState = CheckState.Indeterminate
+                        ChkEqLock.Text = "🔓"
+                    End If
+                End If
+            Else
+                PnlEqLock.Visible = False
+            End If
+        Else
+            PnlEqLock.Visible = False
+        End If
+        'Me.ResumeLayout()
+        ''locked 🔒
+        ''unlocked 🔓
+
+        Dim dummy = Task.Run(Sub() CloseErrorDialog())
+
+        Dim setbehind As IntPtr = AltPP?.MainWindowHandle
+
+        'If setbehind = IntPtr.Zero Then
+        '    setbehind = If(pnlOverview.Visible, ScalaHandle, AltPP?.MainWindowHandle)
+        'End If
+
+        If setbehind = IntPtr.Zero AndAlso pnlOverview.Visible Then setbehind = ScalaHandle
+
+        SetWindowPos(FrmBehind.Handle, setbehind, -1, -1, -1, -1,
+                     SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.ASyncWindowPosition)
+
+    End Sub
 End Class
