@@ -157,20 +157,11 @@ Partial NotInheritable Class FrmMain
                 If Me.cmbResolution.SelectedIndex > 0 Then Me.moveBusy = False
                 prevLoc = Me.Location
             Case WM_WINDOWPOSCHANGING
-                'Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
-                'Debug.Print($"WM_WINDOWPOSCHANGING {winpos.x} {winpos.y} {winpos.cx} {winpos.cy} {winpos.flags} {Me.WindowState} {m.WParam} {AltPP?.HasExited} {AltPP?.IsRunning}")
-
-                'If pnlButtons IsNot Nothing Then
-                '    Dim posInfo As IntPtr = BeginDeferWindowPos(2)
-                '    DeferWindowPos(posInfo, ScalaHandle, Nothing, winpos.x, winpos.y, winpos.cx, winpos.cy, SetWindowPosFlags.DoNotSendChangingEvent)
-                '    DeferWindowPos(posInfo, pnlButtons.Handle, Nothing, winpos.cx - pnlButtons.Width, 0, -1, -1, SetWindowPosFlags.IgnoreResize)
-                '    EndDeferWindowPos(posInfo)
-                'End If
-                'If posChangeBusy Then
-                '    Debug.Print("WM_WINDOWPOSCHANGING busy")
-                '    m.Result = 0
-                '    Exit Sub
-                'End If
+                Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
+                If caption_Mousedown AndAlso New Point(winpos.x, winpos.y) = Me.RestoreBounds.Location Then
+                    winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreMove
+                    System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
+                End If
             Case WM_SHOWWINDOW
                 Debug.Print($"WM_SHOWWINDOW {m.WParam} {m.LParam}")
                 If m.WParam = 0 AndAlso m.LParam = 1 Then 'minimize
@@ -221,7 +212,7 @@ Partial NotInheritable Class FrmMain
                 If FrmSizeBorder IsNot Nothing AndAlso Me.WindowState = FormWindowState.Normal Then
                     FrmSizeBorder.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
                 End If
-                If wasMaximized AndAlso caption_Mousedown AndAlso Not posChangeBusy Then
+                If wasMaximized AndAlso caption_Mousedown Then
                     'Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
                     'winpos.flags = SetWindowPosFlags.IgnoreMove
                     Debug.Print("WM_WINDOWPOSCHANGED from maximized and mousebutton down")
@@ -232,11 +223,9 @@ Partial NotInheritable Class FrmMain
                     ttMain.SetToolTip(btnMax, "Maximize")
                     cmbResolution.Enabled = True
                     wasMaximized = False
-                    posChangeBusy = True
-                    AOshowEqLock = False
-                    'Me.Location = New Point(winpos.x, winpos.y)
 
-                    Me.WindowState = FormWindowState.Normal
+                    AOshowEqLock = False
+
                     ReZoom(New Drawing.Size(winpos.cx - 2, winpos.cy - pnlTitleBar.Height - 1))
                     cmbResolution.SelectedIndex = My.Settings.zoom
 
@@ -247,7 +236,7 @@ Partial NotInheritable Class FrmMain
                     'System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                     FrmSizeBorder.Opacity = If(chkDebug.Checked, 1, 0.01)
                     FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, FrmSizeBorder.Opacity, 0)
-                    posChangeBusy = False
+                    'posChangeBusy = False
                     Exit Sub
                 End If
             Case WM_WININICHANGE '&H1A

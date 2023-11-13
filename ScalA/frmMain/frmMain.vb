@@ -900,7 +900,7 @@ Partial Public NotInheritable Class FrmMain
     ''' wasMaximized is used to determine what state to restore to
     ''' </summary>
     Dim wasMaximized As Boolean = False
-    Dim posChangeBusy As Boolean = False
+
     Public moveBusy As Boolean = False
     Dim suppressWM_MOVEcwp As Boolean = False
 
