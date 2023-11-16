@@ -28,6 +28,7 @@ Partial Public NotInheritable Class FrmMain
         tmrOverview.Stop()
         tmrTick.Stop()
         tmrActive.Stop()
+        If Me.WindowState = FormWindowState.Normal Then My.Settings.location = Me.Location
         WindowState = FormWindowState.Minimized
         Dim procs = AstoniaProcess.Enumerate(False).ToList
         Parallel.ForEach(procs, Sub(ap) ap.CloseOrKill())
@@ -37,7 +38,7 @@ Partial Public NotInheritable Class FrmMain
         Dim ct = cts.Token
         Await Task.Run(Sub()
                            While Not ct.IsCancellationRequested AndAlso
-                               procs.Any(Function(ap As AstoniaProcess) Not ap.HasExited)
+                                 procs.Any(Function(ap As AstoniaProcess) Not ap.HasExited)
                                CloseErrorDialog()
                                Threading.Thread.Sleep(34)
                            End While
