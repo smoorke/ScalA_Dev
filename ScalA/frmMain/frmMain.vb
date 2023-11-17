@@ -570,7 +570,7 @@ Partial Public NotInheritable Class FrmMain
         Catch
             Debug.Print($"WNetGetConnection Exception")
         End Try
-
+        SaveLocation()
         My.Settings.Save()
         tmrOverview.Stop()
         tmrTick.Stop()
@@ -713,15 +713,17 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
 #End Region
-
-
-    Private Sub FrmMain_Closing(sender As Form, e As EventArgs) Handles Me.Closing
-        AstoniaProcess.RestorePos()
+    Public Sub SaveLocation()
         If Me.WindowState = FormWindowState.Normal Then
             My.Settings.location = Me.Location
         Else
             My.Settings.location = Me.RestoreBounds.Location
         End If
+    End Sub
+
+    Private Sub FrmMain_Closing(sender As Form, e As EventArgs) Handles Me.Closing
+        AstoniaProcess.RestorePos()
+        SaveLocation()
         tmrActive.Stop()
         Hotkey.UnregHotkey(Me)
     End Sub
@@ -1347,9 +1349,7 @@ Partial Public NotInheritable Class FrmMain
             .Verb = If(asAdmin, "runas", "") 'add this to prompt for elevation
         }
 
-        If Me.WindowState = FormWindowState.Normal Then
-            My.Settings.location = Me.Location
-        End If
+        SaveLocation()
         My.Settings.Save()
         Try
             Process.Start(procStartInfo).WaitForInputIdle()
@@ -1365,9 +1365,7 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
     Public Sub UnelevateSelf()
-        If Me.WindowState = FormWindowState.Normal Then
-            My.Settings.location = Me.Location
-        End If
+        SaveLocation()
         My.Settings.Save()
 
         tmrActive.Stop()

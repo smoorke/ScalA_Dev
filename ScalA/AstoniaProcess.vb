@@ -299,6 +299,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             FrmMain.tmrActive.Enabled = False
             FrmMain.tmrOverview.Enabled = False
             FrmMain.tmrTick.Enabled = False
+            FrmMain.SaveLocation()
             My.Settings.Save()
             FrmMain.RestartSelf()
             End 'program
@@ -685,7 +686,6 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                            "Elevate ScalA to Administrator?",
                                "Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Error) _
                = DialogResult.Cancel Then Return
-            My.Settings.Save()
             FrmMain.RestartSelf(True)
             End 'program
             Return
