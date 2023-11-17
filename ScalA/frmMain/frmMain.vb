@@ -719,6 +719,8 @@ Partial Public NotInheritable Class FrmMain
         AstoniaProcess.RestorePos()
         If Me.WindowState = FormWindowState.Normal Then
             My.Settings.location = Me.Location
+        Else
+            My.Settings.location = Me.RestoreBounds.Location
         End If
         tmrActive.Stop()
         Hotkey.UnregHotkey(Me)

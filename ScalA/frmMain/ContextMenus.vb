@@ -28,11 +28,6 @@ Partial Public NotInheritable Class FrmMain
         tmrOverview.Stop()
         tmrTick.Stop()
         tmrActive.Stop()
-        If Me.WindowState = FormWindowState.Normal Then
-            My.Settings.location = Me.Location
-        Else
-            My.Settings.location = Me.RestoreBounds.Location
-        End If
         WindowState = FormWindowState.Minimized
         Dim procs = AstoniaProcess.Enumerate(False).ToList
         Parallel.ForEach(procs, Sub(ap) ap.CloseOrKill())
