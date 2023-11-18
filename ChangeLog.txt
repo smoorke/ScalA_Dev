@@ -1,3 +1,9 @@
+**ScalA 1.4.5**
+Fixed Using the Close All & ScalA contextmenuitem doesn't save updated position for ScalA.
+Fixed Closing ScalA while minimized doesn't save last position.
+Fixed When updating ScalA doesn't save it's position.
+Fixed A bunch more cases where SclaA won't save it's position.
+
 **ScalA 1.4.4**
 Fixed Zoom is broken when scaling to a resolution smaller than client.
 Fixed When dragging maximized titlebar ScalA briefly glitches in wrong location.
