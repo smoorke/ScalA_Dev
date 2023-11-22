@@ -1530,7 +1530,7 @@ Partial Public NotInheritable Class FrmMain
         Await Task.Run(Sub() AltPP.Activate())
     End Sub
 
-    Private Sub PnlEqLock_MouseHover(sender As Panel, e As MouseEventArgs) Handles PnlEqLock.MouseMove
+    Private Sub PnlEqLock_Mousemove(sender As Panel, e As MouseEventArgs) Handles PnlEqLock.MouseMove
         If e.Button = MouseButtons.Right OrElse e.Button = MouseButtons.Middle Then
             sender.Visible = False
         End If
