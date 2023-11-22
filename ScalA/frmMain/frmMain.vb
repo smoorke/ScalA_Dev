@@ -1543,4 +1543,23 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
+    Private Sub Caption_MouseMove(sender As Object, e As MouseEventArgs) Handles pnlSys.MouseMove, btnStart.MouseMove, cboAlt.MouseMove, cmbResolution.MouseMove,
+                                                                                 pnlTitleBar.MouseMove, lblTitle.MouseMove,
+                                                                                 pnlUpdate.MouseMove, pbUpdateAvailable.MouseMove, ChkEqLock.MouseMove,
+                                                                                 pnlSys.MouseMove, btnMin.MouseMove, btnMax.MouseMove, btnQuit.MouseMove
+        If cboAlt.SelectedIndex = 0 Then Exit Sub
+        'TODO: test adding panel and move follwing code to tmrTick and test sizeborder drag
+
+        Dim ptZ As Point = Me.PointToScreen(pbZoom.Location)
+
+        newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AltPP.ClientOffset.X - My.Settings.offset.X
+        newY = Me.Location.Y
+
+        Dim flags = swpFlags
+        If Not AltPP.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
+        If AltPP.IsBelow(ScalaHandle) Then flags.SetFlag(SetWindowPosFlags.IgnoreZOrder)
+
+        SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
+
+    End Sub
 End Class
