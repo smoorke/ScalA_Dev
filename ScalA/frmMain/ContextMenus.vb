@@ -602,12 +602,12 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
-        If Not My.Settings.MinMin OrElse Not AltPP?.isSDL Then SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
         UntrapMouse(MouseButtons.Right)
         Try
             AppActivate(scalaPID) 'fix right click drag bug
         Catch
         End Try
+        If Not My.Settings.MinMin OrElse Not AltPP?.isSDL Then SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
         ttMain.Hide(cboAlt)
         ttMain.Hide(btnStart)
         pbZoom.Visible = False
