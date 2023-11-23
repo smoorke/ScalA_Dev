@@ -1543,15 +1543,19 @@ Partial Public NotInheritable Class FrmMain
         sender.Text = If(sender.CheckState = CheckState.Unchecked, "🔓", "🔒")
 
     End Sub
-
+    Private prevMPY As Integer
     Private Sub Caption_MouseMove(sender As Object, e As MouseEventArgs) Handles pnlSys.MouseMove, btnStart.MouseMove, cboAlt.MouseMove, cmbResolution.MouseMove,
                                                                                  pnlTitleBar.MouseMove, lblTitle.MouseMove,
                                                                                  pnlUpdate.MouseMove, pbUpdateAvailable.MouseMove, ChkEqLock.MouseMove,
                                                                                  pnlSys.MouseMove, btnMin.MouseMove, btnMax.MouseMove, btnQuit.MouseMove
         If cboAlt.SelectedIndex = 0 Then Exit Sub
-        'TODO: test adding panel and move follwing code to tmrTick and test sizeborder drag
+        If prevMPY = MousePosition.Y Then Exit Sub
+        prevMPY = MousePosition.Y
 
+        'TODO: test adding panel and move follwing code to tmrTick and test sizeborder drag
         Dim ptZ As Point = Me.PointToScreen(pbZoom.Location)
+
+        Debug.Print("CaptionMouseMove")
 
         newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AltPP.ClientOffset.X - My.Settings.offset.X
         newY = Me.Location.Y
