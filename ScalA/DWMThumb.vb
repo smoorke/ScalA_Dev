@@ -83,7 +83,7 @@ Partial Public NotInheritable Class FrmMain
 
         If prevMode <> mode Then
             Dim oldThumb = thumb
-            Dim ret = DwmRegisterThumbnail(ScalaHandle, AltPP.MainWindowHandle, thumb)
+            DwmRegisterThumbnail(ScalaHandle, AltPP.MainWindowHandle, thumb)
             DwmUpdateThumbnailProperties(thumb, twp)
             DwmUnregisterThumbnail(oldThumb)
             prevMode = mode

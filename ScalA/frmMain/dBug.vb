@@ -172,6 +172,20 @@ Module dBug
         'AppActivate(FrmMain.scalaPID)
         FrmMain.Activate()
     End Sub
+
+    Friend Sub thumbStuff(sender As Object, e As EventArgs)
+        Dim tb As Integer
+        DwmRegisterThumbnail(FrmMain.ScalaHandle, FrmMain.AltPP.MainWindowHandle, tb)
+
+        Dim tp As New DWM_THUMBNAIL_PROPERTIES With {.fSourceClientAreaOnly = True, .dwFlags = DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY}
+
+        DwmUpdateThumbnailProperties(tb, tp)
+
+        Dim sz As Size
+        DwmQueryThumbnailSourceSize(tb, sz)
+        Debug.Print($"size {sz}")
+        DwmUnregisterThumbnail(tb)
+    End Sub
 End Module
 
 #End If
