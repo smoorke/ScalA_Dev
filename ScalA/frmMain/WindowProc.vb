@@ -169,6 +169,7 @@ Partial NotInheritable Class FrmMain
                     If Not AltPP?.isSDL Then
                         Debug.Print("Not AltPP?.isSDL")
                         SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
+                        Me.Activate()
                     End If
                     FrmBehind.Hide()
                     FrmSizeBorder.Hide()

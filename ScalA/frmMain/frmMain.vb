@@ -1097,6 +1097,8 @@ Partial Public NotInheritable Class FrmMain
             Debug.Print("swl parent")
             SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
             AstoniaProcess.RestorePos(True)
+            Threading.Thread.Sleep(1) 'do not task.delay
+            Me.Activate()
         End If
         Me.WindowState = FormWindowState.Minimized
         Debug.Print($"WS {Me.WindowState}")
