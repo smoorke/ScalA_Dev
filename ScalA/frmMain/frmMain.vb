@@ -1552,7 +1552,7 @@ Partial Public NotInheritable Class FrmMain
         If prevMPY = MousePosition.Y Then Exit Sub
         prevMPY = MousePosition.Y
 
-        'TODO: test adding panel and move follwing code to tmrTick and test sizeborder drag
+        'TODO: move follwing code to tmrTick and test sizeborder drag
         Dim ptZ As Point = Me.PointToScreen(pbZoom.Location)
 
         Debug.Print("CaptionMouseMove")
