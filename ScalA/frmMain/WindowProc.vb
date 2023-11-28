@@ -42,7 +42,10 @@ Partial NotInheritable Class FrmMain
                     Case SC_RESTORE
                         Debug.Print("SC_RESTORE " & m.LParam.ToString)
                         SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
-                        'Me.ShowInTaskbar = False
+
+                        SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
+                        SendMessage(FrmBehind.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
+
                         If AltPP?.IsMinimized Then
                             AltPP.Restore()
                             If WindowState <> FormWindowState.Minimized Then Exit Sub
