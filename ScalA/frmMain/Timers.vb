@@ -677,7 +677,14 @@ Partial NotInheritable Class FrmMain
                 AltPP.Restore()
             End If
 
-            ShowWindow(ScalaHandle, SW_SHOW)
+            If Me.WindowState = FormWindowState.Minimized Then
+                If AltPP IsNot Nothing Then
+                    SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
+                End If
+                Me.WindowState = FormWindowState.Normal
+            End If
+
+            'ShowWindow(ScalaHandle, SW_SHOW)
 
             Me.TopMost = True
             Me.BringToFront()
