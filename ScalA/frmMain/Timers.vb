@@ -141,7 +141,7 @@ Partial NotInheritable Class FrmMain
     Shared ReadOnly rectDic As New Concurrent.ConcurrentDictionary(Of Integer, Rectangle)
     Shared ReadOnly swDict As New Concurrent.ConcurrentDictionary(Of Integer, Stopwatch)
 
-    Const dimmed As Byte = 240
+
     Private TickCounter As Integer = 0
 
     Friend Shared AOBusy As Boolean = False

@@ -1138,7 +1138,7 @@ Partial Public NotInheritable Class FrmMain
     Private Sub BtnAlt_MouseEnter(sender As AButton, e As EventArgs) ' Handles AButton.MouseEnter
         If My.Settings.gameOnOverview Then Exit Sub
         If sender.AP Is Nothing Then Exit Sub
-        opaDict(sender.AP.Id) = dimmed
+        opaDict(sender.AP.Id) = 240
     End Sub
     Private Sub BtnAlt_MouseLeave(sender As AButton, e As EventArgs) ' Handles AButton.MouseLeave
         If sender.AP Is Nothing Then Exit Sub
