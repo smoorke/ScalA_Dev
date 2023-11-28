@@ -681,7 +681,7 @@ Partial NotInheritable Class FrmMain
                 If AltPP IsNot Nothing Then
                     SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
                 End If
-                Me.WindowState = FormWindowState.Normal
+                Me.WindowState = If(wasMaximized, FormWindowState.Maximized, FormWindowState.Normal)
             End If
 
             'ShowWindow(ScalaHandle, SW_SHOW)
