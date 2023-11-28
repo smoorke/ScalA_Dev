@@ -148,10 +148,13 @@ Partial NotInheritable Class FrmMain
     Private AOshowEqLock As Boolean = False
 
     Friend Shared apSorter As AstoniaProcessSorter
-
-    Private Sub TimerOverview_Tick(sender As Timer, e As EventArgs) Handles tmrOverview.Tick
+    Private ovBusy As Boolean = False
+    Private Async Sub TimerOverview_Tick(sender As Timer, e As EventArgs) Handles tmrOverview.Tick
 
         If Me.WindowState = FormWindowState.Minimized Then Exit Sub
+
+        If ovBusy Then Exit Sub
+        ovBusy = True
 
 #If DEBUG Then
         chkDebug.Text = TickCounter
@@ -170,7 +173,7 @@ Partial NotInheritable Class FrmMain
         Dim eqLockShown = False
 
 
-        Parallel.ForEach(visibleButtons, New ParallelOptions With {.MaxDegreeOfParallelism = -1},
+        Await Task.Run(Sub() Parallel.ForEach(visibleButtons, New ParallelOptions With {.MaxDegreeOfParallelism = -1},
                          Sub(but As AButton, ls As ParallelLoopState, butCounter As Integer)
                              Dim apCounter = butCounter
                              If apCounter >= topCount Then apCounter = butCounter - skipCount + topCount
@@ -215,24 +218,26 @@ Partial NotInheritable Class FrmMain
 
                                  but.ContextMenuStrip = cmsAlt
 
-                                 If Not startThumbsDict.ContainsKey(apID) Then
-                                     Dim thumbid As IntPtr = IntPtr.Zero
-                                     DwmRegisterThumbnail(ScalaHandle, ap.MainWindowHandle, thumbid)
-                                     startThumbsDict(apID) = thumbid
-                                     Debug.Print($"registered thumb {startThumbsDict(apID)} {ap.Name} {apID}")
+                                 If Me.Invoke(Function() cboAlt.SelectedIndex = 0) Then
+                                     If Not startThumbsDict.ContainsKey(apID) Then
+
+                                         Dim thumbid As IntPtr = IntPtr.Zero
+                                         DwmRegisterThumbnail(ScalaHandle, ap.MainWindowHandle, thumbid)
+                                         startThumbsDict(apID) = thumbid
+                                         Debug.Print($"registered thumb {startThumbsDict(apID)} {ap.Name} {apID}")
+                                     End If
+
+                                     rectDic(apID) = but.ThumbRECT
+                                     Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
+                                       .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY,
+                                       .opacity = opaDict.GetValueOrDefault(apID, If(chkDebug.Checked, 128, 255)),
+                                       .fVisible = True,
+                                       .rcDestination = rectDic(apID),
+                                       .fSourceClientAreaOnly = True}
+
+
+                                     DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
                                  End If
-
-                                 rectDic(apID) = but.ThumbRECT
-                                 Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
-                                   .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY,
-                                   .opacity = opaDict.GetValueOrDefault(apID, If(chkDebug.Checked, 128, 255)),
-                                   .fVisible = True,
-                                   .rcDestination = rectDic(apID),
-                                   .fSourceClientAreaOnly = True}
-
-
-                                 DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
-
                              Else 'buttons w/o alts
                                  but.BeginInvoke(Sub() but.Text = "")
                                  but.AP = Nothing
@@ -241,7 +246,7 @@ Partial NotInheritable Class FrmMain
                                  but.Image = Nothing
                                  but.pidCache = 0
                              End If
-                         End Sub)
+                         End Sub))
 
         Dim thumbContainedMouse As Boolean = False
         If My.Settings.gameOnOverview AndAlso Not caption_Mousedown Then
@@ -321,32 +326,32 @@ Partial NotInheritable Class FrmMain
                         Dim newYB = MousePosition.Y.Map(ptZB.Y, ptZB.Y + but.ThumbRectangle.Height, ptZB.Y, ptZB.Y + but.ThumbRECT.Height - but.ThumbRECT.Top - rccB.Height) - AstClientOffsetB.Height - My.Settings.offset.Y
 
                         AOBusy = True
-                        Task.Run(Sub()
-                                     Try
-                                         Dim ci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
-                                         GetCursorInfo(ci)
-                                         If ci.flags = 0 Then Exit Sub
-                                         AOBusy = True
-                                         Dim flags = swpFlags
-                                         If Not but.AP.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
-                                         'If but.Tag?.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
-                                         Dim pt As Point = MousePosition - New Point(newXB + ap.ClientOffset.X, newYB + ap.ClientOffset.Y)
-                                         Dim wparam = WM_MM_GetWParam()
-                                         Dim lparam = New LParamMap(pt)
-                                         If prevWMMMpt <> MousePosition Then
-                                             SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
-                                         End If
-                                         SetWindowPos(but.AP.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
-                                         If prevWMMMpt <> MousePosition Then
-                                             SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
-                                         End If
-                                         prevWMMMpt = MousePosition
-                                     Catch ex As Exception
-                                         Debug.Print(ex.Message)
-                                     Finally
-                                         AOBusy = False
-                                     End Try
-                                 End Sub)
+                        Dim unused = Task.Run(Sub()
+                                                  Try
+                                                      Dim ci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
+                                                      GetCursorInfo(ci)
+                                                      If ci.flags = 0 Then Exit Sub
+                                                      AOBusy = True
+                                                      Dim flags = swpFlags
+                                                      If Not but.AP.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
+                                                      'If but.Tag?.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
+                                                      Dim pt As Point = MousePosition - New Point(newXB + ap.ClientOffset.X, newYB + ap.ClientOffset.Y)
+                                                      Dim wparam = WM_MM_GetWParam()
+                                                      Dim lparam = New LParamMap(pt)
+                                                      If prevWMMMpt <> MousePosition Then
+                                                          SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
+                                                      End If
+                                                      SetWindowPos(but.AP.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
+                                                      If prevWMMMpt <> MousePosition Then
+                                                          SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
+                                                      End If
+                                                      prevWMMMpt = MousePosition
+                                                  Catch ex As Exception
+                                                      Debug.Print(ex.Message)
+                                                  Finally
+                                                      AOBusy = False
+                                                  End Try
+                                              End Sub)
                     End If
                 End If
             End If
@@ -373,7 +378,14 @@ Partial NotInheritable Class FrmMain
         End If
 
         ' Dim purgeList As List(Of Integer) = startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList
-        For Each ppid As Integer In startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList 'tolist needed as we mutate the thumbsdict
+        Dim purgelist As List(Of Integer) = startThumbsDict.Keys.ToList
+        If cboAlt.SelectedIndex = 0 Then
+            purgelist = purgelist.Except(alts.Select(Function(ap) ap.Id)).ToList
+        Else
+            purgelist = purgelist.Except({AltPP.Id}).ToList
+        End If
+
+        For Each ppid As Integer In purgelist 'tolist needed as we mutate the thumbsdict
             Debug.Print("unregister thumb " & startThumbsDict(ppid).ToString)
             DwmUnregisterThumbnail(startThumbsDict(ppid))
             startThumbsDict.TryRemove(ppid, Nothing)
@@ -387,6 +399,7 @@ Partial NotInheritable Class FrmMain
 
         TickCounter += 1
         If TickCounter >= visibleButtons.Count Then TickCounter = 0
+        ovBusy = False
     End Sub
 #Region "TmrOverview_Tick_Old"
 #If 0 Then
