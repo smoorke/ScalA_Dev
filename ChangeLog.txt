@@ -1,3 +1,14 @@
+**ScalA 1.4.6**
+Fixed Minimizing ScalA via SysMenu doesn't show ScalA on taskbar when a non-SDL client is selected and MinOnMin is enabled.
+Fixed Relaunching ScalA with single instance enabled when in above state doesn't restore ScalA.
+Fixed Moving ScalA when on overview lags when running vanilla clients.
+Fixed Selecting a vanilla client from overview with multiple other vanilla clients running is very laggy.
+Fixed Sometimes pressing ctrl+shift when QuickLaunch is open doesn't reveal all hidden items in its root.
+Fixed When opening QuickLaunch with a non-SDL client selected ScalA erroneously appears on taskbar.
+Fixed When a client with sliding top is selected the top may fail to open when hovering ScalAs caption.
+Fixed After minimizing Ugaris by taskmanger and then restoring ScalA the sizeborder is broken.
+  (Note: Most vanilla/legacy clients crash when minimizing them through taskmanager)
+
 **ScalA 1.4.5**
 Fixed Using the Close All & ScalA contextmenuitem doesn't save updated position for ScalA.
 Fixed Closing ScalA while minimized doesn't save last position.
