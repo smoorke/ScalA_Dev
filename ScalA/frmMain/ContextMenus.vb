@@ -428,12 +428,11 @@ Partial Public NotInheritable Class FrmMain
     Sub SetVisRecurse(col As ToolStripItemCollection)
         Task.Run(Sub() Parallel.ForEach(col.Cast(Of ToolStripItem),
             Sub(it)
-                If cantok.IsCancellationRequested Then Exit Sub
                 Me.BeginInvoke(Sub() it.Visible = True)
                 If TypeOf it Is ToolStripMenuItem AndAlso DirectCast(it, ToolStripMenuItem).HasDropDownItems Then
                     SetVisRecurse(DirectCast(it, ToolStripMenuItem).DropDownItems)
                 End If
-            End Sub), cantok)
+            End Sub))
     End Sub
 
     Private Sub CmsQuickLaunchDropDown_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs)
