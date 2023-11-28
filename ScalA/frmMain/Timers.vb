@@ -175,77 +175,80 @@ Partial NotInheritable Class FrmMain
 
         Await Task.Run(Sub() Parallel.ForEach(visibleButtons, New ParallelOptions With {.MaxDegreeOfParallelism = -1},
                          Sub(but As AButton, ls As ParallelLoopState, butCounter As Integer)
-                             Dim apCounter = butCounter
-                             If apCounter >= topCount Then apCounter = butCounter - skipCount + topCount
-                             'Debug.Print($"pfe tick{TickCounter} but{butCounter} ap{apCounter} bot{botCount} top{topCount} skip{skipCount}")
-                             If apCounter < alts.Count AndAlso
-                                (butCounter < topCount OrElse butCounter >= skipCount) AndAlso
-                                Not alts(apCounter).HasExited Then
-                                 'buttons with alts
+                             Try
+                                 Dim apCounter = butCounter
+                                 If apCounter >= topCount Then apCounter = butCounter - skipCount + topCount
+                                 'Debug.Print($"pfe tick{TickCounter} but{butCounter} ap{apCounter} bot{botCount} top{topCount} skip{skipCount}")
+                                 If apCounter < alts.Count AndAlso
+                                    (butCounter < topCount OrElse butCounter >= skipCount) AndAlso
+                                    Not alts(apCounter).HasExited Then
+                                     'buttons with alts
 
-                                 Dim ap As AstoniaProcess = alts(apCounter)
-                                 Dim apID = ap.Id
-                                 but.AP = ap
-                                 but.BeginInvoke(Sub() but.Text = ap.Name)
+                                     Dim ap As AstoniaProcess = alts(apCounter)
+                                     Dim apID = ap.Id
+                                     but.AP = ap
+                                     but.BeginInvoke(Sub() but.Text = ap.Name)
 
-                                 If ap.IsActive() Then
-                                     but.Font = New Font("Microsoft Sans Serif", 8.25, FontStyle.Bold)
-                                     but.BeginInvoke(Sub() but.Select())
-                                 Else
-                                     but.Font = New Font("Microsoft Sans Serif", 8.25)
-                                 End If
-
-                                 If but.pidCache <> ap.Id Then but.BackgroundImage = Nothing
-                                 If but.BackgroundImage Is Nothing Then
-                                     Using ico As Bitmap = ap.GetIcon?.ToBitmap
-                                         If ico IsNot Nothing Then
-                                             'but.Invoke(updateButtonBackgroundImage, {but, New Bitmap(ico, New Size(16, 16))})
-                                             but.BackgroundImage = New Bitmap(ico, New Size(16, 16))
-                                             Debug.Print($"{ap.Name} icon updated")
-                                         Else
-                                             'but.Invoke(updateButtonBackgroundImage, {but, Nothing})
-                                             but.BackgroundImage = Nothing
-                                         End If
-                                         but.pidCache = ap.Id
-                                     End Using
-                                 End If
-
-                                 Dim sw = swDict.GetOrAdd(ap.Id, Stopwatch.StartNew)
-                                 If but.Image Is Nothing OrElse sw.ElapsedMilliseconds > 42 Then
-                                     but.Image = ap.GetHealthbar
-                                     sw.Restart()
-                                 End If
-
-                                 but.ContextMenuStrip = cmsAlt
-
-                                 If Me.Invoke(Function() cboAlt.SelectedIndex = 0) Then
-                                     If Not startThumbsDict.ContainsKey(apID) Then
-
-                                         Dim thumbid As IntPtr = IntPtr.Zero
-                                         DwmRegisterThumbnail(ScalaHandle, ap.MainWindowHandle, thumbid)
-                                         startThumbsDict(apID) = thumbid
-                                         Debug.Print($"registered thumb {startThumbsDict(apID)} {ap.Name} {apID}")
+                                     If ap.IsActive() Then
+                                         but.Font = New Font("Microsoft Sans Serif", 8.25, FontStyle.Bold)
+                                         but.BeginInvoke(Sub() but.Select())
+                                     Else
+                                         but.Font = New Font("Microsoft Sans Serif", 8.25)
                                      End If
 
-                                     rectDic(apID) = but.ThumbRECT
-                                     Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
-                                       .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY,
-                                       .opacity = opaDict.GetValueOrDefault(apID, If(chkDebug.Checked, 128, 255)),
-                                       .fVisible = True,
-                                       .rcDestination = rectDic(apID),
-                                       .fSourceClientAreaOnly = True}
+                                     If but.pidCache <> ap.Id Then but.BackgroundImage = Nothing
+                                     If but.BackgroundImage Is Nothing Then
+                                         Using ico As Bitmap = ap.GetIcon?.ToBitmap
+                                             If ico IsNot Nothing Then
+                                                 'but.Invoke(updateButtonBackgroundImage, {but, New Bitmap(ico, New Size(16, 16))})
+                                                 but.BackgroundImage = New Bitmap(ico, New Size(16, 16))
+                                                 Debug.Print($"{ap.Name} icon updated")
+                                             Else
+                                                 'but.Invoke(updateButtonBackgroundImage, {but, Nothing})
+                                                 but.BackgroundImage = Nothing
+                                             End If
+                                             but.pidCache = ap.Id
+                                         End Using
+                                     End If
+
+                                     Dim sw = swDict.GetOrAdd(ap.Id, Stopwatch.StartNew)
+                                     If but.Image Is Nothing OrElse sw.ElapsedMilliseconds > 42 Then
+                                         but.Image = ap.GetHealthbar
+                                         sw.Restart()
+                                     End If
+
+                                     but.ContextMenuStrip = cmsAlt
+
+                                     If Me.Invoke(Function() cboAlt.SelectedIndex = 0) Then
+                                         If Not startThumbsDict.ContainsKey(apID) Then
+
+                                             Dim thumbid As IntPtr = IntPtr.Zero
+                                             DwmRegisterThumbnail(ScalaHandle, ap.MainWindowHandle, thumbid)
+                                             startThumbsDict(apID) = thumbid
+                                             Debug.Print($"registered thumb {startThumbsDict(apID)} {ap.Name} {apID}")
+                                         End If
+
+                                         rectDic(apID) = but.ThumbRECT
+                                         Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
+                                           .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY,
+                                           .opacity = opaDict.GetValueOrDefault(apID, If(chkDebug.Checked, 128, 255)),
+                                           .fVisible = True,
+                                           .rcDestination = rectDic(apID),
+                                           .fSourceClientAreaOnly = True}
 
 
-                                     DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
+                                         DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
+                                     End If
+                                 Else 'buttons w/o alts
+                                     but.BeginInvoke(Sub() but.Text = "")
+                                     but.AP = Nothing
+                                     but.ContextMenuStrip = cmsQuickLaunch
+                                     but.BackgroundImage = Nothing
+                                     but.Image = Nothing
+                                     but.pidCache = 0
                                  End If
-                             Else 'buttons w/o alts
-                                 but.BeginInvoke(Sub() but.Text = "")
-                                 but.AP = Nothing
-                                 but.ContextMenuStrip = cmsQuickLaunch
-                                 but.BackgroundImage = Nothing
-                                 but.Image = Nothing
-                                 but.pidCache = 0
-                             End If
+                             Catch
+                             End Try
                          End Sub))
 
         Dim thumbContainedMouse As Boolean = False
