@@ -276,6 +276,7 @@ Public NotInheritable Class FrmSettings
             AButton.ActiveOverview = My.Settings.gameOnOverview
             If Not My.Settings.gameOnOverview Then
                 If FrmMain.cboAlt.SelectedIndex = 0 Then
+                    Me.Hide()
                     Me.ShowInTaskbar = False
                     FrmMain.Detach(True)
                     FrmMain.AltPP = New AstoniaProcess()
