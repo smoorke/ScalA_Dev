@@ -108,6 +108,10 @@ Public NotInheritable Class FrmSettings
 
         ChkQLShowHidden.Checked = My.Settings.QLShowHidden
 
+        grpOverviewShortcut.Enabled = chkSwitchToOverview.Checked
+        grpCycleShortcut.Enabled = chkCycleAlts.Checked
+        grpCloseAllShortcut.Enabled = chkCloseAll.Checked
+
         validate_hotkey(New Object, New EventArgs)
 
         Hotkey.UnregHotkey(Me)
