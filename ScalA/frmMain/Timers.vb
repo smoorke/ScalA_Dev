@@ -216,8 +216,8 @@ Partial NotInheritable Class FrmMain
                                      End If
 
                                      but.ContextMenuStrip = cmsAlt
-
-                                     If Me.Invoke(Function() cboAlt.SelectedIndex = 0) Then
+                                     'Me.Invoke(Function() cboAlt.SelectedIndex = 0) 'do not use index as it changes when hovering dropdown items
+                                     If pnlOverview.Visible Then
                                          If Not startThumbsDict.ContainsKey(apID) Then
 
                                              Dim thumbid As IntPtr = IntPtr.Zero
@@ -380,10 +380,10 @@ Partial NotInheritable Class FrmMain
 
         ' Dim purgeList As List(Of Integer) = startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList
         Dim purgelist As List(Of Integer) = startThumbsDict.Keys.ToList
-        If cboAlt.SelectedIndex = 0 Then
+        If pnlOverview.Visible Then
             purgelist = purgelist.Except(alts.Select(Function(ap) ap.Id)).ToList
         Else
-            purgelist = purgelist.Except({AltPP.Id}).ToList
+            purgelist = purgelist.Except({AltPP?.Id}).ToList
         End If
 
         For Each ppid As Integer In purgelist 'tolist needed as we mutate the thumbsdict

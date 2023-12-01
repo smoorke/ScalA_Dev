@@ -275,7 +275,7 @@ Public NotInheritable Class FrmSettings
             My.Settings.gameOnOverview = chkOverViewIsGame.Checked
             AButton.ActiveOverview = My.Settings.gameOnOverview
             If Not My.Settings.gameOnOverview Then
-                If FrmMain.cboAlt.SelectedIndex = 0 Then
+                If FrmMain.pnlOverview.Visible Then
                     Me.Hide()
                     Me.ShowInTaskbar = False
                     FrmMain.Detach(True)
