@@ -92,9 +92,6 @@ End Class
 Partial NotInheritable Class FrmMain
     Dim SysMenu As SysMenu
     Public Sub InitSysMenu()
-        'Const GWL_STYLE As Integer = -16
-        Debug.Print("SetWindowLong")
-        SetWindowLong(Me.Handle, GWL_STYLE, GetWindowLong(Me.Handle, GWL_STYLE) Or WindowStyles.WS_SYSMENU Or WindowStyles.WS_MINIMIZEBOX) 'Enable SysMenu and MinimizeBox 
         SysMenu = New SysMenu(Me)
         If SysMenu Then
             With SysMenu
