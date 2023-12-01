@@ -908,6 +908,7 @@ Partial Public NotInheritable Class FrmMain
     Dim suppressWM_MOVEcwp As Boolean = False
 
     Private Sub Cycle(Optional up As Boolean = False)
+        cboAlt.DroppedDown = False
         tmrTick.Enabled = False
         'PostMessage(AltPP.MainWindowHandle, WM_RBUTTONUP, 0, 0)'couses look to be sent when cycle hotkey contains ctrl
         'PostMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0)'causes alt to attack when hotkey contains ctrl
@@ -1269,6 +1270,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub BtnStart_Click(sender As Button, e As EventArgs) Handles btnStart.Click
+        cboAlt.DroppedDown = False
         tmrTick.Stop()
         Dim prevAlt As AstoniaProcess = AltPP
         Debug.Print($"prevAlt?.Name {prevAlt?.Name}")
