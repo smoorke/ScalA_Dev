@@ -279,7 +279,7 @@ Public NotInheritable Class FrmSettings
                     Me.Hide()
                     Me.ShowInTaskbar = False
                     FrmMain.Detach(True)
-                    FrmMain.AltPP = New AstoniaProcess()
+                    FrmMain.AltPP = Nothing
                 End If
             End If
         End If

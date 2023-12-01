@@ -893,8 +893,8 @@ Partial Public NotInheritable Class FrmMain
         Try
             'If My.Settings.gameOnOverview OrElse (Not pnlOverview.Visible AndAlso Not pbZoom.Contains(MousePosition)) Then
             Debug.Print($"untrap mouse {button}")
-            If button = MouseButtons.Right Then PostMessage(AltPP.MainWindowHandle, WM_RBUTTONUP, 0, 0)
-            If button = MouseButtons.Middle Then PostMessage(AltPP.MainWindowHandle, WM_MBUTTONUP, 0, 0)
+            If button = MouseButtons.Right Then PostMessage(AltPP?.MainWindowHandle, WM_RBUTTONUP, 0, 0)
+            If button = MouseButtons.Middle Then PostMessage(AltPP?.MainWindowHandle, WM_MBUTTONUP, 0, 0)
             'End If
         Catch
         End Try
@@ -1274,7 +1274,7 @@ Partial Public NotInheritable Class FrmMain
         Debug.Print($"prevAlt?.Name {prevAlt?.Name}")
         AstoniaProcess.RestorePos(True)
         cboAlt.SelectedIndex = 0
-        If prevAlt.Id <> 0 Then
+        If prevAlt?.Id <> 0 Then
             pnlOverview.Controls.OfType(Of AButton).FirstOrDefault(Function(ab As AButton) ab.AP IsNot Nothing AndAlso ab.AP.Id = prevAlt.Id)?.Select()
         Else
             pnlOverview.Controls.OfType(Of AButton).First().Select()
@@ -1288,9 +1288,11 @@ Partial Public NotInheritable Class FrmMain
     'Private EQLockClick As Boolean = False
 
     Public ReadOnly restoreParent As UInteger = GetWindowLong(Me.Handle, GWL_HWNDPARENT)
+    Private prevHWNDParent As IntPtr = restoreParent
     Public Function Attach(ap As AstoniaProcess) As Long
-        If ap Is Nothing Then Return 0
+        If ap Is Nothing OrElse prevHWNDParent = ap.MainWindowHandle Then Return 0
         Debug.Print($"Attach to: {ap.Name}")
+        prevHWNDParent = ap.MainWindowHandle
         Return SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap.MainWindowHandle)
     End Function
     Public Function Detach(show As Boolean) As Long
@@ -1298,6 +1300,7 @@ Partial Public NotInheritable Class FrmMain
         Try
             Return SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
         Finally
+            prevHWNDParent = restoreParent
             If show Then
                 Threading.Thread.Sleep(1)
                 Me.Activate()

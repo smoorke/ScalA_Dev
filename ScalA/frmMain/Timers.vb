@@ -749,13 +749,13 @@ Partial NotInheritable Class FrmMain
 
         Dim dummy = Task.Run(Sub() CloseErrorDialog())
 
-        Dim setbehind As IntPtr = AltPP?.MainWindowHandle
+        Dim setbehind As IntPtr? = AltPP?.MainWindowHandle
 
         'If setbehind = IntPtr.Zero Then
         '    setbehind = If(pnlOverview.Visible, ScalaHandle, AltPP?.MainWindowHandle)
         'End If
 
-        If setbehind = IntPtr.Zero AndAlso pnlOverview.Visible Then setbehind = ScalaHandle
+        If (setbehind Is Nothing OrElse setbehind = IntPtr.Zero) AndAlso pnlOverview.Visible Then setbehind = ScalaHandle
 
         SetWindowPos(FrmBehind.Handle, setbehind, -1, -1, -1, -1,
                      SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.ASyncWindowPosition)

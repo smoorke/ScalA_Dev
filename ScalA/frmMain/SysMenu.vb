@@ -121,7 +121,7 @@ Partial NotInheritable Class FrmMain
             If ret <> SC_MINIMIZE OrElse (My.Settings.MinMin AndAlso AltPP?.isSDL) Then Attach(AltPP)
 
             If GetActiveProcessID() = scalaPID Then
-                Debug.Print($"ShowSysMenu activating {AltPP.Name}")
+                Debug.Print($"ShowSysMenu activating {AltPP?.Name}")
                 AltPP?.Activate()
             End If
         End If
