@@ -1,3 +1,10 @@
+**ScalA 1.4.7**
+Fixed Switching to Active Overview doesn't have immediate effect.
+Fixed Switching from Active Overview back to normal doesn't show ScalA on the taskbar.
+Fixed Using Extra MouseButtons (XMB1/XMB2) to bring an alt to top after switching from AO may put clickguard in front of ScalA.
+Fixed Hovering Alt combobox dropdownitems makes overview thumbnails disappear.
+Fixed Hotkey Settings aren't greyed out on load when disabled.
+
 **ScalA 1.4.6**
 Fixed Minimizing ScalA via SysMenu doesn't show ScalA on taskbar when a non-SDL client is selected and MinOnMin is enabled.
 Fixed Relaunching ScalA with single instance enabled when in above state doesn't restore ScalA.
