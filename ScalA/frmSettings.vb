@@ -271,7 +271,17 @@ Public NotInheritable Class FrmSettings
             FrmMain.AltPP.TopMost = chkTopMost.Checked
         End If
 
-        My.Settings.gameOnOverview = chkOverViewIsGame.Checked
+        If My.Settings.gameOnOverview <> chkOverViewIsGame.Checked Then
+            My.Settings.gameOnOverview = chkOverViewIsGame.Checked
+            AButton.ActiveOverview = My.Settings.gameOnOverview
+            If Not My.Settings.gameOnOverview Then
+                If FrmMain.cboAlt.SelectedIndex = 0 Then
+                    Me.ShowInTaskbar = False
+                    FrmMain.Detach(True)
+                    FrmMain.AltPP = New AstoniaProcess()
+                End If
+            End If
+        End If
 
         My.Settings.roundCorners = chkRoundCorners.Checked
 

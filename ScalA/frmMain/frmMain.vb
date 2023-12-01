@@ -1290,9 +1290,11 @@ Partial Public NotInheritable Class FrmMain
     Public ReadOnly restoreParent As UInteger = GetWindowLong(Me.Handle, GWL_HWNDPARENT)
     Public Function Attach(ap As AstoniaProcess) As Long
         If ap Is Nothing Then Return 0
+        Debug.Print($"Attach to: {ap.Name}")
         Return SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap.MainWindowHandle)
     End Function
     Public Function Detach(show As Boolean) As Long
+        Debug.Print($"Detach {show}")
         Try
             Return SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
         Finally
