@@ -41,7 +41,7 @@ Partial NotInheritable Class FrmMain
                 Select Case m.WParam
                     Case SC_RESTORE
                         Debug.Print("SC_RESTORE " & m.LParam.ToString)
-                        SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
+                        Attach(AltPP)
 
                         SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
                         SendMessage(FrmBehind.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
@@ -171,9 +171,7 @@ Partial NotInheritable Class FrmMain
                     Debug.Print($"AltPP?{{{AltPP?.Id}}}.isSDL{{{AltPP?.isSDL}}}")
                     If Not AltPP?.isSDL Then
                         Debug.Print("Not AltPP?.isSDL")
-                        SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
-                        Threading.Thread.Sleep(1)
-                        Me.Activate()
+                        Detach(True)
                     End If
                     FrmBehind.Hide()
                     FrmSizeBorder.Hide()
@@ -192,7 +190,7 @@ Partial NotInheritable Class FrmMain
                                          End Sub)
                     If AltPP IsNot Nothing Then 'fix thumb breaking
                         AltPP.CenterBehind(pbZoom, 0, True, True)
-                        SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
+                        Attach(AltPP)
                     End If
                 End If
             Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window

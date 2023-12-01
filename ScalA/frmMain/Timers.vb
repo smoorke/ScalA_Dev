@@ -25,9 +25,7 @@ Partial NotInheritable Class FrmMain
             FrmBehind.Show()
             If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
             If Not My.Settings.CycleOnClose Then
-                SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
-                AllowSetForegroundWindow(scalaPID)
-                Me.Activate()
+                Detach(True)
                 BringToFront()
                 cboAlt.SelectedIndex = 0
                 tmrOverview.Enabled = True
@@ -299,9 +297,9 @@ Partial NotInheritable Class FrmMain
                     Else
 
                         If cmsQuickLaunch.Visible OrElse cmsAlt.Visible Then
-                            SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
+                            Detach(False)
                         Else
-                            SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap.MainWindowHandle)
+                            Attach(ap)
                         End If
 
                         ap.SavePos(rcwB.Location, False)
@@ -367,9 +365,9 @@ Partial NotInheritable Class FrmMain
             Dim activePP = alts.Find(Function(ap) ap.MainWindowHandle = active)
 
             If activePP IsNot Nothing AndAlso Not activePP.IsBelow(ScalaHandle) Then
-                SetWindowLong(ScalaHandle, GWL_HWNDPARENT, active)
+                Attach(activePP)
                 SetWindowPos(active, ScalaHandle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
-                SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
+                Detach(False)
             End If
         End If
 
@@ -681,9 +679,7 @@ Partial NotInheritable Class FrmMain
             End If
 
             If Me.WindowState = FormWindowState.Minimized Then
-                If AltPP IsNot Nothing Then
-                    SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
-                End If
+                Attach(AltPP)
                 SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
                 SendMessage(FrmBehind.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
                 Me.WindowState = If(wasMaximized, FormWindowState.Maximized, FormWindowState.Normal)

@@ -121,7 +121,7 @@ Partial NotInheritable Class FrmMain
 
             Debug.Print($"ShowSysMenu awaited")
 
-            If ret <> SC_MINIMIZE OrElse (My.Settings.MinMin AndAlso AltPP?.isSDL) Then SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
+            If ret <> SC_MINIMIZE OrElse (My.Settings.MinMin AndAlso AltPP?.isSDL) Then Attach(AltPP)
 
             If GetActiveProcessID() = scalaPID Then
                 Debug.Print($"ShowSysMenu activating {AltPP.Name}")

@@ -55,7 +55,6 @@ Partial Public NotInheritable Class FrmMain
         Return True
     End Function
 
-    Public ReadOnly restoreParent As UInteger = GetWindowLong(Me.Handle, GWL_HWNDPARENT)
     Private prevItem As New AstoniaProcess()
     Private updatingCombobox As Boolean = False
     Private Async Sub CboAlt_SelectedIndexChanged(sender As ComboBox, e As EventArgs) Handles cboAlt.SelectedIndexChanged
@@ -77,7 +76,7 @@ Partial Public NotInheritable Class FrmMain
 
         TickCounter = 0
 
-        SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
+        Detach(False)
         AstoniaProcess.RestorePos()
         AltPP = sender.SelectedItem
         UpdateTitle()
@@ -210,8 +209,8 @@ Partial Public NotInheritable Class FrmMain
                 UpdateThumb(If(chkDebug.Checked, 128, 255))
             End If
 
-            SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle) ' have Client always be beneath ScalA (set Scala to be owned by client)
-            '                                                                  note SetParent() doesn't work.
+            Attach(AltPP)
+
             If My.Settings.topmost Then
                 AltPP.TopMost = True
             End If
@@ -932,11 +931,7 @@ Partial Public NotInheritable Class FrmMain
             pbZoom.Hide()
             pnlOverview.Show()
             sysTrayIcon.Icon = My.Resources.moa3
-            SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
-            Me.Activate()
-            'FlashWindow(ScalaHandle, True) 'show on taskbar
-            'FlashWindow(ScalaHandle, False) 'stop blink
-            'AppActivate(scalaPID)
+            Detach(True)
             Exit Sub
         End If
         cboAlt.SelectedIndex = requestedindex
@@ -1095,10 +1090,8 @@ Partial Public NotInheritable Class FrmMain
             AltPP.Hide()
         Else
             Debug.Print("swl parent")
-            SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
             AstoniaProcess.RestorePos(True)
-            Threading.Thread.Sleep(1) 'do not task.delay
-            Me.Activate()
+            Detach(True)
         End If
         Me.WindowState = FormWindowState.Minimized
         Debug.Print($"WS {Me.WindowState}")
@@ -1268,7 +1261,7 @@ Partial Public NotInheritable Class FrmMain
             FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, FrmSizeBorder.Opacity, 0)
         End If
         If cboAlt.SelectedIndex > 0 Then
-            SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
+            Attach(AltPP)
             AltPP?.CenterBehind(pbZoom)
         End If
         moveBusy = False
@@ -1294,6 +1287,23 @@ Partial Public NotInheritable Class FrmMain
     Public Shared botSortList As List(Of String) = My.Settings.botSort.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries).ToList
     Public Shared blackList As List(Of String) = topSortList.Intersect(botSortList).ToList
     'Private EQLockClick As Boolean = False
+
+    Public ReadOnly restoreParent As UInteger = GetWindowLong(Me.Handle, GWL_HWNDPARENT)
+    Public Function Attach(ap As AstoniaProcess) As Long
+        If ap Is Nothing Then Return 0
+        Return SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap.MainWindowHandle)
+    End Function
+    Public Function Detach(show As Boolean) As Long
+        Try
+            Return SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
+        Finally
+            If show Then
+                Threading.Thread.Sleep(1)
+                Me.Activate()
+            End If
+        End Try
+    End Function
+
 
     Private Sub setActive(active As Boolean)
         Dim fcol As Color = Color.FromArgb(&HFF666666)

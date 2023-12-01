@@ -119,7 +119,7 @@ Partial Public NotInheritable Class FrmMain
             e.Cancel = True
             Exit Sub
         End If
-        SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
+        Detach(False)
         UntrapMouse(MouseButtons.Right)
         AppActivate(scalaPID) 'fix right click drag bug
 
@@ -606,7 +606,7 @@ Partial Public NotInheritable Class FrmMain
             AppActivate(scalaPID) 'fix right click drag bug
         Catch
         End Try
-        If Not My.Settings.MinMin OrElse Not AltPP?.isSDL Then SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
+        If Not My.Settings.MinMin OrElse Not AltPP?.isSDL Then Detach(False)
         ttMain.Hide(cboAlt)
         ttMain.Hide(btnStart)
         pbZoom.Visible = False
@@ -688,13 +688,13 @@ Partial Public NotInheritable Class FrmMain
         If cboAlt.SelectedIndex > 0 Then
             If (AltPP?.IsActive OrElse GetActiveProcessID() = scalaPID) AndAlso e.CloseReason <> ToolStripDropDownCloseReason.AppClicked Then
                 AppActivate(scalaPID) 'Fixes astona popping to front
-                SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
+                Attach(AltPP)
                 AltPP?.Activate()
             End If
         End If
         Dim dummy = Task.Run(Sub()
                                  Threading.Thread.Sleep(50)
-                                 SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP?.MainWindowHandle)
+                                 Attach(AltPP)
                              End Sub)
         Dim unused = RestoreClicking()
     End Sub
