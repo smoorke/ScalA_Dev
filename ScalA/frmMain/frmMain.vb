@@ -1298,13 +1298,13 @@ Partial Public NotInheritable Class FrmMain
         Return SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap.MainWindowHandle)
     End Function
     Public Function Detach(show As Boolean) As Long
-        Debug.Print($"Detach {show}")
+        Debug.Print($"Detach from: {AltPP?.Name} show:{show}")
         Try
             Return SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
         Finally
             prevHWNDParent = restoreParent
             If show Then
-                Threading.Thread.Sleep(1)
+                Threading.Thread.Sleep(50)
                 Me.Activate()
             End If
         End Try

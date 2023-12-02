@@ -30,8 +30,8 @@ Partial NotInheritable Class FrmMain
                 cboAlt.SelectedIndex = 0
                 tmrOverview.Enabled = True
                 tmrTick.Enabled = False
-                FlashWindow(ScalaHandle, True) 'show on taskbar
-                FlashWindow(ScalaHandle, False) 'stop blink
+                'FlashWindow(ScalaHandle, True) 'show on taskbar
+                'FlashWindow(ScalaHandle, False) 'stop blink
                 '                Dim timeout As UInteger
                 '                Dim ret = SystemParametersInfo(SPI.GETFOREGROUNDLOCKTIMEOUT, 0, timeout, 0)
                 '                timeout = Math.Max(100, timeout + 1)
