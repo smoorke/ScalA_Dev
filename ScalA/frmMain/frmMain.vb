@@ -1168,16 +1168,16 @@ Partial Public NotInheritable Class FrmMain
     'End Property
 
     Dim prevWA As Rectangle
-    'Dim restoreLoc As Point
+    Dim restoreLoc As Point
     Private Sub BtnMax_Click(sender As Button, e As EventArgs) Handles btnMax.Click
         Debug.Print("btnMax_Click")
         suppressWM_MOVEcwp = True
         '🗖,🗗,⧠
-        If Me.WindowState <> FormWindowState.Maximized Then
+        If Me.WindowState = FormWindowState.Normal Then
             'restoreLoc = Me.Location
             My.Settings.zoom = cmbResolution.SelectedIndex
             'go maximized
-            Dim scrn As Screen = Screen.FromPoint(Me.Location + New Point(Me.Width / 2, Me.Height / 2))
+            Dim scrn As Screen = Screen.FromPoint(Me.MaximizedBounds.Location + New Point(Me.Width / 2, Me.Height / 2))
             Debug.Print("screen workarea " & scrn.WorkingArea.ToString)
             Debug.Print("screen bounds " & scrn.Bounds.ToString)
             prevWA = scrn.WorkingArea
@@ -1239,17 +1239,23 @@ Partial Public NotInheritable Class FrmMain
                                                scrn.WorkingArea.Width - leftBorder - rightborder,
                                                scrn.WorkingArea.Height - topBorder - botBorder)
             Debug.Print("new maxbound " & MaximizedBounds.ToString)
-            'If Me.WindowState = FormWindowState.Normal Then
-            '    RestoreLoc = Me.Location
-            '    Debug.Print("restoreLoc " & RestoreLoc.ToString)
-            'End If
+            If Me.WindowState = FormWindowState.Normal AndAlso Me.Location <> New Point(-32000, -32000) Then
+                restoreLoc = Me.Location
+                Debug.Print("restoreLoc " & restoreLoc.ToString)
+            End If
+            'ReZoom()
             Me.WindowState = FormWindowState.Maximized
             sender.Text = "🗗"
             Me.Invalidate()
             ttMain.SetToolTip(sender, "Restore")
             wasMaximized = True
             FrmSizeBorder.Opacity = 0
-        Else 'go normal
+        ElseIf Me.WindowState = FormWindowState.Maximized Then 'go normal
+            Debug.Print($"restorebounds {RestoreBounds.Location}")
+            Debug.Print($"maximizbounds {MaximizedBounds.Location}")
+            Debug.Print($"restoreloc    {restoreLoc}")
+            Debug.Print($"My.Settings.l {My.Settings.location}")
+            Me.Location = restoreLoc
             Me.WindowState = FormWindowState.Normal
             sender.Text = "⧠"
             ttMain.SetToolTip(sender, "Maximize")

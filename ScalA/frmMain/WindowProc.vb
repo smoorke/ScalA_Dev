@@ -5,6 +5,8 @@ End Class
 Partial NotInheritable Class FrmMain
     Dim SuppressWININICHANGECounter As Integer = 0
     Dim ThemeChanging As Boolean = False
+
+    Dim suppressRestoreBounds As Boolean = False
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case Hotkey.WM_HOTKEY
@@ -58,7 +60,11 @@ Partial NotInheritable Class FrmMain
                         End If
                         Debug.Print("wasMax " & wasMaximized)
                         If wasMaximized Then
+                            suppressRestoreBounds = True
+                            SetWindowPos(ScalaHandle, SWP_HWND.TOP, MaximizedBounds.X, MaximizedBounds.Y, MaximizedBounds.Width, MaximizedBounds.Height,
+                                         SetWindowPosFlags.ShowWindow Or SetWindowPosFlags.DrawFrame)
                             Me.WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero))
+                            suppressRestoreBounds = False
                             Exit Sub
                         End If
                         suppressWM_MOVEcwp = True
@@ -123,6 +129,11 @@ Partial NotInheritable Class FrmMain
             Case WM_SIZE ' = &h0005
                 Dim sz As Size = New LParamMap(m.LParam)
                 Debug.Print($"WM_SIZE {m.WParam} {sz}")
+                If suppressRestoreBounds AndAlso sz.Width <= RestoreBounds.Size.Width AndAlso sz.Height <= RestoreBounds.Size.Height Then
+                    m.Result = 0
+                    Debug.Print("WM_SIZE blocked")
+                    Exit Sub
+                End If
                 If m.WParam = 1 Then ' minimized
                     FrmBehind.Opacity = 0
                 Else
@@ -166,6 +177,12 @@ Partial NotInheritable Class FrmMain
                     System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                     Debug.Print("Moveglitch fixed")
                     captionMoveTrigger = False
+                End If
+                If suppressRestoreBounds AndAlso New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy) = Me.RestoreBounds Then
+                    winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize
+                    System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
+                    Debug.Print("Restoreglitch tweaked")
+                    'suppressRestoreBounds = False
                 End If
             Case WM_SHOWWINDOW
                 Debug.Print($"WM_SHOWWINDOW {m.WParam} {m.LParam}")
