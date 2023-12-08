@@ -94,7 +94,7 @@ Partial NotInheritable Class FrmMain
                 End Select
             Case WM_MOVE
                 'Debug.Print($"WM_MOVE {Me.WindowState}")
-                FrmBehind.Location = New LParamMap(m.LParam)
+                'FrmBehind.Location = New LParamMap(m.LParam)
                 Me.Cursor = Cursors.Default
                 'frmCaptureClickBehind.Bounds = Me.RectangleToScreen(pbZoom.Bounds)
                 If AltPP?.IsRunning AndAlso Not FrmSettings.chkDoAlign.Checked AndAlso Me.WindowState <> FormWindowState.Minimized Then
@@ -167,7 +167,7 @@ Partial NotInheritable Class FrmMain
                 End If
             Case WM_SHOWWINDOW
                 Debug.Print($"WM_SHOWWINDOW {m.WParam} {m.LParam}")
-                If m.WParam = 0 AndAlso m.LParam = 1 Then 'minimize
+                If m.WParam = SW_HIDE AndAlso m.LParam = SW_PARENTCLOSING Then 'minimize
                     Debug.Print($"AltPP?{{{AltPP?.Id}}}.isSDL{{{AltPP?.isSDL}}}")
                     If Not AltPP?.isSDL Then
                         Debug.Print("Not AltPP?.isSDL")
@@ -180,18 +180,14 @@ Partial NotInheritable Class FrmMain
                     Me.WindowState = FormWindowState.Minimized
                     Exit Sub
                 End If
-                If m.WParam = 1 AndAlso m.LParam = 3 Then 'restore
+                If m.WParam = SW_NORMAL AndAlso m.LParam = SW_PARENTOPENING Then 'restore
                     Debug.Print($"wasMaximized {wasMaximized}")
-                    FrmBehind.Show()
                     If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
-                    Dim dummy = Task.Run(Sub()
-                                             Threading.Thread.Sleep(100)
-                                             If wasMaximized Then Me.Invoke(Sub() btnMax.PerformClick())
-                                         End Sub)
-                    If AltPP IsNot Nothing Then 'fix thumb breaking
-                        AltPP.CenterBehind(pbZoom, 0, True, True)
-                        Attach(AltPP)
+                    If wasMaximized Then
+                        SetWindowPos(ScalaHandle, SWP_HWND.TOP, MaximizedBounds.X, MaximizedBounds.Y, MaximizedBounds.Width, MaximizedBounds.Height, SetWindowPosFlags.ShowWindow)
                     End If
+                    AltPP?.CenterBehind(pbZoom, 0, True, True) 'fix thumb breaking
+                    FrmBehind.Show()
                 End If
             Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
                 'If posChangeBusy Then
@@ -208,10 +204,9 @@ Partial NotInheritable Class FrmMain
                     FrmBehind.Show()
                     If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
                 End If
-                If caption_Mousedown Then
-                    FrmBehind.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
-                    'Debug.Print($"szb{FrmSizeBorder.Bounds} fbh{FrmBehind.Bounds}")
-                End If
+
+                FrmBehind.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
+
                 If FrmSizeBorder IsNot Nothing AndAlso Me.WindowState = FormWindowState.Normal Then
                     FrmSizeBorder.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
                 End If
@@ -436,7 +431,7 @@ Partial NotInheritable Class FrmMain
 
             Case &H319 ' WM_APPCOMMAND
 
-            Case &HC0D9 To &HC200 ' unknown
+            Case &HC059 To &HC200 ' unknown
 
             Case Else
                 Debug.Print($"Unhandeld WM_ 0x{m.Msg:X8} &H{m.Msg:X8}")

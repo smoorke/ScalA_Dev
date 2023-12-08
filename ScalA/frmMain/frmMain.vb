@@ -845,8 +845,6 @@ Partial Public NotInheritable Class FrmMain
             cornerSE.Visible = False
         End If
 
-        FrmBehind.Bounds = Me.Bounds
-        'FrmSizeBorder.Bounds = Me.Bounds
     End Sub
 
     Private Sub DoEqLock(newSize As Size)
@@ -1515,17 +1513,12 @@ Partial Public NotInheritable Class FrmMain
 
         Debug.Print($"mx:{mx} my:{my}")
 
-        If e.Button = MouseButtons.Right Then
+
+        If e.Button = MouseButtons.Middle OrElse e.Button = MouseButtons.Right Then
             PnlEqLock.Visible = False
             sender.Capture = False
             AltPP?.Activate()
-            SendMessage(AltPP.MainWindowHandle, WM_RBUTTONDOWN, wparam, New LParamMap(mx, my)) 'to change cursor
-        End If
-        If e.Button = MouseButtons.Middle Then
-            PnlEqLock.Visible = False
-            sender.Capture = False
-            AltPP?.Activate()
-            SendMessage(AltPP.MainWindowHandle, WM_MBUTTONDOWN, wparam, New LParamMap(mx, my)) 'to change cursor and enable mmb
+            SendMessage(AltPP.MainWindowHandle, If(e.Button = MouseButtons.Right, WM_RBUTTONDOWN, WM_MBUTTONDOWN), wparam, New LParamMap(mx, my))
         End If
 
 
@@ -1573,7 +1566,7 @@ Partial Public NotInheritable Class FrmMain
         'TODO: move follwing code to tmrTick and test sizeborder drag
         Dim ptZ As Point = Me.PointToScreen(pbZoom.Location)
 
-        Debug.Print("CaptionMouseMove")
+        ' Debug.Print("CaptionMouseMove")
 
         newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AltPP.ClientOffset.X - My.Settings.offset.X
         newY = Me.Location.Y

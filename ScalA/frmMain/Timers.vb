@@ -381,9 +381,10 @@ Partial NotInheritable Class FrmMain
         ' Dim purgeList As List(Of Integer) = startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList
         Dim purgelist As List(Of Integer) = startThumbsDict.Keys.ToList
         If pnlOverview.Visible Then
-            purgelist = purgelist.Except(alts.Select(Function(ap) ap.Id)).ToList
+            Dim altsIDs = alts.ConvertAll(Function(ap) ap.Id).ToHashSet
+            purgelist.RemoveAll(Function(x) altsIDs.Contains(x))
         Else
-            purgelist = purgelist.Except({AltPP?.Id}).ToList
+            purgelist.Remove(AltPP?.Id)
         End If
 
         For Each ppid As Integer In purgelist 'tolist needed as we mutate the thumbsdict

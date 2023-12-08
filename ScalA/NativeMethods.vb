@@ -283,6 +283,11 @@ Module NativeMethods
     Public Const SW_SHOWDEFAULT = 10
     Public Const SW_FORCEMINIMIZE = 11
 
+    Public Const SW_OTHERUNZOOM = 4   'The window Is being uncovered because a maximize window was restored Or minimized.
+    Public Const SW_OTHERZOOM = 2     'The window Is being covered by another window that has been maximized.
+    Public Const SW_PARENTCLOSING = 1 'The window's owner window is being minimized.
+    Public Const SW_PARENTOPENING = 3 'The window's owner window is being restored.
+
     <DllImport("Shell32", CharSet:=CharSet.Auto, SetLastError:=True)>
     Public Function ShellExecuteEx(ByRef lpExecInfo As SHELLEXECUTEINFO) As Boolean
     End Function
