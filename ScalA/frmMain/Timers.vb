@@ -372,7 +372,7 @@ Partial NotInheritable Class FrmMain
         End If
 
 
-        If eqLockShown AndAlso My.Settings.LockEq AndAlso My.Settings.gameOnOverview Then
+        If eqLockShown AndAlso My.Settings.LockEq AndAlso My.Settings.gameOnOverview AndAlso alts.Any Then
             AOshowEqLock = True
         Else
             AOshowEqLock = False
