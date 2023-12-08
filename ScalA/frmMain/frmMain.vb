@@ -1554,14 +1554,14 @@ Partial Public NotInheritable Class FrmMain
         sender.Text = If(sender.CheckState = CheckState.Unchecked, "🔓", "🔒")
 
     End Sub
-    Private prevMPY As Integer
+    Private prevMPX As Integer
     Private Sub Caption_MouseMove(sender As Object, e As MouseEventArgs) Handles pnlSys.MouseMove, btnStart.MouseMove, cboAlt.MouseMove, cmbResolution.MouseMove,
                                                                                  pnlTitleBar.MouseMove, lblTitle.MouseMove,
                                                                                  pnlUpdate.MouseMove, pbUpdateAvailable.MouseMove, ChkEqLock.MouseMove,
                                                                                  pnlSys.MouseMove, btnMin.MouseMove, btnMax.MouseMove, btnQuit.MouseMove
         If cboAlt.SelectedIndex = 0 Then Exit Sub
-        If prevMPY = MousePosition.Y Then Exit Sub
-        prevMPY = MousePosition.Y
+        If prevMPX = MousePosition.X Then Exit Sub
+        prevMPX = MousePosition.X
 
         'TODO: move follwing code to tmrTick and test sizeborder drag
         Dim ptZ As Point = Me.PointToScreen(pbZoom.Location)
