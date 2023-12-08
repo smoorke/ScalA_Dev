@@ -161,9 +161,11 @@ Partial NotInheritable Class FrmMain
                 prevLoc = Me.Location
             Case WM_WINDOWPOSCHANGING
                 Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
-                If caption_Mousedown AndAlso New Point(winpos.x, winpos.y) = Me.RestoreBounds.Location Then
+                If caption_Mousedown AndAlso captionMoveTrigger AndAlso New Point(winpos.x, winpos.y) = Me.RestoreBounds.Location Then
                     winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreMove
                     System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
+                    Debug.Print("Moveglitch fixed")
+                    captionMoveTrigger = False
                 End If
             Case WM_SHOWWINDOW
                 Debug.Print($"WM_SHOWWINDOW {m.WParam} {m.LParam}")
