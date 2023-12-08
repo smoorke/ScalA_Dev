@@ -115,7 +115,7 @@ Partial NotInheritable Class FrmMain
                                      AltPP?.CenterWindowPos(ScalaHandle,
                                                         Me.Left + pbZoom.Left + (pbZoom.Width / 2),
                                                         Me.Top + pbZoom.Top + (pbZoom.Height / 2),
-                                                        SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.ASyncWindowPosition, True)
+                                                        SetWindowPosFlags.ASyncWindowPosition, True)
 
                                  End Sub)
                     End If
