@@ -820,7 +820,7 @@ Partial Public NotInheritable Class FrmMain
         suppressResChange = False
         'Me.ResumeLayout(True)
 
-        If cboAlt.SelectedIndex <> 0 Then
+        If cboAlt.SelectedIndex <> 0 AndAlso Not My.Settings.gameOnOverview Then
             Debug.Print("updateThumb")
             UpdateThumb(If(chkDebug.Checked, 128, 255))
         End If
