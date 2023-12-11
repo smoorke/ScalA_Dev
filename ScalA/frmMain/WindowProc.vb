@@ -122,7 +122,7 @@ Partial NotInheritable Class FrmMain
                 End If
             Case WM_EXITSIZEMOVE
                 Debug.Print($"WM_EXITSIZEMOVE")
-                UpdateThumb(If(chkDebug.Checked, 128, 255))
+                If Not My.Settings.gameOnOverview Then UpdateThumb(If(chkDebug.Checked, 128, 255))
                 AltPP?.ResetCache()
                 Me.Invalidate()
                 moveBusy = False
