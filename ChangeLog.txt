@@ -1,3 +1,11 @@
+**ScalA 1.4.8**
+Fixed Restoring maximized ScalA from minimized state glitches wrong bounds.
+Fixed Restoring a selected minimized SDL client glitches maximized ScalA with wrong bounds.
+Fixed Minimizing Ugaris by taskmanager doesn't show ScalA on taskbar.
+Fixed When scaling 1x or below dragging ScalA across a screen boundary makes zoom have an offset.
+Fixed Closing all clients on active overview leaves eqlock in a visible state.
+Fixed Moving ScalA while on active overview messes up zoom.
+
 **ScalA 1.4.7**
 Fixed Switching to Active Overview doesn't have immediate effect.
 Fixed Switching from Active Overview back to normal doesn't show ScalA on the taskbar.
