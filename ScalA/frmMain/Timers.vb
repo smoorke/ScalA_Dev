@@ -706,16 +706,11 @@ Partial NotInheritable Class FrmMain
         'Me.SuspendLayout()
         If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
             If cboAlt.SelectedIndex <> 0 OrElse My.Settings.gameOnOverview Then
-                If My.Settings.LockEq AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then 'AndAlso Not EQLockClick Then
-                    If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
-                        If Not PnlEqLock.Visible Then
-                            If Not pnlOverview.Visible AndAlso Not My.Settings.gameOnOverview Then
-                                PnlEqLock.Visible = True
-                            Else
-                                PnlEqLock.Visible = AOshowEqLock OrElse Not pnlOverview.Visible
-                            End If
-                        End If
-                        If PnlEqLock.Visible AndAlso
+                If My.Settings.LockEq AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then
+
+                    PnlEqLock.Visible = AOshowEqLock OrElse (Not pnlOverview.Visible AndAlso Not My.Settings.gameOnOverview)
+
+                    If PnlEqLock.Visible AndAlso
                    Not (cmsQuickLaunch.Visible OrElse cmsAlt.Visible) AndAlso
                    Not (FrmSettings.cmsGenerate.Visible OrElse FrmSettings.cmsQLFolder.Visible) AndAlso
                    Not FrmSettings.Contains(MousePosition) AndAlso
@@ -724,10 +719,9 @@ Partial NotInheritable Class FrmMain
                    Not cmbResolution.DropDownContains(MousePosition) AndAlso
                    Not SysMenu.Contains(MousePosition) AndAlso
                    Not FrmSettings.SysMenu.Contains(MousePosition) Then
-                            Cursor.Current = Cursors.No
-                        ElseIf SysMenu.Contains(MousePosition) OrElse FrmSettings.SysMenu.Contains(MousePosition) Then
-                            Cursor.Current = Cursors.Default
-                        End If
+                        Cursor.Current = Cursors.No
+                    ElseIf SysMenu.Contains(MousePosition) OrElse FrmSettings.SysMenu.Contains(MousePosition) Then
+                        Cursor.Current = Cursors.Default
                     End If
                     ChkEqLock.CheckState = CheckState.Checked
                     ChkEqLock.Text = "🔒"
