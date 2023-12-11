@@ -42,7 +42,7 @@ Partial Public NotInheritable Class FrmMain
     End Function
     Private prevMode As Integer = 0
     Public Sub UpdateThumb(opacity As Byte)
-        If AltPP?.Id = 0 Then Exit Sub
+        If AltPP Is Nothing OrElse AltPP.Id = 0 Then Exit Sub
 
         Dim twp As DWM_THUMBNAIL_PROPERTIES
         twp.dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or
