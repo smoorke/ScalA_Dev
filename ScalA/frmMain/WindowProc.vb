@@ -60,9 +60,9 @@ Partial NotInheritable Class FrmMain
                         End If
                         Debug.Print("wasMax " & wasMaximized)
                         If wasMaximized Then
-                            suppressRestoreBounds = True
+                            'suppressRestoreBounds = True
                             SetWindowPos(ScalaHandle, SWP_HWND.TOP, MaximizedBounds.X, MaximizedBounds.Y, MaximizedBounds.Width, MaximizedBounds.Height,
-                                         SetWindowPosFlags.ShowWindow Or SetWindowPosFlags.DrawFrame)
+                                        SetWindowPosFlags.ShowWindow)
                             Me.WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, SC_MAXIMIZE, IntPtr.Zero))
                             suppressRestoreBounds = False
                             Exit Sub
@@ -179,7 +179,7 @@ Partial NotInheritable Class FrmMain
                     captionMoveTrigger = False
                 End If
                 If suppressRestoreBounds AndAlso New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy) = Me.RestoreBounds Then
-                    winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize
+                    winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreMove
                     System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                     Debug.Print("Restoreglitch tweaked")
                     'suppressRestoreBounds = False
@@ -203,7 +203,8 @@ Partial NotInheritable Class FrmMain
                     Debug.Print($"wasMaximized {wasMaximized}")
                     If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
                     If wasMaximized Then
-                        SetWindowPos(ScalaHandle, SWP_HWND.TOP, MaximizedBounds.X, MaximizedBounds.Y, MaximizedBounds.Width, MaximizedBounds.Height, SetWindowPosFlags.ShowWindow)
+                        SetWindowPos(ScalaHandle, SWP_HWND.TOP, Bounds.X, Bounds.Y, MaximizedBounds.Width, MaximizedBounds.Height, SetWindowPosFlags.ShowWindow)
+                        'Me.WindowState = FormWindowState.Maximized
                     End If
                     AltPP?.CenterBehind(pbZoom, 0, True, True) 'fix thumb breaking
                     FrmBehind.Show()
@@ -243,6 +244,7 @@ Partial NotInheritable Class FrmMain
 
                     AOshowEqLock = False
 
+                    Me.WindowState = FormWindowState.Normal
                     ReZoom(New Drawing.Size(winpos.cx - 2, winpos.cy - pnlTitleBar.Height - 1))
                     cmbResolution.SelectedIndex = My.Settings.zoom
 

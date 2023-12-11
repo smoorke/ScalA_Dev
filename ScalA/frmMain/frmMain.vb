@@ -1082,10 +1082,10 @@ Partial Public NotInheritable Class FrmMain
         Debug.Print("btnMin_Click")
         'suppressWM_MOVEcwp = True
         wasMaximized = (Me.WindowState = FormWindowState.Maximized)
-        'If Not wasMaximized Then
-        '    RestoreLoc = Me.Location
-        '    Debug.Print("restoreLoc " & RestoreLoc.ToString)
-        'End If
+        If Not wasMaximized Then
+            restoreLoc = Me.Location
+            Debug.Print("restoreLoc " & restoreLoc.ToString)
+        End If
         AppActivate(scalaPID)
         If My.Settings.MinMin AndAlso cboAlt.SelectedIndex <> 0 AndAlso AltPP?.isSDL Then
             AltPP.Hide()
@@ -1168,16 +1168,18 @@ Partial Public NotInheritable Class FrmMain
     'End Property
 
     Dim prevWA As Rectangle
-    Dim restoreLoc As Point
+    Dim restoreLoc As Point = Me.Location
     Private Sub BtnMax_Click(sender As Button, e As EventArgs) Handles btnMax.Click
         Debug.Print("btnMax_Click")
         suppressWM_MOVEcwp = True
         '🗖,🗗,⧠
         If Me.WindowState = FormWindowState.Normal Then
-            'restoreLoc = Me.Location
             My.Settings.zoom = cmbResolution.SelectedIndex
             'go maximized
-            Dim scrn As Screen = Screen.FromPoint(Me.MaximizedBounds.Location + New Point(Me.Width / 2, Me.Height / 2))
+            If Me.Location <> New Point(-32000, -32000) Then
+                restoreLoc = Me.Location
+            End If
+            Dim scrn As Screen = Screen.FromPoint(restoreLoc + New Point(Me.Width / 2, Me.Height / 2))
             Debug.Print("screen workarea " & scrn.WorkingArea.ToString)
             Debug.Print("screen bounds " & scrn.Bounds.ToString)
             prevWA = scrn.WorkingArea
@@ -1200,8 +1202,8 @@ Partial Public NotInheritable Class FrmMain
                 'Dim monifo As New MonitorInfo With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MonitorInfo))}
                 'GetMonitorInfo(MonitorFromPoint(scrn.Bounds.Location, MONITOR.DEFAULTTONEAREST), monifo)
                 Dim pabd As New APPBARDATA With {
-                            .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(APPBARDATA)),
-                            .rc = scrn.Bounds.ToRECT}
+                        .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(APPBARDATA)),
+                        .rc = scrn.Bounds.ToRECT}
                 For edge = 0 To 3
                     pabd.uEdge = edge
                     If SHAppBarMessage(ABM.GETAUTOHIDEBAREX, pabd) <> IntPtr.Zero Then
@@ -1235,15 +1237,16 @@ Partial Public NotInheritable Class FrmMain
             Debug.Print($"botborder {botBorder}")
 
             Me.MaximizedBounds = New Rectangle(scrn.WorkingArea.Left - scrn.Bounds.Left + leftBorder,
-                                               scrn.WorkingArea.Top - scrn.Bounds.Top + topBorder,
-                                               scrn.WorkingArea.Width - leftBorder - rightborder,
-                                               scrn.WorkingArea.Height - topBorder - botBorder)
+                                           scrn.WorkingArea.Top - scrn.Bounds.Top + topBorder,
+                                           scrn.WorkingArea.Width - leftBorder - rightborder,
+                                           scrn.WorkingArea.Height - topBorder - botBorder)
             Debug.Print("new maxbound " & MaximizedBounds.ToString)
             If Me.WindowState = FormWindowState.Normal AndAlso Me.Location <> New Point(-32000, -32000) Then
                 restoreLoc = Me.Location
                 Debug.Print("restoreLoc " & restoreLoc.ToString)
             End If
             'ReZoom()
+            If Me.Location = New Point(-32000, -32000) Then Me.Location = restoreLoc
             Me.WindowState = FormWindowState.Maximized
             sender.Text = "🗗"
             Me.Invalidate()
@@ -1587,4 +1590,5 @@ Partial Public NotInheritable Class FrmMain
         SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
 
     End Sub
+
 End Class
