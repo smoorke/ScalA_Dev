@@ -1,3 +1,7 @@
+**SclaA 1.4.9**
+Fixed Maximizing to Secondary screens sets wrong bounds if they differ in resolution.
+Fixed Dragging Caption after restoring a minimized maximized ScalA makes ScalA tiny.
+
 **ScalA 1.4.8**
 Fixed Restoring maximized ScalA from minimized state glitches wrong bounds.
 Fixed Restoring a selected minimized SDL client glitches maximized ScalA with wrong bounds.
