@@ -25,11 +25,11 @@ Partial NotInheritable Class FrmMain
             FrmBehind.Show()
             If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
             If Not My.Settings.CycleOnClose Then
-                Detach(True)
                 BringToFront()
                 cboAlt.SelectedIndex = 0
                 tmrOverview.Enabled = True
                 tmrTick.Enabled = False
+                Detach(True)
                 'FlashWindow(ScalaHandle, True) 'show on taskbar
                 'FlashWindow(ScalaHandle, False) 'stop blink
                 '                Dim timeout As UInteger

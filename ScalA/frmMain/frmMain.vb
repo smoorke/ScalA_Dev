@@ -1314,8 +1314,18 @@ Partial Public NotInheritable Class FrmMain
         Finally
             prevHWNDParent = restoreParent
             If show Then
-                Threading.Thread.Sleep(50)
-                Me.Activate()
+                Task.Run(Sub()
+                             Threading.Thread.Sleep(100)
+                             AllowSetForegroundWindow(scalaPID)
+                             Invoke(Sub() Activate())
+                             Threading.Thread.Sleep(100)
+                             FlashWindow(ScalaHandle, True) 'show on taskbar
+                             Try
+                                 AppActivate(scalaPID)
+                             Catch
+                             End Try
+                             FlashWindow(ScalaHandle, False) 'stop blink
+                         End Sub)
             End If
         End Try
     End Function
