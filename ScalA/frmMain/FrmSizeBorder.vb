@@ -48,7 +48,7 @@
             Case WM_SIZING
                 If Not suppressWM_SIZING Then
                     Dim rc As RECT = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(RECT))
-                    Dim sr As New Rectangle(rc.Left + BorderSize, rc.Top + BorderSize, rc.Right - rc.Left - BorderSize * 2, rc.Bottom - rc.Top - BorderSize * 2)
+                    Dim sr As New Rectangle(rc.left + BorderSize, rc.top + BorderSize, rc.right - rc.left - BorderSize * 2, rc.bottom - rc.top - BorderSize * 2)
                     If sr <> prevSR Then
                         FrmMain.Bounds = sr
                         Dim zoomSZ As New Size(sr.Width - 2, sr.Height - FrmMain.pnlTitleBar.Height - 1)
@@ -85,9 +85,24 @@
         If m.Msg = WM_ENTERSIZEMOVE Then
             Debug.Print("border WM_ENTERSIZEMOVE")
             FrmMain.Resizing = True
+            suppressWM_SIZING = True
+            FrmMain.Detach(False) 'fix sluggish sizing on ugaris/vanilla
+            Task.Run(Sub() 'this to supress wmsizing with bad bounds cause of the detach
+                         Threading.Thread.Sleep(50)
+                         suppressWM_SIZING = False
+                     End Sub)
         End If
         If m.Msg = WM_EXITSIZEMOVE Then
             Debug.Print("Border WM_EXITSIZEMOVE")
+
+            FrmMain.Attach(FrmMain.AltPP)
+            Dim sr = New Rectangle(Me.Left + BorderSize, Me.Top + BorderSize, Me.Width - BorderSize * 2, Me.Height - BorderSize * 2)
+            FrmMain.Bounds = sr
+            Dim zoomSZ As New Size(sr.Width - 2, sr.Height - FrmMain.pnlTitleBar.Height - 1)
+            My.Settings.resol = zoomSZ
+            My.Settings.zoom = 0
+            FrmMain.ReZoom(zoomSZ)
+
             FrmMain.ResumeLayout()
             FrmMain.Invalidate()
             FrmMain.Resizing = False

@@ -115,14 +115,21 @@ Partial NotInheritable Class FrmMain
                                      AltPP?.CenterWindowPos(ScalaHandle,
                                                         Me.Left + pbZoom.Left + (pbZoom.Width / 2),
                                                         Me.Top + pbZoom.Top + (pbZoom.Height / 2),
-                                                        SetWindowPosFlags.ASyncWindowPosition, True)
-
+                                                        SetWindowPosFlags.ASyncWindowPosition Or SetWindowPosFlags.DoNotActivate,
+                                                        True)
                                  End Sub)
                     End If
                 End If
             Case WM_EXITSIZEMOVE
                 Debug.Print($"WM_EXITSIZEMOVE")
                 If Not (My.Settings.gameOnOverview AndAlso cboAlt.SelectedIndex = 0) Then UpdateThumb(If(chkDebug.Checked, 128, 255))
+                If My.Settings.SizingBorder Then
+                    If Me.WindowState = FormWindowState.Maximized Then
+                        FrmSizeBorder.Hide()
+                    Else
+                        If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
+                    End If
+                End If
                 AltPP?.ResetCache()
                 Me.Invalidate()
                 moveBusy = False
@@ -158,7 +165,7 @@ Partial NotInheritable Class FrmMain
                                          AltPP?.CenterWindowPos(ScalaHandle,
                                                         Me.Left + pbZoom.Left + (pbZoom.Width / 2),
                                                         Me.Top + pbZoom.Top + (pbZoom.Height / 2),
-                                                        SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder)
+                                                        SetWindowPosFlags.DoNotChangeOwnerZOrder Or SetWindowPosFlags.ASyncWindowPosition Or SetWindowPosFlags.DoNotActivate)
                                      Catch
                                          Debug.Print("WM_SIZE Except")
                                      Finally
@@ -248,7 +255,7 @@ Partial NotInheritable Class FrmMain
                     ReZoom(New Drawing.Size(winpos.cx - 2, winpos.cy - pnlTitleBar.Height - 1))
                     cmbResolution.SelectedIndex = My.Settings.zoom
 
-                    If cboAlt.SelectedIndex > 0 Then AltPP?.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition)
+                    If cboAlt.SelectedIndex > 0 Then AltPP?.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition Or SetWindowPosFlags.DoNotActivate)
                     pnlTitleBar.Width = winpos.cx - pnlButtons.Width - pnlSys.Width
                     Debug.Print($"winpos location {New Point(winpos.x, winpos.y)}")
                     Debug.Print($"winpos size {New Size(winpos.cx, winpos.cy)}")
@@ -464,5 +471,4 @@ Partial NotInheritable Class FrmMain
 
     Dim prevLoc As Point
     Dim sizeMoveBusy As Boolean = False
-    Dim keyConverter As New KeysConverter()
 End Class
