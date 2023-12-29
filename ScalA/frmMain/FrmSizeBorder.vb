@@ -12,18 +12,12 @@
     Private ReadOnly bru As Brush = Brushes.Black
 #End If
     Protected Overrides Sub OnPaint(ByVal e As PaintEventArgs)
-
-        e.Graphics.FillRectangle(bru, TopRC)
-        e.Graphics.FillRectangle(bru, LeftRC)
-        e.Graphics.FillRectangle(bru, RightRC)
-        e.Graphics.FillRectangle(bru, BotRC)
-
         Dim xb As Integer = BorderSize + If(My.Settings.roundCorners, 2, 0)
-
-        e.Graphics.FillRectangle(bru, New Rectangle(0, 0, xb, xb))
-        e.Graphics.FillRectangle(bru, New Rectangle(Me.ClientSize.Width - xb, 0, xb, xb))
-        e.Graphics.FillRectangle(bru, New Rectangle(0, Me.ClientSize.Height - xb, xb, xb))
-        e.Graphics.FillRectangle(bru, New Rectangle(Me.ClientSize.Width - xb, Me.ClientSize.Height - xb, xb, xb))
+        e.Graphics.FillRectangles(bru, {TopRC(), LeftRC(), RightRC(), BotRC(),
+                                  New Rectangle(0, 0, xb, xb), 'top left corner
+                                  New Rectangle(Me.ClientSize.Width - xb, 0, xb, xb), 'top right corner
+                                  New Rectangle(0, Me.ClientSize.Height - xb, xb, xb), 'bottom left corner
+                                  New Rectangle(Me.ClientSize.Width - xb, Me.ClientSize.Height - xb, xb, xb)}) 'bottom right corner
     End Sub
 
     Private Sub FrmBehind_Shown(sender As Object, e As EventArgs) Handles Me.Shown
