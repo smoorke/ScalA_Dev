@@ -677,7 +677,10 @@ Partial Public NotInheritable Class FrmMain
                 sender.Capture = False
                 tmrTick.Stop()
                 caption_Mousedown = True
-                If Me.WindowState = FormWindowState.Maximized Then captionMoveTrigger = True
+                If Me.WindowState = FormWindowState.Maximized Then
+                    captionMoveTrigger = True
+                    wasMaximized = True
+                End If
                 Dim msg As Message = Message.Create(ScalaHandle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
                 Debug.Print("WM_NCLBUTTONDOWN")
                 Me.WndProc(msg)
