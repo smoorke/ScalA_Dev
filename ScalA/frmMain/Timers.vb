@@ -197,21 +197,20 @@ Partial NotInheritable Class FrmMain
                                      If but.pidCache <> ap.Id Then but.BackgroundImage = Nothing
                                      If but.BackgroundImage Is Nothing Then
                                          Using ico As Bitmap = ap.GetIcon?.ToBitmap
+                                             Dim img As Image = Nothing
                                              If ico IsNot Nothing Then
-                                                 'but.Invoke(updateButtonBackgroundImage, {but, New Bitmap(ico, New Size(16, 16))})
-                                                 but.BackgroundImage = New Bitmap(ico, New Size(16, 16))
+                                                 img = New Bitmap(ico, New Size(16, 16))
                                                  Debug.Print($"{ap.Name} icon updated")
-                                             Else
-                                                 'but.Invoke(updateButtonBackgroundImage, {but, Nothing})
-                                                 but.BackgroundImage = Nothing
                                              End If
+                                             Me.BeginInvoke(Sub() but.BackgroundImage = img)
                                              but.pidCache = ap.Id
                                          End Using
                                      End If
 
                                      Dim sw = swDict.GetOrAdd(ap.Id, Stopwatch.StartNew)
                                      If but.Image Is Nothing OrElse sw.ElapsedMilliseconds > 42 Then
-                                         but.Image = ap.GetHealthbar
+                                         Dim img As Image = ap.GetHealthbar
+                                         Me.BeginInvoke(Sub() but.Image = img)
                                          sw.Restart()
                                      End If
 
