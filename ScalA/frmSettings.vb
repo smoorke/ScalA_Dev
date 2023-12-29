@@ -112,6 +112,9 @@ Public NotInheritable Class FrmSettings
         grpCycleShortcut.Enabled = chkCycleAlts.Checked
         grpCloseAllShortcut.Enabled = chkCloseAll.Checked
 
+        chkHoverActivate.Checked = My.Settings.HoverActivate
+        chkHoverActivate.Enabled = My.Settings.gameOnOverview
+
         validate_hotkey(New Object, New EventArgs)
 
         Hotkey.UnregHotkey(Me)
@@ -388,6 +391,8 @@ Public NotInheritable Class FrmSettings
         My.Settings.MinMin = ChkMinMin.Checked
 
         My.Settings.QLShowHidden = ChkQLShowHidden.Checked
+
+        My.Settings.HoverActivate = chkHoverActivate.Checked
 
         FrmMain.tmrOverview.Interval = If(My.Settings.gameOnOverview, 33, 66)
 
@@ -759,6 +764,10 @@ Public NotInheritable Class FrmSettings
             Process.Start(New ProcessStartInfo(FileIO.SpecialDirectories.Temp & "\ScalA\ChangeLog.txt"))
         Catch
         End Try
+    End Sub
+
+    Private Sub chkOverViewIsGame_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkOverViewIsGame.CheckedChanged
+        chkHoverActivate.Enabled = sender.Checked
     End Sub
 
     Private Sub TextBox1_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtStoKey.KeyPress, txtCycleKeyUp.KeyPress, txtCycleKeyDown.KeyPress, txtCloseAll.KeyPress

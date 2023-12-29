@@ -126,6 +126,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
+        Me.chkHoverActivate = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -1083,6 +1084,7 @@ Partial NotInheritable Class FrmSettings
         '
         'tabMisc
         '
+        Me.tabMisc.Controls.Add(Me.chkHoverActivate)
         Me.tabMisc.Controls.Add(Me.cmbTheme)
         Me.tabMisc.Controls.Add(Me.Label16)
         Me.tabMisc.Controls.Add(Me.chkDoAlign)
@@ -1109,7 +1111,7 @@ Partial NotInheritable Class FrmSettings
         Me.cmbTheme.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cmbTheme.FormattingEnabled = True
         Me.cmbTheme.Items.AddRange(New Object() {"System", "Light", "Dark"})
-        Me.cmbTheme.Location = New System.Drawing.Point(200, 63)
+        Me.cmbTheme.Location = New System.Drawing.Point(200, 85)
         Me.cmbTheme.Name = "cmbTheme"
         Me.cmbTheme.Size = New System.Drawing.Size(82, 21)
         Me.cmbTheme.TabIndex = 25
@@ -1117,7 +1119,7 @@ Partial NotInheritable Class FrmSettings
         'Label16
         '
         Me.Label16.AutoSize = True
-        Me.Label16.Location = New System.Drawing.Point(156, 68)
+        Me.Label16.Location = New System.Drawing.Point(156, 90)
         Me.Label16.Name = "Label16"
         Me.Label16.Size = New System.Drawing.Size(40, 13)
         Me.Label16.TabIndex = 24
@@ -1217,6 +1219,18 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.TabIndex = 2
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
+        '
+        'chkHoverActivate
+        '
+        Me.chkHoverActivate.AutoSize = True
+        Me.chkHoverActivate.Location = New System.Drawing.Point(169, 62)
+        Me.chkHoverActivate.Name = "chkHoverActivate"
+        Me.chkHoverActivate.Size = New System.Drawing.Size(112, 17)
+        Me.chkHoverActivate.TabIndex = 26
+        Me.chkHoverActivate.Text = "Activate on Hover"
+        Me.ttSettings.SetToolTip(Me.chkHoverActivate, "Hovering an active overview thumbnail wil activate it if the currently active" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "wi" &
+        "ndow is ScalA or an Astonia client that is shown on the overview.")
+        Me.chkHoverActivate.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
@@ -1356,4 +1370,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents CheckNowToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents OpenChangelogToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ChkQLShowHidden As CheckBox
+    Friend WithEvents chkHoverActivate As CheckBox
 End Class

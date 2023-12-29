@@ -299,6 +299,12 @@ Partial NotInheritable Class FrmMain
                             Detach(False)
                         Else
                             Attach(ap)
+                            If My.Settings.HoverActivate Then
+                                Dim id = GetActiveProcessID()
+                                If id <> 0 AndAlso id = scalaPID OrElse pnlOverview.Controls.OfType(Of AButton).Any(Function(ab As AButton) ab.pidCache = id) Then
+                                    If Not (SysMenu.Visible OrElse cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse FrmSettings.Contains(MousePosition)) Then ap.Activate()
+                                End If
+                            End If
                         End If
 
                         ap.SavePos(rcwB.Location, False)
