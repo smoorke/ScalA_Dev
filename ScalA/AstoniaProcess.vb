@@ -573,6 +573,12 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Return GetWindowLong(Me.MainWindowHandle, GWL_STYLE) And WindowStyles.WS_BORDER
     End Function
 
+    Dim br As New SolidBrush(Color.FromArgb(&HFFFF0400))
+    Dim bo As New SolidBrush(Color.FromArgb(&HFFFF7D29))
+    Dim by As New SolidBrush(Color.FromArgb(186, 186, 30))
+    Dim bl As New SolidBrush(Color.FromArgb(217, 217, 30))
+    Dim bb As New SolidBrush(Color.FromArgb(&HFF297DFF))
+
     Public Function GetHealthbar(Optional width As Integer = 75, Optional height As Integer = 15) As Bitmap
         Dim bmp As New Bitmap(width, height)
 
@@ -585,20 +591,23 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             'Dim bars(4) As Byte
             'va.ReadArray(Of Byte)(4, bars, 0, 4)
             Using g As Graphics = Graphics.FromImage(bmp)
-                Static br As New SolidBrush(Color.FromArgb(&HFFFF0400))
-                Static bo As New SolidBrush(Color.FromArgb(&HFFFF7D29))
-                Static by As New SolidBrush(Color.FromArgb(186, 186, 30))
-                Static bl As New SolidBrush(Color.FromArgb(217, 217, 30))
-                Static bb As New SolidBrush(Color.FromArgb(&HFF297DFF))
+
                 g.Clear(Color.Black)
                 If shm.mana = 255 Then
                     g.FillRectangle(br, New Rectangle(0, 0, shm.hp / 100 * width, height / 5 * 2))
                     g.FillRectangle(bo, New Rectangle(0, height / 5 * 2, shm.shield / 100 * width, height / 5 * 2))
                     g.FillRectangle(If(My.Settings.DarkMode, by, bl), New Rectangle(0, height / 5 * 4, shm.end / 100 * width, height / 5))
                 Else
-                    g.FillRectangle(br, New Rectangle(0, 0, shm.hp / 100 * width, height / 3))
-                    g.FillRectangle(bo, New Rectangle(0, height / 3, shm.shield / 100 * width, height / 3))
-                    g.FillRectangle(bb, New Rectangle(0, height / 3 * 2, shm.mana / 100 * width, height / 3))
+                    Dim itemheight As Integer = height / 15 * 5
+                    If My.Settings.ShowEnd Then
+                        itemheight = height / 15 * 4
+                    End If
+                    g.FillRectangle(br, New Rectangle(0, 0, shm.hp / 100 * width, itemheight))
+                    g.FillRectangle(bo, New Rectangle(0, itemheight, shm.shield / 100 * width, itemheight))
+                    g.FillRectangle(bb, New Rectangle(0, itemheight * 2, shm.mana / 100 * width, itemheight))
+                    If My.Settings.showend Then
+                        g.FillRectangle(If(My.Settings.DarkMode, by, bl), New Rectangle(0, itemheight * 3, shm.end / 100 * width, height - (itemheight * 3)))
+                    End If
                 End If
             End Using
             Return bmp

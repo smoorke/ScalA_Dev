@@ -418,7 +418,7 @@ Namespace My
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
         Public Property SingleInstance() As Boolean
             Get
                 Return CType(Me("SingleInstance"),Boolean)
@@ -586,7 +586,7 @@ Namespace My
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
         Public Property MinMin() As Boolean
             Get
                 Return CType(Me("MinMin"),Boolean)
@@ -701,6 +701,18 @@ Namespace My
             End Get
             Set
                 Me("HoverActivate") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property ShowEnd() As Boolean
+            Get
+                Return CType(Me("ShowEnd"),Boolean)
+            End Get
+            Set
+                Me("ShowEnd") = value
             End Set
         End Property
     End Class

@@ -110,7 +110,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="SingleInstance" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="LockEq" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -152,7 +152,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="MinMin" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="CloseAll" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -179,6 +179,9 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="HoverActivate" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ShowEnd" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

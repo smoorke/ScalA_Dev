@@ -115,6 +115,8 @@ Public NotInheritable Class FrmSettings
         chkHoverActivate.Checked = My.Settings.HoverActivate
         chkHoverActivate.Enabled = My.Settings.gameOnOverview
 
+        chkShowEnd.Checked = My.Settings.ShowEnd
+
         validate_hotkey(New Object, New EventArgs)
 
         Hotkey.UnregHotkey(Me)
@@ -393,6 +395,8 @@ Public NotInheritable Class FrmSettings
         My.Settings.QLShowHidden = ChkQLShowHidden.Checked
 
         My.Settings.HoverActivate = chkHoverActivate.Checked
+
+        My.Settings.ShowEnd = chkShowEnd.Checked
 
         FrmMain.tmrOverview.Interval = If(My.Settings.gameOnOverview, 33, 66)
 

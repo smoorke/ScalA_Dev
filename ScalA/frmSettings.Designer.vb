@@ -67,6 +67,7 @@ Partial NotInheritable Class FrmSettings
         Me.OpenChangelogToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ChkMinMin = New System.Windows.Forms.CheckBox()
         Me.chkCloseAll = New System.Windows.Forms.CheckBox()
+        Me.chkHoverActivate = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
@@ -126,7 +127,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
-        Me.chkHoverActivate = New System.Windows.Forms.CheckBox()
+        Me.chkShowEnd = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -404,7 +405,7 @@ Partial NotInheritable Class FrmSettings
         'ChkSingleInstance
         '
         Me.ChkSingleInstance.AutoSize = True
-        Me.ChkSingleInstance.Location = New System.Drawing.Point(12, 90)
+        Me.ChkSingleInstance.Location = New System.Drawing.Point(12, 95)
         Me.ChkSingleInstance.Name = "ChkSingleInstance"
         Me.ChkSingleInstance.Size = New System.Drawing.Size(99, 17)
         Me.ChkSingleInstance.TabIndex = 6
@@ -588,6 +589,18 @@ Partial NotInheritable Class FrmSettings
         Me.chkCloseAll.Text = "Close All Clients and ScalA"
         Me.ttSettings.SetToolTip(Me.chkCloseAll, "Note: Whitelist setting from Sorting tab is in effect here")
         Me.chkCloseAll.UseVisualStyleBackColor = True
+        '
+        'chkHoverActivate
+        '
+        Me.chkHoverActivate.AutoSize = True
+        Me.chkHoverActivate.Location = New System.Drawing.Point(169, 62)
+        Me.chkHoverActivate.Name = "chkHoverActivate"
+        Me.chkHoverActivate.Size = New System.Drawing.Size(112, 17)
+        Me.chkHoverActivate.TabIndex = 26
+        Me.chkHoverActivate.Text = "Activate on Hover"
+        Me.ttSettings.SetToolTip(Me.chkHoverActivate, "Hovering an active overview thumbnail wil activate it if the currently active" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "wi" &
+        "ndow is ScalA or an Astonia client that is shown on the overview.")
+        Me.chkHoverActivate.UseVisualStyleBackColor = True
         '
         'tbcSettings
         '
@@ -1084,6 +1097,7 @@ Partial NotInheritable Class FrmSettings
         '
         'tabMisc
         '
+        Me.tabMisc.Controls.Add(Me.chkShowEnd)
         Me.tabMisc.Controls.Add(Me.chkHoverActivate)
         Me.tabMisc.Controls.Add(Me.cmbTheme)
         Me.tabMisc.Controls.Add(Me.Label16)
@@ -1203,7 +1217,7 @@ Partial NotInheritable Class FrmSettings
         'chkTopMost
         '
         Me.chkTopMost.AutoSize = True
-        Me.chkTopMost.Location = New System.Drawing.Point(12, 67)
+        Me.chkTopMost.Location = New System.Drawing.Point(12, 77)
         Me.chkTopMost.Name = "chkTopMost"
         Me.chkTopMost.Size = New System.Drawing.Size(98, 17)
         Me.chkTopMost.TabIndex = 3
@@ -1213,24 +1227,23 @@ Partial NotInheritable Class FrmSettings
         'chkRoundCorners
         '
         Me.chkRoundCorners.AutoSize = True
-        Me.chkRoundCorners.Location = New System.Drawing.Point(12, 44)
+        Me.chkRoundCorners.Location = New System.Drawing.Point(12, 59)
         Me.chkRoundCorners.Name = "chkRoundCorners"
         Me.chkRoundCorners.Size = New System.Drawing.Size(109, 17)
         Me.chkRoundCorners.TabIndex = 2
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
-        'chkHoverActivate
+        'chkShowEnd
         '
-        Me.chkHoverActivate.AutoSize = True
-        Me.chkHoverActivate.Location = New System.Drawing.Point(169, 62)
-        Me.chkHoverActivate.Name = "chkHoverActivate"
-        Me.chkHoverActivate.Size = New System.Drawing.Size(112, 17)
-        Me.chkHoverActivate.TabIndex = 26
-        Me.chkHoverActivate.Text = "Activate on Hover"
-        Me.ttSettings.SetToolTip(Me.chkHoverActivate, "Hovering an active overview thumbnail wil activate it if the currently active" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "wi" &
-        "ndow is ScalA or an Astonia client that is shown on the overview.")
-        Me.chkHoverActivate.UseVisualStyleBackColor = True
+        Me.chkShowEnd.AutoSize = True
+        Me.chkShowEnd.Location = New System.Drawing.Point(12, 41)
+        Me.chkShowEnd.Name = "chkShowEnd"
+        Me.chkShowEnd.Size = New System.Drawing.Size(111, 17)
+        Me.chkShowEnd.TabIndex = 27
+        Me.chkShowEnd.Text = "Always Show End"
+        Me.ttSettings.SetToolTip(Me.chkShowEnd, "Always show Endurance on Overview Big HealthBars")
+        Me.chkShowEnd.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
@@ -1371,4 +1384,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents OpenChangelogToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ChkQLShowHidden As CheckBox
     Friend WithEvents chkHoverActivate As CheckBox
+    Friend WithEvents chkShowEnd As CheckBox
 End Class
