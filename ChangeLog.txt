@@ -1,3 +1,6 @@
+**ScalA 1.5.1**
+Fixed Activate on hover only works intermittently.
+
 **ScalA 1.5.0**
 Fixed Overview can throw an `Object is currently in use elsewhere` exception on fast PCs.
 Fixed Pressing escape while dragging maximized caption leaves sizingborder in an invalid state.
