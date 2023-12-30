@@ -31,14 +31,15 @@ Module NativeMethods
         Public dwFlags As UInteger
     End Structure
 
-    <DllImport("user32.dll")>
-    Public Function SystemParametersInfo(uiAction As UInteger, uiParam As SPI,
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function SystemParametersInfo(uiAction As SPI, uiParam As UInteger,
         ByRef pvParam As IntPtr, fWinIni As UInteger) As <MarshalAs(UnmanagedType.Bool)> Boolean
     End Function
 
     Enum SPI As UInteger
         GETCLIENTAREAANIMATION = &H1042
         GETFOREGROUNDLOCKTIMEOUT = &H2000
+        SETFOREGROUNDLOCKTIMEOUT = &H2001
     End Enum
 
     <DllImport("user32.dll")>
@@ -165,7 +166,8 @@ Module NativeMethods
     <DllImport("shell32.dll", EntryPoint:="SHGetFileInfoW", SetLastError:=True)>
     Public Function SHGetFileInfoW(<InAttribute(), MarshalAs(UnmanagedType.LPTStr)> ByVal pszPath As String, ByVal dwFileAttributes As Integer, ByRef psfi As SHFILEINFOW, ByVal cbFileInfo As Integer, ByVal uFlags As Integer) As Integer
     End Function
-    <DllImport("user32.dll")>
+    Public ASFW_ANY As UInteger = &HFFFFFFFFUI
+    <DllImport("user32.dll", SetLastError:=True)>
     Public Function AllowSetForegroundWindow(dwProcessId As UInt32) As Integer : End Function
 
     <DllImport("user32.dll", EntryPoint:="DestroyIcon")>

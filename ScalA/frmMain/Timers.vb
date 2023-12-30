@@ -302,7 +302,17 @@ Partial NotInheritable Class FrmMain
                             If My.Settings.HoverActivate Then
                                 Dim id = GetActiveProcessID()
                                 If id <> 0 AndAlso id = scalaPID OrElse pnlOverview.Controls.OfType(Of AButton).Any(Function(ab As AButton) ab.pidCache = id) Then
-                                    If Not (SysMenu.Visible OrElse cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse FrmSettings.Contains(MousePosition)) Then ap.Activate()
+                                    If Not (SysMenu.Visible OrElse cboAlt.DroppedDown OrElse
+                                            cmbResolution.DroppedDown OrElse FrmSettings.Contains(MousePosition)) Then
+                                        'ap.Activate() doesn't work if not debugging
+#If DEBUG Then
+                                        If Not chkDebug.ContextMenuStrip.Visible Then
+#End If
+                                        SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
+#If DEBUG Then
+                                        End If
+#End If
+                                    End If
                                 End If
                             End If
                         End If

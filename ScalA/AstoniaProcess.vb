@@ -107,7 +107,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     Return New Point
                 End If
                 Try
-                    If _proc.HasExited Then
+                    If Me.HasExited Then
                         Return New Point
                     End If
                     Dim ptt As New Point
@@ -303,7 +303,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             FrmMain.tmrTick.Enabled = False
             FrmMain.SaveLocation()
             My.Settings.Save()
-            FrmMain.RestartSelf()
+            FrmMain.RestartSelf(True)
             End 'program
         End Try
     End Function

@@ -70,6 +70,12 @@
    }
     Public Sub SendMouseInput(flags As MouseEventF)
         MouseInput(0).u.mi.dwFlags = flags
+        MouseInput(0).u.mi.mouseData = 0
+        SendInput(1, MouseInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+    End Sub
+    Public Sub SendMouseInput(flags As MouseEventF, mouseData As UInt32)
+        MouseInput(0).u.mi.dwFlags = flags
+        MouseInput(0).u.mi.mouseData = mouseData
         SendInput(1, MouseInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
     End Sub
 

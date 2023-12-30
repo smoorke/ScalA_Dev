@@ -411,7 +411,7 @@ Partial Public NotInheritable Class FrmMain
         AddHandler test.Opening, Sub()
                                      Debug.Print("test Opening")
                                      dynamicitem1.Text = $"movebusy {moveBusy}"
-                                     dynamicitem2.Text = $"Aborder {AltPP.hasBorder}"
+                                     dynamicitem2.Text = $"Aborder {AltPP?.hasBorder}"
                                      UntrapMouse(MouseButtons.Right)
                                      AppActivate(scalaPID)
                                  End Sub
@@ -1386,7 +1386,7 @@ Partial Public NotInheritable Class FrmMain
         Dim procStartInfo As New ProcessStartInfo With {
             .UseShellExecute = True,
             .FileName = Environment.GetCommandLineArgs()(0),
-            .Arguments = """" & DirectCast(Me.cboAlt.SelectedItem, AstoniaProcess).Name & """",
+            .Arguments = """" & CType(Me.cboAlt.SelectedItem, AstoniaProcess)?.Name & """",
             .WindowStyle = ProcessWindowStyle.Normal,
             .Verb = If(asAdmin, "runas", "") 'add this to prompt for elevation
         }
