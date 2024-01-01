@@ -74,7 +74,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Parallel.ForEach(_restoreDic.Values,
                          Sub(ap As AstoniaProcess)
                              Try
-                                 If ap._restoreLoc IsNot Nothing AndAlso ap.IsRunning() Then
+                                 If ap._restoreLoc IsNot Nothing AndAlso Not ap.HasExited() Then
                                      SetWindowPos(ap.MainWindowHandle, If(ap._wasTopmost, SWP_HWND.TOPMOST, SWP_HWND.NOTOPMOST),
                                                   ap._restoreLoc?.X, ap._restoreLoc?.Y, -1, -1,
                                                   SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
