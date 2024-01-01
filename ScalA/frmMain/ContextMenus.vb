@@ -758,7 +758,7 @@ Partial Public NotInheritable Class FrmMain
             End If
         End If
     End Sub
-
+    Private deleteOpen As Boolean = False
     Private Sub QlCtxDelete(sender As MenuItem, e As EventArgs)
         cmsQuickLaunch.Close()
 
@@ -774,12 +774,14 @@ Partial Public NotInheritable Class FrmMain
             Dim filesCount As Integer = System.IO.Directory.GetFiles(Path, "*.*", IO.SearchOption.AllDirectories).Where(Function(f) IO.Path.GetFileName(f.ToLower) <> "desktop.ini").Count
             Dim filS As String = If(filesCount = 1, "", "s")
             folderContentsMessage &= $"This folder contains {folderCount} folder{folS} and {filesCount} file{filS}."
+            deleteOpen = True
             If shiftdown OrElse MessageBox.Show($"Are you sure you want to move ""{name}"" to the Recycle Bin?" & folderContentsMessage & $"{vbCrLf}Hold Shift to Permanently Delete.",
                                        "Confirm Delete", MessageBoxButtons.YesNo) = DialogResult.Yes Then
                 My.Computer.FileSystem.DeleteDirectory(Path, FileIO.UIOption.OnlyErrorDialogs,
                          If(shiftdown OrElse My.Computer.Keyboard.ShiftKeyDown, FileIO.RecycleOption.DeletePermanently, FileIO.RecycleOption.SendToRecycleBin),
                          FileIO.UICancelOption.DoNothing)
             End If
+            deleteOpen = False
         Else
             My.Computer.FileSystem.DeleteFile(Path, FileIO.UIOption.AllDialogs,
                          If(shiftdown, FileIO.RecycleOption.DeletePermanently, FileIO.RecycleOption.SendToRecycleBin),
