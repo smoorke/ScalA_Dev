@@ -55,9 +55,7 @@ Partial Public NotInheritable Class FrmMain
         If cboAlt.SelectedIndex = 0 Then
             CloseAstoniaToolStripMenuItem.Visible = False
             CloseBothToolStripMenuItem.Visible = False
-            If pnlOverview.Controls.OfType(Of AButton).Any(Function(ab) ab.AP IsNot Nothing) Then
-                CloseAllOverviewToolStripMenuItem.Visible = True
-            End If
+            CloseAllOverviewToolStripMenuItem.Visible = pnlOverview.Controls.OfType(Of AButton).Any(Function(ab) ab.AP IsNot Nothing)
         Else
             CloseAstoniaToolStripMenuItem.Text = $"Close {AltPP.Name}"
             CloseBothToolStripMenuItem.Text = $"Close {AltPP.Name} && ScalA"
