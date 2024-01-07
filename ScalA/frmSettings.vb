@@ -811,7 +811,7 @@ Public NotInheritable Class FrmSettings
     End Sub
 
 
-    Private Sub TextBox1_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtStoKey.KeyPress, txtCycleKeyUp.KeyPress, txtCycleKeyDown.KeyPress, txtCloseAll.KeyPress
+    Private Sub TextBox1_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtStoKey.KeyPress, txtCycleKeyUp.KeyPress, txtCycleKeyDown.KeyPress, txtCloseAll.KeyPress, txtTogTop.KeyPress
         e.Handled = True
     End Sub
 
