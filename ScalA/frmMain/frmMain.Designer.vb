@@ -29,11 +29,8 @@ Partial NotInheritable Class FrmMain
         Dim ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmMain))
         Me.pnlSys = New System.Windows.Forms.Panel()
-        Me.btnStart = New ScalA.ThemedStartButton()
         Me.cmsQuickLaunch = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.DummyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.cmbResolution = New ScalA.ThemedComboBox()
-        Me.cboAlt = New ScalA.ThemedComboBox()
         Me.pnlTitleBar = New System.Windows.Forms.Panel()
         Me.chkDebug = New System.Windows.Forms.CheckBox()
         Me.pnlUpdate = New System.Windows.Forms.Panel()
@@ -49,6 +46,7 @@ Partial NotInheritable Class FrmMain
         Me.CloseAstoniaToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CloseAllIdleToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CloseBothToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.CloseAllOverviewToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CloseAllSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.CloseAllToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.tmrTick = New System.Windows.Forms.Timer(Me.components)
@@ -77,6 +75,9 @@ Partial NotInheritable Class FrmMain
         Me.PnlEqLock = New System.Windows.Forms.Panel()
         Me.ttMain = New System.Windows.Forms.ToolTip(Me.components)
         Me.tmrHotkeys = New System.Windows.Forms.Timer(Me.components)
+        Me.btnStart = New ScalA.ThemedStartButton()
+        Me.cmbResolution = New ScalA.ThemedComboBox()
+        Me.cboAlt = New ScalA.ThemedComboBox()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         NoneSortSeperator1 = New System.Windows.Forms.ToolStripSeparator()
         NoneSortSeperator2 = New System.Windows.Forms.ToolStripSeparator()
@@ -102,7 +103,7 @@ Partial NotInheritable Class FrmMain
         'ToolStripSeparator1
         '
         ToolStripSeparator1.Name = "ToolStripSeparator1"
-        ToolStripSeparator1.Size = New System.Drawing.Size(149, 6)
+        ToolStripSeparator1.Size = New System.Drawing.Size(177, 6)
         '
         'NoneSortSeperator1
         '
@@ -117,7 +118,7 @@ Partial NotInheritable Class FrmMain
         'ToolStripSeparator2
         '
         ToolStripSeparator2.Name = "ToolStripSeparator2"
-        ToolStripSeparator2.Size = New System.Drawing.Size(149, 6)
+        ToolStripSeparator2.Size = New System.Drawing.Size(177, 6)
         '
         'pnlSys
         '
@@ -130,17 +131,6 @@ Partial NotInheritable Class FrmMain
         Me.pnlSys.Size = New System.Drawing.Size(270, 25)
         Me.pnlSys.TabIndex = 13
         '
-        'btnStart
-        '
-        Me.btnStart.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.btnStart.Font = New System.Drawing.Font("Courier New", 15.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnStart.Location = New System.Drawing.Point(2, 2)
-        Me.btnStart.Name = "btnStart"
-        Me.btnStart.Padding = New System.Windows.Forms.Padding(5)
-        Me.btnStart.Size = New System.Drawing.Size(21, 21)
-        Me.btnStart.TabIndex = 15
-        Me.ttMain.SetToolTip(Me.btnStart, "Switch to Overview" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "RMB: QuickLaunch")
-        '
         'cmsQuickLaunch
         '
         Me.cmsQuickLaunch.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DummyToolStripMenuItem})
@@ -152,33 +142,6 @@ Partial NotInheritable Class FrmMain
         Me.DummyToolStripMenuItem.Name = "DummyToolStripMenuItem"
         Me.DummyToolStripMenuItem.Size = New System.Drawing.Size(137, 22)
         Me.DummyToolStripMenuItem.Text = "--Dummy--"
-        '
-        'cmbResolution
-        '
-        Me.cmbResolution.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
-        Me.cmbResolution.DropDownHeight = 4096
-        Me.cmbResolution.FormattingEnabled = True
-        Me.cmbResolution.IntegralHeight = False
-        Me.cmbResolution.Location = New System.Drawing.Point(187, 2)
-        Me.cmbResolution.Name = "cmbResolution"
-        Me.cmbResolution.Size = New System.Drawing.Size(80, 21)
-        Me.cmbResolution.TabIndex = 17
-        Me.ttMain.SetToolTip(Me.cmbResolution, "Change Resolution" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "RMB: Settings")
-        '
-        'cboAlt
-        '
-        Me.cboAlt.ContextMenuStrip = Me.cmsQuickLaunch
-        Me.cboAlt.DisplayMember = "Name"
-        Me.cboAlt.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
-        Me.cboAlt.DropDownHeight = 4096
-        Me.cboAlt.FormattingEnabled = True
-        Me.cboAlt.IntegralHeight = False
-        Me.cboAlt.Location = New System.Drawing.Point(25, 2)
-        Me.cboAlt.Name = "cboAlt"
-        Me.cboAlt.Size = New System.Drawing.Size(160, 21)
-        Me.cboAlt.TabIndex = 16
-        Me.ttMain.SetToolTip(Me.cboAlt, "Select Astonia Client" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "RMB: QuickLaunch")
-        Me.cboAlt.ValueMember = "value"
         '
         'pnlTitleBar
         '
@@ -325,48 +288,55 @@ Partial NotInheritable Class FrmMain
         '
         'cmsQuit
         '
-        Me.cmsQuit.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CloseScalAToolStripMenuItem, Me.CloseAstoniaToolStripMenuItem, Me.CloseAllIdleToolStripMenuItem, Me.CloseBothToolStripMenuItem, Me.CloseAllSeparator, Me.CloseAllToolStripMenuItem})
+        Me.cmsQuit.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CloseScalAToolStripMenuItem, Me.CloseAstoniaToolStripMenuItem, Me.CloseAllIdleToolStripMenuItem, Me.CloseBothToolStripMenuItem, Me.CloseAllSeparator, Me.CloseAllOverviewToolStripMenuItem, Me.CloseAllToolStripMenuItem})
         Me.cmsQuit.Name = "cmsQuit"
-        Me.cmsQuit.Size = New System.Drawing.Size(182, 120)
+        Me.cmsQuit.Size = New System.Drawing.Size(190, 142)
         '
         'CloseScalAToolStripMenuItem
         '
         Me.CloseScalAToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.Close
         Me.CloseScalAToolStripMenuItem.Name = "CloseScalAToolStripMenuItem"
-        Me.CloseScalAToolStripMenuItem.Size = New System.Drawing.Size(181, 22)
+        Me.CloseScalAToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
         Me.CloseScalAToolStripMenuItem.Text = "Close ScalA"
         '
         'CloseAstoniaToolStripMenuItem
         '
         Me.CloseAstoniaToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.F12
         Me.CloseAstoniaToolStripMenuItem.Name = "CloseAstoniaToolStripMenuItem"
-        Me.CloseAstoniaToolStripMenuItem.Size = New System.Drawing.Size(181, 22)
+        Me.CloseAstoniaToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
         Me.CloseAstoniaToolStripMenuItem.Text = "Close Astonia"
         '
         'CloseAllIdleToolStripMenuItem
         '
         Me.CloseAllIdleToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.moreF12
         Me.CloseAllIdleToolStripMenuItem.Name = "CloseAllIdleToolStripMenuItem"
-        Me.CloseAllIdleToolStripMenuItem.Size = New System.Drawing.Size(181, 22)
+        Me.CloseAllIdleToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
         Me.CloseAllIdleToolStripMenuItem.Text = "Close All Someone"
         '
         'CloseBothToolStripMenuItem
         '
         Me.CloseBothToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.CloseBoth
         Me.CloseBothToolStripMenuItem.Name = "CloseBothToolStripMenuItem"
-        Me.CloseBothToolStripMenuItem.Size = New System.Drawing.Size(181, 22)
+        Me.CloseBothToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
         Me.CloseBothToolStripMenuItem.Text = "Close Name && Scala"
+        '
+        'CloseAllOverviewToolStripMenuItem
+        '
+        Me.CloseAllOverviewToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.moreF12
+        Me.CloseAllOverviewToolStripMenuItem.Name = "CloseAllOverviewToolStripMenuItem"
+        Me.CloseAllOverviewToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
+        Me.CloseAllOverviewToolStripMenuItem.Text = "Close All on Overview"
         '
         'CloseAllSeparator
         '
         Me.CloseAllSeparator.Name = "CloseAllSeparator"
-        Me.CloseAllSeparator.Size = New System.Drawing.Size(178, 6)
+        Me.CloseAllSeparator.Size = New System.Drawing.Size(186, 6)
         '
         'CloseAllToolStripMenuItem
         '
         Me.CloseAllToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.CloseAll
         Me.CloseAllToolStripMenuItem.Name = "CloseAllToolStripMenuItem"
-        Me.CloseAllToolStripMenuItem.Size = New System.Drawing.Size(181, 22)
+        Me.CloseAllToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
         Me.CloseAllToolStripMenuItem.Text = "Close All && ScalA"
         '
         'tmrTick
@@ -387,20 +357,20 @@ Partial NotInheritable Class FrmMain
         '
         Me.cmsAlt.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SelectToolStripMenuItem, ToolStripSeparator1, Me.SortSubToolStripMenuItem, Me.TopMostToolStripMenuItem, ToolStripSeparator2, Me.CloseToolStripMenuItem})
         Me.cmsAlt.Name = "cmsAlt"
-        Me.cmsAlt.Size = New System.Drawing.Size(153, 104)
+        Me.cmsAlt.Size = New System.Drawing.Size(181, 126)
         '
         'SelectToolStripMenuItem
         '
         Me.SelectToolStripMenuItem.Name = "SelectToolStripMenuItem"
         Me.SelectToolStripMenuItem.ShortcutKeyDisplayString = ""
-        Me.SelectToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.SelectToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.SelectToolStripMenuItem.Text = "Select"
         '
         'SortSubToolStripMenuItem
         '
         Me.SortSubToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TopFirstToolStripMenuItem, Me.TopLastToolStripMenuItem, NoneSortSeperator1, Me.NoneSortToolStripMenuItem, NoneSortSeperator2, Me.BotFirstToolStripMenuItem, Me.BotLastToolStripMenuItem})
         Me.SortSubToolStripMenuItem.Name = "SortSubToolStripMenuItem"
-        Me.SortSubToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.SortSubToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.SortSubToolStripMenuItem.Text = "Sort"
         '
         'TopFirstToolStripMenuItem
@@ -441,14 +411,14 @@ Partial NotInheritable Class FrmMain
         'TopMostToolStripMenuItem
         '
         Me.TopMostToolStripMenuItem.Name = "TopMostToolStripMenuItem"
-        Me.TopMostToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.TopMostToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.TopMostToolStripMenuItem.Text = "Always On Top"
         '
         'CloseToolStripMenuItem
         '
         Me.CloseToolStripMenuItem.Name = "CloseToolStripMenuItem"
         Me.CloseToolStripMenuItem.ShortcutKeyDisplayString = ""
-        Me.CloseToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.CloseToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.CloseToolStripMenuItem.Text = "Close This"
         '
         'pnlOverview
@@ -564,6 +534,44 @@ Partial NotInheritable Class FrmMain
         '
         Me.tmrHotkeys.Enabled = True
         '
+        'btnStart
+        '
+        Me.btnStart.ContextMenuStrip = Me.cmsQuickLaunch
+        Me.btnStart.Font = New System.Drawing.Font("Courier New", 15.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnStart.Location = New System.Drawing.Point(2, 2)
+        Me.btnStart.Name = "btnStart"
+        Me.btnStart.Padding = New System.Windows.Forms.Padding(5)
+        Me.btnStart.Size = New System.Drawing.Size(21, 21)
+        Me.btnStart.TabIndex = 15
+        Me.ttMain.SetToolTip(Me.btnStart, "Switch to Overview" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "RMB: QuickLaunch")
+        '
+        'cmbResolution
+        '
+        Me.cmbResolution.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
+        Me.cmbResolution.DropDownHeight = 4096
+        Me.cmbResolution.FormattingEnabled = True
+        Me.cmbResolution.IntegralHeight = False
+        Me.cmbResolution.Location = New System.Drawing.Point(187, 2)
+        Me.cmbResolution.Name = "cmbResolution"
+        Me.cmbResolution.Size = New System.Drawing.Size(80, 21)
+        Me.cmbResolution.TabIndex = 17
+        Me.ttMain.SetToolTip(Me.cmbResolution, "Change Resolution" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "RMB: Settings")
+        '
+        'cboAlt
+        '
+        Me.cboAlt.ContextMenuStrip = Me.cmsQuickLaunch
+        Me.cboAlt.DisplayMember = "Name"
+        Me.cboAlt.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
+        Me.cboAlt.DropDownHeight = 4096
+        Me.cboAlt.FormattingEnabled = True
+        Me.cboAlt.IntegralHeight = False
+        Me.cboAlt.Location = New System.Drawing.Point(25, 2)
+        Me.cboAlt.Name = "cboAlt"
+        Me.cboAlt.Size = New System.Drawing.Size(160, 21)
+        Me.cboAlt.TabIndex = 16
+        Me.ttMain.SetToolTip(Me.cboAlt, "Select Astonia Client" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "RMB: QuickLaunch")
+        Me.cboAlt.ValueMember = "value"
+        '
         'FrmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -660,4 +668,5 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents CloseBothToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents CloseAllIdleToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents tmrHotkeys As Timer
+    Friend WithEvents CloseAllOverviewToolStripMenuItem As ToolStripMenuItem
 End Class

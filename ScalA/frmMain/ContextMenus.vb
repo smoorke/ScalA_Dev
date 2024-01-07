@@ -46,20 +46,24 @@ Partial Public NotInheritable Class FrmMain
         btnQuit.PerformClick()
     End Sub
 
-    Private Sub CloseAllOverviewToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs)
+    Private Sub CloseAllOverviewToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseAllOverviewToolStripMenuItem.Click
         Dim procs = pnlOverview.Controls().OfType(Of AButton).Select(Of AstoniaProcess)(Function(ab) ab.AP)
-        Parallel.ForEach(procs, Sub(ap) ap.CloseOrKill())
+        Parallel.ForEach(procs, Sub(ap) ap?.CloseOrKill())
     End Sub
 
     Private Sub cmsQuit_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuit.Opening
         If cboAlt.SelectedIndex = 0 Then
             CloseAstoniaToolStripMenuItem.Visible = False
             CloseBothToolStripMenuItem.Visible = False
+            If pnlOverview.Controls.OfType(Of AButton).Any(Function(ab) ab.AP IsNot Nothing) Then
+                CloseAllOverviewToolStripMenuItem.Visible = True
+            End If
         Else
             CloseAstoniaToolStripMenuItem.Text = $"Close {AltPP.Name}"
             CloseBothToolStripMenuItem.Text = $"Close {AltPP.Name} && ScalA"
             CloseAstoniaToolStripMenuItem.Visible = True
             CloseBothToolStripMenuItem.Visible = True
+            CloseAllOverviewToolStripMenuItem.Visible = False
         End If
         Dim aps = AstoniaProcess.Enumerate(False).ToList
         If aps.Count = 0 OrElse (aps.Count = 1 AndAlso cboAlt.SelectedIndex > 0) Then
@@ -162,7 +166,7 @@ Partial Public NotInheritable Class FrmMain
         Dim somecount As Integer = AstoniaProcess.EnumSomeone.Count(Function(p) p.Name = "Someone")
         Debug.Print($"somecount {somecount}")
         If somecount > 0 AndAlso Not (other = "Other " AndAlso somecount = 1) Then
-            closeAllIdleTSMI = sender.Items.Add($"Close All {other}Someone", My.Resources.F12, AddressOf CloseAllIdle_Click)
+            closeAllIdleTSMI = sender.Items.Add($"Close All {other}Someone", My.Resources.moreF12, AddressOf CloseAllIdle_Click)
             closeAllIdleTSMI.Tag = pp
         End If
     End Sub
@@ -649,7 +653,7 @@ Partial Public NotInheritable Class FrmMain
         If AstoniaProcess.EnumSomeone.Any() Then
             If sender.SourceControl Is Nothing Then 'called from trayicon
                 sender.Items.Insert(0, New ToolStripSeparator())
-                sender.Items.Insert(0, New ToolStripMenuItem("Close All Someone", My.Resources.F12, AddressOf CloseAllIdle_Click))
+                sender.Items.Insert(0, New ToolStripMenuItem("Close All Someone", My.Resources.moreF12, AddressOf CloseAllIdle_Click))
                 closeAllAtBottom = False
             Else
                 sender.Items.Add(New ToolStripSeparator())
