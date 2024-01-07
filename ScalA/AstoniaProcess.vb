@@ -450,7 +450,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             exeCache = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
         End If
         Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p) New AstoniaProcess(p))) _
-            .Where(Function(ap) ap.Name = "Someone")
+            .Where(Function(ap) ap.Name = "Someone" AndAlso ap.IsAstoniaClass())
     End Function
 
     Private Shared Function ListProcesses(blacklist As IEnumerable(Of String), useCache As Boolean) As List(Of AstoniaProcess)
