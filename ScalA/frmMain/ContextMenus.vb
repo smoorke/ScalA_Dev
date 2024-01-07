@@ -29,17 +29,18 @@ Partial Public NotInheritable Class FrmMain
         tmrTick.Stop()
         tmrActive.Stop()
         WindowState = FormWindowState.Minimized
-        Dim procs = AstoniaProcess.Enumerate(False).ToList
+        Dim procs = AstoniaProcess.EnumAll().ToList
         Parallel.ForEach(procs, Sub(ap) ap.CloseOrKill())
 
         Dim cts As New Threading.CancellationTokenSource()
         cts.CancelAfter(100 * procs.Count)
         Dim ct = cts.Token
-        Await Task.Run(Sub() 'TODO: investigate hang
+        Await Task.Run(Sub()
                            While Not ct.IsCancellationRequested AndAlso
                                  procs.Any(Function(ap As AstoniaProcess) Not ap.HasExited)
                                CloseErrorDialog()
                                Threading.Thread.Sleep(34)
+                               Debug.Print("busy error dialog closer")
                            End While
                        End Sub, ct)
         btnQuit.PerformClick()
@@ -79,7 +80,7 @@ Partial Public NotInheritable Class FrmMain
     Private Sub cmsQuit_Closed(sender As Object, e As ToolStripDropDownClosedEventArgs) Handles cmsQuit.Closed
         Dim unused = RestoreClicking()
     End Sub
-#End Region
+#End Region 'cmsQuit
 
     Private Sub CloseToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseToolStripMenuItem.Click
         'PostMessage(CType(sender.Tag, AstoniaProcess).MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)

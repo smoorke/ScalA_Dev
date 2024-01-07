@@ -453,6 +453,14 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             .Where(Function(ap) ap.Name = "Someone" AndAlso ap.IsAstoniaClass())
     End Function
 
+    Public Shared Function EnumAll() As IEnumerable(Of AstoniaProcess)
+        If exeSettingCache <> My.Settings.exe Then
+            exeCache = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
+        End If
+        Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p) New AstoniaProcess(p))) _
+            .Where(Function(ap) ap.IsAstoniaClass())
+    End Function
+
     Private Shared Function ListProcesses(blacklist As IEnumerable(Of String), useCache As Boolean) As List(Of AstoniaProcess)
         'todo move updating cache to frmSettings
         If exeSettingCache <> My.Settings.exe Then
