@@ -54,6 +54,10 @@ Partial NotInheritable Class FrmMain
                                                   -1, -1, -1, -1,
                                                   SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
 
+                                Debug.Print("--Mid 1--")
+                                Debug.Print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                                Debug.Print($"Trget {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                                Debug.Print($"tgtOwner {GetWindowLong(Handle, GWL_HWNDPARENT)}")
                                 'TODO: handle ScalA being topmost
 
 
