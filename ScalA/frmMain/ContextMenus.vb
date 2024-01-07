@@ -63,7 +63,8 @@ Partial Public NotInheritable Class FrmMain
             CloseAllSeparator.Visible = True
             CloseAllToolStripMenuItem.Visible = True
         End If
-        If aps.Any(Function(ap) ap.Name = "Someone") Then
+
+        If AstoniaProcess.EnumSomeone.Any() Then
             CloseAllIdleToolStripMenuItem.Visible = True
         Else
             CloseAllIdleToolStripMenuItem.Visible = False
@@ -152,7 +153,7 @@ Partial Public NotInheritable Class FrmMain
         sender.Items.Add("Close " & pp.Name, My.Resources.F12, AddressOf CloseToolStripMenuItem_Click).Tag = pp
 
         Dim other As String = If(pp.Name = "Someone", "Other ", "")
-        Dim somecount As Integer = AstoniaProcess.Enumerate().Count(Function(p) p.Name = "Someone")
+        Dim somecount As Integer = AstoniaProcess.EnumSomeone.Count(Function(p) p.Name = "Someone")
         Debug.Print($"somecount {somecount}")
         If somecount > 0 AndAlso Not (other = "Other " AndAlso somecount = 1) Then
             closeAllIdleTSMI = sender.Items.Add($"Close All {other}Someone", My.Resources.F12, AddressOf CloseAllIdle_Click)
@@ -260,7 +261,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
     Private Sub CloseAllIdle_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseAllIdleToolStripMenuItem.Click
 
-        For Each pp As AstoniaProcess In AstoniaProcess.Enumerate().Where(Function(p As AstoniaProcess) p.Name = "Someone")
+        For Each pp As AstoniaProcess In AstoniaProcess.EnumSomeone
             If sender.Tag?.id = pp.Id AndAlso sender.Tag?.name = "Someone" Then Continue For
             'PostMessage(pp.MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
             pp.CloseOrKill()
@@ -639,7 +640,7 @@ Partial Public NotInheritable Class FrmMain
         '    sender.Items.Add("Select Folder", My.Resources.gear_wheel, AddressOf ChangeLinksDir)
         'End If
 
-        If AstoniaProcess.Enumerate().Any(Function(pp As AstoniaProcess) pp.Name = "Someone") Then
+        If AstoniaProcess.EnumSomeone.Any() Then
             If sender.SourceControl Is Nothing Then 'called from trayicon
                 sender.Items.Insert(0, New ToolStripSeparator())
                 sender.Items.Insert(0, New ToolStripMenuItem("Close All Someone", My.Resources.F12, AddressOf CloseAllIdle_Click))
