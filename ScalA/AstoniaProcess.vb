@@ -956,6 +956,8 @@ Module ProcessExtensions
         Dim processHandle As IntPtr = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, False, this.Id)
         Try
             If processHandle <> IntPtr.Zero AndAlso GetExitCodeProcess(processHandle, exitCode) Then Return exitCode <> 259
+        Catch
+            MessageBox.Show("Exception on HasExitedSafe")
         Finally
             CloseHandle(processHandle)
         End Try

@@ -35,7 +35,7 @@ Partial Public NotInheritable Class FrmMain
         Dim cts As New Threading.CancellationTokenSource()
         cts.CancelAfter(100 * procs.Count)
         Dim ct = cts.Token
-        Await Task.Run(Sub()
+        Await Task.Run(Sub() 'TODO: investigate hang
                            While Not ct.IsCancellationRequested AndAlso
                                  procs.Any(Function(ap As AstoniaProcess) Not ap.HasExited)
                                CloseErrorDialog()

@@ -1369,6 +1369,7 @@ Partial Public NotInheritable Class FrmMain
                 End If
             End If
         Catch
+            Debug.Print("CloseErrorDialog Exception")
         End Try
     End Sub
 
