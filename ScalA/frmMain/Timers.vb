@@ -309,7 +309,10 @@ Partial NotInheritable Class FrmMain
                                         If Not chkDebug.ContextMenuStrip.Visible Then
 #End If
                                             'ap.Activate() doesn't work if not debugging
-                                            SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
+                                            If Not ap.IsActive Then
+                                                Debug.Print($"Activating {ap.Name}")
+                                                SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
+                                            End If
 #If DEBUG Then
                                         End If
 #End If
