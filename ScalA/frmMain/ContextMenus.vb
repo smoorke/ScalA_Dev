@@ -657,7 +657,7 @@ Partial Public NotInheritable Class FrmMain
                 closeAllAtBottom = False
             Else
                 sender.Items.Add(New ToolStripSeparator())
-                sender.Items.Add("Close All Someone", My.Resources.F12, AddressOf CloseAllIdle_Click)
+                sender.Items.Add("Close All Someone", My.Resources.moreF12, AddressOf CloseAllIdle_Click)
                 closeAllAtBottom = True
             End If
         End If
