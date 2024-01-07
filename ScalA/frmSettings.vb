@@ -50,33 +50,49 @@ Public NotInheritable Class FrmSettings
         Debug.Print($"My.Settings.StoCtrl {My.Settings.StoCtrl}")
         chkStoShift.Checked = My.Settings.StoShift = Hotkey.KeyModifier.Shift
         Debug.Print($"My.Settings.StoShift {My.Settings.StoShift}")
+        chkStoWin.Checked = My.Settings.StoWin = Hotkey.KeyModifier.Winkey
+        Debug.Print($"My.Settings.StoWin {My.Settings.StoWin}")
 
         chkCycleDownAlt.Checked = My.Settings.CycleAltKeyFwd = Hotkey.KeyModifier.Alt
         chkCycleDownCtrl.Checked = My.Settings.CycleCtrlKeyFwd = Hotkey.KeyModifier.Control
         chkCycleDownShift.Checked = My.Settings.CycleShiftKeyFwd = Hotkey.KeyModifier.Shift
+        chkCycleDownShift.Checked = My.Settings.CycleWinKeyFwd = Hotkey.KeyModifier.Winkey
 
         chkCycleUpAlt.Checked = My.Settings.CycleAltKeyBwd = Hotkey.KeyModifier.Alt
         chkCycleUpCtrl.Checked = My.Settings.CycleCtrlKeyBwd = Hotkey.KeyModifier.Control
         chkCycleUpShift.Checked = My.Settings.CycleShiftKeyBwd = Hotkey.KeyModifier.Shift
+        chkCycleUpWin.Checked = My.Settings.CycleWinKeyBwd = Hotkey.KeyModifier.Winkey
 
         txtStoKey.Text = keyNames(My.Settings.StoKey)
 
         txtCycleKeyUp.Text = keyNames(My.Settings.CycleKeyBwd)
         txtCycleKeyDown.Text = keyNames(My.Settings.CycleKeyFwd)
+
         txtCloseAll.Text = keyNames(My.Settings.CloseAllKey)
+
+        txtTogTop.Text = keyNames(My.Settings.ToggleTopKey)
 
         StoKey = My.Settings.StoKey
         CycleKeyDown = My.Settings.CycleKeyFwd
         CycleKeyUp = My.Settings.CycleKeyBwd
         CloseAllKey = My.Settings.CloseAllKey
+        TogTopKey = My.Settings.ToggleTopKey
 
         chkCycleOnClose.Checked = My.Settings.CycleOnClose
 
         chkCAALt.Checked = My.Settings.CloseAllAlt
         chkCACtrl.Checked = My.Settings.CloseAllCtrl
         chkCAShift.Checked = My.Settings.CloseAllShift
+        chkCAWin.Checked = My.Settings.CloseAllWin
 
         chkCloseAll.Checked = My.Settings.CloseAll
+
+        chkTogTopAlt.Checked = My.Settings.TogTopAlt
+        chkTogTopCtrl.Checked = My.Settings.TogTopCtrl
+        chkTogTopShift.Checked = My.Settings.TogTopShift
+        chkTogTopWin.Checked = My.Settings.TogTopWin
+
+        chkToggleTopMost.Checked = My.Settings.ToggleTop
 
         txtTopSort.Text = My.Settings.topSort
         txtBotSort.Text = My.Settings.botSort
@@ -111,6 +127,7 @@ Public NotInheritable Class FrmSettings
         grpOverviewShortcut.Enabled = chkSwitchToOverview.Checked
         grpCycleShortcut.Enabled = chkCycleAlts.Checked
         grpCloseAllShortcut.Enabled = chkCloseAll.Checked
+        grpToggleTopMost.Enabled = chkToggleTopMost.Checked
 
         chkHoverActivate.Checked = My.Settings.HoverActivate
         chkHoverActivate.Enabled = My.Settings.gameOnOverview
@@ -311,6 +328,7 @@ Public NotInheritable Class FrmSettings
         My.Settings.StoAlt = If(chkStoAlt.Checked, Hotkey.KeyModifier.Alt, 0)
         My.Settings.StoCtrl = If(chkStoCtrl.Checked, Hotkey.KeyModifier.Control, 0)
         My.Settings.StoShift = If(chkStoShift.Checked, Hotkey.KeyModifier.Shift, 0)
+        My.Settings.StoWin = If(chkStoWin.Checked, Hotkey.KeyModifier.Winkey, 0)
 
         Debug.Print($"My.Settings.StoAlt {My.Settings.StoAlt}")
         Debug.Print($"My.Settings.StoCtrl {My.Settings.StoCtrl}")
@@ -324,10 +342,12 @@ Public NotInheritable Class FrmSettings
         My.Settings.CycleAltKeyFwd = If(chkCycleDownAlt.Checked, Hotkey.KeyModifier.Alt, 0)
         My.Settings.CycleShiftKeyFwd = If(chkCycleDownShift.Checked, Hotkey.KeyModifier.Alt, 0)
         My.Settings.CycleCtrlKeyFwd = If(chkCycleDownCtrl.Checked, Hotkey.KeyModifier.Control, 0)
+        My.Settings.CycleWinKeyFwd = If(chkCycleDownWin.Checked, Hotkey.KeyModifier.Winkey, 0)
 
         My.Settings.CycleAltKeyBwd = If(chkCycleUpAlt.Checked, Hotkey.KeyModifier.Alt, 0)
         My.Settings.CycleShiftKeyBwd = If(chkCycleUpShift.Checked, Hotkey.KeyModifier.Shift, 0)
         My.Settings.CycleCtrlKeyBwd = If(chkCycleUpCtrl.Checked, Hotkey.KeyModifier.Control, 0)
+        My.Settings.CycleWinKeyBwd = If(chkCycleUpWin.Checked, Hotkey.KeyModifier.Winkey, 0)
 
         My.Settings.CycleOnClose = chkCycleOnClose.Checked
 
@@ -337,6 +357,15 @@ Public NotInheritable Class FrmSettings
         My.Settings.CloseAllAlt = If(chkCAALt.Checked, Hotkey.KeyModifier.Alt, 0)
         My.Settings.CloseAllShift = If(chkCAShift.Checked, Hotkey.KeyModifier.Shift, 0)
         My.Settings.CloseAllCtrl = If(chkCACtrl.Checked, Hotkey.KeyModifier.Control, 0)
+        My.Settings.CloseAllWin = If(chkCAWin.Checked, Hotkey.KeyModifier.Winkey, 0)
+
+        My.Settings.ToggleTop = chkCloseAll.Checked
+        My.Settings.ToggleTopKey = TogTopKey
+
+        My.Settings.TogTopAlt = If(chkTogTopAlt.Checked, Hotkey.KeyModifier.Alt, 0)
+        My.Settings.CloseAllShift = If(chkTogTopShift.Checked, Hotkey.KeyModifier.Shift, 0)
+        My.Settings.CloseAllCtrl = If(chkTogTopCtrl.Checked, Hotkey.KeyModifier.Control, 0)
+        My.Settings.CloseAllWin = If(chkTogTopWin.Checked, Hotkey.KeyModifier.Winkey, 0)
 
         My.Settings.topSort = txtTopSort.Text
         My.Settings.botSort = txtBotSort.Text
@@ -527,7 +556,7 @@ Public NotInheritable Class FrmSettings
                                     "", "", "", "", "", "", "", "", "", "", "", "[", "\", "]", "²", "", ' 208-223
                                     "", "", "\", "", "", "", "", "", "", "", "", "", "", "", "", "", ' 224-239
                                     "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""} ' 240-255
-    Dim StoKey, CycleKeyUp, CycleKeyDown, CloseAllKey As Integer
+    Dim StoKey, CycleKeyUp, CycleKeyDown, CloseAllKey, TogTopKey As Integer
 
 
     Private Sub BtnRestore_Click(sender As Object, e As EventArgs) Handles btnRestore.Click
@@ -709,6 +738,10 @@ Public NotInheritable Class FrmSettings
     Private Sub chkCloseAll_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkCloseAll.CheckedChanged
         grpCloseAllShortcut.Enabled = sender.Checked
     End Sub
+    Private Sub chkToggleTopMost_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkToggleTopMost.CheckedChanged
+        grpToggleTopMost.Enabled = sender.Checked
+    End Sub
+
 
     Private Sub DefaultToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DefaultToolStripMenuItem.Click
         txtResolutions.Text = My.Settings.PropertyValues("resolutions").Property.DefaultValue
@@ -718,7 +751,8 @@ Public NotInheritable Class FrmSettings
         txtResolutions.Text = My.Settings.resolutions
     End Sub
 
-    Private Sub TxtShortcuts_PreviewKeyDown(sender As TextBox, e As PreviewKeyDownEventArgs) Handles txtStoKey.PreviewKeyDown, txtCycleKeyUp.PreviewKeyDown, txtCycleKeyDown.PreviewKeyDown, txtCloseAll.PreviewKeyDown
+    Private Sub TxtShortcuts_PreviewKeyDown(sender As TextBox, e As PreviewKeyDownEventArgs) _
+        Handles txtStoKey.PreviewKeyDown, txtCycleKeyUp.PreviewKeyDown, txtCycleKeyDown.PreviewKeyDown, txtCloseAll.PreviewKeyDown, txtTogTop.PreviewKeyDown
         Debug.Print(e.KeyCode)
         If e.KeyCode = 16 OrElse 'shift
            e.KeyCode = 17 OrElse 'ctrl
@@ -739,6 +773,8 @@ Public NotInheritable Class FrmSettings
                 CycleKeyUp = e.KeyCode
             Case txtCloseAll.Name
                 CloseAllKey = e.KeyCode
+            Case txtTogTop.Name
+                TogTopKey = e.KeyCode
         End Select
         Debug.Print($"key: {e.KeyCode}")
     End Sub
@@ -774,16 +810,18 @@ Public NotInheritable Class FrmSettings
         chkHoverActivate.Enabled = sender.Checked
     End Sub
 
+
     Private Sub TextBox1_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtStoKey.KeyPress, txtCycleKeyUp.KeyPress, txtCycleKeyDown.KeyPress, txtCloseAll.KeyPress
         e.Handled = True
     End Sub
 
     Private Sub validate_hotkey(sender As Object, e As EventArgs) Handles _
-                    chkSwitchToOverview.CheckedChanged, chkCycleAlts.CheckedChanged, chkCloseAll.CheckedChanged,
-                    chkStoAlt.CheckedChanged, chkStoCtrl.CheckedChanged, chkStoShift.CheckedChanged, txtStoKey.KeyUp,
-                    chkCycleUpAlt.CheckedChanged, chkCycleUpCtrl.CheckedChanged, chkCycleUpShift.CheckedChanged, txtCycleKeyUp.KeyUp,
-                    chkCycleDownAlt.CheckedChanged, chkCycleDownCtrl.CheckedChanged, chkCycleDownShift.CheckedChanged, txtCycleKeyDown.KeyUp,
-                    chkCloseAll.CheckedChanged, chkCAALt.CheckedChanged, chkCACtrl.CheckedChanged, chkCAShift.CheckedChanged, txtCloseAll.KeyUp
+                    chkSwitchToOverview.CheckedChanged, chkCycleAlts.CheckedChanged, chkCloseAll.CheckedChanged, chkToggleTopMost.CheckedChanged,
+                    chkStoAlt.CheckedChanged, chkStoCtrl.CheckedChanged, chkStoShift.CheckedChanged, txtStoKey.KeyUp, chkStoWin.CheckedChanged,
+                    chkCycleUpAlt.CheckedChanged, chkCycleUpCtrl.CheckedChanged, chkCycleUpShift.CheckedChanged, txtCycleKeyUp.KeyUp, chkCycleUpWin.CheckedChanged,
+                    chkCycleDownAlt.CheckedChanged, chkCycleDownCtrl.CheckedChanged, chkCycleDownShift.CheckedChanged, txtCycleKeyDown.KeyUp, chkCycleDownWin.CheckedChanged,
+                    chkCAALt.CheckedChanged, chkCACtrl.CheckedChanged, chkCAShift.CheckedChanged, txtCloseAll.KeyUp, chkCAWin.CheckedChanged,
+                    chkTogTopAlt.CheckedChanged, chkTogTopCtrl.CheckedChanged, chkTogTopShift.CheckedChanged, txtTogTop.KeyUp, chkTogTopWin.CheckedChanged
         Dim modi As Hotkey.KeyModifier
         Hotkey.UnregHotkey(FrmMain)
 
@@ -792,6 +830,7 @@ Public NotInheritable Class FrmSettings
             If chkStoAlt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
             If chkStoCtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
             If chkStoShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
+            If chkStoWin.Checked Then modi = modi Or Hotkey.KeyModifier.Winkey
             If Hotkey.RegisterHotkey(Me, 1, modi, StoKey) Then
                 txtStoKey.ForeColor = Color.Black
             Else
@@ -804,6 +843,7 @@ Public NotInheritable Class FrmSettings
             If chkCycleDownAlt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
             If chkCycleDownCtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
             If chkCycleDownShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
+            If chkCycleDownWin.Checked Then modi = modi Or Hotkey.KeyModifier.Winkey
             If Hotkey.RegisterHotkey(Me, 3, modi, CycleKeyDown) Then
                 txtCycleKeyDown.ForeColor = Color.Black
             Else
@@ -814,6 +854,7 @@ Public NotInheritable Class FrmSettings
             If chkCycleUpAlt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
             If chkCycleUpCtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
             If chkCycleUpShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
+            If chkCycleUpWin.Checked Then modi = modi Or Hotkey.KeyModifier.Winkey
             If Hotkey.RegisterHotkey(Me, 2, modi, CycleKeyUp) Then
                 txtCycleKeyUp.ForeColor = Color.Black
             Else
@@ -826,18 +867,32 @@ Public NotInheritable Class FrmSettings
             If chkCAALt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
             If chkCACtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
             If chkCAShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
+            If chkCAWin.Checked Then modi = modi Or Hotkey.KeyModifier.Winkey
             If Hotkey.RegisterHotkey(Me, 4, modi, CloseAllKey) Then
                 txtCloseAll.ForeColor = Color.Black
             Else
                 txtCloseAll.ForeColor = Color.Red
             End If
         End If
+
+        If chkToggleTopMost.Checked Then
+            modi = Hotkey.KeyModifier.None
+            If chkTogTopAlt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
+            If chkTogTopCtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
+            If chkTogTopShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
+            If chkTogTopWin.Checked Then modi = modi Or Hotkey.KeyModifier.Winkey
+            If Hotkey.RegisterHotkey(Me, 5, modi, TogTopKey) Then
+                txtTogTop.ForeColor = Color.Black
+            Else
+                txtTogTop.ForeColor = Color.Red
+            End If
+        End If
+
         Hotkey.UnregHotkey(Me)
     End Sub
 
     Private Sub tbcSettings_SelectedIndexChanged(sender As TabControl, e As EventArgs) Handles tbcSettings.SelectedIndexChanged
         My.Settings.remeberSettingsTab = sender.SelectedIndex
     End Sub
-
 
 End Class

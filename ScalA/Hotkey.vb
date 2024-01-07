@@ -60,24 +60,27 @@ Partial NotInheritable Class frmmain
     Private Sub tmrHotkeys_Tick(sender As Object, e As EventArgs) Handles tmrHotkeys.Tick
         If (activeID = scalaPID OrElse hasCName) Then
             If My.Settings.SwitchToOverview Then
-                Hotkey.RegisterHotkey(Me, 1, Hotkey.KeyModifier.NoRepeat Or My.Settings.StoCtrl Or My.Settings.StoShift Or My.Settings.StoAlt, My.Settings.StoKey)
+                Hotkey.RegisterHotkey(Me, 1, Hotkey.KeyModifier.NoRepeat Or My.Settings.StoCtrl Or My.Settings.StoShift Or My.Settings.StoAlt Or My.Settings.StoWin, My.Settings.StoKey)
             Else
                 Hotkey.UnregHotkey(Me, 1)
             End If
             If My.Settings.CycleAlt Then
-                Hotkey.RegisterHotkey(Me, 2, Hotkey.KeyModifier.NoRepeat Or My.Settings.CycleAltKeyFwd Or My.Settings.CycleShiftKeyFwd Or My.Settings.CycleCtrlKeyFwd, My.Settings.CycleKeyFwd)
-                Hotkey.RegisterHotkey(Me, 3, Hotkey.KeyModifier.NoRepeat Or My.Settings.CycleAltKeyBwd Or My.Settings.CycleShiftKeyBwd Or My.Settings.CycleCtrlKeyBwd, My.Settings.CycleKeyBwd)
+                Hotkey.RegisterHotkey(Me, 2, Hotkey.KeyModifier.NoRepeat Or My.Settings.CycleAltKeyFwd Or My.Settings.CycleShiftKeyFwd Or My.Settings.CycleCtrlKeyFwd Or My.Settings.CycleWinKeyFwd, My.Settings.CycleKeyFwd)
+                Hotkey.RegisterHotkey(Me, 3, Hotkey.KeyModifier.NoRepeat Or My.Settings.CycleAltKeyBwd Or My.Settings.CycleShiftKeyBwd Or My.Settings.CycleCtrlKeyBwd Or My.Settings.CycleWinKeyBwd, My.Settings.CycleKeyBwd)
             Else
                 Hotkey.UnregHotkey(Me, 2)
                 Hotkey.UnregHotkey(Me, 3)
             End If
             If My.Settings.CloseAll Then
-                Hotkey.RegisterHotkey(Me, 4, Hotkey.KeyModifier.NoRepeat Or My.Settings.CloseAllAlt Or My.Settings.CloseAllShift Or My.Settings.CloseAllCtrl, My.Settings.CloseAllKey)
+                Hotkey.RegisterHotkey(Me, 4, Hotkey.KeyModifier.NoRepeat Or My.Settings.CloseAllAlt Or My.Settings.CloseAllShift Or My.Settings.CloseAllCtrl Or My.Settings.CloseAllWin, My.Settings.CloseAllKey)
             Else
                 Hotkey.UnregHotkey(Me, 4)
             End If
         Else
             Hotkey.UnregHotkey(Me)
+            If My.Settings.ToggleTop Then
+                Hotkey.RegisterHotkey(Me, 5, Hotkey.KeyModifier.NoRepeat Or My.Settings.TogTopAlt Or My.Settings.TogTopShift Or My.Settings.TogTopCtrl Or My.Settings.TogTopWin, My.Settings.ToggleTopKey)
+            End If
         End If
     End Sub
 

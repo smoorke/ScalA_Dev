@@ -68,6 +68,7 @@ Partial NotInheritable Class FrmSettings
         Me.ChkMinMin = New System.Windows.Forms.CheckBox()
         Me.chkCloseAll = New System.Windows.Forms.CheckBox()
         Me.chkHoverActivate = New System.Windows.Forms.CheckBox()
+        Me.chkShowEnd = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
@@ -85,26 +86,37 @@ Partial NotInheritable Class FrmSettings
         Me.DummyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.txtResolutions = New System.Windows.Forms.TextBox()
         Me.tabHotkeys = New System.Windows.Forms.TabPage()
+        Me.chkToggleTopMost = New System.Windows.Forms.CheckBox()
+        Me.grpToggleTopMost = New System.Windows.Forms.GroupBox()
+        Me.txtTogTop = New System.Windows.Forms.TextBox()
+        Me.chkTogTopAlt = New System.Windows.Forms.CheckBox()
+        Me.chkTogTopShift = New System.Windows.Forms.CheckBox()
+        Me.chkTogTopWin = New System.Windows.Forms.CheckBox()
+        Me.chkTogTopCtrl = New System.Windows.Forms.CheckBox()
         Me.grpCloseAllShortcut = New System.Windows.Forms.GroupBox()
-        Me.chkCAShift = New System.Windows.Forms.CheckBox()
         Me.txtCloseAll = New System.Windows.Forms.TextBox()
         Me.chkCAALt = New System.Windows.Forms.CheckBox()
+        Me.chkCAShift = New System.Windows.Forms.CheckBox()
+        Me.chkCAWin = New System.Windows.Forms.CheckBox()
         Me.chkCACtrl = New System.Windows.Forms.CheckBox()
         Me.chkSwitchToOverview = New System.Windows.Forms.CheckBox()
         Me.chkCycleAlts = New System.Windows.Forms.CheckBox()
         Me.grpCycleShortcut = New System.Windows.Forms.GroupBox()
-        Me.chkCycleDownShift = New System.Windows.Forms.CheckBox()
-        Me.chkCycleUpShift = New System.Windows.Forms.CheckBox()
         Me.chkCycleDownAlt = New System.Windows.Forms.CheckBox()
-        Me.chkCycleDownCtrl = New System.Windows.Forms.CheckBox()
         Me.txtCycleKeyDown = New System.Windows.Forms.TextBox()
         Me.chkCycleUpAlt = New System.Windows.Forms.CheckBox()
-        Me.chkCycleUpCtrl = New System.Windows.Forms.CheckBox()
         Me.txtCycleKeyUp = New System.Windows.Forms.TextBox()
+        Me.chkCycleDownShift = New System.Windows.Forms.CheckBox()
+        Me.chkCycleUpShift = New System.Windows.Forms.CheckBox()
+        Me.chkCycleDownWin = New System.Windows.Forms.CheckBox()
+        Me.chkCycleUpWin = New System.Windows.Forms.CheckBox()
+        Me.chkCycleDownCtrl = New System.Windows.Forms.CheckBox()
+        Me.chkCycleUpCtrl = New System.Windows.Forms.CheckBox()
         Me.grpOverviewShortcut = New System.Windows.Forms.GroupBox()
-        Me.chkStoShift = New System.Windows.Forms.CheckBox()
         Me.txtStoKey = New System.Windows.Forms.TextBox()
         Me.chkStoAlt = New System.Windows.Forms.CheckBox()
+        Me.chkStoShift = New System.Windows.Forms.CheckBox()
+        Me.chkStoWin = New System.Windows.Forms.CheckBox()
         Me.chkStoCtrl = New System.Windows.Forms.CheckBox()
         Me.tabSortAndBL = New System.Windows.Forms.TabPage()
         Me.btnTest = New System.Windows.Forms.Button()
@@ -127,7 +139,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
-        Me.chkShowEnd = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -158,6 +169,7 @@ Partial NotInheritable Class FrmSettings
         Me.cmsRestore.SuspendLayout()
         Me.cmsGenerate.SuspendLayout()
         Me.tabHotkeys.SuspendLayout()
+        Me.grpToggleTopMost.SuspendLayout()
         Me.grpCloseAllShortcut.SuspendLayout()
         Me.grpCycleShortcut.SuspendLayout()
         Me.grpOverviewShortcut.SuspendLayout()
@@ -525,7 +537,7 @@ Partial NotInheritable Class FrmSettings
         'chkCycleOnClose
         '
         Me.chkCycleOnClose.AutoSize = True
-        Me.chkCycleOnClose.Location = New System.Drawing.Point(161, 57)
+        Me.chkCycleOnClose.Location = New System.Drawing.Point(149, 53)
         Me.chkCycleOnClose.Name = "chkCycleOnClose"
         Me.chkCycleOnClose.Size = New System.Drawing.Size(96, 17)
         Me.chkCycleOnClose.TabIndex = 16
@@ -581,7 +593,7 @@ Partial NotInheritable Class FrmSettings
         'chkCloseAll
         '
         Me.chkCloseAll.AutoSize = True
-        Me.chkCloseAll.Location = New System.Drawing.Point(49, 131)
+        Me.chkCloseAll.Location = New System.Drawing.Point(24, 125)
         Me.chkCloseAll.Name = "chkCloseAll"
         Me.chkCloseAll.Size = New System.Drawing.Size(152, 17)
         Me.chkCloseAll.TabIndex = 19
@@ -602,6 +614,17 @@ Partial NotInheritable Class FrmSettings
         "ndow is ScalA or an Astonia client that is shown on the overview.")
         Me.chkHoverActivate.UseVisualStyleBackColor = True
         '
+        'chkShowEnd
+        '
+        Me.chkShowEnd.AutoSize = True
+        Me.chkShowEnd.Location = New System.Drawing.Point(12, 41)
+        Me.chkShowEnd.Name = "chkShowEnd"
+        Me.chkShowEnd.Size = New System.Drawing.Size(111, 17)
+        Me.chkShowEnd.TabIndex = 27
+        Me.chkShowEnd.Text = "Always Show End"
+        Me.ttSettings.SetToolTip(Me.chkShowEnd, "Always show Endurance on Overview Big HealthBars")
+        Me.chkShowEnd.UseVisualStyleBackColor = True
+        '
         'tbcSettings
         '
         Me.tbcSettings.Appearance = System.Windows.Forms.TabAppearance.FlatButtons
@@ -610,7 +633,7 @@ Partial NotInheritable Class FrmSettings
         Me.tbcSettings.Controls.Add(Me.tabSortAndBL)
         Me.tbcSettings.Controls.Add(Me.tabMaximized)
         Me.tbcSettings.Controls.Add(Me.tabMisc)
-        Me.tbcSettings.Location = New System.Drawing.Point(0, 0)
+        Me.tbcSettings.Location = New System.Drawing.Point(-1, 0)
         Me.tbcSettings.Multiline = True
         Me.tbcSettings.Name = "tbcSettings"
         Me.tbcSettings.SelectedIndex = 0
@@ -753,6 +776,9 @@ Partial NotInheritable Class FrmSettings
         '
         'tabHotkeys
         '
+        Me.tabHotkeys.AutoScroll = True
+        Me.tabHotkeys.Controls.Add(Me.chkToggleTopMost)
+        Me.tabHotkeys.Controls.Add(Me.grpToggleTopMost)
         Me.tabHotkeys.Controls.Add(Me.chkCloseAll)
         Me.tabHotkeys.Controls.Add(Me.grpCloseAllShortcut)
         Me.tabHotkeys.Controls.Add(Me.chkCycleOnClose)
@@ -767,41 +793,108 @@ Partial NotInheritable Class FrmSettings
         Me.tabHotkeys.Text = "Hotkeys"
         Me.tabHotkeys.UseVisualStyleBackColor = True
         '
+        'chkToggleTopMost
+        '
+        Me.chkToggleTopMost.AutoSize = True
+        Me.chkToggleTopMost.Location = New System.Drawing.Point(24, 174)
+        Me.chkToggleTopMost.Name = "chkToggleTopMost"
+        Me.chkToggleTopMost.Size = New System.Drawing.Size(215, 18)
+        Me.chkToggleTopMost.TabIndex = 21
+        Me.chkToggleTopMost.TabStop = False
+        Me.chkToggleTopMost.Text = "Toggle Other Window TopMost Status"
+        Me.chkToggleTopMost.UseCompatibleTextRendering = True
+        Me.chkToggleTopMost.UseVisualStyleBackColor = True
+        '
+        'grpToggleTopMost
+        '
+        Me.grpToggleTopMost.Controls.Add(Me.txtTogTop)
+        Me.grpToggleTopMost.Controls.Add(Me.chkTogTopAlt)
+        Me.grpToggleTopMost.Controls.Add(Me.chkTogTopShift)
+        Me.grpToggleTopMost.Controls.Add(Me.chkTogTopWin)
+        Me.grpToggleTopMost.Controls.Add(Me.chkTogTopCtrl)
+        Me.grpToggleTopMost.Location = New System.Drawing.Point(11, 176)
+        Me.grpToggleTopMost.Name = "grpToggleTopMost"
+        Me.grpToggleTopMost.Size = New System.Drawing.Size(269, 43)
+        Me.grpToggleTopMost.TabIndex = 20
+        Me.grpToggleTopMost.TabStop = False
+        '
+        'txtTogTop
+        '
+        Me.txtTogTop.Location = New System.Drawing.Point(181, 16)
+        Me.txtTogTop.Name = "txtTogTop"
+        Me.txtTogTop.Size = New System.Drawing.Size(82, 20)
+        Me.txtTogTop.TabIndex = 21
+        Me.txtTogTop.TabStop = False
+        '
+        'chkTogTopAlt
+        '
+        Me.chkTogTopAlt.AutoSize = True
+        Me.chkTogTopAlt.Location = New System.Drawing.Point(90, 19)
+        Me.chkTogTopAlt.Name = "chkTogTopAlt"
+        Me.chkTogTopAlt.Size = New System.Drawing.Size(38, 17)
+        Me.chkTogTopAlt.TabIndex = 23
+        Me.chkTogTopAlt.TabStop = False
+        Me.chkTogTopAlt.Text = "Alt"
+        Me.chkTogTopAlt.UseVisualStyleBackColor = True
+        '
+        'chkTogTopShift
+        '
+        Me.chkTogTopShift.AutoSize = True
+        Me.chkTogTopShift.Location = New System.Drawing.Point(131, 19)
+        Me.chkTogTopShift.Name = "chkTogTopShift"
+        Me.chkTogTopShift.Size = New System.Drawing.Size(47, 17)
+        Me.chkTogTopShift.TabIndex = 22
+        Me.chkTogTopShift.TabStop = False
+        Me.chkTogTopShift.Text = "Shift"
+        Me.chkTogTopShift.UseVisualStyleBackColor = True
+        '
+        'chkTogTopWin
+        '
+        Me.chkTogTopWin.AutoSize = True
+        Me.chkTogTopWin.Location = New System.Drawing.Point(46, 19)
+        Me.chkTogTopWin.Name = "chkTogTopWin"
+        Me.chkTogTopWin.Size = New System.Drawing.Size(45, 17)
+        Me.chkTogTopWin.TabIndex = 20
+        Me.chkTogTopWin.TabStop = False
+        Me.chkTogTopWin.Text = "Win"
+        Me.chkTogTopWin.UseVisualStyleBackColor = True
+        '
+        'chkTogTopCtrl
+        '
+        Me.chkTogTopCtrl.AutoSize = True
+        Me.chkTogTopCtrl.Location = New System.Drawing.Point(6, 19)
+        Me.chkTogTopCtrl.Name = "chkTogTopCtrl"
+        Me.chkTogTopCtrl.Size = New System.Drawing.Size(41, 17)
+        Me.chkTogTopCtrl.TabIndex = 19
+        Me.chkTogTopCtrl.TabStop = False
+        Me.chkTogTopCtrl.Text = "Ctrl"
+        Me.chkTogTopCtrl.UseVisualStyleBackColor = True
+        '
         'grpCloseAllShortcut
         '
-        Me.grpCloseAllShortcut.Controls.Add(Me.chkCAShift)
         Me.grpCloseAllShortcut.Controls.Add(Me.txtCloseAll)
         Me.grpCloseAllShortcut.Controls.Add(Me.chkCAALt)
+        Me.grpCloseAllShortcut.Controls.Add(Me.chkCAShift)
+        Me.grpCloseAllShortcut.Controls.Add(Me.chkCAWin)
         Me.grpCloseAllShortcut.Controls.Add(Me.chkCACtrl)
-        Me.grpCloseAllShortcut.Location = New System.Drawing.Point(46, 132)
+        Me.grpCloseAllShortcut.Location = New System.Drawing.Point(11, 126)
         Me.grpCloseAllShortcut.Name = "grpCloseAllShortcut"
-        Me.grpCloseAllShortcut.Size = New System.Drawing.Size(214, 45)
+        Me.grpCloseAllShortcut.Size = New System.Drawing.Size(269, 43)
         Me.grpCloseAllShortcut.TabIndex = 17
         Me.grpCloseAllShortcut.TabStop = False
         '
-        'chkCAShift
-        '
-        Me.chkCAShift.AutoSize = True
-        Me.chkCAShift.Location = New System.Drawing.Point(84, 21)
-        Me.chkCAShift.Name = "chkCAShift"
-        Me.chkCAShift.Size = New System.Drawing.Size(47, 17)
-        Me.chkCAShift.TabIndex = 22
-        Me.chkCAShift.TabStop = False
-        Me.chkCAShift.Text = "Shift"
-        Me.chkCAShift.UseVisualStyleBackColor = True
-        '
         'txtCloseAll
         '
-        Me.txtCloseAll.Location = New System.Drawing.Point(134, 18)
+        Me.txtCloseAll.Location = New System.Drawing.Point(181, 16)
         Me.txtCloseAll.Name = "txtCloseAll"
-        Me.txtCloseAll.Size = New System.Drawing.Size(74, 20)
+        Me.txtCloseAll.Size = New System.Drawing.Size(82, 20)
         Me.txtCloseAll.TabIndex = 21
         Me.txtCloseAll.TabStop = False
         '
         'chkCAALt
         '
         Me.chkCAALt.AutoSize = True
-        Me.chkCAALt.Location = New System.Drawing.Point(46, 21)
+        Me.chkCAALt.Location = New System.Drawing.Point(90, 19)
         Me.chkCAALt.Name = "chkCAALt"
         Me.chkCAALt.Size = New System.Drawing.Size(38, 17)
         Me.chkCAALt.TabIndex = 20
@@ -809,10 +902,32 @@ Partial NotInheritable Class FrmSettings
         Me.chkCAALt.Text = "Alt"
         Me.chkCAALt.UseVisualStyleBackColor = True
         '
+        'chkCAShift
+        '
+        Me.chkCAShift.AutoSize = True
+        Me.chkCAShift.Location = New System.Drawing.Point(131, 19)
+        Me.chkCAShift.Name = "chkCAShift"
+        Me.chkCAShift.Size = New System.Drawing.Size(47, 17)
+        Me.chkCAShift.TabIndex = 22
+        Me.chkCAShift.TabStop = False
+        Me.chkCAShift.Text = "Shift"
+        Me.chkCAShift.UseVisualStyleBackColor = True
+        '
+        'chkCAWin
+        '
+        Me.chkCAWin.AutoSize = True
+        Me.chkCAWin.Location = New System.Drawing.Point(46, 19)
+        Me.chkCAWin.Name = "chkCAWin"
+        Me.chkCAWin.Size = New System.Drawing.Size(45, 17)
+        Me.chkCAWin.TabIndex = 23
+        Me.chkCAWin.TabStop = False
+        Me.chkCAWin.Text = "Win"
+        Me.chkCAWin.UseVisualStyleBackColor = True
+        '
         'chkCACtrl
         '
         Me.chkCACtrl.AutoSize = True
-        Me.chkCACtrl.Location = New System.Drawing.Point(6, 21)
+        Me.chkCACtrl.Location = New System.Drawing.Point(6, 19)
         Me.chkCACtrl.Name = "chkCACtrl"
         Me.chkCACtrl.Size = New System.Drawing.Size(41, 17)
         Me.chkCACtrl.TabIndex = 19
@@ -823,7 +938,7 @@ Partial NotInheritable Class FrmSettings
         'chkSwitchToOverview
         '
         Me.chkSwitchToOverview.AutoSize = True
-        Me.chkSwitchToOverview.Location = New System.Drawing.Point(48, 6)
+        Me.chkSwitchToOverview.Location = New System.Drawing.Point(24, 4)
         Me.chkSwitchToOverview.Name = "chkSwitchToOverview"
         Me.chkSwitchToOverview.Size = New System.Drawing.Size(118, 17)
         Me.chkSwitchToOverview.TabIndex = 2
@@ -834,7 +949,7 @@ Partial NotInheritable Class FrmSettings
         'chkCycleAlts
         '
         Me.chkCycleAlts.AutoSize = True
-        Me.chkCycleAlts.Location = New System.Drawing.Point(48, 57)
+        Me.chkCycleAlts.Location = New System.Drawing.Point(24, 53)
         Me.chkCycleAlts.Name = "chkCycleAlts"
         Me.chkCycleAlts.Size = New System.Drawing.Size(102, 17)
         Me.chkCycleAlts.TabIndex = 10
@@ -844,24 +959,64 @@ Partial NotInheritable Class FrmSettings
         '
         'grpCycleShortcut
         '
-        Me.grpCycleShortcut.Controls.Add(Me.chkCycleDownShift)
-        Me.grpCycleShortcut.Controls.Add(Me.chkCycleUpShift)
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleDownAlt)
-        Me.grpCycleShortcut.Controls.Add(Me.chkCycleDownCtrl)
         Me.grpCycleShortcut.Controls.Add(Me.txtCycleKeyDown)
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleUpAlt)
-        Me.grpCycleShortcut.Controls.Add(Me.chkCycleUpCtrl)
         Me.grpCycleShortcut.Controls.Add(Me.txtCycleKeyUp)
-        Me.grpCycleShortcut.Location = New System.Drawing.Point(46, 59)
+        Me.grpCycleShortcut.Controls.Add(Me.chkCycleDownShift)
+        Me.grpCycleShortcut.Controls.Add(Me.chkCycleUpShift)
+        Me.grpCycleShortcut.Controls.Add(Me.chkCycleDownWin)
+        Me.grpCycleShortcut.Controls.Add(Me.chkCycleUpWin)
+        Me.grpCycleShortcut.Controls.Add(Me.chkCycleDownCtrl)
+        Me.grpCycleShortcut.Controls.Add(Me.chkCycleUpCtrl)
+        Me.grpCycleShortcut.Location = New System.Drawing.Point(11, 55)
         Me.grpCycleShortcut.Name = "grpCycleShortcut"
-        Me.grpCycleShortcut.Size = New System.Drawing.Size(214, 67)
+        Me.grpCycleShortcut.Size = New System.Drawing.Size(269, 67)
         Me.grpCycleShortcut.TabIndex = 1
         Me.grpCycleShortcut.TabStop = False
+        '
+        'chkCycleDownAlt
+        '
+        Me.chkCycleDownAlt.AutoSize = True
+        Me.chkCycleDownAlt.Location = New System.Drawing.Point(90, 42)
+        Me.chkCycleDownAlt.Name = "chkCycleDownAlt"
+        Me.chkCycleDownAlt.Size = New System.Drawing.Size(38, 17)
+        Me.chkCycleDownAlt.TabIndex = 13
+        Me.chkCycleDownAlt.TabStop = False
+        Me.chkCycleDownAlt.Text = "Alt"
+        Me.chkCycleDownAlt.UseVisualStyleBackColor = True
+        '
+        'txtCycleKeyDown
+        '
+        Me.txtCycleKeyDown.Location = New System.Drawing.Point(181, 40)
+        Me.txtCycleKeyDown.Name = "txtCycleKeyDown"
+        Me.txtCycleKeyDown.Size = New System.Drawing.Size(82, 20)
+        Me.txtCycleKeyDown.TabIndex = 11
+        Me.txtCycleKeyDown.TabStop = False
+        '
+        'chkCycleUpAlt
+        '
+        Me.chkCycleUpAlt.AutoSize = True
+        Me.chkCycleUpAlt.Location = New System.Drawing.Point(90, 19)
+        Me.chkCycleUpAlt.Name = "chkCycleUpAlt"
+        Me.chkCycleUpAlt.Size = New System.Drawing.Size(38, 17)
+        Me.chkCycleUpAlt.TabIndex = 9
+        Me.chkCycleUpAlt.TabStop = False
+        Me.chkCycleUpAlt.Text = "Alt"
+        Me.chkCycleUpAlt.UseVisualStyleBackColor = True
+        '
+        'txtCycleKeyUp
+        '
+        Me.txtCycleKeyUp.Location = New System.Drawing.Point(181, 16)
+        Me.txtCycleKeyUp.Name = "txtCycleKeyUp"
+        Me.txtCycleKeyUp.Size = New System.Drawing.Size(82, 20)
+        Me.txtCycleKeyUp.TabIndex = 7
+        Me.txtCycleKeyUp.TabStop = False
         '
         'chkCycleDownShift
         '
         Me.chkCycleDownShift.AutoSize = True
-        Me.chkCycleDownShift.Location = New System.Drawing.Point(84, 43)
+        Me.chkCycleDownShift.Location = New System.Drawing.Point(131, 42)
         Me.chkCycleDownShift.Name = "chkCycleDownShift"
         Me.chkCycleDownShift.Size = New System.Drawing.Size(47, 17)
         Me.chkCycleDownShift.TabIndex = 15
@@ -872,7 +1027,7 @@ Partial NotInheritable Class FrmSettings
         'chkCycleUpShift
         '
         Me.chkCycleUpShift.AutoSize = True
-        Me.chkCycleUpShift.Location = New System.Drawing.Point(84, 20)
+        Me.chkCycleUpShift.Location = New System.Drawing.Point(131, 19)
         Me.chkCycleUpShift.Name = "chkCycleUpShift"
         Me.chkCycleUpShift.Size = New System.Drawing.Size(47, 17)
         Me.chkCycleUpShift.TabIndex = 14
@@ -880,21 +1035,32 @@ Partial NotInheritable Class FrmSettings
         Me.chkCycleUpShift.Text = "Shift"
         Me.chkCycleUpShift.UseVisualStyleBackColor = True
         '
-        'chkCycleDownAlt
+        'chkCycleDownWin
         '
-        Me.chkCycleDownAlt.AutoSize = True
-        Me.chkCycleDownAlt.Location = New System.Drawing.Point(46, 43)
-        Me.chkCycleDownAlt.Name = "chkCycleDownAlt"
-        Me.chkCycleDownAlt.Size = New System.Drawing.Size(38, 17)
-        Me.chkCycleDownAlt.TabIndex = 13
-        Me.chkCycleDownAlt.TabStop = False
-        Me.chkCycleDownAlt.Text = "Alt"
-        Me.chkCycleDownAlt.UseVisualStyleBackColor = True
+        Me.chkCycleDownWin.AutoSize = True
+        Me.chkCycleDownWin.Location = New System.Drawing.Point(46, 42)
+        Me.chkCycleDownWin.Name = "chkCycleDownWin"
+        Me.chkCycleDownWin.Size = New System.Drawing.Size(45, 17)
+        Me.chkCycleDownWin.TabIndex = 17
+        Me.chkCycleDownWin.TabStop = False
+        Me.chkCycleDownWin.Text = "Win"
+        Me.chkCycleDownWin.UseVisualStyleBackColor = True
+        '
+        'chkCycleUpWin
+        '
+        Me.chkCycleUpWin.AutoSize = True
+        Me.chkCycleUpWin.Location = New System.Drawing.Point(46, 19)
+        Me.chkCycleUpWin.Name = "chkCycleUpWin"
+        Me.chkCycleUpWin.Size = New System.Drawing.Size(45, 17)
+        Me.chkCycleUpWin.TabIndex = 16
+        Me.chkCycleUpWin.TabStop = False
+        Me.chkCycleUpWin.Text = "Win"
+        Me.chkCycleUpWin.UseVisualStyleBackColor = True
         '
         'chkCycleDownCtrl
         '
         Me.chkCycleDownCtrl.AutoSize = True
-        Me.chkCycleDownCtrl.Location = New System.Drawing.Point(6, 43)
+        Me.chkCycleDownCtrl.Location = New System.Drawing.Point(6, 42)
         Me.chkCycleDownCtrl.Name = "chkCycleDownCtrl"
         Me.chkCycleDownCtrl.Size = New System.Drawing.Size(41, 17)
         Me.chkCycleDownCtrl.TabIndex = 12
@@ -902,29 +1068,10 @@ Partial NotInheritable Class FrmSettings
         Me.chkCycleDownCtrl.Text = "Ctrl"
         Me.chkCycleDownCtrl.UseVisualStyleBackColor = True
         '
-        'txtCycleKeyDown
-        '
-        Me.txtCycleKeyDown.Location = New System.Drawing.Point(134, 41)
-        Me.txtCycleKeyDown.Name = "txtCycleKeyDown"
-        Me.txtCycleKeyDown.Size = New System.Drawing.Size(74, 20)
-        Me.txtCycleKeyDown.TabIndex = 11
-        Me.txtCycleKeyDown.TabStop = False
-        '
-        'chkCycleUpAlt
-        '
-        Me.chkCycleUpAlt.AutoSize = True
-        Me.chkCycleUpAlt.Location = New System.Drawing.Point(46, 20)
-        Me.chkCycleUpAlt.Name = "chkCycleUpAlt"
-        Me.chkCycleUpAlt.Size = New System.Drawing.Size(38, 17)
-        Me.chkCycleUpAlt.TabIndex = 9
-        Me.chkCycleUpAlt.TabStop = False
-        Me.chkCycleUpAlt.Text = "Alt"
-        Me.chkCycleUpAlt.UseVisualStyleBackColor = True
-        '
         'chkCycleUpCtrl
         '
         Me.chkCycleUpCtrl.AutoSize = True
-        Me.chkCycleUpCtrl.Location = New System.Drawing.Point(6, 20)
+        Me.chkCycleUpCtrl.Location = New System.Drawing.Point(6, 19)
         Me.chkCycleUpCtrl.Name = "chkCycleUpCtrl"
         Me.chkCycleUpCtrl.Size = New System.Drawing.Size(41, 17)
         Me.chkCycleUpCtrl.TabIndex = 8
@@ -932,49 +1079,31 @@ Partial NotInheritable Class FrmSettings
         Me.chkCycleUpCtrl.Text = "Ctrl"
         Me.chkCycleUpCtrl.UseVisualStyleBackColor = True
         '
-        'txtCycleKeyUp
-        '
-        Me.txtCycleKeyUp.Location = New System.Drawing.Point(134, 18)
-        Me.txtCycleKeyUp.Name = "txtCycleKeyUp"
-        Me.txtCycleKeyUp.Size = New System.Drawing.Size(74, 20)
-        Me.txtCycleKeyUp.TabIndex = 7
-        Me.txtCycleKeyUp.TabStop = False
-        '
         'grpOverviewShortcut
         '
-        Me.grpOverviewShortcut.Controls.Add(Me.chkStoShift)
         Me.grpOverviewShortcut.Controls.Add(Me.txtStoKey)
         Me.grpOverviewShortcut.Controls.Add(Me.chkStoAlt)
+        Me.grpOverviewShortcut.Controls.Add(Me.chkStoShift)
+        Me.grpOverviewShortcut.Controls.Add(Me.chkStoWin)
         Me.grpOverviewShortcut.Controls.Add(Me.chkStoCtrl)
-        Me.grpOverviewShortcut.Location = New System.Drawing.Point(46, 8)
+        Me.grpOverviewShortcut.Location = New System.Drawing.Point(11, 6)
         Me.grpOverviewShortcut.Name = "grpOverviewShortcut"
-        Me.grpOverviewShortcut.Size = New System.Drawing.Size(214, 45)
+        Me.grpOverviewShortcut.Size = New System.Drawing.Size(269, 43)
         Me.grpOverviewShortcut.TabIndex = 0
         Me.grpOverviewShortcut.TabStop = False
         '
-        'chkStoShift
-        '
-        Me.chkStoShift.AutoSize = True
-        Me.chkStoShift.Location = New System.Drawing.Point(84, 21)
-        Me.chkStoShift.Name = "chkStoShift"
-        Me.chkStoShift.Size = New System.Drawing.Size(47, 17)
-        Me.chkStoShift.TabIndex = 7
-        Me.chkStoShift.TabStop = False
-        Me.chkStoShift.Text = "Shift"
-        Me.chkStoShift.UseVisualStyleBackColor = True
-        '
         'txtStoKey
         '
-        Me.txtStoKey.Location = New System.Drawing.Point(134, 18)
+        Me.txtStoKey.Location = New System.Drawing.Point(181, 16)
         Me.txtStoKey.Name = "txtStoKey"
-        Me.txtStoKey.Size = New System.Drawing.Size(74, 20)
+        Me.txtStoKey.Size = New System.Drawing.Size(82, 20)
         Me.txtStoKey.TabIndex = 6
         Me.txtStoKey.TabStop = False
         '
         'chkStoAlt
         '
         Me.chkStoAlt.AutoSize = True
-        Me.chkStoAlt.Location = New System.Drawing.Point(46, 21)
+        Me.chkStoAlt.Location = New System.Drawing.Point(90, 19)
         Me.chkStoAlt.Name = "chkStoAlt"
         Me.chkStoAlt.Size = New System.Drawing.Size(38, 17)
         Me.chkStoAlt.TabIndex = 5
@@ -982,10 +1111,32 @@ Partial NotInheritable Class FrmSettings
         Me.chkStoAlt.Text = "Alt"
         Me.chkStoAlt.UseVisualStyleBackColor = True
         '
+        'chkStoShift
+        '
+        Me.chkStoShift.AutoSize = True
+        Me.chkStoShift.Location = New System.Drawing.Point(131, 19)
+        Me.chkStoShift.Name = "chkStoShift"
+        Me.chkStoShift.Size = New System.Drawing.Size(47, 17)
+        Me.chkStoShift.TabIndex = 7
+        Me.chkStoShift.TabStop = False
+        Me.chkStoShift.Text = "Shift"
+        Me.chkStoShift.UseVisualStyleBackColor = True
+        '
+        'chkStoWin
+        '
+        Me.chkStoWin.AutoSize = True
+        Me.chkStoWin.Location = New System.Drawing.Point(46, 19)
+        Me.chkStoWin.Name = "chkStoWin"
+        Me.chkStoWin.Size = New System.Drawing.Size(45, 17)
+        Me.chkStoWin.TabIndex = 8
+        Me.chkStoWin.TabStop = False
+        Me.chkStoWin.Text = "Win"
+        Me.chkStoWin.UseVisualStyleBackColor = True
+        '
         'chkStoCtrl
         '
         Me.chkStoCtrl.AutoSize = True
-        Me.chkStoCtrl.Location = New System.Drawing.Point(6, 21)
+        Me.chkStoCtrl.Location = New System.Drawing.Point(6, 19)
         Me.chkStoCtrl.Name = "chkStoCtrl"
         Me.chkStoCtrl.Size = New System.Drawing.Size(41, 17)
         Me.chkStoCtrl.TabIndex = 3
@@ -1234,23 +1385,12 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
-        'chkShowEnd
-        '
-        Me.chkShowEnd.AutoSize = True
-        Me.chkShowEnd.Location = New System.Drawing.Point(12, 41)
-        Me.chkShowEnd.Name = "chkShowEnd"
-        Me.chkShowEnd.Size = New System.Drawing.Size(111, 17)
-        Me.chkShowEnd.TabIndex = 27
-        Me.chkShowEnd.Text = "Always Show End"
-        Me.ttSettings.SetToolTip(Me.chkShowEnd, "Always show Endurance on Overview Big HealthBars")
-        Me.chkShowEnd.UseVisualStyleBackColor = True
-        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
-        Me.ClientSize = New System.Drawing.Size(314, 244)
+        Me.ClientSize = New System.Drawing.Size(309, 244)
         Me.Controls.Add(Me.tbcSettings)
         Me.Controls.Add(Me.btnCancel)
         Me.Controls.Add(Me.btnOK)
@@ -1278,6 +1418,8 @@ Partial NotInheritable Class FrmSettings
         Me.cmsGenerate.ResumeLayout(False)
         Me.tabHotkeys.ResumeLayout(False)
         Me.tabHotkeys.PerformLayout()
+        Me.grpToggleTopMost.ResumeLayout(False)
+        Me.grpToggleTopMost.PerformLayout()
         Me.grpCloseAllShortcut.ResumeLayout(False)
         Me.grpCloseAllShortcut.PerformLayout()
         Me.grpCycleShortcut.ResumeLayout(False)
@@ -1385,4 +1527,15 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents ChkQLShowHidden As CheckBox
     Friend WithEvents chkHoverActivate As CheckBox
     Friend WithEvents chkShowEnd As CheckBox
+    Friend WithEvents chkToggleTopMost As CheckBox
+    Friend WithEvents grpToggleTopMost As GroupBox
+    Friend WithEvents chkTogTopShift As CheckBox
+    Friend WithEvents txtTogTop As TextBox
+    Friend WithEvents chkTogTopWin As CheckBox
+    Friend WithEvents chkTogTopCtrl As CheckBox
+    Friend WithEvents chkStoWin As CheckBox
+    Friend WithEvents chkTogTopAlt As CheckBox
+    Friend WithEvents chkCAWin As CheckBox
+    Friend WithEvents chkCycleDownWin As CheckBox
+    Friend WithEvents chkCycleUpWin As CheckBox
 End Class

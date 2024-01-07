@@ -715,6 +715,126 @@ Namespace My
                 Me("ShowEnd") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property ToggleTop() As Boolean
+            Get
+                Return CType(Me("ToggleTop"),Boolean)
+            End Get
+            Set
+                Me("ToggleTop") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property TogTopAlt() As Integer
+            Get
+                Return CType(Me("TogTopAlt"),Integer)
+            End Get
+            Set
+                Me("TogTopAlt") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("2")>  _
+        Public Property TogTopCtrl() As Integer
+            Get
+                Return CType(Me("TogTopCtrl"),Integer)
+            End Get
+            Set
+                Me("TogTopCtrl") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property TogTopShift() As Integer
+            Get
+                Return CType(Me("TogTopShift"),Integer)
+            End Get
+            Set
+                Me("TogTopShift") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("8")>  _
+        Public Property TogTopWin() As Integer
+            Get
+                Return CType(Me("TogTopWin"),Integer)
+            End Get
+            Set
+                Me("TogTopWin") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property StoWin() As Integer
+            Get
+                Return CType(Me("StoWin"),Integer)
+            End Get
+            Set
+                Me("StoWin") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property CycleWinKeyFwd() As Integer
+            Get
+                Return CType(Me("CycleWinKeyFwd"),Integer)
+            End Get
+            Set
+                Me("CycleWinKeyFwd") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property CycleWinKeyBwd() As Integer
+            Get
+                Return CType(Me("CycleWinKeyBwd"),Integer)
+            End Get
+            Set
+                Me("CycleWinKeyBwd") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property CloseAllWin() As Integer
+            Get
+                Return CType(Me("CloseAllWin"),Integer)
+            End Get
+            Set
+                Me("CloseAllWin") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("84")>  _
+        Public Property ToggleTopKey() As Integer
+            Get
+                Return CType(Me("ToggleTopKey"),Integer)
+            End Get
+            Set
+                Me("ToggleTopKey") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

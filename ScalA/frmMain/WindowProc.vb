@@ -13,7 +13,7 @@ Partial NotInheritable Class FrmMain
                 Debug.Print($"Hotkey {m.WParam} pressed")
                 Select Case m.WParam
                     Case 1 'ctrl-tab
-                        'only preform switch when astonia or scala Is active
+                        'only perform switch when astonia or scala Is active
                         Dim activeID = GetActiveProcessID()
                         Debug.Print("aID " & activeID & " selfPID " & scalaPID)
                         If activeID = scalaPID OrElse Process.GetProcessById(activeID).HasClassNameIn(My.Settings.className) Then
@@ -38,6 +38,49 @@ Partial NotInheritable Class FrmMain
                         Cycle(True)
                     Case 4
                         CloseAllToolStripMenuItem_Click(New ToolStripMenuItem, New EventArgs)
+                    Case 5 'ctrl-win-T
+                        'only when active window isn't scala nor Astonia
+                        Dim activeID = GetActiveProcessID()
+                        Dim activeHandle = GetForegroundWindow()
+                        Dim activeProc = Process.GetProcessById(activeID)
+                        Debug.Print("--Before--")
+                        Debug.Print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                        Debug.Print($"Trget {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                        Debug.Print($"tgtOwner {GetWindowLong(Handle, GWL_HWNDPARENT)}")
+                        If activeID <> scalaPID OrElse Not activeProc.HasClassNameIn(My.Settings.className) Then
+                            Try
+                                Dim topm As Boolean = (GetWindowLong(Handle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST
+                                SetWindowPos(activeHandle, If(topm, SWP_HWND.NOTOPMOST, SWP_HWND.TOPMOST),
+                                                  -1, -1, -1, -1,
+                                                  SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+
+                                'TODO: handle ScalA being topmost
+
+
+                                'If (GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST AndAlso
+                                '   (GetWindowLong(handle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST Then
+                                '    Dim ownerHndl As IntPtr = GetWindowLong(handle, GWL_HWNDPARENT)
+                                '    If ownerHndl <> ScalaHandle Then
+                                '        SetWindowLong(handle, GWL_HWNDPARENT, ScalaHandle)
+                                '    Else
+                                '        ' this part don't work
+                                '        SetWindowLong(activeHandle, GWL_HWNDPARENT, 0)
+                                '        Threading.Thread.Sleep(50)
+                                '        SetWindowPos(activeHandle, SWP_HWND.NOTOPMOST,
+                                '                  -1, -1, -1, -1,
+                                '                  SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+                                '        Me.TopMost = My.Settings.topmost
+                                '    End If
+                                'End If
+                            Catch
+                            End Try
+                        End If
+                        Debug.Print("---After---")
+                        Debug.Print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                        Debug.Print($"Trget {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                        Debug.Print($"tgtOwner {GetWindowLong(Handle, GWL_HWNDPARENT)}")
+
+
                 End Select
             Case WM_SYSCOMMAND
                 Select Case m.WParam
