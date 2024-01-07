@@ -46,6 +46,11 @@ Partial Public NotInheritable Class FrmMain
         btnQuit.PerformClick()
     End Sub
 
+    Private Sub CloseAllOverviewToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs)
+        Dim procs = pnlOverview.Controls().OfType(Of AButton).Select(Of AstoniaProcess)(Function(ab) ab.AP)
+        Parallel.ForEach(procs, Sub(ap) ap.CloseOrKill())
+    End Sub
+
     Private Sub cmsQuit_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuit.Opening
         If cboAlt.SelectedIndex = 0 Then
             CloseAstoniaToolStripMenuItem.Visible = False
