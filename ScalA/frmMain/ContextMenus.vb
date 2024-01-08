@@ -717,11 +717,11 @@ Partial Public NotInheritable Class FrmMain
     Private Sub QlCtxOpenAll(sender As MenuItem, e As EventArgs)
         Debug.Print($"QlCtxOpenAll sender:{sender}")
         Dim subitems As List(Of ToolStripMenuItem) = DirectCast(sender.Tag, ToolStripMenuItem).
-        DropDownItems.OfType(Of ToolStripMenuItem).
-        Where(Function(it) extensions.Contains(IO.Path.GetExtension(it.Tag(0))) AndAlso it.Visible).
-        ToList()
+                DropDownItems.OfType(Of ToolStripMenuItem).
+                Where(Function(it) extensions.Contains(IO.Path.GetExtension(it.Tag(0))) AndAlso it.Visible).ToList()
+
+        cmsQuickLaunch.Close()
         If subitems.Count >= 10 Then
-            cmsQuickLaunch.Close()
             OpenManyRequester = True
             If Not MessageBox.Show($"This will open {subitems.Count} items.{vbCrLf}Continue?",
                                         "Confirm Opening", MessageBoxButtons.YesNo) = DialogResult.Yes Then
