@@ -363,9 +363,9 @@ Public NotInheritable Class FrmSettings
         My.Settings.ToggleTopKey = TogTopKey
 
         My.Settings.TogTopAlt = If(chkTogTopAlt.Checked, Hotkey.KeyModifier.Alt, 0)
-        My.Settings.CloseAllShift = If(chkTogTopShift.Checked, Hotkey.KeyModifier.Shift, 0)
-        My.Settings.CloseAllCtrl = If(chkTogTopCtrl.Checked, Hotkey.KeyModifier.Control, 0)
-        My.Settings.CloseAllWin = If(chkTogTopWin.Checked, Hotkey.KeyModifier.Winkey, 0)
+        My.Settings.TogTopShift = If(chkTogTopShift.Checked, Hotkey.KeyModifier.Shift, 0)
+        My.Settings.TogTopCtrl = If(chkTogTopCtrl.Checked, Hotkey.KeyModifier.Control, 0)
+        My.Settings.TogTopWin = If(chkTogTopWin.Checked, Hotkey.KeyModifier.Winkey, 0)
 
         My.Settings.topSort = txtTopSort.Text
         My.Settings.botSort = txtBotSort.Text
