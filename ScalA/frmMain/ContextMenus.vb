@@ -714,6 +714,26 @@ Partial Public NotInheritable Class FrmMain
         OpenLnk(sender.Parent.Tag, New MouseEventArgs(MouseButtons.Left, 1, MousePosition.X, MousePosition.Y, 0))
     End Sub
 
+    Private Sub QlCtxOpenAll(sender As MenuItem, e As EventArgs)
+        Debug.Print($"QlCtxOpenAll sender:{sender}")
+        Dim subitems As List(Of ToolStripMenuItem) = DirectCast(sender.Tag, ToolStripMenuItem).
+        DropDownItems.OfType(Of ToolStripMenuItem).
+        Where(Function(it) extensions.Contains(IO.Path.GetExtension(it.Tag(0))) AndAlso it.Visible).
+        ToList()
+        If subitems.Count >= 10 Then
+            cmsQuickLaunch.Close()
+            If Not MessageBox.Show($"This will open {subitems.Count} items.{vbCrLf}Continue?",
+                                        "Confirm Opening", MessageBoxButtons.YesNo) = DialogResult.Yes Then
+                Debug.Print("Too many subitems")
+                Exit Sub
+            End If
+        End If
+        For Each ddi As ToolStripMenuItem In subitems
+            Debug.Print($"{ddi.Tag(0)}")
+            OpenLnk(ddi, New MouseEventArgs(MouseButtons.Left, 1, MousePosition.X, MousePosition.Y, 0))
+        Next
+    End Sub
+
     Private Sub QlCtxRename(sender As MenuItem, e As EventArgs)
         Dim Path As String = sender.Parent.Tag.Tag(0)
         Dim Name As String = sender.Parent.Tag.text
@@ -748,7 +768,7 @@ Partial Public NotInheritable Class FrmMain
         Dim screenWA = Screen.FromPoint(MousePosition).WorkingArea
         Dim dialogLeft = Math.Min(Math.Max(screenWA.Left, MousePosition.X - 177), screenWA.Right - 370)
         Dim dialogTop = Math.Min(Math.Max(screenWA.Top, MousePosition.Y - 76), screenWA.Bottom - 152)
-        Dim toName As String = InputBox("Enter new name", title, currentName, dialogLeft, dialogTop).TrimEnd
+        Dim toName As String = InputBox("Enter New Name", title, currentName, dialogLeft, dialogTop).TrimEnd
         renameOpen = False
         Debug.Print($"Rename to {toName}")
         If toName <> "" AndAlso currentName <> toName Then
@@ -852,8 +872,16 @@ Partial Public NotInheritable Class FrmMain
                                              newFolderItem,
                                              New MenuItem("-")})
 
+            Dim path As String = sender.Tag(0)
+
             QlCtxMenu = New ContextMenu({
                 New MenuItem("Open", AddressOf QlCtxOpen) With {.DefaultItem = True},
+                New MenuItem($"Open All{vbTab}-->", AddressOf QlCtxOpenAll) With {
+                                .Visible = path.EndsWith("\") AndAlso
+                                sender.DropDownItems.OfType(Of ToolStripMenuItem) _
+                                      .Any(Function(it) it.Visible AndAlso extensions.Contains(IO.Path.GetExtension(it.Tag(0)))),
+                                .Tag = sender
+                                            },
                 New MenuItem("-"),
                 New MenuItem("Delete", AddressOf QlCtxDelete),
                 New MenuItem("Rename", AddressOf QlCtxRename),
@@ -862,9 +890,6 @@ Partial Public NotInheritable Class FrmMain
                 New MenuItem("-"),
                 QlCtxNewMenu})
 
-
-
-            Dim path As String = sender.Tag(0)
             Dim name As String = sender.Text
 
             QlCtxMenu.Tag = sender
@@ -914,7 +939,7 @@ Partial Public NotInheritable Class FrmMain
 
 
         ElseIf Not sender.Tag(0).EndsWith("\") Then 'do not process click on dirs as they are handled by doubleclick
-            Debug.Print("clicked not a dir")
+            Debug.Print("clicked Not a dir")
             Task.Run(Sub() OpenLnk(sender, e))
             'cmsQuickLaunch.Close(ToolStripDropDownCloseReason.ItemClicked)
         End If
