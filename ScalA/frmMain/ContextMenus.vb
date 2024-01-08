@@ -713,7 +713,7 @@ Partial Public NotInheritable Class FrmMain
         cmsQuickLaunch.Close()
         OpenLnk(sender.Parent.Tag, New MouseEventArgs(MouseButtons.Left, 1, MousePosition.X, MousePosition.Y, 0))
     End Sub
-
+    Public OpenManyRequester As Boolean = False
     Private Sub QlCtxOpenAll(sender As MenuItem, e As EventArgs)
         Debug.Print($"QlCtxOpenAll sender:{sender}")
         Dim subitems As List(Of ToolStripMenuItem) = DirectCast(sender.Tag, ToolStripMenuItem).
@@ -722,11 +722,14 @@ Partial Public NotInheritable Class FrmMain
         ToList()
         If subitems.Count >= 10 Then
             cmsQuickLaunch.Close()
+            OpenManyRequester = True
             If Not MessageBox.Show($"This will open {subitems.Count} items.{vbCrLf}Continue?",
                                         "Confirm Opening", MessageBoxButtons.YesNo) = DialogResult.Yes Then
                 Debug.Print("Too many subitems")
+                OpenManyRequester = False
                 Exit Sub
             End If
+            OpenManyRequester = False
         End If
         For Each ddi As ToolStripMenuItem In subitems
             Debug.Print($"{ddi.Tag(0)}")
