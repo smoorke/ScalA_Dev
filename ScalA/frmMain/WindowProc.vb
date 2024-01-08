@@ -49,14 +49,15 @@ Partial NotInheritable Class FrmMain
                         Debug.Print($"tgtOwner {GetWindowLong(Handle, GWL_HWNDPARENT)}")
                         If activeID <> scalaPID OrElse Not activeProc.HasClassNameIn(My.Settings.className) Then
                             Try
-                                Dim topm As Boolean = (GetWindowLong(Handle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST
+                                Dim topm As Boolean = (GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST
+
                                 SetWindowPos(activeHandle, If(topm, SWP_HWND.NOTOPMOST, SWP_HWND.TOPMOST),
                                                   -1, -1, -1, -1,
                                                   SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
 
                                 Debug.Print("--Mid 1--")
                                 Debug.Print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
-                                Debug.Print($"Trget {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                                Debug.Print($"Trget {activeProc.MainWindowTitle.Cap(10)} {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
                                 Debug.Print($"tgtOwner {GetWindowLong(Handle, GWL_HWNDPARENT)}")
                                 'TODO: handle ScalA being topmost
 
