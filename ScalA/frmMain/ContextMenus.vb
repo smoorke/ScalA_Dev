@@ -731,10 +731,10 @@ Partial Public NotInheritable Class FrmMain
             End If
             OpenManyRequester = False
         End If
-        Parallel.ForEach(subitems, Sub(ddi)
-                                       Debug.Print($"{ddi.Tag(0)}")
-                                       OpenLnk(ddi, New MouseEventArgs(MouseButtons.Left, 1, MousePosition.X, MousePosition.Y, 0))
-                                   End Sub)
+        For Each ddi As ToolStripMenuItem In subitems
+            Debug.Print($"{ddi.Tag(0)}")
+            OpenLnk(ddi, New MouseEventArgs(MouseButtons.Left, 1, MousePosition.X, MousePosition.Y, 0))
+        Next
     End Sub
 
     Private Sub QlCtxRename(sender As MenuItem, e As EventArgs)
