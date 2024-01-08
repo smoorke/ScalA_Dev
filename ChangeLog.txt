@@ -1,3 +1,13 @@
+**ScalA 1.5.2**
+Fixed Activate on Hover has issues with Rename and Update Dialogs.
+Fixed Closing ScalA after hovering an elevated client with Activate on Hover while ScalA isn't elevated requests Admin privileges.
+Fixed `Close All Someone` ContextMenuItem missing when Whitelist is Active and `Someone` isn't Whitelisted
+Fixed ScalA may appear to hang when closing alts with Activate on Hover enabled.
+Added a Hotkey to set other windows topmost status (ie. SewerItemLocator)
+  (note: this doesn't have the desired effect if ScalA is set to be Always On Top)
+Added `Close All on Overview` item to QuitButton ContextMenu.
+Added `Run All in Folder` ContextMenuItem to Quicklaunch Folders.
+
 **ScalA 1.5.1**
 Fixed Activate on hover only works intermittently.
 
