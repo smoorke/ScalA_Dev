@@ -976,7 +976,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Function UpdateButtonLayout(count As Integer) As List(Of AButton)
-        pnlOverview.SuspendLayout()
+        'pnlOverview.SuspendLayout()
         Dim numCols As Integer
 
         Select Case count + If(My.Settings.hideMessage, 0, 1)
@@ -1050,7 +1050,7 @@ Partial Public NotInheritable Class FrmMain
         pbMessage.Size = newSZ
         chkHideMessage.Location = New Point(pnlMessage.Width - chkHideMessage.Width, pnlMessage.Height - chkHideMessage.Height)
 
-        pnlOverview.ResumeLayout(True)
+        'pnlOverview.ResumeLayout(True)
 
         Return visButtons
     End Function
