@@ -1013,7 +1013,7 @@ Partial Public NotInheritable Class FrmMain
             End If
         End If
 
-        Dim newSZ As New Size(pbZoom.Size.Width / numCols, pbZoom.Size.Height / numRows)
+        Dim newSZ As New Size(pbZoom.Size.Width \ numCols, pbZoom.Size.Height \ numRows)
         Dim widthTooMuch As Boolean = False
         Dim heightTooMuch As Boolean = False
 
@@ -1030,7 +1030,7 @@ Partial Public NotInheritable Class FrmMain
 
             If i <= totalButtons Then
                 but.Size = newSZ
-                If widthTooMuch AndAlso i Mod numCols = 0 Then but.Width -= If((pbZoom.Size.Width / numCols) Mod 1 < 0.5, 1, 2) 'last column
+                If widthTooMuch AndAlso i Mod numCols = 0 Then but.Width -= 1 'last column
                 If heightTooMuch AndAlso i > (numRows - 1) * numRows Then but.Height -= 1 'last row
                 but.Visible = True
                 visButtons.Add(but)
