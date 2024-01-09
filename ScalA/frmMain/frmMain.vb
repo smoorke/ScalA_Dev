@@ -1090,7 +1090,11 @@ Partial Public NotInheritable Class FrmMain
             Debug.Print("restoreLoc " & restoreLoc.ToString)
         End If
         AppActivate(scalaPID)
-        If My.Settings.MinMin AndAlso cboAlt.SelectedIndex <> 0 AndAlso AltPP?.isSDL Then
+
+        If My.Settings.MinMin AndAlso pnlOverview.Visible AndAlso My.Settings.gameOnOverview Then
+            Detach(True)
+            MinAllActiveOverview()
+        ElseIf My.Settings.MinMin AndAlso cboAlt.SelectedIndex <> 0 AndAlso AltPP?.isSDL Then
             AltPP.Hide()
         Else
             Debug.Print("swl parent")
@@ -1101,6 +1105,19 @@ Partial Public NotInheritable Class FrmMain
         Debug.Print($"WS {Me.WindowState}")
         'suppressWM_MOVEcwp = False
     End Sub
+
+    Private Sub MinAllActiveOverview()
+        For Each but As AButton In pnlOverview.Controls.OfType(Of AButton).Where(Function(b) b.AP IsNot Nothing)
+            If Not but.AP.HasExited Then
+                If but.AP.isSDL Then
+                    but.AP.Hide()
+                Else
+                    but.AP.RestoreSinglePos()
+                End If
+            End If
+        Next
+    End Sub
+
     Private Sub BtnAlt_Click(sender As AButton, e As EventArgs) ' Handles AButton.click
         If sender.Text = String.Empty Then
             'show cms
