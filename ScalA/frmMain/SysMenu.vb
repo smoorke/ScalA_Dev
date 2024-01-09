@@ -118,7 +118,13 @@ Partial NotInheritable Class FrmMain
 
             Debug.Print($"ShowSysMenu awaited")
 
-            If ret <> SC_MINIMIZE OrElse (My.Settings.MinMin AndAlso AltPP?.isSDL) Then Attach(AltPP)
+            If ret = SC_MINIMIZE AndAlso My.Settings.MinMin AndAlso
+               My.Settings.gameOnOverview AndAlso pnlOverview.Visible Then
+                Debug.Print("sysmenu no attach")
+            ElseIf ret <> SC_MINIMIZE OrElse (My.Settings.MinMin AndAlso AltPP?.isSDL) Then
+                Debug.Print("sysmenu attach")
+                Attach(AltPP)
+            End If
 
             If GetActiveProcessID() = scalaPID Then
                 Debug.Print($"ShowSysMenu activating {AltPP?.Name}")
