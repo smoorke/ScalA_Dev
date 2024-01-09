@@ -98,6 +98,14 @@ Partial NotInheritable Class FrmMain
                         SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
                         SendMessage(FrmBehind.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
 
+                        If My.Settings.MinMin AndAlso My.Settings.gameOnOverview AndAlso pnlOverview.Visible Then
+                            Parallel.ForEach(pnlOverview.Controls.OfType(Of AButton).TakeWhile(Function(b) b.Visible).Where(Function(b) b.AP IsNot Nothing),
+                                             Sub(ab As AButton)
+                                                 If ab.AP.isSDL Then ab.AP.Restore()
+                                             End Sub)
+                            Me.BringToFront()
+                        End If
+
                         If AltPP?.IsMinimized Then
                             AltPP.Restore()
                             If WindowState <> FormWindowState.Minimized Then Exit Sub
