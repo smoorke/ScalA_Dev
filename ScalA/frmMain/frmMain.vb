@@ -531,7 +531,7 @@ Partial Public NotInheritable Class FrmMain
 
             End Using
         Catch e As Exception
-            MessageBox.Show("Error" & vbCrLf & e.Message)
+            CustomMessageBox.Show("Error" & vbCrLf & e.Message)
         End Try
     End Function
     Friend Shared Async Function LogDownload() As Task
@@ -548,7 +548,7 @@ Partial Public NotInheritable Class FrmMain
 
             End Using
         Catch e As Exception
-            MessageBox.Show("Error" & vbCrLf & e.Message)
+            CustomMessageBox.Show("Error" & vbCrLf & e.Message)
         End Try
     End Function
     Friend Async Sub pbUpdateAvailable_Click(sender As PictureBox, e As MouseEventArgs) Handles pbUpdateAvailable.MouseDown

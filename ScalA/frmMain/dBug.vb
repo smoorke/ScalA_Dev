@@ -17,7 +17,7 @@ Module dBug
 
         Dim exePath As String = objCol(0)("ExecutablePath")
 
-        MessageBox.Show(exePath & vbCrLf & cmdLine)
+        CustomMessageBox.Show(exePath & vbCrLf & cmdLine)
     End Sub
 
     Friend Sub ResetHide(sender As Object, e As EventArgs)

@@ -534,7 +534,7 @@ Partial Public NotInheritable Class FrmMain
         Dim ShortCutLink As String = ShortCutPath & "\" & ShortCutName & ".lnk"
 
         If System.IO.File.Exists(ShortCutLink) AndAlso
-           MessageBox.Show($"""{alt.Name}"" already exists. Overwrite?",
+           CustomMessageBox.Show($"""{alt.Name}"" already exists. Overwrite?",
                            "Notice", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) _
            = DialogResult.Cancel Then Exit Sub
 
@@ -546,7 +546,7 @@ Partial Public NotInheritable Class FrmMain
         Dim arguments As String = mos("commandline")
 
         If arguments = "" Then
-            If MessageBox.Show("Access denied!" & vbCrLf &
+            If CustomMessageBox.Show("Access denied!" & vbCrLf &
                            "Elevate ScalA to Administrator?" & vbCrLf &
                                "You will have to redo the shortcut creation.",
                                "Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Error) _
@@ -571,7 +571,7 @@ Partial Public NotInheritable Class FrmMain
 
 
         If Not arguments.ToLower.Contains("-w") Then
-            If MessageBox.Show("Missing '-w' flag" & vbCrLf &
+            If CustomMessageBox.Show("Missing '-w' flag" & vbCrLf &
                                "Shortcut will currently not start in windowed mode" & vbCrLf &
                                "Would you like to add the '-w' flag for this shortcut?" & vbCrLf &
                               $"{arguments.Trim}",
@@ -713,7 +713,6 @@ Partial Public NotInheritable Class FrmMain
         cmsQuickLaunch.Close()
         OpenLnk(sender.Parent.Tag, New MouseEventArgs(MouseButtons.Left, 1, MousePosition.X, MousePosition.Y, 0))
     End Sub
-    Public OpenManyRequester As Boolean = False
     Private Sub QlCtxOpenAll(sender As MenuItem, e As EventArgs)
         Debug.Print($"QlCtxOpenAll sender:{sender}")
         Dim subitems As List(Of ToolStripMenuItem) = DirectCast(sender.Tag, ToolStripMenuItem).
@@ -722,14 +721,11 @@ Partial Public NotInheritable Class FrmMain
 
         cmsQuickLaunch.Close()
         If subitems.Count >= 10 Then
-            OpenManyRequester = True
-            If Not MessageBox.Show($"This will open {subitems.Count} items.{vbCrLf}Continue?",
+            If Not CustomMessageBox.Show($"This will open {subitems.Count} items.{vbCrLf}Continue?",
                                         "Confirm Opening", MessageBoxButtons.YesNo) = DialogResult.Yes Then
                 Debug.Print("Too many subitems")
-                OpenManyRequester = False
                 Exit Sub
             End If
-            OpenManyRequester = False
         End If
         For Each ddi As ToolStripMenuItem In subitems
             Debug.Print($"{ddi.Tag(0)}")
@@ -784,13 +780,12 @@ Partial Public NotInheritable Class FrmMain
                 Dim sb As New System.Text.StringBuilder(1024)
                 FormatMessage(Format_Message.FORMAT_MESSAGE_FROM_SYSTEM Or Format_Message.FORMAT_MESSAGE_IGNORE_INSERTS, 0,
                               Err.LastDllError, 0, sb, sb.Capacity, Nothing)
-                MessageBox.Show(Me, $"Error renaming ""{currentName}"" to ""{toName}""{vbCrLf}{sb}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                CustomMessageBox.Show(Me, $"Error renaming ""{currentName}"" to ""{toName}""{vbCrLf}{sb}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Else
                 Debug.Print($"renamed to ""{toName}""")
             End If
         End If
     End Sub
-    Private deleteOpen As Boolean = False
     Private Sub QlCtxDelete(sender As MenuItem, e As EventArgs)
         cmsQuickLaunch.Close()
 
@@ -806,14 +801,12 @@ Partial Public NotInheritable Class FrmMain
             Dim filesCount As Integer = System.IO.Directory.GetFiles(Path, "*.*", IO.SearchOption.AllDirectories).Where(Function(f) IO.Path.GetFileName(f.ToLower) <> "desktop.ini").Count
             Dim filS As String = If(filesCount = 1, "", "s")
             folderContentsMessage &= $"This folder contains {folderCount} folder{folS} and {filesCount} file{filS}."
-            deleteOpen = True
-            If shiftdown OrElse MessageBox.Show($"Are you sure you want to move ""{name}"" to the Recycle Bin?" & folderContentsMessage & $"{vbCrLf}Hold Shift to Permanently Delete.",
+            If shiftdown OrElse CustomMessageBox.Show($"Are you sure you want to move ""{name}"" to the Recycle Bin?" & folderContentsMessage & $"{vbCrLf}Hold Shift to Permanently Delete.",
                                        "Confirm Delete", MessageBoxButtons.YesNo) = DialogResult.Yes Then
                 My.Computer.FileSystem.DeleteDirectory(Path, FileIO.UIOption.OnlyErrorDialogs,
                          If(shiftdown OrElse My.Computer.Keyboard.ShiftKeyDown, FileIO.RecycleOption.DeletePermanently, FileIO.RecycleOption.SendToRecycleBin),
                          FileIO.UICancelOption.DoNothing)
             End If
-            deleteOpen = False
         Else
             My.Computer.FileSystem.DeleteFile(Path, FileIO.UIOption.AllDialogs,
                          If(shiftdown, FileIO.RecycleOption.DeletePermanently, FileIO.RecycleOption.SendToRecycleBin),
@@ -1037,7 +1030,7 @@ Partial Public NotInheritable Class FrmMain
                 .InputPath = IO.Path.GetFullPath(My.Settings.links)}
             If fp.ShowDialog(Me) = True Then
                 If fp.ResultPath = System.IO.Path.GetPathRoot(fp.ResultPath) AndAlso
-                        MessageBox.Show("Warning: Selecting a root path is not recommended" & vbCrLf &
+                        CustomMessageBox.Show("Warning: Selecting a root path is not recommended" & vbCrLf &
                                         $"Are you sure you want to use {fp.ResultPath}?", "Warning",
                                         MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.No Then Throw New Exception("dummy")
                 If My.Settings.links <> fp.ResultPath Then

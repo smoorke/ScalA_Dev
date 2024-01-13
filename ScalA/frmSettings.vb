@@ -174,9 +174,15 @@ Public NotInheritable Class FrmSettings
 
 
     ReadOnly storeZoom As Integer = My.Settings.zoom
+    Private resettingAlign As Boolean = False
     Private Async Sub ChkDoAlign_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkDoAlign.CheckedChanged
-        If sender.Checked AndAlso FrmMain.AltPP.Id = 0 Then
-            MessageBox.Show(FrmMain, "To perform alignment an alt needs to be selected.", "ScalA Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        If resettingAlign Then
+            resettingAlign = False
+            Exit Sub
+        End If
+        If sender.Checked AndAlso FrmMain.cboAlt.SelectedIndex = 0 Then
+            CustomMessageBox.Show(Me, "To perform alignment an alt needs to be selected.", "ScalA Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            resettingAlign = True
             sender.Checked = False
             Exit Sub
         End If
@@ -243,13 +249,13 @@ Public NotInheritable Class FrmSettings
                 Dim parts() As String = line.ToUpper.Split("X")
                 Debug.Print(parts(width) & " " & parts(height))
                 If parts(width) < 400 OrElse parts(height) < 300 Then
-                    MessageBox.Show("Error: " & line & " is too small a resolution.")
+                    CustomMessageBox.Show("Error: " & line & " is too small a resolution.")
                     Return fail
                 End If
                 resList.Add(New Size(parts(width), parts(height)))
             Next
             If resList.Count = 0 Then
-                MessageBox.Show("Error: no resolutions defined.")
+                CustomMessageBox.Show("Error: no resolutions defined.")
                 Return fail
             End If
 
@@ -263,7 +269,7 @@ Public NotInheritable Class FrmSettings
             'frmMain.cmbResolution.SelectedIndex = 0
             Return success
         Catch
-            MessageBox.Show("Error in resolutions")
+            CustomMessageBox.Show("Error in resolutions")
             Return fail
         End Try
     End Function
@@ -278,7 +284,7 @@ Public NotInheritable Class FrmSettings
 
         If My.Settings.links <> txtQuickLaunchPath.Text Then
             If Not FileIO.FileSystem.DirectoryExists(txtQuickLaunchPath.Text) Then
-                MessageBox.Show($"Directory {txtQuickLaunchPath.Text} does not exist!", "Error")
+                CustomMessageBox.Show($"Directory {txtQuickLaunchPath.Text} does not exist!", "Error")
                 Exit Sub
             End If
             FrmMain.iconCache.Clear()
@@ -515,7 +521,7 @@ Public NotInheritable Class FrmSettings
                 .InputPath = IO.Path.GetFullPath(current)}
             If fp.ShowDialog(Me) = True Then
                 If fp.ResultPath = System.IO.Path.GetPathRoot(fp.ResultPath) AndAlso
-                        MessageBox.Show("Warning: Selecting a root path is not recommended" & vbCrLf &
+                        CustomMessageBox.Show("Warning: Selecting a root path is not recommended" & vbCrLf &
                                         $"Are you sure you want to use {fp.ResultPath}?", "Warning",
                                         MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.No Then Throw New Exception("dummy")
                 Return fp.ResultPath
@@ -632,7 +638,7 @@ Public NotInheritable Class FrmSettings
     Private Sub BtnHelp_Click(sender As Object, e As EventArgs) Handles btnHelp.Click
         Dim bl As String = vbTab & """" & String.Join($"""{vbCrLf & vbTab}""", txtTopSort.Lines.Intersect(txtBotSort.Lines).Where(Function(s) s <> "")) & """"
         If bl = vbTab & """""" Then bl = $"{vbTab}(None)"
-        MessageBox.Show($"Names are case sensitive.{vbCrLf}Left list Sorts to top, Right one to bottom.{vbCrLf}" &
+        CustomMessageBox.Show($"Names are case sensitive.{vbCrLf}Left list Sorts to top, Right one to bottom.{vbCrLf}" &
                         $"If whitelist is enabled ScalA will only show alts in lists{vbCrLf}   except those that are blacklisted{vbCrLf}" &
                         $"Names appearing in both lists are blacklisted.{vbCrLf}{vbCrLf}" &
                         $"Current Blacklist:{vbCrLf}{bl}", "Sorting & Black/Whitelist Info", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -778,7 +784,6 @@ Public NotInheritable Class FrmSettings
         End Select
         Debug.Print($"key: {e.KeyCode}")
     End Sub
-    Public showingMsgBox As Boolean = False
     Private Async Sub CheckNowToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CheckNowToolStripMenuItem.Click
         Try
             Using response As HttpResponseMessage = Await FrmMain.client.GetAsync("https://github.com/smoorke/ScalA/releases/download/ScalA/version")
@@ -789,17 +794,13 @@ Public NotInheritable Class FrmSettings
                 If New Version(responseBody) > My.Application.Info.Version Then
                     FrmMain.pbUpdateAvailable_Click(FrmMain.pbUpdateAvailable, New MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0))
                 Else
-                    showingMsgBox = True
-                    MessageBox.Show(Me, $"ScalA v{responseBody} is up to date", "No Update Available")
+                    CustomMessageBox.Show(Me, $"ScalA v{responseBody} is up to date", "No Update Available")
                 End If
             End Using
         Catch ex As Exception
             FrmMain.pnlUpdate.Visible = False
             FrmMain.updateToVersion = "Error"
-            showingMsgBox = True
-            MessageBox.Show(Me, "ScalA is unable to check for updates.", "Error")
-        Finally
-            showingMsgBox = False
+            CustomMessageBox.Show(Me, "ScalA is unable to check for updates.", "Error")
         End Try
     End Sub
 

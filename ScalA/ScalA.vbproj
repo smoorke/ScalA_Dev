@@ -100,6 +100,7 @@
     <Compile Include="Extensions.vb" />
     <Compile Include="FolderPicker.vb" />
     <Compile Include="frmMain\ContextMenus.vb" />
+    <Compile Include="CustomMessageBox.vb" />
     <Compile Include="frmMain\dBug.vb" />
     <Compile Include="frmMain\frmBehind.Designer.vb">
       <DependentUpon>frmBehind.vb</DependentUpon>

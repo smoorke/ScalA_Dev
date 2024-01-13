@@ -304,7 +304,7 @@ Partial NotInheritable Class FrmMain
                                 If id <> 0 AndAlso id = scalaPID OrElse pnlOverview.Controls.OfType(Of AButton).Any(Function(ab As AButton) ab.pidCache = id) Then
                                     If Not (SysMenu.Visible OrElse cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse
                                         FrmSettings.Contains(MousePosition) OrElse UpdateDialog.Contains(MousePosition) OrElse
-                                        renameOpen OrElse deleteOpen OrElse OpenManyRequester OrElse FrmSettings.showingMsgBox) Then
+                                        renameOpen OrElse CustomMessageBox.visible) Then
 #If DEBUG Then
                                         If Not chkDebug.ContextMenuStrip.Visible Then
 #End If

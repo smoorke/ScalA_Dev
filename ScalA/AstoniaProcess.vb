@@ -716,7 +716,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Debug.Print($"exePath:""{mos("ExecutablePath")}""")
 
         If arguments = "" Then
-            If MessageBox.Show("Access denied!" & vbCrLf &
+            If CustomMessageBox.Show("Access denied!" & vbCrLf &
                            "Elevate ScalA to Administrator?",
                                "Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Error) _
                = DialogResult.Cancel Then Return
@@ -830,7 +830,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 Exit While
             End If
             If count >= 100 Then
-                MessageBox.Show("Windowing failed")
+                CustomMessageBox.Show("Windowing failed")
                 Exit While
             End If
         End While
@@ -980,7 +980,7 @@ Module ProcessExtensions
         Try
             If processHandle <> IntPtr.Zero AndAlso GetExitCodeProcess(processHandle, exitCode) Then Return exitCode <> 259
         Catch
-            MessageBox.Show("Exception on HasExitedSafe")
+            CustomMessageBox.Show("Exception on HasExitedSafe")
         Finally
             CloseHandle(processHandle)
         End Try
