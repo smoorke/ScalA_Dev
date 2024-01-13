@@ -501,16 +501,18 @@ Partial Public NotInheritable Class FrmMain
     Friend Shared ReadOnly client As HttpClient = New HttpClient() With {.Timeout = TimeSpan.FromMilliseconds(750)}
     Friend Shared Async Sub UpdateCheck()
         Try
-            Using response As HttpResponseMessage = Await client.GetAsync("https://github.com/smoorke/ScalA/releases/download/ScalA/version")
-                response.EnsureSuccessStatusCode()
-                Dim responseBody As String = Await response.Content.ReadAsStringAsync()
+            Using clnt As HttpClient = New HttpClient()
+                Using response As HttpResponseMessage = Await clnt.GetAsync("https://github.com/smoorke/ScalA/releases/download/ScalA/version")
+                    response.EnsureSuccessStatusCode()
+                    Dim responseBody As String = Await response.Content.ReadAsStringAsync()
 
-                If New Version(responseBody) > My.Application.Info.Version Then
-                    FrmMain.pnlUpdate.Visible = True
-                Else
-                    FrmMain.pnlUpdate.Visible = False
-                End If
-                updateToVersion = responseBody
+                    If New Version(responseBody) > My.Application.Info.Version Then
+                        FrmMain.pnlUpdate.Visible = True
+                    Else
+                        FrmMain.pnlUpdate.Visible = False
+                    End If
+                    updateToVersion = responseBody
+                End Using
             End Using
         Catch ex As Exception
             FrmMain.pnlUpdate.Visible = False
