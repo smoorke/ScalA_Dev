@@ -10,7 +10,7 @@ Fixed Updating through settings `Check for Update` contextmenu may hang ScalA.
 Fixed A bunch of cases where a messagebox interferes with activate on hover.
 Fixed Alignment setting is all kinds of broken when no client is selected.
 Added Hack to have `Toggle Top` Hotkey still set other window to be always above ScalA even when ScalA is TopMost. 
-  (Note: Don't set a debugger attached to ScalA to be above ScalA when Scala is TopMost. It will hang the debugger when you interrupt ScalA)
+  (Note: Don't set a debugger attached to ScalA to be above ScalA when ScalA is TopMost. It will hang the debugger when you interrupt ScalA)
 
 **ScalA 1.5.2**
 Fixed Activate on Hover has issues with Rename and Update Dialogs.
