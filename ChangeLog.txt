@@ -1,3 +1,6 @@
+**ScalA 1.5.4**
+Fixed Updatecheck on startup may timeout and fail to show update icon.
+
 **ScalA 1.5.3**
 Fixed Overview glitches when width divided by number of columns ends with exactly .5
 Fixed `Close All & ScalA` and `Toggle Top` hotkeys get saved wrong.
