@@ -778,6 +778,7 @@ Public NotInheritable Class FrmSettings
         End Select
         Debug.Print($"key: {e.KeyCode}")
     End Sub
+    Public showingMsgBox As Boolean = False
     Private Async Sub CheckNowToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CheckNowToolStripMenuItem.Click
         Try
             Using response As HttpResponseMessage = Await FrmMain.client.GetAsync("https://github.com/smoorke/ScalA/releases/download/ScalA/version")
@@ -788,13 +789,17 @@ Public NotInheritable Class FrmSettings
                 If New Version(responseBody) > My.Application.Info.Version Then
                     FrmMain.pbUpdateAvailable_Click(FrmMain.pbUpdateAvailable, New MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0))
                 Else
+                    showingMsgBox = True
                     MessageBox.Show(Me, $"ScalA v{responseBody} is up to date", "No Update Available")
                 End If
             End Using
         Catch ex As Exception
             FrmMain.pnlUpdate.Visible = False
             FrmMain.updateToVersion = "Error"
+            showingMsgBox = True
             MessageBox.Show(Me, "ScalA is unable to check for updates.", "Error")
+        Finally
+            showingMsgBox = False
         End Try
     End Sub
 
