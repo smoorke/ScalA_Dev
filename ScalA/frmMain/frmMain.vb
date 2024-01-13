@@ -498,7 +498,7 @@ Partial Public NotInheritable Class FrmMain
         FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, 0.01, 0)
     End Sub
     Friend Shared updateToVersion As String = "Error"
-    Friend Shared ReadOnly client As HttpClient = New HttpClient()
+    Friend Shared ReadOnly client As HttpClient = New HttpClient() With {.Timeout = TimeSpan.FromMilliseconds(750)}
     Friend Shared Async Sub UpdateCheck()
         Try
             Using response As HttpResponseMessage = Await client.GetAsync("https://github.com/smoorke/ScalA/releases/download/ScalA/version")
