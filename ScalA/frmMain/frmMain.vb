@@ -1028,7 +1028,7 @@ Partial Public NotInheritable Class FrmMain
 
         Dim visButtons As New List(Of AButton)
 
-        For Each but As AButton In pnlOverview.Controls.OfType(Of AButton)
+        For Each but As AButton In pnlOverview.Controls.OfType(Of AButton).ToList
 
             If i <= totalButtons Then
                 but.Size = newSZ
@@ -1044,6 +1044,7 @@ Partial Public NotInheritable Class FrmMain
                     startThumbsDict.TryRemove(but.AP.Id, Nothing)
                 End If
                 but.AP = Nothing
+                but.pidCache = 0
             End If
             i += 1
         Next
