@@ -47,12 +47,11 @@ Module IPC
     End Function
 
     Private OrigScalAfname As String = FileVersionInfo.GetVersionInfo(Environment.GetCommandLineArgs()(0)).OriginalFilename
-    Private Function IsScalA(p As Process) As Boolean
+    Public Function IsScalA(p As Process) As Boolean
         Try
             Return FileVersionInfo.GetVersionInfo(p.MainModule.FileName).OriginalFilename = OrigScalAfname
         Catch ex As Exception
             Return False
         End Try
     End Function
-
 End Module
