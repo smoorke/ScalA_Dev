@@ -406,6 +406,8 @@ Partial Public NotInheritable Class FrmMain
         test.Items.Add(New ToolStripMenuItem("FudgeThumb", Nothing, AddressOf dBug.fudgeThumb))
         test.Items.Add(New ToolStripMenuItem("NudgeTaskbar", Nothing, AddressOf dBug.NudgeTaskbar))
         test.Items.Add(New ToolStripMenuItem("thumbStuff", Nothing, AddressOf dBug.thumbStuff))
+        test.Items.Add(New ToolStripMenuItem("list others", Nothing, AddressOf dBug.listothers))
+
 
         chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()

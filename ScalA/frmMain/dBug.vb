@@ -186,6 +186,19 @@ Module dBug
         Debug.Print($"size {sz}")
         DwmUnregisterThumbnail(tb)
     End Sub
+
+    Friend Sub listothers(sender As Object, e As EventArgs)
+        Task.Run(Sub()
+                     Dim sw = Stopwatch.StartNew
+                     Dim list = EnumOtherScalAs().ToList
+                     Debug.Print($"- {list.Count} other ScalA{If(list.Count = 1, "", "s")} -")
+                     For Each pp As Process In list
+                         Debug.Print($"{pp.Id}")
+                     Next
+                     Debug.Print($"- {sw.ElapsedMilliseconds}ms -")
+                     sw.Stop()
+                 End Sub)
+    End Sub
 End Module
 
 #End If

@@ -1,4 +1,5 @@
 ﻿Imports System.IO.MemoryMappedFiles
+Imports System.Runtime.InteropServices
 Module IPC
     'Private ReadOnly _mmfBoolean As MemoryMappedFile = MemoryMappedFile.CreateOrOpen("ScalA_IPC_Boolean", 1)
     'Private ReadOnly _mmvaBoolean As MemoryMappedViewAccessor = _mmfBoolean.CreateViewAccessor()
@@ -32,5 +33,26 @@ Module IPC
             _mmvaSI.Write(1, value)
         End Set
     End Property
+
+    <DllImport("user32.dll")>
+    Private Function IsWindowVisible(ByVal hWnd As IntPtr) As Boolean : End Function
+
+    Public Function EnumOtherScalAs() As IEnumerable(Of Process)
+        Dim currentProcessId As Integer = Process.GetCurrentProcess().Id
+
+        Return Process.GetProcesses().AsParallel().
+                Where(Function(p)
+                          Return p.Id <> currentProcessId AndAlso IsWindowVisible(p.MainWindowHandle) AndAlso IsScalA(p)
+                      End Function)
+    End Function
+
+    Private OrigScalAfname As String = FileVersionInfo.GetVersionInfo(Environment.GetCommandLineArgs()(0)).OriginalFilename
+    Private Function IsScalA(p As Process) As Boolean
+        Try
+            Return FileVersionInfo.GetVersionInfo(p.MainModule.FileName).OriginalFilename = OrigScalAfname
+        Catch ex As Exception
+            Return False
+        End Try
+    End Function
 
 End Module
