@@ -65,6 +65,7 @@ Partial NotInheritable Class FrmMain
         Me.BotLastToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.MoveToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.NoOtherOverviewsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.KeepToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.TopMostToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CloseToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.pnlOverview = New System.Windows.Forms.FlowLayoutPanel()
@@ -450,7 +451,7 @@ Partial NotInheritable Class FrmMain
         '
         'MoveToolStripMenuItem
         '
-        Me.MoveToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.NoOtherOverviewsToolStripMenuItem})
+        Me.MoveToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.NoOtherOverviewsToolStripMenuItem, Me.KeepToolStripMenuItem})
         Me.MoveToolStripMenuItem.Name = "MoveToolStripMenuItem"
         Me.MoveToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.MoveToolStripMenuItem.Text = "Move To"
@@ -461,6 +462,13 @@ Partial NotInheritable Class FrmMain
         Me.NoOtherOverviewsToolStripMenuItem.Name = "NoOtherOverviewsToolStripMenuItem"
         Me.NoOtherOverviewsToolStripMenuItem.Size = New System.Drawing.Size(188, 22)
         Me.NoOtherOverviewsToolStripMenuItem.Text = "(No Other Overviews)"
+        '
+        'KeepToolStripMenuItem
+        '
+        Me.KeepToolStripMenuItem.CheckOnClick = True
+        Me.KeepToolStripMenuItem.Name = "KeepToolStripMenuItem"
+        Me.KeepToolStripMenuItem.Size = New System.Drawing.Size(188, 22)
+        Me.KeepToolStripMenuItem.Text = "Keep Here?"
         '
         'TopMostToolStripMenuItem
         '
@@ -687,4 +695,5 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents CloseAllOverviewToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents MoveToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents NoOtherOverviewsToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents KeepToolStripMenuItem As ToolStripMenuItem
 End Class

@@ -175,16 +175,30 @@ Partial Public NotInheritable Class FrmMain
         MoveToolStripMenuItem.DropDownItems.Clear()
         MoveToolStripMenuItem.DropDownItems.Add(NoOtherOverviewsToolStripMenuItem)
         NoOtherOverviewsToolStripMenuItem.Visible = lst.Count = 0
+
+        MoveToolStripMenuItem.DropDownItems.Add(KeepToolStripMenuItem)
+        MoveToolStripMenuItem.DropDownItems.Add(New ToolStripSeparator With {.Visible = lst.Count > 0})
+        KeepToolStripMenuItem.Visible = lst.Count > 0
+        KeepToolStripMenuItem.Checked = False
+
         Debug.Print(sender.Tag.name)
         Dim Rang = lst.Select(Function(p) New ToolStripMenuItem(p.ProcessName, Nothing, AddressOf MoveTo_Click) With {.Tag = (sender.Tag, p)}).ToArray
         MoveToolStripMenuItem.DropDownItems.AddRange(Rang)
+    End Sub
+
+    Private Sub KeepToolStripMenuItem_Mousedown(sender As ToolStripMenuItem, e As EventArgs) Handles KeepToolStripMenuItem.MouseDown
+        Debug.Print($"{sender.Owner}")
+        CType(sender.Owner, ToolStripDropDownMenu).AutoClose = False
+    End Sub
+    Private Sub KeepToolStripMenuItem_Mouseleave(sender As ToolStripMenuItem, e As EventArgs) Handles KeepToolStripMenuItem.MouseLeave
+        CType(sender.Owner, ToolStripDropDownMenu).AutoClose = True
     End Sub
 
     Private Sub MoveToolStripMenuItem_DropDownOpened(sender As ToolStripMenuItem, e As EventArgs) Handles MoveToolStripMenuItem.DropDownOpened
         'Dim rcSW As RECT
         'GetWindowRect(ScalaHandle, rcSW)
         Dim mePos As Point = MousePosition 'New Point(rcSW.left + (rcSW.right - rcSW.left) / 2, rcSW.top + (rcSW.bottom - rcSW.top) / 2)
-        For Each tsmi As ToolStripMenuItem In sender.DropDownItems
+        For Each tsmi As ToolStripMenuItem In sender.DropDownItems.OfType(Of ToolStripMenuItem)
             If tsmi.Tag Is Nothing Then Continue For
             Dim ppos As Process = DirectCast(tsmi.Tag.item2, Process)
             Dim rcOW As RECT
@@ -227,6 +241,9 @@ Partial Public NotInheritable Class FrmMain
         Dim sp As Process = sender.Tag.Item2
         Debug.Print($"moving {ap.Name} to {sp.Id} {sp.ProcessName}")
         IPC.AddToWhitelistOrRemoveFromBL(sp.Id, ap.Id)
+
+        If KeepToolStripMenuItem.Checked Then Exit Sub
+
         Dim i = 0
         Do
             Await Task.Delay(50)
