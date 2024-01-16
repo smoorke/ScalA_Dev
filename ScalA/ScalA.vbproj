@@ -210,6 +210,7 @@
     <None Include="Resources\CloseAll.png" />
     <None Include="Resources\CloseBoth.png" />
     <None Include="Resources\List.png" />
+    <None Include="Resources\gnome-maps16.png" />
     <Content Include="Resources\moa3.ico" />
     <None Include="Resources\F12.png" />
     <None Include="Resources\moa3.png" />

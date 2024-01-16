@@ -386,8 +386,8 @@ Partial NotInheritable Class FrmMain
             If activePP IsNot Nothing AndAlso Not activePP.IsBelow(ScalaHandle) Then
                 Attach(activePP)
                 SetWindowPos(active, ScalaHandle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
-                Detach(False)
             End If
+            Detach(False)
         End If
 
 
@@ -690,8 +690,26 @@ Partial NotInheritable Class FrmMain
             setActive(False)
         End If
 
+        Dim addID As Integer = IPC.AddToWhitelistOrRemoveFromBL()
+        If addID > 0 Then
+            Dim addAP = New AstoniaProcess(Process.GetProcessById(addID))
+            Dim nam As String = addAP.Name
+            If blackList.Contains(nam) Then
+                blackList.RemoveAll(Function(it) it = nam)
+            End If
+            If My.Settings.Whitelist AndAlso Not topSortList.Concat(botSortList).Contains(nam) Then
+                topSortList.Add(nam)
+            End If
+
+            My.Settings.topSort = String.Join(vbCrLf, blackList.Concat(topSortList))
+            My.Settings.botSort = String.Join(vbCrLf, blackList.Concat(botSortList))
+
+            IPC.AddToWhitelistOrRemoveFromBL(scalaPID, 0)
+            IPC.RequestActivation = True
+        End If
+
         If IPC.RequestActivation Then
-            IPC.RequestActivation = 0
+            IPC.RequestActivation = False
             Debug.Print("IPC.requestActivation")
 
             If AltPP?.IsMinimized Then

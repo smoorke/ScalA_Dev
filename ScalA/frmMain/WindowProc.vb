@@ -520,7 +520,7 @@ Partial NotInheritable Class FrmMain
 
             Case &H319 ' WM_APPCOMMAND
 
-            Case &HC059 To &HC200 ' unknown
+            Case &HC059 To &HC24E ' unknown
 
             Case Else
                 Debug.Print($"Unhandeld WM_ 0x{m.Msg:X8} &H{m.Msg:X8}")

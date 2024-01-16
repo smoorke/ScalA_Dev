@@ -63,6 +63,8 @@ Partial NotInheritable Class FrmMain
         Me.NoneSortToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.BotFirstToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.BotLastToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MoveToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.NoOtherOverviewsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.TopMostToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CloseToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.pnlOverview = New System.Windows.Forms.FlowLayoutPanel()
@@ -393,9 +395,9 @@ Partial NotInheritable Class FrmMain
         '
         'cmsAlt
         '
-        Me.cmsAlt.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SelectToolStripMenuItem, ToolStripSeparator1, Me.SortSubToolStripMenuItem, Me.TopMostToolStripMenuItem, ToolStripSeparator2, Me.CloseToolStripMenuItem})
+        Me.cmsAlt.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SelectToolStripMenuItem, ToolStripSeparator1, Me.SortSubToolStripMenuItem, Me.MoveToolStripMenuItem, Me.TopMostToolStripMenuItem, ToolStripSeparator2, Me.CloseToolStripMenuItem})
         Me.cmsAlt.Name = "cmsAlt"
-        Me.cmsAlt.Size = New System.Drawing.Size(153, 104)
+        Me.cmsAlt.Size = New System.Drawing.Size(153, 126)
         '
         'SelectToolStripMenuItem
         '
@@ -445,6 +447,20 @@ Partial NotInheritable Class FrmMain
         Me.BotLastToolStripMenuItem.Size = New System.Drawing.Size(118, 22)
         Me.BotLastToolStripMenuItem.Tag = "2"
         Me.BotLastToolStripMenuItem.Text = "Bot Last"
+        '
+        'MoveToolStripMenuItem
+        '
+        Me.MoveToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.NoOtherOverviewsToolStripMenuItem})
+        Me.MoveToolStripMenuItem.Name = "MoveToolStripMenuItem"
+        Me.MoveToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.MoveToolStripMenuItem.Text = "Move To"
+        '
+        'NoOtherOverviewsToolStripMenuItem
+        '
+        Me.NoOtherOverviewsToolStripMenuItem.Enabled = False
+        Me.NoOtherOverviewsToolStripMenuItem.Name = "NoOtherOverviewsToolStripMenuItem"
+        Me.NoOtherOverviewsToolStripMenuItem.Size = New System.Drawing.Size(188, 22)
+        Me.NoOtherOverviewsToolStripMenuItem.Text = "(No Other Overviews)"
         '
         'TopMostToolStripMenuItem
         '
@@ -669,4 +685,6 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents CloseAllIdleToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents tmrHotkeys As Timer
     Friend WithEvents CloseAllOverviewToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents MoveToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents NoOtherOverviewsToolStripMenuItem As ToolStripMenuItem
 End Class

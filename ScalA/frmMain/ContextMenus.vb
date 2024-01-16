@@ -153,6 +153,8 @@ Partial Public NotInheritable Class FrmMain
 
         SortSubToolStripMenuItem.Tag = pp
 
+        MoveToolStripMenuItem.Tag = pp
+
         If sender.Items.Contains(closeAllIdleTSMI) Then
             sender.Items.Remove(closeAllIdleTSMI)
         End If
@@ -168,7 +170,82 @@ Partial Public NotInheritable Class FrmMain
             closeAllIdleTSMI.Tag = pp
         End If
     End Sub
+    Private Sub MoveToolStripMenuItem_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) Handles MoveToolStripMenuItem.DropDownOpening
+        Dim lst = EnumOtherScalAs.OrderBy(Function(p) p.ProcessName, nsSorter).ToList
+        MoveToolStripMenuItem.DropDownItems.Clear()
+        MoveToolStripMenuItem.DropDownItems.Add(NoOtherOverviewsToolStripMenuItem)
+        NoOtherOverviewsToolStripMenuItem.Visible = lst.Count = 0
+        Debug.Print(sender.Tag.name)
+        Dim Rang = lst.Select(Function(p) New ToolStripMenuItem(p.ProcessName, Nothing, AddressOf MoveTo_Click) With {.Tag = (sender.Tag, p)}).ToArray
+        MoveToolStripMenuItem.DropDownItems.AddRange(Rang)
+    End Sub
 
+    Private Sub MoveToolStripMenuItem_DropDownOpened(sender As ToolStripMenuItem, e As EventArgs) Handles MoveToolStripMenuItem.DropDownOpened
+        'Dim rcSW As RECT
+        'GetWindowRect(ScalaHandle, rcSW)
+        Dim mePos As Point = MousePosition 'New Point(rcSW.left + (rcSW.right - rcSW.left) / 2, rcSW.top + (rcSW.bottom - rcSW.top) / 2)
+        For Each tsmi As ToolStripMenuItem In sender.DropDownItems
+            If tsmi.Tag Is Nothing Then Continue For
+            Dim ppos As Process = DirectCast(tsmi.Tag.item2, Process)
+            Dim rcOW As RECT
+            If IsIconic(ppos.MainWindowHandle) Then
+                Dim wp As New WINDOWPLACEMENT With {.length = Runtime.InteropServices.Marshal.SizeOf(GetType(WINDOWPLACEMENT))}
+                GetWindowPlacement(ppos.MainWindowHandle, wp)
+                rcOW = wp.normalPosition
+            Else
+                GetWindowRect(ppos.MainWindowHandle, rcOW)
+            End If
+            Dim otPos As Point = New Point(rcOW.left + (rcOW.right - rcOW.left) / 2, rcOW.top + (rcOW.bottom - rcOW.top) / 2)
+            Debug.Print($"{DirectCast(tsmi.Tag.item2, Process).ProcessName} {otPos}")
+            Dim bmp As Image = DrawArrow(mePos, otPos)
+
+            tsmi.Image = bmp
+        Next
+    End Sub
+
+    Private Function DrawArrow(startPoint As Point, endPoint As Point) As Image
+
+        Dim bmp As New Bitmap(16, 16)
+
+        Using g As Graphics = Graphics.FromImage(bmp)
+            ' Calculate the angle between the two points
+            Dim angle As Double = Math.Atan2(endPoint.Y - startPoint.Y, endPoint.X - startPoint.X) * 180 / Math.PI - 90
+
+            g.TranslateTransform(8, 8) ' Translate to the center of the bitmap
+            g.RotateTransform(angle) ' Rotate based on the angle
+
+            g.DrawImage(My.Resources.gnome_maps16, New Point(-8, -8))
+
+            g.ResetTransform() ' Reset the transformations
+        End Using
+
+        Return bmp
+    End Function
+
+    Private Async Sub MoveTo_Click(sender As ToolStripMenuItem, e As EventArgs)
+        Dim ap As AstoniaProcess = sender.Tag.item1
+        Dim sp As Process = sender.Tag.Item2
+        Debug.Print($"moving {ap.Name} to {sp.Id} {sp.ProcessName}")
+        IPC.AddToWhitelistOrRemoveFromBL(sp.Id, ap.Id)
+        Dim i = 0
+        Do
+            Await Task.Delay(50)
+            i += 1
+        Loop Until IPC.AddToWhitelistOrRemoveFromBL(sp.Id) = 0 OrElse i >= 20
+        If IPC.AddToWhitelistOrRemoveFromBL(sp.Id) = 0 Then
+            If My.Settings.Whitelist Then
+                topSortList.RemoveAll(Function(it) it = ap.Name)
+                botSortList.RemoveAll(Function(it) it = ap.Name)
+            Else
+                blackList.Add(ap.Name)
+            End If
+            My.Settings.topSort = String.Join(vbCrLf, blackList.Concat(topSortList))
+            My.Settings.botSort = String.Join(vbCrLf, blackList.Concat(botSortList))
+
+            Await Task.Delay(100)
+            Detach(True)
+        End If
+    End Sub
     Private Sub CmsAlt_Closed(sender As Object, e As ToolStripDropDownClosedEventArgs) Handles cmsAlt.Closed
         AButton.ActiveOverview = My.Settings.gameOnOverview
     End Sub

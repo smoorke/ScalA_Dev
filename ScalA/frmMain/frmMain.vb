@@ -1330,10 +1330,25 @@ Partial Public NotInheritable Class FrmMain
         If ap Is Nothing OrElse prevHWNDParent = ap.MainWindowHandle Then Return 0
         Debug.Print($"Attach to: {ap.Name}")
         prevHWNDParent = ap.MainWindowHandle
+        If Not pnlOverview.Visible Then
+            Dim rcAst As RECT
+            GetWindowRect(ap.MainWindowHandle, rcAst)
+            If rcAst.top <= Me.Location.Y Then
+                SetWindowPos(ap.MainWindowHandle, ScalaHandle, Me.Location.X, Me.Location.Y + 2, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+            End If
+        End If
         Return SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap.MainWindowHandle)
     End Function
+#If DEBUG Then
+    Private prevDetach As String
+#End If
     Public Function Detach(show As Boolean) As Long
-        Debug.Print($"Detach from: {AltPP?.Name} show:{show}")
+#If DEBUG Then
+        If prevDetach <> AltPP?.Name Then
+            Debug.Print($"Detach from: {AltPP?.Name} show:{show}")
+            prevDetach = AltPP?.Name
+        End If
+#End If
         Try
             Return SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
         Finally

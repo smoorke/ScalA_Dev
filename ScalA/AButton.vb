@@ -43,7 +43,7 @@ Public NotInheritable Class AButton
     End Property
     Public ReadOnly Property ThumbContains(screenPt As Point) As Boolean
         Get
-            Return Me.ThumbRectangle.Contains(Me.PointToClient(screenPt))
+            Return Not Me.Disposing AndAlso Me.ThumbRectangle.Contains(Me.PointToClient(screenPt))
         End Get
     End Property
 

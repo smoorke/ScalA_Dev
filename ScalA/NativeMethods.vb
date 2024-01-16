@@ -162,7 +162,6 @@ Module NativeMethods
         Public lppos As WINDOWPOS
     End Structure
 
-
     <DllImport("shell32.dll", EntryPoint:="SHGetFileInfoW", SetLastError:=True)>
     Public Function SHGetFileInfoW(<InAttribute(), MarshalAs(UnmanagedType.LPTStr)> ByVal pszPath As String, ByVal dwFileAttributes As Integer, ByRef psfi As SHFILEINFOW, ByVal cbFileInfo As Integer, ByVal uFlags As Integer) As Integer
     End Function
@@ -498,6 +497,8 @@ Module NativeMethods
     End Structure
     <DllImport("user32.dll")>
     Public Function SetWindowPlacement(ByVal hWnd As IntPtr, ByRef lpwndpl As WINDOWPLACEMENT) As Boolean : End Function
+    <DllImport("user32.dll")>
+    Public Function GetWindowPlacement(ByVal hWnd As IntPtr, ByRef lpwndpl As WINDOWPLACEMENT) As Boolean : End Function
 
     <DllImport("user32.dll")>
     Public Function ShowWindow(Hwnd As IntPtr, iCmdShow As Integer) As Integer : End Function
