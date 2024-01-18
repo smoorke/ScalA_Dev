@@ -979,7 +979,68 @@ Partial Public NotInheritable Class FrmMain
         pnlOverview.ResumeLayout()
     End Sub
 
+    Private Function UpdateButtonLayout2(count As Integer) As List(Of AButton)
+        count += If(My.Settings.hideMessage, 0, 1)
+
+        Dim targetAspectRatio As Double = 800 / 600
+
+        ' Calculate the number of columns and rows based on the target aspect ratio and available space
+        Dim cols As Integer = Math.Max(2, Math.Ceiling(Math.Sqrt(count * pnlOverview.Width / pnlOverview.Height / targetAspectRatio)))
+        Dim rows As Integer = Math.Ceiling(count / cols)
+
+        ' Adjust the number of columns or rows to ensure at least 'count' total items
+        While cols * rows < count
+            If pnlOverview.Width / (cols + 1) >= pnlOverview.Height / (rows + 1) Then
+                cols += 1
+            Else
+                rows += 1
+            End If
+        End While
+
+        ' Calculate the size of each button based on the adjusted layout
+        Dim buttonWidth As Integer = pnlOverview.Width \ cols
+        Dim buttonHeight As Integer = pnlOverview.Height \ rows
+
+        ' Ensure that the calculated button size is not too small
+        buttonWidth = Math.Max(1, buttonWidth)
+        buttonHeight = Math.Max(1, buttonHeight)
+
+        Dim totalButtons = cols * rows
+        Dim i = If(My.Settings.hideMessage, 1, 2)
+
+        Dim visButtons As New List(Of AButton)
+
+        For Each but As AButton In pnlOverview.Controls.OfType(Of AButton).ToList
+            If i <= totalButtons Then
+                but.Size = New Size(buttonWidth, buttonHeight)
+                but.Visible = True
+                visButtons.Add(but)
+            Else
+                but.Visible = False
+                but.Text = ""
+                If but.AP IsNot Nothing Then
+                    DwmUnregisterThumbnail(startThumbsDict.GetValueOrDefault(but.AP.Id, IntPtr.Zero))
+                    startThumbsDict.TryRemove(but.AP.Id, Nothing)
+                End If
+                but.AP = Nothing
+                but.pidCache = 0
+            End If
+            i += 1
+        Next
+
+        pnlMessage.Size = New Size(buttonWidth, buttonHeight)
+        pbMessage.Size = pnlMessage.Size
+        chkHideMessage.Location = New Point(pnlMessage.Width - chkHideMessage.Width, pnlMessage.Height - chkHideMessage.Height)
+
+        Return visButtons
+    End Function
+
+
+
     Private Function UpdateButtonLayout(count As Integer) As List(Of AButton)
+
+        'Return UpdateButtonLayout2(count)
+
         'pnlOverview.SuspendLayout()
         Dim numCols As Integer
 
