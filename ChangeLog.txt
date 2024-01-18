@@ -1,3 +1,6 @@
+**Updated ScalA to 1.5.5**
+When running multiple ScalAs added an option to move alts from one overview to the other.
+
 **ScalA 1.5.4**
 Fixed Updatecheck on startup may timeout and fail to show update icon.
 
