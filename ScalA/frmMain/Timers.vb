@@ -748,7 +748,7 @@ Partial NotInheritable Class FrmMain
             If cboAlt.SelectedIndex <> 0 OrElse My.Settings.gameOnOverview Then
                 If My.Settings.LockEq AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then
 
-                    PnlEqLock.Visible = AOshowEqLock OrElse (Not pnlOverview.Visible AndAlso Not My.Settings.gameOnOverview)
+                    PnlEqLock.Visible = AOshowEqLock OrElse (Not pnlOverview.Visible)
 
                     If PnlEqLock.Visible AndAlso
                    Not (cmsQuickLaunch.Visible OrElse cmsAlt.Visible) AndAlso
