@@ -60,7 +60,8 @@ Module IPC
         End If
     End Function
 
-
+    <DllImport("user32.dll")>
+    Private Function IsWindow(ByVal hWnd As IntPtr) As Boolean : End Function
     <DllImport("user32.dll")>
     Private Function IsWindowVisible(ByVal hWnd As IntPtr) As Boolean : End Function
 
@@ -70,8 +71,9 @@ Module IPC
         Return Process.GetProcesses().AsParallel().
                 Where(Function(p)
                           'note: IsWindowVisble returns false for ScalAs attached to a client
-                          Return p.Id <> currentProcessId AndAlso IsWindowVisible(p.MainWindowHandle) AndAlso
-                                 IsScalA(p) AndAlso IsOnOverview(p)
+                          'Debug.Print($"{p.ProcessName} {p.MainWindowHandle}")
+                          Return p.Id <> currentProcessId AndAlso p.MainWindowHandle <> 0 AndAlso
+                                 IsWindow(p.MainWindowHandle) AndAlso IsScalAonOverview(p)
                       End Function)
     End Function
 
@@ -85,7 +87,7 @@ Module IPC
     Public Function IsScalA(p As Process) As Boolean
         Try
             Debug.Print($"{p.Id} {p.MainModule.FileName} {p.MainModule.FileVersionInfo.OriginalFilename}")
-            Return p.MainModule.FileVersionInfo.OriginalFilename = OrigScalAfname
+            Return p.MainWindowTitle.StartsWith("ScalA") AndAlso p.MainModule.FileVersionInfo.OriginalFilename = OrigScalAfname
         Catch ex As Exception
             Return False
         End Try
@@ -96,9 +98,13 @@ Module IPC
     ''' <param name="p"></param>
     ''' <returns></returns>
     Public Function IsOnOverview(p As Process) As Boolean
-        p.Refresh()
         Debug.Print($"IsOnOverview {p.MainWindowTitle}")
         If p.MainWindowTitle = "ScalA" Then Return True
         Return False
     End Function
+
+    Public Function IsScalAonOverview(p As Process) As Boolean
+        Return p.MainWindowTitle = "ScalA" AndAlso p.MainModule.FileVersionInfo.OriginalFilename = OrigScalAfname
+    End Function
+
 End Module

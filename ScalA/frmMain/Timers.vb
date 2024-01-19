@@ -388,8 +388,8 @@ Partial NotInheritable Class FrmMain
                 If activePP IsNot Nothing AndAlso Not activePP.IsBelow(ScalaHandle) Then
                     Attach(activePP)
                     SetWindowPos(active, ScalaHandle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+                    Detach(False)
                 End If
-                Detach(False)
             End If
 
 
