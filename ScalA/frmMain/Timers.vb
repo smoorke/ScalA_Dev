@@ -381,6 +381,7 @@ Partial NotInheritable Class FrmMain
 
             If Not thumbContainedMouse AndAlso My.Settings.gameOnOverview Then
                 eqLockShown = False
+                AltPP = Nothing
                 Dim active = GetForegroundWindow()
                 'Dim activePP = alts.FirstOrDefault(Function(ap) ap.MainWindowHandle = active)
                 Dim activePP = alts.Find(Function(ap) ap.MainWindowHandle = active)
