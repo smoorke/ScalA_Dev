@@ -61,6 +61,8 @@ Partial Public NotInheritable Class FrmMain
 
         If updatingCombobox Then Exit Sub
 
+        IPC.AddOrUpdateInstance(scalaPID, sender.SelectedIndex = 0)
+
         Debug.Print($"CboAlt_SelectedIndexChanged {sender.SelectedIndex}")
 
         'btnAlt1.Focus()

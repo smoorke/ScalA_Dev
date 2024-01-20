@@ -60,23 +60,6 @@ Module IPC
         End If
     End Function
 
-    <DllImport("user32.dll")>
-    Private Function IsWindow(ByVal hWnd As IntPtr) As Boolean : End Function
-    <DllImport("user32.dll")>
-    Private Function IsWindowVisible(ByVal hWnd As IntPtr) As Boolean : End Function
-
-    Public Function EnumOtherScalAs() As IEnumerable(Of Process)
-        Dim currentProcessId As Integer = Process.GetCurrentProcess().Id
-
-        Return Process.GetProcesses().AsParallel().
-                Where(Function(p)
-                          'note: IsWindowVisble returns false for ScalAs attached to a client
-                          'Debug.Print($"{p.ProcessName} {p.MainWindowHandle}")
-                          Return p.Id <> currentProcessId AndAlso p.MainWindowHandle <> 0 AndAlso
-                                 IsWindow(p.MainWindowHandle) AndAlso IsScalAonOverview(p)
-                      End Function)
-    End Function
-
     Private ReadOnly OrigScalAfname As String = Process.GetCurrentProcess.MainModule.FileVersionInfo.OriginalFilename
 
     ''' <summary>
@@ -86,25 +69,120 @@ Module IPC
     ''' <returns></returns>
     Public Function IsScalA(p As Process) As Boolean
         Try
-            Debug.Print($"{p.Id} {p.MainModule.FileName} {p.MainModule.FileVersionInfo.OriginalFilename}")
-            Return p.MainWindowTitle.StartsWith("ScalA") AndAlso p.MainModule.FileVersionInfo.OriginalFilename = OrigScalAfname
+            Return p.MainModule.FileVersionInfo.OriginalFilename = OrigScalAfname
         Catch ex As Exception
             Return False
         End Try
     End Function
-    ''' <summary>
-    ''' Determines if target ScalA Is on overview
-    ''' </summary>
-    ''' <param name="p"></param>
-    ''' <returns></returns>
-    Public Function IsOnOverview(p As Process) As Boolean
-        Debug.Print($"IsOnOverview {p.MainWindowTitle}")
-        If p.MainWindowTitle = "ScalA" Then Return True
-        Return False
+
+    Public Structure ScalAInfo
+        Public pid As Integer
+        Public isOnOverview As Boolean
+
+        Public Shared Operator =(i1 As ScalAInfo, i2 As ScalAInfo) As Boolean
+            Return i1.pid = i2.pid
+        End Operator
+
+        Public Shared Operator <>(i1 As ScalAInfo, i2 As ScalAInfo) As Boolean
+            Return i1.pid <> i2.pid
+        End Operator
+
+        Public Sub New(pid As Integer, overview As Boolean)
+            Me.pid = pid
+            Me.isOnOverview = overview
+        End Sub
+
+    End Structure
+
+    Private _mmfInstances As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPCInstances", 4 + Marshal.SizeOf(GetType(ScalAInfo)) * _mmNumInstances)
+    Private _mmvaInstances As MemoryMappedViewAccessor = _mmfInstances.CreateViewAccessor()
+    Private _mmNumInstances As UInteger = 0
+    Private _Instances() As ScalAInfo
+
+    Public Sub AddOrUpdateInstance(id As Integer, Optional overview As Boolean = False)
+        Dim sharednum = _mmvaInstances.ReadInt32(0)
+
+        ReDim Preserve _Instances(sharednum - 1)
+        _mmvaInstances.ReadArray(Of ScalAInfo)(4, _Instances, 0, sharednum)
+
+        Dim newInstance = New ScalAInfo(id, overview)
+
+        Dim existingIndex As Integer = Array.FindIndex(_Instances, Function(inst) inst = newInstance)
+
+        If existingIndex = -1 Then
+            ' The instance does not exist, you can add it now
+            ReDim Preserve _Instances(sharednum)
+            _Instances(sharednum) = newInstance
+
+            If sharednum > _mmNumInstances Then
+                _mmfInstances = MemoryMappedFile.CreateOrOpen($"ScalA_IPCInstances", 4 + Marshal.SizeOf(GetType(ScalAInfo)) * sharednum)
+                _mmvaInstances = _mmfInstances.CreateViewAccessor()
+
+                _mmNumInstances = sharednum
+            End If
+
+            ' Update the shared count 
+            _mmvaInstances.Write(0, _Instances.Length)
+        Else
+            ' The instance already exists, update the existing instance in the array
+            _Instances(existingIndex) = newInstance
+        End If
+        ' Write the array back to the memory-mapped file
+        _mmvaInstances.WriteArray(4, _Instances, 0, _Instances.Length)
+    End Sub
+    Public Function getInstances() As IEnumerable(Of ScalAInfo)
+        Dim sharednum = _mmvaInstances.ReadInt32(0)
+
+        If sharednum > _mmNumInstances Then
+            _mmfInstances = MemoryMappedFile.CreateOrOpen($"ScalA_IPCInstances", 4 + Marshal.SizeOf(GetType(ScalAInfo)) * sharednum)
+            _mmvaInstances = _mmfInstances.CreateViewAccessor()
+
+            _mmNumInstances = sharednum
+            ReDim _Instances(sharednum - 1)
+        End If
+
+        _mmvaInstances.ReadArray(Of ScalAInfo)(4, _Instances, 0, sharednum)
+        Dim meID = Process.GetCurrentProcess.Id
+
+        Dim newInstances = _Instances.Select(Function(si As ScalAInfo)
+                                                 Try
+                                                     Dim pp As Process = Process.GetProcessById(si.pid)
+                                                     If Not IsScalA(pp) Then Return New ScalAInfo(0, False)
+                                                     Return si
+                                                 Catch
+                                                     Return New ScalAInfo(0, False)
+                                                 End Try
+                                             End Function).Where(Function(sin) sin.pid <> 0).ToArray
+
+        _Instances = newInstances
+        _mmvaInstances.Write(0, _Instances.Length)
+        _mmvaInstances.WriteArray(4, _Instances, 0, _Instances.Length)
+        Return _Instances
+    End Function
+    Public Function getOtherInstances() As IEnumerable(Of ScalAInfo)
+        Return getInstances.Where(Function(si) si.pid <> Process.GetCurrentProcess.Id)
     End Function
 
-    Public Function IsScalAonOverview(p As Process) As Boolean
-        Return p.MainWindowTitle = "ScalA" AndAlso p.MainModule.FileVersionInfo.OriginalFilename = OrigScalAfname
+    Public Function EnumOtherScalAs() As IEnumerable(Of Process)
+        Return getOtherInstances.Select(Function(si)
+                                            Try
+                                                Return Process.GetProcessById(si.pid)
+                                            Catch
+                                                Return Nothing
+                                            End Try
+                                        End Function).Where(Function(p) p IsNot Nothing)
     End Function
-
+    Public Function EnumOtherOverviews() As IEnumerable(Of Process)
+        Return getOtherInstances.Select(Function(si)
+                                            Try
+                                                If si.isOnOverview Then
+                                                    Return Process.GetProcessById(si.pid)
+                                                Else
+                                                    Return Nothing
+                                                End If
+                                            Catch
+                                                Return Nothing
+                                            End Try
+                                        End Function).Where(Function(p) p IsNot Nothing)
+    End Function
 End Module

@@ -171,7 +171,7 @@ Partial Public NotInheritable Class FrmMain
         End If
     End Sub
     Private Sub MoveToolStripMenuItem_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) Handles MoveToolStripMenuItem.DropDownOpening
-        Dim lst = EnumOtherScalAs.OrderBy(Function(p) p.ProcessName, nsSorter).ToList
+        Dim lst = EnumOtherOverviews.OrderBy(Function(p) p.ProcessName, nsSorter).ToList
         MoveToolStripMenuItem.DropDownItems.Clear()
         MoveToolStripMenuItem.DropDownItems.Add(NoOtherOverviewsToolStripMenuItem)
         NoOtherOverviewsToolStripMenuItem.Visible = lst.Count = 0

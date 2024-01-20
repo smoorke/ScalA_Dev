@@ -188,16 +188,22 @@ Module dBug
     End Sub
 
     Friend Sub listothers(sender As Object, e As EventArgs)
-        Task.Run(Sub()
-                     Dim sw = Stopwatch.StartNew
-                     Dim list = EnumOtherScalAs().ToList
-                     Debug.Print($"- {list.Count} other ScalA{If(list.Count = 1, "", "s")} -")
-                     For Each pp As Process In list
-                         Debug.Print($"{pp.Id}")
-                     Next
-                     Debug.Print($"- {sw.ElapsedMilliseconds}ms -")
-                     sw.Stop()
-                 End Sub)
+        'Task.Run(Sub()
+        '             Dim sw = Stopwatch.StartNew
+        '             Dim list = EnumOtherScalAs().ToList
+        '             Debug.Print($"- {list.Count} other ScalA{If(list.Count = 1, "", "s")} -")
+        '             For Each pp As Process In list
+        '                 Debug.Print($"{pp.Id}")
+        '             Next
+        '             Debug.Print($"- {sw.ElapsedMilliseconds}ms -")
+        '             sw.Stop()
+        '         End Sub)
+
+        For Each sai As IPC.ScalAInfo In IPC.getInstances()
+            Dim pp = Process.GetProcessById(sai.pid)
+            Debug.Print($"{pp.ProcessName} {pp.Path} {sai.isOnOverview}")
+        Next
+
     End Sub
 End Module
 
