@@ -63,7 +63,7 @@ Module IPC
     Private ReadOnly OrigScalAfname As String = Process.GetCurrentProcess.MainModule.FileVersionInfo.OriginalFilename
 
     ''' <summary>
-    ''' Is process SclaA?
+    ''' Is process ScalA?
     ''' </summary>
     ''' <param name="p"></param>
     ''' <returns></returns>
