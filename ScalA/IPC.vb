@@ -87,7 +87,7 @@ Module IPC
         Private Padding3 As Long
         Private padding4 As Long
         Private padding5 As Long
-        Private Padding7 As Long
+        Private Padding6 As Long
 
         Public Shared Operator =(i1 As ScalAInfo, i2 As ScalAInfo) As Boolean
             Return i1.pid = i2.pid
