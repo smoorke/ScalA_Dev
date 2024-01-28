@@ -76,7 +76,7 @@ Module IPC
         End Try
     End Function
 
-    <StructLayout(LayoutKind.Sequential)>
+    <StructLayout(LayoutKind.Sequential)> '64 bytes
     Public Structure ScalAInfo
         Public pid As Integer
         Public isOnOverview As Boolean
