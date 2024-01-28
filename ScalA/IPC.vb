@@ -67,6 +67,7 @@ Module IPC
     ''' </summary>
     ''' <param name="p"></param>
     ''' <returns></returns>
+    <System.Runtime.CompilerServices.Extension()>
     Public Function IsScalA(p As Process) As Boolean
         Try
             Return p.MainModule.FileVersionInfo.OriginalFilename = OrigScalAfname
@@ -75,6 +76,7 @@ Module IPC
         End Try
     End Function
 
+    <StructLayout(LayoutKind.Sequential)>
     Public Structure ScalAInfo
         Public pid As Integer
         Public isOnOverview As Boolean
@@ -94,15 +96,15 @@ Module IPC
 
     End Structure
 
-    Private _mmfInstances As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPCInstances", 4 + Marshal.SizeOf(GetType(ScalAInfo)) * _mmNumInstances)
+    Private _mmfInstances As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPCInstances", 4 + Marshal.SizeOf(GetType(ScalAInfo)) * (localNum + 1))
     Private _mmvaInstances As MemoryMappedViewAccessor = _mmfInstances.CreateViewAccessor()
-    Private _mmNumInstances As UInteger = 0
+    Private localnum As UInteger = 0
     Private _Instances() As ScalAInfo
 
     Public Sub AddOrUpdateInstance(id As Integer, Optional overview As Boolean = False)
         Dim sharednum = _mmvaInstances.ReadInt32(0)
 
-        ReDim Preserve _Instances(sharednum - 1)
+        ReDim Preserve _Instances(sharednum)
         _mmvaInstances.ReadArray(Of ScalAInfo)(4, _Instances, 0, sharednum)
 
         Dim newInstance = New ScalAInfo(id, overview)
@@ -111,14 +113,14 @@ Module IPC
 
         If existingIndex = -1 Then
             ' The instance does not exist, you can add it now
-            ReDim Preserve _Instances(sharednum)
+            ' todo: find an index that has an empty instance
+            'ReDim Preserve _Instances(sharednum)
             _Instances(sharednum) = newInstance
 
-            If sharednum > _mmNumInstances Then
-                _mmfInstances = MemoryMappedFile.CreateOrOpen($"ScalA_IPCInstances", 4 + Marshal.SizeOf(GetType(ScalAInfo)) * sharednum)
+            If sharednum <> localnum Then
+                _mmfInstances = MemoryMappedFile.CreateOrOpen($"ScalA_IPCInstances", 4 + Marshal.SizeOf(GetType(ScalAInfo)) * (sharednum + 1))
                 _mmvaInstances = _mmfInstances.CreateViewAccessor()
-
-                _mmNumInstances = sharednum
+                localnum = sharednum
             End If
 
             ' Update the shared count 
@@ -128,29 +130,29 @@ Module IPC
             _Instances(existingIndex) = newInstance
         End If
         ' Write the array back to the memory-mapped file
+        _mmvaInstances.Write(0, _Instances.Length)
         _mmvaInstances.WriteArray(4, _Instances, 0, _Instances.Length)
     End Sub
     Public Function getInstances() As IEnumerable(Of ScalAInfo)
         Dim sharednum = _mmvaInstances.ReadInt32(0)
 
-        If sharednum > _mmNumInstances Then
+        If sharednum <> localnum Then
             _mmfInstances = MemoryMappedFile.CreateOrOpen($"ScalA_IPCInstances", 4 + Marshal.SizeOf(GetType(ScalAInfo)) * sharednum)
             _mmvaInstances = _mmfInstances.CreateViewAccessor()
-
-            _mmNumInstances = sharednum
-            ReDim _Instances(sharednum - 1)
+            localnum = sharednum
         End If
 
-        _mmvaInstances.ReadArray(Of ScalAInfo)(4, _Instances, 0, sharednum)
-        Dim meID = Process.GetCurrentProcess.Id
+        ReDim _Instances(sharednum - 1)
+        _mmvaInstances.ReadArray(4, _Instances, 0, sharednum)
 
         Dim newInstances = _Instances.Select(Function(si As ScalAInfo)
                                                  Try
-                                                     Dim pp As Process = Process.GetProcessById(si.pid)
-                                                     If Not IsScalA(pp) Then Return New ScalAInfo(0, False)
-                                                     Return si
+                                                     Using pp As Process = Process.GetProcessById(si.pid)
+                                                         If Not pp.IsScalA() Then Return New ScalAInfo
+                                                         Return si
+                                                     End Using
                                                  Catch
-                                                     Return New ScalAInfo(0, False)
+                                                     Return New ScalAInfo
                                                  End Try
                                              End Function).Where(Function(sin) sin.pid <> 0).ToArray
 

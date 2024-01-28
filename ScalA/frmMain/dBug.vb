@@ -1,4 +1,5 @@
 ﻿Imports System.IO.MemoryMappedFiles
+Imports System.Runtime.InteropServices
 #If DEBUG Then
 Module dBug
     Friend Sub ParseInfo(sender As Object, e As EventArgs)
@@ -198,6 +199,9 @@ Module dBug
         '             Debug.Print($"- {sw.ElapsedMilliseconds}ms -")
         '             sw.Stop()
         '         End Sub)
+
+        Debug.Print($"size: {Marshal.SizeOf(GetType(ScalAInfo))}")
+        Debug.Print($"{New ScalAInfo}")
 
         For Each sai As IPC.ScalAInfo In IPC.getInstances()
             Dim pp = Process.GetProcessById(sai.pid)
