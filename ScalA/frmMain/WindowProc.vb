@@ -47,7 +47,7 @@ Partial NotInheritable Class FrmMain
                         Debug.Print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
                         Debug.Print($"Trget {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
                         Debug.Print($"tgtOwner {GetWindowLong(activeHandle, GWL_HWNDPARENT)}")
-                        If activeID = scalaPID OrElse IsScalA(activeProc) Then
+                        If activeID = scalaPID OrElse activeProc.IsScalA() Then
                             Debug.Print("Cannot set self topmost with hotkey")
                             Exit Sub
                         End If
