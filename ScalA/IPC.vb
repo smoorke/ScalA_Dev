@@ -81,6 +81,14 @@ Module IPC
         Public pid As Integer
         Public isOnOverview As Boolean
 
+        Private padding0 As Long
+        Private padding1 As Long
+        Private padding2 As Long
+        Private Padding3 As Long
+        Private padding4 As Long
+        Private padding5 As Long
+        Private Padding7 As Long
+
         Public Shared Operator =(i1 As ScalAInfo, i2 As ScalAInfo) As Boolean
             Return i1.pid = i2.pid
         End Operator
