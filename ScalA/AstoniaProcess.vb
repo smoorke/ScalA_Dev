@@ -395,8 +395,9 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             nameIconCache.Clear()
             pathIcnCache.Clear()
         End If
+        If _proc Is Nothing Then Return Nothing
         Try
-            Dim ID As Integer = _proc?.Id
+            Dim ID As Integer = _proc.Id
 
             Dim namIco As (ico As Icon, name As String) = (Nothing, Nothing)
 

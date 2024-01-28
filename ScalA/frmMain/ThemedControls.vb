@@ -122,13 +122,13 @@ Public NotInheritable Class ThemedComboBox
                 g.DrawRectangle(p, modRect)
             End Using
 
-            Dim icon = My.Resources.scrollbar_arrow_small_hot
-            g.DrawImageUnscaled(icon, rect.Right - icon.Width - (Consts.Padding / 2), (rect.Height / 2) - (icon.Height / 2))
+            Dim arrow = My.Resources.scrollbar_arrow_small_hot
+            g.DrawImageUnscaled(arrow, rect.Right - arrow.Width - (Consts.Padding / 2), (rect.Height / 2) - (arrow.Height / 2))
             Dim text As String = If(SelectedItem IsNot Nothing, GetItemText(SelectedItem).TrimStart, "")
 
             Using b = New SolidBrush(textColor)
                 Dim padding = 2
-                Dim modRect = New Rectangle(rect.Left + padding, rect.Top + padding, rect.Width - icon.Width - (Consts.Padding / 2) - (padding * 2), rect.Height - (padding * 2))
+                Dim modRect = New Rectangle(rect.Left + padding, rect.Top + padding, rect.Width - arrow.Width - (Consts.Padding / 2) - (padding * 2), rect.Height - (padding * 2))
                 Dim stringFormat = New StringFormat With {
                     .LineAlignment = StringAlignment.Center,
                     .Alignment = StringAlignment.Near,
@@ -165,16 +165,27 @@ Public NotInheritable Class ThemedComboBox
         End Using
 
         If e.Index >= 0 AndAlso e.Index < Items.Count Then
+            Dim leftpad As Integer = 2
+            Dim ap As AstoniaProcess = Nothing
+            If TypeOf Items(e.Index) Is AstoniaProcess Then ap = DirectCast(Items(e.Index), AstoniaProcess)
+            If ap IsNot Nothing AndAlso e.Index > 0 Then
+                Using bmp = ap.GetIcon?.ToBitmap
+                    If bmp IsNot Nothing Then
+                        leftpad = rect.Height
+                        g.DrawImage(bmp, rect.Left, rect.Top, rect.Height, rect.Height)
+                    End If
+                End Using
+            End If
+            Dim padding = 2
             Dim text = GetItemText(Items(e.Index))
             Using b = New SolidBrush(textColor)
-                Dim padding = 2
-                Dim modRect = New Rectangle(rect.Left + padding, rect.Top + padding, rect.Width - (padding * 2), rect.Height - (padding * 2))
+                Dim modRect = New Rectangle(rect.Left + leftpad, rect.Top + padding, rect.Width - (padding * 2), rect.Height - (padding * 2))
                 Dim stringFormat = New StringFormat With {
-                    .LineAlignment = StringAlignment.Center,
-                    .Alignment = StringAlignment.Near,
-                    .FormatFlags = StringFormatFlags.NoWrap,
-                    .Trimming = StringTrimming.None
-                }
+                .LineAlignment = StringAlignment.Center,
+                .Alignment = StringAlignment.Near,
+                .FormatFlags = StringFormatFlags.NoWrap,
+                .Trimming = StringTrimming.None
+            }
                 g.DrawString(text, Font, b, modRect, stringFormat)
             End Using
         End If
