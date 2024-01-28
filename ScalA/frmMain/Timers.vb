@@ -695,9 +695,26 @@ Partial NotInheritable Class FrmMain
         End If
 
         Dim addID As Integer = IPC.AddToWhitelistOrRemoveFromBL()
-        If addID > 0 Then
+        If addID <> 0 Then
             Dim addAP = New AstoniaProcess(Process.GetProcessById(addID))
             Dim nam As String = addAP.Name
+
+            If FrmSettings.Visible Then
+                FrmSettings.tbcSettings.SelectedTab = FrmSettings.tabSortAndBL
+                If FrmSettings.txtTopSort.Lines.Contains(nam) AndAlso FrmSettings.txtBotSort.Lines.Contains(nam) Then
+                    FrmSettings.txtTopSort.Lines = FrmSettings.txtTopSort.Lines.Except({nam}).ToArray
+                    FrmSettings.txtBotSort.Lines = FrmSettings.txtBotSort.Lines.Except({nam}).ToArray
+                End If
+                If FrmSettings.chkWhitelist.Checked Then
+                    If Not FrmSettings.txtTopSort.Lines.Contains(nam) Then
+                        FrmSettings.txtTopSort.Lines = FrmSettings.txtTopSort.Lines.Append(nam).ToArray
+                    End If
+                    FrmSettings.txtTopSort.Select(FrmSettings.txtTopSort.Text.IndexOf(nam), nam.Length)
+                    FrmSettings.txtTopSort.Focus()
+                    FrmSettings.Focus()
+                End If
+            End If
+
             If blackList.Contains(nam) Then
                 blackList.RemoveAll(Function(it) it = nam)
             End If
@@ -734,15 +751,16 @@ Partial NotInheritable Class FrmMain
             Await Task.Delay(100)
             Me.TopMost = My.Settings.topmost
 
-            If Not pnlOverview.Visible Then
-                AltPP?.CenterBehind(pbZoom)
-                AltPP?.Activate()
-                Debug.Print($"{moveBusy} {swpBusy}")
-                moveBusy = False
-            Else
-                AppActivate(scalaPID)
+            If Not FrmSettings.Visible Then
+                If Not pnlOverview.Visible Then
+                    AltPP?.CenterBehind(pbZoom)
+                    AltPP?.Activate()
+                    Debug.Print($"{moveBusy} {swpBusy}")
+                    moveBusy = False
+                Else
+                    AppActivate(scalaPID)
+                End If
             End If
-
         End If
         'Me.SuspendLayout()
         If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
