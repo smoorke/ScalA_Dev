@@ -815,8 +815,8 @@ Partial NotInheritable Class FrmMain
         '    setbehind = If(pnlOverview.Visible, ScalaHandle, AltPP?.MainWindowHandle)
         'End If
 
-        If (setbehind Is Nothing OrElse setbehind = IntPtr.Zero) AndAlso pnlOverview.Visible Then setbehind = ScalaHandle
-        If setbehind Is Nothing Then setbehind = IntPtr.Zero
+        If (setbehind Is Nothing OrElse setbehind = IntPtr.Zero) Then setbehind = ScalaHandle
+        'If setbehind Is Nothing Then setbehind = ScalaHandle
 
         SetWindowPos(FrmBehind.Handle, setbehind, -1, -1, -1, -1,
                      SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.ASyncWindowPosition)
