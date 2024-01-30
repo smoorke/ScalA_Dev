@@ -270,6 +270,8 @@ Partial Public NotInheritable Class FrmMain
             My.Settings.topSort = String.Join(vbCrLf, blackList.Concat(topSortList))
             My.Settings.botSort = String.Join(vbCrLf, blackList.Concat(botSortList))
 
+            apSorter = New AstoniaProcessSorter(topSortList, botSortList)
+
             Await Task.Delay(100)
             Detach(True)
         End If
@@ -309,7 +311,7 @@ Partial Public NotInheritable Class FrmMain
             item.CheckState = CheckState.Unchecked
         Next
 
-        Dim AltName As String = sender.Tag.name
+        Dim AltName As String = DirectCast(sender.Tag, AstoniaProcess).Name
 
         Dim topContains As Boolean = topSortList.Contains(AltName)
         Dim botContains As Boolean = botSortList.Contains(AltName)
@@ -349,7 +351,7 @@ Partial Public NotInheritable Class FrmMain
     Private Sub NoneSortToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles NoneSortToolStripMenuItem.Click,
             TopFirstToolStripMenuItem.Click, TopLastToolStripMenuItem.Click,
             BotFirstToolStripMenuItem.Click, BotLastToolStripMenuItem.Click
-        Dim AltName As String = sender.OwnerItem.Tag.name
+        Dim AltName As String = DirectCast(sender.OwnerItem.Tag, AstoniaProcess).Name
         Debug.Print($"Apply sorting {AltName} {sender.Tag}")
 
         topSortList.Remove(AltName)

@@ -725,6 +725,8 @@ Partial NotInheritable Class FrmMain
             My.Settings.topSort = String.Join(vbCrLf, blackList.Concat(topSortList))
             My.Settings.botSort = String.Join(vbCrLf, blackList.Concat(botSortList))
 
+            apSorter = New AstoniaProcessSorter(topSortList, botSortList)
+
             IPC.AddToWhitelistOrRemoveFromBL(scalaPID, 0)
             IPC.RequestActivation = True
         End If
