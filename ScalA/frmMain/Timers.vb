@@ -406,7 +406,7 @@ Partial NotInheritable Class FrmMain
                 Dim altsIDs = alts.ConvertAll(Function(ap) ap.Id).ToHashSet
                 purgelist.RemoveAll(Function(x) altsIDs.Contains(x))
             Else
-                purgelist.Remove(AltPP?.Id)
+                purgelist.Remove(If(AltPP?.Id, 0))
             End If
 
             For Each ppid As Integer In purgelist 'tolist needed as we mutate the thumbsdict
@@ -747,6 +747,10 @@ Partial NotInheritable Class FrmMain
             End If
 
             'ShowWindow(ScalaHandle, SW_SHOW)
+            Me.Show()
+            If My.Settings.SizingBorder AndAlso Not FrmSizeBorder.Visible Then
+                FrmSizeBorder.Show(Me)
+            End If
 
             Me.TopMost = True
             Me.BringToFront()
@@ -812,6 +816,7 @@ Partial NotInheritable Class FrmMain
         'End If
 
         If (setbehind Is Nothing OrElse setbehind = IntPtr.Zero) AndAlso pnlOverview.Visible Then setbehind = ScalaHandle
+        If setbehind Is Nothing Then setbehind = IntPtr.Zero
 
         SetWindowPos(FrmBehind.Handle, setbehind, -1, -1, -1, -1,
                      SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.ASyncWindowPosition)
