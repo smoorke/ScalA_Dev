@@ -465,7 +465,6 @@ Partial NotInheritable Class FrmMain
         '
         'KeepToolStripMenuItem
         '
-        Me.KeepToolStripMenuItem.CheckOnClick = True
         Me.KeepToolStripMenuItem.Name = "KeepToolStripMenuItem"
         Me.KeepToolStripMenuItem.Size = New System.Drawing.Size(188, 22)
         Me.KeepToolStripMenuItem.Text = "Keep Here?"

@@ -214,5 +214,8 @@
     <Setting Name="ToggleTopKey" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">84</Value>
     </Setting>
+    <Setting Name="KeepOnOverview" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

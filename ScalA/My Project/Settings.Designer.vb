@@ -835,6 +835,18 @@ Namespace My
                 Me("ToggleTopKey") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property KeepOnOverview() As Boolean
+            Get
+                Return CType(Me("KeepOnOverview"),Boolean)
+            End Get
+            Set
+                Me("KeepOnOverview") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

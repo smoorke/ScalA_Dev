@@ -179,16 +179,27 @@ Partial Public NotInheritable Class FrmMain
         MoveToolStripMenuItem.DropDownItems.Add(KeepToolStripMenuItem)
         MoveToolStripMenuItem.DropDownItems.Add(New ToolStripSeparator With {.Visible = lst.Count > 0})
         KeepToolStripMenuItem.Visible = lst.Count > 0
-        KeepToolStripMenuItem.Checked = False
+        KeepToolStripMenuItem.CheckState = If(My.Settings.KeepOnOverview, CheckState.Indeterminate, CheckState.Unchecked)
 
         Debug.Print(sender.Tag.name)
         Dim Rang = lst.Select(Function(p) New ToolStripMenuItem(p.ProcessName, Nothing, AddressOf MoveTo_Click) With {.Tag = (sender.Tag, p)}).ToArray
         MoveToolStripMenuItem.DropDownItems.AddRange(Rang)
     End Sub
 
-    Private Sub KeepToolStripMenuItem_Mousedown(sender As ToolStripMenuItem, e As EventArgs) Handles KeepToolStripMenuItem.MouseDown
+    Private Sub KeepToolStripMenuItem_Mousedown(sender As ToolStripMenuItem, e As MouseEventArgs) Handles KeepToolStripMenuItem.MouseDown
         Debug.Print($"{sender.Owner}")
         CType(sender.Owner, ToolStripDropDownMenu).AutoClose = False
+        If e.Button = MouseButtons.Right Then
+            If sender.CheckState <> CheckState.Indeterminate Then
+                sender.CheckState = CheckState.Indeterminate
+            Else
+                sender.CheckState = CheckState.Unchecked
+            End If
+        End If
+        If e.Button = MouseButtons.Left Then sender.Checked = Not sender.Checked
+
+        My.Settings.KeepOnOverview = sender.CheckState = CheckState.Indeterminate
+
     End Sub
     Private Sub KeepToolStripMenuItem_Mouseleave(sender As ToolStripMenuItem, e As EventArgs) Handles KeepToolStripMenuItem.MouseLeave
         CType(sender.Owner, ToolStripDropDownMenu).AutoClose = True
