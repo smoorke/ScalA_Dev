@@ -75,13 +75,34 @@ Module IPC
             Return False
         End Try
     End Function
+    ''' <summary>
+    ''' Gets the actual MainWindoHandle.
+    ''' Process.MainWindowHandle is null for attached ScalA
+    ''' </summary>
+    ''' <param name="p"></param>
+    ''' <returns></returns>
+
+    <System.Runtime.CompilerServices.Extension()>
+    Public Function GetHandle(p As Process) As IntPtr
+        Dim sharednum = _mmvaInstances.ReadInt32(0)
+
+        ReDim Preserve _Instances(sharednum)
+        _mmvaInstances.ReadArray(Of ScalAInfo)(4, _Instances, 0, sharednum)
+
+        Return _Instances.FirstOrDefault(Function(si) si.pid = p.Id).handle
+
+    End Function
+
+
 
     <StructLayout(LayoutKind.Sequential)> '64 bytes
     Public Structure ScalAInfo
         Public pid As Integer
         Public isOnOverview As Boolean
+        Public handle As IntPtr
 
-        Private padding0 As Long
+        Private padding0 As Integer
+
         Private padding1 As Long
         Private padding2 As Long
         Private Padding3 As Long
@@ -100,6 +121,7 @@ Module IPC
         Public Sub New(pid As Integer, overview As Boolean)
             Me.pid = pid
             Me.isOnOverview = overview
+            Me.handle = FrmMain.ScalaHandle
         End Sub
 
     End Structure

@@ -212,16 +212,18 @@ Partial Public NotInheritable Class FrmMain
         For Each tsmi As ToolStripMenuItem In sender.DropDownItems.OfType(Of ToolStripMenuItem)
             If tsmi.Tag Is Nothing Then Continue For
             Dim ppos As Process = DirectCast(tsmi.Tag.item2, Process)
+            Dim hndl As IntPtr = ppos.GetHandle 'mainwindowhande reports null for attached ScalAs. replaced with a fields in IPC
             Dim rcOW As RECT
-            If IsIconic(ppos.MainWindowHandle) Then
+
+            If IsIconic(hndl) Then
                 Dim wp As New WINDOWPLACEMENT With {.length = Runtime.InteropServices.Marshal.SizeOf(GetType(WINDOWPLACEMENT))}
-                GetWindowPlacement(ppos.MainWindowHandle, wp)
+                GetWindowPlacement(hndl, wp)
                 rcOW = wp.normalPosition
             Else
-                GetWindowRect(ppos.MainWindowHandle, rcOW)
+                GetWindowRect(hndl, rcOW)
             End If
             Dim otPos As Point = New Point(rcOW.left + (rcOW.right - rcOW.left) / 2, rcOW.top + (rcOW.bottom - rcOW.top) / 2)
-            Debug.Print($"{DirectCast(tsmi.Tag.item2, Process).ProcessName} {otPos}")
+            Debug.Print($"{DirectCast(tsmi.Tag.item2, Process).ProcessName} {otPos} {hndl}")
             Dim bmp As Image = DrawArrow(mePos, otPos)
 
             tsmi.Image = bmp

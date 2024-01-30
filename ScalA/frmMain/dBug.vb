@@ -205,7 +205,7 @@ Module dBug
 
         For Each sai As IPC.ScalAInfo In IPC.getInstances()
             Dim pp = Process.GetProcessById(sai.pid)
-            Debug.Print($"{pp.ProcessName} {pp.Path} {sai.isOnOverview}")
+            Debug.Print($"{pp.ProcessName} {pp.Path} {sai.isOnOverview} {sai.handle}")
         Next
 
     End Sub
