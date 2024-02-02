@@ -412,6 +412,7 @@ Partial NotInheritable Class FrmSettings
         Label19.Size = New System.Drawing.Size(11, 13)
         Label19.TabIndex = 26
         Label19.Text = "*"
+        Me.ttSettings.SetToolTip(Label19, "Toggle One Less Row/Column")
         '
         'Label18
         '
@@ -421,6 +422,7 @@ Partial NotInheritable Class FrmSettings
         Label18.Size = New System.Drawing.Size(10, 13)
         Label18.TabIndex = 20
         Label18.Text = "-"
+        Me.ttSettings.SetToolTip(Label18, "Decrease Extra Columns/Rows")
         '
         'Label17
         '
@@ -430,6 +432,7 @@ Partial NotInheritable Class FrmSettings
         Label17.Size = New System.Drawing.Size(13, 13)
         Label17.TabIndex = 19
         Label17.Text = "+"
+        Me.ttSettings.SetToolTip(Label17, "Increase Extra Columns/Rows")
         '
         'grpAlterOverviewMinMax
         '
@@ -938,6 +941,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtAlterOverviewStarKey.Size = New System.Drawing.Size(73, 20)
         Me.txtAlterOverviewStarKey.TabIndex = 21
         Me.txtAlterOverviewStarKey.TabStop = False
+        Me.ttSettings.SetToolTip(Me.txtAlterOverviewStarKey, "Toggle One Less Row/Column")
         '
         'chkAlterOverviewStarShift
         '
@@ -990,6 +994,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtAlterOverviewMinKey.Size = New System.Drawing.Size(73, 20)
         Me.txtAlterOverviewMinKey.TabIndex = 11
         Me.txtAlterOverviewMinKey.TabStop = False
+        Me.ttSettings.SetToolTip(Me.txtAlterOverviewMinKey, "Decrease Extra Columns/Rows")
         '
         'chkAlterOverviewPlusALt
         '
@@ -1009,6 +1014,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtAlterOverviewPlusKey.Size = New System.Drawing.Size(73, 20)
         Me.txtAlterOverviewPlusKey.TabIndex = 7
         Me.txtAlterOverviewPlusKey.TabStop = False
+        Me.ttSettings.SetToolTip(Me.txtAlterOverviewPlusKey, "Increase Extra Columns/Rows")
         '
         'chkAlterOverviewMinShift
         '
