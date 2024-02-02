@@ -629,7 +629,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     g.FillRectangle(br, New Rectangle(0, 0, shm.hp / 100 * width, itemheight))
                     g.FillRectangle(bo, New Rectangle(0, itemheight, shm.shield / 100 * width, itemheight))
                     g.FillRectangle(bb, New Rectangle(0, itemheight * 2, shm.mana / 100 * width, itemheight))
-                    If My.Settings.showend Then
+                    If My.Settings.ShowEnd Then
                         g.FillRectangle(If(My.Settings.DarkMode, by, bl), New Rectangle(0, itemheight * 3, shm.end / 100 * width, height - (itemheight * 3)))
                     End If
                 End If

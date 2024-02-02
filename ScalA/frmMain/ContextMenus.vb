@@ -212,7 +212,7 @@ Partial Public NotInheritable Class FrmMain
         For Each tsmi As ToolStripMenuItem In sender.DropDownItems.OfType(Of ToolStripMenuItem)
             If tsmi.Tag Is Nothing Then Continue For
             Dim ppos As Process = DirectCast(tsmi.Tag.item2, Process)
-            Dim hndl As IntPtr = ppos.GetHandle 'mainwindowhande reports null for attached ScalAs. replaced with a fields in IPC
+            Dim hndl As IntPtr = ppos.GetWindowHandle 'mainwindowhandle reports null for attached ScalAs. replaced with a fields in IPC
             Dim rcOW As RECT
 
             If IsIconic(hndl) Then
