@@ -38,14 +38,21 @@ Partial NotInheritable Class FrmSettings
         Dim Label12 As System.Windows.Forms.Label
         Dim Label13 As System.Windows.Forms.Label
         Dim Label14 As System.Windows.Forms.Label
-        Dim Label6 As System.Windows.Forms.Label
         Dim Label15 As System.Windows.Forms.Label
+        Dim Label19 As System.Windows.Forms.Label
+        Dim Label18 As System.Windows.Forms.Label
+        Dim Label17 As System.Windows.Forms.Label
+        Dim grpAlterOverviewMinMax As System.Windows.Forms.GroupBox
+        Dim Label6 As System.Windows.Forms.Label
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmSettings))
         Me.txtQuickLaunchPath = New System.Windows.Forms.TextBox()
         Me.ChkQLShowHidden = New System.Windows.Forms.CheckBox()
         Me.btnOpenFolderDialog = New System.Windows.Forms.Button()
         Me.cmsQLFolder = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.OpenInExplorerToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.chkApplyAlterNormal = New System.Windows.Forms.CheckBox()
+        Me.ChkLessRowCol = New System.Windows.Forms.CheckBox()
+        Me.NumExtraMax = New System.Windows.Forms.NumericUpDown()
         Me.btnOK = New System.Windows.Forms.Button()
         Me.btnCancel = New System.Windows.Forms.Button()
         Me.tmrAlign = New System.Windows.Forms.Timer(Me.components)
@@ -57,7 +64,6 @@ Partial NotInheritable Class FrmSettings
         Me.NumBorderRight = New System.Windows.Forms.NumericUpDown()
         Me.NumBorderTop = New System.Windows.Forms.NumericUpDown()
         Me.NumBorderLeft = New System.Windows.Forms.NumericUpDown()
-        Me.ChkLessRowCol = New System.Windows.Forms.CheckBox()
         Me.chkOverViewIsGame = New System.Windows.Forms.CheckBox()
         Me.cboScalingMode = New System.Windows.Forms.ComboBox()
         Me.chkCycleOnClose = New System.Windows.Forms.CheckBox()
@@ -69,6 +75,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkCloseAll = New System.Windows.Forms.CheckBox()
         Me.chkHoverActivate = New System.Windows.Forms.CheckBox()
         Me.chkShowEnd = New System.Windows.Forms.CheckBox()
+        Me.chkAlterOverview = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
@@ -86,6 +93,22 @@ Partial NotInheritable Class FrmSettings
         Me.DummyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.txtResolutions = New System.Windows.Forms.TextBox()
         Me.tabHotkeys = New System.Windows.Forms.TabPage()
+        Me.grpAlterOverview = New System.Windows.Forms.GroupBox()
+        Me.chkAlterOverviewStarAlt = New System.Windows.Forms.CheckBox()
+        Me.txtAlterOverviewStarKey = New System.Windows.Forms.TextBox()
+        Me.chkAlterOverviewStarShift = New System.Windows.Forms.CheckBox()
+        Me.chkAlterOverviewStarWin = New System.Windows.Forms.CheckBox()
+        Me.chkAlterOverviewStarCtrl = New System.Windows.Forms.CheckBox()
+        Me.chkAlterOverviewMinAlt = New System.Windows.Forms.CheckBox()
+        Me.txtAlterOverviewMinKey = New System.Windows.Forms.TextBox()
+        Me.chkAlterOverviewPlusALt = New System.Windows.Forms.CheckBox()
+        Me.txtAlterOverviewPlusKey = New System.Windows.Forms.TextBox()
+        Me.chkAlterOverviewMinShift = New System.Windows.Forms.CheckBox()
+        Me.chkAlterOverviewPlusShift = New System.Windows.Forms.CheckBox()
+        Me.chkAlterOverviewMinWin = New System.Windows.Forms.CheckBox()
+        Me.chkAlterOverviewPlusWin = New System.Windows.Forms.CheckBox()
+        Me.chkAlterOverviewMinCtrl = New System.Windows.Forms.CheckBox()
+        Me.chkAlterOverviewPlusCtrl = New System.Windows.Forms.CheckBox()
         Me.chkToggleTopMost = New System.Windows.Forms.CheckBox()
         Me.grpToggleTopMost = New System.Windows.Forms.GroupBox()
         Me.txtTogTop = New System.Windows.Forms.TextBox()
@@ -125,8 +148,8 @@ Partial NotInheritable Class FrmSettings
         Me.txtTopSort = New System.Windows.Forms.TextBox()
         Me.chkWhitelist = New System.Windows.Forms.CheckBox()
         Me.tabMaximized = New System.Windows.Forms.TabPage()
+        Me.chkMinMaxOnSwitch = New System.Windows.Forms.CheckBox()
         Me.chkStartupMax = New System.Windows.Forms.CheckBox()
-        Me.NumExtraMax = New System.Windows.Forms.NumericUpDown()
         Me.tabMisc = New System.Windows.Forms.TabPage()
         Me.cmbTheme = New System.Windows.Forms.ComboBox()
         Me.Label16 = New System.Windows.Forms.Label()
@@ -154,10 +177,16 @@ Partial NotInheritable Class FrmSettings
         Label12 = New System.Windows.Forms.Label()
         Label13 = New System.Windows.Forms.Label()
         Label14 = New System.Windows.Forms.Label()
-        Label6 = New System.Windows.Forms.Label()
         Label15 = New System.Windows.Forms.Label()
+        Label19 = New System.Windows.Forms.Label()
+        Label18 = New System.Windows.Forms.Label()
+        Label17 = New System.Windows.Forms.Label()
+        grpAlterOverviewMinMax = New System.Windows.Forms.GroupBox()
+        Label6 = New System.Windows.Forms.Label()
         grpQLPath.SuspendLayout()
         Me.cmsQLFolder.SuspendLayout()
+        grpAlterOverviewMinMax.SuspendLayout()
+        CType(Me.NumExtraMax, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.grpReserveSpace.SuspendLayout()
         CType(Me.NumBorderBot, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumBorderRight, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -169,13 +198,13 @@ Partial NotInheritable Class FrmSettings
         Me.cmsRestore.SuspendLayout()
         Me.cmsGenerate.SuspendLayout()
         Me.tabHotkeys.SuspendLayout()
+        Me.grpAlterOverview.SuspendLayout()
         Me.grpToggleTopMost.SuspendLayout()
         Me.grpCloseAllShortcut.SuspendLayout()
         Me.grpCycleShortcut.SuspendLayout()
         Me.grpOverviewShortcut.SuspendLayout()
         Me.tabSortAndBL.SuspendLayout()
         Me.tabMaximized.SuspendLayout()
-        CType(Me.NumExtraMax, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tabMisc.SuspendLayout()
         Me.grpAlign.SuspendLayout()
         CType(Me.numXoffset, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -364,15 +393,6 @@ Partial NotInheritable Class FrmSettings
         Label14.TabIndex = 11
         Label14.Text = "‰"
         '
-        'Label6
-        '
-        Label6.AutoSize = True
-        Label6.Location = New System.Drawing.Point(15, 129)
-        Label6.Name = "Label6"
-        Label6.Size = New System.Drawing.Size(106, 13)
-        Label6.TabIndex = 28
-        Label6.Text = "Extra Columns/Rows"
-        '
         'Label15
         '
         Label15.AutoSize = True
@@ -383,6 +403,87 @@ Partial NotInheritable Class FrmSettings
         Label15.Text = "Scaling Mode"
         Me.ttSettings.SetToolTip(Label15, "Auto will use Pixel Mode when scaling factor is 2x or more." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: Pixel Mode is " &
         "disabled when Windows Scaling is not 100%" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
+        '
+        'Label19
+        '
+        Label19.AutoSize = True
+        Label19.Location = New System.Drawing.Point(255, 71)
+        Label19.Name = "Label19"
+        Label19.Size = New System.Drawing.Size(11, 13)
+        Label19.TabIndex = 26
+        Label19.Text = "*"
+        '
+        'Label18
+        '
+        Label18.AutoSize = True
+        Label18.Location = New System.Drawing.Point(255, 43)
+        Label18.Name = "Label18"
+        Label18.Size = New System.Drawing.Size(10, 13)
+        Label18.TabIndex = 20
+        Label18.Text = "-"
+        '
+        'Label17
+        '
+        Label17.AutoSize = True
+        Label17.Location = New System.Drawing.Point(254, 20)
+        Label17.Name = "Label17"
+        Label17.Size = New System.Drawing.Size(13, 13)
+        Label17.TabIndex = 19
+        Label17.Text = "+"
+        '
+        'grpAlterOverviewMinMax
+        '
+        grpAlterOverviewMinMax.Controls.Add(Me.chkApplyAlterNormal)
+        grpAlterOverviewMinMax.Controls.Add(Me.ChkLessRowCol)
+        grpAlterOverviewMinMax.Controls.Add(Me.NumExtraMax)
+        grpAlterOverviewMinMax.Controls.Add(Label6)
+        grpAlterOverviewMinMax.Location = New System.Drawing.Point(15, 86)
+        grpAlterOverviewMinMax.Name = "grpAlterOverviewMinMax"
+        grpAlterOverviewMinMax.Size = New System.Drawing.Size(156, 66)
+        grpAlterOverviewMinMax.TabIndex = 31
+        grpAlterOverviewMinMax.TabStop = False
+        '
+        'chkApplyAlterNormal
+        '
+        Me.chkApplyAlterNormal.AutoSize = True
+        Me.chkApplyAlterNormal.Location = New System.Drawing.Point(14, 0)
+        Me.chkApplyAlterNormal.Name = "chkApplyAlterNormal"
+        Me.chkApplyAlterNormal.Size = New System.Drawing.Size(122, 17)
+        Me.chkApplyAlterNormal.TabIndex = 32
+        Me.chkApplyAlterNormal.Text = "Also Apply in Normal"
+        Me.chkApplyAlterNormal.UseVisualStyleBackColor = True
+        '
+        'ChkLessRowCol
+        '
+        Me.ChkLessRowCol.AutoSize = True
+        Me.ChkLessRowCol.Checked = True
+        Me.ChkLessRowCol.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.ChkLessRowCol.Location = New System.Drawing.Point(6, 20)
+        Me.ChkLessRowCol.Name = "ChkLessRowCol"
+        Me.ChkLessRowCol.Size = New System.Drawing.Size(136, 17)
+        Me.ChkLessRowCol.TabIndex = 29
+        Me.ChkLessRowCol.Text = "One Less Row/Column"
+        Me.ttSettings.SetToolTip(Me.ChkLessRowCol, "When Width is bigger than Height have one less Row " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "If Height is bigger than Wid" &
+        "th have one less Column")
+        Me.ChkLessRowCol.UseVisualStyleBackColor = True
+        '
+        'NumExtraMax
+        '
+        Me.NumExtraMax.Location = New System.Drawing.Point(110, 40)
+        Me.NumExtraMax.Maximum = New Decimal(New Integer() {9, 0, 0, 0})
+        Me.NumExtraMax.Name = "NumExtraMax"
+        Me.NumExtraMax.Size = New System.Drawing.Size(40, 20)
+        Me.NumExtraMax.TabIndex = 30
+        Me.NumExtraMax.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'Label6
+        '
+        Label6.AutoSize = True
+        Label6.Location = New System.Drawing.Point(3, 42)
+        Label6.Name = "Label6"
+        Label6.Size = New System.Drawing.Size(106, 13)
+        Label6.TabIndex = 31
+        Label6.Text = "Extra Columns/Rows"
         '
         'btnOK
         '
@@ -442,7 +543,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpReserveSpace.Controls.Add(Label14)
         Me.grpReserveSpace.Controls.Add(Label13)
         Me.grpReserveSpace.Controls.Add(Label12)
-        Me.grpReserveSpace.Location = New System.Drawing.Point(49, 31)
+        Me.grpReserveSpace.Location = New System.Drawing.Point(50, 17)
         Me.grpReserveSpace.Name = "grpReserveSpace"
         Me.grpReserveSpace.Size = New System.Drawing.Size(212, 67)
         Me.grpReserveSpace.TabIndex = 2
@@ -496,20 +597,6 @@ Partial NotInheritable Class FrmSettings
         Me.NumBorderLeft.Size = New System.Drawing.Size(50, 20)
         Me.NumBorderLeft.TabIndex = 0
         Me.NumBorderLeft.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
-        '
-        'ChkLessRowCol
-        '
-        Me.ChkLessRowCol.AutoSize = True
-        Me.ChkLessRowCol.Checked = True
-        Me.ChkLessRowCol.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.ChkLessRowCol.Location = New System.Drawing.Point(18, 107)
-        Me.ChkLessRowCol.Name = "ChkLessRowCol"
-        Me.ChkLessRowCol.Size = New System.Drawing.Size(136, 17)
-        Me.ChkLessRowCol.TabIndex = 4
-        Me.ChkLessRowCol.Text = "One Less Row/Column"
-        Me.ttSettings.SetToolTip(Me.ChkLessRowCol, "When Width is bigger than Height have one less Row " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "If Height is bigger than Wid" &
-        "th have one less Column")
-        Me.ChkLessRowCol.UseVisualStyleBackColor = True
         '
         'chkOverViewIsGame
         '
@@ -581,7 +668,7 @@ Partial NotInheritable Class FrmSettings
         'ChkMinMin
         '
         Me.ChkMinMin.AutoSize = True
-        Me.ChkMinMin.Location = New System.Drawing.Point(171, 129)
+        Me.ChkMinMin.Location = New System.Drawing.Point(178, 126)
         Me.ChkMinMin.Name = "ChkMinMin"
         Me.ChkMinMin.Size = New System.Drawing.Size(104, 17)
         Me.ChkMinMin.TabIndex = 30
@@ -624,6 +711,18 @@ Partial NotInheritable Class FrmSettings
         Me.chkShowEnd.Text = "Always Show End"
         Me.ttSettings.SetToolTip(Me.chkShowEnd, "Always show Endurance on Overview Big HealthBars")
         Me.chkShowEnd.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverview
+        '
+        Me.chkAlterOverview.AutoSize = True
+        Me.chkAlterOverview.Location = New System.Drawing.Point(24, 223)
+        Me.chkAlterOverview.Name = "chkAlterOverview"
+        Me.chkAlterOverview.Size = New System.Drawing.Size(130, 17)
+        Me.chkAlterOverview.TabIndex = 23
+        Me.chkAlterOverview.TabStop = False
+        Me.chkAlterOverview.Text = "Alter Overview Layout"
+        Me.ttSettings.SetToolTip(Me.chkAlterOverview, "Note: Whitelist setting from Sorting tab is in effect here")
+        Me.chkAlterOverview.UseVisualStyleBackColor = True
         '
         'tbcSettings
         '
@@ -777,6 +876,8 @@ Partial NotInheritable Class FrmSettings
         'tabHotkeys
         '
         Me.tabHotkeys.AutoScroll = True
+        Me.tabHotkeys.Controls.Add(Me.chkAlterOverview)
+        Me.tabHotkeys.Controls.Add(Me.grpAlterOverview)
         Me.tabHotkeys.Controls.Add(Me.chkToggleTopMost)
         Me.tabHotkeys.Controls.Add(Me.grpToggleTopMost)
         Me.tabHotkeys.Controls.Add(Me.chkCloseAll)
@@ -792,6 +893,188 @@ Partial NotInheritable Class FrmSettings
         Me.tabHotkeys.TabIndex = 2
         Me.tabHotkeys.Text = "Hotkeys"
         Me.tabHotkeys.UseVisualStyleBackColor = True
+        '
+        'grpAlterOverview
+        '
+        Me.grpAlterOverview.Controls.Add(Me.chkAlterOverviewStarAlt)
+        Me.grpAlterOverview.Controls.Add(Me.txtAlterOverviewStarKey)
+        Me.grpAlterOverview.Controls.Add(Me.chkAlterOverviewStarShift)
+        Me.grpAlterOverview.Controls.Add(Me.chkAlterOverviewStarWin)
+        Me.grpAlterOverview.Controls.Add(Me.chkAlterOverviewStarCtrl)
+        Me.grpAlterOverview.Controls.Add(Label19)
+        Me.grpAlterOverview.Controls.Add(Me.chkAlterOverviewMinAlt)
+        Me.grpAlterOverview.Controls.Add(Me.txtAlterOverviewMinKey)
+        Me.grpAlterOverview.Controls.Add(Me.chkAlterOverviewPlusALt)
+        Me.grpAlterOverview.Controls.Add(Me.txtAlterOverviewPlusKey)
+        Me.grpAlterOverview.Controls.Add(Me.chkAlterOverviewMinShift)
+        Me.grpAlterOverview.Controls.Add(Me.chkAlterOverviewPlusShift)
+        Me.grpAlterOverview.Controls.Add(Me.chkAlterOverviewMinWin)
+        Me.grpAlterOverview.Controls.Add(Me.chkAlterOverviewPlusWin)
+        Me.grpAlterOverview.Controls.Add(Me.chkAlterOverviewMinCtrl)
+        Me.grpAlterOverview.Controls.Add(Me.chkAlterOverviewPlusCtrl)
+        Me.grpAlterOverview.Controls.Add(Label18)
+        Me.grpAlterOverview.Controls.Add(Label17)
+        Me.grpAlterOverview.Location = New System.Drawing.Point(11, 224)
+        Me.grpAlterOverview.Name = "grpAlterOverview"
+        Me.grpAlterOverview.Size = New System.Drawing.Size(269, 90)
+        Me.grpAlterOverview.TabIndex = 22
+        Me.grpAlterOverview.TabStop = False
+        '
+        'chkAlterOverviewStarAlt
+        '
+        Me.chkAlterOverviewStarAlt.AutoSize = True
+        Me.chkAlterOverviewStarAlt.Location = New System.Drawing.Point(90, 66)
+        Me.chkAlterOverviewStarAlt.Name = "chkAlterOverviewStarAlt"
+        Me.chkAlterOverviewStarAlt.Size = New System.Drawing.Size(38, 17)
+        Me.chkAlterOverviewStarAlt.TabIndex = 23
+        Me.chkAlterOverviewStarAlt.TabStop = False
+        Me.chkAlterOverviewStarAlt.Text = "Alt"
+        Me.chkAlterOverviewStarAlt.UseVisualStyleBackColor = True
+        '
+        'txtAlterOverviewStarKey
+        '
+        Me.txtAlterOverviewStarKey.Location = New System.Drawing.Point(181, 64)
+        Me.txtAlterOverviewStarKey.Name = "txtAlterOverviewStarKey"
+        Me.txtAlterOverviewStarKey.Size = New System.Drawing.Size(73, 20)
+        Me.txtAlterOverviewStarKey.TabIndex = 21
+        Me.txtAlterOverviewStarKey.TabStop = False
+        '
+        'chkAlterOverviewStarShift
+        '
+        Me.chkAlterOverviewStarShift.AutoSize = True
+        Me.chkAlterOverviewStarShift.Location = New System.Drawing.Point(131, 66)
+        Me.chkAlterOverviewStarShift.Name = "chkAlterOverviewStarShift"
+        Me.chkAlterOverviewStarShift.Size = New System.Drawing.Size(47, 17)
+        Me.chkAlterOverviewStarShift.TabIndex = 24
+        Me.chkAlterOverviewStarShift.TabStop = False
+        Me.chkAlterOverviewStarShift.Text = "Shift"
+        Me.chkAlterOverviewStarShift.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewStarWin
+        '
+        Me.chkAlterOverviewStarWin.AutoSize = True
+        Me.chkAlterOverviewStarWin.Location = New System.Drawing.Point(46, 66)
+        Me.chkAlterOverviewStarWin.Name = "chkAlterOverviewStarWin"
+        Me.chkAlterOverviewStarWin.Size = New System.Drawing.Size(45, 17)
+        Me.chkAlterOverviewStarWin.TabIndex = 25
+        Me.chkAlterOverviewStarWin.TabStop = False
+        Me.chkAlterOverviewStarWin.Text = "Win"
+        Me.chkAlterOverviewStarWin.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewStarCtrl
+        '
+        Me.chkAlterOverviewStarCtrl.AutoSize = True
+        Me.chkAlterOverviewStarCtrl.Location = New System.Drawing.Point(6, 66)
+        Me.chkAlterOverviewStarCtrl.Name = "chkAlterOverviewStarCtrl"
+        Me.chkAlterOverviewStarCtrl.Size = New System.Drawing.Size(41, 17)
+        Me.chkAlterOverviewStarCtrl.TabIndex = 22
+        Me.chkAlterOverviewStarCtrl.TabStop = False
+        Me.chkAlterOverviewStarCtrl.Text = "Ctrl"
+        Me.chkAlterOverviewStarCtrl.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewMinAlt
+        '
+        Me.chkAlterOverviewMinAlt.AutoSize = True
+        Me.chkAlterOverviewMinAlt.Location = New System.Drawing.Point(90, 42)
+        Me.chkAlterOverviewMinAlt.Name = "chkAlterOverviewMinAlt"
+        Me.chkAlterOverviewMinAlt.Size = New System.Drawing.Size(38, 17)
+        Me.chkAlterOverviewMinAlt.TabIndex = 13
+        Me.chkAlterOverviewMinAlt.TabStop = False
+        Me.chkAlterOverviewMinAlt.Text = "Alt"
+        Me.chkAlterOverviewMinAlt.UseVisualStyleBackColor = True
+        '
+        'txtAlterOverviewMinKey
+        '
+        Me.txtAlterOverviewMinKey.Location = New System.Drawing.Point(181, 40)
+        Me.txtAlterOverviewMinKey.Name = "txtAlterOverviewMinKey"
+        Me.txtAlterOverviewMinKey.Size = New System.Drawing.Size(73, 20)
+        Me.txtAlterOverviewMinKey.TabIndex = 11
+        Me.txtAlterOverviewMinKey.TabStop = False
+        '
+        'chkAlterOverviewPlusALt
+        '
+        Me.chkAlterOverviewPlusALt.AutoSize = True
+        Me.chkAlterOverviewPlusALt.Location = New System.Drawing.Point(90, 19)
+        Me.chkAlterOverviewPlusALt.Name = "chkAlterOverviewPlusALt"
+        Me.chkAlterOverviewPlusALt.Size = New System.Drawing.Size(38, 17)
+        Me.chkAlterOverviewPlusALt.TabIndex = 9
+        Me.chkAlterOverviewPlusALt.TabStop = False
+        Me.chkAlterOverviewPlusALt.Text = "Alt"
+        Me.chkAlterOverviewPlusALt.UseVisualStyleBackColor = True
+        '
+        'txtAlterOverviewPlusKey
+        '
+        Me.txtAlterOverviewPlusKey.Location = New System.Drawing.Point(181, 16)
+        Me.txtAlterOverviewPlusKey.Name = "txtAlterOverviewPlusKey"
+        Me.txtAlterOverviewPlusKey.Size = New System.Drawing.Size(73, 20)
+        Me.txtAlterOverviewPlusKey.TabIndex = 7
+        Me.txtAlterOverviewPlusKey.TabStop = False
+        '
+        'chkAlterOverviewMinShift
+        '
+        Me.chkAlterOverviewMinShift.AutoSize = True
+        Me.chkAlterOverviewMinShift.Location = New System.Drawing.Point(131, 42)
+        Me.chkAlterOverviewMinShift.Name = "chkAlterOverviewMinShift"
+        Me.chkAlterOverviewMinShift.Size = New System.Drawing.Size(47, 17)
+        Me.chkAlterOverviewMinShift.TabIndex = 15
+        Me.chkAlterOverviewMinShift.TabStop = False
+        Me.chkAlterOverviewMinShift.Text = "Shift"
+        Me.chkAlterOverviewMinShift.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewPlusShift
+        '
+        Me.chkAlterOverviewPlusShift.AutoSize = True
+        Me.chkAlterOverviewPlusShift.Location = New System.Drawing.Point(131, 19)
+        Me.chkAlterOverviewPlusShift.Name = "chkAlterOverviewPlusShift"
+        Me.chkAlterOverviewPlusShift.Size = New System.Drawing.Size(47, 17)
+        Me.chkAlterOverviewPlusShift.TabIndex = 14
+        Me.chkAlterOverviewPlusShift.TabStop = False
+        Me.chkAlterOverviewPlusShift.Text = "Shift"
+        Me.chkAlterOverviewPlusShift.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewMinWin
+        '
+        Me.chkAlterOverviewMinWin.AutoSize = True
+        Me.chkAlterOverviewMinWin.Location = New System.Drawing.Point(46, 42)
+        Me.chkAlterOverviewMinWin.Name = "chkAlterOverviewMinWin"
+        Me.chkAlterOverviewMinWin.Size = New System.Drawing.Size(45, 17)
+        Me.chkAlterOverviewMinWin.TabIndex = 17
+        Me.chkAlterOverviewMinWin.TabStop = False
+        Me.chkAlterOverviewMinWin.Text = "Win"
+        Me.chkAlterOverviewMinWin.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewPlusWin
+        '
+        Me.chkAlterOverviewPlusWin.AutoSize = True
+        Me.chkAlterOverviewPlusWin.Location = New System.Drawing.Point(46, 19)
+        Me.chkAlterOverviewPlusWin.Name = "chkAlterOverviewPlusWin"
+        Me.chkAlterOverviewPlusWin.Size = New System.Drawing.Size(45, 17)
+        Me.chkAlterOverviewPlusWin.TabIndex = 16
+        Me.chkAlterOverviewPlusWin.TabStop = False
+        Me.chkAlterOverviewPlusWin.Text = "Win"
+        Me.chkAlterOverviewPlusWin.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewMinCtrl
+        '
+        Me.chkAlterOverviewMinCtrl.AutoSize = True
+        Me.chkAlterOverviewMinCtrl.Location = New System.Drawing.Point(6, 42)
+        Me.chkAlterOverviewMinCtrl.Name = "chkAlterOverviewMinCtrl"
+        Me.chkAlterOverviewMinCtrl.Size = New System.Drawing.Size(41, 17)
+        Me.chkAlterOverviewMinCtrl.TabIndex = 12
+        Me.chkAlterOverviewMinCtrl.TabStop = False
+        Me.chkAlterOverviewMinCtrl.Text = "Ctrl"
+        Me.chkAlterOverviewMinCtrl.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewPlusCtrl
+        '
+        Me.chkAlterOverviewPlusCtrl.AutoSize = True
+        Me.chkAlterOverviewPlusCtrl.Location = New System.Drawing.Point(6, 19)
+        Me.chkAlterOverviewPlusCtrl.Name = "chkAlterOverviewPlusCtrl"
+        Me.chkAlterOverviewPlusCtrl.Size = New System.Drawing.Size(41, 17)
+        Me.chkAlterOverviewPlusCtrl.TabIndex = 8
+        Me.chkAlterOverviewPlusCtrl.TabStop = False
+        Me.chkAlterOverviewPlusCtrl.Text = "Ctrl"
+        Me.chkAlterOverviewPlusCtrl.UseVisualStyleBackColor = True
         '
         'chkToggleTopMost
         '
@@ -1214,11 +1497,10 @@ Partial NotInheritable Class FrmSettings
         '
         'tabMaximized
         '
+        Me.tabMaximized.Controls.Add(Me.chkMinMaxOnSwitch)
+        Me.tabMaximized.Controls.Add(grpAlterOverviewMinMax)
         Me.tabMaximized.Controls.Add(Me.ChkMinMin)
         Me.tabMaximized.Controls.Add(Me.chkStartupMax)
-        Me.tabMaximized.Controls.Add(Me.ChkLessRowCol)
-        Me.tabMaximized.Controls.Add(Me.NumExtraMax)
-        Me.tabMaximized.Controls.Add(Label6)
         Me.tabMaximized.Controls.Add(Me.grpReserveSpace)
         Me.tabMaximized.Location = New System.Drawing.Point(4, 25)
         Me.tabMaximized.Name = "tabMaximized"
@@ -1227,24 +1509,25 @@ Partial NotInheritable Class FrmSettings
         Me.tabMaximized.Text = "Min/Max"
         Me.tabMaximized.UseVisualStyleBackColor = True
         '
+        'chkMinMaxOnSwitch
+        '
+        Me.chkMinMaxOnSwitch.AutoSize = True
+        Me.chkMinMaxOnSwitch.Location = New System.Drawing.Point(26, 158)
+        Me.chkMinMaxOnSwitch.Name = "chkMinMaxOnSwitch"
+        Me.chkMinMaxOnSwitch.Size = New System.Drawing.Size(257, 17)
+        Me.chkMinMaxOnSwitch.TabIndex = 32
+        Me.chkMinMaxOnSwitch.Text = "Maxim-/Normalize on switching to/from Overview"
+        Me.chkMinMaxOnSwitch.UseVisualStyleBackColor = True
+        '
         'chkStartupMax
         '
         Me.chkStartupMax.AutoSize = True
-        Me.chkStartupMax.Location = New System.Drawing.Point(171, 107)
+        Me.chkStartupMax.Location = New System.Drawing.Point(178, 104)
         Me.chkStartupMax.Name = "chkStartupMax"
         Me.chkStartupMax.Size = New System.Drawing.Size(100, 17)
         Me.chkStartupMax.TabIndex = 29
         Me.chkStartupMax.Text = "Start Maximized"
         Me.chkStartupMax.UseVisualStyleBackColor = True
-        '
-        'NumExtraMax
-        '
-        Me.NumExtraMax.Location = New System.Drawing.Point(122, 127)
-        Me.NumExtraMax.Maximum = New Decimal(New Integer() {9, 0, 0, 0})
-        Me.NumExtraMax.Name = "NumExtraMax"
-        Me.NumExtraMax.Size = New System.Drawing.Size(40, 20)
-        Me.NumExtraMax.TabIndex = 5
-        Me.NumExtraMax.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         '
         'tabMisc
         '
@@ -1404,6 +1687,9 @@ Partial NotInheritable Class FrmSettings
         grpQLPath.ResumeLayout(False)
         grpQLPath.PerformLayout()
         Me.cmsQLFolder.ResumeLayout(False)
+        grpAlterOverviewMinMax.ResumeLayout(False)
+        grpAlterOverviewMinMax.PerformLayout()
+        CType(Me.NumExtraMax, System.ComponentModel.ISupportInitialize).EndInit()
         Me.grpReserveSpace.ResumeLayout(False)
         Me.grpReserveSpace.PerformLayout()
         CType(Me.NumBorderBot, System.ComponentModel.ISupportInitialize).EndInit()
@@ -1418,6 +1704,8 @@ Partial NotInheritable Class FrmSettings
         Me.cmsGenerate.ResumeLayout(False)
         Me.tabHotkeys.ResumeLayout(False)
         Me.tabHotkeys.PerformLayout()
+        Me.grpAlterOverview.ResumeLayout(False)
+        Me.grpAlterOverview.PerformLayout()
         Me.grpToggleTopMost.ResumeLayout(False)
         Me.grpToggleTopMost.PerformLayout()
         Me.grpCloseAllShortcut.ResumeLayout(False)
@@ -1430,7 +1718,6 @@ Partial NotInheritable Class FrmSettings
         Me.tabSortAndBL.PerformLayout()
         Me.tabMaximized.ResumeLayout(False)
         Me.tabMaximized.PerformLayout()
-        CType(Me.NumExtraMax, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tabMisc.ResumeLayout(False)
         Me.tabMisc.PerformLayout()
         Me.grpAlign.ResumeLayout(False)
@@ -1499,8 +1786,6 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents NumBorderTop As NumericUpDown
     Friend WithEvents NumBorderLeft As NumericUpDown
     Friend WithEvents tbcSettings As TabControl
-    Friend WithEvents ChkLessRowCol As CheckBox
-    Friend WithEvents NumExtraMax As NumericUpDown
     Friend WithEvents chkOverViewIsGame As CheckBox
     Friend WithEvents btnGrabCurrent As Button
     Friend WithEvents btnAddCurrentRes As Button
@@ -1538,4 +1823,25 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents chkCAWin As CheckBox
     Friend WithEvents chkCycleDownWin As CheckBox
     Friend WithEvents chkCycleUpWin As CheckBox
+    Friend WithEvents chkAlterOverview As CheckBox
+    Friend WithEvents grpAlterOverview As GroupBox
+    Friend WithEvents chkAlterOverviewMinAlt As CheckBox
+    Friend WithEvents txtAlterOverviewMinKey As TextBox
+    Friend WithEvents chkAlterOverviewPlusALt As CheckBox
+    Friend WithEvents txtAlterOverviewPlusKey As TextBox
+    Friend WithEvents chkAlterOverviewMinShift As CheckBox
+    Friend WithEvents chkAlterOverviewPlusShift As CheckBox
+    Friend WithEvents chkAlterOverviewMinWin As CheckBox
+    Friend WithEvents chkAlterOverviewPlusWin As CheckBox
+    Friend WithEvents chkAlterOverviewMinCtrl As CheckBox
+    Friend WithEvents chkAlterOverviewPlusCtrl As CheckBox
+    Friend WithEvents chkAlterOverviewStarAlt As CheckBox
+    Friend WithEvents txtAlterOverviewStarKey As TextBox
+    Friend WithEvents chkAlterOverviewStarShift As CheckBox
+    Friend WithEvents chkAlterOverviewStarWin As CheckBox
+    Friend WithEvents chkAlterOverviewStarCtrl As CheckBox
+    Friend WithEvents ChkLessRowCol As CheckBox
+    Friend WithEvents NumExtraMax As NumericUpDown
+    Friend WithEvents chkApplyAlterNormal As CheckBox
+    Friend WithEvents chkMinMaxOnSwitch As CheckBox
 End Class

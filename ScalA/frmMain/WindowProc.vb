@@ -89,7 +89,12 @@ Partial NotInheritable Class FrmMain
                         Debug.Print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
                         Debug.Print($"Trget {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
                         Debug.Print($"tgtOwner {GetWindowLong(activeHandle, GWL_HWNDPARENT)}")
-
+                    Case 6 'AlterOverviewPlus
+                        My.Settings.ExtraMaxColRow += 1
+                    Case 7 'AlteroverviewMin
+                        My.Settings.ExtraMaxColRow = Math.Max(0, My.Settings.ExtraMaxColRow - 1)
+                    Case 8 'AlteroverviwStar
+                        My.Settings.OneLessRowCol = Not My.Settings.OneLessRowCol
 
                 End Select
             Case WM_SYSCOMMAND

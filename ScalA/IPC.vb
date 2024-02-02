@@ -101,7 +101,7 @@ Module IPC
         Public pid As Integer
         Public isOnOverview As Boolean
         Public handle As IntPtr
-        Public selectedID As Integer
+        Public AltPPid As Integer
 
         Private padding1 As Long
         Private padding2 As Long
@@ -118,10 +118,11 @@ Module IPC
             Return i1.pid <> i2.pid
         End Operator
 
-        Public Sub New(pid As Integer, overview As Boolean)
+        Public Sub New(pid As Integer, overview? As Boolean, APid? As Integer)
             Me.pid = pid
-            Me.isOnOverview = overview
+            If overview IsNot Nothing Then Me.isOnOverview = overview
             Me.handle = FrmMain.ScalaHandle
+            If APid IsNot Nothing Then Me.AltPPid = APid
         End Sub
 
     End Structure
@@ -131,21 +132,19 @@ Module IPC
     Private localnum As UInteger = 0
     Private _Instances() As ScalAInfo
 
-    Public Sub AddOrUpdateInstance(id As Integer, Optional overview As Boolean = False)
+    Public Sub AddOrUpdateInstance(id As Integer, Optional overview? As Boolean = Nothing, Optional apID? As Integer = Nothing)
         Dim sharednum = _mmvaInstances.ReadInt32(0)
 
-        ReDim Preserve _Instances(sharednum)
+        ReDim Preserve _Instances(sharednum - 1)
         _mmvaInstances.ReadArray(Of ScalAInfo)(4, _Instances, 0, sharednum)
 
-        Dim newInstance = New ScalAInfo(id, overview)
-
-        Dim existingIndex As Integer = Array.FindIndex(_Instances, Function(inst) inst = newInstance)
+        Dim existingIndex As Integer = Array.FindIndex(_Instances, Function(inst) inst.pid = id)
 
         If existingIndex = -1 Then
             ' The instance does not exist, you can add it now
             ' todo: find an index that has an empty instance
-            'ReDim Preserve _Instances(sharednum)
-            _Instances(sharednum) = newInstance
+            ReDim Preserve _Instances(sharednum)
+            _Instances(sharednum) = New ScalAInfo(id, overview, apID)
 
             If sharednum <> localnum Then
                 _mmfInstances = MemoryMappedFile.CreateOrOpen($"ScalA_IPCInstances", 4 + Marshal.SizeOf(GetType(ScalAInfo)) * (sharednum + 1))
@@ -157,7 +156,7 @@ Module IPC
             _mmvaInstances.Write(0, _Instances.Length)
         Else
             ' The instance already exists, update the existing instance in the array
-            _Instances(existingIndex) = newInstance
+            _Instances(existingIndex) = New ScalAInfo(id, overview, apID)
         End If
         ' Write the array back to the memory-mapped file
         _mmvaInstances.Write(0, _Instances.Length)

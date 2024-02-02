@@ -2,7 +2,17 @@
 
 Partial Public NotInheritable Class FrmMain
 
-    Public AltPP As New AstoniaProcess()
+    Private _altPP As New AstoniaProcess()
+
+    Public Property AltPP As AstoniaProcess
+        Get
+            Return _altPP
+        End Get
+        Set(value As AstoniaProcess)
+            _altPP = value
+            IPC.AddOrUpdateInstance(scalaPID, Nothing, _altPP?.Id)
+        End Set
+    End Property
     'Private WndClass() As String = {"MAINWNDMOAC", "䅍义乗䵄䅏C"}
 #Region " Alt Dropdown "
     Friend Sub PopDropDown(sender As ComboBox)
@@ -81,9 +91,15 @@ Partial Public NotInheritable Class FrmMain
         Detach(False)
         AstoniaProcess.RestorePos()
         AltPP = sender.SelectedItem
+        IPC.AddOrUpdateInstance(scalaPID, sender.SelectedIndex = 0, AltPP.Id)
         UpdateTitle()
 
         If sender.SelectedIndex = 0 Then
+            If My.Settings.MaxNormOverview Then
+                If Me.WindowState <> FormWindowState.Maximized Then
+                    btnMax.PerformClick()
+                End If
+            End If
             If Not My.Settings.gameOnOverview Then
                 Try
                     AppActivate(scalaPID)
@@ -112,6 +128,9 @@ Partial Public NotInheritable Class FrmMain
             pnlOverview.Hide()
             tmrOverview.Enabled = False
             PnlEqLock.Visible = True
+            If My.Settings.MaxNormOverview AndAlso WindowState = FormWindowState.Maximized Then
+                btnMax.PerformClick()
+            End If
         End If
 
         If Not AltPP?.IsRunning Then
@@ -760,6 +779,7 @@ Partial Public NotInheritable Class FrmMain
             Return cp
         End Get
     End Property
+
     Private Sub CmbResolution_MouseDown(sender As ComboBox, e As MouseEventArgs) Handles cmbResolution.MouseDown
         If e.Button = MouseButtons.Right Then
             FrmSettings.Tag = FrmSettings.tabResolutions
@@ -1060,7 +1080,7 @@ Partial Public NotInheritable Class FrmMain
         End Select
         Dim numRows As Integer = numCols
 
-        If Me.WindowState = FormWindowState.Maximized Then
+        If Me.WindowState = FormWindowState.Maximized OrElse My.Settings.ApplyAlterNormal Then
 
             Dim numAlts = count + If(My.Settings.hideMessage, 0, 1)
 

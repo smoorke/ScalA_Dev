@@ -72,11 +72,19 @@ Public NotInheritable Class FrmSettings
 
         txtTogTop.Text = keyNames(My.Settings.ToggleTopKey)
 
+        txtAlterOverviewMinKey.Text = keyNames(My.Settings.AlterOverviewMinKey)
+        txtAlterOverviewPlusKey.Text = keyNames(My.Settings.AlterOverviewPlusKey)
+        txtAlterOverviewStarKey.Text = keyNames(My.Settings.AlterOverviewStarKey)
+
         StoKey = My.Settings.StoKey
         CycleKeyDown = My.Settings.CycleKeyFwd
         CycleKeyUp = My.Settings.CycleKeyBwd
         CloseAllKey = My.Settings.CloseAllKey
         TogTopKey = My.Settings.ToggleTopKey
+
+        AlterOvervieKeyMin = My.Settings.AlterOverviewMinKey
+        AlterOvervieKeyPlus = My.Settings.AlterOverviewPlusKey
+        AlterOvervieKeyStar = My.Settings.AlterOverviewStarKey
 
         chkCycleOnClose.Checked = My.Settings.CycleOnClose
 
@@ -93,6 +101,23 @@ Public NotInheritable Class FrmSettings
         chkTogTopWin.Checked = My.Settings.TogTopWin
 
         chkToggleTopMost.Checked = My.Settings.ToggleTop
+
+        chkAlterOverviewMinAlt.Checked = My.Settings.AlterOverviewMinAlt
+        chkAlterOverviewMinCtrl.Checked = My.Settings.AlterOverviewMinCtrl
+        chkAlterOverviewMinShift.Checked = My.Settings.AlterOverviewMinShift
+        chkAlterOverviewMinWin.Checked = My.Settings.AlterOverviewMinWin
+
+        chkAlterOverviewPlusALt.Checked = My.Settings.AlterOverviewPlusAlt
+        chkAlterOverviewPlusCtrl.Checked = My.Settings.AlterOverviewPlusCtrl
+        chkAlterOverviewPlusShift.Checked = My.Settings.AlterOverviewPlusShift
+        chkAlterOverviewPlusWin.Checked = My.Settings.AlterOverviewPlusWin
+
+        chkAlterOverviewStarAlt.Checked = My.Settings.AlterOverviewStarAlt
+        chkAlterOverviewStarCtrl.Checked = My.Settings.AlterOverviewStarCtrl
+        chkAlterOverviewStarShift.Checked = My.Settings.AlterOverviewStarShift
+        chkAlterOverviewStarWin.Checked = My.Settings.AlterOverviewStarWin
+
+        chkAlterOverview.Checked = My.Settings.AlterOverview
 
         txtTopSort.Text = My.Settings.topSort
         txtBotSort.Text = My.Settings.botSort
@@ -128,11 +153,16 @@ Public NotInheritable Class FrmSettings
         grpCycleShortcut.Enabled = chkCycleAlts.Checked
         grpCloseAllShortcut.Enabled = chkCloseAll.Checked
         grpToggleTopMost.Enabled = chkToggleTopMost.Checked
+        grpAlterOverview.Enabled = chkAlterOverview.Checked
 
         chkHoverActivate.Checked = My.Settings.HoverActivate
         chkHoverActivate.Enabled = My.Settings.gameOnOverview
 
         chkShowEnd.Checked = My.Settings.ShowEnd
+
+        chkApplyAlterNormal.Checked = My.Settings.ApplyAlterNormal
+
+        chkMinMaxOnSwitch.Checked = My.Settings.MaxNormOverview
 
         validate_hotkey(New Object, New EventArgs)
 
@@ -373,6 +403,30 @@ Public NotInheritable Class FrmSettings
         My.Settings.TogTopCtrl = If(chkTogTopCtrl.Checked, Hotkey.KeyModifier.Control, 0)
         My.Settings.TogTopWin = If(chkTogTopWin.Checked, Hotkey.KeyModifier.Winkey, 0)
 
+
+        My.Settings.AlterOverview = chkAlterOverview.Checked
+
+        My.Settings.AlterOverviewMinKey = AlterOvervieKeyMin
+
+        My.Settings.AlterOverviewMinAlt = If(chkAlterOverviewMinAlt.Checked, Hotkey.KeyModifier.Alt, 0)
+        My.Settings.AlterOverviewMinShift = If(chkAlterOverviewMinShift.Checked, Hotkey.KeyModifier.Shift, 0)
+        My.Settings.AlterOverviewMinCtrl = If(chkAlterOverviewMinCtrl.Checked, Hotkey.KeyModifier.Control, 0)
+        My.Settings.AlterOverviewMinWin = If(chkAlterOverviewMinWin.Checked, Hotkey.KeyModifier.Winkey, 0)
+
+        My.Settings.AlterOverviewPlusKey = AlterOvervieKeyPlus
+
+        My.Settings.AlterOverviewPlusAlt = If(chkAlterOverviewPlusALt.Checked, Hotkey.KeyModifier.Alt, 0)
+        My.Settings.AlterOverviewPlusShift = If(chkAlterOverviewPlusShift.Checked, Hotkey.KeyModifier.Shift, 0)
+        My.Settings.AlterOverviewPlusCtrl = If(chkAlterOverviewPlusCtrl.Checked, Hotkey.KeyModifier.Control, 0)
+        My.Settings.AlterOverviewPlusWin = If(chkAlterOverviewPlusWin.Checked, Hotkey.KeyModifier.Winkey, 0)
+
+        My.Settings.AlterOverviewStarKey = AlterOvervieKeyStar
+
+        My.Settings.AlterOverviewStarAlt = If(chkAlterOverviewStarAlt.Checked, Hotkey.KeyModifier.Alt, 0)
+        My.Settings.AlterOverviewStarShift = If(chkAlterOverviewStarShift.Checked, Hotkey.KeyModifier.Shift, 0)
+        My.Settings.AlterOverviewStarCtrl = If(chkAlterOverviewStarCtrl.Checked, Hotkey.KeyModifier.Control, 0)
+        My.Settings.AlterOverviewStarWin = If(chkAlterOverviewStarWin.Checked, Hotkey.KeyModifier.Winkey, 0)
+
         My.Settings.topSort = txtTopSort.Text
         My.Settings.botSort = txtBotSort.Text
 
@@ -434,6 +488,10 @@ Public NotInheritable Class FrmSettings
         My.Settings.ShowEnd = chkShowEnd.Checked
 
         FrmMain.tmrOverview.Interval = If(My.Settings.gameOnOverview, 33, 66)
+
+        My.Settings.ApplyAlterNormal = chkApplyAlterNormal.Checked
+
+        My.Settings.MaxNormOverview = chkMinMaxOnSwitch.Checked
 
         My.Settings.Save()
 
@@ -562,7 +620,7 @@ Public NotInheritable Class FrmSettings
                                     "", "", "", "", "", "", "", "", "", "", "", "[", "\", "]", "²", "", ' 208-223
                                     "", "", "\", "", "", "", "", "", "", "", "", "", "", "", "", "", ' 224-239
                                     "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""} ' 240-255
-    Dim StoKey, CycleKeyUp, CycleKeyDown, CloseAllKey, TogTopKey As Integer
+    Dim StoKey, CycleKeyUp, CycleKeyDown, CloseAllKey, TogTopKey, AlterOvervieKeyPlus, AlterOvervieKeyMin, AlterOvervieKeyStar As Integer
 
 
     Private Sub BtnRestore_Click(sender As Object, e As EventArgs) Handles btnRestore.Click
@@ -758,7 +816,8 @@ Public NotInheritable Class FrmSettings
     End Sub
 
     Private Sub TxtShortcuts_PreviewKeyDown(sender As TextBox, e As PreviewKeyDownEventArgs) _
-        Handles txtStoKey.PreviewKeyDown, txtCycleKeyUp.PreviewKeyDown, txtCycleKeyDown.PreviewKeyDown, txtCloseAll.PreviewKeyDown, txtTogTop.PreviewKeyDown
+        Handles txtStoKey.PreviewKeyDown, txtCycleKeyUp.PreviewKeyDown, txtCycleKeyDown.PreviewKeyDown, txtCloseAll.PreviewKeyDown, txtTogTop.PreviewKeyDown,
+                txtAlterOverviewMinKey.PreviewKeyDown, txtAlterOverviewPlusKey.PreviewKeyDown, txtAlterOverviewStarKey.PreviewKeyDown
         Debug.Print(e.KeyCode)
         If e.KeyCode = 16 OrElse 'shift
            e.KeyCode = 17 OrElse 'ctrl
@@ -781,6 +840,13 @@ Public NotInheritable Class FrmSettings
                 CloseAllKey = e.KeyCode
             Case txtTogTop.Name
                 TogTopKey = e.KeyCode
+            Case txtAlterOverviewMinKey.Name
+                AlterOvervieKeyMin = e.KeyCode
+            Case txtAlterOverviewPlusKey.Name
+                AlterOvervieKeyPlus = e.KeyCode
+            Case txtAlterOverviewStarKey.Name
+                AlterOvervieKeyStar = e.KeyCode
+
         End Select
         Debug.Print($"key: {e.KeyCode}")
     End Sub
@@ -812,22 +878,31 @@ Public NotInheritable Class FrmSettings
         End Try
     End Sub
 
+    Private Sub chkAlterOverview_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkAlterOverview.CheckedChanged
+        grpAlterOverview.Enabled = sender.Checked
+    End Sub
+
     Private Sub chkOverViewIsGame_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkOverViewIsGame.CheckedChanged
         chkHoverActivate.Enabled = sender.Checked
     End Sub
 
 
-    Private Sub TextBox1_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtStoKey.KeyPress, txtCycleKeyUp.KeyPress, txtCycleKeyDown.KeyPress, txtCloseAll.KeyPress, txtTogTop.KeyPress
+    Private Sub TextBox1_KeyPress(sender As Object, e As KeyPressEventArgs) Handles _
+            txtStoKey.KeyPress, txtCycleKeyUp.KeyPress, txtCycleKeyDown.KeyPress, txtCloseAll.KeyPress, txtTogTop.KeyPress,
+            txtAlterOverviewMinKey.KeyPress, txtAlterOverviewPlusKey.KeyPress, txtAlterOverviewStarKey.KeyPress
         e.Handled = True
     End Sub
 
     Private Sub validate_hotkey(sender As Object, e As EventArgs) Handles _
-                    chkSwitchToOverview.CheckedChanged, chkCycleAlts.CheckedChanged, chkCloseAll.CheckedChanged, chkToggleTopMost.CheckedChanged,
+                    chkSwitchToOverview.CheckedChanged, chkCycleAlts.CheckedChanged, chkCloseAll.CheckedChanged, chkToggleTopMost.CheckedChanged, chkAlterOverview.CheckedChanged,
                     chkStoAlt.CheckedChanged, chkStoCtrl.CheckedChanged, chkStoShift.CheckedChanged, txtStoKey.KeyUp, chkStoWin.CheckedChanged,
                     chkCycleUpAlt.CheckedChanged, chkCycleUpCtrl.CheckedChanged, chkCycleUpShift.CheckedChanged, txtCycleKeyUp.KeyUp, chkCycleUpWin.CheckedChanged,
                     chkCycleDownAlt.CheckedChanged, chkCycleDownCtrl.CheckedChanged, chkCycleDownShift.CheckedChanged, txtCycleKeyDown.KeyUp, chkCycleDownWin.CheckedChanged,
                     chkCAALt.CheckedChanged, chkCACtrl.CheckedChanged, chkCAShift.CheckedChanged, txtCloseAll.KeyUp, chkCAWin.CheckedChanged,
-                    chkTogTopAlt.CheckedChanged, chkTogTopCtrl.CheckedChanged, chkTogTopShift.CheckedChanged, txtTogTop.KeyUp, chkTogTopWin.CheckedChanged
+                    chkTogTopAlt.CheckedChanged, chkTogTopCtrl.CheckedChanged, chkTogTopShift.CheckedChanged, txtTogTop.KeyUp, chkTogTopWin.CheckedChanged,
+                    chkAlterOverviewMinAlt.CheckedChanged, chkAlterOverviewMinCtrl.CheckedChanged, chkAlterOverviewMinShift.CheckedChanged, txtAlterOverviewMinKey.KeyUp, chkAlterOverviewMinWin.CheckedChanged,
+                    chkAlterOverviewPlusALt.CheckedChanged, chkAlterOverviewPlusCtrl.CheckedChanged, chkAlterOverviewPlusShift.CheckedChanged, txtAlterOverviewPlusKey.KeyUp, chkAlterOverviewPlusWin.CheckedChanged,
+                    chkAlterOverviewStarAlt.CheckedChanged, chkAlterOverviewStarCtrl.CheckedChanged, chkAlterOverviewStarShift.CheckedChanged, txtAlterOverviewStarKey.KeyUp, chkAlterOverviewStarWin.CheckedChanged
         Dim modi As Hotkey.KeyModifier
         Hotkey.UnregHotkey(FrmMain)
 
@@ -891,6 +966,41 @@ Public NotInheritable Class FrmSettings
                 txtTogTop.ForeColor = Color.Black
             Else
                 txtTogTop.ForeColor = Color.Red
+            End If
+        End If
+
+        If chkAlterOverview.Checked Then
+            modi = Hotkey.KeyModifier.None
+            If chkAlterOverviewPlusALt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
+            If chkAlterOverviewPlusCtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
+            If chkAlterOverviewPlusShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
+            If chkAlterOverviewPlusWin.Checked Then modi = modi Or Hotkey.KeyModifier.Winkey
+            If Hotkey.RegisterHotkey(Me, 6, modi, AlterOvervieKeyPlus) Then
+                txtAlterOverviewPlusKey.ForeColor = Color.Black
+            Else
+                txtAlterOverviewPlusKey.ForeColor = Color.Red
+            End If
+
+            modi = Hotkey.KeyModifier.None
+            If chkAlterOverviewMinAlt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
+            If chkAlterOverviewMinCtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
+            If chkAlterOverviewMinShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
+            If chkAlterOverviewMinWin.Checked Then modi = modi Or Hotkey.KeyModifier.Winkey
+            If Hotkey.RegisterHotkey(Me, 7, modi, AlterOvervieKeyMin) Then
+                txtAlterOverviewMinKey.ForeColor = Color.Black
+            Else
+                txtAlterOverviewMinKey.ForeColor = Color.Red
+            End If
+
+            modi = Hotkey.KeyModifier.None
+            If chkAlterOverviewStarAlt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
+            If chkAlterOverviewStarCtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
+            If chkAlterOverviewStarShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
+            If chkAlterOverviewStarWin.Checked Then modi = modi Or Hotkey.KeyModifier.Winkey
+            If Hotkey.RegisterHotkey(Me, 8, modi, AlterOvervieKeyStar) Then
+                txtAlterOverviewStarKey.ForeColor = Color.Black
+            Else
+                txtAlterOverviewStarKey.ForeColor = Color.Red
             End If
         End If
 

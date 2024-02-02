@@ -76,6 +76,17 @@ Partial NotInheritable Class frmmain
             Else
                 Hotkey.UnregHotkey(Me, 4)
             End If
+
+            If My.Settings.AlterOverview Then
+                Hotkey.RegisterHotkey(Me, 6, Hotkey.KeyModifier.NoRepeat Or My.Settings.AlterOverviewPlusAlt Or My.Settings.AlterOverviewPlusCtrl Or My.Settings.AlterOverviewPlusShift Or My.Settings.AlterOverviewPlusWin, My.Settings.AlterOverviewPlusKey)
+                Hotkey.RegisterHotkey(Me, 7, Hotkey.KeyModifier.NoRepeat Or My.Settings.AlterOverviewMinAlt Or My.Settings.AlterOverviewMinCtrl Or My.Settings.AlterOverviewMinShift Or My.Settings.AlterOverviewMinWin, My.Settings.AlterOverviewMinKey)
+                Hotkey.RegisterHotkey(Me, 8, Hotkey.KeyModifier.NoRepeat Or My.Settings.AlterOverviewStarAlt Or My.Settings.AlterOverviewStarCtrl Or My.Settings.AlterOverviewStarShift Or My.Settings.AlterOverviewStarWin, My.Settings.AlterOverviewStarKey)
+            Else
+                Hotkey.UnregHotkey(Me, 6)
+                Hotkey.UnregHotkey(Me, 7)
+                Hotkey.UnregHotkey(Me, 8)
+            End If
+
         Else
             Hotkey.UnregHotkey(Me)
             If My.Settings.ToggleTop Then

@@ -847,6 +847,222 @@ Namespace My
                 Me("KeepOnOverview") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("2")>  _
+        Public Property AlterOverviewPlusCtrl() As Integer
+            Get
+                Return CType(Me("AlterOverviewPlusCtrl"),Integer)
+            End Get
+            Set
+                Me("AlterOverviewPlusCtrl") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property AlterOverviewPlusWin() As Integer
+            Get
+                Return CType(Me("AlterOverviewPlusWin"),Integer)
+            End Get
+            Set
+                Me("AlterOverviewPlusWin") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property AlterOverviewPlusShift() As Integer
+            Get
+                Return CType(Me("AlterOverviewPlusShift"),Integer)
+            End Get
+            Set
+                Me("AlterOverviewPlusShift") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property AlterOverviewPlusAlt() As Integer
+            Get
+                Return CType(Me("AlterOverviewPlusAlt"),Integer)
+            End Get
+            Set
+                Me("AlterOverviewPlusAlt") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("107")>  _
+        Public Property AlterOverviewPlusKey() As Integer
+            Get
+                Return CType(Me("AlterOverviewPlusKey"),Integer)
+            End Get
+            Set
+                Me("AlterOverviewPlusKey") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("2")>  _
+        Public Property AlterOverviewMinCtrl() As Integer
+            Get
+                Return CType(Me("AlterOverviewMinCtrl"),Integer)
+            End Get
+            Set
+                Me("AlterOverviewMinCtrl") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property AlterOverviewMinWin() As Integer
+            Get
+                Return CType(Me("AlterOverviewMinWin"),Integer)
+            End Get
+            Set
+                Me("AlterOverviewMinWin") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property AlterOverviewMinShift() As Integer
+            Get
+                Return CType(Me("AlterOverviewMinShift"),Integer)
+            End Get
+            Set
+                Me("AlterOverviewMinShift") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property AlterOverviewMinAlt() As Integer
+            Get
+                Return CType(Me("AlterOverviewMinAlt"),Integer)
+            End Get
+            Set
+                Me("AlterOverviewMinAlt") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("109")>  _
+        Public Property AlterOverviewMinKey() As Integer
+            Get
+                Return CType(Me("AlterOverviewMinKey"),Integer)
+            End Get
+            Set
+                Me("AlterOverviewMinKey") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("2")>  _
+        Public Property AlterOverviewStarCtrl() As Integer
+            Get
+                Return CType(Me("AlterOverviewStarCtrl"),Integer)
+            End Get
+            Set
+                Me("AlterOverviewStarCtrl") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property AlterOverviewStarWin() As Integer
+            Get
+                Return CType(Me("AlterOverviewStarWin"),Integer)
+            End Get
+            Set
+                Me("AlterOverviewStarWin") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property AlterOverviewStarShift() As Integer
+            Get
+                Return CType(Me("AlterOverviewStarShift"),Integer)
+            End Get
+            Set
+                Me("AlterOverviewStarShift") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property AlterOverviewStarAlt() As Integer
+            Get
+                Return CType(Me("AlterOverviewStarAlt"),Integer)
+            End Get
+            Set
+                Me("AlterOverviewStarAlt") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("106")>  _
+        Public Property AlterOverviewStarKey() As Integer
+            Get
+                Return CType(Me("AlterOverviewStarKey"),Integer)
+            End Get
+            Set
+                Me("AlterOverviewStarKey") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property AlterOverview() As Boolean
+            Get
+                Return CType(Me("AlterOverview"),Boolean)
+            End Get
+            Set
+                Me("AlterOverview") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property ApplyAlterNormal() As Boolean
+            Get
+                Return CType(Me("ApplyAlterNormal"),Boolean)
+            End Get
+            Set
+                Me("ApplyAlterNormal") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property MaxNormOverview() As Boolean
+            Get
+                Return CType(Me("MaxNormOverview"),Boolean)
+            End Get
+            Set
+                Me("MaxNormOverview") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
