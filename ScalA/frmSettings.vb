@@ -861,7 +861,7 @@ Public NotInheritable Class FrmSettings
                 If New Version(responseBody) > My.Application.Info.Version Then
                     FrmMain.pbUpdateAvailable_Click(FrmMain.pbUpdateAvailable, New MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0))
                 Else
-                    CustomMessageBox.Show(Me, $"ScalA v{responseBody} is up to date", "No Update Available")
+                    CustomMessageBox.Show(Me, $"ScalA v{responseBody} is the current version online", "No Update Available")
                 End If
             End Using
         Catch ex As Exception
