@@ -95,10 +95,8 @@ Partial Public NotInheritable Class FrmMain
         UpdateTitle()
 
         If sender.SelectedIndex = 0 Then
-            If My.Settings.MaxNormOverview Then
-                If Me.WindowState <> FormWindowState.Maximized Then
-                    btnMax.PerformClick()
-                End If
+            If Not startup AndAlso My.Settings.MaxNormOverview AndAlso Me.WindowState <> FormWindowState.Maximized Then
+                btnMax.PerformClick()
             End If
             If Not My.Settings.gameOnOverview Then
                 Try
@@ -498,6 +496,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Dim AnimsEnabled As Boolean = getAnimationsEnabled()
+    Dim startup As Boolean = True
 
     Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         Debug.Print("FrmMain_Shown")
@@ -519,6 +518,7 @@ Partial Public NotInheritable Class FrmMain
             UpdateCheck()
         End If
         FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, 0.01, 0)
+        startup = False
     End Sub
     Friend Shared updateToVersion As String = "Error"
     Friend Shared ReadOnly client As HttpClient = New HttpClient() With {.Timeout = TimeSpan.FromMilliseconds(5000)}
