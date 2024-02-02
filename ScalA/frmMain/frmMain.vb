@@ -289,7 +289,9 @@ Partial Public NotInheritable Class FrmMain
         Me.Text = "ScalA" & titleSuff
         sysTrayIcon.Text = traytooltip.Cap(63)
         With My.Application.Info.Version
-            lblTitle.Text = $"- ScalA v{ .Major}.{ .Minor}.{ .Build}{titleSuff}"
+            Dim build = .Build + If(.Revision, 1, 0)
+            Dim rev As String = If(.Revision, $"b{ .Revision}", "")
+            lblTitle.Text = $"- ScalA v{ .Major}.{ .Minor}.{build}{rev}{titleSuff}"
         End With
         Return True
     End Function
