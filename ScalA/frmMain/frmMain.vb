@@ -95,9 +95,6 @@ Partial Public NotInheritable Class FrmMain
         UpdateTitle()
 
         If sender.SelectedIndex = 0 Then
-            If Not startup AndAlso My.Settings.MaxNormOverview AndAlso Me.WindowState <> FormWindowState.Maximized Then
-                btnMax.PerformClick()
-            End If
             If Not My.Settings.gameOnOverview Then
                 Try
                     AppActivate(scalaPID)
@@ -121,14 +118,14 @@ Partial Public NotInheritable Class FrmMain
             PnlEqLock.Visible = False
             AOshowEqLock = False
             Me.TopMost = My.Settings.topmost
+            If Not startup AndAlso My.Settings.MaxNormOverview AndAlso Me.WindowState <> FormWindowState.Maximized Then
+                btnMax.PerformClick()
+            End If
             Exit Sub
         Else
             pnlOverview.Hide()
             tmrOverview.Enabled = False
             PnlEqLock.Visible = True
-            If My.Settings.MaxNormOverview AndAlso WindowState = FormWindowState.Maximized Then
-                btnMax.PerformClick()
-            End If
         End If
 
         If Not AltPP?.IsRunning Then
@@ -187,10 +184,12 @@ Partial Public NotInheritable Class FrmMain
                 DwmUnregisterThumbnail(thumbid)
             Next
             startThumbsDict.Clear()
-
+            If My.Settings.MaxNormOverview AndAlso WindowState = FormWindowState.Maximized Then
+                btnMax.PerformClick()
+            End If
             Debug.Print($"updateThumb pbzoom {pbZoom.Size}")
             AltPP.CenterBehind(pbZoom, SetWindowPosFlags.DoNotActivate, True, True)
-            If AnimsEnabled AndAlso rectDic.ContainsKey(item.Id) Then
+            If Not My.Settings.MaxNormOverview AndAlso AnimsEnabled AndAlso rectDic.ContainsKey(item.Id) Then
                 AnimateThumb(rectDic(item.Id), New Rectangle(pbZoom.Left, pbZoom.Top, pbZoom.Right, pbZoom.Bottom))
             Else
                 prevMode = 0
@@ -241,7 +240,6 @@ Partial Public NotInheritable Class FrmMain
 
 
         End If
-
 
         DoEqLock(pbZoom.Size)
         prevItem = sender.SelectedItem
@@ -506,6 +504,7 @@ Partial Public NotInheritable Class FrmMain
             Dim msWA As Rectangle = Screen.PrimaryScreen.WorkingArea
             Me.Location = New Point(Math.Max(msWA.Left, (msWA.Width - Me.Width) / 2), Math.Max(msWA.Top, (msWA.Height - Me.Height) / 2))
         End If
+        startup = False
         If My.Settings.StartMaximized Then
             btnMax.PerformClick()
         End If
@@ -518,7 +517,10 @@ Partial Public NotInheritable Class FrmMain
             UpdateCheck()
         End If
         FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, 0.01, 0)
-        startup = False
+        If cboAlt.SelectedIndex = 0 AndAlso My.Settings.MaxNormOverview AndAlso Me.WindowState = FormWindowState.Normal Then
+            btnMax.PerformClick()
+        End If
+
     End Sub
     Friend Shared updateToVersion As String = "Error"
     Friend Shared ReadOnly client As HttpClient = New HttpClient() With {.Timeout = TimeSpan.FromMilliseconds(5000)}
