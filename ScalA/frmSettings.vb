@@ -4,6 +4,7 @@ Imports System.Text
 
 Public NotInheritable Class FrmSettings
     Public SysMenu As New SysMenu(Me)
+    Dim startup As Boolean = True
     Private Sub FrmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         'storeZoom = My.Settings.zoom
 
@@ -1011,4 +1012,19 @@ Public NotInheritable Class FrmSettings
         My.Settings.remeberSettingsTab = sender.SelectedIndex
     End Sub
 
+    Private Sub FrmSettings_Shown(sender As Object, e As EventArgs) Handles Me.Shown
+        startup = False
+    End Sub
+
+    Private Sub chkApplyAlterNormal_CheckedChanged(sender As Object, e As EventArgs) Handles chkMinMaxOnSwitch.CheckedChanged
+        If sender.checked Then
+            chkStartupMax.Checked = False
+        End If
+    End Sub
+
+    Private Sub chkStartupMax_CheckedChanged(sender As Object, e As EventArgs) Handles chkStartupMax.CheckedChanged
+        If sender.checked Then
+            chkMinMaxOnSwitch.Checked = False
+        End If
+    End Sub
 End Class
