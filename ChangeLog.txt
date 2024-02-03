@@ -1,3 +1,15 @@
+**Scala 1.5.6**
+Fixed EQLock is broken on selected alts when active overview is enabled.
+Fixed When moving the only alt on overview to another ScalA, empty ScalA may become unresponsive.
+Fixed Double clicking the titlebar of a ScalA not on overview with another ScalA on active overview may have no effect.
+Fixed When moving alts between ScalAs with settings open on the target. It's white-/blacklist doesn't get updated and gets overwritten when you close settings.
+Fixed Moving alts between overviews doesn't update sorting algorithm correctly.
+Fixed Repeatedly (about 60 times) switching back and forth between overview/selected causes a crash.
+Added icons to alt selection combobox dropdown.
+Right clicking the `Keep Here?` item will now toggle it to a dot to remember this when you reopen the menu.
+Added Hotkeys to alter overview layout.
+Added Setting to switch to normal/maximized when selecting an alt or going to overview.
+
 **ScalA 1.5.5**
 When running multiple ScalAs added an option to move alts from one overview to the other.
 
