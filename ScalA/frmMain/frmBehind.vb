@@ -18,7 +18,7 @@
                 msg = WM_MBUTTONDOWN
         End Select
 
-        SendMessage(FrmMain.AltPP?.MainWindowHandle, msg, 0, IntPtr.Zero)
+        If FrmMain.AltPP IsNot Nothing Then SendMessage(FrmMain.AltPP.MainWindowHandle, msg, 0, IntPtr.Zero)
 
     End Sub
 
@@ -40,7 +40,7 @@
                 msg = WM_MBUTTONUP
         End Select
 
-        SendMessage(FrmMain.AltPP?.MainWindowHandle, msg, 0, IntPtr.Zero)
+        If FrmMain.AltPP IsNot Nothing Then SendMessage(FrmMain.AltPP.MainWindowHandle, msg, 0, IntPtr.Zero)
 
     End Sub
 

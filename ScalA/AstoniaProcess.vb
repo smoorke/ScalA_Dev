@@ -48,7 +48,10 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             Dim dummy = _proc.HasExited() 'test to see if proc is elevated
             _proc.CloseMainWindow()
         Catch ex As System.ComponentModel.Win32Exception
-            _proc.Kill()
+            Try
+                _proc.Kill()
+            Catch
+            End Try
         End Try
     End Sub
     Public Function IsMinimized() As Boolean
