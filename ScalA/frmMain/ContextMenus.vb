@@ -589,7 +589,11 @@ Partial Public NotInheritable Class FrmMain
         Next
         If sender.DropDownItems.Count = 2 Then
             sender.DropDownItems.Add("(None)").Enabled = False
+        ElseIf sender.DropDownItems.Count > 3 Then
+            sender.DropDownItems.Add(New ToolStripSeparator())
+            sender.DropDownItems.Add(New ToolStripMenuItem("Add All", My.Resources.Add, AddressOf AddAllShortcuts) With {.Tag = sender.Tag})
         End If
+
     End Sub
 
     Private Sub CreateNewFolder(newpath As String)
@@ -717,6 +721,11 @@ Partial Public NotInheritable Class FrmMain
 
         sender.DropDown.Close()
 
+    End Sub
+
+    Private Sub AddAllShortcuts(sender As Object, e As EventArgs)
+        Debug.Print($"Add All ShortCuts")
+        Debug.Print($"sender.tag {sender.tag}")
     End Sub
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
         UntrapMouse(MouseButtons.Right)
@@ -984,7 +993,7 @@ Partial Public NotInheritable Class FrmMain
                 New MenuItem($"Open All{vbTab}-->", AddressOf QlCtxOpenAll) With {
                                 .Visible = path.EndsWith("\") AndAlso
                                 sender.DropDownItems.OfType(Of ToolStripMenuItem) _
-                                      .Any(Function(it) it.Visible AndAlso extensions.Contains(IO.Path.GetExtension(it.Tag(0)))),
+                                      .Any(Function(it) it.Visible AndAlso it.Tag IsNot Nothing AndAlso extensions.Contains(IO.Path.GetExtension(it.Tag(0)))),
                                 .Tag = sender
                                             },
                 New MenuItem("-"),
@@ -1009,6 +1018,11 @@ Partial Public NotInheritable Class FrmMain
             Next
             If aplist.Count = 0 Then
                 QlCtxNewMenu.MenuItems.Add(New MenuItem("(None)") With {.Enabled = False})
+            ElseIf aplist.Count >= 2 Then
+                QlCtxNewMenu.MenuItems.Add(New MenuItem("-"))
+                Dim AddAllItem = New MenuItem("Add All", AddressOf AddAllShortcuts) With {.Tag = path}
+                QlCtxNewMenu.MenuItems.Add(AddAllItem)
+                SetMenuItemBitmaps(QlCtxNewMenu.Handle, aplist.Count + 3, MF_BYPOSITION, plusHbm, Nothing)
             End If
 
             ModifyMenuA(QlCtxMenu.Handle, 0, MF_BYPOSITION, GetMenuItemID(QlCtxMenu.Handle, 0), $"{name}")
@@ -1024,7 +1038,7 @@ Partial Public NotInheritable Class FrmMain
             Dim purgeList As New List(Of IntPtr)
 
             Dim i = QlCtxNewMenuStaticItemsCount
-            For Each item As MenuItem In QlCtxNewMenu.MenuItems.OfType(Of MenuItem).Skip(i).Where(Function(m) m.Tag IsNot Nothing)
+            For Each item As MenuItem In QlCtxNewMenu.MenuItems.OfType(Of MenuItem).Skip(i).Where(Function(m) m.Tag IsNot Nothing AndAlso TypeOf (m.Tag) IsNot String)
                 Dim althbm As IntPtr = New Bitmap(DirectCast(item.Tag(0), AstoniaProcess).GetIcon?.ToBitmap, New Size(16, 16)).GetHbitmap(Color.Red)
                 purgeList.Add(althbm)
                 SetMenuItemBitmaps(QlCtxNewMenu.Handle, i, MF_BYPOSITION, althbm, Nothing)
