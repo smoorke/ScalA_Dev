@@ -646,11 +646,17 @@ Partial Public NotInheritable Class FrmMain
         If ShortCutName = "Someone" Then Exit Sub
         Dim ShortCutLink As String = ShortCutPath & "\" & ShortCutName & ".lnk"
 
-        If System.IO.File.Exists(ShortCutLink) AndAlso
-           CustomMessageBox.Show($"""{alt.Name}"" already exists. Overwrite?",
-                           "Notice", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) _
-           = DialogResult.Cancel Then Exit Sub
-
+        If System.IO.File.Exists(ShortCutLink) Then
+            Select Case CustomMessageBox.Show($"""{alt.Name}"" already exists. Overwrite?",
+                           "Notice", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)
+                Case DialogResult.Yes
+                    'do nothing
+                Case DialogResult.No
+                    Exit Sub
+                Case Else
+                    Throw New Exception("Abort")
+            End Select
+        End If
         'Dim QS As New ManagementObjectSearcher(“Select * from Win32_Process WHERE ProcessID=" & alt.Id.ToString)
         'Dim objCol As ManagementObjectCollection = QS.Get
 
@@ -716,7 +722,8 @@ Partial Public NotInheritable Class FrmMain
             oLink.WindowStyle = 1
             oLink.Save()
         Catch ex As Exception
-
+            Debug.Print($"except: {ex.Message}")
+            Debug.Print($"shortcutlink")
         End Try
 
         sender.DropDown.Close()
@@ -726,6 +733,30 @@ Partial Public NotInheritable Class FrmMain
     Private Sub AddAllShortcuts(sender As Object, e As EventArgs)
         Debug.Print($"Add All ShortCuts")
         Debug.Print($"sender.tag {sender.tag}")
+
+        Dim list As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).ToList
+
+        cmsQuickLaunch.Close()
+
+        Dim path As String = sender.tag
+        If Not path.EndsWith("\") Then
+            path = path.Substring(0, path.LastIndexOf("\") + 1)
+            Debug.Print($"sanitized: {path}")
+        End If
+
+        For Each ap As AstoniaProcess In list
+            Debug.Print($"adding {ap.Name}")
+            Try
+                CreateShortCut(New ToolStripMenuItem(ap.Name) With {.Tag = {ap, path}}, Nothing)
+            Catch ex As Exception
+                If ex.Message = "Abort" Then
+                    Exit Sub
+                Else
+                    Throw
+                End If
+            End Try
+        Next
+
     End Sub
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
         UntrapMouse(MouseButtons.Right)
@@ -956,7 +987,11 @@ Partial Public NotInheritable Class FrmMain
         Debug.Print($"tag: {sender.Tag(1)}")
         Dim rootFolder As String = sender.Tag(1)
         rootFolder = rootFolder.Substring(0, rootFolder.TrimEnd("\").LastIndexOf("\") + 1)
-        CreateShortCut(New ToolStripMenuItem(sender.Text) With {.Tag = {sender.Tag(0), rootFolder}}, Nothing)
+        Try
+            CreateShortCut(New ToolStripMenuItem(sender.Text) With {.Tag = {sender.Tag(0), rootFolder}}, Nothing)
+        Catch ex As Exception
+            If ex.Message <> "Abort" Then Throw
+        End Try
         cmsQuickLaunch.Close()
     End Sub
 
