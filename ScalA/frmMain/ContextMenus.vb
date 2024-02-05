@@ -654,7 +654,8 @@ Partial Public NotInheritable Class FrmMain
                 Case DialogResult.No
                     Exit Sub
                 Case Else
-                    Throw New Exception("Abort")
+                    Debug.Print($"Cancel {sender.Tag} ""{sender.OwnerItem}"" {sender.Text}")
+                    If sender.OwnerItem?.Text <> "New" Then Throw New Exception("Abort")
             End Select
         End If
         'Dim QS As New ManagementObjectSearcher(“Select * from Win32_Process WHERE ProcessID=" & alt.Id.ToString)
@@ -723,7 +724,7 @@ Partial Public NotInheritable Class FrmMain
             oLink.Save()
         Catch ex As Exception
             Debug.Print($"except: {ex.Message}")
-            Debug.Print($"shortcutlink")
+            Debug.Print($"{ShortCutLink}")
         End Try
 
         sender.DropDown.Close()
@@ -734,7 +735,7 @@ Partial Public NotInheritable Class FrmMain
         Debug.Print($"Add All ShortCuts")
         Debug.Print($"sender.tag {sender.tag}")
 
-        Dim list As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).ToList
+        Dim list As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name).ToList
 
         cmsQuickLaunch.Close()
 
