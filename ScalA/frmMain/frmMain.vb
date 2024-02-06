@@ -518,10 +518,10 @@ Partial Public NotInheritable Class FrmMain
         If My.Settings.CheckForUpdate Then
             UpdateCheck()
         End If
-        FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, 0.01, 0)
         If cboAlt.SelectedIndex = 0 AndAlso My.Settings.MaxNormOverview AndAlso Me.WindowState = FormWindowState.Normal Then
             btnMax.PerformClick()
         End If
+        FrmSizeBorder.Opacity = If(My.Settings.SizingBorder AndAlso Me.WindowState = FormWindowState.Normal, 0.01, 0)
 
     End Sub
     Friend Shared updateToVersion As String = "Error"
