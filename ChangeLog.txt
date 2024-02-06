@@ -1,4 +1,9 @@
-**Scala 1.5.6**
+**ScalA 1.5.7**
+Fixed Right Clicking an empty folder in QL causes an exception.
+Fixed some more Exceptions on active overview.
+Added an option to add all active alts to QL if applicable.
+
+**ScalA 1.5.6**
 Fixed EQLock is broken on selected alts when active overview is enabled.
 Fixed When moving the only alt on overview to another ScalA, empty ScalA may become unresponsive.
 Fixed Double clicking the titlebar of a ScalA not on overview with another ScalA on active overview may have no effect.
