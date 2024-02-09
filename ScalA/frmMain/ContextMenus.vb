@@ -188,7 +188,7 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub KeepToolStripMenuItem_Mousedown(sender As ToolStripMenuItem, e As MouseEventArgs) Handles KeepToolStripMenuItem.MouseDown
         Debug.Print($"{sender.Owner}")
-        CType(sender.Owner, ToolStripDropDownMenu).AutoClose = False
+        CType(sender.Owner, ToolStripDropDownMenu).AutoClose = False 'this messes with topmost
         If e.Button = MouseButtons.Right Then
             If sender.CheckState <> CheckState.Indeterminate Then
                 sender.CheckState = CheckState.Indeterminate
@@ -280,6 +280,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
     Private Sub CmsAlt_Closed(sender As Object, e As ToolStripDropDownClosedEventArgs) Handles cmsAlt.Closed
         AButton.ActiveOverview = My.Settings.gameOnOverview
+        Me.TopMost = My.Settings.topmost
     End Sub
 
     Private Sub CmsAlt_Opened(sender As Object, e As EventArgs) Handles cmsAlt.Opened
