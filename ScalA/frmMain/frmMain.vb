@@ -970,6 +970,7 @@ Partial Public NotInheritable Class FrmMain
         End If
         cboAlt.SelectedIndex = requestedindex
         If requestedindex > 0 Then tmrTick.Start()
+        Me.BringToFront()
     End Sub
 
 
