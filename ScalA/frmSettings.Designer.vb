@@ -44,6 +44,7 @@ Partial NotInheritable Class FrmSettings
         Dim Label17 As System.Windows.Forms.Label
         Dim grpAlterOverviewMinMax As System.Windows.Forms.GroupBox
         Dim Label6 As System.Windows.Forms.Label
+        Dim ToolStripMenuItem1 As System.Windows.Forms.ToolStripSeparator
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmSettings))
         Me.txtQuickLaunchPath = New System.Windows.Forms.TextBox()
         Me.ChkQLShowHidden = New System.Windows.Forms.CheckBox()
@@ -76,6 +77,9 @@ Partial NotInheritable Class FrmSettings
         Me.chkHoverActivate = New System.Windows.Forms.CheckBox()
         Me.chkShowEnd = New System.Windows.Forms.CheckBox()
         Me.chkAlterOverview = New System.Windows.Forms.CheckBox()
+        Me.txtAlterOverviewStarKey = New System.Windows.Forms.TextBox()
+        Me.txtAlterOverviewMinKey = New System.Windows.Forms.TextBox()
+        Me.txtAlterOverviewPlusKey = New System.Windows.Forms.TextBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
@@ -95,14 +99,11 @@ Partial NotInheritable Class FrmSettings
         Me.tabHotkeys = New System.Windows.Forms.TabPage()
         Me.grpAlterOverview = New System.Windows.Forms.GroupBox()
         Me.chkAlterOverviewStarAlt = New System.Windows.Forms.CheckBox()
-        Me.txtAlterOverviewStarKey = New System.Windows.Forms.TextBox()
         Me.chkAlterOverviewStarShift = New System.Windows.Forms.CheckBox()
         Me.chkAlterOverviewStarWin = New System.Windows.Forms.CheckBox()
         Me.chkAlterOverviewStarCtrl = New System.Windows.Forms.CheckBox()
         Me.chkAlterOverviewMinAlt = New System.Windows.Forms.CheckBox()
-        Me.txtAlterOverviewMinKey = New System.Windows.Forms.TextBox()
         Me.chkAlterOverviewPlusALt = New System.Windows.Forms.CheckBox()
-        Me.txtAlterOverviewPlusKey = New System.Windows.Forms.TextBox()
         Me.chkAlterOverviewMinShift = New System.Windows.Forms.CheckBox()
         Me.chkAlterOverviewPlusShift = New System.Windows.Forms.CheckBox()
         Me.chkAlterOverviewMinWin = New System.Windows.Forms.CheckBox()
@@ -162,6 +163,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
+        Me.ResetIconCacheToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         grpQLPath = New System.Windows.Forms.GroupBox()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
@@ -183,6 +185,7 @@ Partial NotInheritable Class FrmSettings
         Label17 = New System.Windows.Forms.Label()
         grpAlterOverviewMinMax = New System.Windows.Forms.GroupBox()
         Label6 = New System.Windows.Forms.Label()
+        ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         grpQLPath.SuspendLayout()
         Me.cmsQLFolder.SuspendLayout()
         grpAlterOverviewMinMax.SuspendLayout()
@@ -259,9 +262,9 @@ Partial NotInheritable Class FrmSettings
         'cmsQLFolder
         '
         Me.cmsQLFolder.ImageScalingSize = New System.Drawing.Size(20, 20)
-        Me.cmsQLFolder.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenInExplorerToolStripMenuItem})
+        Me.cmsQLFolder.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenInExplorerToolStripMenuItem, ToolStripMenuItem1, Me.ResetIconCacheToolStripMenuItem})
         Me.cmsQLFolder.Name = "cmsQLFolder"
-        Me.cmsQLFolder.Size = New System.Drawing.Size(184, 26)
+        Me.cmsQLFolder.Size = New System.Drawing.Size(184, 76)
         '
         'OpenInExplorerToolStripMenuItem
         '
@@ -727,6 +730,33 @@ Partial NotInheritable Class FrmSettings
         Me.ttSettings.SetToolTip(Me.chkAlterOverview, "Note: Whitelist setting from Sorting tab is in effect here")
         Me.chkAlterOverview.UseVisualStyleBackColor = True
         '
+        'txtAlterOverviewStarKey
+        '
+        Me.txtAlterOverviewStarKey.Location = New System.Drawing.Point(181, 64)
+        Me.txtAlterOverviewStarKey.Name = "txtAlterOverviewStarKey"
+        Me.txtAlterOverviewStarKey.Size = New System.Drawing.Size(73, 20)
+        Me.txtAlterOverviewStarKey.TabIndex = 21
+        Me.txtAlterOverviewStarKey.TabStop = False
+        Me.ttSettings.SetToolTip(Me.txtAlterOverviewStarKey, "Toggle One Less Row/Column")
+        '
+        'txtAlterOverviewMinKey
+        '
+        Me.txtAlterOverviewMinKey.Location = New System.Drawing.Point(181, 40)
+        Me.txtAlterOverviewMinKey.Name = "txtAlterOverviewMinKey"
+        Me.txtAlterOverviewMinKey.Size = New System.Drawing.Size(73, 20)
+        Me.txtAlterOverviewMinKey.TabIndex = 11
+        Me.txtAlterOverviewMinKey.TabStop = False
+        Me.ttSettings.SetToolTip(Me.txtAlterOverviewMinKey, "Decrease Extra Columns/Rows")
+        '
+        'txtAlterOverviewPlusKey
+        '
+        Me.txtAlterOverviewPlusKey.Location = New System.Drawing.Point(181, 16)
+        Me.txtAlterOverviewPlusKey.Name = "txtAlterOverviewPlusKey"
+        Me.txtAlterOverviewPlusKey.Size = New System.Drawing.Size(73, 20)
+        Me.txtAlterOverviewPlusKey.TabIndex = 7
+        Me.txtAlterOverviewPlusKey.TabStop = False
+        Me.ttSettings.SetToolTip(Me.txtAlterOverviewPlusKey, "Increase Extra Columns/Rows")
+        '
         'tbcSettings
         '
         Me.tbcSettings.Appearance = System.Windows.Forms.TabAppearance.FlatButtons
@@ -934,15 +964,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkAlterOverviewStarAlt.Text = "Alt"
         Me.chkAlterOverviewStarAlt.UseVisualStyleBackColor = True
         '
-        'txtAlterOverviewStarKey
-        '
-        Me.txtAlterOverviewStarKey.Location = New System.Drawing.Point(181, 64)
-        Me.txtAlterOverviewStarKey.Name = "txtAlterOverviewStarKey"
-        Me.txtAlterOverviewStarKey.Size = New System.Drawing.Size(73, 20)
-        Me.txtAlterOverviewStarKey.TabIndex = 21
-        Me.txtAlterOverviewStarKey.TabStop = False
-        Me.ttSettings.SetToolTip(Me.txtAlterOverviewStarKey, "Toggle One Less Row/Column")
-        '
         'chkAlterOverviewStarShift
         '
         Me.chkAlterOverviewStarShift.AutoSize = True
@@ -987,15 +1008,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkAlterOverviewMinAlt.Text = "Alt"
         Me.chkAlterOverviewMinAlt.UseVisualStyleBackColor = True
         '
-        'txtAlterOverviewMinKey
-        '
-        Me.txtAlterOverviewMinKey.Location = New System.Drawing.Point(181, 40)
-        Me.txtAlterOverviewMinKey.Name = "txtAlterOverviewMinKey"
-        Me.txtAlterOverviewMinKey.Size = New System.Drawing.Size(73, 20)
-        Me.txtAlterOverviewMinKey.TabIndex = 11
-        Me.txtAlterOverviewMinKey.TabStop = False
-        Me.ttSettings.SetToolTip(Me.txtAlterOverviewMinKey, "Decrease Extra Columns/Rows")
-        '
         'chkAlterOverviewPlusALt
         '
         Me.chkAlterOverviewPlusALt.AutoSize = True
@@ -1006,15 +1018,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkAlterOverviewPlusALt.TabStop = False
         Me.chkAlterOverviewPlusALt.Text = "Alt"
         Me.chkAlterOverviewPlusALt.UseVisualStyleBackColor = True
-        '
-        'txtAlterOverviewPlusKey
-        '
-        Me.txtAlterOverviewPlusKey.Location = New System.Drawing.Point(181, 16)
-        Me.txtAlterOverviewPlusKey.Name = "txtAlterOverviewPlusKey"
-        Me.txtAlterOverviewPlusKey.Size = New System.Drawing.Size(73, 20)
-        Me.txtAlterOverviewPlusKey.TabIndex = 7
-        Me.txtAlterOverviewPlusKey.TabStop = False
-        Me.ttSettings.SetToolTip(Me.txtAlterOverviewPlusKey, "Increase Extra Columns/Rows")
         '
         'chkAlterOverviewMinShift
         '
@@ -1674,6 +1677,17 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
+        'ToolStripMenuItem1
+        '
+        ToolStripMenuItem1.Name = "ToolStripMenuItem1"
+        ToolStripMenuItem1.Size = New System.Drawing.Size(180, 6)
+        '
+        'ResetIconCacheToolStripMenuItem
+        '
+        Me.ResetIconCacheToolStripMenuItem.Name = "ResetIconCacheToolStripMenuItem"
+        Me.ResetIconCacheToolStripMenuItem.Size = New System.Drawing.Size(183, 22)
+        Me.ResetIconCacheToolStripMenuItem.Text = "Reset Icon Cache"
+        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1850,4 +1864,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents NumExtraMax As NumericUpDown
     Friend WithEvents chkApplyAlterNormal As CheckBox
     Friend WithEvents chkMinMaxOnSwitch As CheckBox
+    Friend WithEvents ResetIconCacheToolStripMenuItem As ToolStripMenuItem
 End Class

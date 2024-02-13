@@ -883,6 +883,10 @@ Public NotInheritable Class FrmSettings
         grpAlterOverview.Enabled = sender.Checked
     End Sub
 
+    Private Sub ResetIconCacheToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ResetIconCacheToolStripMenuItem.Click
+        FrmMain.iconCache.Clear()
+    End Sub
+
     Private Sub chkOverViewIsGame_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkOverViewIsGame.CheckedChanged
         chkHoverActivate.Enabled = sender.Checked
     End Sub
