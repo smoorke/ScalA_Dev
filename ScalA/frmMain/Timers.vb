@@ -395,7 +395,7 @@ Partial NotInheritable Class FrmMain
                     End If
                 End If
             Catch ex As Exception
-
+                Detach(False)
             End Try
 
 

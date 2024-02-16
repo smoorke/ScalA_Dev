@@ -10,7 +10,7 @@ Partial Public NotInheritable Class FrmMain
         End Get
         Set(value As AstoniaProcess)
             _altPP = value
-            IPC.AddOrUpdateInstance(scalaPID, Nothing, _altPP?.Id)
+            IPC.AddOrUpdateInstance(scalaPID, cboAlt.SelectedIndex = 0, _altPP?.Id)
         End Set
     End Property
     'Private WndClass() As String = {"MAINWNDMOAC", "䅍义乗䵄䅏C"}
@@ -71,7 +71,7 @@ Partial Public NotInheritable Class FrmMain
 
         If updatingCombobox Then Exit Sub
 
-        IPC.AddOrUpdateInstance(scalaPID, sender.SelectedIndex = 0)
+        'IPC.AddOrUpdateInstance(scalaPID, sender.SelectedIndex = 0)
 
         Debug.Print($"CboAlt_SelectedIndexChanged {sender.SelectedIndex}")
 
@@ -91,7 +91,7 @@ Partial Public NotInheritable Class FrmMain
         Detach(False)
         AstoniaProcess.RestorePos()
         AltPP = sender.SelectedItem
-        IPC.AddOrUpdateInstance(scalaPID, sender.SelectedIndex = 0, AltPP.Id)
+        'IPC.AddOrUpdateInstance(scalaPID, sender.SelectedIndex = 0, AltPP.Id)
         UpdateTitle()
 
         If sender.SelectedIndex = 0 Then
