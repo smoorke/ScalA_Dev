@@ -71,6 +71,23 @@ Module IPC
     Public Function IsScalA(p As Process) As Boolean
         Try
             Return p.MainModule.FileVersionInfo.OriginalFilename = OrigScalAfname
+        Catch ex As System.ComponentModel.Win32Exception
+            Dim processPath As String = ""
+
+            Dim processHandle As IntPtr = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, False, p.Id)
+            Try
+                If Not processHandle = IntPtr.Zero Then
+                    Dim buffer As New System.Text.StringBuilder(1024)
+                    If QueryFullProcessImageName(processHandle, 0, buffer, buffer.Capacity) Then
+                        processPath = buffer.ToString()
+                    End If
+                End If
+            Finally
+                CloseHandle(processHandle)
+            End Try
+
+            Return FileVersionInfo.GetVersionInfo(processPath).OriginalFilename = OrigScalAfname
+
         Catch ex As Exception
             Return False
         End Try

@@ -964,4 +964,26 @@ Module NativeMethods
         FORMAT_MESSAGE_FROM_HMODULE = &H800
     End Enum
 
+    <System.Runtime.InteropServices.DllImport("kernel32.dll")>
+    Public Function QueryFullProcessImageName(hprocess As IntPtr, dwFlags As Integer, lpExeName As System.Text.StringBuilder, ByRef size As Integer) As Boolean : End Function
+    Enum ProcessAccessFlags As UInteger
+        All = &H1FFFFF
+        Terminate = &H1
+        CreateThread = &H2
+        VMOperation = &H8
+        VMRead = &H10
+        VMWrite = &H20
+        DupHandle = &H40
+        SetInformation = &H200
+        QueryInformation = &H400
+        QueryLimitedInformation = &H1000
+        Synchronize = &H100000
+    End Enum
+    <System.Runtime.InteropServices.DllImport("kernel32.dll")>
+    Public Function OpenProcess(dwDesiredAccess As ProcessAccessFlags, bInheritHandle As Boolean, dwProcessId As Integer) As IntPtr : End Function
+    <System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError:=True)>
+    Public Function CloseHandle(hHandle As IntPtr) As Boolean : End Function
+    <System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError:=True)>
+    Public Function GetExitCodeProcess(hHandle As IntPtr, ByRef eCode As Integer) As Boolean : End Function
+
 End Module
