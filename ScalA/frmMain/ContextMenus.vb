@@ -206,27 +206,21 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub MoveToolStripMenuItem_DropDownOpened(sender As ToolStripMenuItem, e As EventArgs) Handles MoveToolStripMenuItem.DropDownOpened
-        'Dim rcSW As RECT
-        'GetWindowRect(ScalaHandle, rcSW)
-        Dim mePos As Point = MousePosition 'New Point(rcSW.left + (rcSW.right - rcSW.left) / 2, rcSW.top + (rcSW.bottom - rcSW.top) / 2)
-        For Each tsmi As ToolStripMenuItem In sender.DropDownItems.OfType(Of ToolStripMenuItem)
-            If tsmi.Tag Is Nothing Then Continue For
-            Dim ppos As Process = DirectCast(tsmi.Tag.item2, Process)
-            Dim hndl As IntPtr = ppos.GetWindowHandle 'mainwindowhandle reports null for attached ScalAs. replaced with a fields in IPC
-            Dim rcOW As RECT
+        Dim menuPos As Point = sender.DropDown.Bounds.Location
+        For Each tsmi As ToolStripMenuItem In sender.DropDownItems.OfType(Of ToolStripMenuItem).Where(Function(mi) mi.Tag IsNot Nothing)
+            Dim hndl As IntPtr = DirectCast(tsmi.Tag.item2, Process).GetWindowHandle 'mainwindowhandle reports null for attached ScalAs. replaced with a fields in IPC
+            Dim rcOtherScala As RECT
 
             If IsIconic(hndl) Then
                 Dim wp As New WINDOWPLACEMENT With {.length = Runtime.InteropServices.Marshal.SizeOf(GetType(WINDOWPLACEMENT))}
                 GetWindowPlacement(hndl, wp)
-                rcOW = wp.normalPosition
+                rcOtherScala = wp.normalPosition
             Else
-                GetWindowRect(hndl, rcOW)
+                GetWindowRect(hndl, rcOtherScala)
             End If
-            Dim otPos As Point = New Point(rcOW.left + (rcOW.right - rcOW.left) / 2, rcOW.top + (rcOW.bottom - rcOW.top) / 2)
-            Debug.Print($"{DirectCast(tsmi.Tag.item2, Process).ProcessName} {otPos} {hndl}")
-            Dim bmp As Image = DrawArrow(mePos, otPos)
-
-            tsmi.Image = bmp
+            Dim targetPos As Point = New Point(rcOtherScala.left + (rcOtherScala.right - rcOtherScala.left) / 2, rcOtherScala.top + (rcOtherScala.bottom - rcOtherScala.top) / 2)
+            Dim menuitPos As Point = menuPos + tsmi.Bounds.Location - New Point(tsmi.Bounds.Height / 2, tsmi.Bounds.Height / 2)
+            tsmi.Image = DrawArrow(menuitPos, targetPos)
         Next
     End Sub
 
