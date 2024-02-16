@@ -1,3 +1,10 @@
+**ScalA 1.5.8**
+Fixed Maximized startup erroneously has sizingborder enabled.
+Fixed Clicking the `Keep Here?` item messes with ScalA topmost status.
+Fixed Cycling doesn't bring ScalA to the front.
+Fixed `Move To` doesn't detect Elevated ScalAs.
+Fixed Active overview messes with other ScalAs `Move To` ScalA detection.
+
 **ScalA 1.5.7**
 Fixed Right Clicking an empty folder in QL causes an exception.
 Fixed some more Exceptions on active overview.
