@@ -2,15 +2,20 @@
 
 Partial Public NotInheritable Class FrmMain
 
-    Private _altPP As New AstoniaProcess()
+    Private _altPP As AstoniaProcess
 
     Public Property AltPP As AstoniaProcess
         Get
             Return _altPP
         End Get
         Set(value As AstoniaProcess)
-            _altPP = value
-            IPC.AddOrUpdateInstance(scalaPID, cboAlt.SelectedIndex = 0, _altPP?.Id)
+            If (_altPP Is Nothing AndAlso value IsNot Nothing) OrElse
+               (_altPP IsNot Nothing AndAlso value Is Nothing) OrElse
+               (_altPP IsNot Nothing AndAlso value IsNot Nothing AndAlso _altPP.Id <> value.Id) Then
+                IPC.AddOrUpdateInstance(scalaPID, cboAlt.SelectedIndex = 0, value?.Id)
+                'IPC.getInstances().FirstOrDefault(Function(si) si.pid = scalaPID)
+                _altPP = value
+            End If
         End Set
     End Property
     'Private WndClass() As String = {"MAINWNDMOAC", "䅍义乗䵄䅏C"}
@@ -1416,7 +1421,7 @@ Partial Public NotInheritable Class FrmMain
     Private prevHWNDParent As IntPtr = restoreParent
     Public Function Attach(ap As AstoniaProcess) As Long
         If ap Is Nothing OrElse prevHWNDParent = ap.MainWindowHandle Then Return 0
-        Debug.Print($"Attach to: {ap.Name}")
+        Debug.Print($"Attach to: {ap.Name} {ap.Id}")
         prevHWNDParent = ap.MainWindowHandle
         If Not pnlOverview.Visible Then
             Dim rcAst As RECT

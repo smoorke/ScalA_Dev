@@ -1,5 +1,6 @@
 ﻿Imports System.IO.MemoryMappedFiles
 Imports System.Runtime.InteropServices
+Imports System.Threading
 Module IPC
     'Private ReadOnly _mmfBoolean As MemoryMappedFile = MemoryMappedFile.CreateOrOpen("ScalA_IPC_Boolean", 1)
     'Private ReadOnly _mmvaBoolean As MemoryMappedViewAccessor = _mmfBoolean.CreateViewAccessor()
@@ -101,16 +102,21 @@ Module IPC
 
     <System.Runtime.CompilerServices.Extension()>
     Public Function GetWindowHandle(p As Process) As IntPtr
-        Dim sharednum = _mmvaInstances.ReadInt32(0)
+        _mutex.WaitOne()
+        Try
+            Dim sharednum = _mmvaInstances.ReadInt32(0)
 
-        ReDim Preserve _Instances(sharednum)
-        _mmvaInstances.ReadArray(Of ScalAInfo)(4, _Instances, 0, sharednum)
+            Dim _Instances(sharednum - 1) As ScalAInfo
+            _mmvaInstances.ReadArray(Of ScalAInfo)(4, _Instances, 0, sharednum)
 
-        If p.IsScalA Then
-            Return _Instances.FirstOrDefault(Function(si) si.pid = p.Id).handle
-        Else
-            Return p.MainWindowHandle
-        End If
+            If p.IsScalA Then
+                Return _Instances.FirstOrDefault(Function(si) si.pid = p.Id).handle
+            Else
+                Return p.MainWindowHandle
+            End If
+        Finally
+            _mutex.ReleaseMutex()
+        End Try
     End Function
 
     <StructLayout(LayoutKind.Sequential)> '64 bytes
@@ -144,68 +150,81 @@ Module IPC
 
     End Structure
 
-    Private _mmfInstances As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPCInstances", 4 + Marshal.SizeOf(GetType(ScalAInfo)) * (localNum + 1))
+    Private _mmfInstances As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPCInstances", 4 + Marshal.SizeOf(GetType(ScalAInfo)) * (localnum + 1))
     Private _mmvaInstances As MemoryMappedViewAccessor = _mmfInstances.CreateViewAccessor()
     Private localnum As UInteger = 0
-    Private _Instances() As ScalAInfo
+    'Private _Instances() As ScalAInfo
+    Private _mutex As New Mutex(False, "ScalA_IPCInstances_Mutex")
 
     Public Sub AddOrUpdateInstance(id As Integer, Optional overview? As Boolean = Nothing, Optional apID? As Integer = Nothing)
-        Dim sharednum = _mmvaInstances.ReadInt32(0)
+        _mutex.WaitOne()
+        Try
+            Dim sharednum = _mmvaInstances.ReadInt32(0)
 
-        ReDim Preserve _Instances(sharednum - 1)
-        _mmvaInstances.ReadArray(Of ScalAInfo)(4, _Instances, 0, sharednum)
+            Dim _Instances(sharednum - 1) As ScalAInfo
+            _mmvaInstances.ReadArray(Of ScalAInfo)(4, _Instances, 0, sharednum)
 
-        Dim existingIndex As Integer = Array.FindIndex(_Instances, Function(inst) inst.pid = id)
+            Dim existingIndex As Integer = Array.FindIndex(_Instances, Function(inst) inst.pid = id)
 
-        If existingIndex = -1 Then
-            ' The instance does not exist, you can add it now
-            ' todo: find an index that has an empty instance
-            ReDim Preserve _Instances(sharednum)
-            _Instances(sharednum) = New ScalAInfo(id, overview, apID)
+            If existingIndex = -1 Then
+                ' The instance does not exist, you can add it now
+                ' todo: find an index that has an empty instance
+                ReDim Preserve _Instances(sharednum)
+                _Instances(sharednum) = New ScalAInfo(id, overview, apID)
+
+                If sharednum <> localnum Then
+                    _mmfInstances = MemoryMappedFile.CreateOrOpen($"ScalA_IPCInstances", 4 + Marshal.SizeOf(GetType(ScalAInfo)) * (sharednum + 1))
+                    _mmvaInstances = _mmfInstances.CreateViewAccessor()
+                    localnum = sharednum
+                End If
+
+                ' Update the shared count 
+                _mmvaInstances.Write(0, _Instances.Length)
+            Else
+                ' The instance already exists, update the existing instance in the array
+                _Instances(existingIndex) = New ScalAInfo(id,
+                                                          If(overview IsNot Nothing, overview, _Instances(existingIndex).isOnOverview),
+                                                          If(apID IsNot Nothing, apID, _Instances(existingIndex).AltPPid))
+            End If
+            ' Write the array back to the memory-mapped file
+            _mmvaInstances.Write(0, _Instances.Length)
+            _mmvaInstances.WriteArray(4, _Instances, 0, _Instances.Length)
+        Finally
+            _mutex.ReleaseMutex()
+        End Try
+    End Sub
+    Public Function getInstances() As IEnumerable(Of ScalAInfo)
+        _mutex.WaitOne()
+        Try
+            Dim sharednum = _mmvaInstances.ReadInt32(0)
 
             If sharednum <> localnum Then
-                _mmfInstances = MemoryMappedFile.CreateOrOpen($"ScalA_IPCInstances", 4 + Marshal.SizeOf(GetType(ScalAInfo)) * (sharednum + 1))
+                _mmfInstances = MemoryMappedFile.CreateOrOpen($"ScalA_IPCInstances", 4 + Marshal.SizeOf(GetType(ScalAInfo)) * sharednum)
                 _mmvaInstances = _mmfInstances.CreateViewAccessor()
                 localnum = sharednum
             End If
 
-            ' Update the shared count 
+            Dim _Instances(sharednum - 1) As ScalAInfo
+            _mmvaInstances.ReadArray(4, _Instances, 0, sharednum)
+
+            Dim newInstances = _Instances.Select(Function(si As ScalAInfo)
+                                                     Try
+                                                         Using pp As Process = Process.GetProcessById(si.pid)
+                                                             If Not pp.IsScalA() Then Return New ScalAInfo
+                                                             Return si
+                                                         End Using
+                                                     Catch
+                                                         Return New ScalAInfo
+                                                     End Try
+                                                 End Function).Where(Function(sin) sin.pid <> 0).ToArray
+
+            _Instances = newInstances
             _mmvaInstances.Write(0, _Instances.Length)
-        Else
-            ' The instance already exists, update the existing instance in the array
-            _Instances(existingIndex) = New ScalAInfo(id, overview, apID)
-        End If
-        ' Write the array back to the memory-mapped file
-        _mmvaInstances.Write(0, _Instances.Length)
-        _mmvaInstances.WriteArray(4, _Instances, 0, _Instances.Length)
-    End Sub
-    Public Function getInstances() As IEnumerable(Of ScalAInfo)
-        Dim sharednum = _mmvaInstances.ReadInt32(0)
-
-        If sharednum <> localnum Then
-            _mmfInstances = MemoryMappedFile.CreateOrOpen($"ScalA_IPCInstances", 4 + Marshal.SizeOf(GetType(ScalAInfo)) * sharednum)
-            _mmvaInstances = _mmfInstances.CreateViewAccessor()
-            localnum = sharednum
-        End If
-
-        ReDim _Instances(sharednum - 1)
-        _mmvaInstances.ReadArray(4, _Instances, 0, sharednum)
-
-        Dim newInstances = _Instances.Select(Function(si As ScalAInfo)
-                                                 Try
-                                                     Using pp As Process = Process.GetProcessById(si.pid)
-                                                         If Not pp.IsScalA() Then Return New ScalAInfo
-                                                         Return si
-                                                     End Using
-                                                 Catch
-                                                     Return New ScalAInfo
-                                                 End Try
-                                             End Function).Where(Function(sin) sin.pid <> 0).ToArray
-
-        _Instances = newInstances
-        _mmvaInstances.Write(0, _Instances.Length)
-        _mmvaInstances.WriteArray(4, _Instances, 0, _Instances.Length)
-        Return _Instances
+            _mmvaInstances.WriteArray(4, _Instances, 0, _Instances.Length)
+            Return _Instances
+        Finally
+            _mutex.ReleaseMutex()
+        End Try
     End Function
     Public Function getOtherInstances() As IEnumerable(Of ScalAInfo)
         Return getInstances.Where(Function(si) si.pid <> Process.GetCurrentProcess.Id)
