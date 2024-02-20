@@ -3,7 +3,7 @@
     Private Sub FrmBehind_MouseDown(sender As Object, e As MouseEventArgs) Handles Me.MouseDown
         Debug.Print($"behind down {e.Button}")
         Try
-            AppActivate(FrmMain.AltPP.Id)
+            If FrmMain.AltPP IsNot Nothing Then AppActivate(FrmMain.AltPP.Id)
         Catch ex As Exception
 
         End Try
@@ -25,7 +25,7 @@
     Private Sub FrmBehind_Click(sender As Object, e As MouseEventArgs) Handles Me.MouseUp
         Debug.Print($"behind up {e.Button}")
         Try
-            AppActivate(FrmMain.AltPP.Id)
+            If FrmMain.AltPP IsNot Nothing Then AppActivate(FrmMain.AltPP.Id)
         Catch ex As Exception
             FrmMain.BringToFront()
         End Try
