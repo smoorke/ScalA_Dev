@@ -973,9 +973,9 @@ Partial Public NotInheritable Class FrmMain
             Detach(True)
             Exit Sub
         End If
+        Me.BringToFront()
         cboAlt.SelectedIndex = requestedindex
         If requestedindex > 0 Then tmrTick.Start()
-        Me.BringToFront()
     End Sub
 
 
