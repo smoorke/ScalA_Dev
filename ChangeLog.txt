@@ -1,3 +1,7 @@
+**ScalA 1.5.9**
+Fixed Cycling with ScalA minimized deactivates selected client.
+Fixed a race condition in communicating ScalA status to other tools.
+
 **ScalA 1.5.8**
 Fixed Maximized startup erroneously has sizingborder enabled.
 Fixed Clicking the `Keep Here?` item messes with ScalA topmost status.
@@ -60,7 +64,7 @@ Fixed Pressing escape while dragging sizeborder doesn't restore ScalA to its ori
 Added Activate on hover on active overview.
 Added Always show end on overviews big healthbars.
 
-**SclaA 1.4.9**
+**ScalA 1.4.9**
 Fixed Maximizing to Secondary screens sets wrong bounds if they differ in resolution.
 Fixed Dragging Caption after restoring a minimized maximized ScalA makes ScalA tiny.
 
@@ -92,7 +96,7 @@ Fixed After minimizing Ugaris by taskmanger and then restoring ScalA the sizebor
 Fixed Using the Close All & ScalA contextmenuitem doesn't save updated position for ScalA.
 Fixed Closing ScalA while minimized doesn't save last position.
 Fixed When updating ScalA doesn't save it's position.
-Fixed A bunch more cases where SclaA won't save it's position.
+Fixed A bunch more cases where ScalA won't save it's position.
 
 **ScalA 1.4.4**
 Fixed Zoom is broken when scaling to a resolution smaller than client.
