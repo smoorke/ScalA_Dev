@@ -70,12 +70,14 @@ Partial NotInheritable Class FrmMain
                                         SetWindowLong(activeHandle, GWL_HWNDPARENT, 0)
                                     Else
                                         If System.Diagnostics.Debugger.IsAttached() Then
-                                            Debugger.Break() 'WARNING: do not set GWL_HWNDPARENT to debugger. it will hang
+                                            'Debugger.Break() 'WARNING: do not set GWL_HWNDPARENT to debugger. it will hang
                                         End If
                                         SetWindowLong(activeHandle, GWL_HWNDPARENT, ScalaHandle)
                                         Try
-                                            AppActivate(activeID)
-                                        Catch
+                                            'todo: restore taskbar visibility?
+                                            'AppActivate(activeID) 'doesn't work
+                                        Catch ex As Exception
+                                            Debug.Print(ex.Message)
                                         End Try
                                     End If
                                 End If
