@@ -214,7 +214,11 @@ Partial Public NotInheritable Class FrmMain
                 Dim sw As Stopwatch = Stopwatch.StartNew()
                 Do 'looped delay until alt is scaled same
                     AltPP.CenterBehind(pbZoom, Nothing, True)
+                    Dim rc As RECT
+                    GetWindowRect(AltPP.MainWindowHandle, rc)
+                    SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, rc.left + 1, rc.top + 1, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.FrameChanged)
                     Debug.Print($"Scaling Delay {sw.ElapsedMilliseconds}ms {ScalAWinScaling}% vs {AltPP.WindowsScaling}")
+                    Await Task.Delay(16)
                     If sw.ElapsedMilliseconds > timeout Then
                         sw.Stop()
                         Debug.Print($"Scaling Delay Timeout! {failcounter}")
