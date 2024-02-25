@@ -228,10 +228,6 @@ Partial Public NotInheritable Class FrmMain
                         failcounter += 1
                     End If
                 Loop Until ScalAWinScaling = AltPP.WindowsScaling OrElse failcounter >= 3
-                If failcounter >= 3 Then
-                    cboAlt.SelectedIndex = 0
-                    Exit Sub
-                End If
                 AltPP.ResetCache()
                 UpdateThumb(If(chkDebug.Checked, 128, 255))
             End If

@@ -797,7 +797,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Dim targetName As String = Me.Name
 
         'SendMessage(Me.MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
-        _proc.Kill()
+        Me.CloseOrKill()
 
         Dim pp As Process
 
