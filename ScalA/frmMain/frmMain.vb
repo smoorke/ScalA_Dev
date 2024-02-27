@@ -1,4 +1,5 @@
 ﻿Imports System.Net.Http
+Imports System.Web
 
 Partial Public NotInheritable Class FrmMain
 
@@ -316,6 +317,15 @@ Partial Public NotInheritable Class FrmMain
             End
         End If
         IPC.AlreadyOpen = True
+
+        Try
+            Dim vers As String = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription
+            If vers.ToLower.StartsWith(".net framework ") AndAlso New Version(vers.Split(" "c)(2)) < New Version("4.5.1") Then
+                StructureToPtrSupported = False
+            End If
+        Catch ex As Exception
+
+        End Try
 
         sysTrayIcon.Visible = True
 

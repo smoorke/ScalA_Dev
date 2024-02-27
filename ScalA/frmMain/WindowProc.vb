@@ -7,6 +7,8 @@ Partial NotInheritable Class FrmMain
     Dim ThemeChanging As Boolean = False
 
     Dim suppressRestoreBounds As Boolean = False
+
+    Dim StructureToPtrSupported As Boolean = True
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case Hotkey.WM_HOTKEY
@@ -246,18 +248,23 @@ Partial NotInheritable Class FrmMain
                 If Me.cmbResolution.SelectedIndex > 0 Then Me.moveBusy = False
                 prevLoc = Me.Location
             Case WM_WINDOWPOSCHANGING
-                Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
-                If caption_Mousedown AndAlso captionMoveTrigger AndAlso New Point(winpos.x, winpos.y) = Me.RestoreBounds.Location Then
-                    winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreMove
-                    System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
-                    Debug.Print("Moveglitch fixed")
-                    captionMoveTrigger = False
-                End If
-                If suppressRestoreBounds AndAlso New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy) = Me.RestoreBounds Then
-                    winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreMove
-                    System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
-                    Debug.Print("Restoreglitch tweaked")
-                    'suppressRestoreBounds = False
+                'Debug.Print($"vers: {System.Environment.Version}")
+                'New Version(System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription.Split(" "c)(2))}
+                'Debug.Print(New Version(System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription).ToString)
+                If StructureToPtrSupported Then 'Marshal.StructureToPtr requires 4.5.1 or higher
+                    Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
+                    If caption_Mousedown AndAlso captionMoveTrigger AndAlso New Point(winpos.x, winpos.y) = Me.RestoreBounds.Location Then
+                        winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreMove
+                        System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
+                        Debug.Print("Moveglitch fixed")
+                        captionMoveTrigger = False
+                    End If
+                    If suppressRestoreBounds AndAlso New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy) = Me.RestoreBounds Then
+                        winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreMove
+                        System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
+                        Debug.Print("Restoreglitch tweaked")
+                        'suppressRestoreBounds = False
+                    End If
                 End If
             Case WM_SHOWWINDOW
                 Debug.Print($"WM_SHOWWINDOW {m.WParam} {m.LParam}")
@@ -308,7 +315,7 @@ Partial NotInheritable Class FrmMain
                 If wasMaximized AndAlso caption_Mousedown Then
                     'Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
                     'winpos.flags = SetWindowPosFlags.IgnoreMove
-                    Debug.Print("WM_WINDOWPOSCHANGED from maximized and mousebutton down")
+                    Debug.Print("WM_WINDOWPOSCHANGED from maximized And mousebutton down")
                     Debug.Print($"hwndInsertAfter {winpos.hwndInsertAfter}")
                     Debug.Print($"flags {winpos.flags}")
                     Debug.Print($"pos {winpos.x} {winpos.y} size {winpos.cx} {winpos.cy}")
@@ -326,7 +333,7 @@ Partial NotInheritable Class FrmMain
                     If cboAlt.SelectedIndex > 0 Then AltPP?.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition Or SetWindowPosFlags.DoNotActivate)
                     pnlTitleBar.Width = winpos.cx - pnlButtons.Width - pnlSys.Width
                     Debug.Print($"winpos location {New Point(winpos.x, winpos.y)}")
-                    Debug.Print($"winpos size {New Size(winpos.cx, winpos.cy)}")
+                Debug.Print($"winpos size {New Size(winpos.cx, winpos.cy)}")
                     'System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                     FrmSizeBorder.Opacity = If(chkDebug.Checked, 1, 0.01)
                     FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, FrmSizeBorder.Opacity, 0)
