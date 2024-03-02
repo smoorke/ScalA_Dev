@@ -983,9 +983,19 @@ Partial Public NotInheritable Class FrmMain
             Detach(True)
             Exit Sub
         End If
+        Me.Activate()
         Me.BringToFront()
         cboAlt.SelectedIndex = requestedindex
         If requestedindex > 0 Then tmrTick.Start()
+        Try
+            If AltPP IsNot Nothing Then
+                AppActivate(AltPP.Id)
+            Else
+                AppActivate(scalaPID)
+            End If
+        Catch ex As Exception
+
+        End Try
     End Sub
 
 

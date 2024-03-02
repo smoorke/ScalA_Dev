@@ -256,13 +256,13 @@ Partial NotInheritable Class FrmMain
                     If caption_Mousedown AndAlso captionMoveTrigger AndAlso New Point(winpos.x, winpos.y) = Me.RestoreBounds.Location Then
                         winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreMove
                         System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
-                        Debug.Print("Moveglitch fixed")
+                        Debug.Print($"Moveglitch fixed")
                         captionMoveTrigger = False
                     End If
                     If suppressRestoreBounds AndAlso New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy) = Me.RestoreBounds Then
                         winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreMove
                         System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
-                        Debug.Print("Restoreglitch tweaked")
+                        Debug.Print($"Restoreglitch tweaked")
                         'suppressRestoreBounds = False
                     End If
                 End If
