@@ -307,8 +307,8 @@ Partial Public NotInheritable Class FrmMain
     Private Sub FrmMain_Load(sender As Form, e As EventArgs) Handles MyBase.Load
         CheckForIllegalCrossThreadCalls = True
 
-        If Environment.OSVersion.Version.Major < 6 Then
-            MessageBox.Show("ScalA requires Windows Vista or later", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+        If Environment.OSVersion.Version.Major < 6 AndAlso Environment.OSVersion.Version.Minor < 1 Then
+            MessageBox.Show("ScalA requires Windows 7 or later", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             End
         End If
 
@@ -319,9 +319,16 @@ Partial Public NotInheritable Class FrmMain
         IPC.AlreadyOpen = True
 
         Try
-            Dim vers As String = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription
-            If vers.ToLower.StartsWith(".net framework ") AndAlso New Version(vers.Split(" "c)(2)) >= New Version("4.5.1") Then
-                StructureToPtrSupported = True
+            Dim ndpKey As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full")
+            If ndpKey IsNot Nothing Then
+                Dim releaseValue As Object = ndpKey.GetValue("Release")
+                If releaseValue IsNot Nothing AndAlso Integer.TryParse(releaseValue.ToString(), releaseValue) Then
+                    Dim release As Integer = CInt(releaseValue)
+                    ' Check if the version is greater than or equal to 378675 (corresponding to .NET Framework 4.5.1)
+                    If release >= 378675 Then
+                        StructureToPtrSupported = True
+                    End If
+                End If
             End If
         Catch ex As Exception
 

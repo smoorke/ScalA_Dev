@@ -182,7 +182,7 @@ Partial Public NotInheritable Class FrmMain
         KeepToolStripMenuItem.CheckState = If(My.Settings.KeepOnOverview, CheckState.Indeterminate, CheckState.Unchecked)
 
         Debug.Print(sender.Tag.name)
-        Dim Rang = lst.Select(Function(p) New ToolStripMenuItem(p.ProcessName, Nothing, AddressOf MoveTo_Click) With {.Tag = (sender.Tag, p)}).ToArray
+        Dim Rang = lst.Select(Function(p) New ToolStripMenuItem(p.ProcessName, Nothing, AddressOf MoveTo_Click) With {.Tag = New Tuple(Of AstoniaProcess, Process)(sender.Tag, p)}).ToArray
         MoveToolStripMenuItem.DropDownItems.AddRange(Rang)
     End Sub
 

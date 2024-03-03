@@ -408,8 +408,10 @@ Partial NotInheritable Class FrmMain
             ' Dim purgeList As List(Of Integer) = startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList
             Dim purgelist As List(Of Integer) = startThumbsDict.Keys.ToList
             If pnlOverview.Visible Then
-                Dim altsIDs = alts.ConvertAll(Function(ap) ap.Id).ToHashSet
-                purgelist.RemoveAll(Function(x) altsIDs.Contains(x))
+                'Dim altsIDs = alts.ConvertAll(Function(ap) ap.Id).ToHashSet
+                'purgelist.RemoveAll(Function(x) altsIDs.Contains(x))
+                Dim altsIDs = alts.ConvertAll(Function(ap) ap.Id)
+                purgelist = purgelist.Except(altsIDs).ToList
             Else
                 If AltPP IsNot Nothing Then purgelist.Remove(If(AltPP?.Id, 0))
             End If
@@ -712,7 +714,9 @@ Partial NotInheritable Class FrmMain
                 End If
                 If FrmSettings.chkWhitelist.Checked Then
                     If Not FrmSettings.txtTopSort.Lines.Contains(nam) Then
-                        FrmSettings.txtTopSort.Lines = FrmSettings.txtTopSort.Lines.Append(nam).ToArray
+                        Dim lins = FrmSettings.txtTopSort.Lines.ToList
+                        lins.Add(nam)
+                        FrmSettings.txtTopSort.Lines = lins.ToArray
                     End If
                     FrmSettings.txtTopSort.Select(FrmSettings.txtTopSort.Text.IndexOf(nam), nam.Length)
                     FrmSettings.txtTopSort.Focus()

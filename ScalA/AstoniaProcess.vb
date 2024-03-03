@@ -370,8 +370,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Dim classes = My.Settings.className
         If classCache <> classes Then
             classCacheSet.Clear()
-            classCacheSet = classes.Split(pipe, StringSplitOptions.RemoveEmptyEntries) _
-                                   .Select(Function(wc) Strings.Trim(wc)).Concat(sysMenClass).ToHashSet
+            classCacheSet = New HashSet(Of String)(classes.Split(pipe, StringSplitOptions.RemoveEmptyEntries) _
+                                                          .Select(Function(wc) Strings.Trim(wc)).Concat(sysMenClass))
             classCache = classes
         End If
         Return classCacheSet.Contains(Me.WindowClass)
@@ -391,7 +391,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     '    Return Me.Name()
     'End Function
 
-    Shared ReadOnly nameIconCache As New Concurrent.ConcurrentDictionary(Of Integer, ValueTuple(Of Icon, String)) 'PID, icon, name
+    Shared ReadOnly nameIconCache As New Concurrent.ConcurrentDictionary(Of Integer, Tuple(Of Icon, String)) 'PID, icon, name
     Shared ReadOnly pathIcnCache As New Concurrent.ConcurrentDictionary(Of String, Icon) 'path, icon
     Public Function GetIcon(Optional invalidateCache As Boolean = False) As Icon
         If invalidateCache Then
@@ -402,10 +402,10 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Try
             Dim ID As Integer = _proc.Id
 
-            Dim namIco As (ico As Icon, name As String) = (Nothing, Nothing)
+            Dim IcoNam As New Tuple(Of Icon, String)(Nothing, Nothing)
 
-            If ID > 0 AndAlso nameIconCache.TryGetValue(ID, namIco) AndAlso namIco.name = Me.Name Then
-                Return namIco.ico
+            If ID > 0 AndAlso nameIconCache.TryGetValue(ID, IcoNam) AndAlso IcoNam.Item2 = Me.Name Then
+                Return IcoNam.Item1
             Else
                 nameIconCache.TryRemove(ID, Nothing)
             End If
@@ -415,12 +415,12 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             If Not String.IsNullOrEmpty(path) Then
                 Dim ico As Icon = Nothing
                 If pathIcnCache.TryGetValue(path, ico) Then
-                    nameIconCache.TryAdd(ID, (ico, Me.Name))
+                    nameIconCache.TryAdd(ID, New Tuple(Of Icon, String)(ico, Me.Name))
                     Return ico
                 Else
                     ico = Icon.ExtractAssociatedIcon(path)
                     If ico IsNot Nothing Then
-                        nameIconCache.TryAdd(ID, (ico, Me.Name))
+                        nameIconCache.TryAdd(ID, New Tuple(Of Icon, String)(ico, Me.Name))
                         pathIcnCache.TryAdd(path, ico)
                     End If
                     Return ico
@@ -1003,8 +1003,8 @@ Module ProcessExtensions
     Public Function HasClassNameIn(pp As Process, classes As String) As Boolean
         If classCache <> classes Then
             classCacheSet.Clear()
-            classCacheSet = classes.Split(pipe, StringSplitOptions.RemoveEmptyEntries) _
-                                   .Select(Function(wc) Strings.Trim(wc)).ToHashSet
+            classCacheSet = New HashSet(Of String)(classes.Split(pipe, StringSplitOptions.RemoveEmptyEntries) _
+                                                          .Select(Function(wc) Strings.Trim(wc)))
             classCache = classes
         End If
         Return classCacheSet.Contains(GetWindowClass(pp.MainWindowHandle))
