@@ -320,8 +320,8 @@ Partial Public NotInheritable Class FrmMain
 
         Try
             Dim vers As String = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription
-            If vers.ToLower.StartsWith(".net framework ") AndAlso New Version(vers.Split(" "c)(2)) < New Version("4.5.1") Then
-                StructureToPtrSupported = False
+            If vers.ToLower.StartsWith(".net framework ") AndAlso New Version(vers.Split(" "c)(2)) >= New Version("4.5.1") Then
+                StructureToPtrSupported = True
             End If
         Catch ex As Exception
 

@@ -8,7 +8,7 @@ Partial NotInheritable Class FrmMain
 
     Dim suppressRestoreBounds As Boolean = False
 
-    Dim StructureToPtrSupported As Boolean = True
+    Dim StructureToPtrSupported As Boolean = False
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case Hotkey.WM_HOTKEY
