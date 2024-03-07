@@ -106,6 +106,11 @@ Partial Public NotInheritable Class FrmMain
         Else
             IPC.AddToWhitelistOrRemoveFromBL(SidebarScalA.Id, pp.Id)
             IPC.SelectAlt(SidebarScalA.Id, pp.Id)
+            Try
+                AppActivate(pp.Id)
+            Catch ex As Exception
+
+            End Try
         End If
     End Sub
 

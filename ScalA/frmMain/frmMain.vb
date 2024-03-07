@@ -1026,7 +1026,7 @@ Partial Public NotInheritable Class FrmMain
     Private Sub AddAButtons()
         pnlOverview.SuspendLayout()
         For i As Integer = 1 To 42
-            Dim but As New AButton(i, 0, 0, 200, 150)
+            Dim but As New AButton("", 0, 0, 200, 150)
 
             AddHandler but.Click, AddressOf BtnAlt_Click
             AddHandler but.MouseDown, AddressOf BtnAlt_MouseDown
@@ -1263,6 +1263,11 @@ Partial Public NotInheritable Class FrmMain
         Else
             IPC.AddToWhitelistOrRemoveFromBL(SidebarScalA.Id, sender.AP.Id)
             IPC.SelectAlt(SidebarScalA.Id, sender.AP.Id)
+            Try
+                AppActivate(sender.AP.Id)
+            Catch ex As Exception
+
+            End Try
         End If
     End Sub
     Private Sub BtnAlt_MouseDown(sender As AButton, e As MouseEventArgs) ' handles AButton.mousedown
