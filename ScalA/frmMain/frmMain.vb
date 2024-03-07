@@ -1258,7 +1258,12 @@ Partial Public NotInheritable Class FrmMain
         If Not cboAlt.Items.Contains(sender.AP) Then
             PopDropDown(cboAlt)
         End If
-        cboAlt.SelectedItem = sender.AP
+        If SidebarScalA Is Nothing Then
+            cboAlt.SelectedItem = sender.AP
+        Else
+            IPC.AddToWhitelistOrRemoveFromBL(SidebarScalA.Id, sender.AP.Id)
+            IPC.SelectAlt(SidebarScalA.Id, sender.AP.Id)
+        End If
     End Sub
     Private Sub BtnAlt_MouseDown(sender As AButton, e As MouseEventArgs) ' handles AButton.mousedown
         Debug.Print($"MouseDown {e.Button}")

@@ -101,7 +101,12 @@ Partial Public NotInheritable Class FrmMain
         If Not cboAlt.Items.Contains(pp) Then
             PopDropDown(cboAlt)
         End If
-        cboAlt.SelectedItem = pp
+        If SidebarScalA Is Nothing Then
+            cboAlt.SelectedItem = pp
+        Else
+            IPC.AddToWhitelistOrRemoveFromBL(SidebarScalA.Id, pp.Id)
+            IPC.SelectAlt(SidebarScalA.Id, pp.Id)
+        End If
     End Sub
 
     Private Sub TopMostToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles TopMostToolStripMenuItem.Click
@@ -154,6 +159,8 @@ Partial Public NotInheritable Class FrmMain
         SortSubToolStripMenuItem.Tag = pp
 
         MoveToolStripMenuItem.Tag = pp
+
+        SidebarModeToolStripMenuItem.Checked = SidebarScalA IsNot Nothing
 
         If sender.Items.Contains(closeAllIdleTSMI) Then
             sender.Items.Remove(closeAllIdleTSMI)
@@ -223,7 +230,51 @@ Partial Public NotInheritable Class FrmMain
             tsmi.Image = DrawArrow(menuitPos, targetPos)
         Next
     End Sub
+    Public SidebarScalA As Process = Nothing
+    Private Sub SidebarModeToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles SidebarModeToolStripMenuItem.Click
+        If sender.Checked Then
+            sender.Checked = False
+            SidebarScalA = Nothing
+        End If
+    End Sub
 
+    Private Sub SidebarModeToolStripMenuItem_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) Handles SidebarModeToolStripMenuItem.DropDownOpening
+        Dim otherScalAs As List(Of Process) = IPC.EnumOtherScalAs.ToList
+        sender.DropDownItems.Clear()
+        If otherScalAs.Count = 0 Then
+            sender.DropDownItems.Add(NoOtherScalAsToolStripMenuItem)
+        Else
+            Dim Rang = otherScalAs.Select(Function(p) New ToolStripMenuItem(p.ProcessName,
+                                                                            Nothing,
+                                                                            AddressOf SelectSidebarTarget) With {.Tag = p,
+                                                                                                                 .Checked = (SidebarScalA IsNot Nothing AndAlso p.Id = SidebarScalA.Id)
+                                                                                                                }).ToArray
+            sender.DropDownItems.AddRange(Rang)
+        End If
+    End Sub
+
+    Private Sub SelectSidebarTarget(sender As ToolStripMenuItem, e As EventArgs)
+        SidebarScalA = sender.Tag
+    End Sub
+
+    Private Sub SidebarModeToolStripMenuItem_DropDownOpened(sender As ToolStripMenuItem, e As EventArgs) Handles SidebarModeToolStripMenuItem.DropDownOpened
+        Dim menuPos As Point = sender.DropDown.Bounds.Location
+        For Each tsmi As ToolStripMenuItem In sender.DropDownItems.OfType(Of ToolStripMenuItem).Where(Function(mi) mi.Tag IsNot Nothing)
+            Dim hndl As IntPtr = DirectCast(tsmi.Tag, Process).GetWindowHandle 'mainwindowhandle reports null for attached ScalAs. replaced with a fields in IPC
+            Dim rcOtherScala As RECT
+
+            If IsIconic(hndl) Then
+                Dim wp As New WINDOWPLACEMENT With {.length = Runtime.InteropServices.Marshal.SizeOf(GetType(WINDOWPLACEMENT))}
+                GetWindowPlacement(hndl, wp)
+                rcOtherScala = wp.normalPosition
+            Else
+                GetWindowRect(hndl, rcOtherScala)
+            End If
+            Dim targetPos As Point = New Point(rcOtherScala.left + (rcOtherScala.right - rcOtherScala.left) / 2, rcOtherScala.top + (rcOtherScala.bottom - rcOtherScala.top) / 2)
+            Dim menuitPos As Point = menuPos + tsmi.Bounds.Location - New Point(tsmi.Bounds.Height / 2, tsmi.Bounds.Height / 2)
+            tsmi.Image = DrawArrow(menuitPos, targetPos)
+        Next
+    End Sub
     Private Function DrawArrow(startPoint As Point, endPoint As Point) As Image
 
         Dim bmp As New Bitmap(16, 16)

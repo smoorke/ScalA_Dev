@@ -28,6 +28,7 @@ Partial NotInheritable Class FrmMain
         Dim NoneSortSeperator2 As System.Windows.Forms.ToolStripSeparator
         Dim ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmMain))
+        Dim ToolStripMenuItem1 As System.Windows.Forms.ToolStripSeparator
         Me.pnlSys = New System.Windows.Forms.Panel()
         Me.btnStart = New ScalA.ThemedStartButton()
         Me.cmsQuickLaunch = New System.Windows.Forms.ContextMenuStrip(Me.components)
@@ -81,10 +82,13 @@ Partial NotInheritable Class FrmMain
         Me.PnlEqLock = New System.Windows.Forms.Panel()
         Me.ttMain = New System.Windows.Forms.ToolTip(Me.components)
         Me.tmrHotkeys = New System.Windows.Forms.Timer(Me.components)
+        Me.SidebarModeToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.NoOtherScalAsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         NoneSortSeperator1 = New System.Windows.Forms.ToolStripSeparator()
         NoneSortSeperator2 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
+        ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Me.pnlSys.SuspendLayout()
         Me.cmsQuickLaunch.SuspendLayout()
         Me.pnlTitleBar.SuspendLayout()
@@ -106,7 +110,7 @@ Partial NotInheritable Class FrmMain
         'ToolStripSeparator1
         '
         ToolStripSeparator1.Name = "ToolStripSeparator1"
-        ToolStripSeparator1.Size = New System.Drawing.Size(149, 6)
+        ToolStripSeparator1.Size = New System.Drawing.Size(177, 6)
         '
         'NoneSortSeperator1
         '
@@ -121,7 +125,7 @@ Partial NotInheritable Class FrmMain
         'ToolStripSeparator2
         '
         ToolStripSeparator2.Name = "ToolStripSeparator2"
-        ToolStripSeparator2.Size = New System.Drawing.Size(149, 6)
+        ToolStripSeparator2.Size = New System.Drawing.Size(177, 6)
         '
         'pnlSys
         '
@@ -396,22 +400,22 @@ Partial NotInheritable Class FrmMain
         '
         'cmsAlt
         '
-        Me.cmsAlt.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SelectToolStripMenuItem, ToolStripSeparator1, Me.SortSubToolStripMenuItem, Me.MoveToolStripMenuItem, Me.TopMostToolStripMenuItem, ToolStripSeparator2, Me.CloseToolStripMenuItem})
+        Me.cmsAlt.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SelectToolStripMenuItem, ToolStripSeparator1, Me.SortSubToolStripMenuItem, Me.MoveToolStripMenuItem, Me.TopMostToolStripMenuItem, ToolStripSeparator2, Me.SidebarModeToolStripMenuItem, ToolStripMenuItem1, Me.CloseToolStripMenuItem})
         Me.cmsAlt.Name = "cmsAlt"
-        Me.cmsAlt.Size = New System.Drawing.Size(153, 126)
+        Me.cmsAlt.Size = New System.Drawing.Size(181, 176)
         '
         'SelectToolStripMenuItem
         '
         Me.SelectToolStripMenuItem.Name = "SelectToolStripMenuItem"
         Me.SelectToolStripMenuItem.ShortcutKeyDisplayString = ""
-        Me.SelectToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.SelectToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.SelectToolStripMenuItem.Text = "Select"
         '
         'SortSubToolStripMenuItem
         '
         Me.SortSubToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TopFirstToolStripMenuItem, Me.TopLastToolStripMenuItem, NoneSortSeperator1, Me.NoneSortToolStripMenuItem, NoneSortSeperator2, Me.BotFirstToolStripMenuItem, Me.BotLastToolStripMenuItem})
         Me.SortSubToolStripMenuItem.Name = "SortSubToolStripMenuItem"
-        Me.SortSubToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.SortSubToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.SortSubToolStripMenuItem.Text = "Sort"
         '
         'TopFirstToolStripMenuItem
@@ -453,7 +457,7 @@ Partial NotInheritable Class FrmMain
         '
         Me.MoveToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.NoOtherOverviewsToolStripMenuItem, Me.KeepToolStripMenuItem})
         Me.MoveToolStripMenuItem.Name = "MoveToolStripMenuItem"
-        Me.MoveToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.MoveToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.MoveToolStripMenuItem.Text = "Move To"
         '
         'NoOtherOverviewsToolStripMenuItem
@@ -472,14 +476,14 @@ Partial NotInheritable Class FrmMain
         'TopMostToolStripMenuItem
         '
         Me.TopMostToolStripMenuItem.Name = "TopMostToolStripMenuItem"
-        Me.TopMostToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.TopMostToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.TopMostToolStripMenuItem.Text = "Always On Top"
         '
         'CloseToolStripMenuItem
         '
         Me.CloseToolStripMenuItem.Name = "CloseToolStripMenuItem"
         Me.CloseToolStripMenuItem.ShortcutKeyDisplayString = ""
-        Me.CloseToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.CloseToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.CloseToolStripMenuItem.Text = "Close This"
         '
         'pnlOverview
@@ -595,6 +599,25 @@ Partial NotInheritable Class FrmMain
         '
         Me.tmrHotkeys.Enabled = True
         '
+        'ToolStripMenuItem1
+        '
+        ToolStripMenuItem1.Name = "ToolStripMenuItem1"
+        ToolStripMenuItem1.Size = New System.Drawing.Size(177, 6)
+        '
+        'SidebarModeToolStripMenuItem
+        '
+        Me.SidebarModeToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.NoOtherScalAsToolStripMenuItem})
+        Me.SidebarModeToolStripMenuItem.Name = "SidebarModeToolStripMenuItem"
+        Me.SidebarModeToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.SidebarModeToolStripMenuItem.Text = "Sidebar Mode"
+        '
+        'NoOtherScalAsToolStripMenuItem
+        '
+        Me.NoOtherScalAsToolStripMenuItem.Enabled = False
+        Me.NoOtherScalAsToolStripMenuItem.Name = "NoOtherScalAsToolStripMenuItem"
+        Me.NoOtherScalAsToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.NoOtherScalAsToolStripMenuItem.Text = "(No Other ScalAs)"
+        '
         'FrmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -695,4 +718,6 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents MoveToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents NoOtherOverviewsToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents KeepToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents SidebarModeToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents NoOtherScalAsToolStripMenuItem As ToolStripMenuItem
 End Class
