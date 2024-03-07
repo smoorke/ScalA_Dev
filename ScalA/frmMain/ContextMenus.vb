@@ -236,10 +236,15 @@ Partial Public NotInheritable Class FrmMain
         Next
     End Sub
     Public SidebarScalA As Process = Nothing
-    Private Sub SidebarModeToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles SidebarModeToolStripMenuItem.Click
-        If sender.Checked Then
+    Private Sub SidebarModeToolStripMenuItem_MouseUp(sender As ToolStripMenuItem, e As MouseEventArgs) Handles SidebarModeToolStripMenuItem.MouseUp
+        If sender.Checked AndAlso e.Button = MouseButtons.Right Then
             sender.Checked = False
             SidebarScalA = Nothing
+            If sender.HasDropDown Then
+                For Each item As ToolStripMenuItem In sender.DropDownItems
+                    item.Checked = False
+                Next
+            End If
         End If
     End Sub
 
