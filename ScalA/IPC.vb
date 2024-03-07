@@ -36,14 +36,14 @@ Module IPC
     End Property
 
 
-    Dim _mmfIPCov As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{FrmMain.scalaPID}", Marshal.SizeOf(Of Integer))
+    Dim _mmfIPCov As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{FrmMain.scalaPID}", Marshal.SizeOf(Of Integer) * 2)
     Dim _mmvaIPCov As MemoryMappedViewAccessor = _mmfIPCov.CreateViewAccessor()
 
     Public Sub AddToWhitelistOrRemoveFromBL(spId As Integer, apId As Integer)
         If spId = FrmMain.scalaPID Then
             _mmvaIPCov.Write(0, apId)
         Else
-            Dim _mmfIPC As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{spId}", Marshal.SizeOf(Of Integer))
+            Dim _mmfIPC As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{spId}", Marshal.SizeOf(Of Integer) * 2)
             Dim _mmvaIPC As MemoryMappedViewAccessor = _mmfIPC.CreateViewAccessor()
             _mmvaIPC.Write(0, apId)
         End If
@@ -54,9 +54,30 @@ Module IPC
         If spId = FrmMain.scalaPID Then
             Return _mmvaIPCov.ReadInt32(0)
         Else
-            Using _mmfIPC As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{spId}", Marshal.SizeOf(Of Integer)),
+            Using _mmfIPC As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{spId}", Marshal.SizeOf(Of Integer) * 2),
                   _mmvaIPC As MemoryMappedViewAccessor = _mmfIPC.CreateViewAccessor()
                 Return _mmvaIPC.ReadInt32(0)
+            End Using
+        End If
+    End Function
+
+    Public Sub SelectAlt(spID As Integer, apID As Integer)
+        If spID = FrmMain.scalaPID Then
+            _mmvaIPCov.Write(4, apID)
+        Else
+            Dim _mmfIPC As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{spID}", Marshal.SizeOf(Of Integer) * 2)
+            Dim _mmvaIPC As MemoryMappedViewAccessor = _mmfIPC.CreateViewAccessor()
+            _mmvaIPC.Write(4, apID)
+        End If
+    End Sub
+    Public Function ReadSelectAlt(Optional spId As Integer = 0) As Integer
+        If spId = 0 Then spId = FrmMain.scalaPID
+        If spId = FrmMain.scalaPID Then
+            Return _mmvaIPCov.ReadInt32(4)
+        Else
+            Using _mmfIPC As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{spId}", Marshal.SizeOf(Of Integer) * 2),
+                  _mmvaIPC As MemoryMappedViewAccessor = _mmfIPC.CreateViewAccessor()
+                Return _mmvaIPC.ReadInt32(4)
             End Using
         End If
     End Function
