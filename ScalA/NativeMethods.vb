@@ -296,7 +296,7 @@ Module NativeMethods
     <DllImport("user32.dll")>
     Public Function LoadImage(hinst As IntPtr, lpszName As String, uType As UInt32, cxDesired As Integer, cyDesired As Integer, fuLoad As UInt32) As IntPtr : End Function
     <DllImport("user32.dll")>
-    Public Function SetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer, ByVal dwNewLong As Integer) As Integer : End Function
+    Public Function SetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer, ByVal dwNewLong As UInteger) As Integer : End Function
     <DllImport("user32.dll")>
     Public Function GetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer) As UInteger : End Function
 
@@ -312,7 +312,7 @@ Module NativeMethods
     Public Const GWL_STYLE As Integer = -16
     Public Const GWL_EXSTYLE As Integer = -20
     <Flags()>
-    Public Enum WindowStyles As Integer
+    Public Enum WindowStyles As Long
         WS_BORDER = &H800000
         WS_CAPTION = &HC00000
         WS_CHILD = &H40000000
@@ -328,7 +328,7 @@ Module NativeMethods
         WS_MINIMIZEBOX = &H20000
         WS_OVERLAPPED = &H0
         WS_OVERLAPPEDWINDOW = WS_OVERLAPPED Or WS_CAPTION Or WS_SYSMENU Or WS_SIZEFRAME Or WS_MINIMIZEBOX Or WS_MAXIMIZEBOX
-        WS_POPUP = &H80000000
+        WS_POPUP = &H80000000UI
         WS_POPUPWINDOW = WS_POPUP Or WS_BORDER Or WS_SYSMENU
         WS_SIZEFRAME = &H40000
         WS_SYSMENU = &H80000
@@ -337,7 +337,7 @@ Module NativeMethods
         WS_VSCROLL = &H200000
     End Enum
     <Flags()>
-    Public Enum WindowStylesEx As Integer
+    Public Enum WindowStylesEx As UInteger
         ''' <summary>Specifies a window that accepts drag-drop files.</summary>
         WS_EX_ACCEPTFILES = &H10
 

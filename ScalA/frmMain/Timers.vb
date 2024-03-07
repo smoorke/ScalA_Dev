@@ -701,10 +701,6 @@ Partial NotInheritable Class FrmMain
             setActive(False)
         End If
 
-        If SidebarScalA IsNot Nothing AndAlso SidebarScalA.HasExitedSafe Then
-            SidebarScalA = Nothing
-        End If
-
         Dim addID As Integer = IPC.AddToWhitelistOrRemoveFromBL()
         If addID <> 0 Then
             Dim addAP = New AstoniaProcess(Process.GetProcessById(addID))
@@ -741,15 +737,6 @@ Partial NotInheritable Class FrmMain
             apSorter = New AstoniaProcessSorter(topSortList, botSortList)
 
             IPC.AddToWhitelistOrRemoveFromBL(scalaPID, 0)
-            IPC.RequestActivation = True
-        End If
-
-        Dim selID As Integer = IPC.ReadSelectAlt()
-        If selID <> 0 Then
-            Dim selAP As AstoniaProcess = New AstoniaProcess(Process.GetProcessById(selID))
-            PopDropDown(cboAlt)
-            cboAlt.SelectedItem = selAP
-            IPC.SelectAlt(scalaPID, 0)
             IPC.RequestActivation = True
         End If
 

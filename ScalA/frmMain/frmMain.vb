@@ -800,7 +800,7 @@ Partial Public NotInheritable Class FrmMain
         Get
             Dim cp As CreateParams = MyBase.CreateParams
             cp.Style = cp.Style Or WindowStyles.WS_SYSMENU Or WindowStyles.WS_MINIMIZEBOX
-            'cp.ExStyle = cp.ExStyle Or WindowStylesEx.WS_EX_WINDOWEDGE
+            'cp.ExStyle = cp.ExStyle Or WindowStylesEx.WS_EX_COMPOSITED
             'cp.ClassStyle = cp.ClassStyle Or CS_DROPSHADOW
             Return cp
         End Get
@@ -1258,12 +1258,7 @@ Partial Public NotInheritable Class FrmMain
         If Not cboAlt.Items.Contains(sender.AP) Then
             PopDropDown(cboAlt)
         End If
-        If SidebarScalA Is Nothing Then
-            cboAlt.SelectedItem = sender.AP
-        Else
-            IPC.AddToWhitelistOrRemoveFromBL(SidebarScalA.Id, sender.AP.Id)
-            IPC.SelectAlt(SidebarScalA.Id, sender.AP.Id)
-        End If
+        cboAlt.SelectedItem = sender.AP
     End Sub
     Private Sub BtnAlt_MouseDown(sender As AButton, e As MouseEventArgs) ' handles AButton.mousedown
         Debug.Print($"MouseDown {e.Button}")
