@@ -1253,8 +1253,6 @@ Partial Public NotInheritable Class FrmMain
             AButton.ActiveOverview = True
             Exit Sub
         End If
-        tmrOverview.Enabled = False
-        Debug.Print("tmrStartup.stop")
         If Not cboAlt.Items.Contains(sender.AP) Then
             PopDropDown(cboAlt)
         End If
@@ -1282,7 +1280,17 @@ Partial Public NotInheritable Class FrmMain
                     If Not cboAlt.Items.Contains(sender.AP) Then
                         PopDropDown(cboAlt)
                     End If
-                    cboAlt.SelectedItem = sender.AP
+                    If SidebarScalA Is Nothing Then
+                        cboAlt.SelectedItem = sender.AP
+                    Else
+                        IPC.AddToWhitelistOrRemoveFromBL(SidebarScalA.Id, sender.AP.Id)
+                        IPC.SelectAlt(SidebarScalA.Id, sender.AP.Id)
+                        Try
+                            AppActivate(sender.AP.Id)
+                        Catch ex As Exception
+
+                        End Try
+                    End If
                 End If
         End Select
     End Sub
