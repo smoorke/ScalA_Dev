@@ -51,6 +51,11 @@ Partial NotInheritable Class FrmMain
                 '                    MessageBox.Show(ex.Message)
                 '#End If
                 '                End Try
+                Try
+                    AppActivate(scalaPID)
+                Catch ex As Exception
+
+                End Try
                 Exit Sub
             Else 'CycleOnClose
                 Cycle()
