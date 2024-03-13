@@ -1,3 +1,12 @@
+**ScalA 1.6.0**
+Fixed ScalA is broken when windows scaling isn't set at 100%
+  (Note: ScalA is extremely blurry when Windows scaling isn't 100% irregardless of windows version)
+Lowered .Net requirement to 4.5 (default version for windows 8)
+  (Windows 7 actually supports more .Net versions than Windows 8)
+Fixed an edge case when cycling ScalA doesn't get put to front.
+Fixed a racecondition when closing alts ScalA gets intermittently put behind other windows.
+Added Sidebar Mode (Selecting an alt will instead select it on another ScalA)
+
 **ScalA 1.5.9**
 Fixed Cycling with ScalA minimized deactivates selected client.
 Fixed a race condition in communicating ScalA status to other tools.
