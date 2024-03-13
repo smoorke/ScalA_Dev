@@ -18,6 +18,7 @@ Module IPC
     Private ReadOnly _MeStr As String = Application.ExecutablePath.Replace(":", "").Replace("\", "").Replace(".", "")
     Private ReadOnly _mmfSI As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPCSI_{_MeStr}", 1 + 1)
     Private ReadOnly _mmvaSI As MemoryMappedViewAccessor = _mmfSI.CreateViewAccessor()
+
     Public Property AlreadyOpen As Boolean
         Get
             Return _mmvaSI.ReadBoolean(0)
@@ -36,51 +37,99 @@ Module IPC
     End Property
 
 
-    Dim _mmfIPCov As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{FrmMain.scalaPID}", Marshal.SizeOf(Of Integer) * 2)
+    Dim _mmfIPCov As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{FrmMain.scalaPID}", Marshal.SizeOf(Of Integer) * 4)
     Dim _mmvaIPCov As MemoryMappedViewAccessor = _mmfIPCov.CreateViewAccessor()
+
+    Enum MMIPC
+        WhiteList = 0
+        SelectAlt = 4
+        ScalaHandle = 8
+        ScalaPId = 12
+    End Enum
+
 
     Public Sub AddToWhitelistOrRemoveFromBL(spId As Integer, apId As Integer)
         If spId = FrmMain.scalaPID Then
-            _mmvaIPCov.Write(0, apId)
+            _mmvaIPCov.Write(MMIPC.WhiteList, apId)
         Else
-            Dim _mmfIPC As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{spId}", Marshal.SizeOf(Of Integer) * 2)
-            Dim _mmvaIPC As MemoryMappedViewAccessor = _mmfIPC.CreateViewAccessor()
-            _mmvaIPC.Write(0, apId)
+            Using _mmfIPC As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{spId}", Marshal.SizeOf(Of Integer) * 4),
+                  _mmvaIPC As MemoryMappedViewAccessor = _mmfIPC.CreateViewAccessor()
+                _mmvaIPC.Write(0, apId)
+            End Using
         End If
     End Sub
 
     Public Function AddToWhitelistOrRemoveFromBL(Optional spId As Integer = 0) As Integer
         If spId = 0 Then spId = FrmMain.scalaPID
         If spId = FrmMain.scalaPID Then
-            Return _mmvaIPCov.ReadInt32(0)
+            Return _mmvaIPCov.ReadInt32(MMIPC.WhiteList)
         Else
-            Using _mmfIPC As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{spId}", Marshal.SizeOf(Of Integer) * 2),
+            Using _mmfIPC As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{spId}", Marshal.SizeOf(Of Integer) * 4),
                   _mmvaIPC As MemoryMappedViewAccessor = _mmfIPC.CreateViewAccessor()
-                Return _mmvaIPC.ReadInt32(0)
+                Return _mmvaIPC.ReadInt32(MMIPC.WhiteList)
             End Using
         End If
     End Function
 
     Public Sub SelectAlt(spID As Integer, apID As Integer)
         If spID = FrmMain.scalaPID Then
-            _mmvaIPCov.Write(4, apID)
+            _mmvaIPCov.Write(MMIPC.SelectALT, apID)
+            _mmvaIPCov.Write(MMIPC.ScalaHandle, FrmMain.ScalaHandle)
+            _mmvaIPCov.Write(MMIPC.ScalaPId, FrmMain.scalaPID)
+            SelectSema.Release()
         Else
-            Dim _mmfIPC As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{spID}", Marshal.SizeOf(Of Integer) * 2)
-            Dim _mmvaIPC As MemoryMappedViewAccessor = _mmfIPC.CreateViewAccessor()
-            _mmvaIPC.Write(4, apID)
+            Using _mmfIPC As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{spID}", Marshal.SizeOf(Of Integer) * 4),
+                  _mmvaIPC As MemoryMappedViewAccessor = _mmfIPC.CreateViewAccessor()
+                _mmvaIPC.Write(MMIPC.SelectAlt, apID)
+                _mmvaIPC.Write(MMIPC.ScalaHandle, FrmMain.ScalaHandle)
+                _mmvaIPC.Write(MMIPC.ScalaPId, FrmMain.scalaPID)
+                Using sem As Semaphore = New Semaphore(0, 1, $"ScalA_IPC_Sema_{spID}")
+                    sem.Release()
+                End Using
+            End Using
         End If
+        Try
+            If SelectDoneSema.WaitOne(1000) Then AppActivate(apID)
+        Catch ex As Exception
+        End Try
     End Sub
-    Public Function ReadSelectAlt(Optional spId As Integer = 0) As Integer
+    ''' <summary>
+    ''' Read Alt to Select 
+    ''' </summary>
+    ''' <param name="spId"></param>
+    ''' <returns>AltID to select,sending ScalA handle and sending scala pID</returns>
+    Public Function ReadSelectAlt(Optional spId As Integer = 0) As Tuple(Of Integer, Integer, Integer)
         If spId = 0 Then spId = FrmMain.scalaPID
         If spId = FrmMain.scalaPID Then
-            Return _mmvaIPCov.ReadInt32(4)
+
+            Return Tuple.Create(_mmvaIPCov.ReadInt32(MMIPC.SelectAlt), _mmvaIPCov.ReadInt32(MMIPC.ScalaHandle), _mmvaIPCov.ReadInt32(MMIPC.ScalaPId))
         Else
-            Using _mmfIPC As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{spId}", Marshal.SizeOf(Of Integer) * 2),
+            Using _mmfIPC As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{spId}", Marshal.SizeOf(Of Integer) * 4),
                   _mmvaIPC As MemoryMappedViewAccessor = _mmfIPC.CreateViewAccessor()
-                Return _mmvaIPC.ReadInt32(4)
+                Return Tuple.Create(_mmvaIPC.ReadInt32(MMIPC.SelectAlt), _mmvaIPC.ReadInt32(MMIPC.ScalaHandle), _mmvaIPC.ReadInt32(MMIPC.ScalaPId))
             End Using
         End If
     End Function
+
+    Private SelectSema As New Semaphore(0, 1, $"ScalA_IPC_Sema_{FrmMain.scalaPID}")
+    Private SelectDoneSema As New Semaphore(0, 1, $"ScalA_IPC_SemaDone_{FrmMain.scalaPID}")
+
+    Public Sub SelectSemaThread(frm As FrmMain)
+        While True
+            SelectSema.WaitOne()
+            Dim selectAlt As Tuple(Of Integer, Integer, Integer) = ReadSelectAlt()
+            With frm
+                .Invoke(Sub()
+                            .PopDropDown(.cboAlt)
+                            .cboAlt.SelectedItem = CType(Process.GetProcessById(selectAlt.Item1), AstoniaProcess)
+                        End Sub)
+            End With
+            Using sem As Semaphore = New Semaphore(0, 1, $"ScalA_IPC_SemaDone_{selectAlt.Item3}")
+                sem.Release()
+            End Using
+        End While
+    End Sub
+
 
     Private ReadOnly OrigScalAfname As String = Process.GetCurrentProcess.MainModule.FileVersionInfo.OriginalFilename
 

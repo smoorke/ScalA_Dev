@@ -749,14 +749,16 @@ Partial NotInheritable Class FrmMain
             IPC.RequestActivation = True
         End If
 
-        Dim selID As Integer = IPC.ReadSelectAlt()
-        If selID <> 0 Then
-            Dim selAP As AstoniaProcess = New AstoniaProcess(Process.GetProcessById(selID))
-            PopDropDown(cboAlt)
-            cboAlt.SelectedItem = selAP
-            IPC.SelectAlt(scalaPID, 0)
-            IPC.RequestActivation = True
-        End If
+        'Dim selInfo = IPC.ReadSelectAlt()
+        'If selInfo.Item1 <> 0 Then
+        '    Dim selAP As AstoniaProcess = New AstoniaProcess(Process.GetProcessById(selInfo.Item1))
+        '    PopDropDown(cboAlt)
+        '    AltPP.RestoreSinglePos(selInfo.Item2)
+        '    selAP.CenterBehind(pbZoom, 0, True, True)
+        '    cboAlt.SelectedItem = selAP
+        '    IPC.SelectAlt(scalaPID, 0)
+        '    IPC.RequestActivation = True
+        'End If
 
         If IPC.RequestActivation Then
             IPC.RequestActivation = False

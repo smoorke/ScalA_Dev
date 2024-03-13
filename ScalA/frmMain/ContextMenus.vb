@@ -98,20 +98,7 @@ Partial Public NotInheritable Class FrmMain
         Dim pp As AstoniaProcess = DirectCast(sender.Tag, AstoniaProcess)
         If pp Is Nothing Then Exit Sub
         Debug.Print("SelectToolStrip: " & pp.Name)
-        If Not cboAlt.Items.Contains(pp) Then
-            PopDropDown(cboAlt)
-        End If
-        If SidebarScalA Is Nothing Then
-            cboAlt.SelectedItem = pp
-        Else
-            IPC.AddToWhitelistOrRemoveFromBL(SidebarScalA.Id, pp.Id)
-            IPC.SelectAlt(SidebarScalA.Id, pp.Id)
-            Try
-                AppActivate(pp.Id)
-            Catch ex As Exception
-
-            End Try
-        End If
+        SelectAlt(pp)
     End Sub
 
     Private Sub TopMostToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles TopMostToolStripMenuItem.Click

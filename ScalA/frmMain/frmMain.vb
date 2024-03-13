@@ -515,6 +515,10 @@ Partial Public NotInheritable Class FrmMain
 
         AddHandler Application.Idle, AddressOf Application_Idle
 
+
+        'spawn IPC waiter thread
+        Dim waitThread As New Threading.Thread(AddressOf IPC.SelectSemaThread) With {.IsBackground = True}
+        waitThread.Start(Me)
     End Sub
 
     Dim AnimsEnabled As Boolean = getAnimationsEnabled()
@@ -1253,20 +1257,7 @@ Partial Public NotInheritable Class FrmMain
             AButton.ActiveOverview = True
             Exit Sub
         End If
-        If Not cboAlt.Items.Contains(sender.AP) Then
-            PopDropDown(cboAlt)
-        End If
-        If SidebarScalA Is Nothing Then
-            cboAlt.SelectedItem = sender.AP
-        Else
-            IPC.AddToWhitelistOrRemoveFromBL(SidebarScalA.Id, sender.AP.Id)
-            IPC.SelectAlt(SidebarScalA.Id, sender.AP.Id)
-            Try
-                AppActivate(sender.AP.Id)
-            Catch ex As Exception
-
-            End Try
-        End If
+        SelectAlt(sender.AP)
     End Sub
     Private Sub BtnAlt_MouseDown(sender As AButton, e As MouseEventArgs) ' handles AButton.mousedown
         Debug.Print($"MouseDown {e.Button}")
@@ -1277,23 +1268,34 @@ Partial Public NotInheritable Class FrmMain
                 sender.AP.Activate()
             Case MouseButtons.Left
                 If e.Clicks = 2 Then
-                    If Not cboAlt.Items.Contains(sender.AP) Then
-                        PopDropDown(cboAlt)
-                    End If
-                    If SidebarScalA Is Nothing Then
-                        cboAlt.SelectedItem = sender.AP
-                    Else
-                        IPC.AddToWhitelistOrRemoveFromBL(SidebarScalA.Id, sender.AP.Id)
-                        IPC.SelectAlt(SidebarScalA.Id, sender.AP.Id)
-                        Try
-                            AppActivate(sender.AP.Id)
-                        Catch ex As Exception
-
-                        End Try
-                    End If
+                    SelectAlt(sender.AP)
                 End If
         End Select
     End Sub
+
+    Private Sub SelectAlt(pp As AstoniaProcess)
+        If SidebarScalA Is Nothing Then
+            If Not cboAlt.Items.Contains(pp) Then
+                PopDropDown(cboAlt)
+            End If
+            cboAlt.SelectedItem = pp
+        Else
+            IPC.AddToWhitelistOrRemoveFromBL(SidebarScalA.Id, pp.Id)
+            IPC.SelectAlt(SidebarScalA.Id, pp.Id)
+
+            'Dim sw As Stopwatch = Stopwatch.StartNew()
+            'While IPC.ReadSelectAlt(scalaPID).Item1 <> 0 AndAlso sw.ElapsedMilliseconds <= 150
+            '    Threading.Thread.Sleep(50)
+            'End While
+            'Me.BringToFront()
+            Try
+                'AppActivate(scalaPID)
+                'AppActivate(pp.Id)
+            Catch ex As Exception
+            End Try
+        End If
+    End Sub
+
     Private Sub BtnAlt_MouseEnter(sender As AButton, e As EventArgs) ' Handles AButton.MouseEnter
         If My.Settings.gameOnOverview Then Exit Sub
         If sender.AP Is Nothing Then Exit Sub

@@ -88,11 +88,19 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                          End Sub)
         If Not keep Then _restoreDic.Clear()
     End Sub
-    Public Sub RestoreSinglePos()
+    Public Sub RestoreSinglePos(Optional behind As Integer = 0)
         If Me._restoreLoc IsNot Nothing AndAlso Not Me.HasExited() Then
-            SetWindowPos(Me.MainWindowHandle, If(Me._wasTopmost, SWP_HWND.TOPMOST, SWP_HWND.NOTOPMOST),
-                         Me._restoreLoc?.X, Me._restoreLoc?.Y, -1, -1,
-                         SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+            Debug.Print($"restoresingle {behind}")
+            If behind = 0 Then
+                SetWindowPos(Me.MainWindowHandle, If(Me._wasTopmost, SWP_HWND.TOPMOST, SWP_HWND.NOTOPMOST),
+                             Me._restoreLoc?.X, Me._restoreLoc?.Y, -1, -1,
+                             SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder)
+            Else
+                _restoreDic.TryRemove(Me.Id, Nothing)
+                SetWindowPos(Me.MainWindowHandle, behind,
+                             Me._restoreLoc?.X, Me._restoreLoc?.Y, -1, -1,
+                             SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder)
+            End If
         End If
     End Sub
 
