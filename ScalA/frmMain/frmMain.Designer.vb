@@ -490,15 +490,13 @@ Partial NotInheritable Class FrmMain
         Me.SidebarModeToolStripMenuItem.Name = "SidebarModeToolStripMenuItem"
         Me.SidebarModeToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.SidebarModeToolStripMenuItem.Text = "Sidebar Mode"
-        Me.SidebarModeToolStripMenuItem.ToolTipText = "Selecing an alt will instead select it on the other ScalA." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Use Right Mousebutton" &
-    " on this item to disable." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: You can still select alts normally using the dr" &
-    "opdown or hotkeys."
+        Me.SidebarModeToolStripMenuItem.ToolTipText = resources.GetString("SidebarModeToolStripMenuItem.ToolTipText")
         '
         'NoOtherScalAsToolStripMenuItem
         '
         Me.NoOtherScalAsToolStripMenuItem.Enabled = False
         Me.NoOtherScalAsToolStripMenuItem.Name = "NoOtherScalAsToolStripMenuItem"
-        Me.NoOtherScalAsToolStripMenuItem.Size = New System.Drawing.Size(168, 22)
+        Me.NoOtherScalAsToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.NoOtherScalAsToolStripMenuItem.Text = "(No Other ScalAs)"
         '
         'CloseToolStripMenuItem
