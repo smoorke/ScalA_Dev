@@ -496,7 +496,7 @@ Partial NotInheritable Class FrmMain
         '
         Me.NoOtherScalAsToolStripMenuItem.Enabled = False
         Me.NoOtherScalAsToolStripMenuItem.Name = "NoOtherScalAsToolStripMenuItem"
-        Me.NoOtherScalAsToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.NoOtherScalAsToolStripMenuItem.Size = New System.Drawing.Size(168, 22)
         Me.NoOtherScalAsToolStripMenuItem.Text = "(No Other ScalAs)"
         '
         'CloseToolStripMenuItem

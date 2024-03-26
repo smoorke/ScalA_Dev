@@ -171,7 +171,7 @@ Partial Public NotInheritable Class FrmMain
             AltPP.SavePos(rcW.Location)
 
             'AltPP.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition)
-            AltPP.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition, False, True)
+            AltPP.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition, True, True)
 
             Debug.Print("tmrTick.Enabled")
             tmrTick.Enabled = True
@@ -994,9 +994,9 @@ Partial Public NotInheritable Class FrmMain
             Detach(True)
             Exit Sub
         End If
+        cboAlt.SelectedIndex = requestedindex
         Me.Activate()
         Me.BringToFront()
-        cboAlt.SelectedIndex = requestedindex
         If requestedindex > 0 Then tmrTick.Start()
         Try
             If AltPP IsNot Nothing Then

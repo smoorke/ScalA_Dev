@@ -74,13 +74,21 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Private Shared ReadOnly _restoreDic As Concurrent.ConcurrentDictionary(Of Integer, AstoniaProcess) = New Concurrent.ConcurrentDictionary(Of Integer, AstoniaProcess)
 #Enable Warning IDE0140 ' Object creation can be simplified
     Public Shared Sub RestorePos(Optional keep As Boolean = False)
+        Dim behind As IntPtr
+        If IPC.SidebarSender IsNot Nothing AndAlso Not IPC.SidebarSender.HasExitedSafe Then
+            behind = IPC.SidebarSenderhWnd
+        Else
+            IPC.SidebarSender = Nothing
+            behind = FrmMain.ScalaHandle
+        End If
         Parallel.ForEach(_restoreDic.Values,
                          Sub(ap As AstoniaProcess)
                              Try
                                  If ap._restoreLoc IsNot Nothing AndAlso Not ap.HasExited() Then
-                                     SetWindowPos(ap.MainWindowHandle, If(ap._wasTopmost, SWP_HWND.TOPMOST, SWP_HWND.NOTOPMOST),
+                                     Dim beh = If(ap._wasTopmost, SWP_HWND.TOPMOST, behind)
+                                     SetWindowPos(ap.MainWindowHandle, beh,
                                                   ap._restoreLoc?.X, ap._restoreLoc?.Y, -1, -1,
-                                                  SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+                                                  SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder)
                                      If Not keep Then ap._restoreLoc = Nothing
                                  End If
                              Catch
@@ -92,7 +100,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         If Me._restoreLoc IsNot Nothing AndAlso Not Me.HasExited() Then
             Debug.Print($"restoresingle {behind}")
             If behind = 0 Then
-                SetWindowPos(Me.MainWindowHandle, If(Me._wasTopmost, SWP_HWND.TOPMOST, SWP_HWND.NOTOPMOST),
+                SetWindowPos(Me.MainWindowHandle, If(Me._wasTopmost, SWP_HWND.TOPMOST, FrmMain.ScalaHandle),
                              Me._restoreLoc?.X, Me._restoreLoc?.Y, -1, -1,
                              SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder)
             Else

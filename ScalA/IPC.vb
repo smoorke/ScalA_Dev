@@ -89,8 +89,13 @@ Module IPC
             End Using
         End If
         Try
-            If SelectDoneSema.WaitOne(1000) Then AppActivate(apID)
+            If apID <> 0 AndAlso SelectDoneSema.WaitOne(1000) Then
+                AppActivate(apID)
+            End If
         Catch ex As Exception
+
+        Finally
+            If apID <> 0 Then FrmMain.BringToFront()
         End Try
     End Sub
     ''' <summary>
@@ -114,19 +119,33 @@ Module IPC
     Private SelectSema As New Semaphore(0, 1, $"ScalA_IPC_Sema_{FrmMain.scalaPID}")
     Private SelectDoneSema As New Semaphore(0, 1, $"ScalA_IPC_SemaDone_{FrmMain.scalaPID}")
 
+    Public SidebarSender As Process = Nothing
+    Public SidebarSenderhWnd As IntPtr = IntPtr.Zero
+
     Public Sub SelectSemaThread(frm As FrmMain)
         While True
             SelectSema.WaitOne()
             Dim selectAlt As Tuple(Of Integer, Integer, Integer) = ReadSelectAlt()
-            With frm
-                .Invoke(Sub()
-                            .PopDropDown(.cboAlt)
-                            .cboAlt.SelectedItem = CType(Process.GetProcessById(selectAlt.Item1), AstoniaProcess)
-                        End Sub)
-            End With
-            Using sem As Semaphore = New Semaphore(0, 1, $"ScalA_IPC_SemaDone_{selectAlt.Item3}")
-                sem.Release()
-            End Using
+            If selectAlt.Item1 = 0 Then
+                SidebarSender = Nothing
+                SidebarSenderhWnd = IntPtr.Zero
+            Else
+                Try
+                    SidebarSender = Process.GetProcessById(selectAlt.Item3)
+                    SidebarSenderhWnd = selectAlt.Item2
+                    With frm
+                        .Invoke(Sub()
+                                    .PopDropDown(.cboAlt)
+                                    .cboAlt.SelectedItem = CType(Process.GetProcessById(selectAlt.Item1), AstoniaProcess)
+                                End Sub)
+                    End With
+                Catch
+                Finally
+                    Using sem As Semaphore = New Semaphore(0, 1, $"ScalA_IPC_SemaDone_{selectAlt.Item3}")
+                        sem.Release()
+                    End Using
+                End Try
+            End If
         End While
     End Sub
 

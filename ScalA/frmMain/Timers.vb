@@ -712,7 +712,7 @@ Partial NotInheritable Class FrmMain
 
         Dim addID As Integer = IPC.AddToWhitelistOrRemoveFromBL()
         If addID <> 0 Then
-            Dim addAP = New AstoniaProcess(Process.GetProcessById(addID))
+            Dim addAP = CType(Process.GetProcessById(addID), AstoniaProcess)
             Dim nam As String = addAP.Name
 
             If FrmSettings.Visible Then

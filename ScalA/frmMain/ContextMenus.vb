@@ -226,6 +226,7 @@ Partial Public NotInheritable Class FrmMain
     Private Sub SidebarModeToolStripMenuItem_MouseUp(sender As ToolStripMenuItem, e As MouseEventArgs) Handles SidebarModeToolStripMenuItem.MouseUp
         If sender.Checked AndAlso e.Button = MouseButtons.Right Then
             sender.Checked = False
+            IPC.SelectAlt(SidebarScalA.Id, 0)
             SidebarScalA = Nothing
             If sender.HasDropDown Then
                 For Each item As ToolStripMenuItem In sender.DropDownItems
@@ -271,6 +272,7 @@ Partial Public NotInheritable Class FrmMain
             Dim menuitPos As Point = menuPos + tsmi.Bounds.Location - New Point(tsmi.Bounds.Height / 2, tsmi.Bounds.Height / 2)
             tsmi.Image = DrawArrow(menuitPos, targetPos)
         Next
+
     End Sub
     Private Function DrawArrow(startPoint As Point, endPoint As Point) As Image
 
