@@ -45,6 +45,10 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public Sub CloseOrKill()
         If _proc Is Nothing Then Exit Sub
         Try
+            Dim thumb As IntPtr
+            If FrmMain.startThumbsDict.TryGetValue(_proc.Id, thumb) Then
+                DwmUnregisterThumbnail(thumb)
+            End If
             Dim dummy = _proc.HasExited() 'test to see if proc is elevated
             _proc.CloseMainWindow()
         Catch ex As System.ComponentModel.Win32Exception
@@ -903,6 +907,16 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             Elevated = True
             Return _proc.HasExitedSafe
         End Try
+    End Function
+
+    Friend Function IsElevated() As Boolean
+        If _proc Is Nothing Then Return False
+        Try
+            Dim dummy = _proc.HasExited
+        Catch ex As Exception
+            Elevated = True
+        End Try
+        Return Elevated
     End Function
 End Class
 

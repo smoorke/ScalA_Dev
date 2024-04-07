@@ -887,6 +887,11 @@ Public NotInheritable Class FrmSettings
         FrmMain.iconCache.Clear()
     End Sub
 
+    Private Sub btnGoToAdjustHotkey_Click(sender As Object, e As EventArgs) Handles btnGoToAdjustHotkey.Click
+        tbcSettings.SelectedTab = tabHotkeys
+        tabHotkeys.ScrollControlIntoView(grpAlterOverview)
+    End Sub
+
     Private Sub chkOverViewIsGame_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkOverViewIsGame.CheckedChanged
         chkHoverActivate.Enabled = sender.Checked
     End Sub

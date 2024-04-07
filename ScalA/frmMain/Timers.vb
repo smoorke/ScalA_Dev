@@ -139,7 +139,7 @@ Partial NotInheritable Class FrmMain
     End Sub
     Dim prevWMMMpt As New Point
 
-    Shared ReadOnly startThumbsDict As New Concurrent.ConcurrentDictionary(Of Integer, IntPtr)
+    Public Shared ReadOnly startThumbsDict As New Concurrent.ConcurrentDictionary(Of Integer, IntPtr)
     Shared ReadOnly opaDict As New Concurrent.ConcurrentDictionary(Of Integer, Byte)
     Shared ReadOnly rectDic As New Concurrent.ConcurrentDictionary(Of Integer, Rectangle)
     Shared ReadOnly swDict As New Concurrent.ConcurrentDictionary(Of Integer, Stopwatch)

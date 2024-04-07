@@ -24,6 +24,7 @@ Partial NotInheritable Class FrmSettings
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim grpQLPath As System.Windows.Forms.GroupBox
+        Dim ToolStripMenuItem1 As System.Windows.Forms.ToolStripSeparator
         Dim Label3 As System.Windows.Forms.Label
         Dim Label2 As System.Windows.Forms.Label
         Dim Label1 As System.Windows.Forms.Label
@@ -44,13 +45,13 @@ Partial NotInheritable Class FrmSettings
         Dim Label17 As System.Windows.Forms.Label
         Dim grpAlterOverviewMinMax As System.Windows.Forms.GroupBox
         Dim Label6 As System.Windows.Forms.Label
-        Dim ToolStripMenuItem1 As System.Windows.Forms.ToolStripSeparator
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmSettings))
         Me.txtQuickLaunchPath = New System.Windows.Forms.TextBox()
         Me.ChkQLShowHidden = New System.Windows.Forms.CheckBox()
         Me.btnOpenFolderDialog = New System.Windows.Forms.Button()
         Me.cmsQLFolder = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.OpenInExplorerToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ResetIconCacheToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.chkApplyAlterNormal = New System.Windows.Forms.CheckBox()
         Me.ChkLessRowCol = New System.Windows.Forms.CheckBox()
         Me.NumExtraMax = New System.Windows.Forms.NumericUpDown()
@@ -163,8 +164,9 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
-        Me.ResetIconCacheToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.btnGoToAdjustHotkey = New System.Windows.Forms.Button()
         grpQLPath = New System.Windows.Forms.GroupBox()
+        ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
         Label2 = New System.Windows.Forms.Label()
         Label1 = New System.Windows.Forms.Label()
@@ -185,7 +187,6 @@ Partial NotInheritable Class FrmSettings
         Label17 = New System.Windows.Forms.Label()
         grpAlterOverviewMinMax = New System.Windows.Forms.GroupBox()
         Label6 = New System.Windows.Forms.Label()
-        ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         grpQLPath.SuspendLayout()
         Me.cmsQLFolder.SuspendLayout()
         grpAlterOverviewMinMax.SuspendLayout()
@@ -264,13 +265,24 @@ Partial NotInheritable Class FrmSettings
         Me.cmsQLFolder.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.cmsQLFolder.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenInExplorerToolStripMenuItem, ToolStripMenuItem1, Me.ResetIconCacheToolStripMenuItem})
         Me.cmsQLFolder.Name = "cmsQLFolder"
-        Me.cmsQLFolder.Size = New System.Drawing.Size(184, 76)
+        Me.cmsQLFolder.Size = New System.Drawing.Size(184, 54)
         '
         'OpenInExplorerToolStripMenuItem
         '
         Me.OpenInExplorerToolStripMenuItem.Name = "OpenInExplorerToolStripMenuItem"
         Me.OpenInExplorerToolStripMenuItem.Size = New System.Drawing.Size(183, 22)
         Me.OpenInExplorerToolStripMenuItem.Text = "Open in File Explorer"
+        '
+        'ToolStripMenuItem1
+        '
+        ToolStripMenuItem1.Name = "ToolStripMenuItem1"
+        ToolStripMenuItem1.Size = New System.Drawing.Size(180, 6)
+        '
+        'ResetIconCacheToolStripMenuItem
+        '
+        Me.ResetIconCacheToolStripMenuItem.Name = "ResetIconCacheToolStripMenuItem"
+        Me.ResetIconCacheToolStripMenuItem.Size = New System.Drawing.Size(183, 22)
+        Me.ResetIconCacheToolStripMenuItem.Text = "Reset Icon Cache"
         '
         'Label3
         '
@@ -439,6 +451,7 @@ Partial NotInheritable Class FrmSettings
         '
         'grpAlterOverviewMinMax
         '
+        grpAlterOverviewMinMax.Controls.Add(Me.btnGoToAdjustHotkey)
         grpAlterOverviewMinMax.Controls.Add(Me.chkApplyAlterNormal)
         grpAlterOverviewMinMax.Controls.Add(Me.ChkLessRowCol)
         grpAlterOverviewMinMax.Controls.Add(Me.NumExtraMax)
@@ -1677,16 +1690,15 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
-        'ToolStripMenuItem1
+        'btnGoToAdjustHotkey
         '
-        ToolStripMenuItem1.Name = "ToolStripMenuItem1"
-        ToolStripMenuItem1.Size = New System.Drawing.Size(180, 6)
-        '
-        'ResetIconCacheToolStripMenuItem
-        '
-        Me.ResetIconCacheToolStripMenuItem.Name = "ResetIconCacheToolStripMenuItem"
-        Me.ResetIconCacheToolStripMenuItem.Size = New System.Drawing.Size(183, 22)
-        Me.ResetIconCacheToolStripMenuItem.Text = "Reset Icon Cache"
+        Me.btnGoToAdjustHotkey.Location = New System.Drawing.Point(140, 5)
+        Me.btnGoToAdjustHotkey.Name = "btnGoToAdjustHotkey"
+        Me.btnGoToAdjustHotkey.Size = New System.Drawing.Size(17, 12)
+        Me.btnGoToAdjustHotkey.TabIndex = 33
+        Me.btnGoToAdjustHotkey.Text = "H"
+        Me.ttSettings.SetToolTip(Me.btnGoToAdjustHotkey, "Go to Hotkey Settings")
+        Me.btnGoToAdjustHotkey.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
@@ -1865,4 +1877,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents chkApplyAlterNormal As CheckBox
     Friend WithEvents chkMinMaxOnSwitch As CheckBox
     Friend WithEvents ResetIconCacheToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents btnGoToAdjustHotkey As Button
 End Class

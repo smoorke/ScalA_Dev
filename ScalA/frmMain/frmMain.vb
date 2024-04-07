@@ -461,18 +461,16 @@ Partial Public NotInheritable Class FrmMain
         AddHandler chkDebug.MouseUp, Sub(sen, ev) UntrapMouse(ev.Button)
 #End If
 
+        Dim image = LoadImage(IntPtr.Zero, "#106", 1, 16, 16, 0)
+        If image <> IntPtr.Zero Then
+            Using Ico = Icon.FromHandle(image)
+                bmShield = Ico.ToBitmap
+                DestroyIcon(Ico.Handle)
+            End Using
+        End If
         'set shield if runing as admin
         If My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then
-
-            'Dim size = SystemInformation.SmallIconSize
-            Dim image = LoadImage(IntPtr.Zero, "#106", 1, 16, 16, 0)
-            If image <> IntPtr.Zero Then
-                Using Ico = Icon.FromHandle(image)
-                    btnStart.Image = Ico.ToBitmap
-                    DestroyIcon(Ico.Handle)
-                End Using
-                'btnStart.Text = ""
-            End If
+            btnStart.Image = bmShield
         End If
 
         If System.IO.File.Exists(FileIO.SpecialDirectories.Temp & "\ScalA\tmp.lnk") Then
@@ -520,6 +518,8 @@ Partial Public NotInheritable Class FrmMain
         Dim waitThread As New Threading.Thread(AddressOf IPC.SelectSemaThread) With {.IsBackground = True}
         waitThread.Start(Me)
     End Sub
+
+    Public bmShield As Bitmap
 
     Dim AnimsEnabled As Boolean = getAnimationsEnabled()
     Dim startup As Boolean = True
