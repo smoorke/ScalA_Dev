@@ -572,7 +572,7 @@ Partial Public NotInheritable Class FrmMain
             updateToVersion = "Error"
         End Try
     End Sub
-    Friend Shared Async Function UpdateDownload() As Task
+    Friend Shared Async Function UpdateDownload(self As Form) As Task
         Try
             Using response As HttpResponseMessage = Await client.GetAsync("https://github.com/smoorke/ScalA/releases/download/ScalA/ScalA.exe")
                 response.EnsureSuccessStatusCode()
@@ -586,10 +586,10 @@ Partial Public NotInheritable Class FrmMain
 
             End Using
         Catch e As Exception
-            CustomMessageBox.Show("Error" & vbCrLf & e.Message)
+            CustomMessageBox.Show(self, "Error" & vbCrLf & e.Message)
         End Try
     End Function
-    Friend Shared Async Function LogDownload() As Task
+    Friend Shared Async Function LogDownload(self As Form) As Task
         Try
             Using response As HttpResponseMessage = Await client.GetAsync("https://github.com/smoorke/ScalA/releases/download/ScalA/ChangeLog.txt")
                 response.EnsureSuccessStatusCode()
@@ -603,14 +603,14 @@ Partial Public NotInheritable Class FrmMain
 
             End Using
         Catch e As Exception
-            CustomMessageBox.Show("Error" & vbCrLf & e.Message)
+            CustomMessageBox.Show(self, "Error" & vbCrLf & e.Message)
         End Try
     End Function
     Friend Async Sub pbUpdateAvailable_Click(sender As PictureBox, e As MouseEventArgs) Handles pbUpdateAvailable.MouseDown
 
         If e.Button <> MouseButtons.Left Then Exit Sub
 
-        Await LogDownload()
+        Await LogDownload(Me)
 
         If UpdateDialog.ShowDialog(Me) <> DialogResult.OK Then
             Exit Sub
@@ -629,7 +629,7 @@ Partial Public NotInheritable Class FrmMain
         My.Settings.Save()
         tmrOverview.Stop()
         tmrTick.Stop()
-        Await UpdateDownload()
+        Await UpdateDownload(Me)
         AstoniaProcess.RestorePos()
         Try
             If Not FileIO.FileSystem.DirectoryExists(FileIO.SpecialDirectories.Temp & "\ScalA\") Then

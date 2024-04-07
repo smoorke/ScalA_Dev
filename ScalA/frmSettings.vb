@@ -280,13 +280,13 @@ Public NotInheritable Class FrmSettings
                 Dim parts() As String = line.ToUpper.Split("X")
                 Debug.Print(parts(width) & " " & parts(height))
                 If parts(width) < 400 OrElse parts(height) < 300 Then
-                    CustomMessageBox.Show("Error: " & line & " is too small a resolution.")
+                    CustomMessageBox.Show(Me, "Error: " & line & " is too small a resolution.", icon:=MessageBoxIcon.Error)
                     Return fail
                 End If
                 resList.Add(New Size(parts(width), parts(height)))
             Next
             If resList.Count = 0 Then
-                CustomMessageBox.Show("Error: no resolutions defined.")
+                CustomMessageBox.Show(Me, "Error: no resolutions defined.", icon:=MessageBoxIcon.Error)
                 Return fail
             End If
 
@@ -300,7 +300,7 @@ Public NotInheritable Class FrmSettings
             'frmMain.cmbResolution.SelectedIndex = 0
             Return success
         Catch
-            CustomMessageBox.Show("Error in resolutions")
+            CustomMessageBox.Show(Me, "Error in resolutions")
             Return fail
         End Try
     End Function
@@ -315,7 +315,7 @@ Public NotInheritable Class FrmSettings
 
         If My.Settings.links <> txtQuickLaunchPath.Text Then
             If Not FileIO.FileSystem.DirectoryExists(txtQuickLaunchPath.Text) Then
-                CustomMessageBox.Show($"Directory {txtQuickLaunchPath.Text} does not exist!", "Error")
+                CustomMessageBox.Show(Me, $"Directory {txtQuickLaunchPath.Text} does not exist!", "Error")
                 Exit Sub
             End If
             FrmMain.iconCache.Clear()
@@ -580,7 +580,7 @@ Public NotInheritable Class FrmSettings
                 .InputPath = IO.Path.GetFullPath(current)}
             If fp.ShowDialog(Me) = True Then
                 If fp.ResultPath = System.IO.Path.GetPathRoot(fp.ResultPath) AndAlso
-                        CustomMessageBox.Show("Warning: Selecting a root path is not recommended" & vbCrLf &
+                        CustomMessageBox.Show(Me, "Warning: Selecting a root path is not recommended" & vbCrLf &
                                         $"Are you sure you want to use {fp.ResultPath}?", "Warning",
                                         MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.No Then Throw New Exception("dummy")
                 Return fp.ResultPath
@@ -697,7 +697,7 @@ Public NotInheritable Class FrmSettings
     Private Sub BtnHelp_Click(sender As Object, e As EventArgs) Handles btnHelp.Click
         Dim bl As String = vbTab & """" & String.Join($"""{vbCrLf & vbTab}""", txtTopSort.Lines.Intersect(txtBotSort.Lines).Where(Function(s) s <> "")) & """"
         If bl = vbTab & """""" Then bl = $"{vbTab}(None)"
-        CustomMessageBox.Show($"Names are case sensitive.{vbCrLf}Left list Sorts to top, Right one to bottom.{vbCrLf}" &
+        CustomMessageBox.Show(Me, $"Names are case sensitive.{vbCrLf}Left list Sorts to top, Right one to bottom.{vbCrLf}" &
                         $"If whitelist is enabled ScalA will only show alts in lists{vbCrLf}   except those that are blacklisted{vbCrLf}" &
                         $"Names appearing in both lists are blacklisted.{vbCrLf}{vbCrLf}" &
                         $"Current Blacklist:{vbCrLf}{bl}", "Sorting & Black/Whitelist Info", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -861,18 +861,18 @@ Public NotInheritable Class FrmSettings
                 If New Version(responseBody) > My.Application.Info.Version Then
                     FrmMain.pbUpdateAvailable_Click(FrmMain.pbUpdateAvailable, New MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0))
                 Else
-                    CustomMessageBox.Show(Me, $"ScalA v{responseBody} is the current version online", "No Update Available")
+                    CustomMessageBox.Show(Me, $"ScalA v{responseBody} is the current version online", "No Update Available", icon:=MessageBoxIcon.Information)
                 End If
             End Using
         Catch ex As Exception
             FrmMain.pnlUpdate.Visible = False
             FrmMain.updateToVersion = "Error"
-            CustomMessageBox.Show(Me, "ScalA is unable to check for updates.", "Error")
+            CustomMessageBox.Show(Me, "ScalA is unable to check for updates.", "Error", icon:=MessageBoxIcon.Error)
         End Try
     End Sub
 
     Private Async Sub OpenChangelogToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OpenChangelogToolStripMenuItem.Click
-        Await FrmMain.LogDownload
+        Await FrmMain.LogDownload(Me)
         Try
             Process.Start(New ProcessStartInfo(FileIO.SpecialDirectories.Temp & "\ScalA\ChangeLog.txt"))
         Catch

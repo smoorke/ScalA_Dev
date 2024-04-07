@@ -692,7 +692,7 @@ Partial Public NotInheritable Class FrmMain
         Dim ShortCutLink As String = ShortCutPath & "\" & ShortCutName & ".lnk"
 
         If System.IO.File.Exists(ShortCutLink) Then
-            Select Case CustomMessageBox.Show($"""{alt.Name}"" already exists. Overwrite?",
+            Select Case CustomMessageBox.Show(Me, $"""{alt.Name}"" already exists. Overwrite?",
                            "Notice", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)
                 Case DialogResult.Yes
                     'do nothing
@@ -711,7 +711,7 @@ Partial Public NotInheritable Class FrmMain
         Dim arguments As String = mos("commandline")
 
         If arguments = "" Then
-            If CustomMessageBox.Show("Access denied!" & vbCrLf &
+            If CustomMessageBox.Show(Me, "Access denied!" & vbCrLf &
                            "Elevate ScalA to Administrator?" & vbCrLf &
                                "You will have to redo the shortcut creation.",
                                "Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Error) _
@@ -736,7 +736,7 @@ Partial Public NotInheritable Class FrmMain
 
 
         If Not arguments.ToLower.Contains("-w") Then
-            If CustomMessageBox.Show("Missing '-w' flag" & vbCrLf &
+            If CustomMessageBox.Show(Me, "Missing '-w' flag" & vbCrLf &
                                "Shortcut will currently not start in windowed mode" & vbCrLf &
                                "Would you like to add the '-w' flag for this shortcut?" & vbCrLf &
                               $"{arguments.Trim}",
@@ -916,7 +916,7 @@ Partial Public NotInheritable Class FrmMain
 
         cmsQuickLaunch.Close()
         If subitems.Count >= 10 Then
-            If Not CustomMessageBox.Show($"This will open {subitems.Count} items.{vbCrLf}Continue?",
+            If Not CustomMessageBox.Show(Me, $"This will open {subitems.Count} items.{vbCrLf}Continue?",
                                         "Confirm Opening", MessageBoxButtons.YesNo) = DialogResult.Yes Then
                 Debug.Print("Too many subitems")
                 Exit Sub
@@ -996,7 +996,7 @@ Partial Public NotInheritable Class FrmMain
             Dim filesCount As Integer = System.IO.Directory.GetFiles(Path, "*.*", IO.SearchOption.AllDirectories).Where(Function(f) IO.Path.GetFileName(f.ToLower) <> "desktop.ini").Count
             Dim filS As String = If(filesCount = 1, "", "s")
             folderContentsMessage &= $"This folder contains {folderCount} folder{folS} and {filesCount} file{filS}."
-            If shiftdown OrElse CustomMessageBox.Show($"Are you sure you want to move ""{name}"" to the Recycle Bin?" & folderContentsMessage & $"{vbCrLf}Hold Shift to Permanently Delete.",
+            If shiftdown OrElse CustomMessageBox.Show(Me, $"Are you sure you want to move ""{name}"" to the Recycle Bin?" & folderContentsMessage & $"{vbCrLf}Hold Shift to Permanently Delete.",
                                        "Confirm Delete", MessageBoxButtons.YesNo) = DialogResult.Yes Then
                 My.Computer.FileSystem.DeleteDirectory(Path, FileIO.UIOption.OnlyErrorDialogs,
                          If(shiftdown OrElse My.Computer.Keyboard.ShiftKeyDown, FileIO.RecycleOption.DeletePermanently, FileIO.RecycleOption.SendToRecycleBin),
@@ -1234,7 +1234,7 @@ Partial Public NotInheritable Class FrmMain
                 .InputPath = IO.Path.GetFullPath(My.Settings.links)}
             If fp.ShowDialog(Me) = True Then
                 If fp.ResultPath = System.IO.Path.GetPathRoot(fp.ResultPath) AndAlso
-                        CustomMessageBox.Show("Warning: Selecting a root path is not recommended" & vbCrLf &
+                        CustomMessageBox.Show(Me, "Warning: Selecting a root path is not recommended" & vbCrLf &
                                         $"Are you sure you want to use {fp.ResultPath}?", "Warning",
                                         MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.No Then Throw New Exception("dummy")
                 If My.Settings.links <> fp.ResultPath Then
