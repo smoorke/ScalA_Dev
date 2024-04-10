@@ -652,7 +652,12 @@ Module NativeMethods
     End Structure
     <DllImport("shell32.dll", SetLastError:=True)>
     Public Function SHGetStockIconInfo(ssid As UInteger, uFlags As UInteger, ByRef pssi As SHSTOCKICONINFO) As Integer : End Function
+
+
+    Public Declare Function BlockInput Lib "user32.dll" (fBlockIt As Boolean) As Boolean
+
     Public Declare Function SendInput Lib "user32.dll" (nInputs As Integer, pInputs() As INPUT, cbSize As Integer) As UInteger
+
     Public Enum InputType As UInteger
         INPUT_MOUSE
         INPUT_KEYBOARD

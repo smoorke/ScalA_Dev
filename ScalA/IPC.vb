@@ -176,6 +176,8 @@ Module IPC
                 CloseHandle(processHandle)
             End Try
 
+            If String.IsNullOrEmpty(processPath) Then Return False
+
             Return FileVersionInfo.GetVersionInfo(processPath).OriginalFilename = OrigScalAfname
 
         Catch ex As Exception

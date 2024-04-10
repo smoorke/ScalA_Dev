@@ -73,13 +73,31 @@ Public Class KeyboardHook : Implements IDisposable
                                 If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
                                     Debug.Print("ctrl esc")
                                     alreadySendingEsc = True
-                                    SendInput(CtrlEscKeyInput.Count, CtrlEscKeyInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
-                                    alreadySendingEsc = False
-                                    Return 1
+                                    Try
+                                        BlockInput(True)
+                                        SendInput(CtrlEscKeyInput.Count, CtrlEscKeyInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                                        Return 1
+                                    Finally
+                                        SendInput(1, CtrlDownInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                                        alreadySendingEsc = False
+                                        BlockInput(False)
+                                    End Try
                                 End If
                             End Using
                         End If
                 End Select
+            Case WM_KEYUP
+                If My.Settings.OnlyEsc AndAlso My.Computer.Keyboard.CtrlKeyDown Then
+                    Select Case Marshal.PtrToStructure(Of UInteger)(lParam)
+                        Case Keys.Escape
+                            Debug.Print($"esc up {My.Computer.Keyboard.CtrlKeyDown} {alreadySendingEsc}")
+                            Using proc As Process = Process.GetProcessById(GetActiveProcessID())
+                                If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
+                                    SendInput(1, CtrlDownInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                                End If
+                            End Using
+                    End Select
+                End If
             Case WM_SYSKEYDOWN
                 If My.Settings.OnlyEsc Then
                     If Marshal.PtrToStructure(Of UInteger)(lParam) = Keys.Escape Then
@@ -105,9 +123,6 @@ Public Class KeyboardHook : Implements IDisposable
                         .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wScan = 1, .wVk = Keys.Escape}}
                    },
                    New INPUT With {.type = InputType.INPUT_KEYBOARD,
-                        .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wScan = 1, .wVk = Keys.Escape}}
-                   },
-                   New INPUT With {.type = InputType.INPUT_KEYBOARD,
                         .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wVk = Keys.Menu}}
                    }
              }
@@ -118,14 +133,15 @@ Public Class KeyboardHook : Implements IDisposable
                    },
                    New INPUT With {.type = InputType.INPUT_KEYBOARD,
                         .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wScan = 1, .wVk = Keys.Escape}}
-                   },
-                   New INPUT With {.type = InputType.INPUT_KEYBOARD,
-                        .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wScan = 1, .wVk = Keys.Escape}}
-                   },
-                   New INPUT With {.type = InputType.INPUT_KEYBOARD,
-                        .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wVk = Keys.ControlKey}}
                    }
              }
+
+    Private ReadOnly CtrlDownInput() As INPUT = {
+                    New INPUT With {.type = InputType.INPUT_KEYBOARD,
+                        .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wVk = Keys.ControlKey}}
+                    }
+            }
+
 
     Private mhCallBack As HookCallBack = New HookCallBack(AddressOf KeyProc)
     Private disposedValue As Boolean
