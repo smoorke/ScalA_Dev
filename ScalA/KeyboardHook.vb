@@ -72,7 +72,7 @@ Public Class KeyboardHook : Implements IDisposable
                     If Marshal.PtrToStructure(Of UInteger)(lParam) = Keys.Escape Then
                         Using proc As Process = Process.GetProcessById(GetActiveProcessID())
                             If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
-                                SendInput(4, EscKeyInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                                SendInput(EscKeyInput.Count, EscKeyInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
                                 Return 1
                             End If
                         End Using
@@ -85,16 +85,16 @@ Public Class KeyboardHook : Implements IDisposable
 
     Private ReadOnly EscKeyInput() As INPUT = {
                    New INPUT With {.type = InputType.INPUT_KEYBOARD,
-                           .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wVk = Keys.Menu}}
+                        .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wVk = Keys.Menu}}
                    },
                    New INPUT With {.type = InputType.INPUT_KEYBOARD,
-                           .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wVk = Keys.Escape}}
+                        .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wScan = 1, .wVk = Keys.Escape}}
                    },
                    New INPUT With {.type = InputType.INPUT_KEYBOARD,
-                           .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wVk = Keys.Escape}}
+                        .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wScan = 1, .wVk = Keys.Escape}}
                    },
                    New INPUT With {.type = InputType.INPUT_KEYBOARD,
-                           .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wVk = Keys.Menu}}
+                        .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wVk = Keys.Menu}}
                    }
              }
 
