@@ -44,6 +44,8 @@ Public Class KeyboardHook : Implements IDisposable
     Private Const WM_SYSKEYDOWN = &H104
     Private Const WM_SYSKEYUP = &H105
 
+    Dim altDown As Boolean = False
+
     Private Function KeyProc(
         ByVal nCode As Integer,
         ByVal wParam As IntPtr,
@@ -52,21 +54,49 @@ Public Class KeyboardHook : Implements IDisposable
         If nCode < 0 OrElse nCode <> HC_ACTION Then Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
 
         Select Case wParam.ToInt32
-            Case WM_KEYDOWN, WM_KEYUP, WM_SYSKEYDOWN, WM_SYSKEYUP
+            Case WM_KEYDOWN, WM_KEYUP
                 Select Case Marshal.PtrToStructure(Of UInteger)(lParam)
                     ' we only care about the first field so we marshal directly to it's type instead of using Marshal.PtrToStructure(Of KBDLLHOOKSTRUCT)(lParam).vkCode
                     Case Keys.LWin, Keys.RWin
+                        If My.Settings.DisableWinKey Then
+                            Using proc As Process = Process.GetProcessById(GetActiveProcessID())
+                                If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
+                                    Debug.Print($"Win Key Blocked {wParam:X4} {proc.ProcessName}")
+                                    Return 1
+                                End If
+                            End Using
+                        End If
+                End Select
+            Case WM_SYSKEYDOWN, WM_SYSKEYUP
+                If My.Settings.OnlyEsc Then
+                    If Marshal.PtrToStructure(Of UInteger)(lParam) = Keys.Escape Then
                         Using proc As Process = Process.GetProcessById(GetActiveProcessID())
-                            If proc.IsAstonia Then
-                                Debug.Print($"Win Key Blocked {wParam:X4} {proc.ProcessName}")
+                            If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
+                                SendInput(4, EscKeyInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
                                 Return 1
                             End If
                         End Using
-                End Select
+                    End If
+                End If
         End Select
 
         Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
     End Function
+
+    Private ReadOnly EscKeyInput() As INPUT = {
+                   New INPUT With {.type = InputType.INPUT_KEYBOARD,
+                           .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wVk = Keys.Menu}}
+                   },
+                   New INPUT With {.type = InputType.INPUT_KEYBOARD,
+                           .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wVk = Keys.Escape}}
+                   },
+                   New INPUT With {.type = InputType.INPUT_KEYBOARD,
+                           .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wVk = Keys.Escape}}
+                   },
+                   New INPUT With {.type = InputType.INPUT_KEYBOARD,
+                           .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wVk = Keys.Menu}}
+                   }
+             }
 
     Private mhCallBack As HookCallBack = New HookCallBack(AddressOf KeyProc)
     Private disposedValue As Boolean

@@ -454,6 +454,7 @@ Partial NotInheritable Class FrmMain
                     End If
                 End If
             Case WM_SYSKEYDOWN
+                Debug.Print($"WM_SYSKEY {m.WParam} {m.LParam}")
                 If cboAlt.SelectedIndex > 0 Then
                     AltPP.Activate()
                 End If

@@ -166,6 +166,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
         Me.chkBlockWin = New System.Windows.Forms.CheckBox()
+        Me.chkOnlyEsc = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
@@ -654,7 +655,7 @@ Partial NotInheritable Class FrmSettings
         'chkCycleOnClose
         '
         Me.chkCycleOnClose.AutoSize = True
-        Me.chkCycleOnClose.Location = New System.Drawing.Point(149, 85)
+        Me.chkCycleOnClose.Location = New System.Drawing.Point(149, 109)
         Me.chkCycleOnClose.Name = "chkCycleOnClose"
         Me.chkCycleOnClose.Size = New System.Drawing.Size(96, 17)
         Me.chkCycleOnClose.TabIndex = 16
@@ -745,7 +746,7 @@ Partial NotInheritable Class FrmSettings
         'chkAlterOverview
         '
         Me.chkAlterOverview.AutoSize = True
-        Me.chkAlterOverview.Location = New System.Drawing.Point(24, 255)
+        Me.chkAlterOverview.Location = New System.Drawing.Point(24, 279)
         Me.chkAlterOverview.Name = "chkAlterOverview"
         Me.chkAlterOverview.Size = New System.Drawing.Size(130, 17)
         Me.chkAlterOverview.TabIndex = 23
@@ -933,6 +934,7 @@ Partial NotInheritable Class FrmSettings
         'tabHotkeys
         '
         Me.tabHotkeys.AutoScroll = True
+        Me.tabHotkeys.Controls.Add(Me.chkOnlyEsc)
         Me.tabHotkeys.Controls.Add(Me.chkBlockWin)
         Me.tabHotkeys.Controls.Add(Me.chkAlterOverview)
         Me.tabHotkeys.Controls.Add(Me.grpAlterOverview)
@@ -972,7 +974,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpAlterOverview.Controls.Add(Me.chkAlterOverviewPlusCtrl)
         Me.grpAlterOverview.Controls.Add(Label18)
         Me.grpAlterOverview.Controls.Add(Label17)
-        Me.grpAlterOverview.Location = New System.Drawing.Point(11, 256)
+        Me.grpAlterOverview.Location = New System.Drawing.Point(11, 280)
         Me.grpAlterOverview.Name = "grpAlterOverview"
         Me.grpAlterOverview.Size = New System.Drawing.Size(269, 90)
         Me.grpAlterOverview.TabIndex = 22
@@ -1113,7 +1115,7 @@ Partial NotInheritable Class FrmSettings
         'chkToggleTopMost
         '
         Me.chkToggleTopMost.AutoSize = True
-        Me.chkToggleTopMost.Location = New System.Drawing.Point(24, 206)
+        Me.chkToggleTopMost.Location = New System.Drawing.Point(24, 230)
         Me.chkToggleTopMost.Name = "chkToggleTopMost"
         Me.chkToggleTopMost.Size = New System.Drawing.Size(215, 18)
         Me.chkToggleTopMost.TabIndex = 21
@@ -1129,7 +1131,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpToggleTopMost.Controls.Add(Me.chkTogTopShift)
         Me.grpToggleTopMost.Controls.Add(Me.chkTogTopWin)
         Me.grpToggleTopMost.Controls.Add(Me.chkTogTopCtrl)
-        Me.grpToggleTopMost.Location = New System.Drawing.Point(11, 208)
+        Me.grpToggleTopMost.Location = New System.Drawing.Point(11, 232)
         Me.grpToggleTopMost.Name = "grpToggleTopMost"
         Me.grpToggleTopMost.Size = New System.Drawing.Size(269, 43)
         Me.grpToggleTopMost.TabIndex = 20
@@ -1255,7 +1257,7 @@ Partial NotInheritable Class FrmSettings
         'chkSwitchToOverview
         '
         Me.chkSwitchToOverview.AutoSize = True
-        Me.chkSwitchToOverview.Location = New System.Drawing.Point(24, 36)
+        Me.chkSwitchToOverview.Location = New System.Drawing.Point(24, 60)
         Me.chkSwitchToOverview.Name = "chkSwitchToOverview"
         Me.chkSwitchToOverview.Size = New System.Drawing.Size(118, 17)
         Me.chkSwitchToOverview.TabIndex = 2
@@ -1266,7 +1268,7 @@ Partial NotInheritable Class FrmSettings
         'chkCycleAlts
         '
         Me.chkCycleAlts.AutoSize = True
-        Me.chkCycleAlts.Location = New System.Drawing.Point(24, 85)
+        Me.chkCycleAlts.Location = New System.Drawing.Point(24, 109)
         Me.chkCycleAlts.Name = "chkCycleAlts"
         Me.chkCycleAlts.Size = New System.Drawing.Size(102, 17)
         Me.chkCycleAlts.TabIndex = 10
@@ -1286,7 +1288,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleUpWin)
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleDownCtrl)
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleUpCtrl)
-        Me.grpCycleShortcut.Location = New System.Drawing.Point(11, 87)
+        Me.grpCycleShortcut.Location = New System.Drawing.Point(11, 111)
         Me.grpCycleShortcut.Name = "grpCycleShortcut"
         Me.grpCycleShortcut.Size = New System.Drawing.Size(269, 67)
         Me.grpCycleShortcut.TabIndex = 1
@@ -1403,7 +1405,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpOverviewShortcut.Controls.Add(Me.chkStoShift)
         Me.grpOverviewShortcut.Controls.Add(Me.chkStoWin)
         Me.grpOverviewShortcut.Controls.Add(Me.chkStoCtrl)
-        Me.grpOverviewShortcut.Location = New System.Drawing.Point(11, 38)
+        Me.grpOverviewShortcut.Location = New System.Drawing.Point(11, 62)
         Me.grpOverviewShortcut.Name = "grpOverviewShortcut"
         Me.grpOverviewShortcut.Size = New System.Drawing.Size(269, 43)
         Me.grpOverviewShortcut.TabIndex = 0
@@ -1712,6 +1714,16 @@ Partial NotInheritable Class FrmSettings
         Me.chkBlockWin.Text = "Disable Windows Key when Astonia is Active"
         Me.chkBlockWin.UseVisualStyleBackColor = True
         '
+        'chkOnlyEsc
+        '
+        Me.chkOnlyEsc.AutoSize = True
+        Me.chkOnlyEsc.Location = New System.Drawing.Point(24, 33)
+        Me.chkOnlyEsc.Name = "chkOnlyEsc"
+        Me.chkOnlyEsc.Size = New System.Drawing.Size(239, 17)
+        Me.chkOnlyEsc.TabIndex = 25
+        Me.chkOnlyEsc.Text = "Only Send Esc to Astonia on pressing Alt-Esc"
+        Me.chkOnlyEsc.UseVisualStyleBackColor = True
+        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1891,4 +1903,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents ResetIconCacheToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents btnGoToAdjustHotkey As Button
     Friend WithEvents chkBlockWin As CheckBox
+    Friend WithEvents chkOnlyEsc As CheckBox
 End Class

@@ -166,6 +166,7 @@ Public NotInheritable Class FrmSettings
         chkMinMaxOnSwitch.Checked = My.Settings.MaxNormOverview
 
         chkBlockWin.Checked = My.Settings.DisableWinKey
+        chkOnlyEsc.Checked = My.Settings.OnlyEsc
 
         validate_hotkey(New Object, New EventArgs)
 
@@ -497,8 +498,9 @@ Public NotInheritable Class FrmSettings
         My.Settings.MaxNormOverview = chkMinMaxOnSwitch.Checked
 
         My.Settings.DisableWinKey = chkBlockWin.Checked
+        My.Settings.OnlyEsc = chkOnlyEsc.Checked
 
-        If My.Settings.DisableWinKey Then
+        If My.Settings.DisableWinKey OrElse My.Settings.OnlyEsc Then
             keybHook.Hook()
         Else
             keybHook.Unhook()
@@ -910,6 +912,10 @@ Public NotInheritable Class FrmSettings
         chkAlterOverviewMinWin.Enabled = Not sender.Checked
         chkAlterOverviewPlusWin.Enabled = Not sender.Checked
         chkAlterOverviewStarWin.Enabled = Not sender.Checked
+    End Sub
+
+    Private Sub chkBlockWin_CheckedChanged(sender As Object, e As EventArgs) Handles chkBlockWin.CheckedChanged
+
     End Sub
 
     Private Sub chkOverViewIsGame_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkOverViewIsGame.CheckedChanged
