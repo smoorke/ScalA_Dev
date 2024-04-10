@@ -1,3 +1,9 @@
+**ScalA 1.6.1**
+Fixed Switching Alts using Sidebar Mode may occasionally put switched-out clients above sending ScalA.
+Fixed Hotkeys have a false positive in detecting Astonia Clients. (eg. Steam and other 'SDL_app's)
+Added Setting to Block the Windows Key when an Astonia Client is active or ScalA is on Active Overview.
+Added Setting so Pressing Alt-Esc or Ctrl-Esc will only send Esc to Astonia instead of sending client to back of Z-order or opening Start Menu.
+
 **ScalA 1.6.0**
 Fixed ScalA is broken when windows scaling isn't set at 100%
   (Note: ScalA is extremely blurry when Windows scaling isn't 100% irregardless of windows version)

@@ -87,28 +87,23 @@ Public Class KeyboardHook : Implements IDisposable
                         End If
                 End Select
             Case WM_KEYUP
-                If My.Settings.OnlyEsc AndAlso My.Computer.Keyboard.CtrlKeyDown Then
-                    Select Case Marshal.PtrToStructure(Of UInteger)(lParam)
-                        Case Keys.Escape
-                            Debug.Print($"esc up {My.Computer.Keyboard.CtrlKeyDown} {alreadySendingEsc}")
-                            Using proc As Process = Process.GetProcessById(GetActiveProcessID())
-                                If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
-                                    SendInput(1, CtrlDownInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
-                                End If
-                            End Using
-                    End Select
+                If My.Settings.OnlyEsc AndAlso My.Computer.Keyboard.CtrlKeyDown AndAlso Marshal.PtrToStructure(Of UInteger)(lParam) = Keys.Escape Then
+                    Debug.Print($"esc up {My.Computer.Keyboard.CtrlKeyDown} {alreadySendingEsc}")
+                    Using proc As Process = Process.GetProcessById(GetActiveProcessID())
+                        If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
+                            SendInput(1, CtrlDownInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                        End If
+                    End Using
                 End If
             Case WM_SYSKEYDOWN
-                If My.Settings.OnlyEsc Then
-                    If Marshal.PtrToStructure(Of UInteger)(lParam) = Keys.Escape Then
-                        Using proc As Process = Process.GetProcessById(GetActiveProcessID())
-                            If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
-                                Debug.Print("alt esc")
-                                SendInput(AltEscKeyInput.Count, AltEscKeyInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
-                                Return 1
-                            End If
-                        End Using
-                    End If
+                If My.Settings.OnlyEsc AndAlso Marshal.PtrToStructure(Of UInteger)(lParam) = Keys.Escape Then
+                    Using proc As Process = Process.GetProcessById(GetActiveProcessID())
+                        If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
+                            Debug.Print("alt esc")
+                            SendInput(AltEscKeyInput.Count, AltEscKeyInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                            Return 1
+                        End If
+                    End Using
                 End If
         End Select
 
