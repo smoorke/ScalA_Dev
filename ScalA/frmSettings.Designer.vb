@@ -711,7 +711,7 @@ Partial NotInheritable Class FrmSettings
         'chkCloseAll
         '
         Me.chkCloseAll.AutoSize = True
-        Me.chkCloseAll.Location = New System.Drawing.Point(24, 157)
+        Me.chkCloseAll.Location = New System.Drawing.Point(24, 182)
         Me.chkCloseAll.Name = "chkCloseAll"
         Me.chkCloseAll.Size = New System.Drawing.Size(152, 17)
         Me.chkCloseAll.TabIndex = 19
@@ -1196,7 +1196,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpCloseAllShortcut.Controls.Add(Me.chkCAShift)
         Me.grpCloseAllShortcut.Controls.Add(Me.chkCAWin)
         Me.grpCloseAllShortcut.Controls.Add(Me.chkCACtrl)
-        Me.grpCloseAllShortcut.Location = New System.Drawing.Point(11, 158)
+        Me.grpCloseAllShortcut.Location = New System.Drawing.Point(11, 183)
         Me.grpCloseAllShortcut.Name = "grpCloseAllShortcut"
         Me.grpCloseAllShortcut.Size = New System.Drawing.Size(269, 43)
         Me.grpCloseAllShortcut.TabIndex = 17
