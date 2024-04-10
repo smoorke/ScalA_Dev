@@ -44,7 +44,7 @@ Public Class KeyboardHook : Implements IDisposable
     Private Const WM_SYSKEYDOWN = &H104
     Private Const WM_SYSKEYUP = &H105
 
-    Dim altDown As Boolean = False
+    Private alreadySendingEsc As Boolean = False
 
     Private Function KeyProc(
         ByVal nCode As Integer,
@@ -54,9 +54,10 @@ Public Class KeyboardHook : Implements IDisposable
         If nCode < 0 OrElse nCode <> HC_ACTION Then Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
 
         Select Case wParam.ToInt32
-            Case WM_KEYDOWN, WM_KEYUP
+
+            Case WM_KEYDOWN
                 Select Case Marshal.PtrToStructure(Of UInteger)(lParam)
-                    ' we only care about the first field so we marshal directly to it's type instead of using Marshal.PtrToStructure(Of KBDLLHOOKSTRUCT)(lParam).vkCode
+                ' we only care about the first field so we marshal directly to it's type instead of using Marshal.PtrToStructure(Of KBDLLHOOKSTRUCT)(lParam).vkCode
                     Case Keys.LWin, Keys.RWin
                         If My.Settings.DisableWinKey Then
                             Using proc As Process = Process.GetProcessById(GetActiveProcessID())
@@ -66,13 +67,26 @@ Public Class KeyboardHook : Implements IDisposable
                                 End If
                             End Using
                         End If
+                    Case Keys.Escape
+                        If Not alreadySendingEsc AndAlso My.Settings.OnlyEsc AndAlso My.Computer.Keyboard.CtrlKeyDown Then
+                            Using proc As Process = Process.GetProcessById(GetActiveProcessID())
+                                If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
+                                    Debug.Print("ctrl esc")
+                                    alreadySendingEsc = True
+                                    SendInput(CtrlEscKeyInput.Count, CtrlEscKeyInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                                    alreadySendingEsc = False
+                                    Return 1
+                                End If
+                            End Using
+                        End If
                 End Select
-            Case WM_SYSKEYDOWN, WM_SYSKEYUP
+            Case WM_SYSKEYDOWN
                 If My.Settings.OnlyEsc Then
                     If Marshal.PtrToStructure(Of UInteger)(lParam) = Keys.Escape Then
                         Using proc As Process = Process.GetProcessById(GetActiveProcessID())
                             If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
-                                SendInput(EscKeyInput.Count, EscKeyInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                                Debug.Print("alt esc")
+                                SendInput(AltEscKeyInput.Count, AltEscKeyInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
                                 Return 1
                             End If
                         End Using
@@ -83,7 +97,7 @@ Public Class KeyboardHook : Implements IDisposable
         Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
     End Function
 
-    Private ReadOnly EscKeyInput() As INPUT = {
+    Private ReadOnly AltEscKeyInput() As INPUT = {
                    New INPUT With {.type = InputType.INPUT_KEYBOARD,
                         .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wVk = Keys.Menu}}
                    },
@@ -95,6 +109,21 @@ Public Class KeyboardHook : Implements IDisposable
                    },
                    New INPUT With {.type = InputType.INPUT_KEYBOARD,
                         .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wVk = Keys.Menu}}
+                   }
+             }
+
+    Private ReadOnly CtrlEscKeyInput() As INPUT = {
+                   New INPUT With {.type = InputType.INPUT_KEYBOARD,
+                        .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wVk = Keys.ControlKey}}
+                   },
+                   New INPUT With {.type = InputType.INPUT_KEYBOARD,
+                        .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wScan = 1, .wVk = Keys.Escape}}
+                   },
+                   New INPUT With {.type = InputType.INPUT_KEYBOARD,
+                        .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wScan = 1, .wVk = Keys.Escape}}
+                   },
+                   New INPUT With {.type = InputType.INPUT_KEYBOARD,
+                        .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wVk = Keys.ControlKey}}
                    }
              }
 

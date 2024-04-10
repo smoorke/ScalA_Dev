@@ -1719,9 +1719,10 @@ Partial NotInheritable Class FrmSettings
         Me.chkOnlyEsc.AutoSize = True
         Me.chkOnlyEsc.Location = New System.Drawing.Point(24, 33)
         Me.chkOnlyEsc.Name = "chkOnlyEsc"
-        Me.chkOnlyEsc.Size = New System.Drawing.Size(239, 17)
+        Me.chkOnlyEsc.Size = New System.Drawing.Size(240, 17)
         Me.chkOnlyEsc.TabIndex = 25
-        Me.chkOnlyEsc.Text = "Only Send Esc to Astonia on pressing Alt-Esc"
+        Me.chkOnlyEsc.Text = "Only Send Esc on pressing Alt-Esc or Ctrl-Esc"
+        Me.ttSettings.SetToolTip(Me.chkOnlyEsc, "Only Send Esc to Astonia when pressing Alt-Esc or Ctrl-Esc")
         Me.chkOnlyEsc.UseVisualStyleBackColor = True
         '
         'FrmSettings
