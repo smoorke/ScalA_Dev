@@ -52,6 +52,7 @@ Partial NotInheritable Class FrmSettings
         Me.cmsQLFolder = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.OpenInExplorerToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ResetIconCacheToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.btnGoToAdjustHotkey = New System.Windows.Forms.Button()
         Me.chkApplyAlterNormal = New System.Windows.Forms.CheckBox()
         Me.ChkLessRowCol = New System.Windows.Forms.CheckBox()
         Me.NumExtraMax = New System.Windows.Forms.NumericUpDown()
@@ -164,7 +165,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
-        Me.btnGoToAdjustHotkey = New System.Windows.Forms.Button()
+        Me.chkBlockWin = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
@@ -462,6 +463,16 @@ Partial NotInheritable Class FrmSettings
         grpAlterOverviewMinMax.TabIndex = 31
         grpAlterOverviewMinMax.TabStop = False
         '
+        'btnGoToAdjustHotkey
+        '
+        Me.btnGoToAdjustHotkey.Location = New System.Drawing.Point(140, 5)
+        Me.btnGoToAdjustHotkey.Name = "btnGoToAdjustHotkey"
+        Me.btnGoToAdjustHotkey.Size = New System.Drawing.Size(17, 12)
+        Me.btnGoToAdjustHotkey.TabIndex = 33
+        Me.btnGoToAdjustHotkey.Text = "H"
+        Me.ttSettings.SetToolTip(Me.btnGoToAdjustHotkey, "Go to Hotkey Settings")
+        Me.btnGoToAdjustHotkey.UseVisualStyleBackColor = True
+        '
         'chkApplyAlterNormal
         '
         Me.chkApplyAlterNormal.AutoSize = True
@@ -643,7 +654,7 @@ Partial NotInheritable Class FrmSettings
         'chkCycleOnClose
         '
         Me.chkCycleOnClose.AutoSize = True
-        Me.chkCycleOnClose.Location = New System.Drawing.Point(149, 53)
+        Me.chkCycleOnClose.Location = New System.Drawing.Point(149, 85)
         Me.chkCycleOnClose.Name = "chkCycleOnClose"
         Me.chkCycleOnClose.Size = New System.Drawing.Size(96, 17)
         Me.chkCycleOnClose.TabIndex = 16
@@ -699,7 +710,7 @@ Partial NotInheritable Class FrmSettings
         'chkCloseAll
         '
         Me.chkCloseAll.AutoSize = True
-        Me.chkCloseAll.Location = New System.Drawing.Point(24, 125)
+        Me.chkCloseAll.Location = New System.Drawing.Point(24, 157)
         Me.chkCloseAll.Name = "chkCloseAll"
         Me.chkCloseAll.Size = New System.Drawing.Size(152, 17)
         Me.chkCloseAll.TabIndex = 19
@@ -734,7 +745,7 @@ Partial NotInheritable Class FrmSettings
         'chkAlterOverview
         '
         Me.chkAlterOverview.AutoSize = True
-        Me.chkAlterOverview.Location = New System.Drawing.Point(24, 223)
+        Me.chkAlterOverview.Location = New System.Drawing.Point(24, 255)
         Me.chkAlterOverview.Name = "chkAlterOverview"
         Me.chkAlterOverview.Size = New System.Drawing.Size(130, 17)
         Me.chkAlterOverview.TabIndex = 23
@@ -922,6 +933,7 @@ Partial NotInheritable Class FrmSettings
         'tabHotkeys
         '
         Me.tabHotkeys.AutoScroll = True
+        Me.tabHotkeys.Controls.Add(Me.chkBlockWin)
         Me.tabHotkeys.Controls.Add(Me.chkAlterOverview)
         Me.tabHotkeys.Controls.Add(Me.grpAlterOverview)
         Me.tabHotkeys.Controls.Add(Me.chkToggleTopMost)
@@ -960,7 +972,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpAlterOverview.Controls.Add(Me.chkAlterOverviewPlusCtrl)
         Me.grpAlterOverview.Controls.Add(Label18)
         Me.grpAlterOverview.Controls.Add(Label17)
-        Me.grpAlterOverview.Location = New System.Drawing.Point(11, 224)
+        Me.grpAlterOverview.Location = New System.Drawing.Point(11, 256)
         Me.grpAlterOverview.Name = "grpAlterOverview"
         Me.grpAlterOverview.Size = New System.Drawing.Size(269, 90)
         Me.grpAlterOverview.TabIndex = 22
@@ -1101,7 +1113,7 @@ Partial NotInheritable Class FrmSettings
         'chkToggleTopMost
         '
         Me.chkToggleTopMost.AutoSize = True
-        Me.chkToggleTopMost.Location = New System.Drawing.Point(24, 174)
+        Me.chkToggleTopMost.Location = New System.Drawing.Point(24, 206)
         Me.chkToggleTopMost.Name = "chkToggleTopMost"
         Me.chkToggleTopMost.Size = New System.Drawing.Size(215, 18)
         Me.chkToggleTopMost.TabIndex = 21
@@ -1117,7 +1129,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpToggleTopMost.Controls.Add(Me.chkTogTopShift)
         Me.grpToggleTopMost.Controls.Add(Me.chkTogTopWin)
         Me.grpToggleTopMost.Controls.Add(Me.chkTogTopCtrl)
-        Me.grpToggleTopMost.Location = New System.Drawing.Point(11, 176)
+        Me.grpToggleTopMost.Location = New System.Drawing.Point(11, 208)
         Me.grpToggleTopMost.Name = "grpToggleTopMost"
         Me.grpToggleTopMost.Size = New System.Drawing.Size(269, 43)
         Me.grpToggleTopMost.TabIndex = 20
@@ -1182,7 +1194,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpCloseAllShortcut.Controls.Add(Me.chkCAShift)
         Me.grpCloseAllShortcut.Controls.Add(Me.chkCAWin)
         Me.grpCloseAllShortcut.Controls.Add(Me.chkCACtrl)
-        Me.grpCloseAllShortcut.Location = New System.Drawing.Point(11, 126)
+        Me.grpCloseAllShortcut.Location = New System.Drawing.Point(11, 158)
         Me.grpCloseAllShortcut.Name = "grpCloseAllShortcut"
         Me.grpCloseAllShortcut.Size = New System.Drawing.Size(269, 43)
         Me.grpCloseAllShortcut.TabIndex = 17
@@ -1243,7 +1255,7 @@ Partial NotInheritable Class FrmSettings
         'chkSwitchToOverview
         '
         Me.chkSwitchToOverview.AutoSize = True
-        Me.chkSwitchToOverview.Location = New System.Drawing.Point(24, 4)
+        Me.chkSwitchToOverview.Location = New System.Drawing.Point(24, 36)
         Me.chkSwitchToOverview.Name = "chkSwitchToOverview"
         Me.chkSwitchToOverview.Size = New System.Drawing.Size(118, 17)
         Me.chkSwitchToOverview.TabIndex = 2
@@ -1254,7 +1266,7 @@ Partial NotInheritable Class FrmSettings
         'chkCycleAlts
         '
         Me.chkCycleAlts.AutoSize = True
-        Me.chkCycleAlts.Location = New System.Drawing.Point(24, 53)
+        Me.chkCycleAlts.Location = New System.Drawing.Point(24, 85)
         Me.chkCycleAlts.Name = "chkCycleAlts"
         Me.chkCycleAlts.Size = New System.Drawing.Size(102, 17)
         Me.chkCycleAlts.TabIndex = 10
@@ -1274,7 +1286,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleUpWin)
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleDownCtrl)
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleUpCtrl)
-        Me.grpCycleShortcut.Location = New System.Drawing.Point(11, 55)
+        Me.grpCycleShortcut.Location = New System.Drawing.Point(11, 87)
         Me.grpCycleShortcut.Name = "grpCycleShortcut"
         Me.grpCycleShortcut.Size = New System.Drawing.Size(269, 67)
         Me.grpCycleShortcut.TabIndex = 1
@@ -1391,7 +1403,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpOverviewShortcut.Controls.Add(Me.chkStoShift)
         Me.grpOverviewShortcut.Controls.Add(Me.chkStoWin)
         Me.grpOverviewShortcut.Controls.Add(Me.chkStoCtrl)
-        Me.grpOverviewShortcut.Location = New System.Drawing.Point(11, 6)
+        Me.grpOverviewShortcut.Location = New System.Drawing.Point(11, 38)
         Me.grpOverviewShortcut.Name = "grpOverviewShortcut"
         Me.grpOverviewShortcut.Size = New System.Drawing.Size(269, 43)
         Me.grpOverviewShortcut.TabIndex = 0
@@ -1690,15 +1702,15 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
-        'btnGoToAdjustHotkey
+        'chkBlockWin
         '
-        Me.btnGoToAdjustHotkey.Location = New System.Drawing.Point(140, 5)
-        Me.btnGoToAdjustHotkey.Name = "btnGoToAdjustHotkey"
-        Me.btnGoToAdjustHotkey.Size = New System.Drawing.Size(17, 12)
-        Me.btnGoToAdjustHotkey.TabIndex = 33
-        Me.btnGoToAdjustHotkey.Text = "H"
-        Me.ttSettings.SetToolTip(Me.btnGoToAdjustHotkey, "Go to Hotkey Settings")
-        Me.btnGoToAdjustHotkey.UseVisualStyleBackColor = True
+        Me.chkBlockWin.AutoSize = True
+        Me.chkBlockWin.Location = New System.Drawing.Point(24, 10)
+        Me.chkBlockWin.Name = "chkBlockWin"
+        Me.chkBlockWin.Size = New System.Drawing.Size(239, 17)
+        Me.chkBlockWin.TabIndex = 24
+        Me.chkBlockWin.Text = "Disable Windows Key when Astonia is Active"
+        Me.chkBlockWin.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
@@ -1878,4 +1890,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents chkMinMaxOnSwitch As CheckBox
     Friend WithEvents ResetIconCacheToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents btnGoToAdjustHotkey As Button
+    Friend WithEvents chkBlockWin As CheckBox
 End Class

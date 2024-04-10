@@ -479,7 +479,7 @@ Partial Public NotInheritable Class FrmMain
         End Try
     End Function
 
-    Private Shared ReadOnly nsSorter As IComparer(Of String) = New CustomStringSorter
+    Private Shared ReadOnly nsSorter As IComparer(Of String) = New NaturalStringSorter
     Private Shared ReadOnly extensions As String() = {".exe", ".jar", ".lnk", ".url", ".txt"}
     Private Shared ReadOnly hideExt As String() = {".lnk", ".url"}
     Private Function ParseDir(pth As String) As List(Of ToolStripItem)

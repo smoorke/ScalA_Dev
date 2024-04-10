@@ -165,6 +165,8 @@ Public NotInheritable Class FrmSettings
 
         chkMinMaxOnSwitch.Checked = My.Settings.MaxNormOverview
 
+        chkBlockWin.Checked = My.Settings.DisableWinKey
+
         validate_hotkey(New Object, New EventArgs)
 
         Hotkey.UnregHotkey(Me)
@@ -493,6 +495,14 @@ Public NotInheritable Class FrmSettings
         My.Settings.ApplyAlterNormal = chkApplyAlterNormal.Checked
 
         My.Settings.MaxNormOverview = chkMinMaxOnSwitch.Checked
+
+        My.Settings.DisableWinKey = chkBlockWin.Checked
+
+        If My.Settings.DisableWinKey Then
+            keybHook.Hook()
+        Else
+            keybHook.Unhook()
+        End If
 
         My.Settings.Save()
 
@@ -890,6 +900,16 @@ Public NotInheritable Class FrmSettings
     Private Sub btnGoToAdjustHotkey_Click(sender As Object, e As EventArgs) Handles btnGoToAdjustHotkey.Click
         tbcSettings.SelectedTab = tabHotkeys
         tabHotkeys.ScrollControlIntoView(grpAlterOverview)
+    End Sub
+
+    Private Sub chkBlockWin_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkBlockWin.CheckedChanged
+        chkCAWin.Enabled = Not sender.Checked
+        chkCycleDownWin.Enabled = Not sender.Checked
+        chkCycleUpWin.Enabled = Not sender.Checked
+        chkStoWin.Enabled = Not sender.Checked
+        chkAlterOverviewMinWin.Enabled = Not sender.Checked
+        chkAlterOverviewPlusWin.Enabled = Not sender.Checked
+        chkAlterOverviewStarWin.Enabled = Not sender.Checked
     End Sub
 
     Private Sub chkOverViewIsGame_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkOverViewIsGame.CheckedChanged

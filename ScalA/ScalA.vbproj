@@ -95,7 +95,8 @@
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="AstoniaProcess.vb" />
     <Compile Include="CustomColorTable.vb" />
-    <Compile Include="CustomStringSorter.vb" />
+    <Compile Include="KeyboardHook.vb" />
+    <Compile Include="NaturalStringSorter.vb" />
     <Compile Include="DWMThumb.vb" />
     <Compile Include="Extensions.vb" />
     <Compile Include="FolderPicker.vb" />

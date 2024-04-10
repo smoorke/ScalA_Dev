@@ -755,7 +755,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Else
             For Each exe As String In My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries)
                 If arguments.ToLower.StartsWith(exe.Trim) Then
-                    arguments = arguments.Substring(exe.Trim.Length + 4)
+                    arguments = arguments.Substring(exe.Trim.Length + 4) '+ ".exe".Length)
                 End If
             Next
         End If
@@ -1038,5 +1038,24 @@ Module ProcessExtensions
             classCache = classes
         End If
         Return classCacheSet.Contains(GetWindowClass(pp.MainWindowHandle))
+    End Function
+    Private exeCache As String = String.Empty
+    Private exeCacheSet As New HashSet(Of String)
+    <System.Runtime.CompilerServices.Extension()>
+    Public Function IsAstonia(pp As Process) As Boolean
+        If classCache <> My.Settings.className Then
+            classCacheSet.Clear()
+            classCacheSet = New HashSet(Of String)(My.Settings.className.Split(pipe, StringSplitOptions.RemoveEmptyEntries) _
+                                                          .Select(Function(wc) Strings.Trim(wc)))
+            classCache = My.Settings.className
+        End If
+        If exeCache <> My.Settings.exe Then
+            exeCacheSet.Clear()
+            exeCacheSet = New HashSet(Of String)(My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries) _
+                                                          .Select(Function(x) Strings.Trim(x)))
+            exeCache = My.Settings.exe
+        End If
+        Debug.Print($"{classCacheSet.Contains(GetWindowClass(pp.MainWindowHandle))} {exeCache.Contains(pp.ProcessName)}")
+        Return classCacheSet.Contains(GetWindowClass(pp.MainWindowHandle)) AndAlso exeCache.Contains(pp.ProcessName)
     End Function
 End Module

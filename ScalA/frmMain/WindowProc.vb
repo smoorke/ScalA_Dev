@@ -18,15 +18,7 @@ Partial NotInheritable Class FrmMain
                         'only perform switch when astonia or scala Is active
                         Dim activeID = GetActiveProcessID()
                         Debug.Print("aID " & activeID & " selfPID " & scalaPID)
-                        If activeID = scalaPID OrElse Process.GetProcessById(activeID).HasClassNameIn(My.Settings.className) Then
-                            'If Me.WindowState = FormWindowState.Minimized Then
-                            '    Me.WindowState = FormWindowState.Normal
-                            '    If wasMaximized Then
-                            '        Dim tmp As Point = RestoreLoc
-                            '        btnMax.PerformClick()
-                            '        RestoreLoc = tmp
-                            '    End If
-                            'End If
+                        If activeID = scalaPID OrElse Process.GetProcessById(activeID).IsAstonia Then
                             If Me.WindowState = FormWindowState.Minimized Then
                                 SendMessage(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
                             End If
@@ -53,7 +45,7 @@ Partial NotInheritable Class FrmMain
                             Debug.Print("Cannot set self topmost with hotkey")
                             Exit Sub
                         End If
-                        If Not activeProc.HasClassNameIn(My.Settings.className) Then
+                        If Not activeProc.IsAstonia Then
                             Try
                                 Dim wastopm As Boolean = (GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST
 

@@ -448,6 +448,7 @@ Partial Public NotInheritable Class FrmMain
         test.Items.Add(New ToolStripMenuItem("NudgeTaskbar", Nothing, AddressOf dBug.NudgeTaskbar))
         test.Items.Add(New ToolStripMenuItem("thumbStuff", Nothing, AddressOf dBug.thumbStuff))
         test.Items.Add(New ToolStripMenuItem("list others", Nothing, AddressOf dBug.listothers))
+        test.Items.Add(New ToolStripMenuItem("hookWinKey", Nothing, AddressOf dBug.hookKey))
 
 
         chkDebug.ContextMenuStrip = test
@@ -513,6 +514,7 @@ Partial Public NotInheritable Class FrmMain
 
         AddHandler Application.Idle, AddressOf Application_Idle
 
+        If My.Settings.DisableWinKey Then keybHook.Hook()
 
         'spawn IPC waiter thread
         Dim waitThread As New Threading.Thread(AddressOf IPC.SelectSemaThread) With {.IsBackground = True}
@@ -788,16 +790,6 @@ Partial Public NotInheritable Class FrmMain
         tmrActive.Stop()
         Hotkey.UnregHotkey(Me)
     End Sub
-
-
-    Public Function GetActiveProcessID() As UInteger
-        Dim hWnd As IntPtr = GetForegroundWindow()
-        Dim ProcessID As UInteger = 0
-
-        GetWindowThreadProcessId(hWnd, ProcessID)
-
-        Return ProcessID
-    End Function
 
 
     Protected Overrides ReadOnly Property CreateParams As CreateParams

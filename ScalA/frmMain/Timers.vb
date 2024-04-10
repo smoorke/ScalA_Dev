@@ -689,14 +689,14 @@ Partial NotInheritable Class FrmMain
 #End If
 #End Region
     Private activeID As Integer = 0
-    Private hasCName As Boolean = False
+    Private activeIsAstonia As Boolean = False
     Private Async Sub TmrActive_Tick(sender As Timer, e As EventArgs) Handles tmrActive.Tick
 
         activeID = GetActiveProcessID() ' this returns 0 when switching tasks
         Try
-            hasCName = Process.GetProcessById(activeID).HasClassNameIn(My.Settings.className)
+            activeIsAstonia = Process.GetProcessById(activeID).IsAstonia
         Catch
-            hasCName = False
+            activeIsAstonia = False
         End Try
         If activeID = scalaPID OrElse activeID = AltPP?.Id OrElse
                 (My.Settings.gameOnOverview AndAlso pnlOverview.Visible AndAlso

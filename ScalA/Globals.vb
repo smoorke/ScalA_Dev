@@ -1,4 +1,7 @@
 ﻿Module Globals
+
+    Public keybHook As New KeyboardHook
+
     Public Function WinUsingDarkTheme() As Boolean
         Using key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\Microsoft\Windows\CurrentVersion\Themes\Personalize")
             Dim value = key?.GetValue("AppsUseLightTheme")
@@ -7,6 +10,14 @@
             End If
         End Using
         Return False
+    End Function
+    Public Function GetActiveProcessID() As UInteger
+        Dim hWnd As IntPtr = GetForegroundWindow()
+        Dim ProcessID As UInteger = 0
+
+        GetWindowThreadProcessId(hWnd, ProcessID)
+
+        Return ProcessID
     End Function
 
     Public Function getAnimationsEnabled() As Boolean

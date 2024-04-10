@@ -209,6 +209,16 @@ Module dBug
         Next
 
     End Sub
+
+    Friend Sub hookKey(sender As Object, e As EventArgs)
+        If keybHook.HookHandle = IntPtr.Zero Then
+            Debug.Print("hooking")
+            keybHook.Hook()
+        Else
+            Debug.Print("unhook")
+            keybHook.Unhook()
+        End If
+    End Sub
 End Module
 
 #End If

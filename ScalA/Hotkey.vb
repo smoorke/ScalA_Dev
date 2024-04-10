@@ -58,29 +58,29 @@ End Class
 Partial NotInheritable Class frmmain
 
     Private Sub tmrHotkeys_Tick(sender As Object, e As EventArgs) Handles tmrHotkeys.Tick
-        If (activeID = scalaPID OrElse hasCName) Then
+        If (activeID = scalaPID OrElse activeIsAstonia) Then
             If My.Settings.SwitchToOverview Then
-                Hotkey.RegisterHotkey(Me, 1, Hotkey.KeyModifier.NoRepeat Or My.Settings.StoCtrl Or My.Settings.StoShift Or My.Settings.StoAlt Or My.Settings.StoWin, My.Settings.StoKey)
+                Hotkey.RegisterHotkey(Me, 1, Hotkey.KeyModifier.NoRepeat Or My.Settings.StoCtrl Or My.Settings.StoShift Or My.Settings.StoAlt Or If(My.Settings.DisableWinKey, 0, My.Settings.StoWin), My.Settings.StoKey)
             Else
                 Hotkey.UnregHotkey(Me, 1)
             End If
             If My.Settings.CycleAlt Then
-                Hotkey.RegisterHotkey(Me, 2, Hotkey.KeyModifier.NoRepeat Or My.Settings.CycleAltKeyFwd Or My.Settings.CycleShiftKeyFwd Or My.Settings.CycleCtrlKeyFwd Or My.Settings.CycleWinKeyFwd, My.Settings.CycleKeyFwd)
-                Hotkey.RegisterHotkey(Me, 3, Hotkey.KeyModifier.NoRepeat Or My.Settings.CycleAltKeyBwd Or My.Settings.CycleShiftKeyBwd Or My.Settings.CycleCtrlKeyBwd Or My.Settings.CycleWinKeyBwd, My.Settings.CycleKeyBwd)
+                Hotkey.RegisterHotkey(Me, 2, Hotkey.KeyModifier.NoRepeat Or My.Settings.CycleAltKeyFwd Or My.Settings.CycleShiftKeyFwd Or My.Settings.CycleCtrlKeyFwd Or If(My.Settings.DisableWinKey, 0, My.Settings.CycleWinKeyFwd), My.Settings.CycleKeyFwd)
+                Hotkey.RegisterHotkey(Me, 3, Hotkey.KeyModifier.NoRepeat Or My.Settings.CycleAltKeyBwd Or My.Settings.CycleShiftKeyBwd Or My.Settings.CycleCtrlKeyBwd Or If(My.Settings.DisableWinKey, 0, My.Settings.CycleWinKeyBwd), My.Settings.CycleKeyBwd)
             Else
                 Hotkey.UnregHotkey(Me, 2)
                 Hotkey.UnregHotkey(Me, 3)
             End If
             If My.Settings.CloseAll Then
-                Hotkey.RegisterHotkey(Me, 4, Hotkey.KeyModifier.NoRepeat Or My.Settings.CloseAllAlt Or My.Settings.CloseAllShift Or My.Settings.CloseAllCtrl Or My.Settings.CloseAllWin, My.Settings.CloseAllKey)
+                Hotkey.RegisterHotkey(Me, 4, Hotkey.KeyModifier.NoRepeat Or My.Settings.CloseAllAlt Or My.Settings.CloseAllShift Or My.Settings.CloseAllCtrl Or If(My.Settings.DisableWinKey, 0, My.Settings.CloseAllWin), My.Settings.CloseAllKey)
             Else
                 Hotkey.UnregHotkey(Me, 4)
             End If
 
             If My.Settings.AlterOverview Then
-                Hotkey.RegisterHotkey(Me, 6, Hotkey.KeyModifier.NoRepeat Or My.Settings.AlterOverviewPlusAlt Or My.Settings.AlterOverviewPlusCtrl Or My.Settings.AlterOverviewPlusShift Or My.Settings.AlterOverviewPlusWin, My.Settings.AlterOverviewPlusKey)
-                Hotkey.RegisterHotkey(Me, 7, Hotkey.KeyModifier.NoRepeat Or My.Settings.AlterOverviewMinAlt Or My.Settings.AlterOverviewMinCtrl Or My.Settings.AlterOverviewMinShift Or My.Settings.AlterOverviewMinWin, My.Settings.AlterOverviewMinKey)
-                Hotkey.RegisterHotkey(Me, 8, Hotkey.KeyModifier.NoRepeat Or My.Settings.AlterOverviewStarAlt Or My.Settings.AlterOverviewStarCtrl Or My.Settings.AlterOverviewStarShift Or My.Settings.AlterOverviewStarWin, My.Settings.AlterOverviewStarKey)
+                Hotkey.RegisterHotkey(Me, 6, Hotkey.KeyModifier.NoRepeat Or My.Settings.AlterOverviewPlusAlt Or My.Settings.AlterOverviewPlusCtrl Or My.Settings.AlterOverviewPlusShift Or If(My.Settings.DisableWinKey, 0, My.Settings.AlterOverviewPlusWin), My.Settings.AlterOverviewPlusKey)
+                Hotkey.RegisterHotkey(Me, 7, Hotkey.KeyModifier.NoRepeat Or My.Settings.AlterOverviewMinAlt Or My.Settings.AlterOverviewMinCtrl Or My.Settings.AlterOverviewMinShift Or If(My.Settings.DisableWinKey, 0, My.Settings.AlterOverviewMinWin), My.Settings.AlterOverviewMinKey)
+                Hotkey.RegisterHotkey(Me, 8, Hotkey.KeyModifier.NoRepeat Or My.Settings.AlterOverviewStarAlt Or My.Settings.AlterOverviewStarCtrl Or My.Settings.AlterOverviewStarShift Or If(My.Settings.DisableWinKey, 0, My.Settings.AlterOverviewStarWin), My.Settings.AlterOverviewStarKey)
             Else
                 Hotkey.UnregHotkey(Me, 6)
                 Hotkey.UnregHotkey(Me, 7)
