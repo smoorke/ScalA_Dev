@@ -727,8 +727,8 @@ Partial Public NotInheritable Class FrmMain
             arguments = arguments.Substring(arguments.IndexOf("""", 1) + 1)
         Else
             For Each exe As String In My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries)
-                If arguments.ToLower.StartsWith(exe.Trim) Then
-                    arguments = arguments.Substring(exe.Trim.Length + 4)
+                If arguments.ToLower.Contains(exe.Trim.ToLower & ".exe") Then
+                    arguments = arguments.Substring(arguments.ToLower.IndexOf(exe.Trim.ToLower) + exe.Trim.Length + 4)
                 End If
             Next
         End If
