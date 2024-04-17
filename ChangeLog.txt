@@ -1,3 +1,7 @@
+**ScalA 1.6.2**
+Fixed On certain servers an extra `bin/moac.exe` gets added to the target when creating shortcuts in QuickLaunch.
+Defaulted `Only Send Esc` to off. (Hopefully this mitigates Windows Defender false positive)
+
 **ScalA 1.6.1**
 Fixed Switching Alts using Sidebar Mode may occasionally put switched-out clients above sending ScalA.
 Fixed Hotkeys have a false positive in detecting Astonia Clients. (eg. Steam and other 'SDL_app's)
