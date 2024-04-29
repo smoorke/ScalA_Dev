@@ -39,6 +39,7 @@
                     SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
                 Case Else
                     SendMessage(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
+                    If cmd = 34105 Then cmd = 0
             End Select
         End If
         Return cmd
@@ -126,7 +127,7 @@ Partial NotInheritable Class FrmMain
                 Attach(AltPP)
             End If
 
-            If GetActiveProcessID() = scalaPID Then
+            If GetActiveProcessID() = scalaPID AndAlso ret <> 0 Then
                 Debug.Print($"ShowSysMenu activating {AltPP?.Name}")
                 AltPP?.Activate()
             End If
