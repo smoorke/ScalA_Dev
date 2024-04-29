@@ -46,11 +46,12 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         If _proc Is Nothing Then Exit Sub
         Try
             Dim thumb As IntPtr
-            If FrmMain.startThumbsDict.TryGetValue(_proc.Id, thumb) Then
-                DwmUnregisterThumbnail(thumb)
+            If _proc.HasExited() Then Exit Sub 'exception when proc is elevated
+            If Me.isSDL Then
+                _proc.CloseMainWindow()
+            Else 'isLegacy
+                SendMessage(_proc.MainWindowHandle, WM_KEYDOWN, Keys.F12, &H1UI << 30)
             End If
-            Dim dummy = _proc.HasExited() 'test to see if proc is elevated
-            _proc.CloseMainWindow()
         Catch ex As System.ComponentModel.Win32Exception
             Try
                 _proc.Kill()
