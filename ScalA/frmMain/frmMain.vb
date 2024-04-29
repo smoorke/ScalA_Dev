@@ -149,8 +149,6 @@ Partial Public NotInheritable Class FrmMain
 
             Dim rcW As Rectangle = AltPP.WindowRect
             rcC = AltPP.ClientRect
-            'GetWindowRect(AltPP.MainWindowHandle, rcW)
-            'GetClientRect(AltPP.MainWindowHandle, rcC)
 
             Dim ptC As Point
             ClientToScreen(AltPP.MainWindowHandle, ptC)
@@ -169,9 +167,6 @@ Partial Public NotInheritable Class FrmMain
                 Exit Sub
             End If
             AltPP.SavePos(rcW.Location)
-
-            'AltPP.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition)
-            AltPP.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition, True, True)
 
             Debug.Print("tmrTick.Enabled")
             tmrTick.Enabled = True
@@ -234,12 +229,12 @@ Partial Public NotInheritable Class FrmMain
             End If
 
             Attach(AltPP)
+            AltPP.Activate()
 
             If My.Settings.topmost Then
                 AltPP.TopMost = True
             End If
 
-            AltPP?.Activate()
 
             moveBusy = False
         Else 'AltPP.Id = 0
