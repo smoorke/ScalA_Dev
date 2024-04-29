@@ -45,7 +45,6 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public Sub CloseOrKill()
         If _proc Is Nothing Then Exit Sub
         Try
-            Dim thumb As IntPtr
             If _proc.HasExited() Then Exit Sub 'exception when proc is elevated
             If Me.isSDL Then
                 _proc.CloseMainWindow()
@@ -281,6 +280,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Private Shared ReadOnly memCache As New System.Runtime.Caching.MemoryCache("nameCache")
     Private Shared ReadOnly cacheItemPolicy As New System.Runtime.Caching.CacheItemPolicy With {
                     .SlidingExpiration = TimeSpan.FromMinutes(1)} ' Cache for 1 minute with sliding expiration
+    Public LoggedInAs As String = String.Empty
     Public ReadOnly Property Name As String
         Get
             If _proc Is Nothing Then Return "Someone"
@@ -295,8 +295,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     Return "Someone"
                 End If
                 Dim nam As String = Strings.Left(_proc.MainWindowTitle, _proc.MainWindowTitle.IndexOf(" - "))
-
                 memCache.Set(_proc.Id, nam, cacheItemPolicy)
+                If nam <> "Someone" AndAlso Not String.IsNullOrEmpty(nam) Then LoggedInAs = nam
                 Return nam
             Catch
                 Debug.Print("Name exception")
@@ -477,11 +477,17 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Private Shared exeCache As IEnumerable(Of String) = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
     Private Shared exeSettingCache As String = My.Settings.exe
 
-    Public Shared Function EnumSomeone() As IEnumerable(Of AstoniaProcess)
+    Public Shared Function EnumSomeone(Optional usecache As Boolean = False) As IEnumerable(Of AstoniaProcess)
         If exeSettingCache <> My.Settings.exe Then
             exeCache = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
         End If
-        Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p) New AstoniaProcess(p))) _
+        Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p)
+                                                                                        If usecache Then
+                                                                                            Return CType(p, AstoniaProcess)
+                                                                                        Else
+                                                                                            Return New AstoniaProcess(p)
+                                                                                        End If
+                                                                                    End Function)) _
             .Where(Function(ap) ap.Name = "Someone" AndAlso ap.IsAstoniaClass())
     End Function
 

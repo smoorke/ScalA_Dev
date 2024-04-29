@@ -1087,6 +1087,18 @@ Namespace My
                 Me("OnlyEsc") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property AutoCloseIdle() As Boolean
+            Get
+                Return CType(Me("AutoCloseIdle"),Boolean)
+            End Get
+            Set
+                Me("AutoCloseIdle") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

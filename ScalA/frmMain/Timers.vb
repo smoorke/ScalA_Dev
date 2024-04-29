@@ -836,6 +836,15 @@ Partial NotInheritable Class FrmMain
         ''locked 🔒
         ''unlocked 🔓
 
+
+        If My.Settings.AutoCloseIdle AndAlso blackList.Contains("Someone") Then
+            For Each ap In AstoniaProcess.EnumSomeone(True).
+                    Where(Function(pp) Not String.IsNullOrEmpty(pp.LoggedInAs) AndAlso pp.LoggedInAs <> "Someone")
+                Debug.Print($"Autoclose {ap.Name} ""{ap.LoggedInAs}""")
+                ap.CloseOrKill()
+            Next
+        End If
+
         Dim dummy = Task.Run(Sub() CloseErrorDialog())
 
         Dim setbehind As IntPtr? = AltPP?.MainWindowHandle

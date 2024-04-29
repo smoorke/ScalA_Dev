@@ -82,6 +82,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtAlterOverviewStarKey = New System.Windows.Forms.TextBox()
         Me.txtAlterOverviewMinKey = New System.Windows.Forms.TextBox()
         Me.txtAlterOverviewPlusKey = New System.Windows.Forms.TextBox()
+        Me.chkOnlyEsc = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
@@ -99,6 +100,7 @@ Partial NotInheritable Class FrmSettings
         Me.DummyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.txtResolutions = New System.Windows.Forms.TextBox()
         Me.tabHotkeys = New System.Windows.Forms.TabPage()
+        Me.chkBlockWin = New System.Windows.Forms.CheckBox()
         Me.grpAlterOverview = New System.Windows.Forms.GroupBox()
         Me.chkAlterOverviewStarAlt = New System.Windows.Forms.CheckBox()
         Me.chkAlterOverviewStarShift = New System.Windows.Forms.CheckBox()
@@ -165,8 +167,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
-        Me.chkBlockWin = New System.Windows.Forms.CheckBox()
-        Me.chkOnlyEsc = New System.Windows.Forms.CheckBox()
+        Me.chkAutoCloseSomeone = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
@@ -782,6 +783,17 @@ Partial NotInheritable Class FrmSettings
         Me.txtAlterOverviewPlusKey.TabStop = False
         Me.ttSettings.SetToolTip(Me.txtAlterOverviewPlusKey, "Increase Extra Columns/Rows")
         '
+        'chkOnlyEsc
+        '
+        Me.chkOnlyEsc.AutoSize = True
+        Me.chkOnlyEsc.Location = New System.Drawing.Point(24, 33)
+        Me.chkOnlyEsc.Name = "chkOnlyEsc"
+        Me.chkOnlyEsc.Size = New System.Drawing.Size(240, 17)
+        Me.chkOnlyEsc.TabIndex = 25
+        Me.chkOnlyEsc.Text = "Only Send Esc on pressing Alt-Esc or Ctrl-Esc"
+        Me.ttSettings.SetToolTip(Me.chkOnlyEsc, "Only Send Esc to Astonia when pressing Alt-Esc or Ctrl-Esc")
+        Me.chkOnlyEsc.UseVisualStyleBackColor = True
+        '
         'tbcSettings
         '
         Me.tbcSettings.Appearance = System.Windows.Forms.TabAppearance.FlatButtons
@@ -953,6 +965,16 @@ Partial NotInheritable Class FrmSettings
         Me.tabHotkeys.TabIndex = 2
         Me.tabHotkeys.Text = "Hotkeys"
         Me.tabHotkeys.UseVisualStyleBackColor = True
+        '
+        'chkBlockWin
+        '
+        Me.chkBlockWin.AutoSize = True
+        Me.chkBlockWin.Location = New System.Drawing.Point(24, 10)
+        Me.chkBlockWin.Name = "chkBlockWin"
+        Me.chkBlockWin.Size = New System.Drawing.Size(239, 17)
+        Me.chkBlockWin.TabIndex = 24
+        Me.chkBlockWin.Text = "Disable Windows Key when Astonia is Active"
+        Me.chkBlockWin.UseVisualStyleBackColor = True
         '
         'grpAlterOverview
         '
@@ -1465,6 +1487,7 @@ Partial NotInheritable Class FrmSettings
         '
         'tabSortAndBL
         '
+        Me.tabSortAndBL.Controls.Add(Me.chkAutoCloseSomeone)
         Me.tabSortAndBL.Controls.Add(Me.btnTest)
         Me.tabSortAndBL.Controls.Add(Label5)
         Me.tabSortAndBL.Controls.Add(Label4)
@@ -1507,7 +1530,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtBotSort.Multiline = True
         Me.txtBotSort.Name = "txtBotSort"
         Me.txtBotSort.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.txtBotSort.Size = New System.Drawing.Size(130, 168)
+        Me.txtBotSort.Size = New System.Drawing.Size(130, 150)
         Me.txtBotSort.TabIndex = 1
         Me.txtBotSort.Text = "Someone"
         '
@@ -1517,7 +1540,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtTopSort.Multiline = True
         Me.txtTopSort.Name = "txtTopSort"
         Me.txtTopSort.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.txtTopSort.Size = New System.Drawing.Size(130, 168)
+        Me.txtTopSort.Size = New System.Drawing.Size(130, 150)
         Me.txtTopSort.TabIndex = 0
         Me.txtTopSort.Text = "Someone"
         '
@@ -1704,26 +1727,16 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
-        'chkBlockWin
+        'chkAutoCloseSomeone
         '
-        Me.chkBlockWin.AutoSize = True
-        Me.chkBlockWin.Location = New System.Drawing.Point(24, 10)
-        Me.chkBlockWin.Name = "chkBlockWin"
-        Me.chkBlockWin.Size = New System.Drawing.Size(239, 17)
-        Me.chkBlockWin.TabIndex = 24
-        Me.chkBlockWin.Text = "Disable Windows Key when Astonia is Active"
-        Me.chkBlockWin.UseVisualStyleBackColor = True
-        '
-        'chkOnlyEsc
-        '
-        Me.chkOnlyEsc.AutoSize = True
-        Me.chkOnlyEsc.Location = New System.Drawing.Point(24, 33)
-        Me.chkOnlyEsc.Name = "chkOnlyEsc"
-        Me.chkOnlyEsc.Size = New System.Drawing.Size(240, 17)
-        Me.chkOnlyEsc.TabIndex = 25
-        Me.chkOnlyEsc.Text = "Only Send Esc on pressing Alt-Esc or Ctrl-Esc"
-        Me.ttSettings.SetToolTip(Me.chkOnlyEsc, "Only Send Esc to Astonia when pressing Alt-Esc or Ctrl-Esc")
-        Me.chkOnlyEsc.UseVisualStyleBackColor = True
+        Me.chkAutoCloseSomeone.AutoSize = True
+        Me.chkAutoCloseSomeone.Location = New System.Drawing.Point(10, 169)
+        Me.chkAutoCloseSomeone.Name = "chkAutoCloseSomeone"
+        Me.chkAutoCloseSomeone.Size = New System.Drawing.Size(294, 17)
+        Me.chkAutoCloseSomeone.TabIndex = 7
+        Me.chkAutoCloseSomeone.Text = "AutoClose Idled Alts (Only When Someone is Blacklisted)"
+        Me.ttSettings.SetToolTip(Me.chkAutoCloseSomeone, "Alts actually named Someone are exempt" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  and will require a manual close.")
+        Me.chkAutoCloseSomeone.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
@@ -1905,4 +1918,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents btnGoToAdjustHotkey As Button
     Friend WithEvents chkBlockWin As CheckBox
     Friend WithEvents chkOnlyEsc As CheckBox
+    Friend WithEvents chkAutoCloseSomeone As CheckBox
 End Class

@@ -168,6 +168,8 @@ Public NotInheritable Class FrmSettings
         chkBlockWin.Checked = My.Settings.DisableWinKey
         chkOnlyEsc.Checked = My.Settings.OnlyEsc
 
+        chkAutoCloseSomeone.Checked = My.Settings.AutoCloseIdle
+
         validate_hotkey(New Object, New EventArgs)
 
         Hotkey.UnregHotkey(Me)
@@ -505,6 +507,8 @@ Public NotInheritable Class FrmSettings
         Else
             keybHook.Unhook()
         End If
+
+        My.Settings.AutoCloseIdle = chkAutoCloseSomeone.Checked
 
         My.Settings.Save()
 
