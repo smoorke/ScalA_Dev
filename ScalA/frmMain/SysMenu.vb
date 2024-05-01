@@ -39,7 +39,6 @@
                     SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
                 Case Else
                     SendMessage(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
-                    If cmd = 34105 Then cmd = 0
             End Select
         End If
         Return cmd
@@ -92,6 +91,7 @@ End Class
 
 Partial NotInheritable Class FrmMain
     Dim SysMenu As SysMenu
+    Const MC_SETTINGS As Integer = &H8000 + 1337
     Public Sub InitSysMenu()
         SysMenu = New SysMenu(Me)
         If SysMenu Then
@@ -101,8 +101,8 @@ Partial NotInheritable Class FrmMain
                 .SetDefault(SC_CLOSE)
                 'add settings
                 .InsertSeperator(0)
-                .InsertItem(0, &H8000 + 1337, "Se&ttings")
-                .SetBitmaps(&H8000 + 1337, My.Resources.gear_wheel, Nothing)
+                .InsertItem(0, MC_SETTINGS, "Se&ttings")
+                .SetBitmaps(MC_SETTINGS, My.Resources.gear_wheel, Nothing)
             End With
         End If
     End Sub
@@ -127,7 +127,7 @@ Partial NotInheritable Class FrmMain
                 Attach(AltPP)
             End If
 
-            If GetActiveProcessID() = scalaPID AndAlso ret <> 0 Then
+            If GetActiveProcessID() = scalaPID AndAlso ret <> MC_SETTINGS Then
                 Debug.Print($"ShowSysMenu activating {AltPP?.Name}")
                 AltPP?.Activate()
             End If

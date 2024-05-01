@@ -155,10 +155,11 @@ Partial NotInheritable Class FrmMain
                         SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, SC_SIZE, IntPtr.Zero)
                         m.Result = 0
                         Exit Sub
-                    Case &H8000 + 1337
-                        Debug.Print("Settings called by 1337")
+                    Case MC_SETTINGS
+                        Debug.Print("Settings called by sysMenu")
                         FrmSettings.Show()
                         FrmSettings.WindowState = FormWindowState.Normal
+                        Exit Sub
                 End Select
             Case WM_MOVE
                 'Debug.Print($"WM_MOVE {Me.WindowState}")
