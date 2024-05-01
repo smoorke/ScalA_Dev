@@ -530,7 +530,10 @@ Public NotInheritable Class FrmSettings
         BtnTest_Click(Nothing, Nothing)
         FrmMain.tmrHotkeys.Start()
     End Sub
-
+    Private Async Sub FrmSettings_Closed(sender As Object, e As FormClosedEventArgs) Handles Me.Closed
+        Await Task.Delay(50)
+        FrmMain.AltPP?.Activate()
+    End Sub
     Dim rcAstOffsetBase As Rectangle
     Public ScalaMoved As Point
     Dim rcAstOffsetNew As Rectangle
