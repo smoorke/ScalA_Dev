@@ -170,11 +170,13 @@ Public NotInheritable Class FrmSettings
 
         chkAutoCloseSomeone.Checked = My.Settings.AutoCloseIdle
 
-        validate_hotkey(New Object, New EventArgs)
+        validate_hotkey(Nothing, Nothing)
 
         Hotkey.UnregHotkey(Me)
     End Sub
-
+    Private Sub FrmSettings_Shown(sender As Object, e As EventArgs) Handles Me.Shown
+        startup = False
+    End Sub
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case WM_ENTERMENULOOP
@@ -938,6 +940,7 @@ Public NotInheritable Class FrmSettings
         e.Handled = True
     End Sub
 
+    Private init_validate As Boolean = True
     Private Sub validate_hotkey(sender As Object, e As EventArgs) Handles _
                     chkSwitchToOverview.CheckedChanged, chkCycleAlts.CheckedChanged, chkCloseAll.CheckedChanged, chkToggleTopMost.CheckedChanged, chkAlterOverview.CheckedChanged,
                     chkStoAlt.CheckedChanged, chkStoCtrl.CheckedChanged, chkStoShift.CheckedChanged, txtStoKey.KeyUp, chkStoWin.CheckedChanged,
@@ -949,6 +952,9 @@ Public NotInheritable Class FrmSettings
                     chkAlterOverviewPlusALt.CheckedChanged, chkAlterOverviewPlusCtrl.CheckedChanged, chkAlterOverviewPlusShift.CheckedChanged, txtAlterOverviewPlusKey.KeyUp, chkAlterOverviewPlusWin.CheckedChanged,
                     chkAlterOverviewStarAlt.CheckedChanged, chkAlterOverviewStarCtrl.CheckedChanged, chkAlterOverviewStarShift.CheckedChanged, txtAlterOverviewStarKey.KeyUp, chkAlterOverviewStarWin.CheckedChanged,
                     chkBlockWin.CheckedChanged
+
+        If sender Is Nothing Then init_validate = False
+        If init_validate Then Exit Sub
 
         Debug.Print($"Validate {sender} {e?.GetType}")
 
@@ -1061,10 +1067,6 @@ Public NotInheritable Class FrmSettings
 
     Private Sub tbcSettings_SelectedIndexChanged(sender As TabControl, e As EventArgs) Handles tbcSettings.SelectedIndexChanged
         My.Settings.remeberSettingsTab = sender.SelectedIndex
-    End Sub
-
-    Private Sub FrmSettings_Shown(sender As Object, e As EventArgs) Handles Me.Shown
-        startup = False
     End Sub
 
     Private Sub chkApplyAlterNormal_CheckedChanged(sender As Object, e As EventArgs) Handles chkMinMaxOnSwitch.CheckedChanged
