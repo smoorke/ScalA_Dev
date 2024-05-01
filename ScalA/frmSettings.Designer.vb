@@ -83,6 +83,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtAlterOverviewMinKey = New System.Windows.Forms.TextBox()
         Me.txtAlterOverviewPlusKey = New System.Windows.Forms.TextBox()
         Me.chkOnlyEsc = New System.Windows.Forms.CheckBox()
+        Me.chkAutoCloseSomeone = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
@@ -167,7 +168,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
-        Me.chkAutoCloseSomeone = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
@@ -790,9 +790,21 @@ Partial NotInheritable Class FrmSettings
         Me.chkOnlyEsc.Name = "chkOnlyEsc"
         Me.chkOnlyEsc.Size = New System.Drawing.Size(240, 17)
         Me.chkOnlyEsc.TabIndex = 25
+        Me.chkOnlyEsc.TabStop = False
         Me.chkOnlyEsc.Text = "Only Send Esc on pressing Alt-Esc or Ctrl-Esc"
         Me.ttSettings.SetToolTip(Me.chkOnlyEsc, "Only Send Esc to Astonia when pressing Alt-Esc or Ctrl-Esc")
         Me.chkOnlyEsc.UseVisualStyleBackColor = True
+        '
+        'chkAutoCloseSomeone
+        '
+        Me.chkAutoCloseSomeone.AutoSize = True
+        Me.chkAutoCloseSomeone.Location = New System.Drawing.Point(10, 169)
+        Me.chkAutoCloseSomeone.Name = "chkAutoCloseSomeone"
+        Me.chkAutoCloseSomeone.Size = New System.Drawing.Size(294, 17)
+        Me.chkAutoCloseSomeone.TabIndex = 7
+        Me.chkAutoCloseSomeone.Text = "AutoClose Idled Alts (Only When Someone is Blacklisted)"
+        Me.ttSettings.SetToolTip(Me.chkAutoCloseSomeone, "Alts actually named Someone are exempt" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  and will require a manual close.")
+        Me.chkAutoCloseSomeone.UseVisualStyleBackColor = True
         '
         'tbcSettings
         '
@@ -973,6 +985,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkBlockWin.Name = "chkBlockWin"
         Me.chkBlockWin.Size = New System.Drawing.Size(239, 17)
         Me.chkBlockWin.TabIndex = 24
+        Me.chkBlockWin.TabStop = False
         Me.chkBlockWin.Text = "Disable Windows Key when Astonia is Active"
         Me.chkBlockWin.UseVisualStyleBackColor = True
         '
@@ -1726,17 +1739,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.TabIndex = 2
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
-        '
-        'chkAutoCloseSomeone
-        '
-        Me.chkAutoCloseSomeone.AutoSize = True
-        Me.chkAutoCloseSomeone.Location = New System.Drawing.Point(10, 169)
-        Me.chkAutoCloseSomeone.Name = "chkAutoCloseSomeone"
-        Me.chkAutoCloseSomeone.Size = New System.Drawing.Size(294, 17)
-        Me.chkAutoCloseSomeone.TabIndex = 7
-        Me.chkAutoCloseSomeone.Text = "AutoClose Idled Alts (Only When Someone is Blacklisted)"
-        Me.ttSettings.SetToolTip(Me.chkAutoCloseSomeone, "Alts actually named Someone are exempt" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  and will require a manual close.")
-        Me.chkAutoCloseSomeone.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
