@@ -1,3 +1,10 @@
+**ScalA 1.6.3**
+Fixed Sometimes selecting an alt doesn't set keyboard focus correctly.
+Fixed Closing legacy clients through other means than `F12` or clicking `Exit` can cause graphical glitches.
+Fixed Hotkey validation in settings is wonky and doesn't take `Disable Win` into account.
+Added setting to enable Autoclosing of idled alts.
+Amended Hotkey settings textbox background denoting waiting for input.
+
 **ScalA 1.6.2**
 Fixed On certain servers an extra `bin/moac.exe` gets added to the target when creating shortcuts in QuickLaunch.
 Defaulted `Only Send Esc` to off. (Hopefully this mitigates Windows Defender false positive)
