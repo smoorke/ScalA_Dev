@@ -184,6 +184,72 @@ Public NotInheritable Class FrmSettings
             Case WM_EXITMENULOOP
                 SysMenu.Visible = False
         End Select
+        If Me.Owner Is Nothing Then 'this to address ghost form when closing settings.
+            Select Case m.Msg
+                Case WM_ENTERMENULOOP
+                    Debug.Print("GhostSettings EnterMenuLoop")
+                    FrmMain.AltPP?.Activate()
+                    Me.Close()
+                    Exit Sub
+                Case WM_KEYDOWN
+                    Debug.Print($"GhostSettings WM_KEYDOWN {m.WParam} {m.LParam}")
+                    Debug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
+                    If FrmMain.cboAlt.SelectedIndex > 0 Then
+                        FrmMain.AltPP.Activate()
+                        Dim key As Keys = m.WParam
+                        If Not FrmMain.AltPP.isSDL Then
+                            SendMessage(FrmMain.AltPP.MainWindowHandle, WM_KEYDOWN, key, IntPtr.Zero)
+                        Else
+                            Dim scan As Byte = New LParamMap(m.LParam)
+                            If key = Keys.Escape OrElse (key >= Keys.F1 AndAlso key <= Keys.F12) OrElse
+                               key = Keys.Back Then
+                                SendScanKey(scan)
+                            ElseIf key = Keys.Delete OrElse key = Keys.PageUp OrElse key = Keys.PageDown OrElse
+                                   key = Keys.End OrElse key = Keys.Home Then
+                                SendScanKeyEx(scan)
+                            Else
+                                SendKey(key)
+                            End If
+                        End If
+                    End If
+                    'Me.Close()
+                    Exit Sub
+                Case WM_KEYUP
+                    Debug.Print($"GhostSettings WM_KEYUP {m.WParam} {m.LParam}")
+                    Debug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
+                    If FrmMain.cboAlt.SelectedIndex > 0 Then
+                        FrmMain.AltPP.Activate()
+                        Dim scan As Byte = New LParamMap(m.LParam)
+                        If scan = 28 Then
+                            If Not FrmMain.AltPP.isSDL Then
+                                SendKeys.Send("{ENTER}")
+                            Else
+                                SendScanKey(scan)
+                            End If
+                        End If
+                    End If
+                    'Me.Close()
+                    Exit Sub
+                Case WM_CHAR
+                    Debug.Print($"GhostSettings WM_CHAR {m.WParam} {m.LParam}")
+                    Debug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
+                    If FrmMain.cboAlt.SelectedIndex > 0 Then
+                        FrmMain.AltPP.Activate()
+                        If Not FrmMain.AltPP.isSDL Then
+                            SendMessage(FrmMain.AltPP.MainWindowHandle, WM_CHAR, m.WParam, IntPtr.Zero)
+                        End If
+                    End If
+                    'Me.Close()
+                Case WM_SYSKEYDOWN
+                    Debug.Print($"GhostSettings WM_SYSKEY {m.WParam} {m.LParam}")
+                    If FrmMain.cboAlt.SelectedIndex > 0 Then
+                        FrmMain.AltPP.Activate()
+                    End If
+                    'Me.Close()
+                    Exit Sub
+            End Select
+
+        End If
         MyBase.WndProc(m)
     End Sub
 
@@ -532,8 +598,9 @@ Public NotInheritable Class FrmSettings
         BtnTest_Click(Nothing, Nothing)
         FrmMain.tmrHotkeys.Start()
     End Sub
-    Private Async Sub FrmSettings_Closed(sender As Object, e As FormClosedEventArgs) Handles Me.Closed
-        Await Task.Delay(50)
+    Private Async Sub FrmSettings_Closed(sender As Form, e As FormClosedEventArgs) Handles Me.Closed
+        Debug.Print($"frmSettings.Closed {e.CloseReason} ""{sender.Owner}""")
+        Await Task.Delay(100) 'hardcoded delay no good. failsafe in wndproc
         FrmMain.AltPP?.Activate()
     End Sub
     Dim rcAstOffsetBase As Rectangle
@@ -922,10 +989,6 @@ Public NotInheritable Class FrmSettings
         chkAlterOverviewMinWin.Enabled = Not sender.Checked
         chkAlterOverviewPlusWin.Enabled = Not sender.Checked
         chkAlterOverviewStarWin.Enabled = Not sender.Checked
-    End Sub
-
-    Private Sub chkBlockWin_CheckedChanged(sender As Object, e As EventArgs) Handles chkBlockWin.CheckedChanged
-
     End Sub
 
     Private Sub chkOverViewIsGame_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkOverViewIsGame.CheckedChanged
