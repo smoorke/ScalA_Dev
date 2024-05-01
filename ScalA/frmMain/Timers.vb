@@ -838,9 +838,8 @@ Partial NotInheritable Class FrmMain
 
 
         If My.Settings.AutoCloseIdle AndAlso blackList.Contains("Someone") Then
-            For Each ap In AstoniaProcess.EnumSomeone(True).
-                    Where(Function(pp) Not String.IsNullOrEmpty(pp.LoggedInAs) AndAlso pp.LoggedInAs <> "Someone")
-                Debug.Print($"Autoclose {ap.Name} ""{ap.LoggedInAs}""")
+            For Each ap In AstoniaProcess.EnumSomeone(True).Where(Function(p) p.hasLoggedIn)
+                Debug.Print($"Autoclose {ap.Name} ""{ap.hasLoggedIn}""")
                 ap.CloseOrKill()
             Next
         End If

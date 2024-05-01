@@ -280,7 +280,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Private Shared ReadOnly memCache As New System.Runtime.Caching.MemoryCache("nameCache")
     Private Shared ReadOnly cacheItemPolicy As New System.Runtime.Caching.CacheItemPolicy With {
                     .SlidingExpiration = TimeSpan.FromMinutes(1)} ' Cache for 1 minute with sliding expiration
-    Public LoggedInAs As String = String.Empty
+    Public hasLoggedIn As Boolean = False
     Public ReadOnly Property Name As String
         Get
             If _proc Is Nothing Then Return "Someone"
@@ -296,7 +296,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 End If
                 Dim nam As String = Strings.Left(_proc.MainWindowTitle, _proc.MainWindowTitle.IndexOf(" - "))
                 memCache.Set(_proc.Id, nam, cacheItemPolicy)
-                If nam <> "Someone" AndAlso Not String.IsNullOrEmpty(nam) Then LoggedInAs = nam
+                If nam <> "Someone" AndAlso Not String.IsNullOrEmpty(nam) Then hasLoggedIn = True
                 Return nam
             Catch
                 Debug.Print("Name exception")
