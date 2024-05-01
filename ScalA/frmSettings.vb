@@ -867,6 +867,7 @@ Public NotInheritable Class FrmSettings
         End Select
         Debug.Print($"key: {e.KeyCode}")
     End Sub
+
     Private Async Sub CheckNowToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CheckNowToolStripMenuItem.Click
         Try
             Using response As HttpResponseMessage = Await FrmMain.client.GetAsync("https://github.com/smoorke/ScalA/releases/download/ScalA/version")
@@ -927,9 +928,10 @@ Public NotInheritable Class FrmSettings
     End Sub
 
 
-    Private Sub TextBox1_KeyPress(sender As Object, e As KeyPressEventArgs) Handles _
+    Private Sub TextVarious_KeyPress(sender As TextBox, e As KeyPressEventArgs) Handles _
             txtStoKey.KeyPress, txtCycleKeyUp.KeyPress, txtCycleKeyDown.KeyPress, txtCloseAll.KeyPress, txtTogTop.KeyPress,
             txtAlterOverviewMinKey.KeyPress, txtAlterOverviewPlusKey.KeyPress, txtAlterOverviewStarKey.KeyPress
+        tabHotkeys.ScrollControlIntoView(sender)
         e.Handled = True
     End Sub
 
@@ -942,19 +944,26 @@ Public NotInheritable Class FrmSettings
                     chkTogTopAlt.CheckedChanged, chkTogTopCtrl.CheckedChanged, chkTogTopShift.CheckedChanged, txtTogTop.KeyUp, chkTogTopWin.CheckedChanged,
                     chkAlterOverviewMinAlt.CheckedChanged, chkAlterOverviewMinCtrl.CheckedChanged, chkAlterOverviewMinShift.CheckedChanged, txtAlterOverviewMinKey.KeyUp, chkAlterOverviewMinWin.CheckedChanged,
                     chkAlterOverviewPlusALt.CheckedChanged, chkAlterOverviewPlusCtrl.CheckedChanged, chkAlterOverviewPlusShift.CheckedChanged, txtAlterOverviewPlusKey.KeyUp, chkAlterOverviewPlusWin.CheckedChanged,
-                    chkAlterOverviewStarAlt.CheckedChanged, chkAlterOverviewStarCtrl.CheckedChanged, chkAlterOverviewStarShift.CheckedChanged, txtAlterOverviewStarKey.KeyUp, chkAlterOverviewStarWin.CheckedChanged
+                    chkAlterOverviewStarAlt.CheckedChanged, chkAlterOverviewStarCtrl.CheckedChanged, chkAlterOverviewStarShift.CheckedChanged, txtAlterOverviewStarKey.KeyUp, chkAlterOverviewStarWin.CheckedChanged,
+                    chkBlockWin.CheckedChanged
+
+        Debug.Print($"Validate {sender} {e?.GetType}")
+
+
         Dim modi As Hotkey.KeyModifier
         Hotkey.UnregHotkey(FrmMain)
+        Hotkey.UnregHotkey(Me)
 
         If chkSwitchToOverview.Checked Then
             modi = Hotkey.KeyModifier.None
             If chkStoAlt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
             If chkStoCtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
             If chkStoShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
-            If chkStoWin.Checked Then modi = modi Or Hotkey.KeyModifier.Winkey
+            If chkStoWin.Checked Then modi = modi Or If(chkBlockWin.Checked, 0, Hotkey.KeyModifier.Winkey)
             If Hotkey.RegisterHotkey(Me, 1, modi, StoKey) Then
                 txtStoKey.ForeColor = Color.Black
             Else
+                Debug.Print("Invalid hotkey")
                 txtStoKey.ForeColor = Color.Red
             End If
         End If
@@ -964,7 +973,7 @@ Public NotInheritable Class FrmSettings
             If chkCycleDownAlt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
             If chkCycleDownCtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
             If chkCycleDownShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
-            If chkCycleDownWin.Checked Then modi = modi Or Hotkey.KeyModifier.Winkey
+            If chkCycleDownWin.Checked Then modi = modi Or If(chkBlockWin.Checked, 0, Hotkey.KeyModifier.Winkey)
             If Hotkey.RegisterHotkey(Me, 3, modi, CycleKeyDown) Then
                 txtCycleKeyDown.ForeColor = Color.Black
             Else
@@ -975,7 +984,7 @@ Public NotInheritable Class FrmSettings
             If chkCycleUpAlt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
             If chkCycleUpCtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
             If chkCycleUpShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
-            If chkCycleUpWin.Checked Then modi = modi Or Hotkey.KeyModifier.Winkey
+            If chkCycleUpWin.Checked Then modi = modi Or If(chkBlockWin.Checked, 0, Hotkey.KeyModifier.Winkey)
             If Hotkey.RegisterHotkey(Me, 2, modi, CycleKeyUp) Then
                 txtCycleKeyUp.ForeColor = Color.Black
             Else
@@ -988,7 +997,7 @@ Public NotInheritable Class FrmSettings
             If chkCAALt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
             If chkCACtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
             If chkCAShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
-            If chkCAWin.Checked Then modi = modi Or Hotkey.KeyModifier.Winkey
+            If chkCAWin.Checked Then modi = modi Or If(chkBlockWin.Checked, 0, Hotkey.KeyModifier.Winkey)
             If Hotkey.RegisterHotkey(Me, 4, modi, CloseAllKey) Then
                 txtCloseAll.ForeColor = Color.Black
             Else
@@ -1014,7 +1023,7 @@ Public NotInheritable Class FrmSettings
             If chkAlterOverviewPlusALt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
             If chkAlterOverviewPlusCtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
             If chkAlterOverviewPlusShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
-            If chkAlterOverviewPlusWin.Checked Then modi = modi Or Hotkey.KeyModifier.Winkey
+            If chkAlterOverviewPlusWin.Checked Then modi = modi Or If(chkBlockWin.Checked, 0, Hotkey.KeyModifier.Winkey)
             If Hotkey.RegisterHotkey(Me, 6, modi, AlterOvervieKeyPlus) Then
                 txtAlterOverviewPlusKey.ForeColor = Color.Black
             Else
@@ -1025,7 +1034,7 @@ Public NotInheritable Class FrmSettings
             If chkAlterOverviewMinAlt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
             If chkAlterOverviewMinCtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
             If chkAlterOverviewMinShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
-            If chkAlterOverviewMinWin.Checked Then modi = modi Or Hotkey.KeyModifier.Winkey
+            If chkAlterOverviewMinWin.Checked Then modi = modi Or If(chkBlockWin.Checked, 0, Hotkey.KeyModifier.Winkey)
             If Hotkey.RegisterHotkey(Me, 7, modi, AlterOvervieKeyMin) Then
                 txtAlterOverviewMinKey.ForeColor = Color.Black
             Else
@@ -1036,7 +1045,7 @@ Public NotInheritable Class FrmSettings
             If chkAlterOverviewStarAlt.Checked Then modi = modi Or Hotkey.KeyModifier.Alt
             If chkAlterOverviewStarCtrl.Checked Then modi = modi Or Hotkey.KeyModifier.Control
             If chkAlterOverviewStarShift.Checked Then modi = modi Or Hotkey.KeyModifier.Shift
-            If chkAlterOverviewStarWin.Checked Then modi = modi Or Hotkey.KeyModifier.Winkey
+            If chkAlterOverviewStarWin.Checked Then modi = modi Or If(chkBlockWin.Checked, 0, Hotkey.KeyModifier.Winkey)
             If Hotkey.RegisterHotkey(Me, 8, modi, AlterOvervieKeyStar) Then
                 txtAlterOverviewStarKey.ForeColor = Color.Black
             Else
@@ -1065,5 +1074,15 @@ Public NotInheritable Class FrmSettings
         If sender.checked Then
             chkMinMaxOnSwitch.Checked = False
         End If
+    End Sub
+
+    Private Sub txtHotkeys_GotFocus(sender As TextBox, e As EventArgs) Handles txtStoKey.GotFocus, txtCycleKeyUp.GotFocus, txtCycleKeyDown.GotFocus,
+        txtCloseAll.GotFocus, txtTogTop.GotFocus, txtAlterOverviewMinKey.GotFocus, txtAlterOverviewPlusKey.GotFocus, txtAlterOverviewStarKey.GotFocus
+
+        sender.BackColor = Color.LightYellow
+    End Sub
+    Private Sub txtHotkeys_LostFocus(sender As Object, e As EventArgs) Handles txtStoKey.LostFocus, txtCycleKeyUp.LostFocus, txtCycleKeyDown.LostFocus,
+        txtCloseAll.LostFocus, txtTogTop.LostFocus, txtAlterOverviewMinKey.LostFocus, txtAlterOverviewPlusKey.LostFocus, txtAlterOverviewStarKey.LostFocus
+        sender.backColor = Color.White
     End Sub
 End Class
