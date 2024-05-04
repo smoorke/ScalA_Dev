@@ -1099,6 +1099,18 @@ Namespace My
                 Me("AutoCloseIdle") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property NoAltTab() As Boolean
+            Get
+                Return CType(Me("NoAltTab"),Boolean)
+            End Get
+            Set
+                Me("NoAltTab") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

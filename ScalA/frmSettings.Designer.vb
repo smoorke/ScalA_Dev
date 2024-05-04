@@ -168,6 +168,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
+        Me.chkNoAltTab = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
@@ -786,7 +787,7 @@ Partial NotInheritable Class FrmSettings
         'chkOnlyEsc
         '
         Me.chkOnlyEsc.AutoSize = True
-        Me.chkOnlyEsc.Location = New System.Drawing.Point(24, 33)
+        Me.chkOnlyEsc.Location = New System.Drawing.Point(24, 38)
         Me.chkOnlyEsc.Name = "chkOnlyEsc"
         Me.chkOnlyEsc.Size = New System.Drawing.Size(240, 17)
         Me.chkOnlyEsc.TabIndex = 25
@@ -958,6 +959,7 @@ Partial NotInheritable Class FrmSettings
         'tabHotkeys
         '
         Me.tabHotkeys.AutoScroll = True
+        Me.tabHotkeys.Controls.Add(Me.chkNoAltTab)
         Me.tabHotkeys.Controls.Add(Me.chkOnlyEsc)
         Me.tabHotkeys.Controls.Add(Me.chkBlockWin)
         Me.tabHotkeys.Controls.Add(Me.chkAlterOverview)
@@ -981,7 +983,7 @@ Partial NotInheritable Class FrmSettings
         'chkBlockWin
         '
         Me.chkBlockWin.AutoSize = True
-        Me.chkBlockWin.Location = New System.Drawing.Point(24, 10)
+        Me.chkBlockWin.Location = New System.Drawing.Point(24, 2)
         Me.chkBlockWin.Name = "chkBlockWin"
         Me.chkBlockWin.Size = New System.Drawing.Size(239, 17)
         Me.chkBlockWin.TabIndex = 24
@@ -1740,6 +1742,19 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
+        'chkNoAltTab
+        '
+        Me.chkNoAltTab.AutoSize = True
+        Me.chkNoAltTab.Location = New System.Drawing.Point(24, 20)
+        Me.chkNoAltTab.Name = "chkNoAltTab"
+        Me.chkNoAltTab.Size = New System.Drawing.Size(209, 17)
+        Me.chkNoAltTab.TabIndex = 26
+        Me.chkNoAltTab.TabStop = False
+        Me.chkNoAltTab.Text = "Disable Alt-Tab when Astonia Is Active"
+        Me.ttSettings.SetToolTip(Me.chkNoAltTab, "Note you can still use Ctrl-Alt-Tab to bring up the task switcher" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "and then press" &
+        " space to swith applications.")
+        Me.chkNoAltTab.UseVisualStyleBackColor = True
+        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1921,4 +1936,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents chkBlockWin As CheckBox
     Friend WithEvents chkOnlyEsc As CheckBox
     Friend WithEvents chkAutoCloseSomeone As CheckBox
+    Friend WithEvents chkNoAltTab As CheckBox
 End Class

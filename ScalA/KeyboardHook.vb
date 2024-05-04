@@ -96,11 +96,19 @@ Public Class KeyboardHook : Implements IDisposable
                     End Using
                 End If
             Case WM_SYSKEYDOWN
-                If My.Settings.OnlyEsc AndAlso Marshal.PtrToStructure(Of UInteger)(lParam) = Keys.Escape Then
+                Dim key As Keys = Marshal.PtrToStructure(Of UInteger)(lParam)
+                If My.Settings.OnlyEsc AndAlso key = Keys.Escape Then
                     Using proc As Process = Process.GetProcessById(GetActiveProcessID())
                         If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
                             Debug.Print("alt esc")
                             SendInput(AltEscKeyInput.Count, AltEscKeyInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                            Return 1
+                        End If
+                    End Using
+                End If
+                If My.Settings.NoAltTab AndAlso key = Keys.Tab Then
+                    Using proc As Process = Process.GetProcessById(GetActiveProcessID())
+                        If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
                             Return 1
                         End If
                     End Using

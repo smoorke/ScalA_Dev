@@ -480,6 +480,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public Shared Function EnumSomeone(Optional usecache As Boolean = False) As IEnumerable(Of AstoniaProcess)
         If exeSettingCache <> My.Settings.exe Then
             exeCache = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
+            exeSettingCache = My.Settings.exe
         End If
         Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p)
                                                                                         If usecache Then
@@ -494,6 +495,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public Shared Function EnumAll() As IEnumerable(Of AstoniaProcess)
         If exeSettingCache <> My.Settings.exe Then
             exeCache = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
+            exeSettingCache = My.Settings.exe
         End If
         Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p) New AstoniaProcess(p))) _
             .Where(Function(ap) ap.IsAstoniaClass())
@@ -503,6 +505,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         'todo move updating cache to frmSettings
         If exeSettingCache <> My.Settings.exe Then
             exeCache = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
+            exeSettingCache = My.Settings.exe
         End If
 
         Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p) If(useCache, GetFromCache(p), New AstoniaProcess(p)))) _
@@ -627,11 +630,11 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Return GetWindowLong(Me.MainWindowHandle, GWL_STYLE) And WindowStyles.WS_BORDER
     End Function
 
-    Dim br As New SolidBrush(Color.FromArgb(&HFFFF0400))
-    Dim bo As New SolidBrush(Color.FromArgb(&HFFFF7D29))
-    Dim by As New SolidBrush(Color.FromArgb(186, 186, 30))
-    Dim bl As New SolidBrush(Color.FromArgb(217, 217, 30))
-    Dim bb As New SolidBrush(Color.FromArgb(&HFF297DFF))
+    ReadOnly br As New SolidBrush(Color.FromArgb(&HFFFF0400))
+    ReadOnly bo As New SolidBrush(Color.FromArgb(&HFFFF7D29))
+    ReadOnly by As New SolidBrush(Color.FromArgb(186, 186, 30))
+    ReadOnly bl As New SolidBrush(Color.FromArgb(217, 217, 30))
+    ReadOnly bb As New SolidBrush(Color.FromArgb(&HFF297DFF))
 
     Public Function GetHealthbar(Optional width As Integer = 75, Optional height As Integer = 15) As Bitmap
         Dim bmp As New Bitmap(width, height)

@@ -509,7 +509,7 @@ Partial Public NotInheritable Class FrmMain
 
         AddHandler Application.Idle, AddressOf Application_Idle
 
-        If My.Settings.DisableWinKey OrElse My.Settings.OnlyEsc Then keybHook.Hook()
+        If My.Settings.DisableWinKey OrElse My.Settings.OnlyEsc OrElse My.Settings.NoAltTab Then keybHook.Hook()
 
         'spawn IPC waiter thread
         Dim waitThread As New Threading.Thread(AddressOf IPC.SelectSemaThread) With {.IsBackground = True}

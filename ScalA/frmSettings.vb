@@ -166,6 +166,7 @@ Public NotInheritable Class FrmSettings
         chkMinMaxOnSwitch.Checked = My.Settings.MaxNormOverview
 
         chkBlockWin.Checked = My.Settings.DisableWinKey
+        chkNoAltTab.Checked = My.Settings.NoAltTab
         chkOnlyEsc.Checked = My.Settings.OnlyEsc
 
         chkAutoCloseSomeone.Checked = My.Settings.AutoCloseIdle
@@ -568,9 +569,10 @@ Public NotInheritable Class FrmSettings
         My.Settings.MaxNormOverview = chkMinMaxOnSwitch.Checked
 
         My.Settings.DisableWinKey = chkBlockWin.Checked
+        My.Settings.NoAltTab = chkNoAltTab.Checked
         My.Settings.OnlyEsc = chkOnlyEsc.Checked
 
-        If My.Settings.DisableWinKey OrElse My.Settings.OnlyEsc Then
+        If My.Settings.DisableWinKey OrElse My.Settings.OnlyEsc OrElse My.Settings.NoAltTab Then
             keybHook.Hook()
         Else
             keybHook.Unhook()
@@ -600,7 +602,7 @@ Public NotInheritable Class FrmSettings
     End Sub
     Private Async Sub FrmSettings_Closed(sender As Form, e As FormClosedEventArgs) Handles Me.Closed
         Debug.Print($"frmSettings.Closed {e.CloseReason} ""{sender.Owner}""")
-        Await Task.Delay(100) 'hardcoded delay no good. failsafe in wndproc
+        Await Task.Delay(100) 'hardcoded delay only partially effective. failsafe in wndproc
         FrmMain.AltPP?.Activate()
     End Sub
     Dim rcAstOffsetBase As Rectangle
