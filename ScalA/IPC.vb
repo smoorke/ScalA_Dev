@@ -216,8 +216,8 @@ Module IPC
         Public isOnOverview As Boolean
         Public handle As IntPtr
         Public AltPPid As Integer
+        Public showingSomeones As Boolean
 
-        Private padding1 As Long
         Private padding2 As Long
         Private Padding3 As Long
         Private padding4 As Long
@@ -232,11 +232,12 @@ Module IPC
             Return i1.pid <> i2.pid
         End Operator
 
-        Public Sub New(pid As Integer, overview? As Boolean, APid? As Integer)
+        Public Sub New(pid As Integer, overview? As Boolean, APid? As Integer, showingSome? As Boolean)
             Me.pid = pid
             If overview IsNot Nothing Then Me.isOnOverview = overview
             Me.handle = FrmMain.ScalaHandle
             If APid IsNot Nothing Then Me.AltPPid = APid
+            If showingSome IsNot Nothing Then Me.showingSomeones = showingSome
         End Sub
 
     End Structure
@@ -247,7 +248,7 @@ Module IPC
     'Private _Instances() As ScalAInfo
     Private _mutex As New Mutex(False, "ScalA_IPCInstances_Mutex")
 
-    Public Sub AddOrUpdateInstance(id As Integer, Optional overview? As Boolean = Nothing, Optional apID? As Integer = Nothing)
+    Public Sub AddOrUpdateInstance(id As Integer, Optional overview? As Boolean = Nothing, Optional apID? As Integer = Nothing, Optional showsome? As Boolean = Nothing)
         _mutex.WaitOne()
         Try
             Dim sharednum = _mmvaInstances.ReadInt32(0)
@@ -261,7 +262,16 @@ Module IPC
                 ' The instance does not exist, you can add it now
                 ' todo: find an index that has an empty instance
                 ReDim Preserve _Instances(sharednum)
-                _Instances(sharednum) = New ScalAInfo(id, overview, apID)
+
+
+                ' Dim showingsome = False // My.Settings.Whitelist todo complete this
+
+                'Dim showsome = Not FrmMain.blackList.Contains("Someone") AndAlso
+                '                  (Not FrmMain.topSortList.Contains("Someone") OrElse
+                '                   Not FrmMain.botSortList.Contains("Someone"))
+
+
+                _Instances(sharednum) = New ScalAInfo(id, overview, apID, showsome)
 
                 If sharednum <> localnum Then
                     _mmfInstances = MemoryMappedFile.CreateOrOpen($"ScalA_IPCInstances", 4 + Marshal.SizeOf(GetType(ScalAInfo)) * (sharednum + 1))
@@ -275,7 +285,8 @@ Module IPC
                 ' The instance already exists, update the existing instance in the array
                 _Instances(existingIndex) = New ScalAInfo(id,
                                                           If(overview IsNot Nothing, overview, _Instances(existingIndex).isOnOverview),
-                                                          If(apID IsNot Nothing, apID, _Instances(existingIndex).AltPPid))
+                                                          If(apID IsNot Nothing, apID, _Instances(existingIndex).AltPPid),
+                                                          If(showsome IsNot Nothing, showsome, _Instances(existingIndex).showingSomeones))
             End If
             ' Write the array back to the memory-mapped file
             _mmvaInstances.Write(0, _Instances.Length)
