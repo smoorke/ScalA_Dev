@@ -84,8 +84,10 @@ Partial NotInheritable Class FrmSettings
         Me.txtAlterOverviewPlusKey = New System.Windows.Forms.TextBox()
         Me.chkOnlyEsc = New System.Windows.Forms.CheckBox()
         Me.chkAutoCloseSomeone = New System.Windows.Forms.CheckBox()
+        Me.chkNoAltTab = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
+        Me.pb100PWarning = New System.Windows.Forms.PictureBox()
         Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
         Me.btnAddCurrentRes = New System.Windows.Forms.Button()
         Me.btnRestore = New System.Windows.Forms.Button()
@@ -168,7 +170,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
-        Me.chkNoAltTab = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
@@ -203,6 +204,7 @@ Partial NotInheritable Class FrmSettings
         Me.cmsUpdate.SuspendLayout()
         Me.tbcSettings.SuspendLayout()
         Me.tabResolutions.SuspendLayout()
+        CType(Me.pb100PWarning, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.cmsRestore.SuspendLayout()
         Me.cmsGenerate.SuspendLayout()
         Me.tabHotkeys.SuspendLayout()
@@ -807,6 +809,19 @@ Partial NotInheritable Class FrmSettings
         Me.ttSettings.SetToolTip(Me.chkAutoCloseSomeone, "Alts actually named Someone are exempt" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  and will require a manual close.")
         Me.chkAutoCloseSomeone.UseVisualStyleBackColor = True
         '
+        'chkNoAltTab
+        '
+        Me.chkNoAltTab.AutoSize = True
+        Me.chkNoAltTab.Location = New System.Drawing.Point(24, 20)
+        Me.chkNoAltTab.Name = "chkNoAltTab"
+        Me.chkNoAltTab.Size = New System.Drawing.Size(209, 17)
+        Me.chkNoAltTab.TabIndex = 26
+        Me.chkNoAltTab.TabStop = False
+        Me.chkNoAltTab.Text = "Disable Alt-Tab when Astonia Is Active"
+        Me.ttSettings.SetToolTip(Me.chkNoAltTab, "Note you can still use Ctrl-Alt-Tab to bring up the task switcher" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "and then press" &
+        " Space to switch applications.")
+        Me.chkNoAltTab.UseVisualStyleBackColor = True
+        '
         'tbcSettings
         '
         Me.tbcSettings.Appearance = System.Windows.Forms.TabAppearance.FlatButtons
@@ -825,6 +840,7 @@ Partial NotInheritable Class FrmSettings
         '
         'tabResolutions
         '
+        Me.tabResolutions.Controls.Add(Me.pb100PWarning)
         Me.tabResolutions.Controls.Add(Me.ChkSizeBorder)
         Me.tabResolutions.Controls.Add(Me.cboScalingMode)
         Me.tabResolutions.Controls.Add(Label15)
@@ -840,6 +856,17 @@ Partial NotInheritable Class FrmSettings
         Me.tabResolutions.TabIndex = 0
         Me.tabResolutions.Text = "Resolutions"
         Me.tabResolutions.UseVisualStyleBackColor = True
+        '
+        'pb100PWarning
+        '
+        Me.pb100PWarning.BackgroundImage = Global.ScalA.My.Resources.Resources.Warning
+        Me.pb100PWarning.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch
+        Me.pb100PWarning.Location = New System.Drawing.Point(273, 32)
+        Me.pb100PWarning.Name = "pb100PWarning"
+        Me.pb100PWarning.Size = New System.Drawing.Size(18, 18)
+        Me.pb100PWarning.TabIndex = 10
+        Me.pb100PWarning.TabStop = False
+        Me.ttSettings.SetToolTip(Me.pb100PWarning, "Windows Monitor Scaling not 100%" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Pixel Mode Disabled." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
         '
         'ChkSizeBorder
         '
@@ -1742,19 +1769,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
-        'chkNoAltTab
-        '
-        Me.chkNoAltTab.AutoSize = True
-        Me.chkNoAltTab.Location = New System.Drawing.Point(24, 20)
-        Me.chkNoAltTab.Name = "chkNoAltTab"
-        Me.chkNoAltTab.Size = New System.Drawing.Size(209, 17)
-        Me.chkNoAltTab.TabIndex = 26
-        Me.chkNoAltTab.TabStop = False
-        Me.chkNoAltTab.Text = "Disable Alt-Tab when Astonia Is Active"
-        Me.ttSettings.SetToolTip(Me.chkNoAltTab, "Note you can still use Ctrl-Alt-Tab to bring up the task switcher" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "and then press" &
-        " Space to switch applications.")
-        Me.chkNoAltTab.UseVisualStyleBackColor = True
-        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1787,6 +1801,7 @@ Partial NotInheritable Class FrmSettings
         Me.tbcSettings.ResumeLayout(False)
         Me.tabResolutions.ResumeLayout(False)
         Me.tabResolutions.PerformLayout()
+        CType(Me.pb100PWarning, System.ComponentModel.ISupportInitialize).EndInit()
         Me.cmsRestore.ResumeLayout(False)
         Me.cmsGenerate.ResumeLayout(False)
         Me.tabHotkeys.ResumeLayout(False)
@@ -1937,4 +1952,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents chkOnlyEsc As CheckBox
     Friend WithEvents chkAutoCloseSomeone As CheckBox
     Friend WithEvents chkNoAltTab As CheckBox
+    Friend WithEvents pb100PWarning As PictureBox
 End Class

@@ -258,7 +258,13 @@ Partial Public NotInheritable Class FrmMain
         DwmGetWindowAttribute(ScalaHandle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
         Dim rcWind As RECT
         GetWindowRect(ScalaHandle, rcWind)
-        Return Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25
+        Dim percent = Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25
+        If percent = 100 Then
+            FrmSettings.pb100PWarning.Hide()
+        Else
+            FrmSettings.pb100PWarning.Show()
+        End If
+        Return percent
     End Function
 
     Public Function GetScaling(hWnd As IntPtr) As Integer
