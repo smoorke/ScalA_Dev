@@ -171,6 +171,8 @@ Public NotInheritable Class FrmSettings
 
         chkAutoCloseSomeone.Checked = My.Settings.AutoCloseIdle
 
+        pb100PWarning.Visible = FrmMain.WindowsScaling <> 100
+
         validate_hotkey(Nothing, Nothing)
 
         Hotkey.UnregHotkey(Me)
