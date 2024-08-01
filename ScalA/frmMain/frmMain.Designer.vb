@@ -36,6 +36,7 @@ Partial NotInheritable Class FrmMain
         Me.cmbResolution = New ScalA.ThemedComboBox()
         Me.cboAlt = New ScalA.ThemedComboBox()
         Me.pnlTitleBar = New System.Windows.Forms.Panel()
+        Me.lblDebug = New System.Windows.Forms.Label()
         Me.chkDebug = New System.Windows.Forms.CheckBox()
         Me.pnlUpdate = New System.Windows.Forms.Panel()
         Me.pbUpdateAvailable = New System.Windows.Forms.PictureBox()
@@ -196,6 +197,7 @@ Partial NotInheritable Class FrmMain
         'pnlTitleBar
         '
         Me.pnlTitleBar.BackColor = System.Drawing.SystemColors.Control
+        Me.pnlTitleBar.Controls.Add(Me.lblDebug)
         Me.pnlTitleBar.Controls.Add(Me.chkDebug)
         Me.pnlTitleBar.Controls.Add(Me.pnlUpdate)
         Me.pnlTitleBar.Controls.Add(Me.ChkEqLock)
@@ -204,6 +206,16 @@ Partial NotInheritable Class FrmMain
         Me.pnlTitleBar.Name = "pnlTitleBar"
         Me.pnlTitleBar.Size = New System.Drawing.Size(641, 25)
         Me.pnlTitleBar.TabIndex = 14
+        '
+        'lblDebug
+        '
+        Me.lblDebug.AutoSize = True
+        Me.lblDebug.Location = New System.Drawing.Point(500, 7)
+        Me.lblDebug.Name = "lblDebug"
+        Me.lblDebug.Size = New System.Drawing.Size(39, 13)
+        Me.lblDebug.TabIndex = 23
+        Me.lblDebug.Text = "Label1"
+        Me.lblDebug.Visible = False
         '
         'chkDebug
         '
@@ -721,4 +733,5 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents KeepToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents SidebarModeToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents NoOtherScalAsToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents lblDebug As Label
 End Class

@@ -411,7 +411,7 @@ Partial NotInheritable Class FrmMain
                              End Sub)
                 End If
             Case WM_KEYDOWN
-                Debug.Print($"WM_KEYDOWN {m.WParam} {m.LParam}")
+                Debug.Print($"WM_KEYDOWN w:{m.WParam} l:{m.LParam}")
                 Debug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
                 If cboAlt.SelectedIndex > 0 Then
                     AltPP.Activate()
@@ -432,7 +432,7 @@ Partial NotInheritable Class FrmMain
                     End If
                 End If
             Case WM_KEYUP
-                Debug.Print($"WM_KEYUP {m.WParam} {m.LParam}")
+                Debug.Print($"WM_KEYUP w:{m.WParam} l:{m.LParam}")
                 Debug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
                 If cboAlt.SelectedIndex > 0 Then
                     AltPP.Activate()
@@ -446,7 +446,7 @@ Partial NotInheritable Class FrmMain
                     End If
                 End If
             Case WM_CHAR
-                Debug.Print($"WM_CHAR {m.WParam} {m.LParam}")
+                Debug.Print($"WM_CHAR w:{m.WParam} l:{m.LParam}")
                 Debug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
                 If cboAlt.SelectedIndex > 0 Then
                     AltPP.Activate()
@@ -531,10 +531,9 @@ Partial NotInheritable Class FrmMain
             Case &HC059 To &HC2AB ' unknown
 
             Case Else
-                Debug.Print($"Unhandeld WM_ 0x{m.Msg:X8} &H{m.Msg:X8}")
+                Debug.Print($"Unhandeld WM_ 0x{m.Msg:X8} &H{m.Msg:X8} w{m.WParam} {m.LParam}")
 #End If
         End Select
-
         MyBase.WndProc(m)  ' allow form to process this message
     End Sub
 

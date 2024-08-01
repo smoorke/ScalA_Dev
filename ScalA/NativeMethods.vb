@@ -526,7 +526,8 @@ Module NativeMethods
 
     <DllImport("dwmapi.dll")>
     Public Function DwmGetWindowAttribute(hwnd As IntPtr, dwAttribute As Integer, ByRef pvAttribute As RECT, cbAttribute As Integer) As Integer : End Function
-
+    <DllImport("user32.dll")>
+    Public Function SetParent(hWndChild As IntPtr, hWndNewParent As IntPtr) As IntPtr : End Function
     'Public Declare Function DwmGetWindowAttribute Lib "dwmapi" (ByVal hwnd As IntPtr, ByVal dwAttribute As Integer, ByRef pvAttribute As RECT, ByVal cbAttribute As Integer) As Integer
 
     <DllImport("gdi32.dll")>
@@ -534,8 +535,12 @@ Module NativeMethods
     <DllImport("user32.dll")>
     Public Function GetDC(ByVal hwnd As IntPtr) As IntPtr : End Function
     <DllImport("user32.dll")>
-    Public Function ReleaseDC(ByVal hWnd As IntPtr, ByVal hDC As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
-    End Function
+    Public Function ReleaseDC(ByVal hWnd As IntPtr, ByVal hDC As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean : End Function
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function SetLayeredWindowAttributes(hWnd As IntPtr, crKey As UInteger, bAlpha As Byte, dwFlags As UInteger) As Boolean : End Function
+    Public Const LWA_COLORKEY As Integer = &H1
+    Public Const LWA_ALPHA As Integer = &H2
+
 
 #Region " SetWindowPos "
 
@@ -736,7 +741,8 @@ Module NativeMethods
     End Structure
     <DllImport("user32.dll")>
     Public Function GetCursorInfo(ByRef pci As CURSORINFO) As Boolean : End Function
-
+    <DllImport("user32.dll")>
+    Public Function ShowCursor(bShow As Boolean) As Integer : End Function
 
     <DllImport("user32.dll")>
     Public Function GetMenuItemCount(hMenu As IntPtr) As Integer : End Function
@@ -878,6 +884,7 @@ Module NativeMethods
 
     Public Const WM_MOVE = &H3
     Public Const WM_SIZE = &H5
+    Public Const WM_ACTIVATE = &H6
 
     Public Const WM_PAINT = &HF
 
@@ -924,6 +931,7 @@ Module NativeMethods
     Public Const WM_MBUTTONDOWN = &H207
     Public Const WM_MBUTTONUP = &H208
 
+    Public Const WM_MOUSEWHEEL = &H20A
     Public Const WM_XBUTTONDOWN = &H20B
     Public Const WM_XBUTTONUP = &H20C
 
@@ -953,9 +961,17 @@ Module NativeMethods
     <DllImport("User32.Dll")>
     Public Function TrackPopupMenuEx(ByVal hmenu As IntPtr, ByVal fuFlags As UInteger, ByVal x As Integer, ByVal y As Integer, ByVal hwnd As IntPtr, ByVal lptpm As Integer) As Integer : End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>
-    Public Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByVal lParam As IntPtr) As IntPtr : End Function
+    Public Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByVal lParam As IntPtr) As IntPtr : End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>
-    Public Function PostMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByVal lParam As IntPtr) As Boolean : End Function
+    Public Function PostMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByVal lParam As IntPtr) As Boolean : End Function
+
+    Public Function WM_MOUSEMOVE_CreateWParam() As IntPtr
+        Dim wp As Integer
+        wp = wp Or ((Control.MouseButtons >> 20) And &H3)   ' 00000011 (Extract left and right buttons)
+        wp = wp Or ((Control.ModifierKeys >> 14) And &H300) ' 00001100 (Extract Shift and Ctrl keys)
+        wp = wp Or ((Control.MouseButtons >> 18) And &H70)  ' 01110000 (Extract middle and X buttons)
+        Return New IntPtr(wp)
+    End Function
 
 
     <DllImport("kernel32.dll", SetLastError:=True, CharSet:=CharSet.Auto)>

@@ -809,6 +809,8 @@ Public NotInheritable Class FrmSettings
 
         My.Settings.Whitelist = chkWhitelist.Checked
 
+        IPC.AddOrUpdateInstance(FrmMain.scalaPID, FrmMain.cboAlt.SelectedIndex = 0, If(FrmMain.cboAlt.SelectedIndex = 0, Nothing, FrmMain.cboAlt.SelectedItem.id), FrmMain.showingSomeone)
+
 #If DEBUG Then
         Debug.Print("Top:")
         FrmMain.topSortList.ForEach(Sub(el) Debug.Print(el))
@@ -1157,4 +1159,5 @@ Public NotInheritable Class FrmSettings
         txtCloseAll.LostFocus, txtTogTop.LostFocus, txtAlterOverviewMinKey.LostFocus, txtAlterOverviewPlusKey.LostFocus, txtAlterOverviewStarKey.LostFocus
         sender.backColor = Color.White
     End Sub
+
 End Class

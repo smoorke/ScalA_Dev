@@ -219,6 +219,19 @@ Module dBug
             keybHook.Unhook()
         End If
     End Sub
+
+    Friend Sub ipcSize(sender As Object, e As EventArgs)
+        Debug.Print($"IPC Size: {Marshal.SizeOf(GetType(IPC.ScalAInfo))}")
+    End Sub
+
+    Friend Sub dumpApCache(sender As Object, e As EventArgs)
+        Debug.Print($"AP procCache {AstoniaProcess.ProcCache.Count}")
+        Debug.Print($"AP Loggedins {AstoniaProcess.loggedIns.Count}")
+
+        AstoniaProcess.loggedIns.ForEach(Sub(ap As AstoniaProcess)
+                                             Debug.Print($"{ap.Name} {ap.hasLoggedIn}")
+                                         End Sub)
+    End Sub
 End Module
 
 #End If

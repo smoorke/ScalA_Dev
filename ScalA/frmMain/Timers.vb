@@ -83,7 +83,7 @@ Partial NotInheritable Class FrmMain
                     Dim bzB As Rectangle = Me.RectangleToScreen(pbZoom.Bounds)
                     Dim ipt As New Point(movedX.Map(bzB.Left, bzB.Right, 0, rcC.Width),
                                          movedY.Map(bzB.Top, bzB.Bottom, 0, rcC.Height))
-                    SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, WM_MM_GetWParam, New LParamMap(ipt)) 'update client internal mousepos
+                    SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, WM_MOUSEMOVE_CreateWParam, New LParamMap(ipt)) 'update client internal mousepos
                     Debug.Print($"ipt {ipt}")
                 End If
             End If
@@ -118,7 +118,7 @@ Partial NotInheritable Class FrmMain
                                  If Not AltPP.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
                                  If AltPP.IsBelow(ScalaHandle) Then flags.SetFlag(SetWindowPosFlags.IgnoreZOrder)
                                  Dim pt As Point = MousePosition - New Point(newX + AltPP.ClientOffset.X, newY + AltPP.ClientOffset.Y)
-                                 Dim wparam = WM_MM_GetWParam()
+                                 Dim wparam = WM_MOUSEMOVE_CreateWParam()
                                  Dim lparam = New LParamMap(pt)
                                  If prevWMMMpt <> MousePosition Then
                                      SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
@@ -281,7 +281,7 @@ Partial NotInheritable Class FrmMain
                                     Dim bzB As Rectangle = but.RectangleToScreen(but.ThumbRectangle)
                                     Dim ipt As New Point(movedX.Map(bzB.Left, bzB.Right, 0, rccB.Width),
                                                          movedY.Map(bzB.Top, bzB.Bottom, 0, rccB.Height))
-                                    SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, WM_MM_GetWParam, New LParamMap(ipt)) 'update client internal mousepos
+                                    SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, WM_MOUSEMOVE_CreateWParam(), New LParamMap(ipt)) 'update client internal mousepos
                                     Debug.Print($"ipt {ipt}")
                                 End If
                             End If
@@ -365,7 +365,7 @@ Partial NotInheritable Class FrmMain
                                                               If Not but.AP.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
                                                               'If but.Tag?.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                                                               Dim pt As Point = MousePosition - New Point(newXB + ap.ClientOffset.X, newYB + ap.ClientOffset.Y)
-                                                              Dim wparam = WM_MM_GetWParam()
+                                                              Dim wparam = WM_MOUSEMOVE_CreateWParam()
                                                               Dim lparam = New LParamMap(pt)
                                                               If prevWMMMpt <> MousePosition Then
                                                                   SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
@@ -836,12 +836,21 @@ Partial NotInheritable Class FrmMain
         ''locked 🔒
         ''unlocked 🔓
 
-
-        If My.Settings.AutoCloseIdle AndAlso blackList.Contains("Someone") Then
-            For Each ap In AstoniaProcess.EnumSomeone(True).Where(Function(p) p.hasLoggedIn)
-                Debug.Print($"Autoclose {ap.Name} ""{ap.hasLoggedIn}""")
-                ap.CloseOrKill()
-            Next
+        'this does not belong in this hot path
+        If My.Settings.AutoCloseIdle Then 'AndAlso blackList.Contains("Someone") Then
+            Dim listingsomeone = IPC.getInstances.Any(Function(si) si.showingSomeones)
+            'Debug.Print($"autoclosesome {listingsomeone}")
+            If Not listingsomeone Then
+                For Each ap In AstoniaProcess.loggedIns.Where(Function(p) p.Name = "Someone")
+                    'If ap.Name = "Bool" OrElse ap.Name = "Someone" Then Debug.Print($"Autoclose {ap.Name} ""{ap.hasLoggedIn}""")
+                    If ap.hasLoggedIn Then
+                        ap.CloseOrKill()
+                        Debug.Print($"autoclose {ap.loggedInAs}")
+                        AstoniaProcess.loggedIns = AstoniaProcess.loggedIns.FindAll(Function(pp) pp.loggedInAs <> ap.loggedInAs)
+                    End If
+                Next
+                'AstoniaProcess.loggedIns = AstoniaProcess.loggedIns.FindAll(Function(ap) ap.Name <> "Someone")
+            End If
         End If
 
         Dim dummy = Task.Run(Sub() CloseErrorDialog())

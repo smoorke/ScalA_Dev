@@ -281,6 +281,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Private Shared ReadOnly cacheItemPolicy As New System.Runtime.Caching.CacheItemPolicy With {
                     .SlidingExpiration = TimeSpan.FromMinutes(1)} ' Cache for 1 minute with sliding expiration
     Public hasLoggedIn As Boolean = False
+    Public loggedInAs As String = String.Empty
     Public ReadOnly Property Name As String
         Get
             If _proc Is Nothing Then Return "Someone"
@@ -296,11 +297,17 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 End If
                 Dim nam As String = Strings.Left(_proc.MainWindowTitle, _proc.MainWindowTitle.IndexOf(" - "))
                 memCache.Set(_proc.Id, nam, cacheItemPolicy)
-                If nam <> "Someone" AndAlso Not String.IsNullOrEmpty(nam) Then hasLoggedIn = True
+                If nam <> "Someone" AndAlso Not String.IsNullOrEmpty(nam) Then
+                    If loggedIns.Find(Function(ap) ap.Id = Me.Id) Is Nothing Then loggedIns.Add(Me)
+                    loggedInAs = nam
+                    hasLoggedIn = True
+                End If
                 Return nam
-            Catch
-                Debug.Print("Name exception")
-                Return String.Empty
+            Catch ex As InvalidOperationException 'process has exited
+                Return "Someone"
+            Catch ex As Exception
+                Debug.Print($"Name exception {ex.Message}")
+                Return "Someone"
             End Try
         End Get
     End Property
@@ -484,7 +491,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End If
         Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p)
                                                                                         If usecache Then
-                                                                                            Return CType(p, AstoniaProcess)
+                                                                                            Dim ap As AstoniaProcess = GetFromCache(p)
+                                                                                            Return ap
                                                                                         Else
                                                                                             Return New AstoniaProcess(p)
                                                                                         End If
@@ -501,7 +509,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             .Where(Function(ap) ap.IsAstoniaClass())
     End Function
 
-    Private Shared Function ListProcesses(blacklist As IEnumerable(Of String), useCache As Boolean) As List(Of AstoniaProcess)
+    Public Shared Function ListProcesses(blacklist As IEnumerable(Of String), useCache As Boolean) As List(Of AstoniaProcess)
         'todo move updating cache to frmSettings
         If exeSettingCache <> My.Settings.exe Then
             exeCache = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
@@ -519,31 +527,42 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public Shared Function Enumerate(Optional useCache As Boolean = False) As IEnumerable(Of AstoniaProcess)
         Return AstoniaProcess.Enumerate({}, useCache)
     End Function
-    Private Shared _ProcCache As New List(Of AstoniaProcess)
-    Private Shared _CacheCounter As Integer = 0
+    Public Shared ProcCache As New List(Of AstoniaProcess)
+    Public Shared CacheCounter As Integer = 0
+    Public Shared loggedIns As New List(Of AstoniaProcess)
+    'todo: make function to enumerate loggedins for autoclose
+    ' move this whole functionality to a different process?
+    '  set up ipc to control it's settings? 
+    '  how to handle conflicting settings?
+    '  drunk. GENTSE FEESTEN
+
     Private Shared Function GetFromCache(p As Process) As AstoniaProcess
 
-        Return If(_ProcCache.Find(Function(ap)
-                                      If ap.HasExited Then Return False
-                                      Return ap.Id = p.Id
-                                  End Function), New AstoniaProcess(p))
+        Return If(ProcCache.Find(Function(ap)
+                                     If ap.HasExited Then Return False
+                                     'If ap.Id = p.Id Then ' AndAlso (ap.Name = "Bool" OrElse ap.Name = "Someone") Then
+                                     '    Debug.Print($"got from cache {ap.Name} {ap.hasLoggedIn}")
+                                     'End If
+                                     Return ap.Id = p.Id
+                                 End Function), New AstoniaProcess(p))
     End Function
 
-    Public Shared Function Enumerate(blacklist As IEnumerable(Of String), Optional useCache As Boolean = False, Optional resetCacheFirst As Boolean = False) As IEnumerable(Of AstoniaProcess)
-        If resetCacheFirst Then
-            _CacheCounter = 0
-            _ProcCache.Clear()
-        End If
+    Public Shared Function Enumerate(blacklist As IEnumerable(Of String), Optional useCache As Boolean = False) As IEnumerable(Of AstoniaProcess)
+        ', Optional resetCacheFirst As Boolean = False
+        'If resetCacheFirst Then
+        '    _CacheCounter = 0
+        '    _ProcCache.Clear()
+        'End If
         If useCache Then
-            If _CacheCounter = 0 Then
-                _ProcCache = ListProcesses(blacklist, True)
+            If CacheCounter = 0 Then
+                ProcCache = ListProcesses(blacklist, True)
             End If
-            _CacheCounter += 1
-            If _CacheCounter > 5 Then
-                _CacheCounter = 0
-                _ProcCache.RemoveAll(Function(ap) ap.HasExited)
+            CacheCounter += 1
+            If CacheCounter > 5 Then
+                CacheCounter = 0
+                ProcCache.RemoveAll(Function(ap) ap.HasExited)
             End If
-            Return _ProcCache
+            Return ProcCache
         End If
         Return ListProcesses(blacklist, False)
     End Function

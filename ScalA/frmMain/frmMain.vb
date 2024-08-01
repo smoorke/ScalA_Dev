@@ -1,9 +1,26 @@
 ﻿Imports System.Net.Http
-Imports System.Web
 
 Partial Public NotInheritable Class FrmMain
 
     Private _altPP As AstoniaProcess
+
+    Public ReadOnly Property showingSomeone() As Boolean
+        Get
+            Dim a As Boolean = My.Settings.Whitelist
+            Dim b As Boolean = topSortList.Contains("Someone")
+            Dim c As Boolean = botSortList.Contains("Someone")
+            Dim d As Boolean = blackList.Contains("Someone")
+
+            Dim q As Boolean = (Not d OrElse (a AndAlso (b OrElse c))) AndAlso Not (a AndAlso Not b AndAlso Not c AndAlso Not d)
+#If DEBUG Then
+            Debug.Print($"a {a} b {b} c {c} d {d}    q {q}")
+
+            lblDebug.Text = q.ToString
+#End If
+            Return q
+        End Get
+    End Property
+
 
     Public Property AltPP As AstoniaProcess
         Get
@@ -13,7 +30,8 @@ Partial Public NotInheritable Class FrmMain
             If (_altPP Is Nothing AndAlso value IsNot Nothing) OrElse
                (_altPP IsNot Nothing AndAlso value Is Nothing) OrElse
                (_altPP IsNot Nothing AndAlso value IsNot Nothing AndAlso _altPP.Id <> value.Id) Then
-                IPC.AddOrUpdateInstance(scalaPID, cboAlt.SelectedIndex = 0, value?.Id)
+
+                IPC.AddOrUpdateInstance(scalaPID, cboAlt.SelectedIndex = 0, value?.Id, showingSomeone)
                 'IPC.getInstances().FirstOrDefault(Function(si) si.pid = scalaPID)
                 _altPP = value
             End If
@@ -109,7 +127,9 @@ Partial Public NotInheritable Class FrmMain
             End If
             'pnlOverview.SuspendLayout()
             pnlOverview.Show()
-            Dim visbut = UpdateButtonLayout(AstoniaProcess.Enumerate(blackList, True, True).Count)
+            AstoniaProcess.CacheCounter = 0
+            AstoniaProcess.ProcCache.Clear()
+            Dim visbut = UpdateButtonLayout(AstoniaProcess.Enumerate(blackList, True).Count)
             For Each but As AButton In visbut.Where(Function(b) b.Text <> "")
                 but.Image = Nothing
                 but.BackgroundImage = Nothing
@@ -450,17 +470,22 @@ Partial Public NotInheritable Class FrmMain
         test.Items.Add(New ToolStripMenuItem("thumbStuff", Nothing, AddressOf dBug.thumbStuff))
         test.Items.Add(New ToolStripMenuItem("list others", Nothing, AddressOf dBug.listothers))
         test.Items.Add(New ToolStripMenuItem("hookWinKey", Nothing, AddressOf dBug.hookKey))
-
+        test.Items.Add(New ToolStripMenuItem("IPC Size", Nothing, AddressOf dBug.ipcSize))
+        Static dynamicitem3 As New ToolStripMenuItem($"Aborder", Nothing, AddressOf dBug.dumpApCache)
+        test.Items.Add(dynamicitem3)
 
         chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()
                                      Debug.Print("test Opening")
                                      dynamicitem1.Text = $"movebusy {moveBusy}"
                                      dynamicitem2.Text = $"Aborder {AltPP?.hasBorder}"
+                                     dynamicitem3.Text = $"ap cache {AstoniaProcess.ProcCache?.Count}"
                                      UntrapMouse(MouseButtons.Right)
                                      AppActivate(scalaPID)
                                  End Sub
         AddHandler chkDebug.MouseUp, Sub(sen, ev) UntrapMouse(ev.Button)
+
+        lblDebug.Visible = True
 #End If
 
         Dim image = LoadImage(IntPtr.Zero, "#106", 1, 16, 16, 0)
@@ -552,6 +577,7 @@ Partial Public NotInheritable Class FrmMain
         End If
         FrmSizeBorder.Opacity = If(My.Settings.SizingBorder AndAlso Me.WindowState = FormWindowState.Normal, 0.01, 0)
 
+        IPC.AddOrUpdateInstance(scalaPID, cboAlt.SelectedIndex = 0, If(cboAlt.SelectedIndex = 0, Nothing, cboAlt.SelectedItem.id), showingSomeone)
     End Sub
     Friend Shared updateToVersion As String = "Error"
     Friend Shared ReadOnly client As HttpClient = New HttpClient() With {.Timeout = TimeSpan.FromMilliseconds(5000)}
@@ -671,6 +697,7 @@ Partial Public NotInheritable Class FrmMain
             ChkEqLock.ForeColor = Color.Gray
 #If DEBUG Then
             chkDebug.ForeColor = Colors.LightText
+            lblDebug.ForeColor = Colors.LightText
 #End If
         Else
             pnlOverview.BackColor = Color.FromKnownColor(KnownColor.Control)
@@ -683,6 +710,7 @@ Partial Public NotInheritable Class FrmMain
             ChkEqLock.ForeColor = Color.Black
 #If DEBUG Then
             chkDebug.ForeColor = Color.Black
+            lblDebug.ForeColor = Color.Black
 #End If
         End If
 
@@ -1661,17 +1689,25 @@ Partial Public NotInheritable Class FrmMain
         End If
     End Sub
 
-    Private Function WM_MM_GetWParam() As Integer
-        Dim wp As Integer
-        wp = wp Or If(MouseButtons.HasFlag(MouseButtons.Left), MK_LBUTTON, 0)
-        wp = wp Or If(MouseButtons.HasFlag(MouseButtons.Right), MK_RBUTTON, 0)
-        wp = wp Or If(MouseButtons.HasFlag(MouseButtons.Middle), MK_MBUTTON, 0)
-        wp = wp Or If(MouseButtons.HasFlag(MouseButtons.XButton1), MK_XBUTTON1, 0)
-        wp = wp Or If(MouseButtons.HasFlag(MouseButtons.XButton2), MK_XBUTTON2, 0)
-        wp = wp Or If(My.Computer.Keyboard.CtrlKeyDown, MK_CONTROL, 0)
-        wp = wp Or If(My.Computer.Keyboard.ShiftKeyDown, MK_SHIFT, 0)
-        Return wp
-    End Function
+    'Private Function WM_MM_GetWParam() As Integer
+    '    Dim wp As Integer
+    '    wp = wp Or If(MouseButtons.HasFlag(MouseButtons.Left), MK_LBUTTON, 0)
+    '    wp = wp Or If(MouseButtons.HasFlag(MouseButtons.Right), MK_RBUTTON, 0)
+    '    wp = wp Or If(MouseButtons.HasFlag(MouseButtons.Middle), MK_MBUTTON, 0)
+    '    wp = wp Or If(MouseButtons.HasFlag(MouseButtons.XButton1), MK_XBUTTON1, 0)
+    '    wp = wp Or If(MouseButtons.HasFlag(MouseButtons.XButton2), MK_XBUTTON2, 0)
+    '    wp = wp Or If(My.Computer.Keyboard.CtrlKeyDown, MK_CONTROL, 0)
+    '    wp = wp Or If(My.Computer.Keyboard.ShiftKeyDown, MK_SHIFT, 0)
+    '    Return wp
+    'End Function
+
+    'Public Function WM_MOUSEMOVE_CreateWParam() As IntPtr
+    '    Dim wp As Integer
+    '    wp = wp Or ((MouseButtons >> 20) And &H3)   ' 00000011 (Extract left and right buttons)
+    '    wp = wp Or ((ModifierKeys >> 14) And &H300) ' 00001100 (Extract Shift and Ctrl keys)
+    '    wp = wp Or ((MouseButtons >> 18) And &H70)  ' 01110000 (Extract middle and X buttons)
+    '    Return New IntPtr(wp)
+    'End Function
 
     Private Async Sub JiggerMouse()
         prevWMMMpt = New Point
@@ -1683,7 +1719,7 @@ Partial Public NotInheritable Class FrmMain
     Private Sub PnlEqLock_MouseDown(sender As Panel, e As MouseEventArgs) Handles PnlEqLock.MouseDown
         Debug.Print($"pnlEqLock.MouseDown {e.Button}")
 
-        Dim wparam As Integer = WM_MM_GetWParam()
+        Dim wparam = WM_MOUSEMOVE_CreateWParam()
 
         Dim rc As Rectangle
         GetClientRect(AltPP.MainWindowHandle, rc)
@@ -1774,5 +1810,4 @@ Partial Public NotInheritable Class FrmMain
         SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
 
     End Sub
-
 End Class
