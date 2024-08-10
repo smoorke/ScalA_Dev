@@ -228,9 +228,9 @@ Module dBug
         Debug.Print($"AP procCache {AstoniaProcess.ProcCache.Count}")
         Debug.Print($"AP Loggedins {AstoniaProcess.loggedIns.Count}")
 
-        AstoniaProcess.loggedIns.ForEach(Sub(ap As AstoniaProcess)
-                                             Debug.Print($"{ap.Name} {ap.hasLoggedIn}")
-                                         End Sub)
+        AstoniaProcess.loggedIns.ToList.ForEach(Sub(ap As AstoniaProcess)
+                                                    Debug.Print($"{ap.Name} {ap.hasLoggedIn}")
+                                                End Sub)
     End Sub
 End Module
 

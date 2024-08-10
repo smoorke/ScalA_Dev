@@ -690,6 +690,7 @@ Partial NotInheritable Class FrmMain
 #End Region
     Private activeID As Integer = 0
     Private activeIsAstonia As Boolean = False
+    Private swAutoClose As Stopwatch = Stopwatch.StartNew
     Private Async Sub TmrActive_Tick(sender As Timer, e As EventArgs) Handles tmrActive.Tick
 
         activeID = GetActiveProcessID() ' this returns 0 when switching tasks
@@ -837,20 +838,31 @@ Partial NotInheritable Class FrmMain
         ''unlocked 🔓
 
         'this does not belong in this hot path
-        If My.Settings.AutoCloseIdle Then 'AndAlso blackList.Contains("Someone") Then
+        If My.Settings.AutoCloseIdle AndAlso swAutoClose.ElapsedMilliseconds > 1000 Then
+            'todo populate loggedins when an alt is selected
             Dim listingsomeone = IPC.getInstances.Any(Function(si) si.showingSomeones)
             'Debug.Print($"autoclosesome {listingsomeone}")
             If Not listingsomeone Then
-                For Each ap In AstoniaProcess.loggedIns.Where(Function(p) p.Name = "Someone")
-                    'If ap.Name = "Bool" OrElse ap.Name = "Someone" Then Debug.Print($"Autoclose {ap.Name} ""{ap.hasLoggedIn}""")
-                    If ap.hasLoggedIn Then
-                        ap.CloseOrKill()
-                        Debug.Print($"autoclose {ap.loggedInAs}")
-                        AstoniaProcess.loggedIns = AstoniaProcess.loggedIns.FindAll(Function(pp) pp.loggedInAs <> ap.loggedInAs)
-                    End If
-                Next
-                'AstoniaProcess.loggedIns = AstoniaProcess.loggedIns.FindAll(Function(ap) ap.Name <> "Someone")
+                'todo: make async and parallel
+                Dim dumm = Task.Run(Sub()
+                                        Parallel.ForEach(AstoniaProcess.loggedIns.Where(Function(p) p.Name = "Someone").ToArray,
+                                            Sub(it As AstoniaProcess)
+                                                If it.hasLoggedIn Then
+                                                    it.CloseOrKill()
+                                                    AstoniaProcess.loggedIns = New Concurrent.ConcurrentBag(Of AstoniaProcess)(AstoniaProcess.loggedIns.Where(Function(pp) pp.Id <> it.Id))
+                                                End If
+                                            End Sub)
+                                    End Sub)
+                'For Each ap In AstoniaProcess.loggedIns.Where(Function(p) p.Name = "Someone").ToArray
+                '    'If ap.Name = "Bool" OrElse ap.Name = "Someone" Then Debug.Print($"Autoclose {ap.Name} ""{ap.hasLoggedIn}""")
+                '    If ap.hasLoggedIn Then
+                '        ap.CloseOrKill()
+                '        Debug.Print($"autoclose {ap.loggedInAs}")
+                '        AstoniaProcess.loggedIns = AstoniaProcess.loggedIns.FindAll(Function(pp) pp.Id <> ap.Id)
+                '    End If
+                'Next
             End If
+            swAutoClose.Restart()
         End If
 
         Dim dummy = Task.Run(Sub() CloseErrorDialog())
