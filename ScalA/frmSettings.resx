@@ -201,6 +201,14 @@
   <metadata name="cmsGenerate.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>343, 17</value>
   </metadata>
+  <data name="chkAutoCloseOnlyOnNoSome.ToolTip" xml:space="preserve">
+    <value>Only close Idled Alts when ScalA isn't set to showing Someone.
+This includes ScalAs running on additional profiles.
+Does not count saved settings for ScalAs that aren't currenlty open.
+
+To create additional profiles copy, rename and/or move ScalA.exe
+</value>
+  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

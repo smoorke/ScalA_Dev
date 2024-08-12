@@ -1,3 +1,14 @@
+**ScalA 1.6.4**
+Fixed Closing Settings when an alt is selected doesn't set keyboard focus correctly.
+Fixed Unwhitelisted alts aren't autoclosed when WL is active.
+Fixed Maximizing/Restoring through Process Explorer sets wrong size/messes up Overview/Zoom.
+Fixed Using Hotkeys to increase Extra Columns/Rows may cause skippable exception when opening settings.
+Fixed Autoclosing of idled alts (someone) has a timing issue and sometimes fails.
+Fixed Autoclose doesn't work for alts that are opened while not on overview until you switch to overview.
+Added Setting to disable Alt-Tab.
+Added Warning icon in settings when Windows Scaling isn't 100%
+Made AutoClose be async, multithreaded and less aggressive for improved performance.
+
 **ScalA 1.6.3**
 Fixed Sometimes selecting an alt doesn't set keyboard focus correctly.
 Fixed Closing legacy clients through other means than `F12` or clicking `Exit` can cause graphical glitches.

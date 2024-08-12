@@ -691,6 +691,7 @@ Partial NotInheritable Class FrmMain
     Private activeID As Integer = 0
     Private activeIsAstonia As Boolean = False
     Private swAutoClose As Stopwatch = Stopwatch.StartNew
+    Private AutoCloseCounter As Integer = 0
     Private Async Sub TmrActive_Tick(sender As Timer, e As EventArgs) Handles tmrActive.Tick
 
         activeID = GetActiveProcessID() ' this returns 0 when switching tasks
@@ -839,17 +840,40 @@ Partial NotInheritable Class FrmMain
 
         'this does not belong in this hot path
         If My.Settings.AutoCloseIdle AndAlso swAutoClose.ElapsedMilliseconds > 1000 Then
-            'todo populate loggedins when an alt is selected
+            AutoCloseCounter += 1
+            If AutoCloseCounter > 5 Then AutoCloseCounter = 0
+            If AutoCloseCounter = 0 AndAlso cboAlt.SelectedIndex <> 0 Then
+                'todo populate loggedins when an alt is selected
+
+                'ERROR: this is not thread safe
+                'AstoniaProcess.loggedIns = New Concurrent.ConcurrentDictionary(Of Integer, AstoniaProcess)(AstoniaProcess.Enumerate({}, True).Where(Function(ap) ap.Name <> "Someone").Select(Function(ap) New KeyValuePair(Of Integer, AstoniaProcess)(ap.Id, ap)))
+
+                Dim dum = AstoniaProcess.Enumerate({}, True).Where(Function(p) p.Name <> "Someone") 'p.name populates loggedins
+
+                'Dim dum As AstoniaProcess 'to ensure optimizer doesn't remove the following for each
+                'For Each ap In AstoniaProcess.Enumerate({}, True).Where(Function(p) p.Name <> "Someone") ' this is handled in p.name: AstoniaProcess.loggedIns.TryAdd(ap.Id, ap)
+                '    dum = ap
+                'Next
+            End If
+
             Dim listingsomeone = IPC.getInstances.Any(Function(si) si.showingSomeones)
-            'Debug.Print($"autoclosesome {listingsomeone}")
-            If Not listingsomeone Then
-                'todo: make async and parallel
+
+            'TODO: this needs XOR? 
+
+            '  ls  ns | c
+            '  0   0  | 0
+            '  0   1  | 1
+            '  1   0  | 1
+            '  1   1  | 0
+
+            If listingsomeone Xor My.Settings.OnlyAutoCloseOnNoSomeone Then
                 Dim dumm = Task.Run(Sub()
-                                        Parallel.ForEach(AstoniaProcess.loggedIns.Where(Function(p) p.Name = "Someone").ToArray,
+                                        Parallel.ForEach(AstoniaProcess.loggedIns.Values.Where(Function(p) p.Name = "Someone").ToArray,
                                             Sub(it As AstoniaProcess)
                                                 If it.hasLoggedIn Then
+                                                    Debug.Print($"AutoClosing {it.loggedInAs}")
                                                     it.CloseOrKill()
-                                                    AstoniaProcess.loggedIns = New Concurrent.ConcurrentBag(Of AstoniaProcess)(AstoniaProcess.loggedIns.Where(Function(pp) pp.Id <> it.Id))
+                                                    AstoniaProcess.loggedIns.TryRemove(it.Id, Nothing)
                                                 End If
                                             End Sub)
                                     End Sub)

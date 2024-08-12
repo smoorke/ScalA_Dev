@@ -170,6 +170,8 @@ Public NotInheritable Class FrmSettings
         chkOnlyEsc.Checked = My.Settings.OnlyEsc
 
         chkAutoCloseSomeone.Checked = My.Settings.AutoCloseIdle
+        chkAutoCloseOnlyOnNoSome.Enabled = My.Settings.AutoCloseIdle
+        chkAutoCloseOnlyOnNoSome.Checked = My.Settings.OnlyAutoCloseOnNoSomeone
 
         pb100PWarning.Visible = FrmMain.WindowsScaling <> 100
 
@@ -581,6 +583,7 @@ Public NotInheritable Class FrmSettings
         End If
 
         My.Settings.AutoCloseIdle = chkAutoCloseSomeone.Checked
+        My.Settings.OnlyAutoCloseOnNoSomeone = chkAutoCloseOnlyOnNoSome.Checked
 
         My.Settings.Save()
 
@@ -1007,6 +1010,10 @@ Public NotInheritable Class FrmSettings
             txtAlterOverviewMinKey.KeyPress, txtAlterOverviewPlusKey.KeyPress, txtAlterOverviewStarKey.KeyPress
         tabHotkeys.ScrollControlIntoView(sender)
         e.Handled = True
+    End Sub
+
+    Private Sub chkAutoCloseSomeone_CheckedChanged(sender As Object, e As EventArgs) Handles chkAutoCloseSomeone.CheckedChanged
+        chkAutoCloseOnlyOnNoSome.Enabled = sender.checked
     End Sub
 
     Private init_validate As Boolean = True

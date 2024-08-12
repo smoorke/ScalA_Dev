@@ -298,7 +298,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 Dim nam As String = Strings.Left(_proc.MainWindowTitle, _proc.MainWindowTitle.IndexOf(" - "))
                 memCache.Set(_proc.Id, nam, cacheItemPolicy)
                 If nam <> "Someone" AndAlso Not String.IsNullOrEmpty(nam) Then
-                    If Not loggedIns.Any(Function(ap) ap.Id = Me.Id) Then loggedIns.Add(Me)
+                    loggedIns.TryAdd(Me.Id, Me)
                     loggedInAs = nam
                     hasLoggedIn = True
                 End If
@@ -529,7 +529,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     End Function
     Public Shared ProcCache As New List(Of AstoniaProcess)
     Public Shared CacheCounter As Integer = 0
-    Public Shared loggedIns As New Concurrent.ConcurrentBag(Of AstoniaProcess)()
+    Public Shared loggedIns As New Concurrent.ConcurrentDictionary(Of Integer, AstoniaProcess)()
     'todo: make function to enumerate loggedins for autoclose
     ' move this whole functionality to a different process?
     '  set up ipc to control it's settings? 
