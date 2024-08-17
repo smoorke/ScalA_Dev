@@ -858,15 +858,15 @@ Partial NotInheritable Class FrmMain
 
             Dim listingsomeone = IPC.getInstances.Any(Function(si) si.showingSomeones)
 
-            'TODO: this needs XOR? 
+            'TODO: this needs NAND? 
 
             '  ls  ns | c
-            '  0   0  | 0
+            '  0   0  | 1
             '  0   1  | 1
             '  1   0  | 1
             '  1   1  | 0
 
-            If listingsomeone Xor My.Settings.OnlyAutoCloseOnNoSomeone Then
+            If Not (listingsomeone AndAlso My.Settings.OnlyAutoCloseOnNoSomeone) Then
                 Dim dumm = Task.Run(Sub()
                                         Parallel.ForEach(AstoniaProcess.loggedIns.Values.Where(Function(p) p.Name = "Someone").ToArray,
                                             Sub(it As AstoniaProcess)
