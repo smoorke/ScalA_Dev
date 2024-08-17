@@ -598,7 +598,12 @@ Partial Public NotInheritable Class FrmMain
             End Sub))
     End Sub
 
-    Private Sub CmsQuickLaunchDropDown_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs)
+    Private Sub CmsQuickLaunchDropDown_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs) Handles cmsQuickLaunch.Closing
+        If My.Computer.Keyboard.CtrlKeyDown AndAlso
+                (e.CloseReason = ToolStripDropDownCloseReason.ItemClicked OrElse e.CloseReason = ToolStripDropDownCloseReason.AppFocusChange) Then
+            e.Cancel = True
+            Return
+        End If
         cts?.Cancel()
     End Sub
     Private Sub DeferredIconLoading(items As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
