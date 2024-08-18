@@ -838,7 +838,7 @@ Partial Public NotInheritable Class FrmMain
         cmsQuickLaunch.Close()
         UntrapMouse(MouseButtons.Right)
         Try
-            If AltPP IsNot Nothing AndAlso Not AltPP.isSDL() Then AppActivate(scalaPID) 'fix right click drag bug
+            AppActivate(scalaPID) 'fix right click drag bug
         Catch
         End Try
         If Not My.Settings.MinMin OrElse Not AltPP?.isSDL Then Detach(False)
