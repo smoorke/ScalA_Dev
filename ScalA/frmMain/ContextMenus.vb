@@ -619,9 +619,33 @@ Partial Public NotInheritable Class FrmMain
             Debug.Print("deferredIconLoading general exception")
         End Try
     End Sub
+    Private Sub CloseOtherDropDowns(items As ToolStripItemCollection, Optional keep As HashSet(Of ToolStripMenuItem) = Nothing)
+        If keep Is Nothing Then keep = New HashSet(Of ToolStripMenuItem)
+        For Each it As ToolStripMenuItem In items.OfType(Of ToolStripMenuItem)
+            ' Recursively close all dropdowns of the current item
+            If it.HasDropDownItems AndAlso it.DropDown.Visible Then
+                CloseOtherDropDowns(it.DropDownItems, keep)
+                If Not keep.Contains(it) Then
+                    it.DropDown.Close()
+                    Debug.Print($"Closing dropdown of {it.Text}")
+                End If
+            End If
+        Next
+    End Sub
+
     Private Sub ParseSubDir(sender As ToolStripMenuItem, e As EventArgs) ' Handles DummyToolStripMenuItem.DropDownOpening
-        'Debug.Print($"ParseSubDir QlCtxIsOpen:{QlCtxIsOpen}")
-        'If QlCtxIsOpen Then Exit Sub
+        Debug.Print($"{sender.OwnerItem}")
+        Debug.Print($"{sender}")
+
+        Dim keep As New HashSet(Of ToolStripMenuItem)
+        Dim curr = sender.OwnerItem
+        While curr IsNot Nothing
+            keep.Add(curr)
+            curr = curr.OwnerItem
+        End While
+
+        CloseOtherDropDowns(cmsQuickLaunch.Items, keep)
+
         sender.DropDownItems.Clear()
         sender.DropDownItems.AddRange(ParseDir(sender.Tag(0)).ToArray)
     End Sub
@@ -810,9 +834,11 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
+        'CloseOtherDropDowns(cmsQuickLaunch.Items, New HashSet(Of ToolStripMenuItem))
+        cmsQuickLaunch.Close()
         UntrapMouse(MouseButtons.Right)
         Try
-            AppActivate(scalaPID) 'fix right click drag bug
+            If AltPP IsNot Nothing AndAlso Not AltPP.isSDL() Then AppActivate(scalaPID) 'fix right click drag bug
         Catch
         End Try
         If Not My.Settings.MinMin OrElse Not AltPP?.isSDL Then Detach(False)
@@ -1182,7 +1208,8 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub DblClickDir(ByVal sender As ToolStripMenuItem, ByVal e As EventArgs) 'Handles smenu.DoubleClick
-
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
         Dim pp As New Process With {.StartInfo = New ProcessStartInfo With {.FileName = sender.Tag(0)}}
 
         Try
