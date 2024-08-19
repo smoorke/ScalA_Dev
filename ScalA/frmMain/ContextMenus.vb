@@ -1227,10 +1227,10 @@ Partial Public NotInheritable Class FrmMain
             Exit Sub
         End If
 
-        Me.BeginInvoke(Sub() Cursor = Cursors.WaitCursor)
+        Me.Invoke(Sub() Cursor = Cursors.WaitCursor)
 
         Dim bat As String = "\AsInvoker.bat"
-        Dim tmpDir As String = FileIO.SpecialDirectories.Temp & "\ScalA"
+        Dim tmpDir As String = IO.Path.Combine(FileIO.SpecialDirectories.Temp, "\ScalA")
 
         If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
         If Not FileIO.FileSystem.FileExists(tmpDir & bat) OrElse
@@ -1250,7 +1250,10 @@ Partial Public NotInheritable Class FrmMain
             Debug.Print($"pp.start {ex.Message}")
         Finally
             pp.Dispose()
-            Me.BeginInvoke(Sub() Cursor = Cursors.Arrow)
+            Task.Run(Sub()
+                         Threading.Thread.Sleep(50)
+                         Me.BeginInvoke(Sub() Cursor = Cursors.Arrow)
+                     End Sub)
         End Try
 
         'btnStart.PerformClick()
