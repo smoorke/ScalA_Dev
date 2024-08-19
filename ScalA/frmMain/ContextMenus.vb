@@ -1227,6 +1227,8 @@ Partial Public NotInheritable Class FrmMain
             Exit Sub
         End If
 
+        Me.BeginInvoke(Sub() Cursor = Cursors.WaitCursor)
+
         Dim bat As String = "\AsInvoker.bat"
         Dim tmpDir As String = FileIO.SpecialDirectories.Temp & "\ScalA"
 
@@ -1248,6 +1250,7 @@ Partial Public NotInheritable Class FrmMain
             Debug.Print($"pp.start {ex.Message}")
         Finally
             pp.Dispose()
+            Me.BeginInvoke(Sub() Cursor = Cursors.Arrow)
         End Try
 
         'btnStart.PerformClick()
