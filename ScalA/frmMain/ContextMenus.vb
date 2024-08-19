@@ -936,6 +936,7 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub QlCtxOpen(sender As MenuItem, e As EventArgs)
         Debug.Print($"QlCtxOpen sender:{sender}")
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
         OpenLnk(sender.Parent.Tag, New MouseEventArgs(MouseButtons.Left, 1, MousePosition.X, MousePosition.Y, 0))
     End Sub
@@ -945,6 +946,7 @@ Partial Public NotInheritable Class FrmMain
                 DropDownItems.OfType(Of ToolStripMenuItem).
                 Where(Function(it) extensions.Contains(IO.Path.GetExtension(it.Tag(0))) AndAlso it.Visible).ToList()
 
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
         If subitems.Count >= 10 Then
             If Not CustomMessageBox.Show(Me, $"This will open {subitems.Count} items.{vbCrLf}Continue?",
@@ -964,7 +966,8 @@ Partial Public NotInheritable Class FrmMain
         Dim Name As String = sender.Parent.Tag.text
 
         Debug.Print($"QlCtxRename {Path} {Name}")
-
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
         RenameMethod(Path, Name)
     End Sub
     Private renameOpen As Boolean
@@ -1013,6 +1016,7 @@ Partial Public NotInheritable Class FrmMain
         End If
     End Sub
     Private Sub QlCtxDelete(sender As MenuItem, e As EventArgs)
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
 
         Dim Path As String = sender.Parent.Tag.tag(0)
@@ -1041,6 +1045,8 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub QlCtxProps(sender As MenuItem, e As EventArgs)
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
         OpenProps(sender.Parent.Tag, New MouseEventArgs(MouseButtons.Right, 1, MousePosition.X, MousePosition.Y, 0))
     End Sub
 
@@ -1054,7 +1060,8 @@ Partial Public NotInheritable Class FrmMain
         'Else
         '    rootFolder = rootFolder.Substring(0, rootFolder.LastIndexOf("\") + 1)
         'End If
-
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
         CreateNewFolder(rootFolder)
 
     End Sub
@@ -1062,6 +1069,8 @@ Partial Public NotInheritable Class FrmMain
     Private Sub QlCtxNewAlt(sender As MenuItem, e As EventArgs)
         Debug.Print($"newAlt: {sender.Text}")
         Debug.Print($"tag: {sender.Tag(1)}")
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
         Dim rootFolder As String = sender.Tag(1)
         rootFolder = rootFolder.Substring(0, rootFolder.TrimEnd("\").LastIndexOf("\") + 1)
         Try
@@ -1178,6 +1187,8 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub OpenProps(ByVal sender As ToolStripMenuItem, ByVal e As MouseEventArgs) 'Handles smenu.MouseUp, item.MouseUp
         Debug.Print($"OpenProps {sender.Tag(0)} {sender.GetType}")
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
         Dim pth As String = sender.Tag(0).ToString.TrimEnd("\")
         If e.Button = MouseButtons.Right Then
             Dim sei As New SHELLEXECUTEINFO With {
