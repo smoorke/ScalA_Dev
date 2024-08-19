@@ -693,6 +693,7 @@ Partial Public NotInheritable Class FrmMain
 
         End Try
 
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
 
         If IO.Directory.Exists(newfolderPath) Then
@@ -705,6 +706,9 @@ Partial Public NotInheritable Class FrmMain
         Debug.Print($"QlCtxNewFolder sender:{sender}")
         Debug.Print($"tag:    {sender?.Tag}")
 
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
+
         CreateNewFolder(sender.Tag)
 
     End Sub
@@ -713,6 +717,9 @@ Partial Public NotInheritable Class FrmMain
 
         Debug.Print($"CreateShortCut")
         Debug.Print($"sender.text {sender.Text}")
+
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
 
         Dim alt As AstoniaProcess = DirectCast(sender.Tag(0), AstoniaProcess)
         Dim ShortCutPath As String = sender.Tag(1)
@@ -801,8 +808,6 @@ Partial Public NotInheritable Class FrmMain
             Debug.Print($"{ShortCutLink}")
         End Try
 
-        sender.DropDown.Close()
-
     End Sub
 
     Private Sub AddAllShortcuts(sender As Object, e As EventArgs)
@@ -811,6 +816,7 @@ Partial Public NotInheritable Class FrmMain
 
         Dim list As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name).ToList
 
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
 
         Dim path As String = sender.tag
@@ -834,7 +840,7 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
-        'CloseOtherDropDowns(cmsQuickLaunch.Items, New HashSet(Of ToolStripMenuItem))
+        CloseOtherDropDowns(cmsQuickLaunch.Items, New HashSet(Of ToolStripMenuItem))
         cmsQuickLaunch.Close()
         UntrapMouse(MouseButtons.Right)
         Try
@@ -1078,7 +1084,6 @@ Partial Public NotInheritable Class FrmMain
         Catch ex As Exception
             If ex.Message <> "Abort" Then Throw
         End Try
-        cmsQuickLaunch.Close()
     End Sub
 
     Private ReadOnly folderHbm As IntPtr = foldericon?.GetHbitmap(Color.Red)
@@ -1187,8 +1192,6 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub OpenProps(ByVal sender As ToolStripMenuItem, ByVal e As MouseEventArgs) 'Handles smenu.MouseUp, item.MouseUp
         Debug.Print($"OpenProps {sender.Tag(0)} {sender.GetType}")
-        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
-        cmsQuickLaunch.Close()
         Dim pth As String = sender.Tag(0).ToString.TrimEnd("\")
         If e.Button = MouseButtons.Right Then
             Dim sei As New SHELLEXECUTEINFO With {
@@ -1198,6 +1201,7 @@ Partial Public NotInheritable Class FrmMain
                .nShow = SW_SHOW,
                .fMask = SEE_MASK_INVOKEIDLIST
             }
+            CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
             cmsQuickLaunch.Close()
             Task.Run(action:=Async Sub()
                                  ShellExecuteEx(sei) 'open properties

@@ -1676,6 +1676,7 @@ Partial Public NotInheritable Class FrmMain
     Private Async Sub FrmMain_Click(sender As Object, e As MouseEventArgs) Handles Me.MouseDown
         Debug.Print($"me.mousedown {sender.name} {e.Button}")
         MyBase.WndProc(Message.Create(ScalaHandle, WM_CANCELMODE, 0, 0))
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
         Await Task.Delay(200)
         Debug.Print($"Me.MouseDown awaited")
