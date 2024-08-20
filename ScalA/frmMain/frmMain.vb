@@ -552,7 +552,7 @@ Partial Public NotInheritable Class FrmMain
     Public bmShield As Bitmap
 
     Dim AnimsEnabled As Boolean = getAnimationsEnabled()
-    Dim startup As Boolean = True
+    Public startup As Boolean = True
 
     Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         Debug.Print("FrmMain_Shown")
@@ -835,6 +835,8 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub CmbResolution_MouseDown(sender As ComboBox, e As MouseEventArgs) Handles cmbResolution.MouseDown
         If e.Button = MouseButtons.Right Then
+            CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+            cmsQuickLaunch.Close()
             FrmSettings.Tag = FrmSettings.tabResolutions
             FrmSettings.Show()
         End If
@@ -1231,6 +1233,16 @@ Partial Public NotInheritable Class FrmMain
     End Sub
     Private Sub Various_MouseUp(sender As Control, e As MouseEventArgs) Handles Me.MouseUp, btnQuit.MouseUp, pnlSys.MouseUp, pnlButtons.MouseUp, btnStart.MouseUp, cboAlt.MouseUp, cmbResolution.MouseUp, ChkEqLock.MouseUp
         UntrapMouse(e.Button) 'fix mousebutton stuck
+    End Sub
+
+    Private Sub btnstart_MouseDown(sender As Control, e As MouseEventArgs) Handles btnStart.MouseDown
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
+    End Sub
+
+    Private Sub cbx_DropDown(sender As ComboBox, e As EventArgs) Handles cboAlt.DropDown, cmbResolution.DropDown
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
     End Sub
 
     Private Sub BtnMin_Click(sender As Button, e As EventArgs) Handles btnMin.Click

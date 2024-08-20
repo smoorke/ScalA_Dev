@@ -619,7 +619,7 @@ Partial Public NotInheritable Class FrmMain
             Debug.Print("deferredIconLoading general exception")
         End Try
     End Sub
-    Private Sub CloseOtherDropDowns(items As ToolStripItemCollection, Optional keep As HashSet(Of ToolStripMenuItem) = Nothing)
+    Public Sub CloseOtherDropDowns(items As ToolStripItemCollection, Optional keep As HashSet(Of ToolStripMenuItem) = Nothing)
         If keep Is Nothing Then keep = New HashSet(Of ToolStripMenuItem)
         For Each it As ToolStripMenuItem In items.OfType(Of ToolStripMenuItem)
             ' Recursively close all dropdowns of the current item

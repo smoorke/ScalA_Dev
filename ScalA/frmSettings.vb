@@ -1167,4 +1167,10 @@ Public NotInheritable Class FrmSettings
         sender.backColor = Color.White
     End Sub
 
+    Private Sub FrmSettings_Activated(sender As Object, e As EventArgs) Handles Me.Activated
+        If Not Me.startup Then
+            FrmMain.CloseOtherDropDowns(FrmMain.cmsQuickLaunch.Items, Nothing)
+            FrmMain.cmsQuickLaunch.Close()
+        End If
+    End Sub
 End Class
