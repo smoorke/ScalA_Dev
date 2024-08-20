@@ -707,6 +707,10 @@ Partial NotInheritable Class FrmMain
         ElseIf activeID <> 0 Then 'inactive
             setActive(False)
         End If
+        If activeIsAstonia Then
+            CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+            cmsQuickLaunch.Close()
+        End If
 
         If SidebarScalA IsNot Nothing AndAlso SidebarScalA.HasExitedSafe Then
             SidebarScalA = Nothing
