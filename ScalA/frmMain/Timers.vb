@@ -707,7 +707,7 @@ Partial NotInheritable Class FrmMain
         ElseIf activeID <> 0 Then 'inactive
             setActive(False)
         End If
-        If activeIsAstonia Then
+        If activeIsAstonia AndAlso Not My.Computer.Keyboard.CtrlKeyDown Then
             CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
             cmsQuickLaunch.Close()
         End If
