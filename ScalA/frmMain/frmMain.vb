@@ -95,6 +95,8 @@ Partial Public NotInheritable Class FrmMain
 
         If updatingCombobox Then Exit Sub
 
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
         'IPC.AddOrUpdateInstance(scalaPID, sender.SelectedIndex = 0)
 
         Debug.Print($"CboAlt_SelectedIndexChanged {sender.SelectedIndex}")
@@ -1269,6 +1271,8 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub BtnAlt_Click(sender As AButton, e As EventArgs) ' Handles AButton.click
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
         If sender.Text = String.Empty Then
             'show cms
             cmsQuickLaunch.Show(sender, sender.PointToClient(MousePosition))
@@ -1282,6 +1286,8 @@ Partial Public NotInheritable Class FrmMain
     End Sub
     Private Sub BtnAlt_MouseDown(sender As AButton, e As MouseEventArgs) ' handles AButton.mousedown
         Debug.Print($"MouseDown {e.Button}")
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
         If sender.AP Is Nothing Then Exit Sub
         Select Case e.Button
             Case MouseButtons.XButton1, MouseButtons.XButton2

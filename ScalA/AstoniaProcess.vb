@@ -347,6 +347,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     End Function
 
     Public Function IsActive() As Boolean
+        If _proc Is Nothing Then Return False
         Dim hWnd As IntPtr = GetForegroundWindow()
         Dim ProcessID As UInteger = 0
 
