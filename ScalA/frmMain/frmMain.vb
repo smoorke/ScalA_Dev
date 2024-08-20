@@ -436,7 +436,7 @@ Partial Public NotInheritable Class FrmMain
 
         If cboAlt.SelectedIndex = 0 AndAlso args.Count = 1 Then
             Debug.Print("Selecting Default")
-            cboAlt.SelectedIndex = If(cboAlt.Items.Count = 2, 1, 0)
+            cboAlt.SelectedIndex = If(cboAlt.Items.Count = 2 AndAlso Not My.Settings.gameOnOverview, 1, 0)
         End If
 
         Debug.Print("updateTitle")
