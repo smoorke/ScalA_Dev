@@ -107,6 +107,8 @@ Partial NotInheritable Class FrmMain
         End If
     End Sub
     Public Async Sub ShowSysMenu(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseUp, lblTitle.MouseUp, btnMin.MouseUp, btnMax.MouseUp
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
         UntrapMouse(e.Button) ' fix mousebutton stuck bug
         If e.Button = MouseButtons.Right Then
 
