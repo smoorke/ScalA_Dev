@@ -1,3 +1,9 @@
+**ScalA 1.6.5**
+Fixed Autoclose doesn't work right when `not showing Someone` is not checked.
+Added Keep QuickLaunch open when clicking with ctrl held.
+Added Feedback when clicking items in QL. (spinner shown briefly)
+Changed autoselecting of the only alt on startup when Active Overview is on.
+
 **ScalA 1.6.4**
 Fixed Closing Settings when an alt is selected doesn't set keyboard focus correctly.
 Fixed Unwhitelisted alts aren't autoclosed when WL is active.

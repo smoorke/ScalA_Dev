@@ -507,7 +507,7 @@ Partial Public NotInheritable Class FrmMain
                 AddHandler smenu.MouseDown, AddressOf QL_MouseDown
                 AddHandler smenu.DoubleClick, AddressOf DblClickDir
                 AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
-                'AddHandler smenu.DropDownOpened, AddressOf deferredIconLoading
+                'AddHandler smenu.DropDownOpened, AddressOf DeferredIconLoading
                 AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunchDropDown_Closing
 
                 Dirs.Add(smenu)
