@@ -53,6 +53,13 @@
             _HotkeyList.Remove(hotKeyID)
         End If
     End Sub
+
+    Public Shared Sub UnregHotKey(ByVal sourceForm As Form, ByVal hotKeyIDs As List(Of Integer))
+        For Each id As Integer In hotKeyIDs
+            UnregHotkey(sourceForm, id)
+        Next
+    End Sub
+
 End Class
 
 Partial NotInheritable Class frmmain
@@ -88,7 +95,7 @@ Partial NotInheritable Class frmmain
             End If
 
         Else
-            Hotkey.UnregHotkey(Me)
+            Hotkey.UnregHotKey(Me, {1, 2, 3, 4, 6, 7, 8}.ToList)
             If My.Settings.ToggleTop Then
                 Hotkey.RegisterHotkey(Me, 5, Hotkey.KeyModifier.NoRepeat Or My.Settings.TogTopAlt Or My.Settings.TogTopShift Or My.Settings.TogTopCtrl Or My.Settings.TogTopWin, My.Settings.ToggleTopKey)
             End If
