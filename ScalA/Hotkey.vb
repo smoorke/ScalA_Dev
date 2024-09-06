@@ -98,6 +98,8 @@ Partial NotInheritable Class frmmain
             Hotkey.UnregHotKey(Me, {1, 2, 3, 4, 6, 7, 8}.ToList)
             If My.Settings.ToggleTop Then
                 Hotkey.RegisterHotkey(Me, 5, Hotkey.KeyModifier.NoRepeat Or My.Settings.TogTopAlt Or My.Settings.TogTopShift Or My.Settings.TogTopCtrl Or My.Settings.TogTopWin, My.Settings.ToggleTopKey)
+            Else
+                Hotkey.UnregHotkey(Me, 5)
             End If
         End If
     End Sub
