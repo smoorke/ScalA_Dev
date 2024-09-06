@@ -215,7 +215,7 @@ Partial NotInheritable Class FrmMain
                 End If
                 If m.WParam = 2 Then 'maximized
                     ReZoom(sz)
-                    FrmBehind.Size = sz
+                    FrmBehind.Size = New Size(sz.Width, sz.Height - pnlOverview.Height)
                     btnMax.Text = "🗗"
                     ttMain.SetToolTip(btnMax, "Restore")
                 End If
