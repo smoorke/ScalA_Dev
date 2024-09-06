@@ -48,13 +48,13 @@
             Exit Sub
         End If
         If _HotkeyList.Contains(hotKeyID) Then
-            Debug.Print("unregisterHotkey " & hotKeyID)
+            'Debug.Print("unregisterHotkey " & hotKeyID)
             UnregisterHotKey(sourceForm.Handle, hotKeyID)  'Remember to call unregisterHotkeys() when closing your application.
             _HotkeyList.Remove(hotKeyID)
         End If
     End Sub
 
-    Public Shared Sub UnregHotKey(ByVal sourceForm As Form, ByVal hotKeyIDs As List(Of Integer))
+    Public Shared Sub UnregHotKey(ByVal sourceForm As Form, ByVal hotKeyIDs As Integer())
         For Each id As Integer In hotKeyIDs
             UnregHotkey(sourceForm, id)
         Next
@@ -95,7 +95,7 @@ Partial NotInheritable Class frmmain
             End If
 
         Else
-            Hotkey.UnregHotKey(Me, {1, 2, 3, 4, 6, 7, 8}.ToList)
+            Hotkey.UnregHotKey(Me, {1, 2, 3, 4, 6, 7, 8})
             If My.Settings.ToggleTop Then
                 Hotkey.RegisterHotkey(Me, 5, Hotkey.KeyModifier.NoRepeat Or My.Settings.TogTopAlt Or My.Settings.TogTopShift Or My.Settings.TogTopCtrl Or My.Settings.TogTopWin, My.Settings.ToggleTopKey)
             Else
