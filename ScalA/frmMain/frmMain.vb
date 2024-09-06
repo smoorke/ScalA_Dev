@@ -570,7 +570,7 @@ Partial Public NotInheritable Class FrmMain
             tmrTick.Start()
             moveBusy = False
         End If
-        FrmBehind.Bounds = Me.Bounds
+        FrmBehind.Bounds = Me.RectangleToScreen(pbZoom.Bounds)
         If My.Settings.CheckForUpdate Then
             UpdateCheck()
         End If

@@ -300,7 +300,7 @@ Partial NotInheritable Class FrmMain
                     If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
                 End If
 
-                FrmBehind.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
+                FrmBehind.Bounds = New Rectangle(winpos.x, winpos.y + 21, winpos.cx, winpos.cy - 21)
 
                 If FrmSizeBorder IsNot Nothing AndAlso Me.WindowState = FormWindowState.Normal Then
                     FrmSizeBorder.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
