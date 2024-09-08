@@ -63,7 +63,7 @@
     Protected Overrides ReadOnly Property CreateParams As CreateParams
         Get
             Dim cp As CreateParams = MyBase.CreateParams
-            cp.ExStyle = cp.ExStyle Or WindowStylesEx.WS_EX_TOOLWINDOW 'hide from alt-tab
+            cp.ExStyle = cp.ExStyle Or WindowStylesEx.WS_EX_TOOLWINDOW Or WindowStylesEx.WS_EX_NOACTIVATE
             Return cp
         End Get
     End Property
