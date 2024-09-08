@@ -318,7 +318,7 @@ Partial NotInheritable Class FrmMain
                                                 If Not chkDebug.ContextMenuStrip.Visible Then
 #End If
                                                     'ap.Activate() doesn't work if not debugging
-                                                    If Not ap.IsActive AndAlso windowfrompoint(MousePosition) = ap.MainWindowHandle Then
+                                                    If Not ap.IsActive AndAlso WindowFromPoint(MousePosition) = ap.MainWindowHandle Then
                                                         Debug.Print($"Activating {ap.Name}")
                                                         SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
                                                     End If
