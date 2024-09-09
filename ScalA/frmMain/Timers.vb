@@ -1,4 +1,5 @@
-﻿Public Class Timers
+﻿
+Public Class Timers
     'dummy to prevent form generation
 End Class
 
@@ -396,7 +397,9 @@ Partial NotInheritable Class FrmMain
                     If activePP IsNot Nothing AndAlso Not activePP.IsBelow(ScalaHandle) Then
                         Attach(activePP)
                         SetWindowPos(active, ScalaHandle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
-                        Detach(False)
+                        SetWindowPos(FrmBehind.Handle, active, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+
+                        'Detach(False)
                     End If
                 End If
             Catch ex As Exception
@@ -905,7 +908,7 @@ Partial NotInheritable Class FrmMain
         'If setbehind Is Nothing Then setbehind = ScalaHandle
 
         SetWindowPos(FrmBehind.Handle, setbehind, -1, -1, -1, -1,
-                     SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.ASyncWindowPosition)
+                    SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreResize) ' Or SetWindowPosFlags.ASyncWindowPosition)
 
     End Sub
 End Class
