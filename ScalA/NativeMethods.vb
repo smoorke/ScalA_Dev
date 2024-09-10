@@ -194,9 +194,16 @@ Module NativeMethods
     End Function
 
     <DllImport("user32.dll")>
+    Public Function GetTopWindow(hwnd As IntPtr) As IntPtr : End Function
+
+    <DllImport("user32.dll")>
     Public Function GetWindow(hWnd As IntPtr, uCmd As UInteger) As IntPtr : End Function
 
+    Public Const GW_HWNDFIRST As UInteger = 0
+    Public Const GW_HWNDLAST As UInteger = 1
     Public Const GW_HWNDNEXT As UInteger = 2
+    Public Const GW_HWNDPREV As UInteger = 3
+
 
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function IsWindowVisible(ByVal hWnd As IntPtr) As Boolean : End Function

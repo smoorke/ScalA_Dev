@@ -687,11 +687,13 @@ Partial NotInheritable Class FrmMain
         If tP.Count <= 1 Then Return tP.FirstOrDefault()?.MainWindowHandle
 
         Dim lowestHwnd As IntPtr? = Nothing
-        Dim currentHwnd As IntPtr = startHwnd
+        Dim currentHwnd As IntPtr = IntPtr.Zero
 
         ' Build a HashSet of window handles (hwnds) for the target processes
         Dim hwnds As New HashSet(Of IntPtr)(tP.Select(Function(p) p.MainWindowHandle).Where(Function(h) h <> IntPtr.Zero))
 
+        ' Traverse windows in Z-order (starting from the top)
+        currentHwnd = GetTopWindow(IntPtr.Zero)
         ' Traverse windows in Z-order (starting from the specified hwnd)
         While currentHwnd <> IntPtr.Zero
             ' Only consider visible windows
@@ -706,6 +708,9 @@ Partial NotInheritable Class FrmMain
             ' Get the next window in Z-order
             currentHwnd = GetWindow(currentHwnd, GW_HWNDNEXT)
         End While
+
+
+        Debug.Print($"{If(lowestHwnd, "none")}")
 
         Return lowestHwnd
 
