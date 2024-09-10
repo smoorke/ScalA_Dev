@@ -65,7 +65,12 @@ Partial NotInheritable Class FrmMain
 
         If Not UpdateTitle() Then Exit Sub
 
-        If Me.WindowState = FormWindowState.Minimized Then Exit Sub
+        If Me.WindowState = FormWindowState.Minimized Then
+            altSelectedOrOverview = Nothing
+            Exit Sub
+        End If
+
+        altSelectedOrOverview = {AltPP}.ToList
 
         Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
         GetCursorInfo(pci)
@@ -156,14 +161,17 @@ Partial NotInheritable Class FrmMain
     Private Shared lockObject As New Object()
     Private Sub TimerOverview_Tick(sender As Timer, e As EventArgs) Handles tmrOverview.Tick
 
-        If Me.WindowState = FormWindowState.Minimized Then Exit Sub
+        If Me.WindowState = FormWindowState.Minimized Then
+            altSelectedOrOverview = Nothing
+            Exit Sub
+        End If
 
         If ovBusy Then Exit Sub
         ovBusy = True
-        SyncLock lockObject
+        'SyncLock lockObject
 
 #If DEBUG Then
-            chkDebug.Text = TickCounter
+        chkDebug.Text = TickCounter
 #End If
 
             Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList, True).OrderBy(Function(ap) ap.Name, apSorter).ToList
@@ -436,261 +444,14 @@ Partial NotInheritable Class FrmMain
                 End If
             Next
 
+            altSelectedOrOverview = alts
+
             TickCounter += 1
             If TickCounter >= visibleButtons.Count Then TickCounter = 0
-        End SyncLock
+        'End SyncLock
         ovBusy = False
     End Sub
-#Region "TmrOverview_Tick_Old"
-#If 0 Then
-    Private Sub TmrOverview_Tick_Old(sender As Timer, e As EventArgs)
 
-        If Me.WindowState = FormWindowState.Minimized Then
-            Exit Sub
-        End If
-
-#If DEBUG Then
-        chkDebug.Text = TickCounter
-#End If
-
-        Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList, True).OrderBy(Function(ap) ap.Name, apSorter).ToList
-
-        pnlOverview.SuspendLayout()
-        Dim visibleButtons As List(Of AButton) = UpdateButtonLayout(alts.Count)
-
-        Dim botCount = alts.Where(Function(ap) botSortList.Contains(ap.Name)).Count()
-        Dim topCount = alts.Count - botCount
-        Dim skipCount = visibleButtons.Count - botCount
-
-        Dim apCounter = 0
-        Dim butCounter = 0
-        Dim eqLockShown = False
-        Dim thumbContainedMouse As Boolean = False
-
-        For Each but As AButton In visibleButtons
-            butCounter += 1
-            'Debug.Print($"apCount < alts.Count AndAlso (i < topCount OrElse i > skipCount")
-            'Debug.Print($"{apCount} < {alts.Count} AndAlso ({i} < {topCount} OrElse {i} > {skipCount}")
-            If apCounter < alts.Count AndAlso (butCounter <= topCount OrElse butCounter > skipCount) Then 'buttons with alts
-
-                Dim ap As AstoniaProcess = alts(apCounter)
-                Dim apID As Integer = ap.Id
-                but.AP = ap
-                but.Text = ap.Name
-
-                If ap.IsActive() Then
-                    but.Font = New Font("Microsoft Sans Serif", 8.25, FontStyle.Bold)
-                    but.Select()
-                Else
-                    but.Font = New Font("Microsoft Sans Serif", 8.25)
-                End If
-                'Debug.Print($"tick {TickCounter} apc {apCounter} {ap.Name}")
-                If (TickCounter = apCounter OrElse but.BackgroundImage Is Nothing OrElse but.Image Is Nothing) Then
-                    Dim localAPC = apCounter
-                    Dim localTick = TickCounter
-                    Task.Run(Sub()
-                                 If (localTick = localAPC AndAlso ap.Id <> but.pidCache) OrElse but.BackgroundImage Is Nothing Then
-                                     Using ico As Bitmap = ap.GetIcon?.ToBitmap
-                                         If ico IsNot Nothing Then
-                                             'but.Invoke(updateButtonBackgroundImage, {but, New Bitmap(ico, New Size(16, 16))})
-                                             but.BackgroundImage = New Bitmap(ico, New Size(16, 16))
-                                         Else
-                                             'but.Invoke(updateButtonBackgroundImage, {but, Nothing})
-                                             but.BackgroundImage = Nothing
-                                         End If
-                                         but.pidCache = ap.Id
-                                     End Using
-                                 End If
-
-                                 Dim sw = swDict.GetOrAdd(ap.Id, Stopwatch.StartNew)
-                                 If sw.ElapsedMilliseconds < 42 AndAlso but.Image IsNot Nothing Then
-                                     Exit Sub
-                                 End If
-
-                                 If (localTick = localAPC) OrElse but.Image Is Nothing Then
-                                     'Me.Invoke(updateButtonImage, {but, ap.GetHealthbar()})
-                                     but.Image = ap.GetHealthbar
-                                 End If
-                                 sw.Restart()
-                             End Sub)
-                End If
-
-                apCounter += 1
-
-                but.ContextMenuStrip = cmsAlt
-
-                If Not startThumbsDict.ContainsKey(apID) Then
-                    Dim thumbid As IntPtr = IntPtr.Zero
-                    DwmRegisterThumbnail(ScalaHandle, ap.MainWindowHandle, thumbid)
-                    startThumbsDict(apID) = thumbid
-                    Debug.Print($"registered thumb {startThumbsDict(apID)} {ap.Name} {apID}")
-                End If
-
-                rectDic(apID) = but.ThumbRECT
-
-
-
-
-                'Dim ACO = New Size(pttB.X - rcwB.Left, pttB.Y - rcwB.Top)
-
-                ' Debug.Print($"ACO {ap.Name}:{ACO}")
-
-                Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
-                                   .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY,
-                                   .opacity = opaDict.GetValueOrDefault(apID, If(chkDebug.Checked, 128, 255)),
-                                   .fVisible = True,
-                                   .rcDestination = rectDic(apID),
-                                   .fSourceClientAreaOnly = True}
-
-                DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
-
-                If My.Settings.gameOnOverview Then 'todo move this to seperate timer and make async
-
-                    'InvalidateRect(ap.MainWindowHandle, IntPtr.Zero, False)
-                    'SendMessage(ap.MainWindowHandle, WM_PAINT, IntPtr.Zero, IntPtr.Zero)
-                    'RedrawWindow(ap.MainWindowHandle, Nothing, Nothing, RedrawWindowFlags.Invalidate Or RedrawWindowFlags.InternalPaint)
-
-
-                    Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
-                    GetCursorInfo(pci)
-                    If pci.flags <> 0 Then ' cursor is visible
-                        If Not wasVisible AndAlso ap.IsActive() Then
-                            Debug.Print("scrollthumb released")
-                            If storedY <> pci.ptScreenpos.y Then
-                                Debug.Print("scrollthumb moved")
-                                Dim factor As Double = but.ThumbRectangle.Height / ap.ClientRect.Height
-                                Dim movedY As Integer = storedY + ((pci.ptScreenpos.y - storedY) * factor)
-                                Cursor.Position = New Point(pci.ptScreenpos.x, movedY)
-                            End If
-                        End If
-                        storedY = pci.ptScreenpos.y
-                        wasVisible = True
-                    End If
-
-                    If Not AOBusy AndAlso but.ThumbContains(MousePosition) Then
-                        AltPP = ap
-                        Dim rcwB As Rectangle = ap.WindowRect
-                        Dim rccB As Rectangle = ap.ClientRect
-                        If ap.IsMinimized Then
-                            Debug.Print($"before {rcwB} {rccB}")
-                            ap.Restore()
-                            rcwB = ap.WindowRect
-                            rccB = ap.ClientRect
-                            Debug.Print($"after {rcwB} {rccB}")
-                        End If
-
-                        If pci.flags = 0 Then ' cursor is hidden
-                            wasVisible = False
-                            Exit For ' do not move astonia when cursor is hidden. fixes scrollbar thumb.
-                            ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
-                        End If
-
-                        thumbContainedMouse = True
-
-                        If cmsQuickLaunch.Visible OrElse cmsAlt.Visible Then
-                            SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
-                        Else
-                            SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap.MainWindowHandle)
-                        End If
-
-                        'Dim rcwB As Rectangle
-                        'Dim pttB As Point
-
-                        'GetWindowRect(ap.MainWindowHandle, rcwB)
-                        'ClientToScreen(ap.MainWindowHandle, pttB)
-
-                        ap.SavePos(rcwB.Location, False)
-
-                        eqLockShown = True
-                        Dim excludGearLock As Integer = If(AltPP?.isSDL, 18, 0)
-                        PnlEqLock.Location = but.ThumbRECT.Location + New Point((rccB.Width \ 2 - 262.Map(0, 400, 0, rccB.Width / 2)).Map(0, rccB.Width, 0, but.ThumbRECT.Width - but.ThumbRECT.Left), 0)
-                        PnlEqLock.Size = New Size((524 - excludGearLock).Map(0, 800, 0, but.ThumbRECT.Width - but.ThumbRECT.Left),
-                                                   45.Map(0, 600, 0, but.ThumbRECT.Height - but.ThumbRECT.Top))
-
-                        Dim pttB As New Point
-                        ClientToScreen(ap?.MainWindowHandle, pttB)
-                        Dim AstClientOffsetB = New Size(pttB.X - rcwB.Left, pttB.Y - rcwB.Top)
-
-                        Dim ptZB = Me.PointToScreen(but.ThumbRECT.Location)
-                        Dim newXB = MousePosition.X.Map(ptZB.X, ptZB.X + but.ThumbRectangle.Width, ptZB.X, ptZB.X + but.ThumbRECT.Width - but.ThumbRECT.X - rccB.Width) - AstClientOffsetB.Width - My.Settings.offset.X
-                        Dim newYB = MousePosition.Y.Map(ptZB.Y, ptZB.Y + but.ThumbRectangle.Height, ptZB.Y, ptZB.Y + but.ThumbRECT.Height - but.ThumbRECT.Top - rccB.Height) - AstClientOffsetB.Height - My.Settings.offset.Y
-
-                        AOBusy = True
-                        Task.Run(Sub()
-                                     Try
-                                         Dim ci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
-                                         GetCursorInfo(ci)
-                                         If ci.flags = 0 Then Exit Sub
-                                         AOBusy = True
-                                         Dim flags = swpFlags
-                                         If Not but.AP.IsActive() Then flags = flags Or SetWindowPosFlags.DoNotChangeOwnerZOrder
-                                         'If but.Tag?.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
-                                         Dim pt As Point = MousePosition - New Point(newXB + ap.ClientOffset.X, newYB + ap.ClientOffset.Y)
-                                         If prevWMMMpt <> MousePosition Then
-                                             SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
-                                         End If
-                                         SetWindowPos(but.AP.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
-                                         If prevWMMMpt <> MousePosition Then
-                                             SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, Nothing, (pt.Y << 16) + pt.X) 'update client internal mousepos
-                                         End If
-                                         prevWMMMpt = MousePosition
-                                     Catch ex As Exception
-                                         Debug.Print(ex.Message)
-                                     Finally
-                                         AOBusy = False
-                                     End Try
-                                 End Sub)
-                    End If 'but.ThumbContains(MousePosition)
-                End If 'gameonoverview
-            Else ' buttons w/o alts
-                but.Text = String.Empty
-                but.AP = Nothing 'New AstoniaProcess(Nothing)
-                but.ContextMenuStrip = cmsQuickLaunch
-                but.BackgroundImage = Nothing
-                but.Image = Nothing
-                but.pidCache = 0
-            End If
-        Next but
-
-
-
-        If Not thumbContainedMouse AndAlso My.Settings.gameOnOverview Then
-            eqLockShown = False
-            Dim active = GetForegroundWindow()
-            Dim activePP = alts.FirstOrDefault(Function(ap) ap.MainWindowHandle = active)
-            If activePP IsNot Nothing AndAlso Not activePP.IsBelow(ScalaHandle) Then
-                SetWindowLong(ScalaHandle, GWL_HWNDPARENT, active)
-                SetWindowPos(active, ScalaHandle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
-                SetWindowLong(ScalaHandle, GWL_HWNDPARENT, restoreParent)
-            End If
-        End If
-
-
-        If eqLockShown AndAlso My.Settings.LockEq AndAlso My.Settings.gameOnOverview Then
-            AOshowEqLock = True
-        Else
-            AOshowEqLock = False
-        End If
-
-        ' Dim purgeList As List(Of Integer) = startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList
-        For Each ppid As Integer In startThumbsDict.Keys.Except(alts.Select(Function(ap) ap.Id)).ToList 'tolist needed as we mutate the thumbsdict
-            Debug.Print("unregister thumb " & startThumbsDict(ppid).ToString)
-            DwmUnregisterThumbnail(startThumbsDict(ppid))
-            startThumbsDict.TryRemove(ppid, Nothing)
-            rectDic.TryRemove(ppid, Nothing)
-            Dim sw As Stopwatch = Nothing
-            If swDict.TryRemove(ppid, sw) Then
-                sw.Stop()
-                sw = Nothing
-            End If
-        Next
-
-        pnlOverview.ResumeLayout()
-        TickCounter += 1
-        If TickCounter >= visibleButtons.Count Then TickCounter = 0
-    End Sub
-#End If
-#End Region
     Private activeID As Integer = 0
     Private activeIsAstonia As Boolean = False
     Private swAutoClose As Stopwatch = Stopwatch.StartNew
@@ -898,17 +659,55 @@ Partial NotInheritable Class FrmMain
 
         Dim dummy = Task.Run(Sub() CloseErrorDialog())
 
-        Dim setbehind As IntPtr? = AltPP?.MainWindowHandle
+        'If behindTaskDone Then
+        '    behindTaskDone = False
+        Dim behindHandle = FrmBehind.Handle
 
-        'If setbehind = IntPtr.Zero Then
-        '    setbehind = If(pnlOverview.Visible, ScalaHandle, AltPP?.MainWindowHandle)
-        'End If
+        'Dim setbehind As IntPtr? = AltPP?.MainWindowHandle
+
+        Dim setbehind? = FindLowestZOrderHwnd(altSelectedOrOverview, ScalaHandle)
 
         If (setbehind Is Nothing OrElse setbehind = IntPtr.Zero) Then setbehind = ScalaHandle
-        'If setbehind Is Nothing Then setbehind = ScalaHandle
 
-        SetWindowPos(FrmBehind.Handle, setbehind, -1, -1, -1, -1,
-                    SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreResize) ' Or SetWindowPosFlags.ASyncWindowPosition)
+        SetWindowPos(behindHandle, setbehind, -1, -1, -1, -1,
+                                        SetWindowPosFlags.IgnoreMove Or
+                                        SetWindowPosFlags.DoNotActivate Or
+                                        SetWindowPosFlags.IgnoreResize) ' Or SetWindowPosFlags.ASyncWindowPosition)
+        '                  End Sub).ContinueWith(Sub() behindTaskDone = True)
+        ' End If
 
     End Sub
+
+    Private behindTaskDone As Boolean = True
+    Private altSelectedOrOverview As List(Of AstoniaProcess)
+
+    Private Function FindLowestZOrderHwnd(ByVal tP As List(Of AstoniaProcess), ByVal startHwnd As IntPtr) As IntPtr?
+
+        If tP Is Nothing Then Return Nothing
+        If tP.Count <= 1 Then Return tP.FirstOrDefault()?.MainWindowHandle
+
+        Dim lowestHwnd As IntPtr? = Nothing
+        Dim currentHwnd As IntPtr = startHwnd
+
+        ' Build a HashSet of window handles (hwnds) for the target processes
+        Dim hwnds As New HashSet(Of IntPtr)(tP.Select(Function(p) p.MainWindowHandle).Where(Function(h) h <> IntPtr.Zero))
+
+        ' Traverse windows in Z-order (starting from the specified hwnd)
+        While currentHwnd <> IntPtr.Zero
+            ' Only consider visible windows
+            If IsWindowVisible(currentHwnd) Then
+                ' Check if the current window handle is one of the hwnds we care about
+                If hwnds.Contains(currentHwnd) Then
+                    ' Keep track of the last (i.e., bottom-most) matching window
+                    lowestHwnd = currentHwnd
+                End If
+            End If
+
+            ' Get the next window in Z-order
+            currentHwnd = GetWindow(currentHwnd, GW_HWNDNEXT)
+        End While
+
+        Return lowestHwnd
+
+    End Function
 End Class

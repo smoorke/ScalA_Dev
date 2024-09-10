@@ -196,6 +196,12 @@ Module NativeMethods
     <DllImport("user32.dll")>
     Public Function GetWindow(hWnd As IntPtr, uCmd As UInteger) As IntPtr : End Function
 
+    Public Const GW_HWNDNEXT As UInteger = 2
+
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function IsWindowVisible(ByVal hWnd As IntPtr) As Boolean : End Function
+
+
     <DllImport("user32.dll")>
     Public Function RedrawWindow(hWnd As IntPtr, lprcUpdate As IntPtr, hrgnUpdate As IntPtr, flags As RedrawWindowFlags) As Boolean : End Function
 
