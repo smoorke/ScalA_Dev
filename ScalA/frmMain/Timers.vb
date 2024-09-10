@@ -663,9 +663,9 @@ Partial NotInheritable Class FrmMain
         '    behindTaskDone = False
         Dim behindHandle = FrmBehind.Handle
 
-        'Dim setbehind As IntPtr? = AltPP?.MainWindowHandle
+        Dim setbehind As IntPtr? = AltPP?.MainWindowHandle
 
-        Dim setbehind? = FindLowestZOrderHwnd(altSelectedOrOverview, ScalaHandle)
+        ' Dim setbehind? = FindLowestZOrderHwnd(altSelectedOrOverview, ScalaHandle)
 
         If (setbehind Is Nothing OrElse setbehind = IntPtr.Zero) Then setbehind = ScalaHandle
 
@@ -682,6 +682,9 @@ Partial NotInheritable Class FrmMain
     Private altSelectedOrOverview As List(Of AstoniaProcess)
 
     Private Function FindLowestZOrderHwnd(ByVal tP As List(Of AstoniaProcess), ByVal startHwnd As IntPtr) As IntPtr?
+
+        'todo replace with enumwindows
+
 
         If tP Is Nothing Then Return Nothing
         If tP.Count <= 1 Then Return tP.FirstOrDefault()?.MainWindowHandle
