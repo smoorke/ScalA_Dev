@@ -226,29 +226,29 @@ Partial Public NotInheritable Class FrmMain
             Debug.Print($"{ScalAWinScaling}% ScalA windows scaling")
             Debug.Print($"{AltPP.WindowsScaling}% altPP windows scaling")
 
-            Dim failcounter = 0
-            If AltPP.WindowsScaling <> ScalAWinScaling Then 'scala is scaled diffrent than Alt
-                Const timeout As Integer = 500
-                Dim sw As Stopwatch = Stopwatch.StartNew()
-                Do 'looped delay until alt is scaled same
-                    AltPP.CenterBehind(pbZoom, Nothing, True)
-                    Dim rc As RECT
-                    GetWindowRect(AltPP.MainWindowHandle, rc)
-                    SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, rc.left + 1, rc.top + 1, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.FrameChanged)
-                    Debug.Print($"Scaling Delay {sw.ElapsedMilliseconds}ms {ScalAWinScaling}% vs {AltPP.WindowsScaling}")
-                    Await Task.Delay(16)
-                    If sw.ElapsedMilliseconds > timeout Then
-                        sw.Stop()
-                        Debug.Print($"Scaling Delay Timeout! {failcounter}")
-                        AstoniaProcess.RestorePos(True)
-                        Await Task.Delay(16)
-                        sw = Stopwatch.StartNew()
-                        failcounter += 1
-                    End If
-                Loop Until ScalAWinScaling = AltPP.WindowsScaling OrElse failcounter >= 3
-                AltPP.ResetCache()
-                UpdateThumb(If(chkDebug.Checked, 128, 255))
-            End If
+            'Dim failcounter = 0
+            'If AltPP.WindowsScaling <> ScalAWinScaling Then 'scala is scaled diffrent than Alt
+            '    Const timeout As Integer = 500
+            '    Dim sw As Stopwatch = Stopwatch.StartNew()
+            '    Do 'looped delay until alt is scaled same
+            '        AltPP.CenterBehind(pbZoom, Nothing, True)
+            '        Dim rc As RECT
+            '        GetWindowRect(AltPP.MainWindowHandle, rc)
+            '        SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, rc.left + 1, rc.top + 1, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.FrameChanged)
+            '        Debug.Print($"Scaling Delay {sw.ElapsedMilliseconds}ms {ScalAWinScaling}% vs {AltPP.WindowsScaling}")
+            '        Await Task.Delay(16)
+            '        If sw.ElapsedMilliseconds > timeout Then
+            '            sw.Stop()
+            '            Debug.Print($"Scaling Delay Timeout! {failcounter}")
+            '            AstoniaProcess.RestorePos(True)
+            '            Await Task.Delay(16)
+            '            sw = Stopwatch.StartNew()
+            '            failcounter += 1
+            '        End If
+            '    Loop Until ScalAWinScaling = AltPP.WindowsScaling OrElse failcounter >= 3
+            '    AltPP.ResetCache()
+            '    UpdateThumb(If(chkDebug.Checked, 128, 255))
+            'End If
 
             Attach(AltPP)
             AltPP.Activate()
@@ -475,6 +475,7 @@ Partial Public NotInheritable Class FrmMain
         test.Items.Add(New ToolStripMenuItem("IPC Size", Nothing, AddressOf dBug.ipcSize))
         Static dynamicitem3 As New ToolStripMenuItem($"Aborder", Nothing, AddressOf dBug.dumpApCache)
         test.Items.Add(dynamicitem3)
+        test.Items.Add(New ToolStripMenuItem("DPI Reg", Nothing, AddressOf dBug.regFudge))
 
         chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()
@@ -1828,5 +1829,25 @@ Partial Public NotInheritable Class FrmMain
 
         SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
 
+    End Sub
+
+    Private Sub pbWarning_Click(sender As Object, e As EventArgs) Handles pbWarning.Click
+        Dim res As MsgBoxResult = MessageBox.Show(Me,
+                            "For best results Astonia needs to be running with" &
+                   vbCrLf & " Application High DPI scaling override." &
+                   vbCrLf &
+                   vbCrLf & "Click Yes to apply this setting. (client restart required)" &
+                   vbCrLf & "Click Cancel to ignore future warnings (hide icon)", "Information",
+                        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2)
+        If res = MsgBoxResult.Yes Then
+            AltPP.RegHighDpiAware = True
+            If MessageBox.Show(Me, "Restart Required for settings to take effect.", "Restart Client?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1) = MsgBoxResult.Ok Then
+                AltPP.restart()
+            End If
+        End If
+        If res = MsgBoxResult.Cancel Then
+            My.Settings.IgnoreWindowsScalingIssue = True
+            pnlWarning.Hide()
+        End If
     End Sub
 End Class

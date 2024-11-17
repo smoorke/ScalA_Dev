@@ -3,12 +3,12 @@ Imports System.Runtime.InteropServices
 
 Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
-    Private ReadOnly _proc As Process
+    Public ReadOnly proc As Process
 
     'Public thumbID As IntPtr
 
     Public Sub New(Optional process As Process = Nothing)
-        _proc = process
+        proc = process
     End Sub
 
     Public Sub ResetCache()
@@ -25,7 +25,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             Else
                 'Debug.Print("called get ClientRect")
                 Dim rcc As New Rectangle
-                If _proc Is Nothing Then Return New Rectangle
+                If proc Is Nothing Then Return New Rectangle
                 GetClientRect(Me.MainWindowHandle, rcc)
                 If rcc <> New Rectangle Then _rcc = rcc
                 Return rcc
@@ -35,7 +35,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public ReadOnly Property WindowRect() As Rectangle
         Get
             Dim rcw As New Rectangle
-            If _proc Is Nothing Then Return New Rectangle
+            If proc Is Nothing Then Return New Rectangle
 
             GetWindowRect(Me.MainWindowHandle, rcw)
 
@@ -43,23 +43,23 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End Get
     End Property
     Public Sub CloseOrKill()
-        If _proc Is Nothing Then Exit Sub
+        If proc Is Nothing Then Exit Sub
         Try
-            If _proc.HasExited() Then Exit Sub 'exception when proc is elevated
+            If proc.HasExited() Then Exit Sub 'exception when proc is elevated
             If Me.isSDL Then
-                _proc.CloseMainWindow()
+                proc.CloseMainWindow()
             Else 'isLegacy
-                SendMessage(_proc.MainWindowHandle, WM_KEYDOWN, Keys.F12, &H1UI << 30)
+                SendMessage(proc.MainWindowHandle, WM_KEYDOWN, Keys.F12, &H1UI << 30)
             End If
         Catch ex As System.ComponentModel.Win32Exception
             Try
-                _proc.Kill()
+                proc.Kill()
             Catch
             End Try
         End Try
     End Sub
     Public Function IsMinimized() As Boolean
-        If _proc Is Nothing Then Return False
+        If proc Is Nothing Then Return False
         Return IsIconic(Me.MainWindowHandle)
     End Function
 
@@ -122,8 +122,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             GetWindowRect(Me.MainWindowHandle, rc)
             pt = rc.Location
         End If
-        If overwrite OrElse Not _restoreDic.ContainsKey(_proc.Id) Then Me._restoreLoc = pt
-        If Not _restoreDic.ContainsKey(_proc.Id) Then _restoreDic.TryAdd(_proc.Id, Me)
+        If overwrite OrElse Not _restoreDic.ContainsKey(proc.Id) Then Me._restoreLoc = pt
+        If Not _restoreDic.ContainsKey(proc.Id) Then _restoreDic.TryAdd(proc.Id, Me)
         Me._wasTopmost = Me.TopMost()
     End Sub
 
@@ -133,7 +133,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             If _CO IsNot Nothing AndAlso _CO <> New Point Then
                 Return _CO
             Else
-                If _proc Is Nothing Then
+                If proc Is Nothing Then
                     Return New Point
                 End If
                 Try
@@ -155,7 +155,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     Debug.Print($"co {_CO}")
                     Return _CO
                 Catch ex As Exception
-                    Debug.Print($"ex on CO {ex.Message}")
+                    Debug.Print(message:=$"ex on CO {ex.Message}")
                     Return New Point
                 End Try
             End If
@@ -182,6 +182,18 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             If _rcSource IsNot Nothing AndAlso _rcSource <> New Rectangle Then
                 Return _rcSource
             Else
+                Dim factor As Single = Me.WindowsScaling / 100
+                '125%  +2 +5
+                Dim nudge = 0
+                If factor > 1 Then
+                    nudge = 1
+                End If
+                _rcSource = New Rectangle(Math.Floor(ClientOffset.X * factor) + nudge,
+                                          Math.Floor(ClientOffset.Y * factor),
+                                          Math.Floor((ClientRect.Width + ClientOffset.X) * factor - nudge),
+                                          Math.Floor((ClientRect.Height + ClientOffset.Y) * factor) - nudge)
+                Return _rcSource
+
                 _rcSource = New Rectangle(ClientOffset.X, ClientOffset.Y, ClientRect.Width + ClientOffset.X, ClientRect.Height + ClientOffset.Y)
                 Return _rcSource
             End If
@@ -224,7 +236,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
 
     Public Shared Narrowing Operator CType(ByVal d As AstoniaProcess) As Process
-        Return d?._proc
+        Return d?.proc
     End Operator
     Public Shared Widening Operator CType(ByVal b As Process) As AstoniaProcess
         Return GetFromCache(b)
@@ -232,15 +244,15 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
     Public ReadOnly Property Id As Integer
         Get
-            Return If(_proc?.Id, 0)
+            Return If(proc?.Id, 0)
         End Get
     End Property
 
     Public Sub Activate()
-        If _proc Is Nothing Then Exit Sub
+        If proc Is Nothing Then Exit Sub
         Try
             AllowSetForegroundWindow(FrmMain.scalaPID)
-            AppActivate(_proc.Id)
+            AppActivate(proc.Id)
         Catch ex As Exception
             Debug.Print("activate exception")
         End Try
@@ -251,7 +263,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Get
             If _mwhCache <> IntPtr.Zero Then Return _mwhCache
             Try
-                _mwhCache = If(_proc?.MainWindowHandle, IntPtr.Zero)
+                _mwhCache = If(proc?.MainWindowHandle, IntPtr.Zero)
                 Return _mwhCache
             Catch
                 Debug.Print("MainWindowHandle exeption")
@@ -284,19 +296,19 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public loggedInAs As String = String.Empty
     Public ReadOnly Property Name As String
         Get
-            If _proc Is Nothing Then Return "Someone"
+            If proc Is Nothing Then Return "Someone"
             Try
-                _proc.Refresh()
-                If _proc.MainWindowTitle = "" Then
-                    Dim nm As String = TryCast(memCache.Get(_proc.Id), String)
+                proc.Refresh()
+                If proc.MainWindowTitle = "" Then
+                    Dim nm As String = TryCast(memCache.Get(proc.Id), String)
                     If Not String.IsNullOrEmpty(nm) Then
                         Debug.Print($"name fail {nm} ""{Me.WindowClass}""")
                         Return nm
                     End If
                     Return "Someone"
                 End If
-                Dim nam As String = Strings.Left(_proc.MainWindowTitle, _proc.MainWindowTitle.IndexOf(" - "))
-                memCache.Set(_proc.Id, nam, cacheItemPolicy)
+                Dim nam As String = Strings.Left(proc.MainWindowTitle, proc.MainWindowTitle.IndexOf(" - "))
+                memCache.Set(proc.Id, nam, cacheItemPolicy)
                 If nam <> "Someone" AndAlso Not String.IsNullOrEmpty(nam) Then
                     loggedIns.TryAdd(Me.Id, Me)
                     loggedInAs = nam
@@ -334,7 +346,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public Function IsRunning() As Boolean
         'todo: replace with limited access check
         Try
-            Return _proc IsNot Nothing AndAlso Not _proc.HasExited
+            Return proc IsNot Nothing AndAlso Not proc.HasExited
         Catch e As Exception
             FrmMain.tmrActive.Enabled = False
             FrmMain.tmrOverview.Enabled = False
@@ -347,13 +359,13 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     End Function
 
     Public Function IsActive() As Boolean
-        If _proc Is Nothing Then Return False
+        If proc Is Nothing Then Return False
         Dim hWnd As IntPtr = GetForegroundWindow()
         Dim ProcessID As UInteger = 0
 
         GetWindowThreadProcessId(hWnd, ProcessID)
 
-        Return _proc?.Id = ProcessID
+        Return proc?.Id = ProcessID
     End Function
 
     Public Function IsBelow(hwnd As IntPtr) As Boolean
@@ -378,8 +390,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
     Public Function MainWindowTitle() As String
         Try
-            _proc?.Refresh()
-            Return _proc?.MainWindowTitle
+            proc?.Refresh()
+            Return proc?.MainWindowTitle
         Catch
             Debug.Print("MainWindowTitle exception")
             Return ""
@@ -427,9 +439,9 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             nameIconCache.Clear()
             pathIcnCache.Clear()
         End If
-        If _proc Is Nothing Then Return Nothing
+        If proc Is Nothing Then Return Nothing
         Try
-            Dim ID As Integer = _proc.Id
+            Dim ID As Integer = proc.Id
 
             Dim IcoNam As New Tuple(Of Icon, String)(Nothing, Nothing)
 
@@ -464,15 +476,15 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     End Function
 
     Dim pathCache As String = Nothing
-    Private Function Path() As String
-        If String.IsNullOrEmpty(pathCache) Then pathCache = _proc?.Path()
+    Public Function Path() As String
+        If String.IsNullOrEmpty(pathCache) Then pathCache = proc?.Path()
         Return pathCache
     End Function
 
     Public Overrides Function Equals(obj As Object) As Boolean
         Dim proc2 As AstoniaProcess = TryCast(obj, AstoniaProcess)
         'Debug.Print($"obj {proc2?._proc?.Id} eqals _proc {_proc?.Id}")
-        Return proc2?._proc IsNot Nothing AndAlso Me._proc IsNot Nothing AndAlso proc2._proc.Id = Me._proc.Id AndAlso proc2.Name = Me.Name
+        Return proc2?.proc IsNot Nothing AndAlso Me.proc IsNot Nothing AndAlso proc2.proc.Id = Me.proc.Id AndAlso proc2.Name = Me.Name
     End Function
     'Public Shared Operator =(left As AstoniaProcess, right As AstoniaProcess) As Boolean
     '    Debug.Print("AP ==")
@@ -576,7 +588,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Private Shared Function GetClientRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As Boolean : End Function
 
     Public Function GetClientBitmap() As Bitmap
-        If _proc Is Nothing Then Return Nothing
+        If proc Is Nothing Then Return Nothing
         Try
             Dim rcc As Rectangle
             If Not GetClientRect(Me.MainWindowHandle, rcc) Then Return Nothing 'GetClientRect fails if astonia is running fullscreen and is tabbed out
@@ -644,6 +656,83 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             End If
             Return _va
         End Get
+    End Property
+    Private DpiAware As Boolean? = Nothing
+    Friend Property RegHighDpiAware As Boolean
+        Get
+            If Me.DpiAware IsNot Nothing Then Return Me.DpiAware
+            Try
+                Using key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers")
+                    Dim value = key?.GetValue(proc.MainModule.FileName)
+                    If value IsNot Nothing AndAlso value.contains("HIGHDPIAWARE") Then
+                        Me.DpiAware = True
+                        Return True
+                    End If
+                End Using
+            Catch ex As Exception
+                'TODO: 64 bit broker to retrieve MainModule.FileName from 64 bit sdl app
+                Me.DpiAware = True
+                Return True
+            End Try
+
+
+            Me.DpiAware = False
+            Return False
+        End Get
+        Set(value As Boolean)
+            Dim keyPath As String = "SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers"
+
+            ' Open the key with write access. Create if necessary.
+            Dim key As Microsoft.Win32.RegistryKey = Nothing
+            Try
+                key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(keyPath, writable:=True)
+                If key Is Nothing Then
+                    ' The key doesn't exist, so create it
+                    key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(keyPath)
+                End If
+
+                ' Get the current value for this process path
+                Dim currentValue As String = DirectCast(key.GetValue(proc.MainModule.FileName, String.Empty), String).Trim()
+
+                ' Modify the value based on the new setting
+                If value Then
+                    ' Add the HIGHDPIAWARE flag if it's not already present
+                    If Not currentValue.Contains("HIGHDPIAWARE") Then
+                        ' If currentValue is empty, set it to "~ HIGHDPIAWARE"
+                        If String.IsNullOrEmpty(currentValue) Then
+                            currentValue = "~ HIGHDPIAWARE"
+                        Else
+                            ' If currentValue contains other flags, append "HIGHDPIAWARE"
+                            currentValue &= " HIGHDPIAWARE"
+                        End If
+                    End If
+                Else
+                    ' Remove the HIGHDPIAWARE flag if present
+                    If currentValue.Contains("HIGHDPIAWARE") Then
+                        ' Remove the flag and clean up spaces
+                        currentValue = System.Text.RegularExpressions.Regex.Replace(currentValue, "HIGHDPIAWARE\s*", "").Trim()
+                        ' Remove "~" if it's the only character remaining
+                        If currentValue = "~" Then currentValue = String.Empty
+                    End If
+                End If
+
+                ' Update the registry with the new flags
+                If String.IsNullOrEmpty(currentValue) Then
+                    ' Delete the value if it is empty
+                    key.DeleteValue(proc.MainModule.FileName, throwOnMissingValue:=False)
+                Else
+                    key.SetValue(proc.MainModule.FileName, currentValue)
+                End If
+            Catch ex As Exception
+                ' Handle exceptions (e.g., permission issues) as needed
+                Debug.Print("SETREG An error occurred: " & ex.Message)
+            Finally
+                key?.Close()
+            End Try
+
+            ' Do not update the cached value. The process needs to be restarted for it to take effect.
+            ' Me.DpiAware = value
+        End Set
     End Property
 
     Public Function hasBorder() As Boolean
@@ -746,11 +835,91 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     End Function
 
     Friend Function GetCurrentDirectory() As String
-        Return _proc?.GetCurrentDirectory
+        Return proc?.GetCurrentDirectory
     End Function
 
     Private alreadylaunched As Boolean = False
     Private disposedValue As Boolean
+
+    Friend Sub restart()
+        ' Ensure process is restarted only once
+        If alreadylaunched Then
+            Exit Sub
+        End If
+
+        ' Log process details
+        Debug.Print($"Restarting process: {proc.ProcessName} {proc.Id}")
+
+        Dim shortcutlink As String = FileIO.SpecialDirectories.Temp & "\ScalA\restart.lnk"
+        Dim mos As Management.ManagementObject = New Management.ManagementObjectSearcher($"Select * from Win32_Process WHERE ProcessID={proc.Id}").Get()(0)
+
+        ' Get the current command-line arguments and executable path
+        Dim arguments As String = mos("commandline")
+        Dim exepath As String = mos("ExecutablePath")
+
+        Debug.Print($"Original arguments: ""{arguments}""")
+        Debug.Print($"Executable Path: ""{exepath}""")
+
+        If arguments = "" Then
+            Debug.Print("Access denied! Restart process with elevated permissions.")
+            Exit Sub
+        End If
+
+        ' Get the working directory
+        Dim workdir As String = proc.GetCurrentDirectory()
+        Debug.Print($"Working Directory: {workdir}")
+
+        If workdir.EndsWith("bin") Then
+            workdir = workdir.Substring(0, workdir.LastIndexOf("\"))
+        End If
+
+        If arguments.Contains(exepath) Then arguments = arguments.Replace(exepath, "")
+        If arguments.Contains("""""") Then arguments = arguments.Replace("""""", "")
+
+        ' Create a shortcut to relaunch the process
+        Dim oLink As Object
+        Try
+            oLink = CreateObject("WScript.Shell").CreateShortcut(shortcutlink)
+            oLink.TargetPath = exepath
+            oLink.Arguments = arguments
+            oLink.WorkingDirectory = workdir
+            oLink.WindowStyle = 1
+            oLink.Save()
+        Catch ex As Exception
+            Debug.Print($"Failed to create shortcut: {ex.Message}")
+            Exit Sub
+        End Try
+
+        ' Close or kill the current process
+        Me.CloseOrKill()
+
+        ' Start the new process using a batch script to avoid admin rights prompt
+        Dim bat As String = "\restart.bat"
+        Dim tmpDir As String = FileIO.SpecialDirectories.Temp & "\ScalA"
+
+        If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
+        If Not FileIO.FileSystem.FileExists(tmpDir & bat) Then FileIO.FileSystem.WriteAllText(tmpDir & bat, My.Resources.AsInvoker, False)
+
+        Dim pp As New Process With {
+        .StartInfo = New ProcessStartInfo With {
+            .FileName = tmpDir & bat,
+            .Arguments = """" & shortcutlink & """",
+            .WindowStyle = ProcessWindowStyle.Hidden,
+            .CreateNoWindow = True
+        }
+    }
+
+        ' Start the new process
+        Try
+            alreadylaunched = True
+            pp.Start()
+        Catch ex As Exception
+            Debug.Print($"Failed to restart process: {ex.Message}")
+        Finally
+            pp.Dispose()
+        End Try
+        alreadylaunched = False
+    End Sub
 
     Friend Async Function ReOpenAsWindowed() As Task
 
@@ -762,7 +931,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
         Dim shortcutlink As String = FileIO.SpecialDirectories.Temp & "\ScalA\tmp.lnk"
 
-        Dim mos As Management.ManagementObject = New Management.ManagementObjectSearcher($“Select * from Win32_Process WHERE ProcessID={_proc.Id}").Get()(0)
+        Dim mos As Management.ManagementObject = New Management.ManagementObjectSearcher($“Select * from Win32_Process WHERE ProcessID={proc.Id}").Get()(0)
 
         Dim arguments As String = mos("commandline")
 
@@ -821,7 +990,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
         End Try
         'Dim workdir As String = exepath.Substring(0, exepath.LastIndexOf("\")) 'todo: replace with function found at https://stackoverflow.com/a/23842609/7433250
-        Dim workdir = _proc.GetCurrentDirectory()
+        Dim workdir = proc.GetCurrentDirectory()
 
         Debug.Print($"wd {workdir}")
 
@@ -904,7 +1073,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 ' TODO: dispose managed state (managed objects)
                 _va?.Dispose()
                 _map?.Dispose()
-                _proc?.Dispose()
+                proc?.Dispose()
 
             End If
 
@@ -928,26 +1097,27 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     End Sub
     Dim Elevated As Boolean = False
     Friend Function HasExited() As Boolean
-        If _proc Is Nothing Then Return True
-        If Elevated Then Return _proc.HasExitedSafe
+        If proc Is Nothing Then Return True
+        If Elevated Then Return proc.HasExitedSafe
         Try
-            Return _proc.HasExited
+            Return proc.HasExited
         Catch ex As Exception
             Debug.Print("HasExited Exception")
             Elevated = True
-            Return _proc.HasExitedSafe
+            Return proc.HasExitedSafe
         End Try
     End Function
 
     Friend Function IsElevated() As Boolean
-        If _proc Is Nothing Then Return False
+        If proc Is Nothing Then Return False
         Try
-            Dim dummy = _proc.HasExited
+            Dim dummy = proc.HasExited
         Catch ex As Exception
             Elevated = True
         End Try
         Return Elevated
     End Function
+
 End Class
 
 NotInheritable Class AstoniaProcessSorter

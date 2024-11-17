@@ -86,6 +86,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkAutoCloseSomeone = New System.Windows.Forms.CheckBox()
         Me.chkNoAltTab = New System.Windows.Forms.CheckBox()
         Me.pb100PWarning = New System.Windows.Forms.PictureBox()
+        Me.chkAutoCloseOnlyOnNoSome = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
@@ -170,7 +171,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
-        Me.chkAutoCloseOnlyOnNoSome = New System.Windows.Forms.CheckBox()
+        Me.chkIgnoreDPI = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
@@ -321,7 +322,7 @@ Partial NotInheritable Class FrmSettings
         'ToolStripSeparator1
         '
         ToolStripSeparator1.Name = "ToolStripSeparator1"
-        ToolStripSeparator1.Size = New System.Drawing.Size(151, 6)
+        ToolStripSeparator1.Size = New System.Drawing.Size(155, 6)
         '
         'Label4
         '
@@ -418,13 +419,12 @@ Partial NotInheritable Class FrmSettings
         'Label15
         '
         Label15.AutoSize = True
-        Label15.Location = New System.Drawing.Point(200, 36)
+        Label15.Location = New System.Drawing.Point(197, 36)
         Label15.Name = "Label15"
         Label15.Size = New System.Drawing.Size(72, 13)
         Label15.TabIndex = 7
         Label15.Text = "Scaling Mode"
-        Me.ttSettings.SetToolTip(Label15, "Auto will use Pixel Mode when scaling factor is 2x or more." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: Pixel Mode is " &
-        "disabled when Windows Scaling is not 100%" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
+        Me.ttSettings.SetToolTip(Label15, "Auto will use Pixel Mode when scaling factor is 2x or more.")
         '
         'Label19
         '
@@ -650,12 +650,11 @@ Partial NotInheritable Class FrmSettings
         Me.cboScalingMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cboScalingMode.FormattingEnabled = True
         Me.cboScalingMode.Items.AddRange(New Object() {"Auto", "Blur", "Pixel"})
-        Me.cboScalingMode.Location = New System.Drawing.Point(200, 52)
+        Me.cboScalingMode.Location = New System.Drawing.Point(192, 52)
         Me.cboScalingMode.Name = "cboScalingMode"
-        Me.cboScalingMode.Size = New System.Drawing.Size(97, 21)
+        Me.cboScalingMode.Size = New System.Drawing.Size(106, 21)
         Me.cboScalingMode.TabIndex = 8
-        Me.ttSettings.SetToolTip(Me.cboScalingMode, "Auto will use Pixel Mode when scaling factor is 2x or more." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: Pixel Mode is " &
-        "disabled when Windows Scaling is not 100%" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
+        Me.ttSettings.SetToolTip(Me.cboScalingMode, "Auto will use Pixel Mode when scaling factor is 2x or more.")
         '
         'chkCycleOnClose
         '
@@ -683,22 +682,23 @@ Partial NotInheritable Class FrmSettings
         '
         'cmsUpdate
         '
+        Me.cmsUpdate.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.cmsUpdate.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CheckNowToolStripMenuItem, Me.OpenChangelogToolStripMenuItem})
         Me.cmsUpdate.Name = "cmsUpdate"
-        Me.cmsUpdate.Size = New System.Drawing.Size(165, 48)
+        Me.cmsUpdate.Size = New System.Drawing.Size(169, 56)
         '
         'CheckNowToolStripMenuItem
         '
         Me.CheckNowToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.Sync
         Me.CheckNowToolStripMenuItem.Name = "CheckNowToolStripMenuItem"
-        Me.CheckNowToolStripMenuItem.Size = New System.Drawing.Size(164, 22)
+        Me.CheckNowToolStripMenuItem.Size = New System.Drawing.Size(168, 26)
         Me.CheckNowToolStripMenuItem.Text = "Check Now"
         '
         'OpenChangelogToolStripMenuItem
         '
         Me.OpenChangelogToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.List
         Me.OpenChangelogToolStripMenuItem.Name = "OpenChangelogToolStripMenuItem"
-        Me.OpenChangelogToolStripMenuItem.Size = New System.Drawing.Size(164, 22)
+        Me.OpenChangelogToolStripMenuItem.Size = New System.Drawing.Size(168, 26)
         Me.OpenChangelogToolStripMenuItem.Text = "Open Changelog"
         '
         'ChkMinMin
@@ -832,7 +832,19 @@ Partial NotInheritable Class FrmSettings
         Me.pb100PWarning.Size = New System.Drawing.Size(18, 18)
         Me.pb100PWarning.TabIndex = 10
         Me.pb100PWarning.TabStop = False
-        Me.ttSettings.SetToolTip(Me.pb100PWarning, "Windows Monitor Scaling not 100%" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Pixel Mode Disabled." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
+        Me.ttSettings.SetToolTip(Me.pb100PWarning, "Windows Monitor Scaling not 100%" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Legacy Astonia Clients require " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Application Hi" &
+        "gh DPI scaling" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "compatability setting" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "or pixel mode will be disabled." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
+        '
+        'chkAutoCloseOnlyOnNoSome
+        '
+        Me.chkAutoCloseOnlyOnNoSome.AutoSize = True
+        Me.chkAutoCloseOnlyOnNoSome.Location = New System.Drawing.Point(133, 169)
+        Me.chkAutoCloseOnlyOnNoSome.Name = "chkAutoCloseOnlyOnNoSome"
+        Me.chkAutoCloseOnlyOnNoSome.Size = New System.Drawing.Size(163, 17)
+        Me.chkAutoCloseOnlyOnNoSome.TabIndex = 15
+        Me.chkAutoCloseOnlyOnNoSome.Text = "When not showing Someone"
+        Me.ttSettings.SetToolTip(Me.chkAutoCloseOnlyOnNoSome, resources.GetString("chkAutoCloseOnlyOnNoSome.ToolTip"))
+        Me.chkAutoCloseOnlyOnNoSome.UseVisualStyleBackColor = True
         '
         'tbcSettings
         '
@@ -852,6 +864,7 @@ Partial NotInheritable Class FrmSettings
         '
         'tabResolutions
         '
+        Me.tabResolutions.Controls.Add(Me.chkIgnoreDPI)
         Me.tabResolutions.Controls.Add(Me.pb100PWarning)
         Me.tabResolutions.Controls.Add(Me.ChkSizeBorder)
         Me.tabResolutions.Controls.Add(Me.cboScalingMode)
@@ -872,7 +885,7 @@ Partial NotInheritable Class FrmSettings
         'ChkSizeBorder
         '
         Me.ChkSizeBorder.AutoSize = True
-        Me.ChkSizeBorder.Location = New System.Drawing.Point(204, 80)
+        Me.ChkSizeBorder.Location = New System.Drawing.Point(192, 80)
         Me.ChkSizeBorder.Name = "ChkSizeBorder"
         Me.ChkSizeBorder.Size = New System.Drawing.Size(88, 17)
         Me.ChkSizeBorder.TabIndex = 9
@@ -901,6 +914,7 @@ Partial NotInheritable Class FrmSettings
         '
         'cmsRestore
         '
+        Me.cmsRestore.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.cmsRestore.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.LastSavedToolStripMenuItem, Me.DefaultToolStripMenuItem})
         Me.cmsRestore.Name = "cmsRestore"
         Me.cmsRestore.ShowImageMargin = False
@@ -939,22 +953,23 @@ Partial NotInheritable Class FrmSettings
         '
         'cmsGenerate
         '
+        Me.cmsGenerate.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.cmsGenerate.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.X60043ToolStripMenuItem, Me.X720169ToolStripMenuItem, ToolStripSeparator1, Me.FromToolStripMenuItem})
         Me.cmsGenerate.Name = "cmsGenerate"
-        Me.cmsGenerate.Size = New System.Drawing.Size(155, 76)
+        Me.cmsGenerate.Size = New System.Drawing.Size(159, 88)
         Me.cmsGenerate.Tag = "800x600 (4:3)"
         '
         'X60043ToolStripMenuItem
         '
         Me.X60043ToolStripMenuItem.Name = "X60043ToolStripMenuItem"
-        Me.X60043ToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.X60043ToolStripMenuItem.Size = New System.Drawing.Size(158, 26)
         Me.X60043ToolStripMenuItem.Tag = "800x600 (4:3)"
         Me.X60043ToolStripMenuItem.Text = "800x600 (4:3)"
         '
         'X720169ToolStripMenuItem
         '
         Me.X720169ToolStripMenuItem.Name = "X720169ToolStripMenuItem"
-        Me.X720169ToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.X720169ToolStripMenuItem.Size = New System.Drawing.Size(158, 26)
         Me.X720169ToolStripMenuItem.Tag = "1280x720 (16:9)"
         Me.X720169ToolStripMenuItem.Text = "1280x720 (16:9)"
         '
@@ -963,7 +978,7 @@ Partial NotInheritable Class FrmSettings
         Me.FromToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DummyToolStripMenuItem})
         Me.FromToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.moa31
         Me.FromToolStripMenuItem.Name = "FromToolStripMenuItem"
-        Me.FromToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
+        Me.FromToolStripMenuItem.Size = New System.Drawing.Size(158, 26)
         Me.FromToolStripMenuItem.Text = "From"
         '
         'DummyToolStripMenuItem
@@ -1771,16 +1786,16 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
-        'chkAutoCloseOnlyOnNoSome
+        'chkIgnoreDPI
         '
-        Me.chkAutoCloseOnlyOnNoSome.AutoSize = True
-        Me.chkAutoCloseOnlyOnNoSome.Location = New System.Drawing.Point(133, 169)
-        Me.chkAutoCloseOnlyOnNoSome.Name = "chkAutoCloseOnlyOnNoSome"
-        Me.chkAutoCloseOnlyOnNoSome.Size = New System.Drawing.Size(163, 17)
-        Me.chkAutoCloseOnlyOnNoSome.TabIndex = 15
-        Me.chkAutoCloseOnlyOnNoSome.Text = "When not showing Someone"
-        Me.ttSettings.SetToolTip(Me.chkAutoCloseOnlyOnNoSome, resources.GetString("chkAutoCloseOnlyOnNoSome.ToolTip"))
-        Me.chkAutoCloseOnlyOnNoSome.UseVisualStyleBackColor = True
+        Me.chkIgnoreDPI.AutoSize = True
+        Me.chkIgnoreDPI.Location = New System.Drawing.Point(192, 102)
+        Me.chkIgnoreDPI.Name = "chkIgnoreDPI"
+        Me.chkIgnoreDPI.Size = New System.Drawing.Size(109, 17)
+        Me.chkIgnoreDPI.TabIndex = 11
+        Me.chkIgnoreDPI.Text = "Hide DPI warning"
+        Me.ttSettings.SetToolTip(Me.chkIgnoreDPI, "Hide the warning icon when legacy clients arn't using DPI override" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
+        Me.chkIgnoreDPI.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
@@ -1967,4 +1982,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents chkNoAltTab As CheckBox
     Friend WithEvents pb100PWarning As PictureBox
     Friend WithEvents chkAutoCloseOnlyOnNoSome As CheckBox
+    Friend WithEvents chkIgnoreDPI As CheckBox
 End Class

@@ -232,6 +232,10 @@ Module dBug
                                                            Debug.Print($"{ap.Name} {ap.hasLoggedIn}")
                                                        End Sub)
     End Sub
+
+    Friend Sub regFudge(sender As Object, e As EventArgs)
+        If FrmMain.AltPP IsNot Nothing Then FrmMain.AltPP.RegHighDpiAware = False
+    End Sub
 End Module
 
 #End If

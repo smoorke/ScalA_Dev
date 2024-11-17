@@ -43,7 +43,7 @@ Partial Public NotInheritable Class FrmMain
     Private prevMode As Integer = 0
     Public Sub UpdateThumb(opacity As Byte)
         If AltPP Is Nothing OrElse AltPP.Id = 0 Then Exit Sub
-
+        Me.BeginInvoke(Sub() Me.pnlWarning.Hide())
         Dim twp As DWM_THUMBNAIL_PROPERTIES
         twp.dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or
                       DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or
@@ -55,23 +55,39 @@ Partial Public NotInheritable Class FrmMain
         'twp.rcSource = New Rectangle(AltPP.ClientOffset.X, AltPP.ClientOffset.Y, rcC.Width + AltPP.ClientOffset.X, rcC.Height + AltPP.ClientOffset.Y)
         twp.rcDestination = New Rectangle(pbZoom.Left, pbZoom.Top, pbZoom.Right, pbZoom.Bottom)
 
-        Dim mode = My.Settings.ScalingMode '0 auto, 1 blur, 2 pixel
+        Dim mode = My.Settings.ScalingMode '0 auto, 1 blur, 2 pixel , pixel on non 100% DPI
         If My.Settings.ScalingMode = 0 Then
             Dim compsz As Size = pbZoom.Size
+            Dim factor = If(AltPP.RegHighDpiAware, AltPP.WindowsScaling / 100, 1) 'todo: refactor this to AstoniaProcess
             Debug.Print($"UpdateThumb pbzoom {pbZoom.Size}")
-            If (compsz.Width / AltPP.ClientRect.Width >= 2) AndAlso
-               (compsz.Height / AltPP.ClientRect.Height >= 2) Then
+            If (compsz.Width / (AltPP.ClientRect.Width * factor) >= 2) AndAlso
+               (compsz.Height / (AltPP.ClientRect.Height * factor) >= 2) Then
+                Debug.Print($"auto mode 2 selected {compsz} {AltPP.ClientRect} {AltPP.ClientRect.Width * factor}")
                 mode = 2
             Else
+                Debug.Print($"auto mode 1 selected {compsz} {AltPP.ClientRect} {AltPP.ClientRect.Width * factor}")
                 mode = 1
             End If
         End If
 
-        If Me.WindowsScaling <> 100 AndAlso AltPP.WindowsScaling <> 100 Then 'handle windows scaling
-            Debug.Print("scaling not 100: pixel mode disabled")
-            mode = 1
+        If Me.WindowsScaling <> 100 Then 'handle windows scaling
             twp.rcDestination = New Rectangle(pbZoom.Left, pbZoom.Top - 1, pbZoom.Right, pbZoom.Bottom)
         End If
+
+        If AltPP.WindowsScaling <> 100 Then 'todo divise check to see if astonia is forced DPI aware
+            Debug.Print($"scaling not 100: {AltPP.RegHighDpiAware}")
+
+            If Not AltPP.RegHighDpiAware Then
+                If mode = 2 AndAlso Not My.Settings.IgnoreWindowsScalingIssue Then Me.BeginInvoke(Sub() pnlWarning.Show())
+                Debug.Print("pixel mode disabled")
+                mode = 1
+            End If
+
+        Else
+            Me.BeginInvoke(Sub() Me.pnlWarning.Hide())
+        End If
+
+        Debug.Print($"mode {mode}")
 
         If mode = 1 Then
             twp.fSourceClientAreaOnly = True
@@ -81,17 +97,20 @@ Partial Public NotInheritable Class FrmMain
             twp.rcSource = AltPP.rcSource(pbZoom.Size, mode)
         End If
 
+        Dim ret As Integer? = Nothing
         If prevMode <> mode Then
             Dim oldThumb = thumb
             DwmRegisterThumbnail(ScalaHandle, AltPP.MainWindowHandle, thumb)
-            DwmUpdateThumbnailProperties(thumb, twp)
+            ret = DwmUpdateThumbnailProperties(thumb, twp)
             DwmUnregisterThumbnail(oldThumb)
             prevMode = mode
         Else
-            DwmUpdateThumbnailProperties(thumb, twp)
+            ret = DwmUpdateThumbnailProperties(thumb, twp)
         End If
-        Debug.Print($"Thumb {thumb}")
+        Debug.Print($"Thumb {thumb} {ret}")
     End Sub
+
+
 
 
     Public Sub AnimateThumb(startRC As Rectangle, endRC As Rectangle, Optional time As Integer = 50)
