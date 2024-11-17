@@ -150,6 +150,7 @@ Module Extensions
     ''' <returns></returns>
     <Extension()>
     Public Function Map(this As Integer, fromMin As Integer, fromMax As Integer, toMin As Integer, toMax As Integer) As Integer
+        If (fromMax - fromMin) = 0 Then Return 0
         Return toMin + ((this - fromMin) * (toMax - toMin) / (fromMax - fromMin))
     End Function
     Private Const DWMWA_EXTENDED_FRAME_BOUNDS = 9

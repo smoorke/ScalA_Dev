@@ -1,5 +1,7 @@
 ﻿Module Globals
 
+    Public startup As Boolean = True
+
     Public keybHook As New KeyboardHook
 
     Public Function WinUsingDarkTheme() As Boolean

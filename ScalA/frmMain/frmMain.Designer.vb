@@ -33,6 +33,8 @@ Partial NotInheritable Class FrmMain
         Me.cmsQuickLaunch = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.DummyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.pnlTitleBar = New System.Windows.Forms.Panel()
+        Me.pnlWarning = New System.Windows.Forms.Panel()
+        Me.pbWarning = New System.Windows.Forms.PictureBox()
         Me.lblDebug = New System.Windows.Forms.Label()
         Me.chkDebug = New System.Windows.Forms.CheckBox()
         Me.pnlUpdate = New System.Windows.Forms.Panel()
@@ -82,8 +84,6 @@ Partial NotInheritable Class FrmMain
         Me.PnlEqLock = New System.Windows.Forms.Panel()
         Me.ttMain = New System.Windows.Forms.ToolTip(Me.components)
         Me.tmrHotkeys = New System.Windows.Forms.Timer(Me.components)
-        Me.pnlWarning = New System.Windows.Forms.Panel()
-        Me.pbWarning = New System.Windows.Forms.PictureBox()
         Me.btnStart = New ScalA.ThemedStartButton()
         Me.cmbResolution = New ScalA.ThemedComboBox()
         Me.cboAlt = New ScalA.ThemedComboBox()
@@ -95,6 +95,8 @@ Partial NotInheritable Class FrmMain
         Me.pnlSys.SuspendLayout()
         Me.cmsQuickLaunch.SuspendLayout()
         Me.pnlTitleBar.SuspendLayout()
+        Me.pnlWarning.SuspendLayout()
+        CType(Me.pbWarning, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.pnlUpdate.SuspendLayout()
         CType(Me.pbUpdateAvailable, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.pnlButtons.SuspendLayout()
@@ -108,8 +110,6 @@ Partial NotInheritable Class FrmMain
         CType(Me.cornerNE, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.cornerSW, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.cornerSE, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.pnlWarning.SuspendLayout()
-        CType(Me.pbWarning, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'ToolStripSeparator1
@@ -174,14 +174,39 @@ Partial NotInheritable Class FrmMain
         Me.pnlTitleBar.Size = New System.Drawing.Size(641, 25)
         Me.pnlTitleBar.TabIndex = 14
         '
+        'pnlWarning
+        '
+        Me.pnlWarning.Controls.Add(Me.pbWarning)
+        Me.pnlWarning.Dock = System.Windows.Forms.DockStyle.Right
+        Me.pnlWarning.Location = New System.Drawing.Point(556, 0)
+        Me.pnlWarning.Margin = New System.Windows.Forms.Padding(0)
+        Me.pnlWarning.Name = "pnlWarning"
+        Me.pnlWarning.Size = New System.Drawing.Size(24, 25)
+        Me.pnlWarning.TabIndex = 24
+        Me.pnlWarning.Visible = False
+        '
+        'pbWarning
+        '
+        Me.pbWarning.BackgroundImage = Global.ScalA.My.Resources.Resources.Warning
+        Me.pbWarning.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
+        Me.pbWarning.Location = New System.Drawing.Point(4, 5)
+        Me.pbWarning.Margin = New System.Windows.Forms.Padding(0)
+        Me.pbWarning.Name = "pbWarning"
+        Me.pbWarning.Size = New System.Drawing.Size(17, 17)
+        Me.pbWarning.TabIndex = 14
+        Me.pbWarning.TabStop = False
+        Me.ttMain.SetToolTip(Me.pbWarning, "Warning: client isn't running as DPI aware." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "PIXEL mode disabled." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Click this ico" &
+        "n to set this Astonia " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  installation to the right DPI mode" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  and enable pixel" &
+        " mode.")
+        '
         'lblDebug
         '
         Me.lblDebug.AutoSize = True
         Me.lblDebug.Location = New System.Drawing.Point(411, 7)
         Me.lblDebug.Name = "lblDebug"
-        Me.lblDebug.Size = New System.Drawing.Size(39, 13)
+        Me.lblDebug.Size = New System.Drawing.Size(49, 13)
         Me.lblDebug.TabIndex = 23
-        Me.lblDebug.Text = "Label1"
+        Me.lblDebug.Text = "lblDebug"
         Me.lblDebug.Visible = False
         '
         'chkDebug
@@ -597,31 +622,6 @@ Partial NotInheritable Class FrmMain
         '
         Me.tmrHotkeys.Enabled = True
         '
-        'pnlWarning
-        '
-        Me.pnlWarning.Controls.Add(Me.pbWarning)
-        Me.pnlWarning.Dock = System.Windows.Forms.DockStyle.Right
-        Me.pnlWarning.Location = New System.Drawing.Point(556, 0)
-        Me.pnlWarning.Margin = New System.Windows.Forms.Padding(0)
-        Me.pnlWarning.Name = "pnlWarning"
-        Me.pnlWarning.Size = New System.Drawing.Size(24, 25)
-        Me.pnlWarning.TabIndex = 24
-        Me.pnlWarning.Visible = False
-        '
-        'pbWarning
-        '
-        Me.pbWarning.BackgroundImage = Global.ScalA.My.Resources.Resources.Warning
-        Me.pbWarning.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
-        Me.pbWarning.Location = New System.Drawing.Point(4, 5)
-        Me.pbWarning.Margin = New System.Windows.Forms.Padding(0)
-        Me.pbWarning.Name = "pbWarning"
-        Me.pbWarning.Size = New System.Drawing.Size(17, 17)
-        Me.pbWarning.TabIndex = 14
-        Me.pbWarning.TabStop = False
-        Me.ttMain.SetToolTip(Me.pbWarning, "Warning: client isn't running as DPI aware." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "PIXEL mode disabled." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Click this ico" &
-        "n to set this Astonia " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  installation to the right DPI mode" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  and enable pixel" &
-        " mode.")
-        '
         'btnStart
         '
         Me.btnStart.ContextMenuStrip = Me.cmsQuickLaunch
@@ -689,6 +689,8 @@ Partial NotInheritable Class FrmMain
         Me.cmsQuickLaunch.ResumeLayout(False)
         Me.pnlTitleBar.ResumeLayout(False)
         Me.pnlTitleBar.PerformLayout()
+        Me.pnlWarning.ResumeLayout(False)
+        CType(Me.pbWarning, System.ComponentModel.ISupportInitialize).EndInit()
         Me.pnlUpdate.ResumeLayout(False)
         CType(Me.pbUpdateAvailable, System.ComponentModel.ISupportInitialize).EndInit()
         Me.pnlButtons.ResumeLayout(False)
@@ -703,8 +705,6 @@ Partial NotInheritable Class FrmMain
         CType(Me.cornerNE, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.cornerSW, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.cornerSE, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.pnlWarning.ResumeLayout(False)
-        CType(Me.pbWarning, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub

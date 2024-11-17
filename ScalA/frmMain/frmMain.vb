@@ -476,6 +476,8 @@ Partial Public NotInheritable Class FrmMain
         Static dynamicitem3 As New ToolStripMenuItem($"Aborder", Nothing, AddressOf dBug.dumpApCache)
         test.Items.Add(dynamicitem3)
         test.Items.Add(New ToolStripMenuItem("DPI Reg", Nothing, AddressOf dBug.regFudge))
+        test.Items.Add(New ToolStripMenuItem("ReLogin Client", Nothing, AddressOf dBug.RestartClient))
+        test.Items.Add(New ToolStripMenuItem("Show RelButton", Nothing, AddressOf dBug.ShowRelButton))
 
         chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()
@@ -509,7 +511,8 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         FrmBehind.Show()
-        FrmSizeBorder.Show(Me)
+        frmOverlay.Show(Me)
+        FrmSizeBorder.Show(frmOverlay)
         ScalaHandle = Me.Handle
         suppressWM_MOVEcwp = True
 
@@ -553,7 +556,7 @@ Partial Public NotInheritable Class FrmMain
     Public bmShield As Bitmap
 
     Dim AnimsEnabled As Boolean = getAnimationsEnabled()
-    Public startup As Boolean = True
+    'Public startup As Boolean = True
 
     Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         Debug.Print("FrmMain_Shown")

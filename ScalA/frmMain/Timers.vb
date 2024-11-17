@@ -548,7 +548,8 @@ Partial NotInheritable Class FrmMain
             'ShowWindow(ScalaHandle, SW_SHOW)
             Me.Show()
             If My.Settings.SizingBorder AndAlso Not FrmSizeBorder.Visible Then
-                FrmSizeBorder.Show(Me)
+                frmOverlay.Show(Me)
+                FrmSizeBorder.Show(frmOverlay)
             End If
 
             Me.TopMost = True
@@ -606,6 +607,12 @@ Partial NotInheritable Class FrmMain
         ''locked 🔒
         ''unlocked 🔓
 
+        If cboAlt.SelectedIndex <> 0 AndAlso AltPP.hasLoggedIn AndAlso AltPP.Name = "Someone" Then
+            frmOverlay.pbRestart.Show()
+        Else
+            frmOverlay.pbRestart.Hide()
+        End If
+
         'this does not belong in this hot path
         If My.Settings.AutoCloseIdle AndAlso swAutoClose.ElapsedMilliseconds > 1000 Then
             AutoCloseCounter += 1
@@ -625,8 +632,6 @@ Partial NotInheritable Class FrmMain
             End If
 
             Dim listingsomeone = IPC.getInstances.Any(Function(si) si.showingSomeones)
-
-            'TODO: this needs NAND? 
 
             '  ls  ns | c
             '  0   0  | 1
@@ -659,8 +664,6 @@ Partial NotInheritable Class FrmMain
 
         Dim dummy = Task.Run(Sub() CloseErrorDialog())
 
-        'If behindTaskDone Then
-        '    behindTaskDone = False
         Dim behindHandle = FrmBehind.Handle
 
         Dim setbehind As IntPtr? = AltPP?.MainWindowHandle
@@ -672,15 +675,16 @@ Partial NotInheritable Class FrmMain
         SetWindowPos(behindHandle, setbehind, -1, -1, -1, -1,
                                         SetWindowPosFlags.IgnoreMove Or
                                         SetWindowPosFlags.DoNotActivate Or
-                                        SetWindowPosFlags.IgnoreResize) ' Or SetWindowPosFlags.ASyncWindowPosition)
-        '                  End Sub).ContinueWith(Sub() behindTaskDone = True)
-        ' End If
+                                        SetWindowPosFlags.IgnoreResize) ' Or SetWindowPosFlags.ASyncWindowPosition
 
     End Sub
 
     Private behindTaskDone As Boolean = True
     Private altSelectedOrOverview As List(Of AstoniaProcess)
 
+
+
+    ' why did i write this? intended use? why is this in timers?
     Private Function FindLowestZOrderHwnd(ByVal tP As List(Of AstoniaProcess), ByVal startHwnd As IntPtr) As IntPtr?
 
         'todo replace with enumwindows

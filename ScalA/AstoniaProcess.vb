@@ -658,7 +658,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End Get
     End Property
     Private DpiAware As Boolean? = Nothing
-    Friend Property RegHighDpiAware As Boolean
+    Friend Property RegHighDpiAware As Boolean 'todo: this has wrong path for junctioned/hardlinked/.... files
         Get
             If Me.DpiAware IsNot Nothing Then Return Me.DpiAware
             Try
@@ -671,7 +671,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 End Using
             Catch ex As Exception
                 'TODO: 64 bit broker to retrieve MainModule.FileName from 64 bit sdl app
-                Me.DpiAware = True
+                Me.DpiAware = True 'defaulting to true since SDL apps are DPI aware by default. still need to check tho. FE: invicta ( i think ) is 64 bit w/o being aware
                 Return True
             End Try
 
@@ -857,7 +857,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Dim arguments As String = mos("commandline")
         Dim exepath As String = mos("ExecutablePath")
 
-        Debug.Print($"Original arguments: ""{arguments}""")
+        'Debug.Print($"Original arguments: ""{arguments}""")
         Debug.Print($"Executable Path: ""{exepath}""")
 
         If arguments = "" Then
@@ -929,13 +929,17 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
         Debug.Print($"runasWindowed: {Me.Name} {Me.Id}")
 
-        Dim shortcutlink As String = FileIO.SpecialDirectories.Temp & "\ScalA\tmp.lnk"
+        If Not IO.Directory.Exists(IO.Path.Combine(FileIO.SpecialDirectories.Temp, "\ScalA\")) Then
+            IO.Directory.CreateDirectory(IO.Path.Combine(FileIO.SpecialDirectories.Temp, "\ScalA\"))
+        End If
+
+        Dim shortcutlink As String = IO.Path.Combine(FileIO.SpecialDirectories.Temp, "\ScalA\tmp.lnk")
 
         Dim mos As Management.ManagementObject = New Management.ManagementObjectSearcher($“Select * from Win32_Process WHERE ProcessID={proc.Id}").Get()(0)
 
         Dim arguments As String = mos("commandline")
 
-        Debug.Print($"arguments:""{arguments}""")
+        'Debug.Print($"arguments:""{arguments}""") 'leaks creds to dehub
         Debug.Print($"exePath:""{mos("ExecutablePath")}""")
 
         If arguments = "" Then
@@ -947,7 +951,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             End 'program
             Return
         End If
-        Debug.Print("cmdline:" & arguments)
+        'Debug.Print("cmdline:" & arguments) 'leaks creds
         If arguments.StartsWith("""") Then
             'arguments = arguments.Substring(1) 'skipped with startindex
             arguments = arguments.Substring(arguments.IndexOf("""", 1) + 1)
@@ -981,13 +985,13 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         newargs.Add("h600")
 
         arguments = Strings.Join(newargs.ToArray, " -")
-        Debug.Print($"args {arguments}")
+        'Debug.Print($"args {arguments}") 'leaks creds to debug
 
         Dim exepath As String = ""
         Try
             exepath = mos("ExecutablePath")
         Catch
-
+            Debug.Print("exepath exept")
         End Try
         'Dim workdir As String = exepath.Substring(0, exepath.LastIndexOf("\")) 'todo: replace with function found at https://stackoverflow.com/a/23842609/7433250
         Dim workdir = proc.GetCurrentDirectory()
@@ -1010,6 +1014,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             oLink.WindowStyle = 1
             oLink.Save()
         Catch ex As Exception
+            Debug.Print($"oLink exept {exepath} {workdir} {shortcutlink}") 'why is this giving an exception?
             Return
         End Try
 
@@ -1034,6 +1039,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             alreadylaunched = True
             pp.Start()
         Catch
+            Debug.Print("pp.start() except")
         Finally
             pp.Dispose()
         End Try

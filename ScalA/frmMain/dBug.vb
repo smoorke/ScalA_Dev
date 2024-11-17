@@ -236,6 +236,38 @@ Module dBug
     Friend Sub regFudge(sender As Object, e As EventArgs)
         If FrmMain.AltPP IsNot Nothing Then FrmMain.AltPP.RegHighDpiAware = False
     End Sub
+
+    Friend Async Sub RestartClient(sender As Object, e As EventArgs)
+
+        Dim targetname As String = FrmMain.AltPP.loggedInAs
+        Debug.Print($"restarting {targetname}")
+
+
+
+        FrmMain.AltPP.restart()
+        FrmMain.Cursor = Cursors.WaitCursor
+        Dim count As Integer = 0
+
+        While True
+            count += 1
+            Await Task.Delay(50)
+            Dim targetPPs As AstoniaProcess() = AstoniaProcess.Enumerate(FrmMain.blackList).Where(Function(ap) ap.Name = targetname).ToArray()
+            If targetPPs.Length > 0 AndAlso targetPPs(0) IsNot Nothing AndAlso targetPPs(0).Id <> 0 Then
+                FrmMain.PopDropDown(FrmMain.cboAlt)
+                FrmMain.cboAlt.SelectedItem = targetPPs(0)
+                Exit While
+            End If
+            If count >= 100 Then
+                CustomMessageBox.Show(FrmMain, "Windowing failed")
+                Exit While
+            End If
+        End While
+        FrmMain.Cursor = Cursors.Default
+    End Sub
+
+    Friend Sub ShowRelButton(sender As Object, e As EventArgs)
+        frmOverlay.pbRestart.Show()
+    End Sub
 End Module
 
 #End If

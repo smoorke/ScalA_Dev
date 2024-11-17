@@ -95,6 +95,12 @@
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="AstoniaProcess.vb" />
     <Compile Include="CustomColorTable.vb" />
+    <Compile Include="frmMain\frmOverlay.Designer.vb">
+      <DependentUpon>frmOverlay.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmMain\frmOverlay.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="KeyboardHook.vb" />
     <Compile Include="NaturalStringSorter.vb" />
     <Compile Include="DWMThumb.vb" />
@@ -166,6 +172,9 @@
     <EmbeddedResource Include="frmMain\frmBehind.resx">
       <DependentUpon>frmBehind.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="frmMain\frmOverlay.resx">
+      <DependentUpon>frmOverlay.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmMain\FrmSizeBorder.resx">
       <DependentUpon>FrmSizeBorder.vb</DependentUpon>
     </EmbeddedResource>
@@ -200,6 +209,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Refresh.png" />
     <None Include="Resources\Warning.png" />
     <None Include="Resources\Sync.png" />
     <None Include="Resources\moreF12.png" />
@@ -215,6 +225,7 @@
     <None Include="Resources\CloseBoth.png" />
     <None Include="Resources\List.png" />
     <None Include="Resources\gnome-maps16.png" />
+    <None Include="Resources\Idled.DELETEME.png" />
     <Content Include="Resources\moa3.ico" />
     <None Include="Resources\F12.png" />
     <None Include="Resources\moa3.png" />
