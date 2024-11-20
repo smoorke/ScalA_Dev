@@ -269,6 +269,8 @@ Partial Public NotInheritable Class FrmMain
 
         If sender.SelectedIndex > 0 Then
             pbZoom.Visible = True
+            Dim sb As Rectangle = Me.Bounds
+            frmOverlay.Bounds = New Rectangle(sb.X, sb.Y + 21, sb.Width, sb.Height - 21)
         Else
             AButton.ActiveOverview = My.Settings.gameOnOverview
         End If
@@ -1853,4 +1855,5 @@ Partial Public NotInheritable Class FrmMain
             pnlWarning.Hide()
         End If
     End Sub
+
 End Class

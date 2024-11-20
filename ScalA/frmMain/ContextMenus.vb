@@ -101,6 +101,13 @@ Partial Public NotInheritable Class FrmMain
         SelectAlt(pp)
     End Sub
 
+    Private Sub ReLaunchToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles ReLaunchToolStripMenuItem.Click
+        Dim pp As AstoniaProcess = DirectCast(sender.Tag, AstoniaProcess)
+        AltPP = pp
+        AltPP.restart()
+    End Sub
+
+
     Private Sub TopMostToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles TopMostToolStripMenuItem.Click
         Dim pp As AstoniaProcess = DirectCast(sender.Tag, AstoniaProcess)
         If pp Is Nothing Then Exit Sub
@@ -144,6 +151,17 @@ Partial Public NotInheritable Class FrmMain
         SelectToolStripMenuItem.Text = "Select " & pp.Name
         SelectToolStripMenuItem.Image = pp.GetIcon?.ToBitmap
         SelectToolStripMenuItem.Tag = pp
+
+
+        Debug.Print($"cmsAlt {pp.Name} {pp.hasLoggedIn} ""{pp.loggedInAs}""")
+
+        If pp.Name = "Someone" Then
+            ReLaunchToolStripMenuItem.Visible = True
+            ReLaunchToolStripMenuItem.Text = $"ReLaunch {pp.loggedInAs}"
+        Else
+            ReLaunchToolStripMenuItem.Visible = False
+        End If
+        ReLaunchToolStripMenuItem.Tag = pp
 
         TopMostToolStripMenuItem.Checked = pp.TopMost()
         TopMostToolStripMenuItem.Tag = pp

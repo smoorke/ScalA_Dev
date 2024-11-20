@@ -31,7 +31,7 @@ Partial Class frmOverlay
         'pbRestart
         '
         Me.pbRestart.BackColor = System.Drawing.Color.Transparent
-        Me.pbRestart.BackgroundImage = Global.ScalA.My.Resources.Resources.Refresh
+        Me.pbRestart.BackgroundImage = Global.ScalA.My.Resources.Resources.RefreshB
         Me.pbRestart.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch
         Me.pbRestart.Location = New System.Drawing.Point(671, 7)
         Me.pbRestart.Margin = New System.Windows.Forms.Padding(0)

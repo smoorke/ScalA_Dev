@@ -210,6 +210,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Refresh.png" />
+    <None Include="Resources\RefreshB.png" />
     <None Include="Resources\Warning.png" />
     <None Include="Resources\Sync.png" />
     <None Include="Resources\moreF12.png" />

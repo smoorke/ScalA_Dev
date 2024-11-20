@@ -8,11 +8,13 @@
             Case WM_WINDOWPOSCHANGED
                 If Not startup AndAlso FrmMain.AltPP IsNot Nothing Then
                     Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
-                    pbRestart.Bounds = New Rectangle(671.Map(0, FrmMain.AltPP.ClientRect.Width, 0, winpos.cx),
+                    Dim tr = New Rectangle(671.Map(0, FrmMain.AltPP.ClientRect.Width, 0, winpos.cx),
                                                     10.Map(0, FrmMain.AltPP.ClientRect.Height, 0, winpos.cy),
                                                     24.Map(0, FrmMain.AltPP.ClientRect.Width, 0, winpos.cx),
                                                     24.Map(0, FrmMain.AltPP.ClientRect.Height, 0, winpos.cy))
-
+                    If tr <> Rectangle.Empty Then
+                        pbRestart.Bounds = tr
+                    End If
 
 
                     'pbRestart.Location = New Point(671.Map(0, FrmMain.AltPP.ClientRect.Width, 0, winpos.cx),
@@ -34,7 +36,7 @@
         FrmMain.Cursor = Cursors.WaitCursor
         Dim count As Integer = 0
 
-        While True
+        While Not String.IsNullOrEmpty(targetname)
             count += 1
             Await Task.Delay(50)
             Dim targetPPs As AstoniaProcess() = AstoniaProcess.Enumerate(FrmMain.blackList).Where(Function(ap) ap.Name = targetname).ToArray()
@@ -49,5 +51,9 @@
             End If
         End While
         FrmMain.Cursor = Cursors.Default
+    End Sub
+
+    Private Sub pbRestart_Resize(sender As Object, e As EventArgs) Handles pbRestart.Resize
+        Debug.Print($"pbRestart.Size {pbRestart.Size}")
     End Sub
 End Class

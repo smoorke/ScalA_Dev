@@ -607,7 +607,7 @@ Partial NotInheritable Class FrmMain
         ''locked 🔒
         ''unlocked 🔓
 
-        If cboAlt.SelectedIndex <> 0 AndAlso AltPP.hasLoggedIn AndAlso AltPP.Name = "Someone" Then
+        If Not pnlOverview.Visible AndAlso AltPP.loggedInAs <> "Someone" AndAlso AltPP.Name = "Someone" Then
             frmOverlay.pbRestart.Show()
         Else
             frmOverlay.pbRestart.Hide()
