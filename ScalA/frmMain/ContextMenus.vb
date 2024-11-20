@@ -1263,7 +1263,7 @@ Partial Public NotInheritable Class FrmMain
         Me.Invoke(Sub() Cursor = Cursors.WaitCursor)
 
         Dim bat As String = "\AsInvoker.bat"
-        Dim tmpDir As String = IO.Path.Combine(FileIO.SpecialDirectories.Temp, "\ScalA")
+        Dim tmpDir As String = IO.Path.Combine(FileIO.SpecialDirectories.Temp, "ScalA")
 
         If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
         If Not FileIO.FileSystem.FileExists(tmpDir & bat) OrElse
