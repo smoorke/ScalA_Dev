@@ -157,7 +157,19 @@ Partial Public NotInheritable Class FrmMain
 
         If pp.Name = "Someone" Then
             ReLaunchToolStripMenuItem.Visible = True
-            ReLaunchToolStripMenuItem.Text = $"ReLaunch {pp.loggedInAs}"
+            If String.IsNullOrWhiteSpace(pp.loggedInAs) Then
+                Dim QS As New Management.ManagementObjectSearcher(“Select * from Win32_Process WHERE ProcessID=" & pp.Id)
+                Dim objCol As Management.ManagementObjectCollection = QS.Get
+
+                Dim cmdLine As String = objCol(0)("commandline")
+
+                Dim nam As String = cmdLine.Split("-").FirstOrDefault(Function(s) s.ToLower.StartsWith("u")).TrimStart("u ".ToCharArray).TrimEnd.FirstToUpper()
+
+                Debug.Print($"ReLaunch ""{nam}""")
+                ReLaunchToolStripMenuItem.Text = $"ReLaunch {nam}"
+            Else
+                ReLaunchToolStripMenuItem.Text = $"ReLaunch {pp.loggedInAs}"
+            End If
         Else
             ReLaunchToolStripMenuItem.Visible = False
         End If

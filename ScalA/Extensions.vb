@@ -49,6 +49,19 @@ Module Extensions
     Public Function Cap(str As String, length As Integer) As String
         Return Strings.Left(str, Math.Min(length, str.Length))
     End Function
+
+    ''' <summary>
+    ''' Returns the input string with the first character converted to uppercase, Or mutates any nulls passed into string.Empty
+    ''' </summary>
+    <Extension>
+    Public Function FirstToUpper(s As String) As String
+        If (String.IsNullOrEmpty(s)) Then Return String.Empty
+
+        Dim a As Char() = s.ToLower.ToCharArray()
+        a(0) = Char.ToUpper(a(0))
+        Return New String(a)
+    End Function
+
     ''' <summary>
     ''' Checks if a control contains a given point in screen coords
     ''' </summary>
