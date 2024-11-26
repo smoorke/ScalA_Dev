@@ -75,7 +75,7 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         If AltPP.WindowsScaling <> 100 Then 'todo divise check to see if astonia is forced DPI aware
-            Debug.Print($"scaling not 100: {AltPP.RegHighDpiAware}")
+            Debug.Print($"scaling not 100: {AltPP.RegHighDpiAware} {AltPP.WindowsScaling}")
 
             If Not AltPP.RegHighDpiAware Then
                 If mode = 2 AndAlso Not My.Settings.IgnoreWindowsScalingIssue Then Me.BeginInvoke(Sub() pnlWarning.Show())
@@ -87,7 +87,7 @@ Partial Public NotInheritable Class FrmMain
             Me.BeginInvoke(Sub() Me.pnlWarning.Hide())
         End If
 
-        Debug.Print($"mode {mode}")
+        Debug.Print($"mode {mode} {If(mode = 1, "blur", "pixel")}")
 
         If mode = 1 Then
             twp.fSourceClientAreaOnly = True
