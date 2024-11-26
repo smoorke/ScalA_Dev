@@ -2,6 +2,47 @@
 Imports System.Runtime.InteropServices
 #If DEBUG Then
 Module dBug
+
+    Friend Sub debugMenu()
+        Dim test As New ContextMenuStrip
+        test.Items.Add(New ToolStripMenuItem("Parse Info", Nothing, AddressOf dBug.ParseInfo))
+        test.Items.Add(New ToolStripMenuItem("Reset Hide", Nothing, AddressOf dBug.ResetHide))
+        test.Items.Add(New ToolStripMenuItem("ResumeLayout", Nothing, AddressOf dBug.Resumelayout))
+        test.Items.Add(New ToolStripMenuItem("Button Info", Nothing, AddressOf dBug.ButtonInfo))
+        test.Items.Add(New ToolStripMenuItem("isBelow", Nothing, AddressOf dBug.IsBelow))
+        Static dynamicitem1 As New ToolStripMenuItem($"movebusy {FrmMain.moveBusy}")
+        test.Items.Add(dynamicitem1)
+        test.Items.Add(New ToolStripMenuItem("Update", Nothing, AddressOf dBug.ToggleUpdate))
+        test.Items.Add(New ToolStripMenuItem("Scaling", Nothing, AddressOf dBug.ScreenScaling))
+        test.Items.Add(New ToolStripMenuItem("Shared Mem", Nothing, AddressOf dBug.SharedMem))
+        Static dynamicitem2 As New ToolStripMenuItem($"Aborder", Nothing, AddressOf dBug.toggeleborder)
+        test.Items.Add(dynamicitem2)
+        test.Items.Add(New ToolStripMenuItem("ThumbSize", Nothing, AddressOf dBug.querySize))
+        test.Items.Add(New ToolStripMenuItem("FudgeThumb", Nothing, AddressOf dBug.fudgeThumb))
+        test.Items.Add(New ToolStripMenuItem("NudgeTaskbar", Nothing, AddressOf dBug.NudgeTaskbar))
+        test.Items.Add(New ToolStripMenuItem("thumbStuff", Nothing, AddressOf dBug.thumbStuff))
+        test.Items.Add(New ToolStripMenuItem("list others", Nothing, AddressOf dBug.listothers))
+        test.Items.Add(New ToolStripMenuItem("hookWinKey", Nothing, AddressOf dBug.hookKey))
+        test.Items.Add(New ToolStripMenuItem("IPC Size", Nothing, AddressOf dBug.ipcSize))
+        Static dynamicitem3 As New ToolStripMenuItem($"Aborder", Nothing, AddressOf dBug.dumpApCache)
+        test.Items.Add(dynamicitem3)
+        test.Items.Add(New ToolStripMenuItem("DPI Reg", Nothing, AddressOf dBug.regFudge))
+        test.Items.Add(New ToolStripMenuItem("ReLogin Client", Nothing, AddressOf dBug.RestartClient))
+        test.Items.Add(New ToolStripMenuItem("Show RelButton", Nothing, AddressOf dBug.ShowRelButton))
+
+        FrmMain.chkDebug.ContextMenuStrip = test
+        AddHandler test.Opening, Sub()
+                                     Debug.Print("test Opening")
+                                     dynamicitem1.Text = $"movebusy {FrmMain.moveBusy}"
+                                     dynamicitem2.Text = $"Aborder {FrmMain.AltPP?.hasBorder}"
+                                     dynamicitem3.Text = $"ap cache {AstoniaProcess.ProcCache?.Count}"
+                                     FrmMain.UntrapMouse(MouseButtons.Right)
+                                     AppActivate(FrmMain.scalaPID)
+                                 End Sub
+        AddHandler FrmMain.chkDebug.MouseUp, Sub(sen, ev) FrmMain.UntrapMouse(ev.Button)
+
+    End Sub
+
     Friend Sub ParseInfo(sender As Object, e As EventArgs)
         If FrmMain.AltPP Is Nothing Then Exit Sub
         Dim QS As New Management.ManagementObjectSearcher(“Select * from Win32_Process WHERE ProcessID=" & FrmMain.AltPP.Id)
@@ -234,7 +275,8 @@ Module dBug
     End Sub
 
     Friend Sub regFudge(sender As Object, e As EventArgs)
-        If FrmMain.AltPP IsNot Nothing Then FrmMain.AltPP.RegHighDpiAware = False
+        Debug.Print($"DPI: {FrmMain.AltPP?.RegHighDpiAware}")
+        'If FrmMain.AltPP IsNot Nothing Then FrmMain.AltPP.RegHighDpiAware = False
     End Sub
 
     Friend Async Sub RestartClient(sender As Object, e As EventArgs)

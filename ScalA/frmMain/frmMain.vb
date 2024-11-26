@@ -455,43 +455,7 @@ Partial Public NotInheritable Class FrmMain
 
 #If DEBUG Then
         chkDebug.Visible = True
-        Dim test As New ContextMenuStrip
-        test.Items.Add(New ToolStripMenuItem("Parse Info", Nothing, AddressOf dBug.ParseInfo))
-        test.Items.Add(New ToolStripMenuItem("Reset Hide", Nothing, AddressOf dBug.ResetHide))
-        test.Items.Add(New ToolStripMenuItem("ResumeLayout", Nothing, AddressOf dBug.Resumelayout))
-        test.Items.Add(New ToolStripMenuItem("Button Info", Nothing, AddressOf dBug.ButtonInfo))
-        test.Items.Add(New ToolStripMenuItem("isBelow", Nothing, AddressOf dBug.IsBelow))
-        Static dynamicitem1 As New ToolStripMenuItem($"movebusy {moveBusy}")
-        test.Items.Add(dynamicitem1)
-        test.Items.Add(New ToolStripMenuItem("Update", Nothing, AddressOf dBug.ToggleUpdate))
-        test.Items.Add(New ToolStripMenuItem("Scaling", Nothing, AddressOf dBug.ScreenScaling))
-        test.Items.Add(New ToolStripMenuItem("Shared Mem", Nothing, AddressOf dBug.SharedMem))
-        Static dynamicitem2 As New ToolStripMenuItem($"Aborder", Nothing, AddressOf dBug.toggeleborder)
-        test.Items.Add(dynamicitem2)
-        test.Items.Add(New ToolStripMenuItem("ThumbSize", Nothing, AddressOf dBug.querySize))
-        test.Items.Add(New ToolStripMenuItem("FudgeThumb", Nothing, AddressOf dBug.fudgeThumb))
-        test.Items.Add(New ToolStripMenuItem("NudgeTaskbar", Nothing, AddressOf dBug.NudgeTaskbar))
-        test.Items.Add(New ToolStripMenuItem("thumbStuff", Nothing, AddressOf dBug.thumbStuff))
-        test.Items.Add(New ToolStripMenuItem("list others", Nothing, AddressOf dBug.listothers))
-        test.Items.Add(New ToolStripMenuItem("hookWinKey", Nothing, AddressOf dBug.hookKey))
-        test.Items.Add(New ToolStripMenuItem("IPC Size", Nothing, AddressOf dBug.ipcSize))
-        Static dynamicitem3 As New ToolStripMenuItem($"Aborder", Nothing, AddressOf dBug.dumpApCache)
-        test.Items.Add(dynamicitem3)
-        test.Items.Add(New ToolStripMenuItem("DPI Reg", Nothing, AddressOf dBug.regFudge))
-        test.Items.Add(New ToolStripMenuItem("ReLogin Client", Nothing, AddressOf dBug.RestartClient))
-        test.Items.Add(New ToolStripMenuItem("Show RelButton", Nothing, AddressOf dBug.ShowRelButton))
-
-        chkDebug.ContextMenuStrip = test
-        AddHandler test.Opening, Sub()
-                                     Debug.Print("test Opening")
-                                     dynamicitem1.Text = $"movebusy {moveBusy}"
-                                     dynamicitem2.Text = $"Aborder {AltPP?.hasBorder}"
-                                     dynamicitem3.Text = $"ap cache {AstoniaProcess.ProcCache?.Count}"
-                                     UntrapMouse(MouseButtons.Right)
-                                     AppActivate(scalaPID)
-                                 End Sub
-        AddHandler chkDebug.MouseUp, Sub(sen, ev) UntrapMouse(ev.Button)
-
+        dBug.debugMenu()
         lblDebug.Visible = True
 #End If
 
@@ -586,6 +550,10 @@ Partial Public NotInheritable Class FrmMain
         FrmSizeBorder.Opacity = If(My.Settings.SizingBorder AndAlso Me.WindowState = FormWindowState.Normal, 0.01, 0)
 
         IPC.AddOrUpdateInstance(scalaPID, cboAlt.SelectedIndex = 0, If(cboAlt.SelectedIndex = 0, Nothing, cboAlt.SelectedItem.id), showingSomeone)
+
+        'Dim sb As Rectangle = Me.RectangleToScreen(pbZoom.Bounds)
+        ' frmOverlay.Bounds = sb 'New Rectangle(sb.X, sb.Y + 21, sb.Width, sb.Height - 21)
+
     End Sub
     Friend Shared updateToVersion As String = "Error"
     Friend Shared ReadOnly client As HttpClient = New HttpClient() With {.Timeout = TimeSpan.FromMilliseconds(5000)}
@@ -977,7 +945,7 @@ Partial Public NotInheritable Class FrmMain
     ''' Fix mousebutton stuck after drag bug
     ''' Note: needs to be run before acivating self
     ''' </summary>
-    Private Sub UntrapMouse(button As MouseButtons)
+    Public Sub UntrapMouse(button As MouseButtons)
         Dim activePID = GetActiveProcessID()
         'Debug.Print($"active {activePID} is AltPP.id {activePID = AltPP?.Id}")
         If activePID <> AltPP?.Id Then Exit Sub 'only when dragged from client
