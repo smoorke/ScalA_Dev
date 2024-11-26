@@ -300,7 +300,9 @@ Partial NotInheritable Class FrmMain
                     If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
                 End If
 
-                frmOverlay.Bounds = If(pbZoom IsNot Nothing, New Rectangle(winpos.x, winpos.y + 21, winpos.cx, winpos.cy - 21), Me.Bounds)
+                If pbZoom IsNot Nothing Then
+                    frmOverlay.Bounds = New Rectangle(winpos.x, winpos.y + 21, winpos.cx, winpos.cy - 21)
+                End If
                 FrmBehind.Bounds = New Rectangle(winpos.x, winpos.y + 21, winpos.cx, winpos.cy - 21)
 
                 If FrmSizeBorder IsNot Nothing AndAlso Me.WindowState = FormWindowState.Normal Then

@@ -5,7 +5,7 @@
 
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
-            Case WM_WINDOWPOSCHANGED
+            Case WM_WINDOWPOSCHANGING
                 If Not startup AndAlso FrmMain.AltPP IsNot Nothing Then
                     Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
                     Dim tr = New Rectangle(671.Map(0, FrmMain.AltPP.ClientRect.Width, 0, winpos.cx),
