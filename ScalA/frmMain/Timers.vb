@@ -608,6 +608,9 @@ Partial NotInheritable Class FrmMain
         ''unlocked 🔓
 
         If Not pnlOverview.Visible AndAlso AltPP.loggedInAs <> "Someone" AndAlso AltPP.Name = "Someone" Then
+            Dim sb As Rectangle = Me.Bounds
+            frmOverlay.Bounds = New Rectangle(sb.X, sb.Y + 21, sb.Width, sb.Height - 21)
+            SetWindowPos(frmOverlay.Handle, 0, sb.X, sb.Y + 21, sb.Width, sb.Height - 21, SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder)
             frmOverlay.pbRestart.Show()
         Else
             frmOverlay.pbRestart.Hide()

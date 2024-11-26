@@ -989,6 +989,41 @@ Module NativeMethods
         Return New IntPtr(wp)
     End Function
 
+    Public Enum FileAccess
+        Read = &H80000000
+        Write = &H40000000
+        ReadWrite = &H40000000 Or &H80000000
+    End Enum
+
+    Public Enum FileShare
+        None = 0
+        Read = 1
+        Write = 2
+        ReadWrite = 3
+    End Enum
+
+    Public Enum CreationDisposition
+        OpenExisting = 3
+    End Enum
+
+    <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Auto)>
+    Public Structure SecurityAttributes
+        Public Length As Integer
+        Public SecurityDescriptor As IntPtr
+        Public InheritHandle As Boolean
+    End Structure
+
+    <System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet:=CharSet.Auto, SetLastError:=True, CallingConvention:=CallingConvention.Winapi)>
+    Public Function CreateFile(
+    ByVal lpFileName As String,
+    ByVal dwDesiredAccess As FileAccess,
+    ByVal dwShareMode As FileShare,
+    ByRef lpSecurityAttributes As SecurityAttributes,
+    ByVal dwCreationDisposition As CreationDisposition,
+    ByVal dwFlagsAndAttributes As Integer,
+    ByVal hTemplateFile As IntPtr
+) As IntPtr
+    End Function
 
     <DllImport("kernel32.dll", SetLastError:=True, CharSet:=CharSet.Auto)>
     Public Function MoveFileW(ExistingFileName As String, NewFileName As String) As Boolean : End Function
@@ -1003,6 +1038,11 @@ Module NativeMethods
 
     <System.Runtime.InteropServices.DllImport("kernel32.dll")>
     Public Function QueryFullProcessImageName(hprocess As IntPtr, dwFlags As Integer, lpExeName As System.Text.StringBuilder, ByRef size As Integer) As Boolean : End Function
+
+    <System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet:=CharSet.Unicode, SetLastError:=True)>
+    Public Function GetFinalPathNameByHandleW(hFile As IntPtr, ByVal lpszFilePath As System.Text.StringBuilder, ByVal cchFilePath As Integer, ByVal dwFlags As UInteger) As Integer : End Function
+
+
     Enum ProcessAccessFlags As UInteger
         All = &H1FFFFF
         Terminate = &H1

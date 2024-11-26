@@ -481,6 +481,14 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Return pathCache
     End Function
 
+    Private _FinalPath As String = Nothing
+    Public ReadOnly Property FinalPath() As String
+        Get
+            If String.IsNullOrEmpty(_FinalPath) Then _FinalPath = proc?.FinalPath()
+            Return _FinalPath
+        End Get
+    End Property
+
     Public Overrides Function Equals(obj As Object) As Boolean
         Dim proc2 As AstoniaProcess = TryCast(obj, AstoniaProcess)
         'Debug.Print($"obj {proc2?._proc?.Id} eqals _proc {_proc?.Id}")
@@ -658,21 +666,28 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End Get
     End Property
     Private DpiAware As Boolean? = Nothing
-    Friend Property RegHighDpiAware As Boolean 'todo: this has wrong path for junctioned/hardlinked/.... files
+    Friend Property RegHighDpiAware As Boolean 'proc.MainModule.FileName has wrong path for junctioned/hardlinked/.... will GetFinalPathNameByHandle do the trick?
         Get
+            Debug.Print($"FinalPath ""{Me.FinalPath}""")
             If Me.DpiAware IsNot Nothing Then Return Me.DpiAware
             Try
                 Using key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers")
-                    Dim value = key?.GetValue(proc.MainModule.FileName)
-                    If value IsNot Nothing AndAlso value.contains("HIGHDPIAWARE") Then
-                        Me.DpiAware = True
-                        Return True
+                    Dim value = key?.GetValue(Me.FinalPath)
+                    If Me.isSDL Then
+                        If value Is Nothing Then ' OrElse value.contains("HIGHDPIAWARE") Then 'TODO fix this
+                            Me.DpiAware = True
+                            Return True
+                        End If
+                    Else
+                        If value IsNot Nothing AndAlso value.contains("HIGHDPIAWARE") Then
+                            Me.DpiAware = True
+                            Return True
+                        End If
                     End If
                 End Using
             Catch ex As Exception
-                'TODO: 64 bit broker to retrieve MainModule.FileName from 64 bit sdl app
-                Me.DpiAware = True 'defaulting to true since SDL apps are DPI aware by default. still need to check tho. FE: invicta ( i think ) is 64 bit w/o being aware
-                Return True
+                Me.DpiAware = False
+                Return False
             End Try
 
 
@@ -692,7 +707,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 End If
 
                 ' Get the current value for this process path
-                Dim currentValue As String = DirectCast(key.GetValue(proc.MainModule.FileName, String.Empty), String).Trim()
+                Dim currentValue As String = DirectCast(key.GetValue(Me.FinalPath, String.Empty), String).Trim()
 
                 ' Modify the value based on the new setting
                 If value Then
@@ -1204,7 +1219,7 @@ Module ProcessExtensions
         Return True
     End Function
     ''' <summary>
-    ''' Returns the executable path of a process.
+    ''' Returns the executable path of a process by using QueryFullProcessImageName.
     ''' </summary>
     ''' <param name="this"></param>
     ''' <returns></returns>
@@ -1226,6 +1241,38 @@ Module ProcessExtensions
 
         Return processPath
     End Function
+
+    ''' <summary>
+    ''' Returns the executable path of a process by using GetFinalPathNameByHandle.
+    ''' </summary>
+    ''' <param name="this"></param>
+    ''' <returns></returns>
+    <System.Runtime.CompilerServices.Extension()>
+    Public Function FinalPath(ByVal this As Process) As String
+        Dim processPath As String = ""
+        Dim sa As New SecurityAttributes
+        sa.Length = Marshal.SizeOf(sa)
+        Dim hFile As IntPtr = CreateFile(this.Path, FileAccess.Read, FileShare.ReadWrite, sa, CreationDisposition.OpenExisting, 0, IntPtr.Zero)
+
+
+        'Dim processHandle As IntPtr = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, False, this?.Id)
+        Try
+            If Not hFile = IntPtr.Zero Then
+                Dim buffer As New System.Text.StringBuilder(1024)
+                If GetFinalPathNameByHandleW(hFile, buffer, buffer.Capacity, 0) > 0 Then
+                    processPath = buffer.ToString().Replace("\\?\", String.Empty)
+                End If
+            Else
+                Debug.Print("Error opening proc")
+            End If
+        Finally
+            CloseHandle(hFile)
+        End Try
+
+        Return processPath
+    End Function
+
+
     Private classCache As String = String.Empty
     Private classCacheSet As New HashSet(Of String)
     Private ReadOnly pipe As Char() = {"|"c}
