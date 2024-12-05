@@ -75,11 +75,11 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         If AltPP.WindowsScaling <> 100 Then 'todo divise check to see if astonia is forced DPI aware
-            Debug.Print($"scaling not 100: {AltPP.RegHighDpiAware} {AltPP.WindowsScaling}")
+            Debug.Print($"scaling not 100: {AltPP.RegHighDpiAware} {AltPP.WindowsScaling} {AltPP.WindowRect}")
 
             If Not AltPP.RegHighDpiAware Then
                 If mode = 2 AndAlso Not My.Settings.IgnoreWindowsScalingIssue Then Me.BeginInvoke(Sub() pnlWarning.Show())
-                Debug.Print("pixel mode disabled")
+                Debug.Print($"pixel mode disabled")
                 mode = 1
             End If
 
