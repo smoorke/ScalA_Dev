@@ -26,8 +26,6 @@ Partial NotInheritable Class FrmSettings
         Dim grpQLPath As System.Windows.Forms.GroupBox
         Dim ToolStripMenuItem1 As System.Windows.Forms.ToolStripSeparator
         Dim Label3 As System.Windows.Forms.Label
-        Dim Label2 As System.Windows.Forms.Label
-        Dim Label1 As System.Windows.Forms.Label
         Dim ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
         Dim Label4 As System.Windows.Forms.Label
         Dim Label5 As System.Windows.Forms.Label
@@ -87,6 +85,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkNoAltTab = New System.Windows.Forms.CheckBox()
         Me.pb100PWarning = New System.Windows.Forms.PictureBox()
         Me.chkAutoCloseOnlyOnNoSome = New System.Windows.Forms.CheckBox()
+        Me.chkIgnoreDPI = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
@@ -162,21 +161,13 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc = New System.Windows.Forms.TabPage()
         Me.cmbTheme = New System.Windows.Forms.ComboBox()
         Me.Label16 = New System.Windows.Forms.Label()
-        Me.chkDoAlign = New System.Windows.Forms.CheckBox()
-        Me.grpAlign = New System.Windows.Forms.GroupBox()
-        Me.btnResetAlign = New System.Windows.Forms.Button()
-        Me.numXoffset = New System.Windows.Forms.NumericUpDown()
-        Me.numYoffset = New System.Windows.Forms.NumericUpDown()
         Me.txtExe = New System.Windows.Forms.TextBox()
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
-        Me.chkIgnoreDPI = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
-        Label2 = New System.Windows.Forms.Label()
-        Label1 = New System.Windows.Forms.Label()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Label4 = New System.Windows.Forms.Label()
         Label5 = New System.Windows.Forms.Label()
@@ -218,9 +209,6 @@ Partial NotInheritable Class FrmSettings
         Me.tabSortAndBL.SuspendLayout()
         Me.tabMaximized.SuspendLayout()
         Me.tabMisc.SuspendLayout()
-        Me.grpAlign.SuspendLayout()
-        CType(Me.numXoffset, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'grpQLPath
@@ -295,29 +283,11 @@ Partial NotInheritable Class FrmSettings
         'Label3
         '
         Label3.AutoSize = True
-        Label3.Location = New System.Drawing.Point(166, 140)
+        Label3.Location = New System.Drawing.Point(250, 140)
         Label3.Name = "Label3"
         Label3.Size = New System.Drawing.Size(27, 13)
         Label3.TabIndex = 18
         Label3.Text = ".exe"
-        '
-        'Label2
-        '
-        Label2.AutoSize = True
-        Label2.Location = New System.Drawing.Point(6, 41)
-        Label2.Name = "Label2"
-        Label2.Size = New System.Drawing.Size(14, 13)
-        Label2.TabIndex = 7
-        Label2.Text = "Y"
-        '
-        'Label1
-        '
-        Label1.AutoSize = True
-        Label1.Location = New System.Drawing.Point(6, 20)
-        Label1.Name = "Label1"
-        Label1.Size = New System.Drawing.Size(14, 13)
-        Label1.TabIndex = 6
-        Label1.Text = "X"
         '
         'ToolStripSeparator1
         '
@@ -542,9 +512,6 @@ Partial NotInheritable Class FrmSettings
         Me.btnCancel.Text = "Cancel"
         Me.btnCancel.UseVisualStyleBackColor = True
         '
-        'tmrAlign
-        '
-        '
         'ttSettings
         '
         Me.ttSettings.AutoPopDelay = 10000
@@ -637,7 +604,7 @@ Partial NotInheritable Class FrmSettings
         'chkOverViewIsGame
         '
         Me.chkOverViewIsGame.AutoSize = True
-        Me.chkOverViewIsGame.Location = New System.Drawing.Point(159, 44)
+        Me.chkOverViewIsGame.Location = New System.Drawing.Point(169, 44)
         Me.chkOverViewIsGame.Name = "chkOverViewIsGame"
         Me.chkOverViewIsGame.Size = New System.Drawing.Size(107, 17)
         Me.chkOverViewIsGame.TabIndex = 7
@@ -845,6 +812,17 @@ Partial NotInheritable Class FrmSettings
         Me.chkAutoCloseOnlyOnNoSome.Text = "When not showing Someone"
         Me.ttSettings.SetToolTip(Me.chkAutoCloseOnlyOnNoSome, resources.GetString("chkAutoCloseOnlyOnNoSome.ToolTip"))
         Me.chkAutoCloseOnlyOnNoSome.UseVisualStyleBackColor = True
+        '
+        'chkIgnoreDPI
+        '
+        Me.chkIgnoreDPI.AutoSize = True
+        Me.chkIgnoreDPI.Location = New System.Drawing.Point(192, 102)
+        Me.chkIgnoreDPI.Name = "chkIgnoreDPI"
+        Me.chkIgnoreDPI.Size = New System.Drawing.Size(109, 17)
+        Me.chkIgnoreDPI.TabIndex = 11
+        Me.chkIgnoreDPI.Text = "Hide DPI warning"
+        Me.ttSettings.SetToolTip(Me.chkIgnoreDPI, "Hide the warning icon when legacy clients arn't using DPI override" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
+        Me.chkIgnoreDPI.UseVisualStyleBackColor = True
         '
         'tbcSettings
         '
@@ -1653,8 +1631,6 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc.Controls.Add(Me.chkHoverActivate)
         Me.tabMisc.Controls.Add(Me.cmbTheme)
         Me.tabMisc.Controls.Add(Me.Label16)
-        Me.tabMisc.Controls.Add(Me.chkDoAlign)
-        Me.tabMisc.Controls.Add(Me.grpAlign)
         Me.tabMisc.Controls.Add(Me.txtExe)
         Me.tabMisc.Controls.Add(grpQLPath)
         Me.tabMisc.Controls.Add(Label3)
@@ -1691,69 +1667,12 @@ Partial NotInheritable Class FrmSettings
         Me.Label16.TabIndex = 24
         Me.Label16.Text = "Theme"
         '
-        'chkDoAlign
-        '
-        Me.chkDoAlign.AutoSize = True
-        Me.chkDoAlign.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkDoAlign.Location = New System.Drawing.Point(200, 121)
-        Me.chkDoAlign.Name = "chkDoAlign"
-        Me.chkDoAlign.Size = New System.Drawing.Size(66, 16)
-        Me.chkDoAlign.TabIndex = 10
-        Me.chkDoAlign.Text = "Alignment"
-        Me.chkDoAlign.UseVisualStyleBackColor = True
-        '
-        'grpAlign
-        '
-        Me.grpAlign.Controls.Add(Me.btnResetAlign)
-        Me.grpAlign.Controls.Add(Me.numXoffset)
-        Me.grpAlign.Controls.Add(Label2)
-        Me.grpAlign.Controls.Add(Label1)
-        Me.grpAlign.Controls.Add(Me.numYoffset)
-        Me.grpAlign.Enabled = False
-        Me.grpAlign.Location = New System.Drawing.Point(200, 121)
-        Me.grpAlign.Name = "grpAlign"
-        Me.grpAlign.Size = New System.Drawing.Size(100, 62)
-        Me.grpAlign.TabIndex = 21
-        Me.grpAlign.TabStop = False
-        '
-        'btnResetAlign
-        '
-        Me.btnResetAlign.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnResetAlign.Location = New System.Drawing.Point(65, -1)
-        Me.btnResetAlign.Name = "btnResetAlign"
-        Me.btnResetAlign.Size = New System.Drawing.Size(33, 17)
-        Me.btnResetAlign.TabIndex = 11
-        Me.btnResetAlign.Text = "Reset"
-        Me.btnResetAlign.UseVisualStyleBackColor = True
-        '
-        'numXoffset
-        '
-        Me.numXoffset.Location = New System.Drawing.Point(26, 17)
-        Me.numXoffset.Maximum = New Decimal(New Integer() {4000, 0, 0, 0})
-        Me.numXoffset.Minimum = New Decimal(New Integer() {4000, 0, 0, -2147483648})
-        Me.numXoffset.Name = "numXoffset"
-        Me.numXoffset.Size = New System.Drawing.Size(72, 20)
-        Me.numXoffset.TabIndex = 12
-        Me.numXoffset.Tag = "0"
-        Me.numXoffset.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
-        '
-        'numYoffset
-        '
-        Me.numYoffset.Location = New System.Drawing.Point(26, 38)
-        Me.numYoffset.Maximum = New Decimal(New Integer() {4000, 0, 0, 0})
-        Me.numYoffset.Minimum = New Decimal(New Integer() {4000, 0, 0, -2147483648})
-        Me.numYoffset.Name = "numYoffset"
-        Me.numYoffset.Size = New System.Drawing.Size(72, 20)
-        Me.numYoffset.TabIndex = 13
-        Me.numYoffset.Tag = "1"
-        Me.numYoffset.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
-        '
         'txtExe
         '
         Me.txtExe.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtExe.Location = New System.Drawing.Point(12, 137)
         Me.txtExe.Name = "txtExe"
-        Me.txtExe.Size = New System.Drawing.Size(154, 20)
+        Me.txtExe.Size = New System.Drawing.Size(238, 20)
         Me.txtExe.TabIndex = 8
         Me.txtExe.Text = "moac | new"
         '
@@ -1762,7 +1681,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtClass.Location = New System.Drawing.Point(12, 163)
         Me.txtClass.Name = "txtClass"
-        Me.txtClass.Size = New System.Drawing.Size(182, 20)
+        Me.txtClass.Size = New System.Drawing.Size(266, 20)
         Me.txtClass.TabIndex = 9
         Me.txtClass.Text = "MAINWNDMOAC | 䅍义乗䵄䅏C"
         '
@@ -1785,17 +1704,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.TabIndex = 2
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
-        '
-        'chkIgnoreDPI
-        '
-        Me.chkIgnoreDPI.AutoSize = True
-        Me.chkIgnoreDPI.Location = New System.Drawing.Point(192, 102)
-        Me.chkIgnoreDPI.Name = "chkIgnoreDPI"
-        Me.chkIgnoreDPI.Size = New System.Drawing.Size(109, 17)
-        Me.chkIgnoreDPI.TabIndex = 11
-        Me.chkIgnoreDPI.Text = "Hide DPI warning"
-        Me.ttSettings.SetToolTip(Me.chkIgnoreDPI, "Hide the warning icon when legacy clients arn't using DPI override" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
-        Me.chkIgnoreDPI.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
@@ -1850,10 +1758,6 @@ Partial NotInheritable Class FrmSettings
         Me.tabMaximized.PerformLayout()
         Me.tabMisc.ResumeLayout(False)
         Me.tabMisc.PerformLayout()
-        Me.grpAlign.ResumeLayout(False)
-        Me.grpAlign.PerformLayout()
-        CType(Me.numXoffset, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.numYoffset, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
@@ -1874,11 +1778,6 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents chkStoCtrl As CheckBox
     Friend WithEvents chkSwitchToOverview As CheckBox
     Friend WithEvents tabMisc As TabPage
-    Friend WithEvents chkDoAlign As CheckBox
-    Friend WithEvents grpAlign As GroupBox
-    Friend WithEvents btnResetAlign As Button
-    Friend WithEvents numYoffset As NumericUpDown
-    Friend WithEvents numXoffset As NumericUpDown
     Friend WithEvents txtExe As TextBox
     Friend WithEvents chkTopMost As CheckBox
     Friend WithEvents chkRoundCorners As CheckBox

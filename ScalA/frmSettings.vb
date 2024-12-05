@@ -28,8 +28,8 @@ Public NotInheritable Class FrmSettings
         'chkAspect.Checked = My.Settings.lockAspect
         'cmbAnchor.SelectedIndex = My.Settings.anchor
 
-        numXoffset.Value = My.Settings.offset.X
-        numYoffset.Value = My.Settings.offset.Y
+        'numXoffset.Value = My.Settings.offset.X
+        'numYoffset.Value = My.Settings.offset.Y
 
         txtResolutions.Text = My.Settings.resolutions
 
@@ -157,7 +157,7 @@ Public NotInheritable Class FrmSettings
         grpAlterOverview.Enabled = chkAlterOverview.Checked
 
         chkHoverActivate.Checked = My.Settings.HoverActivate
-        chkHoverActivate.Enabled = My.Settings.gameOnOverview
+        'chkHoverActivate.Enabled = My.Settings.gameOnOverview
 
         chkShowEnd.Checked = My.Settings.ShowEnd
 
@@ -284,67 +284,67 @@ Public NotInheritable Class FrmSettings
 
 
 
-    ReadOnly storeZoom As Integer = My.Settings.zoom
-    Private resettingAlign As Boolean = False
-    Private Async Sub ChkDoAlign_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkDoAlign.CheckedChanged
-        If resettingAlign Then
-            resettingAlign = False
-            Exit Sub
-        End If
-        If sender.Checked AndAlso FrmMain.cboAlt.SelectedIndex = 0 Then
-            CustomMessageBox.Show(Me, "To perform alignment an alt needs to be selected.", "ScalA Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            resettingAlign = True
-            sender.Checked = False
-            Exit Sub
-        End If
-        If FrmMain.WindowState = FormWindowState.Maximized Then
-            FrmMain.btnMax.PerformClick()
-        End If
-        FrmMain.tmrTick.Enabled = Not sender.Checked
-        Await Task.Delay(200) ' wait for tmrtick to stop running async code
-        'If FrmMain.cmbResolution.SelectedIndex <> 0 Then
-        '    FrmMain.cmbResolution.SelectedIndex = If(sender.Checked, 0, storeZoom)
-        'Else ' SelectedIndex = 0
-        '    Call FrmMain.CmbResolution_SelectedIndexChanged(FrmMain.cmbResolution, Nothing)
-        'End If
+    'ReadOnly storeZoom As Integer = My.Settings.zoom
+    'Private resettingAlign As Boolean = False
+    'Private Async Sub ChkDoAlign_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkDoAlign.CheckedChanged
+    '    If resettingAlign Then
+    '        resettingAlign = False
+    '        Exit Sub
+    '    End If
+    '    If sender.Checked AndAlso FrmMain.cboAlt.SelectedIndex = 0 Then
+    '        CustomMessageBox.Show(Me, "To perform alignment an alt needs to be selected.", "ScalA Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+    '        resettingAlign = True
+    '        sender.Checked = False
+    '        Exit Sub
+    '    End If
+    '    If FrmMain.WindowState = FormWindowState.Maximized Then
+    '        FrmMain.btnMax.PerformClick()
+    '    End If
+    '    FrmMain.tmrTick.Enabled = Not sender.Checked
+    '    Await Task.Delay(200) ' wait for tmrtick to stop running async code
+    '    'If FrmMain.cmbResolution.SelectedIndex <> 0 Then
+    '    '    FrmMain.cmbResolution.SelectedIndex = If(sender.Checked, 0, storeZoom)
+    '    'Else ' SelectedIndex = 0
+    '    '    Call FrmMain.CmbResolution_SelectedIndexChanged(FrmMain.cmbResolution, Nothing)
+    '    'End If
 
-        grpAlign.Enabled = sender.Checked
-        If sender.Checked Then
-            FrmMain.suppressResChange = False
+    '    grpAlign.Enabled = sender.Checked
+    '    If sender.Checked Then
+    '        FrmMain.suppressResChange = False
 
-            Debug.Print(rcAstOffsetBase.ToString)
+    '        Debug.Print(rcAstOffsetBase.ToString)
 
-            Dim rcClient As Rectangle = FrmMain.AltPP?.ClientRect
-            'GetClientRect(FrmMain.AltPP.MainWindowHandle, rcClient)
-            FrmMain.ReZoom(New Drawing.Size(rcClient.Width, rcClient.Height))
-            FrmMain.cmbResolution.SelectedIndex = 0
-            FrmMain.cmbResolution.Items(0) = "Aligning"
-            FrmMain.suppressResChange = False
+    '        Dim rcClient As Rectangle = FrmMain.AltPP?.ClientRect
+    '        'GetClientRect(FrmMain.AltPP.MainWindowHandle, rcClient)
+    '        FrmMain.ReZoom(New Drawing.Size(rcClient.Width, rcClient.Height))
+    '        FrmMain.cmbResolution.SelectedIndex = 0
+    '        FrmMain.cmbResolution.Items(0) = "Aligning"
+    '        FrmMain.suppressResChange = False
 
-            Dim ptz As Point = FrmMain.pbZoom.PointToScreen(New Point)
-            'FrmMain.AltPP.CenterBehind(FrmMain.pbZoom)
-            SetWindowPos(FrmMain.AltPP.MainWindowHandle, FrmMain.ScalaHandle,
-                                ptz.X - FrmMain.AltPP.ClientOffset.X,
-                                ptz.Y - FrmMain.AltPP.ClientOffset.Y,
-                                -1, -1,
-                                SetWindowPosFlags.IgnoreResize)
+    '        Dim ptz As Point = FrmMain.pbZoom.PointToScreen(New Point)
+    '        'FrmMain.AltPP.CenterBehind(FrmMain.pbZoom)
+    '        SetWindowPos(FrmMain.AltPP.MainWindowHandle, FrmMain.ScalaHandle,
+    '                            ptz.X - FrmMain.AltPP.ClientOffset.X,
+    '                            ptz.Y - FrmMain.AltPP.ClientOffset.Y,
+    '                            -1, -1,
+    '                            SetWindowPosFlags.IgnoreResize)
 
-            GetWindowRect(FrmMain.AltPP.MainWindowHandle, rcAstOffsetBase)
-            manualNumUpdate = False
-            numXoffset.Value = 0
-            numYoffset.Value = 0
-            manualNumUpdate = True
-        Else
-            FrmMain.cmbResolution.Items(0) = $"{My.Settings.resol.Width}x{My.Settings.resol.Height}"
-            FrmMain.cmbResolution.SelectedIndex = My.Settings.zoom
-        End If
-        FrmMain.UpdateThumb(If(sender.Checked, 122, 255))
-        FrmMain.cmbResolution.Enabled = Not sender.Checked
-        tmrAlign.Enabled = sender.Checked
-        chkDoAlign.Enabled = Not sender.Checked
-        FrmMain.btnMin.Enabled = Not sender.Checked
-        FrmMain.btnMax.Enabled = Not sender.Checked
-    End Sub
+    '        GetWindowRect(FrmMain.AltPP.MainWindowHandle, rcAstOffsetBase)
+    '        manualNumUpdate = False
+    '        numXoffset.Value = 0
+    '        numYoffset.Value = 0
+    '        manualNumUpdate = True
+    '    Else
+    '        FrmMain.cmbResolution.Items(0) = $"{My.Settings.resol.Width}x{My.Settings.resol.Height}"
+    '        FrmMain.cmbResolution.SelectedIndex = My.Settings.zoom
+    '    End If
+    '    FrmMain.UpdateThumb(If(sender.Checked, 122, 255))
+    '    FrmMain.cmbResolution.Enabled = Not sender.Checked
+    '    tmrAlign.Enabled = sender.Checked
+    '    chkDoAlign.Enabled = Not sender.Checked
+    '    FrmMain.btnMin.Enabled = Not sender.Checked
+    '    FrmMain.btnMax.Enabled = Not sender.Checked
+    'End Sub
 
     Private Function ParseResolutions() As Boolean
         Const width = 0
@@ -405,7 +405,7 @@ Public NotInheritable Class FrmSettings
 
         My.Settings.resolutions = txtResolutions.Text
 
-        Me.chkDoAlign.Checked = False
+        'Me.chkDoAlign.Checked = False
 
         My.Settings.topmost = chkTopMost.Checked
 
@@ -434,10 +434,10 @@ Public NotInheritable Class FrmSettings
         FrmMain.cornerSE.Visible = chkRoundCorners.Checked
         FrmMain.cornerSW.Visible = chkRoundCorners.Checked
 
-        My.Settings.offset = New Point(numXoffset.Value, numYoffset.Value)
+        'My.Settings.offset = New Point(numXoffset.Value, numYoffset.Value)
         My.Settings.exe = txtExe.Text
         My.Settings.className = txtClass.Text
-        manualNumUpdate = False
+        'manualNumUpdate = False
 
         My.Settings.SwitchToOverview = chkSwitchToOverview.Checked
         My.Settings.StoKey = StoKey
@@ -601,7 +601,7 @@ Public NotInheritable Class FrmSettings
         Me.Close()
     End Sub
     Private Sub FrmSettings_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
-        Me.chkDoAlign.Checked = False
+        'Me.chkDoAlign.Checked = False
         Me.txtTopSort.Text = My.Settings.topSort
         Me.txtBotSort.Text = My.Settings.botSort
         'btnTest.PerformClick()
@@ -614,35 +614,35 @@ Public NotInheritable Class FrmSettings
         Await Task.Delay(100) 'hardcoded delay only partially effective. failsafe in wndproc
         FrmMain.AltPP?.Activate()
     End Sub
-    Dim rcAstOffsetBase As Rectangle
-    Public ScalaMoved As Point
-    Dim rcAstOffsetNew As Rectangle
-    Private Sub TmrAlign_Tick(sender As Object, e As EventArgs) Handles tmrAlign.Tick
-        manualNumUpdate = False
-        GetWindowRect(FrmMain.AltPP.MainWindowHandle, rcAstOffsetNew)
-        numXoffset.Value = My.Settings.offset.X + ScalaMoved.X - rcAstOffsetNew.Left + rcAstOffsetBase.Left
-        numYoffset.Value = My.Settings.offset.Y + ScalaMoved.Y - rcAstOffsetNew.Top + rcAstOffsetBase.Top
-        manualNumUpdate = True
-    End Sub
+    'Dim rcAstOffsetBase As Rectangle
+    'Public ScalaMoved As Point
+    'Dim rcAstOffsetNew As Rectangle
+    'Private Sub TmrAlign_Tick(sender As Object, e As EventArgs) Handles tmrAlign.Tick
+    '    manualNumUpdate = False
+    '    GetWindowRect(FrmMain.AltPP.MainWindowHandle, rcAstOffsetNew)
+    '    numXoffset.Value = My.Settings.offset.X + ScalaMoved.X - rcAstOffsetNew.Left + rcAstOffsetBase.Left
+    '    numYoffset.Value = My.Settings.offset.Y + ScalaMoved.Y - rcAstOffsetNew.Top + rcAstOffsetBase.Top
+    '    manualNumUpdate = True
+    'End Sub
 
-    Public manualNumUpdate As Boolean = True
+    'Public manualNumUpdate As Boolean = True
 
-    Private Sub NumXYoffsets_ValueChanged(sender As NumericUpDown, e As EventArgs) Handles numYoffset.ValueChanged, numXoffset.ValueChanged
+    'Private Sub NumXYoffsets_ValueChanged(sender As NumericUpDown, e As EventArgs) Handles numYoffset.ValueChanged, numXoffset.ValueChanged
 
-        If manualNumUpdate Then
-            Debug.Print($"ManualNumUpdate")
-            Dim ptMove As New Point(0, 0)
-            If sender.Tag Then
-                ptMove.Y += sender.Text - sender.Value
-            Else
-                ptMove.X += sender.Text - sender.Value
-            End If
+    '    If manualNumUpdate Then
+    '        Debug.Print($"ManualNumUpdate")
+    '        Dim ptMove As New Point(0, 0)
+    '        If sender.Tag Then
+    '            ptMove.Y += sender.Text - sender.Value
+    '        Else
+    '            ptMove.X += sender.Text - sender.Value
+    '        End If
 
-            SetWindowPos(FrmMain.AltPP.MainWindowHandle, FrmMain.Handle, rcAstOffsetNew.Left + ptMove.X, rcAstOffsetNew.Top + ptMove.Y, -1, -1, SetWindowPosFlags.IgnoreResize + SetWindowPosFlags.DoNotActivate)
+    '        SetWindowPos(FrmMain.AltPP.MainWindowHandle, FrmMain.Handle, rcAstOffsetNew.Left + ptMove.X, rcAstOffsetNew.Top + ptMove.Y, -1, -1, SetWindowPosFlags.IgnoreResize + SetWindowPosFlags.DoNotActivate)
 
-        End If
+    '    End If
 
-    End Sub
+    'End Sub
 
     Private Sub TxtResolutions_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtResolutions.KeyPress
         If Not (Char.IsDigit(e.KeyChar) Or Char.IsControl(e.KeyChar) Or e.KeyChar.ToString.ToLower = "x") Then
@@ -652,15 +652,15 @@ Public NotInheritable Class FrmSettings
         End If
     End Sub
 
-    Private Sub BtnResetAlign_Click(sender As Object, e As EventArgs) Handles btnResetAlign.Click
-        tmrAlign.Stop()
-        chkDoAlign.Checked = False
-        My.Settings.offset = New Point(0, 0)
-        manualNumUpdate = False
-        numXoffset.Text = 0
-        numYoffset.Text = 0
-        manualNumUpdate = True
-    End Sub
+    'Private Sub BtnResetAlign_Click(sender As Object, e As EventArgs)
+    '    tmrAlign.Stop()
+    '    chkDoAlign.Checked = False
+    '    My.Settings.offset = New Point(0, 0)
+    '    manualNumUpdate = False
+    '    numXoffset.Text = 0
+    '    numYoffset.Text = 0
+    '    manualNumUpdate = True
+    'End Sub
 
     Private Sub BtnOpenFolderDialog_Click(sender As Object, e As EventArgs) Handles btnOpenFolderDialog.Click
         txtQuickLaunchPath.SuspendLayout()
@@ -1004,9 +1004,9 @@ Public NotInheritable Class FrmSettings
         chkAlterOverviewStarWin.Enabled = Not sender.Checked
     End Sub
 
-    Private Sub chkOverViewIsGame_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkOverViewIsGame.CheckedChanged
-        chkHoverActivate.Enabled = sender.Checked
-    End Sub
+    'Private Sub chkOverViewIsGame_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkOverViewIsGame.CheckedChanged
+    '    chkHoverActivate.Enabled = sender.Checked
+    'End Sub
 
 
     Private Sub TextVarious_KeyPress(sender As TextBox, e As KeyPressEventArgs) Handles _

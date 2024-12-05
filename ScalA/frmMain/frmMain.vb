@@ -729,13 +729,13 @@ Partial Public NotInheritable Class FrmMain
         'setActive(True)
         'Me.Invalidate(True)
 
-        If FrmSettings.chkDoAlign.Checked Then
-            If Me.WindowState <> FormWindowState.Maximized AndAlso e.Button = MouseButtons.Left Then
-                MovingForm = True
-                MoveForm_MousePosition = e.Location
-            End If
-        Else
-            If e.Button = MouseButtons.Left AndAlso e.Clicks = 1 Then
+        'If FrmSettings.chkDoAlign.Checked Then
+        '    If Me.WindowState <> FormWindowState.Maximized AndAlso e.Button = MouseButtons.Left Then
+        '        MovingForm = True
+        '        MoveForm_MousePosition = e.Location
+        '    End If
+        'Else
+        If e.Button = MouseButtons.Left AndAlso e.Clicks = 1 Then
                 sender.Capture = False
                 tmrTick.Stop()
                 caption_Mousedown = True
@@ -755,7 +755,7 @@ Partial Public NotInheritable Class FrmMain
                 Debug.Print("movetimer stopped")
                 'FrmSizeBorder.Bounds = Me.Bounds
             End If
-        End If
+        'End If
     End Sub
 
     Public Sub MoveForm_MouseMove(sender As Control, e As MouseEventArgs) Handles _
@@ -763,9 +763,9 @@ Partial Public NotInheritable Class FrmMain
         If MovingForm Then
             Dim newoffset As Point = e.Location - MoveForm_MousePosition
             Me.Location += newoffset
-            If FrmSettings.chkDoAlign.Checked Then
-                FrmSettings.ScalaMoved += newoffset
-            End If
+            'If FrmSettings.chkDoAlign.Checked Then
+            'FrmSettings.ScalaMoved += newoffset
+            'End If
         End If
     End Sub
 
@@ -774,7 +774,7 @@ Partial Public NotInheritable Class FrmMain
         If e.Button = MouseButtons.Left Then
             Debug.Print("Mouseup")
             MovingForm = False
-            If AltPP?.IsRunning AndAlso Not FrmSettings.chkDoAlign.Checked Then
+            If AltPP?.IsRunning Then ' AndAlso Not FrmSettings.chkDoAlign.Checked Then
                 AltPP?.CenterBehind(pbZoom, SetWindowPosFlags.DoNotActivate)
             End If
         End If
@@ -1793,7 +1793,7 @@ Partial Public NotInheritable Class FrmMain
 
         ' Debug.Print("CaptionMouseMove")
 
-        newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AltPP.ClientOffset.X - My.Settings.offset.X
+        newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AltPP.ClientOffset.X '- My.Settings.offset.X
         newY = Me.Location.Y
 
         Dim flags = swpFlags

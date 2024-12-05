@@ -217,14 +217,14 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     End Function
     Public Function CenterWindowPos(hWndInsertAfter As IntPtr, x As Integer, y As Integer, Optional extraSWPFlags As UInteger = 0, Optional fixThumb As Boolean = False) As Boolean
         Try
-            y = y - ClientRect.Height / 2 - ClientOffset.Y - My.Settings.offset.Y
+            y = y - ClientRect.Height / 2 - ClientOffset.Y ' - My.Settings.offset.Y
             If fixThumb Then
                 Dim rc As RECT
                 GetWindowRect(FrmMain.ScalaHandle, rc)
                 If y <= rc.top Then y = rc.top + 1
             End If
             Return SetWindowPos(Me.MainWindowHandle, hWndInsertAfter,
-                                x - ClientRect.Width / 2 - ClientOffset.X - My.Settings.offset.X,
+                                x - ClientRect.Width / 2 - ClientOffset.X,' - My.Settings.offset.X,
                                 y,
                                 -1, -1,
                                 SetWindowPosFlags.IgnoreResize Or extraSWPFlags)

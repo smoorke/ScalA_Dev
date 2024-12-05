@@ -166,7 +166,7 @@ Partial NotInheritable Class FrmMain
                 'FrmBehind.Location = New LParamMap(m.LParam)
                 Me.Cursor = Cursors.Default
                 'frmCaptureClickBehind.Bounds = Me.RectangleToScreen(pbZoom.Bounds)
-                If AltPP?.IsRunning AndAlso Not FrmSettings.chkDoAlign.Checked AndAlso Me.WindowState <> FormWindowState.Minimized Then
+                If AltPP?.IsRunning AndAlso Me.WindowState <> FormWindowState.Minimized Then
 #If DEBUG Then
                     pbZoom.Visible = True
 #End If
@@ -373,14 +373,14 @@ Partial NotInheritable Class FrmMain
                 SysMenu.Visible = False
             Case WM_INITMENU
                 Debug.Print($"WM_INITMENU {m.WParam} {SysMenu.Handle}")
-                If FrmSettings.chkDoAlign.Checked Then
-                    SysMenu.Disable(SC_SIZE)
-                    SysMenu.Disable(SC_MOVE)
-                    SysMenu.Disable(SC_RESTORE)
-                    SysMenu.Disable(SC_MAXIMIZE)
-                    SysMenu.Disable(SC_MINIMIZE)
-                Else
-                    If Me.WindowState = FormWindowState.Minimized Then
+                'If FrmSettings.chkDoAlign.Checked Then
+                '    SysMenu.Disable(SC_SIZE)
+                '    SysMenu.Disable(SC_MOVE)
+                '    SysMenu.Disable(SC_RESTORE)
+                '    SysMenu.Disable(SC_MAXIMIZE)
+                '    SysMenu.Disable(SC_MINIMIZE)
+                'Else
+                If Me.WindowState = FormWindowState.Minimized Then
                         SysMenu.Disable(SC_MINIMIZE)
                     Else
                         SysMenu.Enable(SC_MINIMIZE)
@@ -395,7 +395,7 @@ Partial NotInheritable Class FrmMain
                         SysMenu.Disable(SC_SIZE)
                         SysMenu.Disable(SC_MOVE)
                     End If
-                End If
+                'End If
             Case WM_DWMCOLORIZATIONCOLORCHANGED
                 If Not ThemeChanging Then
                     ThemeChanging = True
