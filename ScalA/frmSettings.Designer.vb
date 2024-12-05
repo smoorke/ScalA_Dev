@@ -700,8 +700,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkHoverActivate.Size = New System.Drawing.Size(112, 17)
         Me.chkHoverActivate.TabIndex = 26
         Me.chkHoverActivate.Text = "Activate on Hover"
-        Me.ttSettings.SetToolTip(Me.chkHoverActivate, "Hovering an active overview thumbnail wil activate it if the currently active" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "wi" &
-        "ndow is ScalA or an Astonia client that is shown on the overview.")
+        Me.ttSettings.SetToolTip(Me.chkHoverActivate, "Hovering over a client in ScalA wil activate and bring it to front.")
         Me.chkHoverActivate.UseVisualStyleBackColor = True
         '
         'chkShowEnd

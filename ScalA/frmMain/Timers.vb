@@ -106,6 +106,28 @@ Partial NotInheritable Class FrmMain
                 ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
             End If
 
+            If My.Settings.HoverActivate Then
+                Dim id = GetActiveProcessID()
+                If id <> 0 AndAlso id = scalaPID OrElse AltPP?.Id <> id Then
+                    If Not (SysMenu.Visible OrElse cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse
+                                                FrmSettings.Contains(MousePosition) OrElse UpdateDialog.Contains(MousePosition) OrElse
+                                                renameOpen OrElse CustomMessageBox.visible) Then
+#If DEBUG Then
+                        If Not chkDebug.ContextMenuStrip.Visible Then
+#End If
+                            'ap.Activate() doesn't work if not debugging
+                            If Not AltPP.IsActive AndAlso WindowFromPoint(MousePosition) = AltPP?.MainWindowHandle Then
+                                Debug.Print($"Activating {AltPP?.Name}")
+                                SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
+                            End If
+#If DEBUG Then
+                        End If
+#End If
+                    End If
+                End If
+            End If
+
+
             Dim ptZ As Point = Me.PointToScreen(pbZoom.Location)
 
             newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AltPP.ClientOffset.X '- My.Settings.offset.X
