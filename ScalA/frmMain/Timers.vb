@@ -110,7 +110,7 @@ Partial NotInheritable Class FrmMain
                 Dim id = GetActiveProcessID()
                 If id <> 0 AndAlso id = scalaPID OrElse AltPP?.Id <> id Then
                     If Not (SysMenu.Visible OrElse cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse
-                                                FrmSettings.Contains(MousePosition) OrElse UpdateDialog.Contains(MousePosition) OrElse
+                                                FrmSettings.Visible OrElse UpdateDialog.Contains(MousePosition) OrElse
                                                 renameOpen OrElse CustomMessageBox.visible) Then
 #If DEBUG Then
                         If Not chkDebug.ContextMenuStrip.Visible Then
@@ -342,22 +342,22 @@ Partial NotInheritable Class FrmMain
                                     If My.Settings.HoverActivate Then
                                         Dim id = GetActiveProcessID()
                                         If id <> 0 AndAlso id = scalaPID OrElse pnlOverview.Controls.OfType(Of AButton).Any(Function(ab As AButton) ab.pidCache = id) Then
-                                            If Not (SysMenu.Visible OrElse cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse
-                                                FrmSettings.Contains(MousePosition) OrElse UpdateDialog.Contains(MousePosition) OrElse
+                                        If Not (SysMenu.Visible OrElse cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse
+                                                FrmSettings.Visible OrElse UpdateDialog.Contains(MousePosition) OrElse
                                                 renameOpen OrElse CustomMessageBox.visible) Then
 #If DEBUG Then
-                                                If Not chkDebug.ContextMenuStrip.Visible Then
+                                            If Not chkDebug.ContextMenuStrip.Visible Then
 #End If
-                                                    'ap.Activate() doesn't work if not debugging
-                                                    If Not ap.IsActive AndAlso WindowFromPoint(MousePosition) = ap.MainWindowHandle Then
-                                                        Debug.Print($"Activating {ap.Name}")
-                                                        SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
-                                                    End If
-#If DEBUG Then
+                                                'ap.Activate() doesn't work if not debugging
+                                                If Not ap.IsActive AndAlso WindowFromPoint(MousePosition) = ap.MainWindowHandle Then
+                                                    Debug.Print($"Activating {ap.Name}")
+                                                    SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
                                                 End If
-#End If
+#If DEBUG Then
                                             End If
+#End If
                                         End If
+                                    End If
                                     End If
                                 End If
 
