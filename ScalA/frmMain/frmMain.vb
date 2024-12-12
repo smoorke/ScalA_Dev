@@ -453,11 +453,16 @@ Partial Public NotInheritable Class FrmMain
             System.IO.Directory.CreateDirectory(progdata & "\Example Folder")
         End If
 
+        Dim Dbg As Boolean = False
 #If DEBUG Then
-        chkDebug.Visible = True
-        dBug.debugMenu()
-        lblDebug.Visible = True
+        Dbg = True
 #End If
+        If My.Application.Info.Version.Revision > 0 OrElse Dbg Then
+            chkDebug.Visible = True
+            dBug.debugMenu()
+            If Dbg Then lblDebug.Visible = True
+        End If
+
 
         Dim image = LoadImage(IntPtr.Zero, "#106", 1, 16, 16, 0)
         If image <> IntPtr.Zero Then

@@ -253,12 +253,11 @@ Partial NotInheritable Class FrmMain
         Me.chkDebug.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.chkDebug.AutoSize = True
         Me.chkDebug.CheckAlign = System.Drawing.ContentAlignment.MiddleRight
-        Me.chkDebug.Location = New System.Drawing.Point(491, 6)
+        Me.chkDebug.Location = New System.Drawing.Point(508, 6)
         Me.chkDebug.Name = "chkDebug"
-        Me.chkDebug.Size = New System.Drawing.Size(32, 17)
+        Me.chkDebug.Size = New System.Drawing.Size(15, 14)
         Me.chkDebug.TabIndex = 11
         Me.chkDebug.TabStop = False
-        Me.chkDebug.Text = "0"
         Me.chkDebug.UseVisualStyleBackColor = True
         Me.chkDebug.Visible = False
         '

@@ -1,10 +1,12 @@
 ﻿Imports System.IO.MemoryMappedFiles
 Imports System.Runtime.InteropServices
-#If DEBUG Then
+
 Module dBug
 
     Friend Sub debugMenu()
+
         Dim test As New ContextMenuStrip
+#If DEBUG Then
         test.Items.Add(New ToolStripMenuItem("Parse Info", Nothing, AddressOf dBug.ParseInfo))
         test.Items.Add(New ToolStripMenuItem("Reset Hide", Nothing, AddressOf dBug.ResetHide))
         test.Items.Add(New ToolStripMenuItem("ResumeLayout", Nothing, AddressOf dBug.Resumelayout))
@@ -12,10 +14,10 @@ Module dBug
         test.Items.Add(New ToolStripMenuItem("isBelow", Nothing, AddressOf dBug.IsBelow))
         Static dynamicitem1 As New ToolStripMenuItem($"movebusy {FrmMain.moveBusy}")
         test.Items.Add(dynamicitem1)
-        test.Items.Add(New ToolStripMenuItem("Update", Nothing, AddressOf dBug.ToggleUpdate))
+        test.Items.Add(New ToolStripMenuItem("Toggle Update", Nothing, AddressOf dBug.ToggleUpdate))
         test.Items.Add(New ToolStripMenuItem("Scaling", Nothing, AddressOf dBug.ScreenScaling))
         test.Items.Add(New ToolStripMenuItem("Shared Mem", Nothing, AddressOf dBug.SharedMem))
-        Static dynamicitem2 As New ToolStripMenuItem($"Aborder", Nothing, AddressOf dBug.toggeleborder)
+        Static dynamicitem2 As New ToolStripMenuItem("Aborder", Nothing, AddressOf dBug.toggeleborder)
         test.Items.Add(dynamicitem2)
         test.Items.Add(New ToolStripMenuItem("ThumbSize", Nothing, AddressOf dBug.querySize))
         test.Items.Add(New ToolStripMenuItem("FudgeThumb", Nothing, AddressOf dBug.fudgeThumb))
@@ -29,19 +31,118 @@ Module dBug
         test.Items.Add(New ToolStripMenuItem("DPI Reg", Nothing, AddressOf dBug.regFudge))
         test.Items.Add(New ToolStripMenuItem("ReLogin Client", Nothing, AddressOf dBug.RestartClient))
         test.Items.Add(New ToolStripMenuItem("Show RelButton", Nothing, AddressOf dBug.ShowRelButton))
+        test.Items.Add(New ToolStripMenuItem("Scaling Info", Nothing, AddressOf dBug.ScalingInfo))
+        test.Items.Add(New ToolStripSeparator)
+#End If
+        'begin public beta menu
+        test.Items.Add(New ToolStripMenuItem("Open Debug Window", Nothing, AddressOf dBug.OpenDebugWindow))
+
 
         FrmMain.chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()
                                      Debug.Print("test Opening")
+#If DEBUG Then
                                      dynamicitem1.Text = $"movebusy {FrmMain.moveBusy}"
                                      dynamicitem2.Text = $"Aborder {FrmMain.AltPP?.hasBorder}"
                                      dynamicitem3.Text = $"ap cache {AstoniaProcess.ProcCache?.Count}"
+#End If
                                      FrmMain.UntrapMouse(MouseButtons.Right)
                                      AppActivate(FrmMain.scalaPID)
                                  End Sub
         AddHandler FrmMain.chkDebug.MouseUp, Sub(sen, ev) FrmMain.UntrapMouse(ev.Button)
-
     End Sub
+
+    Private Sub OpenDebugWindow(sender As Object, e As EventArgs)
+        frmDebug.Show(FrmMain)
+    End Sub
+
+
+#If DEBUG Then
+    Private Sub ScalingInfo(sender As Object, e As EventArgs)
+        Debug.Print($"WindowsScaling: {FrmMain.WindowsScaling} {FrmMain.Bounds}")
+        Dim pp As AstoniaProcess = FrmMain.AltPP
+        Debug.Print($"Alt Scaling {pp?.WindowsScaling} DPIAware {pp?.RegHighDpiAware} {pp?.ClientRect}")
+    End Sub
+
+    'legend
+    ' DPI: client is in forced DPIAWARE mode
+    ' MM+: main monitor is scaled up
+    ' SM+: secondary monitor scaled
+    ' SDL: client is SDL vs legacy
+    ' WS+: frmMain.WindowsScaling isn't 100%
+    ' AS+: AProc.WindowsScaling isn't 100%
+
+    ' DPI MM+ SM+ SDL WS+ AS+ Issue
+    '  0   0   0   0   0   0   
+    '  0   0   0   0   0   1   
+    '  0   0   0   0   1   0   
+    '  0   0   0   1   0   0   
+    '  0   0   0   0   1   1   
+    '  0   0   0   1   0   1   
+    '  0   0   0   1   1   0   
+    '  0   0   0   1   1   1   
+    '  0   0   1   0   0   0   
+    '  0   0   1   0   0   1   
+    '  0   0   1   0   1   0   
+    '  0   0   1   0   1   1   
+    '  0   0   1   1   0   0   
+    '  0   0   1   1   0   1   
+    '  0   0   1   1   1   0   
+    '  0   0   1   1   1   1
+
+    ' DPI MM+ SM+ SDL WS+ AS+ Issue
+    '  0   1   0   0   0   0
+    '  0   1   0   0   0   1
+    '  0   1   0   0   1   0
+    '  0   1   0   0   1   1
+    '  0   1   0   1   0   0 
+    '  0   1   0   1   0   1
+    '  0   1   0   1   1   0
+    '  0   1   0   1   1   1
+    '  0   1   1   0   0   0
+    '  0   1   1   0   0   1
+    '  0   1   1   0   1   0
+    '  0   1   1   0   1   1
+    '  0   1   1   1   0   0
+    '  0   1   1   1   0   1
+    '  0   1   1   1   1   0
+    '  0   1   1   1   1   1
+
+    ' DPI MM+ SM+ SDL WS+ AS+ Issue
+    '  1   0   0   0   0   0   
+    '  1   0   0   0   0   1   
+    '  1   0   0   0   1   0   
+    '  1   0   0   1   0   0   
+    '  1   0   0   0   1   1   
+    '  1   0   0   1   0   1   
+    '  1   0   0   1   1   0   
+    '  1   0   0   1   1   1   
+    '  1   0   1   0   0   0   
+    '  1   0   1   0   0   1   
+    '  1   0   1   0   1   0   
+    '  1   0   1   0   1   1   
+    '  1   0   1   1   0   0   
+    '  1   0   1   1   0   1   
+    '  1   0   1   1   1   0   
+    '  1   0   1   1   1   1   
+
+    ' DPI MM+ SM+ SDL WS+ AS+ Issue
+    '  1   1   0   0   0   0
+    '  1   1   0   0   0   1
+    '  1   1   0   0   1   0
+    '  1   1   0   0   1   1
+    '  1   1   0   1   0   0 
+    '  1   1   0   1   0   1
+    '  1   1   0   1   1   0
+    '  1   1   0   1   1   1
+    '  1   1   1   0   0   0
+    '  1   1   1   0   0   1
+    '  1   1   1   0   1   0
+    '  1   1   1   0   1   1
+    '  1   1   1   1   0   0
+    '  1   1   1   1   0   1
+    '  1   1   1   1   1   0
+    '  1   1   1   1   1   1
 
     Friend Sub ParseInfo(sender As Object, e As EventArgs)
         If FrmMain.AltPP Is Nothing Then Exit Sub
@@ -310,6 +411,8 @@ Module dBug
     Friend Sub ShowRelButton(sender As Object, e As EventArgs)
         frmOverlay.pbRestart.Show()
     End Sub
+#End If
+
+
 End Module
 
-#End If

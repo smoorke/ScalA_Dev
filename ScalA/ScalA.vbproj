@@ -95,6 +95,13 @@
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="AstoniaProcess.vb" />
     <Compile Include="CustomColorTable.vb" />
+    <Compile Include="debugger\dBug.vb" />
+    <Compile Include="debugger\frmDebug.Designer.vb">
+      <DependentUpon>frmDebug.vb</DependentUpon>
+    </Compile>
+    <Compile Include="debugger\frmDebug.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="frmMain\frmOverlay.Designer.vb">
       <DependentUpon>frmOverlay.vb</DependentUpon>
     </Compile>
@@ -108,7 +115,6 @@
     <Compile Include="FolderPicker.vb" />
     <Compile Include="frmMain\ContextMenus.vb" />
     <Compile Include="CustomMessageBox.vb" />
-    <Compile Include="frmMain\dBug.vb" />
     <Compile Include="frmMain\frmBehind.Designer.vb">
       <DependentUpon>frmBehind.vb</DependentUpon>
     </Compile>
@@ -169,6 +175,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="debugger\frmDebug.resx">
+      <DependentUpon>frmDebug.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmMain\frmBehind.resx">
       <DependentUpon>frmBehind.vb</DependentUpon>
     </EmbeddedResource>
