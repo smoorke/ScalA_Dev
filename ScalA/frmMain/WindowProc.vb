@@ -534,7 +534,7 @@ Partial NotInheritable Class FrmMain
             Case &HC059 To &HC2AB ' unknown
 
             Case Else
-                dBug.print($"Unhandeld WM_ 0x{m.Msg:X8} &H{m.Msg:X8} w{m.WParam} {m.LParam}")
+                Debug.Print($"Unhandeld WM_ 0x{m.Msg:X8} &H{m.Msg:X8} w{m.WParam} {m.LParam}")
 #End If
         End Select
         MyBase.WndProc(m)  ' allow form to process this message

@@ -668,8 +668,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public DpiAware As Boolean? = Nothing
     Friend Property RegHighDpiAware As Boolean 'proc.MainModule.FileName has wrong path for junctioned/hardlinked/.... will GetFinalPathNameByHandle do the trick?
         Get
-            dBug.print($"FinalPath ""{Me.FinalPath}""")
             If Me.DpiAware IsNot Nothing Then Return Me.DpiAware
+            dBug.Print($"FinalPath ""{Me.FinalPath}""")
             Try
                 Using key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers")
                     Dim value = key?.GetValue(Me.FinalPath)

@@ -29,7 +29,7 @@ Module dBug
     End Sub
 
     Private pubBeta As Boolean = False
-    Private minLogL As Integer = 0 'If(My.Application.CommandLineArgs.Contains("-llAll"), 0, 1)
+    Private minLogL As Integer = If(My.Application.CommandLineArgs.Contains("-llAll"), 0, 1)
 
     Friend Sub InitDebug()
 

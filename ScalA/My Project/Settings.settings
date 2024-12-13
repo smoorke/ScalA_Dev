@@ -38,7 +38,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="className" Type="System.String" Scope="User">
-      <Value Profile="(Default)">MAINWNDMOAC | 䅍义乗䵄䅏C | MAINWNDASTONIA | SDL_app</Value>
+      <Value Profile="(Default)">MAINWNDMOAC | 䅍义乗䵄䅏C潣普楬瑣搮瑡 | MAINWNDASTONIA | SDL_app</Value>
     </Setting>
     <Setting Name="exe" Type="System.String" Scope="User">
       <Value Profile="(Default)">moac | new | Knights of Astonia</Value>
