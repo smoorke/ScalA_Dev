@@ -19,9 +19,9 @@ Partial NotInheritable Class FrmMain
                      SetWindowPosFlags.DoNotActivate Or
                      SetWindowPosFlags.ASyncWindowPosition
     Private Sub TmrTick_Tick(sender As Timer, e As EventArgs) Handles tmrTick.Tick
-        'Debug.Print($"ws {Me.WindowState}")
+        'dBug.print($"ws {Me.WindowState}")
         If Not AltPP?.IsRunning() Then
-            Debug.Print($"Not AltPP?.IsRunning() {Me.WindowState}")
+            dBug.print($"Not AltPP?.IsRunning() {Me.WindowState}")
             Me.Show()
             FrmBehind.Show()
             If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
@@ -36,7 +36,7 @@ Partial NotInheritable Class FrmMain
                 '                Dim timeout As UInteger
                 '                Dim ret = SystemParametersInfo(SPI.GETFOREGROUNDLOCKTIMEOUT, 0, timeout, 0)
                 '                timeout = Math.Max(100, timeout + 1)
-                '                Debug.Print($"timeout:{timeout} {ret}")
+                '                dBug.print($"timeout:{timeout} {ret}")
                 '                Try
                 '                    Task.Run(action:=Async Sub()
                 '                                         Await Task.Delay(timeout / 2)
@@ -76,9 +76,9 @@ Partial NotInheritable Class FrmMain
         GetCursorInfo(pci)
         If pci.flags <> 0 Then ' cursor is visible
             If Not wasVisible AndAlso AltPP?.IsActive() Then
-                Debug.Print("scrollthumb released")
+                dBug.print("scrollthumb released")
                 If storedY <> pci.ptScreenpos.y OrElse storedX <> pci.ptScreenpos.x Then
-                    Debug.Print("scrollthumb moved")
+                    dBug.print("scrollthumb moved")
                     Dim Xfactor As Double = pbZoom.Width / rcC.Width
                     Dim Yfactor As Double = pbZoom.Height / rcC.Height
                     Dim movedX As Integer = storedX + ((pci.ptScreenpos.x - storedX) * Xfactor)
@@ -90,7 +90,7 @@ Partial NotInheritable Class FrmMain
                     Dim ipt As New Point(movedX.Map(bzB.Left, bzB.Right, 0, rcC.Width),
                                          movedY.Map(bzB.Top, bzB.Bottom, 0, rcC.Height))
                     SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, WM_MOUSEMOVE_CreateWParam, New LParamMap(ipt)) 'update client internal mousepos
-                    Debug.Print($"ipt {ipt}")
+                    dBug.print($"ipt {ipt}")
                 End If
             End If
             storedX = pci.ptScreenpos.x
@@ -117,7 +117,7 @@ Partial NotInheritable Class FrmMain
 #End If
                             'ap.Activate() doesn't work if not debugging
                             If Not AltPP.IsActive AndAlso WindowFromPoint(MousePosition) = AltPP?.MainWindowHandle Then
-                                Debug.Print($"Activating {AltPP?.Name}")
+                                dBug.print($"Activating {AltPP?.Name}")
                                 SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
                             End If
 #If DEBUG Then
@@ -157,7 +157,7 @@ Partial NotInheritable Class FrmMain
                                  End If
                                  prevWMMMpt = MousePosition
                              Catch ex As Exception
-                                 Debug.Print(ex.Message)
+                                 dBug.print(ex.Message)
                              Finally
                                  swpBusy = False
                              End Try
@@ -214,7 +214,7 @@ Partial NotInheritable Class FrmMain
                              Try
                                  Dim apCounter = butCounter
                                  If apCounter >= topCount Then apCounter = butCounter - skipCount + topCount
-                                 'Debug.Print($"pfe tick{TickCounter} but{butCounter} ap{apCounter} bot{botCount} top{topCount} skip{skipCount}")
+                                 'dBug.print($"pfe tick{TickCounter} but{butCounter} ap{apCounter} bot{botCount} top{topCount} skip{skipCount}")
                                  If apCounter < alts.Count AndAlso
                                     (butCounter < topCount OrElse butCounter >= skipCount) AndAlso
                                     Not alts(apCounter).HasExited Then
@@ -238,7 +238,7 @@ Partial NotInheritable Class FrmMain
                                              Dim img As Image = Nothing
                                              If ico IsNot Nothing Then
                                                  img = New Bitmap(ico, New Size(16, 16))
-                                                 Debug.Print($"{ap.Name} icon updated")
+                                                 dBug.print($"{ap.Name} icon updated")
                                              End If
                                              Me.BeginInvoke(Sub() but.BackgroundImage = img)
                                          End Using
@@ -260,7 +260,7 @@ Partial NotInheritable Class FrmMain
                                              Dim thumbid As IntPtr = IntPtr.Zero
                                              DwmRegisterThumbnail(ScalaHandle, ap.MainWindowHandle, thumbid)
                                              startThumbsDict(apID) = thumbid
-                                             Debug.Print($"registered thumb {startThumbsDict(apID)} {ap.Name} {apID}")
+                                             dBug.print($"registered thumb {startThumbsDict(apID)} {ap.Name} {apID}")
                                          End If
 
                                          rectDic(apID) = but.ThumbRECT
@@ -300,9 +300,9 @@ Partial NotInheritable Class FrmMain
                     GetCursorInfo(pci)
                     If pci.flags <> 0 Then ' cursor is visible
                         If Not wasVisible AndAlso ap.IsActive() Then
-                            Debug.Print("scrollthumb released")
+                            dBug.print("scrollthumb released")
                             If storedY <> pci.ptScreenpos.y OrElse storedX <> pci.ptScreenpos.x Then
-                                Debug.Print("scrollthumb moved")
+                                dBug.print("scrollthumb moved")
                                 Dim Xfactor As Double = but.ThumbRectangle.Width / ap.ClientRect.Width
                                 Dim Yfactor As Double = but.ThumbRectangle.Height / ap.ClientRect.Height
                                 Dim movedX As Integer = storedX + ((pci.ptScreenpos.x - storedX) * Xfactor)
@@ -313,7 +313,7 @@ Partial NotInheritable Class FrmMain
                                 Dim ipt As New Point(movedX.Map(bzB.Left, bzB.Right, 0, rccB.Width),
                                                      movedY.Map(bzB.Top, bzB.Bottom, 0, rccB.Height))
                                 SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, WM_MOUSEMOVE_CreateWParam(), New LParamMap(ipt)) 'update client internal mousepos
-                                Debug.Print($"ipt {ipt}")
+                                dBug.print($"ipt {ipt}")
                             End If
                         End If
                         storedX = pci.ptScreenpos.x
@@ -324,11 +324,11 @@ Partial NotInheritable Class FrmMain
                     If Not AOBusy Then
                         AltPP = ap
                         If ap.IsMinimized Then
-                            Debug.Print($"before {rcwB} {rccB}")
+                            dBug.print($"before {rcwB} {rccB}")
                             ap.Restore()
                             rcwB = ap.WindowRect
                             rccB = ap.ClientRect
-                            Debug.Print($"after {rcwB} {rccB}")
+                            dBug.print($"after {rcwB} {rccB}")
                         End If
 
                         If pci.flags = 0 Then ' cursor is hidden do not move astonia. fixes scrollbar thumb.
@@ -350,7 +350,7 @@ Partial NotInheritable Class FrmMain
 #End If
                                                 'ap.Activate() doesn't work if not debugging
                                                 If Not ap.IsActive AndAlso WindowFromPoint(MousePosition) = ap.MainWindowHandle Then
-                                                    Debug.Print($"Activating {ap.Name}")
+                                                    dBug.print($"Activating {ap.Name}")
                                                     SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
                                                 End If
 #If DEBUG Then
@@ -407,7 +407,7 @@ Partial NotInheritable Class FrmMain
                                                           End If
                                                           prevWMMMpt = MousePosition
                                                       Catch ex As Exception
-                                                          Debug.Print(ex.Message)
+                                                          dBug.print(ex.Message)
                                                       Finally
                                                           AOBusy = False
                                                       End Try
@@ -455,7 +455,7 @@ Partial NotInheritable Class FrmMain
         End If
 
         For Each ppid As Integer In purgelist 'tolist needed as we mutate the thumbsdict
-            Debug.Print("unregister thumb " & startThumbsDict(ppid).ToString)
+            dBug.print("unregister thumb " & startThumbsDict(ppid).ToString)
             DwmUnregisterThumbnail(startThumbsDict(ppid))
             startThumbsDict.TryRemove(ppid, Nothing)
             rectDic.TryRemove(ppid, Nothing)
@@ -554,7 +554,7 @@ Partial NotInheritable Class FrmMain
 
         If IPC.RequestActivation Then
             IPC.RequestActivation = False
-            Debug.Print("IPC.requestActivation")
+            dBug.print("IPC.requestActivation")
 
             If AltPP?.IsMinimized Then
                 AltPP.Restore()
@@ -583,7 +583,7 @@ Partial NotInheritable Class FrmMain
                 If Not pnlOverview.Visible Then
                     AltPP?.CenterBehind(pbZoom)
                     AltPP?.Activate()
-                    Debug.Print($"{moveBusy} {swpBusy}")
+                    dBug.print($"{moveBusy} {swpBusy}")
                     moveBusy = False
                 Else
                     AppActivate(scalaPID)
@@ -669,17 +669,17 @@ Partial NotInheritable Class FrmMain
                                         Parallel.ForEach(AstoniaProcess.loggedIns.Values.Where(Function(p) p.Name = "Someone").ToArray,
                                             Sub(it As AstoniaProcess)
                                                 If it.hasLoggedIn Then
-                                                    Debug.Print($"AutoClosing {it.loggedInAs}")
+                                                    dBug.print($"AutoClosing {it.loggedInAs}")
                                                     it.CloseOrKill()
                                                     AstoniaProcess.loggedIns.TryRemove(it.Id, Nothing)
                                                 End If
                                             End Sub)
                                     End Sub)
                 'For Each ap In AstoniaProcess.loggedIns.Where(Function(p) p.Name = "Someone").ToArray
-                '    'If ap.Name = "Bool" OrElse ap.Name = "Someone" Then Debug.Print($"Autoclose {ap.Name} ""{ap.hasLoggedIn}""")
+                '    'If ap.Name = "Bool" OrElse ap.Name = "Someone" Then dBug.print($"Autoclose {ap.Name} ""{ap.hasLoggedIn}""")
                 '    If ap.hasLoggedIn Then
                 '        ap.CloseOrKill()
-                '        Debug.Print($"autoclose {ap.loggedInAs}")
+                '        dBug.print($"autoclose {ap.loggedInAs}")
                 '        AstoniaProcess.loggedIns = AstoniaProcess.loggedIns.FindAll(Function(pp) pp.Id <> ap.Id)
                 '    End If
                 'Next
@@ -742,7 +742,7 @@ Partial NotInheritable Class FrmMain
         End While
 
 
-        Debug.Print($"{If(lowestHwnd, "none")}")
+        dBug.print($"{If(lowestHwnd, "none")}")
 
         Return lowestHwnd
 

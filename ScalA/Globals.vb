@@ -25,7 +25,7 @@
     Public Function getAnimationsEnabled() As Boolean
         Dim enabled As Boolean = False
         If Not SystemParametersInfo(SPI.GETCLIENTAREAANIMATION, 0, enabled, 0) Then
-            Debug.Print("SystemParametersInfo SPI_GETCLIENTAREAANIMATION FAIL!")
+            dBug.print("SystemParametersInfo SPI_GETCLIENTAREAANIMATION FAIL!")
         End If
         Return enabled
     End Function

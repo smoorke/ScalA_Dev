@@ -3,10 +3,46 @@ Imports System.Runtime.InteropServices
 
 Module dBug
 
-    Friend Sub debugMenu()
+#If DEBUG Then
+    Friend logbuilder As New Text.StringBuilder With {.Capacity = 100 * 1024}
+#Else
+    Friend logbuilder As New Text.StringBuilder With {.Capacity = If(My.Application.Info.Version.Revision = 0, 0, 100 * 1024)}
+#End If
+
+    Friend Sub Print(Message As String, Optional Level As Integer = 0)
+        Debug.Print(Message)
+        Dim bugger As Boolean = pubBeta
+#If DEBUG Then
+        bugger = True
+#End If
+        If bugger AndAlso Level >= minLogL AndAlso logbuilder IsNot Nothing Then
+            ' Check if appending the message would exceed MaxCapacity
+            Dim requiredCapacity As Integer = logbuilder.Length + Message.Length + 2
+            If requiredCapacity > logbuilder.MaxCapacity Then
+                ' Increase capacity to handle larger logs (e.g., double the current MaxCapacity)
+                logbuilder.EnsureCapacity(Math.Max(requiredCapacity, logbuilder.MaxCapacity + 50 * 1024))
+            End If
+
+            ' Append the new log message
+            logbuilder.AppendLine($"{Date.Now:HH:mm:ss.ff} {Message}")
+        End If
+    End Sub
+
+    Private pubBeta As Boolean = False
+    Private minLogL As Integer = 0 'If(My.Application.CommandLineArgs.Contains("-llAll"), 0, 1)
+
+    Friend Sub InitDebug()
+
+        If My.Application.Info.Version.Revision > 0 Then
+            pubBeta = True
+            'logbuilder = New Text.StringBuilder With {.Capacity = 100_000}
+        End If
 
         Dim test As New ContextMenuStrip
 #If DEBUG Then
+
+
+
         test.Items.Add(New ToolStripMenuItem("Parse Info", Nothing, AddressOf dBug.ParseInfo))
         test.Items.Add(New ToolStripMenuItem("Reset Hide", Nothing, AddressOf dBug.ResetHide))
         test.Items.Add(New ToolStripMenuItem("ResumeLayout", Nothing, AddressOf dBug.Resumelayout))
@@ -53,7 +89,7 @@ Module dBug
     End Sub
 
     Private Sub OpenDebugWindow(sender As Object, e As EventArgs)
-        frmDebug.Show(FrmMain)
+        If Not frmDebug.Visible Then frmDebug.Show(FrmMain)
     End Sub
 
 
@@ -76,8 +112,8 @@ Module dBug
     '  0   0   0   0   0   0   
     '  0   0   0   0   0   1   
     '  0   0   0   0   1   0   
-    '  0   0   0   1   0   0   
     '  0   0   0   0   1   1   
+    '  0   0   0   1   0   0   
     '  0   0   0   1   0   1   
     '  0   0   0   1   1   0   
     '  0   0   0   1   1   1   
@@ -112,8 +148,8 @@ Module dBug
     '  1   0   0   0   0   0   
     '  1   0   0   0   0   1   
     '  1   0   0   0   1   0   
-    '  1   0   0   1   0   0   
     '  1   0   0   0   1   1   
+    '  1   0   0   1   0   0   
     '  1   0   0   1   0   1   
     '  1   0   0   1   1   0   
     '  1   0   0   1   1   1   
@@ -233,7 +269,7 @@ Module dBug
 
     Friend Sub toggeleborder(sender As Object, e As EventArgs)
         'Static restoreWS As WindowStyles = GetWindowLong(FrmMain.AltPP.MainWindowHandle, GWL_STYLE) 'todo replace with magic number? legacy/vs sdl?
-        'Debug.Print($"restorews {restoreWS}")
+        'Debug.print($"restorews {restoreWS}")
         Dim restoreWS As WindowStyles
         If FrmMain.AltPP.isSDL Then
             restoreWS = WindowStyles.WS_MINIMIZEBOX Or
@@ -269,7 +305,7 @@ Module dBug
 
     Friend Sub fudgeThumb(sender As Object, e As EventArgs)
 
-        'Debug.Print($"create {FrmMain.CreateThumb()}")
+        'Debug.print($"create {FrmMain.CreateThumb()}")
 
         'FrmMain.AnimateThumb(New Rectangle(FrmMain.PnlEqLock.Left, FrmMain.PnlEqLock.Top, FrmMain.PnlEqLock.Right, FrmMain.PnlEqLock.Bottom), New Rectangle(FrmMain.pbZoom.Left, FrmMain.pbZoom.Top, FrmMain.pbZoom.Right, FrmMain.pbZoom.Bottom), 2000)
         'Await Task.Delay(50)
@@ -292,10 +328,10 @@ Module dBug
         'Dim ret = DwmUpdateThumbnailProperties(FrmMain.thumb, tp)
         'Dim rcc As New RECT
         'GetClientRect(FrmMain.AltPP.MainWindowHandle, rcc)
-        'Debug.Print($"rcc:{rcc}")
+        'Debug.print($"rcc:{rcc}")
         'Dim rcFrame As RECT
         'DwmGetWindowAttribute(FrmMain.AltPP.MainWindowHandle, 9, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
-        'Debug.Print($"rcf:{rcFrame.ToRectangle}")
+        'Debug.print($"rcf:{rcFrame.ToRectangle}")
 
         Dim rcc As RECT
         GetClientRect(FrmMain.AltPP.MainWindowHandle, rcc)
@@ -310,8 +346,8 @@ Module dBug
 
     Friend Sub NudgeTaskbar(sender As Object, e As EventArgs)
         SetWindowLong(FrmMain.ScalaHandle, GWL_HWNDPARENT, 0)
-        'Debug.Print("1:" & FlashWindow(FrmMain.ScalaHandle, True))
-        'Debug.Print("2:" & FlashWindow(FrmMain.ScalaHandle, False))
+        'Debug.print("1:" & FlashWindow(FrmMain.ScalaHandle, True))
+        'Debug.print("2:" & FlashWindow(FrmMain.ScalaHandle, False))
         'AppActivate(FrmMain.scalaPID)
         FrmMain.Activate()
     End Sub
@@ -334,11 +370,11 @@ Module dBug
         'Task.Run(Sub()
         '             Dim sw = Stopwatch.StartNew
         '             Dim list = EnumOtherScalAs().ToList
-        '             Debug.Print($"- {list.Count} other ScalA{If(list.Count = 1, "", "s")} -")
+        '             Debug.print($"- {list.Count} other ScalA{If(list.Count = 1, "", "s")} -")
         '             For Each pp As Process In list
-        '                 Debug.Print($"{pp.Id}")
+        '                 Debug.print($"{pp.Id}")
         '             Next
-        '             Debug.Print($"- {sw.ElapsedMilliseconds}ms -")
+        '             Debug.print($"- {sw.ElapsedMilliseconds}ms -")
         '             sw.Stop()
         '         End Sub)
 

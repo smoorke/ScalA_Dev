@@ -23,7 +23,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             If _rcc IsNot Nothing AndAlso _rcc <> New Rectangle Then
                 Return _rcc
             Else
-                'Debug.Print("called get ClientRect")
+                'dBug.print("called get ClientRect")
                 Dim rcc As New Rectangle
                 If proc Is Nothing Then Return New Rectangle
                 GetClientRect(Me.MainWindowHandle, rcc)
@@ -102,7 +102,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     End Sub
     Public Sub RestoreSinglePos(Optional behind As Integer = 0)
         If Me._restoreLoc IsNot Nothing AndAlso Not Me.HasExited() Then
-            Debug.Print($"restoresingle {behind}")
+            dBug.print($"restoresingle {behind}")
             If behind = 0 Then
                 SetWindowPos(Me.MainWindowHandle, If(Me._wasTopmost, SWP_HWND.TOPMOST, FrmMain.ScalaHandle),
                              Me._restoreLoc?.X, Me._restoreLoc?.Y, -1, -1,
@@ -152,10 +152,10 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                             extrapixel = 1
                     End Select
                     _CO = New Point(ptt.X - rcW.left, ptt.Y - rcW.top + extrapixel)
-                    Debug.Print($"co {_CO}")
+                    dBug.print($"co {_CO}")
                     Return _CO
                 Catch ex As Exception
-                    Debug.Print(message:=$"ex on CO {ex.Message}")
+                    dBug.print(message:=$"ex on CO {ex.Message}")
                     Return New Point
                 End Try
             End If
@@ -166,7 +166,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public Function rcSource(TargetSZ As Size, mode As Integer) As Rectangle
 
         'Dim mode = My.Settings.ScalingMode
-        'Debug.Print($"rcSource target {TargetSZ}")
+        'dBug.print($"rcSource target {TargetSZ}")
         'If mode = 0 Then
         '    Dim compsz As Size = TargetSZ
         '    If (compsz.Width / ClientRect.Width >= 2) AndAlso
@@ -229,7 +229,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                                 -1, -1,
                                 SetWindowPosFlags.IgnoreResize Or extraSWPFlags)
         Catch
-            Debug.Print("CenterWindowPos exception")
+            dBug.print("CenterWindowPos exception")
             Return False
         End Try
     End Function
@@ -254,7 +254,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             AllowSetForegroundWindow(FrmMain.scalaPID)
             AppActivate(proc.Id)
         Catch ex As Exception
-            Debug.Print("activate exception")
+            dBug.print("activate exception")
         End Try
     End Sub
 
@@ -266,7 +266,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 _mwhCache = If(proc?.MainWindowHandle, IntPtr.Zero)
                 Return _mwhCache
             Catch
-                Debug.Print("MainWindowHandle exeption")
+                dBug.print("MainWindowHandle exeption")
                 Return IntPtr.Zero
             End Try
         End Get
@@ -302,7 +302,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 If proc.MainWindowTitle = "" Then
                     Dim nm As String = TryCast(memCache.Get(proc.Id), String)
                     If Not String.IsNullOrEmpty(nm) Then
-                        Debug.Print($"name fail {nm} ""{Me.WindowClass}""")
+                        dBug.print($"name fail {nm} ""{Me.WindowClass}""")
                         Return nm
                     End If
                     Return "Someone"
@@ -318,7 +318,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             Catch ex As InvalidOperationException 'process has exited
                 Return "Someone"
             Catch ex As Exception
-                Debug.Print($"Name exception {ex.Message}")
+                dBug.print($"Name exception {ex.Message}")
                 Return "Someone"
             End Try
         End Get
@@ -393,7 +393,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             proc?.Refresh()
             Return proc?.MainWindowTitle
         Catch
-            Debug.Print("MainWindowTitle exception")
+            dBug.print("MainWindowTitle exception")
             Return ""
         End Try
     End Function
@@ -469,7 +469,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             End If
 
         Catch ex As Exception
-            Debug.Print($"Error retrieving icon: {ex.Message}")
+            dBug.print($"Error retrieving icon: {ex.Message}")
         End Try
 
         Return Nothing
@@ -491,15 +491,15 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
     Public Overrides Function Equals(obj As Object) As Boolean
         Dim proc2 As AstoniaProcess = TryCast(obj, AstoniaProcess)
-        'Debug.Print($"obj {proc2?._proc?.Id} eqals _proc {_proc?.Id}")
+        'dBug.print($"obj {proc2?._proc?.Id} eqals _proc {_proc?.Id}")
         Return proc2?.proc IsNot Nothing AndAlso Me.proc IsNot Nothing AndAlso proc2.proc.Id = Me.proc.Id AndAlso proc2.Name = Me.Name
     End Function
     'Public Shared Operator =(left As AstoniaProcess, right As AstoniaProcess) As Boolean
-    '    Debug.Print("AP ==")
+    '    dBug.print("AP ==")
     '    Return left.Equals(right)
     'End Operator
     'Public Shared Operator <>(left As AstoniaProcess, right As AstoniaProcess) As Boolean
-    '    Debug.Print("AP <>")
+    '    dBug.print("AP <>")
     '    Return Not left.Equals(right)
     'End Operator
     Private Shared exeCache As IEnumerable(Of String) = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
@@ -562,7 +562,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Return If(ProcCache.Find(Function(ap)
                                      If ap.HasExited Then Return False
                                      'If ap.Id = p.Id Then ' AndAlso (ap.Name = "Bool" OrElse ap.Name = "Someone") Then
-                                     '    Debug.Print($"got from cache {ap.Name} {ap.hasLoggedIn}")
+                                     '    dBug.print($"got from cache {ap.Name} {ap.hasLoggedIn}")
                                      'End If
                                      Return ap.Id = p.Id
                                  End Function), New AstoniaProcess(p))
@@ -610,7 +610,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 Try
                     hdcBm = gBM.GetHdc
                 Catch ex As Exception
-                    Debug.Print("GetHdc error")
+                    dBug.print("GetHdc error")
                     Return Nothing
                 End Try
                 PrintWindow(Me.MainWindowHandle, hdcBm, 1)
@@ -632,7 +632,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 Else
                     _isSDL = False
                 End If
-                'Debug.Print($"isSDL {Me.Name} {_isSDL} {shm.pID} {Me.Id}")
+                'dBug.print($"isSDL {Me.Name} {_isSDL} {shm.pID} {Me.Id}")
             End If
             Return _isSDL
         End Get
@@ -668,7 +668,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public DpiAware As Boolean? = Nothing
     Friend Property RegHighDpiAware As Boolean 'proc.MainModule.FileName has wrong path for junctioned/hardlinked/.... will GetFinalPathNameByHandle do the trick?
         Get
-            Debug.Print($"FinalPath ""{Me.FinalPath}""")
+            dBug.print($"FinalPath ""{Me.FinalPath}""")
             If Me.DpiAware IsNot Nothing Then Return Me.DpiAware
             Try
                 Using key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers")
@@ -686,7 +686,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     End If
                 End Using
             Catch ex As Exception
-                Debug.Print($"Exception RegDPI: {ex.Message}")
+                dBug.print($"Exception RegDPI: {ex.Message}")
                 Me.DpiAware = False
                 Return False
             End Try
@@ -741,7 +741,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 End If
             Catch ex As Exception
                 ' Handle exceptions (e.g., permission issues) as needed
-                Debug.Print("SETREG An error occurred: " & ex.Message)
+                dBug.print("SETREG An error occurred: " & ex.Message)
             Finally
                 key?.Close()
             End Try
@@ -815,18 +815,18 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 blackCount = 0
                 For dx As Integer = 0 To grab.Width / 32 - 1
                     Dim currentCol As Integer = grab.GetPixel(barX + dx, barY + dy).ToArgb
-                    'Debug.Print($"current{dy}/{dx}:{currentCol:X8}")
+                    'dBug.print($"current{dy}/{dx}:{currentCol:X8}")
                     If {&HFF000000, &HFF000400}.Contains(currentCol) Then
                         blackCount += 1
                     End If
 
                     If Not validColors.Contains(currentCol) Then
-                        'Debug.Print($"badcolor row{dy} &H{grab.GetPixel(barX + dx, 205 + dy).ToArgb.ToString("X8")}")
+                        'dBug.print($"badcolor row{dy} &H{grab.GetPixel(barX + dx, 205 + dy).ToArgb.ToString("X8")}")
                         BadColorCount += 1
                     End If
                     If dy = 0 Then
                         If BadColorCount > 1 OrElse blackCount = 25 Then
-                            'Debug.Print("Pane open?")
+                            'dBug.print("Pane open?")
                             blackCount = 0
                             barX += 110.Map(0, 800, 0, grab.Width)
                             Exit For
@@ -864,7 +864,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End If
 
         ' Log process details
-        Debug.Print($"Restarting process: {proc.ProcessName} {proc.Id}")
+        dBug.print($"Restarting process: {proc.ProcessName} {proc.Id}")
 
         Dim shortcutlink As String = FileIO.SpecialDirectories.Temp & "\ScalA\restart.lnk"
         Dim mos As Management.ManagementObject = New Management.ManagementObjectSearcher($"Select * from Win32_Process WHERE ProcessID={proc.Id}").Get()(0)
@@ -873,17 +873,17 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Dim arguments As String = mos("commandline")
         Dim exepath As String = mos("ExecutablePath")
 
-        'Debug.Print($"Original arguments: ""{arguments}""")
-        Debug.Print($"Executable Path: ""{exepath}""")
+        'dBug.print($"Original arguments: ""{arguments}""")
+        dBug.print($"Executable Path: ""{exepath}""")
 
         If arguments = "" Then
-            Debug.Print("Access denied! Restart process with elevated permissions.")
+            dBug.print("Access denied! Restart process with elevated permissions.")
             Exit Sub
         End If
 
         ' Get the working directory
         Dim workdir As String = proc.GetCurrentDirectory()
-        Debug.Print($"Working Directory: {workdir}")
+        dBug.print($"Working Directory: {workdir}")
 
         If workdir.EndsWith("bin") Then
             workdir = workdir.Substring(0, workdir.LastIndexOf("\"))
@@ -902,7 +902,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             oLink.WindowStyle = 1
             oLink.Save()
         Catch ex As Exception
-            Debug.Print($"Failed to create shortcut: {ex.Message}")
+            dBug.print($"Failed to create shortcut: {ex.Message}")
             Exit Sub
         End Try
 
@@ -930,7 +930,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             alreadylaunched = True
             pp.Start()
         Catch ex As Exception
-            Debug.Print($"Failed to restart process: {ex.Message}")
+            dBug.print($"Failed to restart process: {ex.Message}")
         Finally
             pp.Dispose()
         End Try
@@ -943,7 +943,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             Return
         End If
 
-        Debug.Print($"runasWindowed: {Me.Name} {Me.Id}")
+        dBug.print($"runasWindowed: {Me.Name} {Me.Id}")
 
         If Not IO.Directory.Exists(IO.Path.Combine(FileIO.SpecialDirectories.Temp, "\ScalA\")) Then
             IO.Directory.CreateDirectory(IO.Path.Combine(FileIO.SpecialDirectories.Temp, "\ScalA\"))
@@ -955,8 +955,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
         Dim arguments As String = mos("commandline")
 
-        'Debug.Print($"arguments:""{arguments}""") 'leaks creds to dehub
-        Debug.Print($"exePath:""{mos("ExecutablePath")}""")
+        'dBug.print($"arguments:""{arguments}""") 'leaks creds to dehub
+        dBug.print($"exePath:""{mos("ExecutablePath")}""")
 
         If arguments = "" Then
             If CustomMessageBox.Show(FrmMain, "Access denied!" & vbCrLf &
@@ -967,7 +967,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             End 'program
             Return
         End If
-        'Debug.Print("cmdline:" & arguments) 'leaks creds
+        'dBug.print("cmdline:" & arguments) 'leaks creds
         If arguments.StartsWith("""") Then
             'arguments = arguments.Substring(1) 'skipped with startindex
             arguments = arguments.Substring(arguments.IndexOf("""", 1) + 1)
@@ -1001,18 +1001,18 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         newargs.Add("h600")
 
         arguments = Strings.Join(newargs.ToArray, " -")
-        'Debug.Print($"args {arguments}") 'leaks creds to debug
+        'dBug.print($"args {arguments}") 'leaks creds to debug
 
         Dim exepath As String = ""
         Try
             exepath = mos("ExecutablePath")
         Catch
-            Debug.Print("exepath exept")
+            dBug.print("exepath exept")
         End Try
         'Dim workdir As String = exepath.Substring(0, exepath.LastIndexOf("\")) 'todo: replace with function found at https://stackoverflow.com/a/23842609/7433250
         Dim workdir = proc.GetCurrentDirectory()
 
-        Debug.Print($"wd {workdir}")
+        dBug.print($"wd {workdir}")
 
         If workdir.EndsWith("bin") Then
             workdir = workdir.Substring(0, workdir.LastIndexOf("\"))
@@ -1030,7 +1030,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             oLink.WindowStyle = 1
             oLink.Save()
         Catch ex As Exception
-            Debug.Print($"oLink exept {exepath} {workdir} {shortcutlink}") 'why is this giving an exception?
+            dBug.print($"oLink exept {exepath} {workdir} {shortcutlink}") 'why is this giving an exception?
             Return
         End Try
 
@@ -1055,7 +1055,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             alreadylaunched = True
             pp.Start()
         Catch
-            Debug.Print("pp.start() except")
+            dBug.print("pp.start() except")
         Finally
             pp.Dispose()
         End Try
@@ -1082,7 +1082,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         FrmMain.Cursor = Cursors.Default
 
         If System.IO.File.Exists(shortcutlink) Then
-            Debug.Print("Deleting shortcut")
+            dBug.print("Deleting shortcut")
             System.IO.File.Delete(shortcutlink)
         End If
 
@@ -1124,7 +1124,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Try
             Return proc.HasExited
         Catch ex As Exception
-            Debug.Print("HasExited Exception")
+            dBug.print("HasExited Exception")
             Elevated = True
             Return proc.HasExitedSafe
         End Try
@@ -1162,9 +1162,9 @@ NotInheritable Class AstoniaProcessSorter
         Dim bot1 As Boolean = botOrder.Contains(ap1)
         Dim bot2 As Boolean = botOrder.Contains(ap2)
 
-        'Debug.Print($"comp:{ap1} {ap2}")
-        'Debug.Print($"top: {top1} {top2}")
-        'Debug.Print($"bot: {bot1} {bot2}")
+        'dBug.print($"comp:{ap1} {ap2}")
+        'dBug.print($"top: {top1} {top2}")
+        'dBug.print($"bot: {bot1} {bot2}")
 
         If top1 AndAlso bot2 Then Return -1
         If bot1 AndAlso top2 Then Return 1
@@ -1264,7 +1264,7 @@ Module ProcessExtensions
                     processPath = buffer.ToString().Replace("\\?\", String.Empty)
                 End If
             Else
-                Debug.Print("Error opening proc")
+                dBug.print("Error opening proc")
             End If
         Finally
             CloseHandle(hFile)

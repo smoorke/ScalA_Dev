@@ -6,12 +6,12 @@ Module IPC
     'Private ReadOnly _mmvaBoolean As MemoryMappedViewAccessor = _mmfBoolean.CreateViewAccessor()
     'Public Property QlCtxIsOpen As Boolean
     '    Get
-    '        'Debug.Print(_mmvaBoolean.ReadBoolean(0))
+    '        'dBug.print(_mmvaBoolean.ReadBoolean(0))
     '        Return _mmvaBoolean.ReadBoolean(0)
     '    End Get
     '    Set(ByVal value As Boolean)
     '        _mmvaBoolean.Write(0, value)
-    '        Debug.Print($"set QlCtxOpen to {value}")
+    '        dBug.print($"set QlCtxOpen to {value}")
     '    End Set
     'End Property
 

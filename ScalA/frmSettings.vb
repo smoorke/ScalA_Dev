@@ -46,13 +46,13 @@ Public NotInheritable Class FrmSettings
         chkCycleAlts.Checked = My.Settings.CycleAlt
 
         chkStoAlt.Checked = My.Settings.StoAlt = Hotkey.KeyModifier.Alt
-        Debug.Print($"My.Settings.StoAlt {My.Settings.StoAlt}")
+        dBug.print($"My.Settings.StoAlt {My.Settings.StoAlt}")
         chkStoCtrl.Checked = My.Settings.StoCtrl = Hotkey.KeyModifier.Control
-        Debug.Print($"My.Settings.StoCtrl {My.Settings.StoCtrl}")
+        dBug.print($"My.Settings.StoCtrl {My.Settings.StoCtrl}")
         chkStoShift.Checked = My.Settings.StoShift = Hotkey.KeyModifier.Shift
-        Debug.Print($"My.Settings.StoShift {My.Settings.StoShift}")
+        dBug.print($"My.Settings.StoShift {My.Settings.StoShift}")
         chkStoWin.Checked = My.Settings.StoWin = Hotkey.KeyModifier.Winkey
-        Debug.Print($"My.Settings.StoWin {My.Settings.StoWin}")
+        dBug.print($"My.Settings.StoWin {My.Settings.StoWin}")
 
         chkCycleDownAlt.Checked = My.Settings.CycleAltKeyFwd = Hotkey.KeyModifier.Alt
         chkCycleDownCtrl.Checked = My.Settings.CycleCtrlKeyFwd = Hotkey.KeyModifier.Control
@@ -194,13 +194,13 @@ Public NotInheritable Class FrmSettings
         If Me.Owner Is Nothing Then 'this to address ghost form when closing settings.
             Select Case m.Msg
                 Case WM_ENTERMENULOOP
-                    Debug.Print("GhostSettings EnterMenuLoop")
+                    dBug.print("GhostSettings EnterMenuLoop")
                     FrmMain.AltPP?.Activate()
                     Me.Close()
                     Exit Sub
                 Case WM_KEYDOWN
-                    Debug.Print($"GhostSettings WM_KEYDOWN {m.WParam} {m.LParam}")
-                    Debug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
+                    dBug.print($"GhostSettings WM_KEYDOWN {m.WParam} {m.LParam}")
+                    dBug.print($"ScanCode {New LParamMap(m.LParam).scan}")
                     If FrmMain.cboAlt.SelectedIndex > 0 Then
                         FrmMain.AltPP.Activate()
                         Dim key As Keys = m.WParam
@@ -222,8 +222,8 @@ Public NotInheritable Class FrmSettings
                     'Me.Close()
                     Exit Sub
                 Case WM_KEYUP
-                    Debug.Print($"GhostSettings WM_KEYUP {m.WParam} {m.LParam}")
-                    Debug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
+                    dBug.print($"GhostSettings WM_KEYUP {m.WParam} {m.LParam}")
+                    dBug.print($"ScanCode {New LParamMap(m.LParam).scan}")
                     If FrmMain.cboAlt.SelectedIndex > 0 Then
                         FrmMain.AltPP.Activate()
                         Dim scan As Byte = New LParamMap(m.LParam)
@@ -238,8 +238,8 @@ Public NotInheritable Class FrmSettings
                     'Me.Close()
                     Exit Sub
                 Case WM_CHAR
-                    Debug.Print($"GhostSettings WM_CHAR {m.WParam} {m.LParam}")
-                    Debug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
+                    dBug.print($"GhostSettings WM_CHAR {m.WParam} {m.LParam}")
+                    dBug.print($"ScanCode {New LParamMap(m.LParam).scan}")
                     If FrmMain.cboAlt.SelectedIndex > 0 Then
                         FrmMain.AltPP.Activate()
                         If Not FrmMain.AltPP.isSDL Then
@@ -248,7 +248,7 @@ Public NotInheritable Class FrmSettings
                     End If
                     'Me.Close()
                 Case WM_SYSKEYDOWN
-                    Debug.Print($"GhostSettings WM_SYSKEY {m.WParam} {m.LParam}")
+                    dBug.print($"GhostSettings WM_SYSKEY {m.WParam} {m.LParam}")
                     If FrmMain.cboAlt.SelectedIndex > 0 Then
                         FrmMain.AltPP.Activate()
                     End If
@@ -312,7 +312,7 @@ Public NotInheritable Class FrmSettings
     '    If sender.Checked Then
     '        FrmMain.suppressResChange = False
 
-    '        Debug.Print(rcAstOffsetBase.ToString)
+    '        dBug.print(rcAstOffsetBase.ToString)
 
     '        Dim rcClient As Rectangle = FrmMain.AltPP?.ClientRect
     '        'GetClientRect(FrmMain.AltPP.MainWindowHandle, rcClient)
@@ -353,12 +353,12 @@ Public NotInheritable Class FrmSettings
         Const success = True
         Dim resList As New List(Of Size)
         Try
-            Debug.Print("parseRes")
+            dBug.print("parseRes")
             For Each line As String In txtResolutions.Lines
-                Debug.Print($"""{line}""")
+                dBug.print($"""{line}""")
                 If line = "" Then Continue For
                 Dim parts() As String = line.ToUpper.Split("X")
-                Debug.Print(parts(width) & " " & parts(height))
+                dBug.print(parts(width) & " " & parts(height))
                 If parts(width) < 400 OrElse parts(height) < 300 Then
                     CustomMessageBox.Show(Me, "Error: " & line & " is too small a resolution.", icon:=MessageBoxIcon.Error)
                     Return fail
@@ -447,9 +447,9 @@ Public NotInheritable Class FrmSettings
         My.Settings.StoShift = If(chkStoShift.Checked, Hotkey.KeyModifier.Shift, 0)
         My.Settings.StoWin = If(chkStoWin.Checked, Hotkey.KeyModifier.Winkey, 0)
 
-        Debug.Print($"My.Settings.StoAlt {My.Settings.StoAlt}")
-        Debug.Print($"My.Settings.StoCtrl {My.Settings.StoCtrl}")
-        Debug.Print($"My.Settings.StoShift {My.Settings.StoShift}")
+        dBug.print($"My.Settings.StoAlt {My.Settings.StoAlt}")
+        dBug.print($"My.Settings.StoCtrl {My.Settings.StoCtrl}")
+        dBug.print($"My.Settings.StoShift {My.Settings.StoShift}")
 
 
         My.Settings.CycleAlt = chkCycleAlts.Checked
@@ -610,7 +610,7 @@ Public NotInheritable Class FrmSettings
         FrmMain.tmrHotkeys.Start()
     End Sub
     Private Async Sub FrmSettings_Closed(sender As Form, e As FormClosedEventArgs) Handles Me.Closed
-        Debug.Print($"frmSettings.Closed {e.CloseReason} ""{sender.Owner}""")
+        dBug.print($"frmSettings.Closed {e.CloseReason} ""{sender.Owner}""")
         Await Task.Delay(100) 'hardcoded delay only partially effective. failsafe in wndproc
         FrmMain.AltPP?.Activate()
     End Sub
@@ -630,7 +630,7 @@ Public NotInheritable Class FrmSettings
     'Private Sub NumXYoffsets_ValueChanged(sender As NumericUpDown, e As EventArgs) Handles numYoffset.ValueChanged, numXoffset.ValueChanged
 
     '    If manualNumUpdate Then
-    '        Debug.Print($"ManualNumUpdate")
+    '        dBug.print($"ManualNumUpdate")
     '        Dim ptMove As New Point(0, 0)
     '        If sender.Tag Then
     '            ptMove.Y += sender.Text - sender.Value
@@ -670,7 +670,7 @@ Public NotInheritable Class FrmSettings
     End Sub
 
     Private Function ChangeLinksDir(current As String) As String
-        Debug.Print("changeLinksDir")
+        dBug.print("changeLinksDir")
 
         Try
             Dim fp As New FolderPicker With {
@@ -739,10 +739,10 @@ Public NotInheritable Class FrmSettings
         Dim baseRes As New Size(Val(sender_tag),
                                 Val(sender_tag.Substring(sender_tag.IndexOf("x") + 1)))
 
-        Debug.Print($"baseRes {baseRes}")
+        dBug.print($"baseRes {baseRes}")
 
         Dim gcd = Me.GCD(baseRes.Width, baseRes.Height)
-        Debug.Print($"aspect  {baseRes.Width / gcd}:{baseRes.Height / gcd}")
+        dBug.print($"aspect  {baseRes.Width / gcd}:{baseRes.Height / gcd}")
 
         sb.AppendLine($"{baseRes.Width}x{baseRes.Height}")
 
@@ -804,7 +804,7 @@ Public NotInheritable Class FrmSettings
 
     Private Sub BtnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
 
-        Debug.Print("btnTest_Click")
+        dBug.print("btnTest_Click")
 
         FrmMain.topSortList = txtTopSort.Lines.Where(Function(s) s <> "").ToList
         FrmMain.botSortList = txtBotSort.Lines.Where(Function(s) s <> "").ToList
@@ -819,12 +819,12 @@ Public NotInheritable Class FrmSettings
         IPC.AddOrUpdateInstance(FrmMain.scalaPID, FrmMain.cboAlt.SelectedIndex = 0, If(FrmMain.cboAlt.SelectedIndex = 0, Nothing, FrmMain.cboAlt.SelectedItem.id), FrmMain.showingSomeone)
 
 #If DEBUG Then
-        Debug.Print("Top:")
-        FrmMain.topSortList.ForEach(Sub(el) Debug.Print(el))
-        Debug.Print("Bot:")
-        FrmMain.botSortList.ForEach(Sub(el) Debug.Print(el))
-        Debug.Print("blacklist:")
-        FrmMain.blackList.ForEach(Sub(el) Debug.Print(el))
+        dBug.print("Top:")
+        FrmMain.topSortList.ForEach(Sub(el) dBug.print(el))
+        dBug.print("Bot:")
+        FrmMain.botSortList.ForEach(Sub(el) dBug.print(el))
+        dBug.print("blacklist:")
+        FrmMain.blackList.ForEach(Sub(el) dBug.print(el))
 #End If
     End Sub
 
@@ -854,7 +854,7 @@ Public NotInheritable Class FrmSettings
     Private Sub btnGrabCurrent_Click(sender As Object, e As EventArgs) Handles btnGrabCurrent.Click
         Dim bounds = FrmMain.Bounds
         Dim workarea = Screen.FromControl(FrmMain).WorkingArea
-        Debug.Print($"b {bounds} wa {workarea}")
+        dBug.print($"b {bounds} wa {workarea}")
         NumBorderTop.Value = Math.Max(0, (bounds.Top - workarea.Top) * 1000 / workarea.Height)
         NumBorderLeft.Value = Math.Max(0, (bounds.Left - workarea.Left) * 1000 / workarea.Width)
         NumBorderRight.Value = Math.Max(0, (workarea.Right - bounds.Right) * 1000 / workarea.Width)
@@ -863,9 +863,9 @@ Public NotInheritable Class FrmSettings
 
     Private Sub btnAddCurrentRes_Click(sender As Object, e As EventArgs) Handles btnAddCurrentRes.Click
         Dim res As String = FrmMain.cmbResolution.SelectedItem
-        Debug.Print(res)
+        dBug.print(res)
         If txtResolutions.Lines.Contains(res) Then
-            Debug.Print("already present")
+            dBug.print("already present")
             txtResolutions.SelectionStart = txtResolutions.Text.IndexOf(res)
             txtResolutions.SelectionLength = res.Length
             txtResolutions.ScrollToCaret()
@@ -920,7 +920,7 @@ Public NotInheritable Class FrmSettings
     Private Sub TxtShortcuts_PreviewKeyDown(sender As TextBox, e As PreviewKeyDownEventArgs) _
         Handles txtStoKey.PreviewKeyDown, txtCycleKeyUp.PreviewKeyDown, txtCycleKeyDown.PreviewKeyDown, txtCloseAll.PreviewKeyDown, txtTogTop.PreviewKeyDown,
                 txtAlterOverviewMinKey.PreviewKeyDown, txtAlterOverviewPlusKey.PreviewKeyDown, txtAlterOverviewStarKey.PreviewKeyDown
-        Debug.Print(e.KeyCode)
+        dBug.print(e.KeyCode)
         If e.KeyCode = 16 OrElse 'shift
            e.KeyCode = 17 OrElse 'ctrl
            e.KeyCode = 18 OrElse 'alt
@@ -950,7 +950,7 @@ Public NotInheritable Class FrmSettings
                 AlterOvervieKeyStar = e.KeyCode
 
         End Select
-        Debug.Print($"key: {e.KeyCode}")
+        dBug.print($"key: {e.KeyCode}")
     End Sub
 
     Private Async Sub CheckNowToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CheckNowToolStripMenuItem.Click
@@ -1036,7 +1036,7 @@ Public NotInheritable Class FrmSettings
         If sender Is Nothing Then init_validate = False
         If init_validate Then Exit Sub
 
-        Debug.Print($"Validate {sender} {e?.GetType}")
+        dBug.print($"Validate {sender} {e?.GetType}")
 
 
         Dim modi As Hotkey.KeyModifier
@@ -1052,7 +1052,7 @@ Public NotInheritable Class FrmSettings
             If Hotkey.RegisterHotkey(Me, 1, modi, StoKey) Then
                 txtStoKey.ForeColor = Color.Black
             Else
-                Debug.Print("Invalid hotkey")
+                dBug.print("Invalid hotkey")
                 txtStoKey.ForeColor = Color.Red
             End If
         End If

@@ -62,7 +62,7 @@ Public Class KeyboardHook : Implements IDisposable
                         If My.Settings.DisableWinKey Then
                             Using proc As Process = Process.GetProcessById(GetActiveProcessID())
                                 If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
-                                    Debug.Print($"Win Key Blocked {wParam:X4} {proc.ProcessName}")
+                                    dBug.print($"Win Key Blocked {wParam:X4} {proc.ProcessName}")
                                     Return 1
                                 End If
                             End Using
@@ -71,7 +71,7 @@ Public Class KeyboardHook : Implements IDisposable
                         If Not alreadySendingEsc AndAlso My.Settings.OnlyEsc AndAlso My.Computer.Keyboard.CtrlKeyDown Then
                             Using proc As Process = Process.GetProcessById(GetActiveProcessID())
                                 If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
-                                    Debug.Print("ctrl esc")
+                                    dBug.print("ctrl esc")
                                     alreadySendingEsc = True
                                     Try
                                         BlockInput(True)
@@ -88,7 +88,7 @@ Public Class KeyboardHook : Implements IDisposable
                 End Select
             Case WM_KEYUP
                 If My.Settings.OnlyEsc AndAlso My.Computer.Keyboard.CtrlKeyDown AndAlso Marshal.PtrToStructure(Of UInteger)(lParam) = Keys.Escape Then
-                    Debug.Print($"esc up {My.Computer.Keyboard.CtrlKeyDown} {alreadySendingEsc}")
+                    dBug.print($"esc up {My.Computer.Keyboard.CtrlKeyDown} {alreadySendingEsc}")
                     Using proc As Process = Process.GetProcessById(GetActiveProcessID())
                         If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
                             SendInput(1, CtrlDownInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
@@ -100,7 +100,7 @@ Public Class KeyboardHook : Implements IDisposable
                 If My.Settings.OnlyEsc AndAlso key = Keys.Escape Then
                     Using proc As Process = Process.GetProcessById(GetActiveProcessID())
                         If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
-                            Debug.Print("alt esc")
+                            dBug.print("alt esc")
                             SendInput(AltEscKeyInput.Count, AltEscKeyInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
                             Return 1
                         End If

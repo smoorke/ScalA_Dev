@@ -13,7 +13,7 @@ Partial Public NotInheritable Class FrmMain
 
             Dim q As Boolean = (Not d OrElse (a AndAlso (b OrElse c))) AndAlso Not (a AndAlso Not b AndAlso Not c AndAlso Not d)
 #If DEBUG Then
-            Debug.Print($"a {a} b {b} c {c} d {d}    q {q}")
+            dBug.Print($"a {a} b {b} c {c} d {d}    q {q}")
 
             lblDebug.Text = q.ToString
 #End If
@@ -99,7 +99,7 @@ Partial Public NotInheritable Class FrmMain
         cmsQuickLaunch.Close()
         'IPC.AddOrUpdateInstance(scalaPID, sender.SelectedIndex = 0)
 
-        Debug.Print($"CboAlt_SelectedIndexChanged {sender.SelectedIndex}")
+        dBug.Print($"CboAlt_SelectedIndexChanged {sender.SelectedIndex}")
 
         'btnAlt1.Focus()
 
@@ -175,30 +175,30 @@ Partial Public NotInheritable Class FrmMain
             Dim ptC As Point
             ClientToScreen(AltPP.MainWindowHandle, ptC)
 
-            Debug.Print($"rcW:{rcW}")
-            Debug.Print($"rcC:{rcC}")
-            Debug.Print($"ptC:{ptC}")
+            dBug.Print($"rcW:{rcW}")
+            dBug.Print($"rcC:{rcC}")
+            dBug.Print($"ptC:{ptC}")
 
             'check if target is running as windowed. if not ask to run it with -w
             If rcC.Width = 0 AndAlso rcC.Height = 0 OrElse
                rcC.X = ptC.X AndAlso rcC.Y = ptC.Y Then
                 'MessageBox.Show("Client is not running in windowed mode", "Error")
-                Debug.Print("Astonia Not Windowed")
+                dBug.Print("Astonia Not Windowed")
                 Await AltPP.ReOpenAsWindowed()
                 'cboAlt.SelectedIndex = 0
                 Exit Sub
             End If
             AltPP.SavePos(rcW.Location)
 
-            Debug.Print("tmrTick.Enabled")
+            dBug.Print("tmrTick.Enabled")
             tmrTick.Enabled = True
 
-            Debug.Print("AltPPTopMost " & AltPP.TopMost.ToString)
-            Debug.Print("SelfTopMost " & Process.GetCurrentProcess.IsTopMost.ToString)
+            dBug.Print("AltPPTopMost " & AltPP.TopMost.ToString)
+            dBug.Print("SelfTopMost " & Process.GetCurrentProcess.IsTopMost.ToString)
 
             Dim item As AstoniaProcess = DirectCast(sender.SelectedItem, AstoniaProcess)
             If startThumbsDict.ContainsKey(item.Id) Then
-                Debug.Print($"reassignThumb {item.Id} {startThumbsDict(item.Id)} {item.Name}")
+                dBug.Print($"reassignThumb {item.Id} {startThumbsDict(item.Id)} {item.Name}")
                 thumb = startThumbsDict(item.Id)
             End If
 
@@ -210,7 +210,7 @@ Partial Public NotInheritable Class FrmMain
             If My.Settings.MaxNormOverview AndAlso WindowState = FormWindowState.Maximized Then
                 btnMax.PerformClick()
             End If
-            Debug.Print($"updateThumb pbzoom {pbZoom.Size}")
+            dBug.Print($"updateThumb pbzoom {pbZoom.Size}")
             AltPP.CenterBehind(pbZoom, SetWindowPosFlags.DoNotActivate, True, True)
             If Not My.Settings.MaxNormOverview AndAlso AnimsEnabled AndAlso rectDic.ContainsKey(item.Id) Then
                 AnimateThumb(rectDic(item.Id), New Rectangle(pbZoom.Left, pbZoom.Top, pbZoom.Right, pbZoom.Bottom))
@@ -223,8 +223,8 @@ Partial Public NotInheritable Class FrmMain
 
             Dim ScalAWinScaling = Me.WindowsScaling()
 
-            Debug.Print($"{ScalAWinScaling}% ScalA windows scaling")
-            Debug.Print($"{AltPP.WindowsScaling}% altPP windows scaling")
+            dBug.Print($"{ScalAWinScaling}% ScalA windows scaling")
+            dBug.Print($"{AltPP.WindowsScaling}% altPP windows scaling")
 
             'Dim failcounter = 0
             'If AltPP.WindowsScaling <> ScalAWinScaling Then 'scala is scaled diffrent than Alt
@@ -235,11 +235,11 @@ Partial Public NotInheritable Class FrmMain
             '        Dim rc As RECT
             '        GetWindowRect(AltPP.MainWindowHandle, rc)
             '        SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, rc.left + 1, rc.top + 1, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.FrameChanged)
-            '        Debug.Print($"Scaling Delay {sw.ElapsedMilliseconds}ms {ScalAWinScaling}% vs {AltPP.WindowsScaling}")
+            '        dBug.print($"Scaling Delay {sw.ElapsedMilliseconds}ms {ScalAWinScaling}% vs {AltPP.WindowsScaling}")
             '        Await Task.Delay(16)
             '        If sw.ElapsedMilliseconds > timeout Then
             '            sw.Stop()
-            '            Debug.Print($"Scaling Delay Timeout! {failcounter}")
+            '            dBug.print($"Scaling Delay Timeout! {failcounter}")
             '            AstoniaProcess.RestorePos(True)
             '            Await Task.Delay(16)
             '            sw = Stopwatch.StartNew()
@@ -337,6 +337,16 @@ Partial Public NotInheritable Class FrmMain
             End
         End If
 
+        Dim Dbg As Boolean = False
+#If DEBUG Then
+        Dbg = True
+#End If
+        If My.Application.Info.Version.Revision > 0 OrElse Dbg Then
+            chkDebug.Visible = True
+            dBug.InitDebug()
+            If Dbg Then lblDebug.Visible = True
+        End If
+
         If My.Settings.SingleInstance AndAlso IPC.AlreadyOpen Then
             IPC.RequestActivation = True
             End
@@ -379,21 +389,21 @@ Partial Public NotInheritable Class FrmMain
         apSorter = New AstoniaProcessSorter(topSortList, botSortList)
 
 #If DEBUG Then
-        Debug.Print("Top:")
-        topSortList.ForEach(Sub(el) Debug.Print(el))
-        Debug.Print("Bot:")
-        botSortList.ForEach(Sub(el) Debug.Print(el))
-        Debug.Print("blacklist:")
-        blackList.ForEach(Sub(el) Debug.Print(el))
+        dBug.Print("Top:")
+        topSortList.ForEach(Sub(el) dBug.Print(el))
+        dBug.Print("Bot:")
+        botSortList.ForEach(Sub(el) dBug.Print(el))
+        dBug.Print("blacklist:")
+        blackList.ForEach(Sub(el) dBug.Print(el))
 #End If
 
 
 
-        Debug.Print("mangleSysMenu")
+        dBug.Print("mangleSysMenu")
         InitSysMenu()
         ScalaHandle = Me.Handle
 
-        Debug.Print("topmost " & My.Settings.topmost)
+        dBug.Print("topmost " & My.Settings.topmost)
         Me.TopMost = My.Settings.topmost
         Me.chkHideMessage.Checked = My.Settings.hideMessage
 
@@ -409,7 +419,7 @@ Partial Public NotInheritable Class FrmMain
         cmbResolution.SelectedIndex = My.Settings.zoom
 
 
-        Debug.Print("location " & My.Settings.location.ToString)
+        dBug.Print("location " & My.Settings.location.ToString)
         suppressWM_MOVEcwp = True
         Me.Location = My.Settings.location
         suppressWM_MOVEcwp = False
@@ -423,7 +433,7 @@ Partial Public NotInheritable Class FrmMain
         For Each ap As AstoniaProcess In APlist
             cboAlt.Items.Add(ap)
             If args.Count > 1 AndAlso ap.Name = args(1) Then
-                Debug.Print($"Selecting '{ap.Name}'")
+                dBug.Print($"Selecting '{ap.Name}'")
                 cboAlt.SelectedItem = ap
             End If
         Next
@@ -437,11 +447,11 @@ Partial Public NotInheritable Class FrmMain
         UpdateButtonLayout(APlist.Count)
 
         If cboAlt.SelectedIndex = 0 AndAlso args.Count = 1 Then
-            Debug.Print("Selecting Default")
+            dBug.Print("Selecting Default")
             cboAlt.SelectedIndex = If(cboAlt.Items.Count = 2 AndAlso Not My.Settings.gameOnOverview, 1, 0)
         End If
 
-        Debug.Print("updateTitle")
+        dBug.Print("updateTitle")
         UpdateTitle()
 
         Dim progdata As String = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) & "\ScalA"
@@ -453,15 +463,7 @@ Partial Public NotInheritable Class FrmMain
             System.IO.Directory.CreateDirectory(progdata & "\Example Folder")
         End If
 
-        Dim Dbg As Boolean = False
-#If DEBUG Then
-        Dbg = True
-#End If
-        If My.Application.Info.Version.Revision > 0 OrElse Dbg Then
-            chkDebug.Visible = True
-            dBug.debugMenu()
-            If Dbg Then lblDebug.Visible = True
-        End If
+
 
 
         Dim image = LoadImage(IntPtr.Zero, "#106", 1, 16, 16, 0)
@@ -477,7 +479,7 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         If System.IO.File.Exists(FileIO.SpecialDirectories.Temp & "\ScalA\tmp.lnk") Then
-            Debug.Print("Deleting shortcut")
+            dBug.Print("Deleting shortcut")
             System.IO.File.Delete(FileIO.SpecialDirectories.Temp & "\ScalA\tmp.lnk")
         End If
 
@@ -511,7 +513,7 @@ Partial Public NotInheritable Class FrmMain
         End If
         ApplyTheme(darkmode)
 
-        Debug.Print($"Anims {AnimsEnabled}")
+        dBug.Print($"Anims {AnimsEnabled}")
 
         tmrOverview.Interval = If(My.Settings.gameOnOverview, 33, 66)
 
@@ -530,10 +532,10 @@ Partial Public NotInheritable Class FrmMain
     'Public startup As Boolean = True
 
     Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
-        Debug.Print("FrmMain_Shown")
+        dBug.Print("FrmMain_Shown")
         suppressWM_MOVEcwp = False
         If Not Screen.AllScreens.Any(Function(s) s.WorkingArea.Contains(Me.Location)) Then
-            Debug.Print("location out of bounds")
+            dBug.Print("location out of bounds")
             Dim msWA As Rectangle = Screen.PrimaryScreen.WorkingArea
             Me.Location = New Point(Math.Max(msWA.Left, (msWA.Width - Me.Width) / 2), Math.Max(msWA.Top, (msWA.Height - Me.Height) / 2))
         End If
@@ -633,7 +635,7 @@ Partial Public NotInheritable Class FrmMain
             Dim drive = Strings.Left(MePath, 2)
             If WNetGetConnection(drive, sb, len) = 0 Then MePath = MePath.Replace(drive, sb.ToString)
         Catch
-            Debug.Print($"WNetGetConnection Exception")
+            dBug.Print($"WNetGetConnection Exception")
         End Try
         SaveLocation()
         My.Settings.Save()
@@ -713,7 +715,7 @@ Partial Public NotInheritable Class FrmMain
         Dim reslist As New List(Of Size)
         For Each line As String In My.Settings.resolutions.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries)
             Dim parts() As String = line.ToUpper.Split("X")
-            Debug.Print(parts(0) & " " & parts(1))
+            dBug.Print(parts(0) & " " & parts(1))
             reslist.Add(New Size(parts(0), parts(1)))
         Next
 
@@ -741,25 +743,25 @@ Partial Public NotInheritable Class FrmMain
         '    End If
         'Else
         If e.Button = MouseButtons.Left AndAlso e.Clicks = 1 Then
-                sender.Capture = False
-                tmrTick.Stop()
-                caption_Mousedown = True
-                If Me.WindowState = FormWindowState.Maximized Then
-                    captionMoveTrigger = True
-                    wasMaximized = True
-                End If
-                Dim msg As Message = Message.Create(ScalaHandle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
-                Debug.Print("WM_NCLBUTTONDOWN")
-                Me.WndProc(msg)
-                caption_Mousedown = False
-                captionMoveTrigger = False
-                If Not pnlOverview.Visible Then
-                    AltPP.Activate()
-                    tmrTick.Start()
-                End If
-                Debug.Print("movetimer stopped")
-                'FrmSizeBorder.Bounds = Me.Bounds
+            sender.Capture = False
+            tmrTick.Stop()
+            caption_Mousedown = True
+            If Me.WindowState = FormWindowState.Maximized Then
+                captionMoveTrigger = True
+                wasMaximized = True
             End If
+            Dim msg As Message = Message.Create(ScalaHandle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
+            dBug.Print("WM_NCLBUTTONDOWN")
+            Me.WndProc(msg)
+            caption_Mousedown = False
+            captionMoveTrigger = False
+            If Not pnlOverview.Visible Then
+                AltPP.Activate()
+                tmrTick.Start()
+            End If
+            dBug.Print("movetimer stopped")
+            'FrmSizeBorder.Bounds = Me.Bounds
+        End If
         'End If
     End Sub
 
@@ -777,7 +779,7 @@ Partial Public NotInheritable Class FrmMain
     Public Sub MoveForm_MouseUp(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseUp, lblTitle.MouseUp
         ' only fires when settings.chkAlign is on
         If e.Button = MouseButtons.Left Then
-            Debug.Print("Mouseup")
+            dBug.Print("Mouseup")
             MovingForm = False
             If AltPP?.IsRunning Then ' AndAlso Not FrmSettings.chkDoAlign.Checked Then
                 AltPP?.CenterBehind(pbZoom, SetWindowPosFlags.DoNotActivate)
@@ -825,7 +827,7 @@ Partial Public NotInheritable Class FrmMain
     Public Sub CmbResolution_SelectedIndexChanged(sender As ComboBox, e As EventArgs) Handles cmbResolution.SelectedIndexChanged
         moveBusy = False
         If sender.SelectedIndex = 0 Then Exit Sub
-        Debug.Print($"cboResolution_SelectedIndexChanged {sender.SelectedIndex}")
+        dBug.Print($"cboResolution_SelectedIndexChanged {sender.SelectedIndex}")
 
         My.Settings.zoom = sender.SelectedIndex
         My.Settings.resol = zooms(sender.SelectedIndex - 1)
@@ -846,7 +848,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Public Sub ReZoom(newSize As Size)
-        Debug.Print($"reZoom {newSize}")
+        dBug.Print($"reZoom {newSize}")
         'Me.SuspendLayout()
         suppressResChange = True
         If Me.WindowState <> FormWindowState.Maximized Then
@@ -884,11 +886,11 @@ Partial Public NotInheritable Class FrmMain
         'Me.ResumeLayout(True)
 
         If cboAlt.SelectedIndex <> 0 Then
-            Debug.Print("updateThumb")
+            dBug.Print("updateThumb")
             UpdateThumb(If(chkDebug.Checked, 128, 255))
         End If
         pnlTitleBar.Width = newSize.Width - pnlButtons.Width - pnlSys.Width
-        Debug.Print($"rezoom pnlTitleBar.Width {pnlTitleBar.Width}")
+        dBug.Print($"rezoom pnlTitleBar.Width {pnlTitleBar.Width}")
 
         cornerNW.Location = New Point(0, 0)
         cornerNE.Location = New Point(Me.Width - 2, 0)
@@ -925,7 +927,7 @@ Partial Public NotInheritable Class FrmMain
             If cmbResolution.SelectedIndex > 0 Then
                 zoom = zooms(cmbResolution.SelectedIndex - 1)
             End If
-            Debug.Print($"DoEqLock zoom {zoom}")
+            dBug.Print($"DoEqLock zoom {zoom}")
             PnlEqLock.Location = New Point(CType(rcC.Width / 2 - 262.Map(0, 800, 0, rcC.Width), Integer).Map(rcC.Width, 0, zoom.Width, 0), 25)
             Dim excludGearLock As Integer = If(AltPP?.isSDL, 18, 0)
             Dim lockHeight = 45
@@ -952,11 +954,11 @@ Partial Public NotInheritable Class FrmMain
     ''' </summary>
     Public Sub UntrapMouse(button As MouseButtons)
         Dim activePID = GetActiveProcessID()
-        'Debug.Print($"active {activePID} is AltPP.id {activePID = AltPP?.Id}")
+        'dBug.print($"active {activePID} is AltPP.id {activePID = AltPP?.Id}")
         If activePID <> AltPP?.Id Then Exit Sub 'only when dragged from client
         Try
             'If My.Settings.gameOnOverview OrElse (Not pnlOverview.Visible AndAlso Not pbZoom.Contains(MousePosition)) Then
-            Debug.Print($"untrap mouse {button}")
+            dBug.Print($"untrap mouse {button}")
             If button = MouseButtons.Right Then PostMessage(AltPP?.MainWindowHandle, WM_RBUTTONUP, 0, 0)
             If button = MouseButtons.Middle Then PostMessage(AltPP?.MainWindowHandle, WM_MBUTTONUP, 0, 0)
             'End If
@@ -1225,12 +1227,12 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub BtnMin_Click(sender As Button, e As EventArgs) Handles btnMin.Click
-        Debug.Print("btnMin_Click")
+        dBug.Print("btnMin_Click")
         'suppressWM_MOVEcwp = True
         wasMaximized = (Me.WindowState = FormWindowState.Maximized)
         If Not wasMaximized Then
             restoreLoc = Me.Location
-            Debug.Print("restoreLoc " & restoreLoc.ToString)
+            dBug.Print("restoreLoc " & restoreLoc.ToString)
         End If
         AppActivate(scalaPID)
 
@@ -1240,12 +1242,12 @@ Partial Public NotInheritable Class FrmMain
         ElseIf My.Settings.MinMin AndAlso cboAlt.SelectedIndex <> 0 AndAlso AltPP?.isSDL Then
             AltPP.Hide()
         Else
-            Debug.Print("swl parent")
+            dBug.Print("swl parent")
             AstoniaProcess.RestorePos(True)
             Detach(True)
         End If
         Me.WindowState = FormWindowState.Minimized
-        Debug.Print($"WS {Me.WindowState}")
+        dBug.Print($"WS {Me.WindowState}")
         'suppressWM_MOVEcwp = False
     End Sub
 
@@ -1276,7 +1278,7 @@ Partial Public NotInheritable Class FrmMain
         SelectAlt(sender.AP)
     End Sub
     Private Sub BtnAlt_MouseDown(sender As AButton, e As MouseEventArgs) ' handles AButton.mousedown
-        Debug.Print($"MouseDown {e.Button}")
+        dBug.Print($"MouseDown {e.Button}")
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
         If sender.AP Is Nothing Then Exit Sub
@@ -1325,7 +1327,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub ChkHideMessage_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkHideMessage.CheckedChanged
-        Debug.Print("chkHideMessage " & sender.Checked)
+        dBug.Print("chkHideMessage " & sender.Checked)
         If sender.Checked Then
             'btnAlt9.Visible = True
             pnlMessage.Visible = False
@@ -1346,14 +1348,14 @@ Partial Public NotInheritable Class FrmMain
     '    End Get
     '    Set(ByVal value As Point)
     '        _restoreLoc = value
-    '        Debug.Print($"Set restoreloc to {value}")
+    '        dBug.print($"Set restoreloc to {value}")
     '    End Set
     'End Property
 
     Dim prevWA As Rectangle
     Dim restoreLoc As Point = Me.Location
     Private Sub BtnMax_Click(sender As Button, e As EventArgs) Handles btnMax.Click
-        Debug.Print("btnMax_Click")
+        dBug.Print("btnMax_Click")
         suppressWM_MOVEcwp = True
         '🗖,🗗,⧠
         If Me.WindowState = FormWindowState.Normal Then
@@ -1363,8 +1365,8 @@ Partial Public NotInheritable Class FrmMain
                 restoreLoc = Me.Location
             End If
             Dim scrn As Screen = Screen.FromPoint(restoreLoc + New Point(Me.Width / 2, Me.Height / 2))
-            Debug.Print("screen workarea " & scrn.WorkingArea.ToString)
-            Debug.Print("screen bounds " & scrn.Bounds.ToString)
+            dBug.Print("screen workarea " & scrn.WorkingArea.ToString)
+            dBug.Print("screen bounds " & scrn.Bounds.ToString)
             prevWA = scrn.WorkingArea
 
             Dim leftBorder As Integer = scrn.WorkingArea.Width * My.Settings.MaxBorderLeft / 1000
@@ -1393,16 +1395,16 @@ Partial Public NotInheritable Class FrmMain
                         Select Case edge
                             Case 0
                                 leftBorder = 1
-                                Debug.Print("Hidden taskbar left")
+                                dBug.Print("Hidden taskbar left")
                             Case 1
                                 topBorder = 1
-                                Debug.Print("Hidden taskbar top")
+                                dBug.Print("Hidden taskbar top")
                             Case 2
                                 rightborder = 1
-                                Debug.Print("Hidden taskbar right")
+                                dBug.Print("Hidden taskbar right")
                             Case 3
                                 botBorder = 1
-                                Debug.Print("Hidden taskbar bottom")
+                                dBug.Print("Hidden taskbar bottom")
                         End Select
                         Exit For
                     End If
@@ -1410,23 +1412,23 @@ Partial Public NotInheritable Class FrmMain
             End If
             'if no taskbar present add to bottom
             If leftBorder + rightborder + topBorder + botBorder = 0 Then
-                Debug.Print("no taskbar present")
+                dBug.Print("no taskbar present")
                 botBorder = 1
             End If
 
-            Debug.Print($"leftborder {leftBorder}")
-            Debug.Print($"topborder {topBorder}")
-            Debug.Print($"rightborder {rightborder}")
-            Debug.Print($"botborder {botBorder}")
+            dBug.Print($"leftborder {leftBorder}")
+            dBug.Print($"topborder {topBorder}")
+            dBug.Print($"rightborder {rightborder}")
+            dBug.Print($"botborder {botBorder}")
 
             Me.MaximizedBounds = New Rectangle(scrn.WorkingArea.Left - scrn.Bounds.Left + leftBorder,
                                            scrn.WorkingArea.Top - scrn.Bounds.Top + topBorder,
                                            scrn.WorkingArea.Width - leftBorder - rightborder,
                                            scrn.WorkingArea.Height - topBorder - botBorder)
-            Debug.Print("new maxbound " & MaximizedBounds.ToString)
+            dBug.Print("new maxbound " & MaximizedBounds.ToString)
             If Me.WindowState = FormWindowState.Normal AndAlso Me.Location <> New Point(-32000, -32000) Then
                 restoreLoc = Me.Location
-                Debug.Print("restoreLoc " & restoreLoc.ToString)
+                dBug.Print("restoreLoc " & restoreLoc.ToString)
             End If
             'ReZoom()
             If Me.Location = New Point(-32000, -32000) Then Me.Location = restoreLoc
@@ -1437,10 +1439,10 @@ Partial Public NotInheritable Class FrmMain
             wasMaximized = True
             FrmSizeBorder.Opacity = 0
         ElseIf Me.WindowState = FormWindowState.Maximized Then 'go normal
-            Debug.Print($"restorebounds {RestoreBounds.Location}")
-            Debug.Print($"maximizbounds {MaximizedBounds.Location}")
-            Debug.Print($"restoreloc    {restoreLoc}")
-            Debug.Print($"My.Settings.l {My.Settings.location}")
+            dBug.Print($"restorebounds {RestoreBounds.Location}")
+            dBug.Print($"maximizbounds {MaximizedBounds.Location}")
+            dBug.Print($"restoreloc    {restoreLoc}")
+            dBug.Print($"My.Settings.l {My.Settings.location}")
             Me.Location = restoreLoc
             Me.WindowState = FormWindowState.Normal
             sender.Text = "⧠"
@@ -1466,7 +1468,7 @@ Partial Public NotInheritable Class FrmMain
         cboAlt.DroppedDown = False
         tmrTick.Stop()
         Dim prevAlt As AstoniaProcess = AltPP
-        Debug.Print($"prevAlt?.Name {prevAlt?.Name}")
+        dBug.Print($"prevAlt?.Name {prevAlt?.Name}")
         AstoniaProcess.RestorePos(True)
         cboAlt.SelectedIndex = 0
         If prevAlt?.Id <> 0 Then
@@ -1486,7 +1488,7 @@ Partial Public NotInheritable Class FrmMain
     Private prevHWNDParent As IntPtr = restoreParent
     Public Function Attach(ap As AstoniaProcess) As Long
         If ap Is Nothing OrElse prevHWNDParent = ap.MainWindowHandle Then Return 0
-        Debug.Print($"Attach to: {ap.Name} {ap.Id}")
+        dBug.Print($"Attach to: {ap.Name} {ap.Id}")
         prevHWNDParent = ap.MainWindowHandle
         If Not pnlOverview.Visible Then
             Dim rcAst As RECT
@@ -1503,7 +1505,7 @@ Partial Public NotInheritable Class FrmMain
     Public Function Detach(show As Boolean) As Long
 #If DEBUG Then
         If prevDetach <> AltPP?.Name Then
-            Debug.Print($"Detach from: {AltPP?.Name} show:{show}")
+            dBug.Print($"Detach from: {AltPP?.Name} show:{show}")
             prevDetach = AltPP?.Name
         End If
 #End If
@@ -1560,16 +1562,16 @@ Partial Public NotInheritable Class FrmMain
                    FindWindowEx(errorHwnd, Nothing, "Static", "Copy new->moac failed: 5") <> IntPtr.Zero Then
                     Dim butHandle = FindWindowEx(errorHwnd, Nothing, "Button", "OK")
                     SendMessage(butHandle, &HF5, IntPtr.Zero, IntPtr.Zero)
-                    Debug.Print("Error dialog closed")
+                    dBug.Print("Error dialog closed")
                 End If
             End If
         Catch
-            Debug.Print("CloseErrorDialog Exception")
+            dBug.Print("CloseErrorDialog Exception")
         End Try
     End Sub
 
     Private Sub Title_MouseDoubleClick(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.DoubleClick, lblTitle.DoubleClick
-        Debug.Print("title_DoubleClick")
+        dBug.Print("title_DoubleClick")
         If e.Button = MouseButtons.Left Then btnMax.PerformClick()
         'FrmSizeBorder.Bounds = Me.Bounds
     End Sub
@@ -1621,7 +1623,7 @@ Partial Public NotInheritable Class FrmMain
 
 #If DEBUG Then
     Private Sub ChkDebug_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkDebug.CheckedChanged
-        Debug.Print(Screen.GetWorkingArea(sender).ToString)
+        dBug.Print(Screen.GetWorkingArea(sender).ToString)
         If Not pnlOverview.Visible Then
             UpdateThumb(If(sender.Checked, 122, 255))
         Else
@@ -1640,7 +1642,7 @@ Partial Public NotInheritable Class FrmMain
 
 
     Private Sub SysTrayIcon_MouseDoubleClick(sender As NotifyIcon, e As MouseEventArgs) Handles sysTrayIcon.MouseDoubleClick
-        Debug.Print("sysTrayIcon_MouseDoubleClick")
+        dBug.Print("sysTrayIcon_MouseDoubleClick")
         If e.Button = MouseButtons.Right Then Exit Sub
         'If Me.WindowState = FormWindowState.Minimized Then
         '    Me.Location = RestoreLoc
@@ -1671,12 +1673,12 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Async Sub FrmMain_Click(sender As Object, e As MouseEventArgs) Handles Me.MouseDown
-        Debug.Print($"me.mousedown {sender.name} {e.Button}")
+        dBug.Print($"me.mousedown {sender.name} {e.Button}")
         MyBase.WndProc(Message.Create(ScalaHandle, WM_CANCELMODE, 0, 0))
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
         Await Task.Delay(200)
-        Debug.Print($"Me.MouseDown awaited")
+        dBug.Print($"Me.MouseDown awaited")
         If Not pnlOverview.Visible Then
             pbZoom.Visible = True
             If e.Button <> MouseButtons.None Then
@@ -1715,7 +1717,7 @@ Partial Public NotInheritable Class FrmMain
         Cursor.Position += New Point(1, 1)
     End Sub
     Private Sub PnlEqLock_MouseDown(sender As Panel, e As MouseEventArgs) Handles PnlEqLock.MouseDown
-        Debug.Print($"pnlEqLock.MouseDown {e.Button}")
+        dBug.Print($"pnlEqLock.MouseDown {e.Button}")
 
         Dim wparam = WM_MOUSEMOVE_CreateWParam()
 
@@ -1741,7 +1743,7 @@ Partial Public NotInheritable Class FrmMain
         End If
         Dim my As Integer = mp.Y.Map(0, sender.Bounds.Height, 0, lockHeight)
 
-        Debug.Print($"mx:{mx} my:{my}")
+        dBug.Print($"mx:{mx} my:{my}")
 
 
         If e.Button = MouseButtons.Middle OrElse e.Button = MouseButtons.Right Then
@@ -1754,7 +1756,7 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
     Private Async Sub PnlEqLock_MouseUp(sender As Panel, e As MouseEventArgs) Handles PnlEqLock.MouseUp
-        Debug.Print($"pnlEqLock.MouseUp {e.Button} lock vis {PnlEqLock.Visible}")
+        dBug.Print($"pnlEqLock.MouseUp {e.Button} lock vis {PnlEqLock.Visible}")
         If (e.Button = MouseButtons.Right OrElse e.Button = MouseButtons.Middle) AndAlso PnlEqLock.Contains(MousePosition) Then
             '    'EQLockClick = True
             PnlEqLock.Visible = False
@@ -1796,7 +1798,7 @@ Partial Public NotInheritable Class FrmMain
         'TODO: move follwing code to tmrTick and test sizeborder drag
         Dim ptZ As Point = Me.PointToScreen(pbZoom.Location)
 
-        ' Debug.Print("CaptionMouseMove")
+        ' dBug.print("CaptionMouseMove")
 
         newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AltPP.ClientOffset.X '- My.Settings.offset.X
         newY = Me.Location.Y

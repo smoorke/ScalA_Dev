@@ -1,7 +1,7 @@
 ﻿Public NotInheritable Class FrmBehind
 
     Private Sub FrmBehind_MouseDown(sender As Object, e As MouseEventArgs) Handles Me.MouseDown
-        Debug.Print($"behind down {e.Button}")
+        dBug.print($"behind down {e.Button}")
         'Try
         '    If FrmMain.AltPP IsNot Nothing Then
         '        AppActivate(FrmMain.AltPP.Id)
@@ -28,7 +28,7 @@
     End Sub
 
     Private Sub FrmBehind_Click(sender As Object, e As MouseEventArgs) Handles Me.MouseUp
-        Debug.Print($"behind up {e.Button}")
+        dBug.print($"behind up {e.Button}")
         'Try
         '    If FrmMain.AltPP IsNot Nothing Then
         '        AppActivate(FrmMain.AltPP.Id)

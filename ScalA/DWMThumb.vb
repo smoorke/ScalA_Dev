@@ -59,13 +59,13 @@ Partial Public NotInheritable Class FrmMain
         If My.Settings.ScalingMode = 0 Then
             Dim compsz As Size = pbZoom.Size
             Dim factor = If(AltPP.RegHighDpiAware, AltPP.WindowsScaling / 100, 1) 'todo: refactor this to AstoniaProcess
-            Debug.Print($"UpdateThumb pbzoom {pbZoom.Size}")
+            dBug.print($"UpdateThumb pbzoom {pbZoom.Size}")
             If (compsz.Width / (AltPP.ClientRect.Width * factor) >= 2) AndAlso
                (compsz.Height / (AltPP.ClientRect.Height * factor) >= 2) Then
-                Debug.Print($"auto mode 2 selected {compsz} {AltPP.ClientRect} {AltPP.ClientRect.Width * factor}")
+                dBug.print($"auto mode 2 selected {compsz} {AltPP.ClientRect} {AltPP.ClientRect.Width * factor}")
                 mode = 2
             Else
-                Debug.Print($"auto mode 1 selected {compsz} {AltPP.ClientRect} {AltPP.ClientRect.Width * factor}")
+                dBug.print($"auto mode 1 selected {compsz} {AltPP.ClientRect} {AltPP.ClientRect.Width * factor}")
                 mode = 1
             End If
         End If
@@ -75,11 +75,11 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         If AltPP.WindowsScaling <> 100 Then 'todo divise check to see if astonia is forced DPI aware
-            Debug.Print($"scaling not 100: {AltPP.RegHighDpiAware} {AltPP.WindowsScaling} {AltPP.WindowRect}")
+            dBug.print($"scaling not 100: {AltPP.RegHighDpiAware} {AltPP.WindowsScaling} {AltPP.WindowRect}")
 
             If Not AltPP.RegHighDpiAware Then
                 If mode = 2 AndAlso Not My.Settings.IgnoreWindowsScalingIssue Then Me.BeginInvoke(Sub() pnlWarning.Show())
-                Debug.Print($"pixel mode disabled")
+                dBug.print($"pixel mode disabled")
                 mode = 1
             End If
 
@@ -87,7 +87,7 @@ Partial Public NotInheritable Class FrmMain
             Me.BeginInvoke(Sub() Me.pnlWarning.Hide())
         End If
 
-        Debug.Print($"mode {mode} {If(mode = 1, "blur", "pixel")}")
+        dBug.print($"mode {mode} {If(mode = 1, "blur", "pixel")}")
 
         If mode = 1 Then
             twp.fSourceClientAreaOnly = True
@@ -107,7 +107,7 @@ Partial Public NotInheritable Class FrmMain
         Else
             ret = DwmUpdateThumbnailProperties(thumb, twp)
         End If
-        Debug.Print($"Thumb {thumb} {ret}")
+        dBug.print($"Thumb {thumb} {ret}")
     End Sub
 
 
@@ -137,7 +137,7 @@ Partial Public NotInheritable Class FrmMain
 
                      While timer.ElapsedMilliseconds < time
                          Dim percent = timer.ElapsedMilliseconds / time
-                         ' Debug.Print($"{percent * 100}%")
+                         ' dBug.print($"{percent * 100}%")
                          twp.rcDestination = New Rectangle(startRC.X + (endRC.X - startRC.X) * percent,
                                               startRC.Y + (endRC.Y - startRC.Y) * percent,
                                               startRC.Width + (endRC.Width - startRC.Width) * percent,

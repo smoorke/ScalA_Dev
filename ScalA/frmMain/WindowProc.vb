@@ -12,12 +12,12 @@ Partial NotInheritable Class FrmMain
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case Hotkey.WM_HOTKEY
-                Debug.Print($"Hotkey {m.WParam} pressed")
+                dBug.print($"Hotkey {m.WParam} pressed")
                 Select Case m.WParam
                     Case 1 'ctrl-tab
                         'only perform switch when astonia or scala Is active
                         Dim activeID = GetActiveProcessID()
-                        Debug.Print("aID " & activeID & " selfPID " & scalaPID)
+                        dBug.print("aID " & activeID & " selfPID " & scalaPID)
                         If activeID = scalaPID OrElse Process.GetProcessById(activeID).IsAstonia Then
                             If Me.WindowState = FormWindowState.Minimized Then
                                 SendMessage(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
@@ -37,12 +37,12 @@ Partial NotInheritable Class FrmMain
                         Dim activeID As Integer = GetActiveProcessID()
                         Dim activeHandle = GetForegroundWindow()
                         Dim activeProc = Process.GetProcessById(activeID)
-                        Debug.Print("--Before--")
-                        Debug.Print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
-                        Debug.Print($"Trget {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
-                        Debug.Print($"tgtOwner {GetWindowLong(activeHandle, GWL_HWNDPARENT)}")
+                        dBug.print("--Before--")
+                        dBug.print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                        dBug.print($"Trget {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                        dBug.print($"tgtOwner {GetWindowLong(activeHandle, GWL_HWNDPARENT)}")
                         If activeID = scalaPID OrElse activeProc.IsScalA() Then
-                            Debug.Print("Cannot set self topmost with hotkey")
+                            dBug.print("Cannot set self topmost with hotkey")
                             Exit Sub
                         End If
                         If Not activeProc.IsAstonia Then
@@ -53,10 +53,10 @@ Partial NotInheritable Class FrmMain
                                                   -1, -1, -1, -1,
                                                   SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
 
-                                Debug.Print("--Mid 1--")
-                                Debug.Print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
-                                Debug.Print($"Trget {activeProc.MainWindowTitle.Cap(10)} {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
-                                Debug.Print($"tgtOwner {GetWindowLong(activeHandle, GWL_HWNDPARENT)}")
+                                dBug.print("--Mid 1--")
+                                dBug.print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                                dBug.print($"Trget {activeProc.MainWindowTitle.Cap(10)} {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                                dBug.print($"tgtOwner {GetWindowLong(activeHandle, GWL_HWNDPARENT)}")
 
                                 If My.Settings.topmost Then
                                     Dim ownerHndl As IntPtr = GetWindowLong(activeHandle, GWL_HWNDPARENT)
@@ -71,7 +71,7 @@ Partial NotInheritable Class FrmMain
                                             'todo: restore taskbar visibility?
                                             'AppActivate(activeID) 'doesn't work
                                         Catch ex As Exception
-                                            Debug.Print(ex.Message)
+                                            dBug.print(ex.Message)
                                         End Try
                                     End If
                                 End If
@@ -81,10 +81,10 @@ Partial NotInheritable Class FrmMain
                                 Me.TopMost = My.Settings.topmost
                             End Try
                         End If
-                        Debug.Print("---After---")
-                        Debug.Print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
-                        Debug.Print($"Trget {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
-                        Debug.Print($"tgtOwner {GetWindowLong(activeHandle, GWL_HWNDPARENT)}")
+                        dBug.print("---After---")
+                        dBug.print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                        dBug.print($"Trget {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                        dBug.print($"tgtOwner {GetWindowLong(activeHandle, GWL_HWNDPARENT)}")
                     Case 6 'AlterOverviewPlus
                         My.Settings.ExtraMaxColRow += 1
                     Case 7 'AlteroverviewMin
@@ -96,7 +96,7 @@ Partial NotInheritable Class FrmMain
             Case WM_SYSCOMMAND
                 Select Case m.WParam
                     Case SC_RESTORE
-                        Debug.Print("SC_RESTORE " & m.LParam.ToString)
+                        dBug.print("SC_RESTORE " & m.LParam.ToString)
                         Attach(AltPP)
 
                         SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
@@ -116,11 +116,11 @@ Partial NotInheritable Class FrmMain
                         End If
                         moveBusy = False
                         If WindowState = FormWindowState.Maximized Then
-                            Debug.Print("Restore clicking btnMax")
+                            dBug.print("Restore clicking btnMax")
                             btnMax.PerformClick()
                             Exit Sub
                         End If
-                        Debug.Print("wasMax " & wasMaximized)
+                        dBug.print("wasMax " & wasMaximized)
                         If wasMaximized Then
                             'suppressRestoreBounds = True
                             SetWindowPos(ScalaHandle, SWP_HWND.TOP, MaximizedBounds.X, MaximizedBounds.Y, MaximizedBounds.Width, MaximizedBounds.Height,
@@ -135,7 +135,7 @@ Partial NotInheritable Class FrmMain
                         suppressWM_MOVEcwp = False
                         Exit Sub
                     Case SC_MAXIMIZE
-                        Debug.Print("SC_MAXIMIZE " & m.LParam.ToString)
+                        dBug.print("SC_MAXIMIZE " & m.LParam.ToString)
                         If AltPP?.IsMinimized Then
                             AltPP.Restore()
                         End If
@@ -144,10 +144,10 @@ Partial NotInheritable Class FrmMain
                             'Me.Location = RestoreLoc
                         End If
                         btnMax.PerformClick()
-                        Debug.Print("wasMax " & wasMaximized)
+                        dBug.print("wasMax " & wasMaximized)
                         m.Result = 0
                     Case SC_MINIMIZE
-                        Debug.Print("SC_MINIMIZE")
+                        dBug.print("SC_MINIMIZE")
                         btnMin.PerformClick()
                         m.Result = 0
                         Exit Sub
@@ -156,13 +156,13 @@ Partial NotInheritable Class FrmMain
                         m.Result = 0
                         Exit Sub
                     Case MC_SETTINGS
-                        Debug.Print("Settings called by sysMenu")
+                        dBug.print("Settings called by sysMenu")
                         FrmSettings.Show()
                         FrmSettings.WindowState = FormWindowState.Normal
                         Exit Sub
                 End Select
             Case WM_MOVE
-                'Debug.Print($"WM_MOVE {Me.WindowState}")
+                'dBug.print($"WM_MOVE {Me.WindowState}")
                 'FrmBehind.Location = New LParamMap(m.LParam)
                 Me.Cursor = Cursors.Default
                 'frmCaptureClickBehind.Bounds = Me.RectangleToScreen(pbZoom.Bounds)
@@ -171,7 +171,7 @@ Partial NotInheritable Class FrmMain
                     pbZoom.Visible = True
 #End If
                     If Not suppressWM_MOVEcwp AndAlso Not wasMaximized AndAlso cboAlt.SelectedIndex > 0 Then
-                        'Debug.Print($"WM_MOVE {Me.WindowState}")
+                        'dBug.print($"WM_MOVE {Me.WindowState}")
                         moveBusy = True
                         Task.Run(Sub()
                                      'Exit Sub
@@ -184,7 +184,7 @@ Partial NotInheritable Class FrmMain
                     End If
                 End If
             Case WM_EXITSIZEMOVE
-                Debug.Print($"WM_EXITSIZEMOVE")
+                dBug.print($"WM_EXITSIZEMOVE")
                 If Not (My.Settings.gameOnOverview AndAlso cboAlt.SelectedIndex = 0) Then UpdateThumb(If(chkDebug.Checked, 128, 255))
                 If My.Settings.SizingBorder Then
                     If Me.WindowState = FormWindowState.Maximized Then
@@ -198,10 +198,10 @@ Partial NotInheritable Class FrmMain
                 moveBusy = False
             Case WM_SIZE ' = &h0005
                 Dim sz As Size = New LParamMap(m.LParam)
-                Debug.Print($"WM_SIZE {m.WParam} {sz}")
+                dBug.print($"WM_SIZE {m.WParam} {sz}")
                 If suppressRestoreBounds AndAlso sz.Width <= RestoreBounds.Size.Width AndAlso sz.Height <= RestoreBounds.Size.Height Then
                     m.Result = 0
-                    Debug.Print("WM_SIZE blocked")
+                    dBug.print("WM_SIZE blocked")
                     Exit Sub
                 End If
                 If m.WParam = 1 Then ' minimized
@@ -230,7 +230,7 @@ Partial NotInheritable Class FrmMain
                                                         Me.Top + pbZoom.Top + (pbZoom.Height / 2),
                                                         SetWindowPosFlags.DoNotChangeOwnerZOrder Or SetWindowPosFlags.ASyncWindowPosition Or SetWindowPosFlags.DoNotActivate)
                                      Catch
-                                         Debug.Print("WM_SIZE Except")
+                                         dBug.print("WM_SIZE Except")
                                      Finally
                                          sizeMoveBusy = False
                                          ' moveBusy = False
@@ -241,30 +241,30 @@ Partial NotInheritable Class FrmMain
                 If Me.cmbResolution.SelectedIndex > 0 Then Me.moveBusy = False
                 prevLoc = Me.Location
             Case WM_WINDOWPOSCHANGING
-                'Debug.Print($"vers: {System.Environment.Version}")
+                'dBug.print($"vers: {System.Environment.Version}")
                 'New Version(System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription.Split(" "c)(2))}
-                'Debug.Print(New Version(System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription).ToString)
+                'dBug.print(New Version(System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription).ToString)
                 If StructureToPtrSupported Then 'Marshal.StructureToPtr requires 4.5.1 or higher
                     Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
                     If caption_Mousedown AndAlso captionMoveTrigger AndAlso New Point(winpos.x, winpos.y) = Me.RestoreBounds.Location Then
                         winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreMove
                         System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
-                        Debug.Print($"Moveglitch fixed")
+                        dBug.print($"Moveglitch fixed")
                         captionMoveTrigger = False
                     End If
                     If suppressRestoreBounds AndAlso New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy) = Me.RestoreBounds Then
                         winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreMove
                         System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
-                        Debug.Print($"Restoreglitch tweaked")
+                        dBug.print($"Restoreglitch tweaked")
                         'suppressRestoreBounds = False
                     End If
                 End If
             Case WM_SHOWWINDOW
-                Debug.Print($"WM_SHOWWINDOW {m.WParam} {m.LParam}")
+                dBug.print($"WM_SHOWWINDOW {m.WParam} {m.LParam}")
                 If m.WParam = SW_HIDE AndAlso m.LParam = SW_PARENTCLOSING Then 'minimize
-                    Debug.Print($"AltPP?{{{AltPP?.Id}}}.isSDL{{{AltPP?.isSDL}}}")
+                    dBug.print($"AltPP?{{{AltPP?.Id}}}.isSDL{{{AltPP?.isSDL}}}")
                     If Not AltPP?.isSDL Then
-                        Debug.Print("Not AltPP?.isSDL")
+                        dBug.print("Not AltPP?.isSDL")
                         Detach(True)
                     End If
                     FrmBehind.Hide()
@@ -275,7 +275,7 @@ Partial NotInheritable Class FrmMain
                     Exit Sub
                 End If
                 If m.WParam = SW_NORMAL AndAlso m.LParam = SW_PARENTOPENING Then 'restore
-                    Debug.Print($"wasMaximized {wasMaximized}")
+                    dBug.print($"wasMaximized {wasMaximized}")
                     If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
                     If wasMaximized Then
                         SetWindowPos(ScalaHandle, SWP_HWND.TOP, Bounds.X, Bounds.Y, MaximizedBounds.Width, MaximizedBounds.Height, SetWindowPosFlags.ShowWindow)
@@ -286,14 +286,14 @@ Partial NotInheritable Class FrmMain
                 End If
             Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
                 'If posChangeBusy Then
-                '    Debug.Print("WM_WINDOWPOSCHANGED busy")
+                '    dBug.print("WM_WINDOWPOSCHANGED busy")
                 '    m.Result = 0
                 '    Exit Sub
                 'End If
                 Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
-                'Debug.Print($"WM_WINDOWPOSCHANGED {winpos.x} {winpos.y} {winpos.cx} {winpos.cy} {winpos.flags} {Me.WindowState} {m.WParam} {AltPP?.HasExited} {AltPP?.IsRunning}")
+                'dBug.print($"WM_WINDOWPOSCHANGED {winpos.x} {winpos.y} {winpos.cx} {winpos.cy} {winpos.flags} {Me.WindowState} {m.WParam} {AltPP?.HasExited} {AltPP?.IsRunning}")
                 If Me.WindowState = FormWindowState.Minimized AndAlso AltPP?.HasExited AndAlso cboAlt.SelectedIndex <> 0 Then
-                    Debug.Print("Sending restore")
+                    dBug.print("Sending restore")
                     Me.WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, Nothing))
                     Me.Show()
                     FrmBehind.Show()
@@ -311,10 +311,10 @@ Partial NotInheritable Class FrmMain
                 If wasMaximized AndAlso caption_Mousedown Then
                     'Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
                     'winpos.flags = SetWindowPosFlags.IgnoreMove
-                    Debug.Print("WM_WINDOWPOSCHANGED from maximized And mousebutton down")
-                    Debug.Print($"hwndInsertAfter {winpos.hwndInsertAfter}")
-                    Debug.Print($"flags {winpos.flags}")
-                    Debug.Print($"pos {winpos.x} {winpos.y} size {winpos.cx} {winpos.cy}")
+                    dBug.print("WM_WINDOWPOSCHANGED from maximized And mousebutton down")
+                    dBug.print($"hwndInsertAfter {winpos.hwndInsertAfter}")
+                    dBug.print($"flags {winpos.flags}")
+                    dBug.print($"pos {winpos.x} {winpos.y} size {winpos.cx} {winpos.cy}")
                     btnMax.Text = "⧠"
                     ttMain.SetToolTip(btnMax, "Maximize")
                     cmbResolution.Enabled = True
@@ -328,8 +328,8 @@ Partial NotInheritable Class FrmMain
 
                     If cboAlt.SelectedIndex > 0 Then AltPP?.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition Or SetWindowPosFlags.DoNotActivate)
                     pnlTitleBar.Width = winpos.cx - pnlButtons.Width - pnlSys.Width
-                    Debug.Print($"winpos location {New Point(winpos.x, winpos.y)}")
-                Debug.Print($"winpos size {New Size(winpos.cx, winpos.cy)}")
+                    dBug.print($"winpos location {New Point(winpos.x, winpos.y)}")
+                dBug.print($"winpos size {New Size(winpos.cx, winpos.cy)}")
                     'System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                     FrmSizeBorder.Opacity = If(chkDebug.Checked, 1, 0.01)
                     FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, FrmSizeBorder.Opacity, 0)
@@ -337,14 +337,14 @@ Partial NotInheritable Class FrmMain
                     Exit Sub
                 End If
             Case WM_WININICHANGE '&H1A
-                Debug.Print($"WM_WININICHANGE {m.LParam} {m.WParam}")
+                dBug.print($"WM_WININICHANGE {m.LParam} {m.WParam}")
                 Dim settingnname = Runtime.InteropServices.Marshal.PtrToStringAuto(m.LParam)
                 If settingnname = "VisualEffects" Then
                     AnimsEnabled = getAnimationsEnabled()
-                    Debug.Print($"Animations {AnimsEnabled}")
+                    dBug.print($"Animations {AnimsEnabled}")
                 End If
                 If SuppressWININICHANGECounter > 0 Then
-                    Debug.Print($"ReschangeCounter {SuppressWININICHANGECounter}")
+                    dBug.print($"ReschangeCounter {SuppressWININICHANGECounter}")
                     SuppressWININICHANGECounter -= 1
                 Else
                     If m.LParam = IntPtr.Zero AndAlso Me.WindowState = FormWindowState.Maximized Then
@@ -352,27 +352,27 @@ Partial NotInheritable Class FrmMain
                         Dim newWA = Screen.FromPoint(Me.Location + New Point(Me.Width / 2, Me.Height / 2)).WorkingArea
                         'only do adjustment when size change or moved from top/bottom to sides
                         If newWA.Height <> prevWA.Height OrElse newWA.Width <> prevWA.Width Then
-                            Debug.Print($"Taskbar changed {prevWA}->{newWA}")
+                            dBug.print($"Taskbar changed {prevWA}->{newWA}")
                             Me.WindowState = FormWindowState.Normal
                             btnMax.PerformClick() 'todo replace with gracefull resizing
                         End If
                     End If
                 End If
             Case WM_DISPLAYCHANGE
-                Debug.Print($"WM_DISPLAYCHANGE w {m.WParam} w {m.LParam}")
+                dBug.print($"WM_DISPLAYCHANGE w {m.WParam} w {m.LParam}")
                 If Me.WindowState = FormWindowState.Maximized Then SuppressWININICHANGECounter = 2
                 Task.Run(Sub()
                              Threading.Thread.Sleep(5000)
                              SuppressWININICHANGECounter = 0
                          End Sub)
             Case WM_ENTERMENULOOP
-                Debug.Print($"WM_ENTERMENULOOP {cmsQuickLaunch.Visible}")
+                dBug.print($"WM_ENTERMENULOOP {cmsQuickLaunch.Visible}")
                 SysMenu.Visible = Not cmsQuickLaunch.Visible
             Case WM_EXITMENULOOP
-                Debug.Print("WM_EXITMENULOOP")
+                dBug.print("WM_EXITMENULOOP")
                 SysMenu.Visible = False
             Case WM_INITMENU
-                Debug.Print($"WM_INITMENU {m.WParam} {SysMenu.Handle}")
+                dBug.print($"WM_INITMENU {m.WParam} {SysMenu.Handle}")
                 'If FrmSettings.chkDoAlign.Checked Then
                 '    SysMenu.Disable(SC_SIZE)
                 '    SysMenu.Disable(SC_MOVE)
@@ -401,7 +401,7 @@ Partial NotInheritable Class FrmMain
                     ThemeChanging = True
                     If My.Settings.Theme = 1 Then
                         Dim darkmode As Boolean = WinUsingDarkTheme()
-                        Debug.Print($"Theme Changing dark={darkmode}")
+                        dBug.print($"Theme Changing dark={darkmode}")
 
                         If darkmode <> My.Settings.DarkMode Then
                             ApplyTheme(darkmode)
@@ -414,8 +414,8 @@ Partial NotInheritable Class FrmMain
                              End Sub)
                 End If
             Case WM_KEYDOWN
-                Debug.Print($"WM_KEYDOWN w:{m.WParam} l:{m.LParam}")
-                Debug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
+                dBug.print($"WM_KEYDOWN w:{m.WParam} l:{m.LParam}")
+                dBug.print($"ScanCode {New LParamMap(m.LParam).scan}")
                 If cboAlt.SelectedIndex > 0 Then
                     AltPP.Activate()
                     Dim key As Keys = m.WParam
@@ -435,8 +435,8 @@ Partial NotInheritable Class FrmMain
                     End If
                 End If
             Case WM_KEYUP
-                Debug.Print($"WM_KEYUP w:{m.WParam} l:{m.LParam}")
-                Debug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
+                dBug.print($"WM_KEYUP w:{m.WParam} l:{m.LParam}")
+                dBug.print($"ScanCode {New LParamMap(m.LParam).scan}")
                 If cboAlt.SelectedIndex > 0 Then
                     AltPP.Activate()
                     Dim scan As Byte = New LParamMap(m.LParam)
@@ -449,8 +449,8 @@ Partial NotInheritable Class FrmMain
                     End If
                 End If
             Case WM_CHAR
-                Debug.Print($"WM_CHAR w:{m.WParam} l:{m.LParam}")
-                Debug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
+                dBug.print($"WM_CHAR w:{m.WParam} l:{m.LParam}")
+                dBug.print($"ScanCode {New LParamMap(m.LParam).scan}")
                 If cboAlt.SelectedIndex > 0 Then
                     AltPP.Activate()
                     If Not AltPP.isSDL Then
@@ -458,12 +458,12 @@ Partial NotInheritable Class FrmMain
                     End If
                 End If
             Case WM_SYSKEYDOWN
-                Debug.Print($"WM_SYSKEY {m.WParam} {m.LParam}")
+                dBug.print($"WM_SYSKEY {m.WParam} {m.LParam}")
                 If cboAlt.SelectedIndex > 0 Then
                     AltPP.Activate()
                 End If
             Case WM_NCACTIVATE
-                Debug.Print("WM_NCACTIVATE")
+                dBug.print("WM_NCACTIVATE")
                 setActive(True)
                 Me.Refresh()
 #If DEBUG Then
@@ -488,10 +488,10 @@ Partial NotInheritable Class FrmMain
             Case &H7F ' WM_GETICON 
             Case &H83 ' WM_NCCALCSIZE
                 'If CType(m.WParam, Boolean) = True AndAlso pnlButtons IsNot Nothing Then
-                '    Debug.Print($"WM_NCCALCSIZE")
+                '    dBug.print($"WM_NCCALCSIZE")
                 '    Dim NCCS As NCCALCSIZE_PARAMS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(NCCALCSIZE_PARAMS))
 
-                '    Debug.Print($"{NCCS.rgrc(0)} {NCCS.rgrc(1)} {NCCS.rgrc(2)}")
+                '    dBug.print($"{NCCS.rgrc(0)} {NCCS.rgrc(1)} {NCCS.rgrc(2)}")
 
 
                 '    Dim origin As RECT = New RECT(NCCS.rgrc(1).Right - pnlButtons.Width, NCCS.rgrc(1).Top, NCCS.rgrc(1).Right, NCCS.rgrc(1).Top + pnlButtons.Height)
@@ -500,7 +500,7 @@ Partial NotInheritable Class FrmMain
                 '    NCCS.rgrc(1) = origin
                 '    NCCS.rgrc(2) = dest
 
-                '    Debug.Print($"{NCCS.rgrc(0)} {NCCS.rgrc(1)} {NCCS.rgrc(2)}")
+                '    dBug.print($"{NCCS.rgrc(0)} {NCCS.rgrc(1)} {NCCS.rgrc(2)}")
 
                 '    m.Result = &H400 'WVR_VALIDRECTS
 
@@ -517,7 +517,7 @@ Partial NotInheritable Class FrmMain
             Case &H121 ' WM_ENTERIDLE
 
             Case &H200 ' WM_MOUSEMOVE
-                'Debug.Print($"WM_MOUSEMOVE {Nothing} {Nothing}")
+                'dBug.print($"WM_MOUSEMOVE {Nothing} {Nothing}")
 
             Case &H210 ' WM_PARENTNOTIFY 
             Case &H215 ' WM_CAPTURECHANGED
@@ -534,7 +534,7 @@ Partial NotInheritable Class FrmMain
             Case &HC059 To &HC2AB ' unknown
 
             Case Else
-                Debug.Print($"Unhandeld WM_ 0x{m.Msg:X8} &H{m.Msg:X8} w{m.WParam} {m.LParam}")
+                dBug.print($"Unhandeld WM_ 0x{m.Msg:X8} &H{m.Msg:X8} w{m.WParam} {m.LParam}")
 #End If
         End Select
         MyBase.WndProc(m)  ' allow form to process this message

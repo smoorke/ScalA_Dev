@@ -26,12 +26,12 @@
         Try
             If Not _HotkeyList.Contains(hotkeyID) Then
                 Dim ret = RegisterHotKey(sourceForm.Handle, hotkeyID, modifier, triggerKey)
-                'Debug.Print($"regHK {hotkeyID} {modifier} {triggerKey} {ret}")
+                'dBug.print($"regHK {hotkeyID} {modifier} {triggerKey} {ret}")
                 _HotkeyList.Add(hotkeyID)
                 Return ret = 1
             End If
         Catch ex As Exception
-            Debug.Print("registerHotkey failed")
+            dBug.print("registerHotkey failed")
             UnregisterHotKey(sourceForm.Handle, hotkeyID)
             Return False
         End Try
@@ -39,7 +39,7 @@
     End Function
 
     Public Shared Sub UnregHotkey(ByVal sourceForm As Form, Optional ByVal hotKeyID As Integer = 0)
-        'Debug.Print("Unregister Hotkey " & hotKeyID)
+        'dBug.print("Unregister Hotkey " & hotKeyID)
         If hotKeyID = 0 Then
             For Each id As Integer In _HotkeyList
                 UnregisterHotKey(sourceForm.Handle, id)  'Remember to call unregisterHotkeys() when closing your application.
@@ -48,7 +48,7 @@
             Exit Sub
         End If
         If _HotkeyList.Contains(hotKeyID) Then
-            'Debug.Print("unregisterHotkey " & hotKeyID)
+            'dBug.print("unregisterHotkey " & hotKeyID)
             UnregisterHotKey(sourceForm.Handle, hotKeyID)  'Remember to call unregisterHotkeys() when closing your application.
             _HotkeyList.Remove(hotKeyID)
         End If

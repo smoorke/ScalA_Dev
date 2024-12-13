@@ -28,12 +28,12 @@
 
     Public Function Show(pos As Point) As Integer
         'Me.Visible = True 'handled in wndproc
-        Debug.Print($"SysMenu.Show {pos}")
+        dBug.print($"SysMenu.Show {pos}")
 
         Dim cmd As Integer = TrackPopupMenuEx(Me.Handle, TPM_RIGHTBUTTON Or TPM_RETURNCMD, pos.X, pos.Y, _form.Handle, Nothing)
         'Me.Visible = False 'handled in wndproc
         If cmd > 0 Then
-            Debug.Print("SendMessage " & cmd)
+            dBug.print("SendMessage " & cmd)
             Select Case cmd
                 Case SC_SIZE
                     SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
@@ -119,18 +119,18 @@ Partial NotInheritable Class FrmMain
 
             If Not Await RestoreClicking() Then Exit Sub
 
-            Debug.Print($"ShowSysMenu awaited")
+            dBug.print($"ShowSysMenu awaited")
 
             If ret = SC_MINIMIZE AndAlso My.Settings.MinMin AndAlso
                My.Settings.gameOnOverview AndAlso pnlOverview.Visible Then
-                Debug.Print("sysmenu no attach")
+                dBug.print("sysmenu no attach")
             ElseIf ret <> SC_MINIMIZE OrElse (My.Settings.MinMin AndAlso AltPP?.isSDL) Then
-                Debug.Print("sysmenu attach")
+                dBug.print("sysmenu attach")
                 Attach(AltPP)
             End If
 
             If GetActiveProcessID() = scalaPID AndAlso ret <> MC_SETTINGS Then
-                Debug.Print($"ShowSysMenu activating {AltPP?.Name}")
+                dBug.print($"ShowSysMenu activating {AltPP?.Name}")
                 AltPP?.Activate()
             End If
         End If

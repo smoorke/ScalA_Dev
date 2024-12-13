@@ -77,7 +77,7 @@
             End If
         End If
         If m.Msg = WM_ENTERSIZEMOVE Then
-            Debug.Print("border WM_ENTERSIZEMOVE")
+            dBug.print("border WM_ENTERSIZEMOVE")
             FrmMain.Resizing = True
             suppressWM_SIZING = True
             FrmMain.Detach(False) 'fix sluggish sizing on ugaris/vanilla
@@ -87,7 +87,7 @@
                      End Sub)
         End If
         If m.Msg = WM_EXITSIZEMOVE Then
-            Debug.Print("Border WM_EXITSIZEMOVE")
+            dBug.print("Border WM_EXITSIZEMOVE")
 
             FrmMain.Attach(FrmMain.AltPP)
             Dim sr = New Rectangle(Me.Left + BorderSize, Me.Top + BorderSize, Me.Width - BorderSize * 2, Me.Height - BorderSize * 2)
