@@ -33,6 +33,7 @@ Partial Class frmDebug
         Me.ToolStripStatusLabe3 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.btnMonInfo = New System.Windows.Forms.Button()
         Me.chkPollDPI = New System.Windows.Forms.CheckBox()
+        Me.btnAltInfo = New System.Windows.Forms.Button()
         Me.ssDebug.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -117,11 +118,21 @@ Partial Class frmDebug
         Me.chkPollDPI.Text = "PollDPI"
         Me.chkPollDPI.UseVisualStyleBackColor = True
         '
+        'btnAltInfo
+        '
+        Me.btnAltInfo.Location = New System.Drawing.Point(154, 402)
+        Me.btnAltInfo.Name = "btnAltInfo"
+        Me.btnAltInfo.Size = New System.Drawing.Size(75, 23)
+        Me.btnAltInfo.TabIndex = 5
+        Me.btnAltInfo.Text = "AltInfo"
+        Me.btnAltInfo.UseVisualStyleBackColor = True
+        '
         'frmDebug
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(748, 450)
+        Me.Controls.Add(Me.btnAltInfo)
         Me.Controls.Add(Me.btnMonInfo)
         Me.Controls.Add(Me.chkPollDPI)
         Me.Controls.Add(Me.ssDebug)
@@ -148,4 +159,5 @@ Partial Class frmDebug
     Friend WithEvents ToolStripStatusLabe3 As ToolStripStatusLabel
     Friend WithEvents btnMonInfo As Button
     Friend WithEvents chkPollDPI As CheckBox
+    Friend WithEvents btnAltInfo As Button
 End Class

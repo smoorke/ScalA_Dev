@@ -27,7 +27,7 @@ Public Class frmDebug
 
             For Each item As ToolStripStatusLabel In ssDebug.Items.OfType(Of ToolStripStatusLabel)
                 Dim bord As Boolean = False
-                If FrmMain.AltPP IsNot Nothing AndAlso FrmMain.AltPP.Name <> "Someone" Then
+                If FrmMain.AltPP IsNot Nothing AndAlso FrmMain.AltPP.Id <> 0 Then
                     Dim ap As AstoniaProcess = FrmMain.AltPP
                     Select Case item.Text
                         Case "DPI"
@@ -131,5 +131,14 @@ Public Class frmDebug
         For Each scrn As Screen In Screen.AllScreens.OrderByDescending(Function(s) s.Primary)
             dBug.Print($"{scrn.DeviceName} {scrn.Bounds} {scrn.ScalingPercent}%{If(scrn.Primary, " Primary", "")}", 1)
         Next
+    End Sub
+
+    Private Sub btnAltInfo_Click(sender As Object, e As EventArgs) Handles btnAltInfo.Click
+        If FrmMain.AltPP IsNot Nothing AndAlso FrmMain.AltPP.Id <> 0 Then
+            Dim ap As AstoniaProcess = FrmMain.AltPP
+            dBug.Print($"{ap.Name} {ap.MainWindowHandle} DPI:{ap.DpiAware} SDL:{ap.isSDL} WS:{FrmMain.WindowsScaling}% AS:{ap.WindowsScaling}%", 1)
+        Else
+            dBug.Print("No Alt Proc Active", 1)
+        End If
     End Sub
 End Class
