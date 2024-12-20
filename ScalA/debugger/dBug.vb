@@ -5,26 +5,24 @@ Module dBug
 
 #If DEBUG Then
     Friend logbuilder As New Text.StringBuilder With {.Capacity = 100 * 1024}
-    Private minLogL As Integer = If(My.Application.CommandLineArgs.Contains("-llAll"), 0, 1)
+    Public minLogLevel As Integer = If(My.Application.CommandLineArgs.Contains("-llAll"), 0, 1)
 #End If
     <Conditional("DEBUG")>
     Friend Sub Print(Message As String, Optional Level As Integer = 0)
         Debug.Print(Message)
 #If DEBUG Then
-        If Level >= minLogL AndAlso logbuilder IsNot Nothing Then
+        If Level >= minLogLevel AndAlso logbuilder IsNot Nothing Then
             ' Check if appending the message would exceed MaxCapacity
-            Dim requiredCapacity As Integer = logbuilder.Length + Message.Length + 2
+            Dim requiredCapacity As Integer = logbuilder.Length + Message.Length + vbCrLf.Length
             If requiredCapacity > logbuilder.MaxCapacity Then
                 ' Increase capacity to handle larger logs (e.g., double the current MaxCapacity)
                 logbuilder.EnsureCapacity(Math.Max(requiredCapacity, logbuilder.MaxCapacity + 50 * 1024))
             End If
-
             ' Append the new log message
             logbuilder.AppendLine($"{Date.Now:HH:mm:ss.ff} {Message}")
         End If
 #End If
     End Sub
-
 
     <Conditional("DEBUG")>
     Friend Sub InitDebug()

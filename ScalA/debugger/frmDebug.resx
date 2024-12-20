@@ -123,4 +123,25 @@
   <metadata name="ssDebug.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>125, 17</value>
   </metadata>
+  <metadata name="lblMinimum.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAICAQAAAAAADoAgAAFgAAACgAAAAgAAAAQAAAAAEABAAAAAAAgAIAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAACAAACAAAAAgIAAgAAAAIAAgACAgAAAwMDAAICAgAAAAP8AAP8AAAD//wD/AAAA/wD/AP//
+        AAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////8AAAAAAAAAAAAAAP8AAAAA//AAAAAAAAAAAP8A
+        AAAAAAD/AAAAAAAAAA8AAAAAAAAAAP8AAAAAAA/wAAAAAAAAAAAP8AAAAAAPAAD/AA/wAP8AAP8AAAAA
+        8AAA/wAP8AD/AAAPAAAADwAAAP8AD/AA/wAAAPAAAA8AAAD/AA/wAP8AAAD/AADwAAAA/wAP8AD/AAAA
+        DwAA8AAAAP8AD/AA/wAAAA8AAPAAAAD/AA/wAP8AAAAA8A8AAAAA/wAP8AD/AAAAAPAPAAAAAP8AD/AA
+        /wAAAADwDwAAAAD/AA/wAP8AAAAA8A8AAAAA/wAP8AD/AAAAAPAPAAAAAP8AD/AA/wAAAADwDwAAAAD/
+        AA/wAP8AAAAA8ADwAAAA/wAP8AD/AAAAAPAA8AAAAP8AD/AA/wAAAA8AAPAAAAD/AA/wAP8AAAAPAAAP
+        AAAA/wAP8AD/AAAA8AAADwAAAP8AD/AA/wAAAPAAAADwAAD/AA/wAP8AAA8AAAAADwAA/wAP8AD/AADw
+        AAAAAADwAAAAAAAAAAAP8AAAAAAADwAAAAAAAAAA8AAAAAAAAAD/AAAAAAAA/wAAAAAAAAAAAP/wAAAP
+        /wAAAAAAAAAAAAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/8A///4AB//4AAH/8D/A/+D/8H/BO
+        cw/hhCGH44Qhw8OEIeOHhCHhj4Qh8Y+EIfGPhCH4H4Qh+B+EIfgfhCH4H4Qh+B+EIfgfhCH4j4Qh+I+E
+        IfGPhCHxx4Qh4cOEIcPjhCHD4YQhh/BOcg/4P/wf/AfgP/8AAP//wAH///gf/w==
+</value>
+  </data>
 </root>

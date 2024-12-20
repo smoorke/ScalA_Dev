@@ -5,6 +5,16 @@ Public Class frmDebug
         If logbuilder Is Nothing Then
             logbuilder = New System.Text.StringBuilder With {.Capacity = 100_000}
         End If
+
+        Me.Owner = FrmMain
+
+        Me.Location = New Point(
+            Me.Owner.Location.X + (Me.Owner.Width - Me.Width) \ 2,
+            Me.Owner.Location.Y + (Me.Owner.Height - Me.Height) \ 2)
+
+        tbLogLevel.Value = dBug.minLogLevel
+        lblLogLevel.Text = $"Log Level {dBug.minLogLevel}"
+
         dBug.Print("FrmDebug Load", 1)
     End Sub
 
@@ -145,12 +155,38 @@ Public Class frmDebug
 
 
     Private Sub btnSaveLog_Click(sender As Object, e As EventArgs) Handles btnSaveLog.Click
-        dBug.Print("Save Log Not Implemented", 1)
+        dBug.Print($"Saving Log", 1)
+        Try
+            Using sfd As New SaveFileDialog With {
+                    .Filter = "Text Files (*.txt)|*.txt",
+                    .Title = "Save Debug Log",
+                    .FileName = $"ScalA_DebugLog_{Now:yyyyMMdd_HHmmss}.txt",
+                    .InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+                    }
+
+                If sfd.ShowDialog = DialogResult.OK Then
+                    dBug.Print($"Saving as {sfd.FileName.Replace(Environment.UserName, "%USERNAME%")}", 1)
+                    IO.File.WriteAllText(sfd.FileName, logbuilder.ToString)
+                Else
+                    dBug.Print($"Save Cancelled", 1)
+                End If
+
+            End Using
+        Catch ex As Exception
+            dBug.Print($"Error Saving Log", 1)
+            dBug.Print(ex.Message, 0)
+        End Try
     End Sub
 
     Private Sub btnClearLog_Click(sender As Object, e As EventArgs) Handles btnClearLog.Click
         logbuilder.Clear()
         dBug.Print("Log Cleared", 1)
+    End Sub
+
+    Private Sub tbLogLevel_Scroll(sender As TrackBar, e As EventArgs) Handles tbLogLevel.Scroll
+        dBug.minLogLevel = sender.Value
+        lblLogLevel.Text = $"Log Level {dBug.minLogLevel}"
+        dBug.Print($"Set Minimum Log Level to {dBug.minLogLevel}", 1)
     End Sub
 #End If
 End Class

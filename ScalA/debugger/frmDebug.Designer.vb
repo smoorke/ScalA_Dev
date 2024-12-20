@@ -23,6 +23,8 @@ Partial Class frmDebug
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
+        Dim lblMinimum As System.Windows.Forms.Label
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmDebug))
         Me.txtDebugLog = New System.Windows.Forms.TextBox()
         Me.tmrDebug = New System.Windows.Forms.Timer(Me.components)
         Me.chkAutoScroll = New System.Windows.Forms.CheckBox()
@@ -36,7 +38,11 @@ Partial Class frmDebug
         Me.btnAltInfo = New System.Windows.Forms.Button()
         Me.btnClearLog = New System.Windows.Forms.Button()
         Me.btnSaveLog = New System.Windows.Forms.Button()
+        Me.tbLogLevel = New System.Windows.Forms.TrackBar()
+        Me.lblLogLevel = New System.Windows.Forms.Label()
+        lblMinimum = New System.Windows.Forms.Label()
         Me.ssDebug.SuspendLayout()
+        CType(Me.tbLogLevel, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'txtDebugLog
@@ -140,18 +146,49 @@ Partial Class frmDebug
         '
         'btnSaveLog
         '
-        Me.btnSaveLog.Location = New System.Drawing.Point(668, 164)
+        Me.btnSaveLog.Location = New System.Drawing.Point(668, 47)
         Me.btnSaveLog.Name = "btnSaveLog"
         Me.btnSaveLog.Size = New System.Drawing.Size(75, 23)
         Me.btnSaveLog.TabIndex = 7
         Me.btnSaveLog.Text = "Save"
         Me.btnSaveLog.UseVisualStyleBackColor = True
         '
+        'tbLogLevel
+        '
+        Me.tbLogLevel.Location = New System.Drawing.Point(669, 348)
+        Me.tbLogLevel.Maximum = 1
+        Me.tbLogLevel.Name = "tbLogLevel"
+        Me.tbLogLevel.RightToLeft = System.Windows.Forms.RightToLeft.Yes
+        Me.tbLogLevel.Size = New System.Drawing.Size(67, 45)
+        Me.tbLogLevel.TabIndex = 8
+        Me.tbLogLevel.Value = 1
+        '
+        'lblLogLevel
+        '
+        Me.lblLogLevel.AutoSize = True
+        Me.lblLogLevel.Location = New System.Drawing.Point(673, 332)
+        Me.lblLogLevel.Name = "lblLogLevel"
+        Me.lblLogLevel.Size = New System.Drawing.Size(63, 13)
+        Me.lblLogLevel.TabIndex = 9
+        Me.lblLogLevel.Text = "Log Level 1"
+        '
+        'lblMinimum
+        '
+        lblMinimum.AutoSize = True
+        lblMinimum.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        lblMinimum.Location = New System.Drawing.Point(679, 323)
+        lblMinimum.Name = "lblMinimum"
+        lblMinimum.Size = New System.Drawing.Size(44, 12)
+        lblMinimum.TabIndex = 10
+        lblMinimum.Text = "Minimum"
+        '
         'frmDebug
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(748, 450)
+        Me.Controls.Add(lblMinimum)
+        Me.Controls.Add(Me.lblLogLevel)
         Me.Controls.Add(Me.btnSaveLog)
         Me.Controls.Add(Me.btnClearLog)
         Me.Controls.Add(Me.btnAltInfo)
@@ -160,12 +197,16 @@ Partial Class frmDebug
         Me.Controls.Add(Me.ssDebug)
         Me.Controls.Add(Me.chkAutoScroll)
         Me.Controls.Add(Me.txtDebugLog)
+        Me.Controls.Add(Me.tbLogLevel)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
         Me.Name = "frmDebug"
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "ScalA Debug Window"
         Me.ssDebug.ResumeLayout(False)
         Me.ssDebug.PerformLayout()
+        CType(Me.tbLogLevel, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -184,4 +225,6 @@ Partial Class frmDebug
     Friend WithEvents btnAltInfo As Button
     Friend WithEvents btnClearLog As Button
     Friend WithEvents btnSaveLog As Button
+    Friend WithEvents tbLogLevel As TrackBar
+    Friend WithEvents lblLogLevel As Label
 End Class
