@@ -34,6 +34,8 @@ Partial Class frmDebug
         Me.btnMonInfo = New System.Windows.Forms.Button()
         Me.chkPollDPI = New System.Windows.Forms.CheckBox()
         Me.btnAltInfo = New System.Windows.Forms.Button()
+        Me.btnClearLog = New System.Windows.Forms.Button()
+        Me.btnSaveLog = New System.Windows.Forms.Button()
         Me.ssDebug.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -127,11 +129,31 @@ Partial Class frmDebug
         Me.btnAltInfo.Text = "AltInfo"
         Me.btnAltInfo.UseVisualStyleBackColor = True
         '
+        'btnClearLog
+        '
+        Me.btnClearLog.Location = New System.Drawing.Point(668, 12)
+        Me.btnClearLog.Name = "btnClearLog"
+        Me.btnClearLog.Size = New System.Drawing.Size(75, 23)
+        Me.btnClearLog.TabIndex = 6
+        Me.btnClearLog.Text = "Clear"
+        Me.btnClearLog.UseVisualStyleBackColor = True
+        '
+        'btnSaveLog
+        '
+        Me.btnSaveLog.Location = New System.Drawing.Point(668, 164)
+        Me.btnSaveLog.Name = "btnSaveLog"
+        Me.btnSaveLog.Size = New System.Drawing.Size(75, 23)
+        Me.btnSaveLog.TabIndex = 7
+        Me.btnSaveLog.Text = "Save"
+        Me.btnSaveLog.UseVisualStyleBackColor = True
+        '
         'frmDebug
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(748, 450)
+        Me.Controls.Add(Me.btnSaveLog)
+        Me.Controls.Add(Me.btnClearLog)
         Me.Controls.Add(Me.btnAltInfo)
         Me.Controls.Add(Me.btnMonInfo)
         Me.Controls.Add(Me.chkPollDPI)
@@ -160,4 +182,6 @@ Partial Class frmDebug
     Friend WithEvents btnMonInfo As Button
     Friend WithEvents chkPollDPI As CheckBox
     Friend WithEvents btnAltInfo As Button
+    Friend WithEvents btnClearLog As Button
+    Friend WithEvents btnSaveLog As Button
 End Class

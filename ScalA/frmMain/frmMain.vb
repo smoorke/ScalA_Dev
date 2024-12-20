@@ -12,11 +12,9 @@ Partial Public NotInheritable Class FrmMain
             Dim d As Boolean = blackList.Contains("Someone")
 
             Dim q As Boolean = (Not d OrElse (a AndAlso (b OrElse c))) AndAlso Not (a AndAlso Not b AndAlso Not c AndAlso Not d)
-#If DEBUG Then
+
             dBug.Print($"a {a} b {b} c {c} d {d}    q {q}")
 
-            lblDebug.Text = q.ToString
-#End If
             Return q
         End Get
     End Property
@@ -337,15 +335,7 @@ Partial Public NotInheritable Class FrmMain
             End
         End If
 
-        Dim Dbg As Boolean = False
-#If DEBUG Then
-        Dbg = True
-#End If
-        If My.Application.Info.Version.Revision > 0 OrElse Dbg Then
-            chkDebug.Visible = True
-            dBug.InitDebug()
-            If Dbg Then lblDebug.Visible = True
-        End If
+        dBug.InitDebug()
 
         If My.Settings.SingleInstance AndAlso IPC.AlreadyOpen Then
             IPC.RequestActivation = True
@@ -680,7 +670,6 @@ Partial Public NotInheritable Class FrmMain
             ChkEqLock.ForeColor = Color.Gray
 #If DEBUG Then
             chkDebug.ForeColor = Colors.LightText
-            lblDebug.ForeColor = Colors.LightText
 #End If
         Else
             pnlOverview.BackColor = Color.FromKnownColor(KnownColor.Control)
@@ -693,7 +682,6 @@ Partial Public NotInheritable Class FrmMain
             ChkEqLock.ForeColor = Color.Black
 #If DEBUG Then
             chkDebug.ForeColor = Color.Black
-            lblDebug.ForeColor = Color.Black
 #End If
         End If
 
@@ -950,7 +938,7 @@ Partial Public NotInheritable Class FrmMain
 
     ''' <summary>
     ''' Fix mousebutton stuck after drag bug
-    ''' Note: needs to be run before acivating self
+    ''' Note: needs to be run before activating self
     ''' </summary>
     Public Sub UntrapMouse(button As MouseButtons)
         Dim activePID = GetActiveProcessID()

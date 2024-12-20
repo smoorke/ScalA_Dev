@@ -38,7 +38,6 @@ Partial NotInheritable Class FrmMain
         Me.pnlTitleBar = New System.Windows.Forms.Panel()
         Me.pnlWarning = New System.Windows.Forms.Panel()
         Me.pbWarning = New System.Windows.Forms.PictureBox()
-        Me.lblDebug = New System.Windows.Forms.Label()
         Me.chkDebug = New System.Windows.Forms.CheckBox()
         Me.pnlUpdate = New System.Windows.Forms.Panel()
         Me.pbUpdateAvailable = New System.Windows.Forms.PictureBox()
@@ -203,7 +202,6 @@ Partial NotInheritable Class FrmMain
         '
         Me.pnlTitleBar.BackColor = System.Drawing.SystemColors.Control
         Me.pnlTitleBar.Controls.Add(Me.pnlWarning)
-        Me.pnlTitleBar.Controls.Add(Me.lblDebug)
         Me.pnlTitleBar.Controls.Add(Me.chkDebug)
         Me.pnlTitleBar.Controls.Add(Me.pnlUpdate)
         Me.pnlTitleBar.Controls.Add(Me.ChkEqLock)
@@ -237,16 +235,6 @@ Partial NotInheritable Class FrmMain
         Me.ttMain.SetToolTip(Me.pbWarning, "Warning: client isn't running as DPI aware." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "PIXEL mode disabled." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Click this ico" &
         "n to set this Astonia " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  installation to the right DPI mode" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  and enable pixel" &
         " mode.")
-        '
-        'lblDebug
-        '
-        Me.lblDebug.AutoSize = True
-        Me.lblDebug.Location = New System.Drawing.Point(411, 7)
-        Me.lblDebug.Name = "lblDebug"
-        Me.lblDebug.Size = New System.Drawing.Size(49, 13)
-        Me.lblDebug.TabIndex = 23
-        Me.lblDebug.Text = "lblDebug"
-        Me.lblDebug.Visible = False
         '
         'chkDebug
         '
@@ -771,7 +759,6 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents KeepToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents SidebarModeToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents NoOtherScalAsToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents lblDebug As Label
     Friend WithEvents pnlWarning As Panel
     Friend WithEvents pbWarning As PictureBox
     Friend WithEvents ReLaunchToolStripMenuItem As ToolStripMenuItem

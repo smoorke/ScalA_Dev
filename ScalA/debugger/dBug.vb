@@ -5,17 +5,13 @@ Module dBug
 
 #If DEBUG Then
     Friend logbuilder As New Text.StringBuilder With {.Capacity = 100 * 1024}
-#Else
-    Friend logbuilder As New Text.StringBuilder With {.Capacity = If(My.Application.Info.Version.Revision = 0, 0, 100 * 1024)}
+    Private minLogL As Integer = If(My.Application.CommandLineArgs.Contains("-llAll"), 0, 1)
 #End If
-
+    <Conditional("DEBUG")>
     Friend Sub Print(Message As String, Optional Level As Integer = 0)
         Debug.Print(Message)
-        Dim bugger As Boolean = pubBeta
 #If DEBUG Then
-        bugger = True
-#End If
-        If bugger AndAlso Level >= minLogL AndAlso logbuilder IsNot Nothing Then
+        If Level >= minLogL AndAlso logbuilder IsNot Nothing Then
             ' Check if appending the message would exceed MaxCapacity
             Dim requiredCapacity As Integer = logbuilder.Length + Message.Length + 2
             If requiredCapacity > logbuilder.MaxCapacity Then
@@ -26,62 +22,63 @@ Module dBug
             ' Append the new log message
             logbuilder.AppendLine($"{Date.Now:HH:mm:ss.ff} {Message}")
         End If
+#End If
     End Sub
 
-    Private pubBeta As Boolean = False
-    Private minLogL As Integer = If(My.Application.CommandLineArgs.Contains("-llAll"), 0, 1)
 
+    <Conditional("DEBUG")>
     Friend Sub InitDebug()
 
-        If My.Application.Info.Version.Revision > 0 Then
-            pubBeta = True
-            'logbuilder = New Text.StringBuilder With {.Capacity = 100_000}
-        End If
+        FrmMain.chkDebug.Visible = True
 
         Dim test As New ContextMenuStrip
-#If DEBUG Then
 
 
 
-        test.Items.Add(New ToolStripMenuItem("Parse Info", Nothing, AddressOf dBug.ParseInfo))
-        test.Items.Add(New ToolStripMenuItem("Reset Hide", Nothing, AddressOf dBug.ResetHide))
-        test.Items.Add(New ToolStripMenuItem("ResumeLayout", Nothing, AddressOf dBug.Resumelayout))
-        test.Items.Add(New ToolStripMenuItem("Button Info", Nothing, AddressOf dBug.ButtonInfo))
-        test.Items.Add(New ToolStripMenuItem("isBelow", Nothing, AddressOf dBug.IsBelow))
-        Static dynamicitem1 As New ToolStripMenuItem($"movebusy {FrmMain.moveBusy}")
-        test.Items.Add(dynamicitem1)
-        test.Items.Add(New ToolStripMenuItem("Toggle Update", Nothing, AddressOf dBug.ToggleUpdate))
-        test.Items.Add(New ToolStripMenuItem("Scaling", Nothing, AddressOf dBug.ScreenScaling))
-        test.Items.Add(New ToolStripMenuItem("Shared Mem", Nothing, AddressOf dBug.SharedMem))
-        Static dynamicitem2 As New ToolStripMenuItem("Aborder", Nothing, AddressOf dBug.toggeleborder)
-        test.Items.Add(dynamicitem2)
-        test.Items.Add(New ToolStripMenuItem("ThumbSize", Nothing, AddressOf dBug.querySize))
-        test.Items.Add(New ToolStripMenuItem("FudgeThumb", Nothing, AddressOf dBug.fudgeThumb))
-        test.Items.Add(New ToolStripMenuItem("NudgeTaskbar", Nothing, AddressOf dBug.NudgeTaskbar))
-        test.Items.Add(New ToolStripMenuItem("thumbStuff", Nothing, AddressOf dBug.thumbStuff))
-        test.Items.Add(New ToolStripMenuItem("list others", Nothing, AddressOf dBug.listothers))
-        test.Items.Add(New ToolStripMenuItem("hookWinKey", Nothing, AddressOf dBug.hookKey))
-        test.Items.Add(New ToolStripMenuItem("IPC Size", Nothing, AddressOf dBug.ipcSize))
-        Static dynamicitem3 As New ToolStripMenuItem($"Aborder", Nothing, AddressOf dBug.dumpApCache)
-        test.Items.Add(dynamicitem3)
-        test.Items.Add(New ToolStripMenuItem("DPI Reg", Nothing, AddressOf dBug.regFudge))
-        test.Items.Add(New ToolStripMenuItem("ReLogin Client", Nothing, AddressOf dBug.RestartClient))
-        test.Items.Add(New ToolStripMenuItem("Show RelButton", Nothing, AddressOf dBug.ShowRelButton))
-        test.Items.Add(New ToolStripMenuItem("Scaling Info", Nothing, AddressOf dBug.ScalingInfo))
-        test.Items.Add(New ToolStripSeparator)
-#End If
+        'test.Items.Add(New ToolStripMenuItem("Parse Info", Nothing, AddressOf dBug.ParseInfo))
+        'test.Items.Add(New ToolStripMenuItem("Reset Hide", Nothing, AddressOf dBug.ResetHide))
+        'test.Items.Add(New ToolStripMenuItem("ResumeLayout", Nothing, AddressOf dBug.Resumelayout))
+        'test.Items.Add(New ToolStripMenuItem("Button Info", Nothing, AddressOf dBug.ButtonInfo))
+        'test.Items.Add(New ToolStripMenuItem("isBelow", Nothing, AddressOf dBug.IsBelow))
+        'Static dynamicitem1 As New ToolStripMenuItem($"movebusy {FrmMain.moveBusy}")
+        'test.Items.Add(dynamicitem1)
+        'test.Items.Add(New ToolStripMenuItem("Toggle Update", Nothing, AddressOf dBug.ToggleUpdate))
+        'test.Items.Add(New ToolStripMenuItem("Scaling", Nothing, AddressOf dBug.ScreenScaling))
+        'test.Items.Add(New ToolStripMenuItem("Shared Mem", Nothing, AddressOf dBug.SharedMem))
+        'Static dynamicitem2 As New ToolStripMenuItem("Aborder", Nothing, AddressOf dBug.toggeleborder)
+        'test.Items.Add(dynamicitem2)
+        'test.Items.Add(New ToolStripMenuItem("ThumbSize", Nothing, AddressOf dBug.querySize))
+        'test.Items.Add(New ToolStripMenuItem("FudgeThumb", Nothing, AddressOf dBug.fudgeThumb))
+        'test.Items.Add(New ToolStripMenuItem("NudgeTaskbar", Nothing, AddressOf dBug.NudgeTaskbar))
+        'test.Items.Add(New ToolStripMenuItem("thumbStuff", Nothing, AddressOf dBug.thumbStuff))
+        'test.Items.Add(New ToolStripMenuItem("list others", Nothing, AddressOf dBug.listothers))
+        'test.Items.Add(New ToolStripMenuItem("hookWinKey", Nothing, AddressOf dBug.hookKey))
+        'test.Items.Add(New ToolStripMenuItem("IPC Size", Nothing, AddressOf dBug.ipcSize))
+        'Static dynamicitem3 As New ToolStripMenuItem($"Aborder", Nothing, AddressOf dBug.dumpApCache)
+        'test.Items.Add(dynamicitem3)
+        'test.Items.Add(New ToolStripMenuItem("DPI Reg", Nothing, AddressOf dBug.regFudge))
+        'test.Items.Add(New ToolStripMenuItem("Show RelButton", Nothing, AddressOf dBug.ShowRelButton))
+        'test.Items.Add(New ToolStripMenuItem("Scaling Info", Nothing, AddressOf dBug.ScalingInfo))
+
         'begin public beta menu
         test.Items.Add(New ToolStripMenuItem("Open Debug Window", Nothing, AddressOf dBug.OpenDebugWindow))
+        test.Items.Add(New ToolStripSeparator)
+        test.Items.Add(New ToolStripMenuItem("Restart Client", My.Resources.Refresh, AddressOf dBug.RestartClient))
 
+
+        test.RenderMode = ToolStripRenderMode.Professional
+        test.Renderer = New ToolStripProfessionalRenderer(New CustomColorTable)
 
         FrmMain.chkDebug.ContextMenuStrip = test
         AddHandler test.Opening, Sub()
                                      Debug.Print("test Opening")
-#If DEBUG Then
-                                     dynamicitem1.Text = $"movebusy {FrmMain.moveBusy}"
-                                     dynamicitem2.Text = $"Aborder {FrmMain.AltPP?.hasBorder}"
-                                     dynamicitem3.Text = $"ap cache {AstoniaProcess.ProcCache?.Count}"
-#End If
+
+                                     '                                     dynamicitem1.Text = $"movebusy {FrmMain.moveBusy}"
+                                     '                                     dynamicitem2.Text = $"Aborder {FrmMain.AltPP?.hasBorder}"
+                                     '                                     dynamicitem3.Text = $"ap cache {AstoniaProcess.ProcCache?.Count}"
+                                     test.Items.OfType(Of ToolStripMenuItem).FirstOrDefault(Function(t) t.Text.StartsWith("Restart Client")).Enabled =
+                                                                       FrmMain.AltPP IsNot Nothing AndAlso FrmMain.AltPP.Id <> 0 AndAlso FrmMain.cboAlt.SelectedIndex <> 0
+
                                      FrmMain.UntrapMouse(MouseButtons.Right)
                                      AppActivate(FrmMain.scalaPID)
                                  End Sub
@@ -179,7 +176,35 @@ Module dBug
     '  1   1   1   1   0   1
     '  1   1   1   1   1   0
     '  1   1   1   1   1   1
+    Friend Async Sub RestartClient(sender As Object, e As EventArgs)
 
+        Dim targetname As String = FrmMain.AltPP.loggedInAs
+        dBug.Print($"restarting {targetname}")
+
+
+
+        FrmMain.AltPP.restart()
+        FrmMain.Cursor = Cursors.WaitCursor
+        Dim count As Integer = 0
+
+        While True
+            count += 1
+            Await Task.Delay(50)
+            Dim targetPPs As AstoniaProcess() = AstoniaProcess.Enumerate(FrmMain.blackList).Where(Function(ap) ap.Name = targetname).ToArray()
+            If targetPPs.Length > 0 AndAlso targetPPs(0) IsNot Nothing AndAlso targetPPs(0).Id <> 0 Then
+                FrmMain.PopDropDown(FrmMain.cboAlt)
+                FrmMain.cboAlt.SelectedItem = targetPPs(0)
+                Exit While
+            End If
+            If count >= 100 Then
+                CustomMessageBox.Show(FrmMain, "Restart failed")
+                Exit While
+            End If
+        End While
+        FrmMain.Cursor = Cursors.Default
+    End Sub
+
+#If 0 Then
     Friend Sub ParseInfo(sender As Object, e As EventArgs)
         If FrmMain.AltPP Is Nothing Then Exit Sub
         Dim QS As New Management.ManagementObjectSearcher(“Select * from Win32_Process WHERE ProcessID=" & FrmMain.AltPP.Id)
@@ -416,39 +441,11 @@ Module dBug
         'If FrmMain.AltPP IsNot Nothing Then FrmMain.AltPP.RegHighDpiAware = False
     End Sub
 
-    Friend Async Sub RestartClient(sender As Object, e As EventArgs)
-
-        Dim targetname As String = FrmMain.AltPP.loggedInAs
-        Debug.Print($"restarting {targetname}")
-
-
-
-        FrmMain.AltPP.restart()
-        FrmMain.Cursor = Cursors.WaitCursor
-        Dim count As Integer = 0
-
-        While True
-            count += 1
-            Await Task.Delay(50)
-            Dim targetPPs As AstoniaProcess() = AstoniaProcess.Enumerate(FrmMain.blackList).Where(Function(ap) ap.Name = targetname).ToArray()
-            If targetPPs.Length > 0 AndAlso targetPPs(0) IsNot Nothing AndAlso targetPPs(0).Id <> 0 Then
-                FrmMain.PopDropDown(FrmMain.cboAlt)
-                FrmMain.cboAlt.SelectedItem = targetPPs(0)
-                Exit While
-            End If
-            If count >= 100 Then
-                CustomMessageBox.Show(FrmMain, "Windowing failed")
-                Exit While
-            End If
-        End While
-        FrmMain.Cursor = Cursors.Default
-    End Sub
-
     Friend Sub ShowRelButton(sender As Object, e As EventArgs)
         frmOverlay.pbRestart.Show()
     End Sub
 #End If
-
+#End If
 
 End Module
 

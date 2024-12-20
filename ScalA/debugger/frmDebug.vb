@@ -1,7 +1,6 @@
 ﻿Imports System.Runtime.InteropServices
-
 Public Class frmDebug
-
+#If DEBUG Then
     Private Sub frmDebug_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         If logbuilder Is Nothing Then
             logbuilder = New System.Text.StringBuilder With {.Capacity = 100_000}
@@ -137,8 +136,21 @@ Public Class frmDebug
         If FrmMain.AltPP IsNot Nothing AndAlso FrmMain.AltPP.Id <> 0 Then
             Dim ap As AstoniaProcess = FrmMain.AltPP
             dBug.Print($"{ap.Name} {ap.MainWindowHandle} DPI:{ap.DpiAware} SDL:{ap.isSDL} WS:{FrmMain.WindowsScaling}% AS:{ap.WindowsScaling}%", 1)
+            dBug.Print($"co: {ap.ClientOffset} rcc:{ap.ClientRect} rcw:{ap.WindowRect}", 1)
         Else
             dBug.Print("No Alt Proc Active", 1)
         End If
     End Sub
+
+
+
+    Private Sub btnSaveLog_Click(sender As Object, e As EventArgs) Handles btnSaveLog.Click
+        dBug.Print("Save Log Not Implemented", 1)
+    End Sub
+
+    Private Sub btnClearLog_Click(sender As Object, e As EventArgs) Handles btnClearLog.Click
+        logbuilder.Clear()
+        dBug.Print("Log Cleared", 1)
+    End Sub
+#End If
 End Class
