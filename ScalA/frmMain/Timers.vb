@@ -169,7 +169,7 @@ Partial NotInheritable Class FrmMain
         TickCounter += 1
         If TickTimer.ElapsedMilliseconds >= 1000 Then
             HeartBeat = Not HeartBeat
-            chkDebug.Text = $"{If(HeartBeat, ".", "")}{TickCounter}"
+            chkDebug.Text = $"{If(HeartBeat, "♡", "")}{TickCounter}"
             TickCounter = 0
             TickTimer.Restart()
         End If
@@ -208,8 +208,11 @@ Partial NotInheritable Class FrmMain
         'SyncLock lockObject
 
 #If DEBUG Then
-        heartBeat = Not heartBeat
-        chkDebug.Text = $"{if(heartbeat,".","")}{TickCounter}"
+        If TickTimer.ElapsedMilliseconds >= 1000 Then
+            HeartBeat = Not HeartBeat
+            TickTimer.Restart()
+        End If
+        chkDebug.Text = $"{If(HeartBeat, "♡", "")}{TickCounter}"
 #End If
 
         Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList, True).OrderBy(Function(ap) ap.Name, apSorter).ToList
