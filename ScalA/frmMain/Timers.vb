@@ -21,7 +21,7 @@ Partial NotInheritable Class FrmMain
     Private Sub TmrTick_Tick(sender As Timer, e As EventArgs) Handles tmrTick.Tick
         'dBug.print($"ws {Me.WindowState}")
         If Not AltPP?.IsRunning() Then
-            dBug.print($"Not AltPP?.IsRunning() {Me.WindowState}")
+            dBug.Print($"Not AltPP?.IsRunning() {Me.WindowState}")
             Me.Show()
             FrmBehind.Show()
             If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
@@ -76,9 +76,9 @@ Partial NotInheritable Class FrmMain
         GetCursorInfo(pci)
         If pci.flags <> 0 Then ' cursor is visible
             If Not wasVisible AndAlso AltPP?.IsActive() Then
-                dBug.print("scrollthumb released")
+                dBug.Print("scrollthumb released")
                 If storedY <> pci.ptScreenpos.y OrElse storedX <> pci.ptScreenpos.x Then
-                    dBug.print("scrollthumb moved")
+                    dBug.Print("scrollthumb moved")
                     Dim Xfactor As Double = pbZoom.Width / rcC.Width
                     Dim Yfactor As Double = pbZoom.Height / rcC.Height
                     Dim movedX As Integer = storedX + ((pci.ptScreenpos.x - storedX) * Xfactor)
@@ -90,7 +90,7 @@ Partial NotInheritable Class FrmMain
                     Dim ipt As New Point(movedX.Map(bzB.Left, bzB.Right, 0, rcC.Width),
                                          movedY.Map(bzB.Top, bzB.Bottom, 0, rcC.Height))
                     SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, WM_MOUSEMOVE_CreateWParam, New LParamMap(ipt)) 'update client internal mousepos
-                    dBug.print($"ipt {ipt}")
+                    dBug.Print($"ipt {ipt}")
                 End If
             End If
             storedX = pci.ptScreenpos.x
@@ -117,7 +117,7 @@ Partial NotInheritable Class FrmMain
 #End If
                             'ap.Activate() doesn't work if not debugging
                             If Not AltPP.IsActive AndAlso WindowFromPoint(MousePosition) = AltPP?.MainWindowHandle Then
-                                dBug.print($"Activating {AltPP?.Name}")
+                                dBug.Print($"Activating {AltPP?.Name}")
                                 SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
                             End If
 #If DEBUG Then
@@ -157,13 +157,25 @@ Partial NotInheritable Class FrmMain
                                  End If
                                  prevWMMMpt = MousePosition
                              Catch ex As Exception
-                                 dBug.print(ex.Message)
+                                 dBug.Print(ex.Message)
                              Finally
                                  swpBusy = False
                              End Try
                          End Sub)
             End If
         End If
+
+#If DEBUG Then
+        TickCounter += 1
+        If TickTimer.ElapsedMilliseconds >= 1000 Then
+            HeartBeat = Not HeartBeat
+            chkDebug.Text = $"{If(HeartBeat, ".", "")}{TickCounter}"
+            TickCounter = 0
+            TickTimer.Restart()
+        End If
+#End If
+
+
     End Sub
     Dim prevWMMMpt As New Point
 
@@ -172,8 +184,11 @@ Partial NotInheritable Class FrmMain
     Shared ReadOnly rectDic As New Concurrent.ConcurrentDictionary(Of Integer, Rectangle)
     Shared ReadOnly swDict As New Concurrent.ConcurrentDictionary(Of Integer, Stopwatch)
 
-
+#If DEBUG Then
     Private TickCounter As Integer = 0
+    Private TickTimer As Stopwatch = Stopwatch.StartNew
+    Private HeartBeat As Boolean = False
+#End If
 
     Friend Shared AOBusy As Boolean = False
     Private AOshowEqLock As Boolean = False
@@ -193,7 +208,8 @@ Partial NotInheritable Class FrmMain
         'SyncLock lockObject
 
 #If DEBUG Then
-        chkDebug.Text = TickCounter
+        heartBeat = Not heartBeat
+        chkDebug.Text = $"{if(heartbeat,".","")}{TickCounter}"
 #End If
 
         Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList, True).OrderBy(Function(ap) ap.Name, apSorter).ToList
@@ -467,9 +483,10 @@ Partial NotInheritable Class FrmMain
         Next
 
         altSelectedOrOverview = alts
-
+#If debug Then
         TickCounter += 1
         If TickCounter >= visibleButtons.Count Then TickCounter = 0
+#End If
         'End SyncLock
         ovBusy = False
     End Sub

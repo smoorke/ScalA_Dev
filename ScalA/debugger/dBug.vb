@@ -26,6 +26,7 @@ Module dBug
 
     <Conditional("DEBUG")>
     Friend Sub InitDebug()
+#If debug Then
 
         FrmMain.chkDebug.Visible = True
 
@@ -81,6 +82,7 @@ Module dBug
                                      AppActivate(FrmMain.scalaPID)
                                  End Sub
         AddHandler FrmMain.chkDebug.MouseUp, Sub(sen, ev) FrmMain.UntrapMouse(ev.Button)
+#End If
     End Sub
 
     Private Sub OpenDebugWindow(sender As Object, e As EventArgs)

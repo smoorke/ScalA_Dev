@@ -109,8 +109,9 @@ Partial Public NotInheritable Class FrmMain
         'If AltPP.Id = 0 AndAlso that.SelectedIndex = 0 Then
         '    Exit Sub
         'End If
-
-        TickCounter = 0
+#If Debug Then
+            TickCounter = 0
+#End If
 
         Detach(False)
         AstoniaProcess.RestorePos()
