@@ -207,6 +207,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         DwmGetWindowAttribute(Me.MainWindowHandle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
         Dim rcWind As RECT
         GetWindowRect(Me.MainWindowHandle, rcWind)
+        If rcFrame.right = 0 OrElse rcWind.right = 0 Then Return 0
         Return Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25 + 25
     End Function
 
@@ -670,25 +671,27 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Get
             If Me.DpiAware IsNot Nothing Then Return Me.DpiAware
             dBug.Print($"FinalPath ""{Me.FinalPath}""")
+            Dim key As Microsoft.Win32.RegistryKey = Nothing
             Try
-                Using key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers")
-                    Dim value = key?.GetValue(Me.FinalPath)
-                    If Me.isSDL Then
-                        If value IsNot Nothing AndAlso value.contains("HIGHDPIAWARE") Then
-                            Me.DpiAware = True
-                            Return True
-                        End If
-                    Else
-                        If value IsNot Nothing AndAlso value.contains("HIGHDPIAWARE") Then
-                            Me.DpiAware = True
-                            Return True
-                        End If
+                key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers")
+                Dim value = key?.GetValue(Me.FinalPath)
+                If Me.isSDL Then
+                    If value IsNot Nothing AndAlso value.contains("HIGHDPIAWARE") Then
+                        Me.DpiAware = True
+                        Return True
                     End If
-                End Using
+                Else
+                    If value IsNot Nothing AndAlso value.contains("HIGHDPIAWARE") Then
+                        Me.DpiAware = True
+                        Return True
+                    End If
+                End If
             Catch ex As Exception
-                dBug.print($"Exception RegDPI: {ex.Message}")
+                dBug.Print($"Exception RegDPI: {ex.Message}")
                 Me.DpiAware = False
                 Return False
+            Finally
+                key?.Close()
             End Try
 
 
@@ -735,9 +738,9 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 ' Update the registry with the new flags
                 If String.IsNullOrEmpty(currentValue) Then
                     ' Delete the value if it is empty
-                    key.DeleteValue(proc.MainModule.FileName, throwOnMissingValue:=False)
+                    key.DeleteValue(Me.FinalPath, throwOnMissingValue:=False)
                 Else
-                    key.SetValue(proc.MainModule.FileName, currentValue)
+                    key.SetValue(Me.FinalPath, currentValue)
                 End If
             Catch ex As Exception
                 ' Handle exceptions (e.g., permission issues) as needed
@@ -910,7 +913,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Me.CloseOrKill()
 
         ' Start the new process using a batch script to avoid admin rights prompt
-        Dim bat As String = "\restart.bat"
+        Dim bat As String = "\AsInvoker.bat"
         Dim tmpDir As String = FileIO.SpecialDirectories.Temp & "\ScalA"
 
         If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
@@ -933,6 +936,12 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             dBug.print($"Failed to restart process: {ex.Message}")
         Finally
             pp.Dispose()
+            Try
+                'todo delete link when proc succesfully launched
+                'FileIO.FileSystem.DeleteFile(shortcutlink) 'this deletes too soon
+            Catch ex As Exception
+
+            End Try
         End Try
         alreadylaunched = False
     End Sub

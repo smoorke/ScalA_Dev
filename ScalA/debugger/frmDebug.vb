@@ -188,5 +188,62 @@ Public Class frmDebug
         lblLogLevel.Text = $"Log Level {dBug.minLogLevel}"
         dBug.Print($"Set Minimum Log Level to {dBug.minLogLevel}", 1)
     End Sub
+
+    Private Sub chkPollDPI_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkPollDPI.CheckedChanged
+        If sender.Checked Then
+            For Each item As ToolStripStatusLabel In ssDebug.Items.OfType(Of ToolStripStatusLabel)
+                item.ForeColor = SystemColors.ControlText
+            Next
+        Else
+            For Each item As ToolStripStatusLabel In ssDebug.Items.OfType(Of ToolStripStatusLabel)
+                item.ForeColor = SystemColors.Control
+                item.BorderSides = ToolStripStatusLabelBorderSides.None
+            Next
+        End If
+    End Sub
+
+    Private Sub cmsSSDebug_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsSSDebug.Opening
+        For Each it As ToolStripMenuItem In sender.Items.OfType(Of ToolStripMenuItem)
+            it.Visible = False
+        Next
+
+        If sender.SourceControl Is ssDebug Then
+            Dim ss As StatusStrip = CType(sender.SourceControl, StatusStrip)
+            If ss IsNot Nothing Then
+                Dim mousePos As Point = ss.PointToClient(Control.MousePosition)
+                Dim clickedItem As ToolStripStatusLabel = ss.Items.OfType(Of ToolStripStatusLabel).FirstOrDefault(Function(i) i.Bounds.Contains(mousePos))
+
+                If clickedItem IsNot Nothing Then
+                    dBug.Print($"Opening Context Menu for {ss.Name} {clickedItem.Text}", 0)
+                    Select Case clickedItem.Text
+                        Case "DPI"
+                            'sender.Items.Add(New ToolStripMenuItem("Toggle DPI Aware", Nothing, AddressOf ToggleDpiAware))
+                            If chkPollDPI.Checked AndAlso FrmMain.AltPP IsNot Nothing AndAlso FrmMain.AltPP.Id <> 0 Then
+                                ToggleDPIToolStripMenuItem.Visible = True
+                                Return
+                            End If
+                        Case Else
+                            'dBug.Print($"e.Cancel 1", 1)
+                            e.Cancel = True
+                    End Select
+                Else
+                    'dBug.Print($"e.Cancel 2", 1)
+                    e.Cancel = True
+                End If
+            End If
+        End If
+        'dBug.Print($"e.Cancel 3", 1)
+        e.Cancel = True
+    End Sub
+
+    Private Sub ToggleDPIToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ToggleDPIToolStripMenuItem.Click
+        If FrmMain.AltPP IsNot Nothing AndAlso FrmMain.AltPP.Id <> 0 Then
+            FrmMain.AltPP.RegHighDpiAware = Not FrmMain.AltPP.RegHighDpiAware
+            dBug.RestartClient(Nothing, Nothing)
+            dBug.Print($"Toggled DPI aware mode for {FrmMain.AltPP.FinalPath.Replace(Environment.UserName, "%USERNAME%")} to {Not FrmMain.AltPP.RegHighDpiAware}", 1)
+        Else
+            dBug.Print("No Alt Proc Active", 1)
+        End If
+    End Sub
 #End If
 End Class

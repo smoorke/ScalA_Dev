@@ -84,10 +84,11 @@ Module dBug
         AddHandler FrmMain.chkDebug.MouseUp, Sub(sen, ev) FrmMain.UntrapMouse(ev.Button)
 #End If
     End Sub
-
+#If debug Then
     Private Sub OpenDebugWindow(sender As Object, e As EventArgs)
-        If Not frmDebug.Visible Then frmDebug.Show(FrmMain)
+    If Not frmDebug.Visible Then frmDebug.Show(FrmMain)
     End Sub
+#End If
 
 
 #If DEBUG Then
@@ -189,7 +190,7 @@ Module dBug
 
         While True
             count += 1
-            Await Task.Delay(50)
+            Await Task.Delay(100)
             Dim targetPPs As AstoniaProcess() = AstoniaProcess.Enumerate(FrmMain.blackList).Where(Function(ap) ap.Name = targetname).ToArray()
             If targetPPs.Length > 0 AndAlso targetPPs(0) IsNot Nothing AndAlso targetPPs(0).Id <> 0 Then
                 FrmMain.PopDropDown(FrmMain.cboAlt)

@@ -1,4 +1,5 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
+﻿#If DEBUG Then
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class frmDebug
     Inherits System.Windows.Forms.Form
 
@@ -24,11 +25,15 @@ Partial Class frmDebug
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim lblMinimum As System.Windows.Forms.Label
+        Dim ToolStripMenuItem1 As System.Windows.Forms.ToolStripSeparator
+        Dim ToolStripMenuItem2 As System.Windows.Forms.ToolStripSeparator
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmDebug))
         Me.txtDebugLog = New System.Windows.Forms.TextBox()
         Me.tmrDebug = New System.Windows.Forms.Timer(Me.components)
         Me.chkAutoScroll = New System.Windows.Forms.CheckBox()
         Me.ssDebug = New System.Windows.Forms.StatusStrip()
+        Me.cmsSSDebug = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.ToggleDPIToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripStatusLabel0 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ToolStripStatusLabel2 = New System.Windows.Forms.ToolStripStatusLabel()
@@ -41,9 +46,22 @@ Partial Class frmDebug
         Me.tbLogLevel = New System.Windows.Forms.TrackBar()
         Me.lblLogLevel = New System.Windows.Forms.Label()
         lblMinimum = New System.Windows.Forms.Label()
+        ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
+        ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
         Me.ssDebug.SuspendLayout()
+        Me.cmsSSDebug.SuspendLayout()
         CType(Me.tbLogLevel, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
+        '
+        'lblMinimum
+        '
+        lblMinimum.AutoSize = True
+        lblMinimum.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        lblMinimum.Location = New System.Drawing.Point(679, 323)
+        lblMinimum.Name = "lblMinimum"
+        lblMinimum.Size = New System.Drawing.Size(44, 12)
+        lblMinimum.TabIndex = 10
+        lblMinimum.Text = "Minimum"
         '
         'txtDebugLog
         '
@@ -75,6 +93,7 @@ Partial Class frmDebug
         '
         'ssDebug
         '
+        Me.ssDebug.ContextMenuStrip = Me.cmsSSDebug
         Me.ssDebug.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusLabel0, Me.ToolStripStatusLabel1, Me.ToolStripStatusLabel2, Me.ToolStripStatusLabe3})
         Me.ssDebug.Location = New System.Drawing.Point(0, 428)
         Me.ssDebug.Name = "ssDebug"
@@ -83,26 +102,42 @@ Partial Class frmDebug
         Me.ssDebug.TabIndex = 2
         Me.ssDebug.Text = "StatusStrip1"
         '
+        'cmsSSDebug
+        '
+        Me.cmsSSDebug.Items.AddRange(New System.Windows.Forms.ToolStripItem() {ToolStripMenuItem1, Me.ToggleDPIToolStripMenuItem, ToolStripMenuItem2})
+        Me.cmsSSDebug.Name = "cmsSSDebug"
+        Me.cmsSSDebug.Size = New System.Drawing.Size(181, 60)
+        '
+        'ToggleDPIToolStripMenuItem
+        '
+        Me.ToggleDPIToolStripMenuItem.Name = "ToggleDPIToolStripMenuItem"
+        Me.ToggleDPIToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.ToggleDPIToolStripMenuItem.Text = "Toggle DPI Aware"
+        '
         'ToolStripStatusLabel0
         '
+        Me.ToolStripStatusLabel0.ForeColor = System.Drawing.SystemColors.Control
         Me.ToolStripStatusLabel0.Name = "ToolStripStatusLabel0"
         Me.ToolStripStatusLabel0.Size = New System.Drawing.Size(25, 17)
         Me.ToolStripStatusLabel0.Text = "DPI"
         '
         'ToolStripStatusLabel1
         '
+        Me.ToolStripStatusLabel1.ForeColor = System.Drawing.SystemColors.Control
         Me.ToolStripStatusLabel1.Name = "ToolStripStatusLabel1"
         Me.ToolStripStatusLabel1.Size = New System.Drawing.Size(27, 17)
         Me.ToolStripStatusLabel1.Text = "SDL"
         '
         'ToolStripStatusLabel2
         '
+        Me.ToolStripStatusLabel2.ForeColor = System.Drawing.SystemColors.Control
         Me.ToolStripStatusLabel2.Name = "ToolStripStatusLabel2"
         Me.ToolStripStatusLabel2.Size = New System.Drawing.Size(29, 17)
         Me.ToolStripStatusLabel2.Text = "AS+"
         '
         'ToolStripStatusLabe3
         '
+        Me.ToolStripStatusLabe3.ForeColor = System.Drawing.SystemColors.Control
         Me.ToolStripStatusLabe3.Name = "ToolStripStatusLabe3"
         Me.ToolStripStatusLabe3.Size = New System.Drawing.Size(32, 17)
         Me.ToolStripStatusLabe3.Text = "WS+"
@@ -172,15 +207,15 @@ Partial Class frmDebug
         Me.lblLogLevel.TabIndex = 9
         Me.lblLogLevel.Text = "Log Level 1"
         '
-        'lblMinimum
+        'ToolStripMenuItem1
         '
-        lblMinimum.AutoSize = True
-        lblMinimum.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        lblMinimum.Location = New System.Drawing.Point(679, 323)
-        lblMinimum.Name = "lblMinimum"
-        lblMinimum.Size = New System.Drawing.Size(44, 12)
-        lblMinimum.TabIndex = 10
-        lblMinimum.Text = "Minimum"
+        ToolStripMenuItem1.Name = "ToolStripMenuItem1"
+        ToolStripMenuItem1.Size = New System.Drawing.Size(177, 6)
+        '
+        'ToolStripMenuItem2
+        '
+        ToolStripMenuItem2.Name = "ToolStripMenuItem2"
+        ToolStripMenuItem2.Size = New System.Drawing.Size(177, 6)
         '
         'frmDebug
         '
@@ -206,6 +241,7 @@ Partial Class frmDebug
         Me.Text = "ScalA Debug Window"
         Me.ssDebug.ResumeLayout(False)
         Me.ssDebug.PerformLayout()
+        Me.cmsSSDebug.ResumeLayout(False)
         CType(Me.tbLogLevel, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
@@ -227,4 +263,7 @@ Partial Class frmDebug
     Friend WithEvents btnSaveLog As Button
     Friend WithEvents tbLogLevel As TrackBar
     Friend WithEvents lblLogLevel As Label
+    Friend WithEvents cmsSSDebug As ContextMenuStrip
+    Friend WithEvents ToggleDPIToolStripMenuItem As ToolStripMenuItem
 End Class
+#End If
