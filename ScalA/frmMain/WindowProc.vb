@@ -360,11 +360,7 @@ Partial NotInheritable Class FrmMain
                 End If
             Case WM_DISPLAYCHANGE
                 dBug.print($"WM_DISPLAYCHANGE w {m.WParam} w {m.LParam}")
-                If Me.WindowState = FormWindowState.Maximized Then SuppressWININICHANGECounter = 2
-                Task.Run(Sub()
-                             Threading.Thread.Sleep(5000)
-                             SuppressWININICHANGECounter = 0
-                         End Sub)
+
             Case WM_ENTERMENULOOP
                 dBug.print($"WM_ENTERMENULOOP {cmsQuickLaunch.Visible}")
                 SysMenu.Visible = Not cmsQuickLaunch.Visible
@@ -531,7 +527,7 @@ Partial NotInheritable Class FrmMain
 
             Case &H319 ' WM_APPCOMMAND
 
-            Case &HC059 To &HC2AB ' unknown
+            Case &HC059 To &HC2BC ' unknown
 
             Case Else
                 Debug.Print($"Unhandeld WM_ 0x{m.Msg:X8} &H{m.Msg:X8} w{m.WParam} {m.LParam}")
