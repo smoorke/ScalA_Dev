@@ -10,6 +10,7 @@ Public NotInheritable Class FrmSettings
 
         Me.Owner = FrmMain
         If FrmMain.WindowState <> FormWindowState.Minimized Then Me.CenterToParent()
+        Me.Owner = Nothing
 
         FrmMain.tmrHotkeys.Stop()
 

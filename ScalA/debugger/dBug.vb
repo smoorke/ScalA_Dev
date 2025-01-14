@@ -86,7 +86,7 @@ Module dBug
     End Sub
 #If debug Then
     Private Sub OpenDebugWindow(sender As Object, e As EventArgs)
-    If Not frmDebug.Visible Then frmDebug.Show(FrmMain)
+        If Not frmDebug.Visible Then frmDebug.Show()
     End Sub
 #End If
 
