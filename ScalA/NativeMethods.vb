@@ -327,6 +327,31 @@ Module NativeMethods
     Public Const GWL_HWNDPARENT As Integer = -8
     Public Const GWL_STYLE As Integer = -16
     Public Const GWL_EXSTYLE As Integer = -20
+
+
+    Public Declare Function RedrawWindow Lib "user32.dll" (
+    ByVal hWnd As IntPtr,
+    ByRef lprcUpdate As RECT,
+    ByVal hrgnUpdate As IntPtr,
+    ByVal flags As UInteger
+) As Boolean
+
+
+    ' RedrawWindow flags
+    Public Const RDW_INVALIDATE As UInteger = &H1
+    Public Const RDW_INTERNALPAINT As UInteger = &H2
+    Public Const RDW_ERASE As UInteger = &H4
+    Public Const RDW_VALIDATE As UInteger = &H8
+    Public Const RDW_NOINTERNALPAINT As UInteger = &H10
+    Public Const RDW_NOERASE As UInteger = &H20
+    Public Const RDW_NOCHILDREN As UInteger = &H40
+    Public Const RDW_ALLCHILDREN As UInteger = &H80
+    Public Const RDW_UPDATENOW As UInteger = &H100
+    Public Const RDW_ERASENOW As UInteger = &H200
+    Public Const RDW_FRAME As UInteger = &H400
+    Public Const RDW_NOFRAME As UInteger = &H800
+
+
     <Flags()>
     Public Enum WindowStyles As Long
         WS_BORDER = &H800000
