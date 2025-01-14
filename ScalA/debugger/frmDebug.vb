@@ -6,16 +6,11 @@ Public Class frmDebug
             logbuilder = New System.Text.StringBuilder With {.Capacity = 100_000}
         End If
 
-        'Me.Owner = FrmMain
-
-        Me.Owner = FrmMain
-        If FrmMain.WindowState <> FormWindowState.Minimized Then Me.CenterToParent()
-        Me.Owner = Nothing
         Me.TopMost = True
 
-        'Me.Location = New Point(
-        'FrmMain.Location.X + (FrmMain.Width - Me.Width) \ 2,
-        'FrmMain.Location.Y + (FrmMain.Height - Me.Height) \ 2)
+        Me.Location = New Point(
+        FrmMain.Location.X + (FrmMain.Width - Me.Width) \ 2,
+        FrmMain.Location.Y + (FrmMain.Height - Me.Height) \ 2)
 
         tbLogLevel.Value = dBug.minLogLevel
         lblLogLevel.Text = $"Log Level {dBug.minLogLevel}"

@@ -8,9 +8,11 @@ Public NotInheritable Class FrmSettings
     Private Sub FrmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         'storeZoom = My.Settings.zoom
 
-        Me.Owner = FrmMain
-        If FrmMain.WindowState <> FormWindowState.Minimized Then Me.CenterToParent()
-        Me.Owner = Nothing
+        If FrmMain.WindowState <> FormWindowState.Minimized Then
+            Me.Location = New Point(
+                FrmMain.Location.X + (FrmMain.Width - Me.Width) \ 2,
+                FrmMain.Location.Y + (FrmMain.Height - Me.Height) \ 2)
+        End If
 
         FrmMain.tmrHotkeys.Stop()
 
