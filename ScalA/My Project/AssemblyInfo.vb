@@ -11,7 +11,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("Astonia Window Scaler and Shortcut Manager")>
 <Assembly: AssemblyCompany("")>
 <Assembly: AssemblyProduct("ScalA")>
-<Assembly: AssemblyCopyright("Copyright © 2024")>
+<Assembly: AssemblyCopyright("Copyright © 2025")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>
@@ -30,5 +30,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")>
 
-<Assembly: AssemblyVersion("1.6.5.4")>
-<Assembly: AssemblyFileVersion("1.6.5.4")>
+<Assembly: AssemblyVersion("1.6.5.5")>
+<Assembly: AssemblyFileVersion("1.6.5.5")>
