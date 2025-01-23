@@ -137,9 +137,7 @@
     <Compile Include="frmSettings.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmMain\frmMain.vb">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="frmMain\frmMain.vb" />
     <Compile Include="frmMain\frmMain.Designer.vb">
       <DependentUpon>frmMain.vb</DependentUpon>
       <SubType>Form</SubType>

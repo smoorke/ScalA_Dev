@@ -215,7 +215,6 @@ Partial NotInheritable Class FrmMain
                 End If
                 If m.WParam = 2 Then 'maximized
                     ReZoom(sz)
-                    FrmBehind.Size = New Size(sz.Width, sz.Height - pnlOverview.Height)
                     btnMax.Text = "🗗"
                     ttMain.SetToolTip(btnMax, "Restore")
                 End If
@@ -303,6 +302,7 @@ Partial NotInheritable Class FrmMain
                 If pbZoom IsNot Nothing Then
                     frmOverlay.Bounds = New Rectangle(winpos.x, winpos.y + 21, winpos.cx, winpos.cy - 21)
                 End If
+
                 FrmBehind.Bounds = New Rectangle(winpos.x, winpos.y + 21, winpos.cx, winpos.cy - 21)
 
                 If FrmSizeBorder IsNot Nothing AndAlso Me.WindowState = FormWindowState.Normal Then
