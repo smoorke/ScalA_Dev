@@ -72,20 +72,24 @@ Partial Public NotInheritable Class FrmMain
 
         If Me.WindowsScaling <> 100 Then 'handle windows scaling
             twp.rcDestination = New Rectangle(pbZoom.Left, pbZoom.Top - 1, pbZoom.Right, pbZoom.Bottom)
+            mode = 1
+            dBug.Print($"pixel mode disabled {Me.WindowsScaling}")
         End If
 
-        If AltPP.WindowsScaling <> 100 Then 'todo divise check to see if astonia is forced DPI aware
-            dBug.print($"scaling not 100: {AltPP.RegHighDpiAware} {AltPP.WindowsScaling} {AltPP.WindowRect}")
+        'If AltPP.WindowsScaling <> 100 Then 'todo divise check to see if astonia is forced DPI aware
+        '    dBug.print($"scaling not 100: {AltPP.RegHighDpiAware} {AltPP.WindowsScaling} {AltPP.WindowRect}")
+        '    mode = 1
+        '    dBug.Print($"pixel mode disabled")
 
-            If Not AltPP.RegHighDpiAware Then
-                If mode = 2 AndAlso Not My.Settings.IgnoreWindowsScalingIssue Then Me.BeginInvoke(Sub() pnlWarning.Show())
-                dBug.print($"pixel mode disabled")
-                mode = 1
-            End If
+        '    'If Not AltPP.RegHighDpiAware Then
+        '    '    'If mode = 2 AndAlso Not My.Settings.IgnoreWindowsScalingIssue Then Me.BeginInvoke(Sub() pnlWarning.Show())
+        '    '    mode = 1
 
-        Else
-            Me.BeginInvoke(Sub() Me.pnlWarning.Hide())
-        End If
+        '    'End If
+
+        'Else
+        '    Me.BeginInvoke(Sub() Me.pnlWarning.Hide())
+        'End If
 
         dBug.print($"mode {mode} {If(mode = 1, "blur", "pixel")}")
 

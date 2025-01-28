@@ -287,6 +287,7 @@ Partial Public NotInheritable Class FrmMain
         Else
             FrmSettings.pb100PWarning.Show()
         End If
+        If Double.IsNaN(percent) Then Return 100
         Return percent
     End Function
 
@@ -548,6 +549,8 @@ Partial Public NotInheritable Class FrmMain
         FrmSizeBorder.Opacity = If(My.Settings.SizingBorder AndAlso Me.WindowState = FormWindowState.Normal, 0.01, 0)
 
         IPC.AddOrUpdateInstance(scalaPID, cboAlt.SelectedIndex = 0, If(cboAlt.SelectedIndex = 0, Nothing, cboAlt.SelectedItem.id), showingSomeone)
+
+        CheckScreenScalingModes()
 
         'Dim sb As Rectangle = Me.RectangleToScreen(pbZoom.Bounds)
         ' frmOverlay.Bounds = sb 'New Rectangle(sb.X, sb.Y + 21, sb.Width, sb.Height - 21)
@@ -1803,23 +1806,23 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub pbWarning_Click(sender As Object, e As EventArgs) Handles pbWarning.Click
-        Dim res As MsgBoxResult = MessageBox.Show(Me,
-                            "For best results Astonia needs to be running with" &
-                   vbCrLf & " Application High DPI scaling override." &
-                   vbCrLf &
-                   vbCrLf & "Click Yes to apply this setting. (client restart required)" &
-                   vbCrLf & "Click Cancel to ignore future warnings (hide icon)", "Information",
-                        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2)
-        If res = MsgBoxResult.Yes Then
-            AltPP.RegHighDpiAware = True
-            If MessageBox.Show(Me, "Restart Required for settings to take effect.", "Restart Client?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1) = MsgBoxResult.Ok Then
-                AltPP.restart()
-            End If
-        End If
-        If res = MsgBoxResult.Cancel Then
-            My.Settings.IgnoreWindowsScalingIssue = True
-            pnlWarning.Hide()
-        End If
+        'Dim res As MsgBoxResult = MessageBox.Show(Me,
+        '                    "For best results Astonia needs to be running with" &
+        '           vbCrLf & " Application High DPI scaling override." &
+        '           vbCrLf &
+        '           vbCrLf & "Click Yes to apply this setting. (client restart required)" &
+        '           vbCrLf & "Click Cancel to ignore future warnings (hide icon)", "Information",
+        '                MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2)
+        'If res = MsgBoxResult.Yes Then
+        '    AltPP.RegHighDpiAware = True
+        '    If MessageBox.Show(Me, "Restart Required for settings to take effect.", "Restart Client?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1) = MsgBoxResult.Ok Then
+        '        AltPP.restart()
+        '    End If
+        'End If
+        'If res = MsgBoxResult.Cancel Then
+        '    'My.Settings.IgnoreWindowsScalingIssue = True
+        '    pnlWarning.Hide()
+        'End If
     End Sub
 
 End Class

@@ -176,8 +176,6 @@ Public NotInheritable Class FrmSettings
         chkAutoCloseOnlyOnNoSome.Enabled = My.Settings.AutoCloseIdle
         chkAutoCloseOnlyOnNoSome.Checked = My.Settings.OnlyAutoCloseOnNoSomeone
 
-        chkIgnoreDPI.Checked = My.Settings.IgnoreWindowsScalingIssue
-
         pb100PWarning.Visible = FrmMain.WindowsScaling <> 100
 
         validate_hotkey(Nothing, Nothing)
@@ -589,8 +587,6 @@ Public NotInheritable Class FrmSettings
 
         My.Settings.AutoCloseIdle = chkAutoCloseSomeone.Checked
         My.Settings.OnlyAutoCloseOnNoSomeone = chkAutoCloseOnlyOnNoSome.Checked
-
-        My.Settings.IgnoreWindowsScalingIssue = chkIgnoreDPI.Checked
 
         My.Settings.Save()
 

@@ -85,7 +85,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkNoAltTab = New System.Windows.Forms.CheckBox()
         Me.pb100PWarning = New System.Windows.Forms.PictureBox()
         Me.chkAutoCloseOnlyOnNoSome = New System.Windows.Forms.CheckBox()
-        Me.chkIgnoreDPI = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
@@ -798,8 +797,7 @@ Partial NotInheritable Class FrmSettings
         Me.pb100PWarning.Size = New System.Drawing.Size(18, 18)
         Me.pb100PWarning.TabIndex = 10
         Me.pb100PWarning.TabStop = False
-        Me.ttSettings.SetToolTip(Me.pb100PWarning, "Windows Monitor Scaling not 100%" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Legacy Astonia Clients require " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Application Hi" &
-        "gh DPI scaling" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "compatability setting" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "or pixel mode will be disabled." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
+        Me.ttSettings.SetToolTip(Me.pb100PWarning, "Windows Monitor Scaling not 100%" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Pixel Mode Disabled." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
         '
         'chkAutoCloseOnlyOnNoSome
         '
@@ -811,17 +809,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkAutoCloseOnlyOnNoSome.Text = "When not showing Someone"
         Me.ttSettings.SetToolTip(Me.chkAutoCloseOnlyOnNoSome, resources.GetString("chkAutoCloseOnlyOnNoSome.ToolTip"))
         Me.chkAutoCloseOnlyOnNoSome.UseVisualStyleBackColor = True
-        '
-        'chkIgnoreDPI
-        '
-        Me.chkIgnoreDPI.AutoSize = True
-        Me.chkIgnoreDPI.Location = New System.Drawing.Point(192, 102)
-        Me.chkIgnoreDPI.Name = "chkIgnoreDPI"
-        Me.chkIgnoreDPI.Size = New System.Drawing.Size(109, 17)
-        Me.chkIgnoreDPI.TabIndex = 11
-        Me.chkIgnoreDPI.Text = "Hide DPI warning"
-        Me.ttSettings.SetToolTip(Me.chkIgnoreDPI, "Hide the warning icon when legacy clients arn't using DPI override" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
-        Me.chkIgnoreDPI.UseVisualStyleBackColor = True
         '
         'tbcSettings
         '
@@ -841,7 +828,6 @@ Partial NotInheritable Class FrmSettings
         '
         'tabResolutions
         '
-        Me.tabResolutions.Controls.Add(Me.chkIgnoreDPI)
         Me.tabResolutions.Controls.Add(Me.pb100PWarning)
         Me.tabResolutions.Controls.Add(Me.ChkSizeBorder)
         Me.tabResolutions.Controls.Add(Me.cboScalingMode)
@@ -1880,5 +1866,4 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents chkNoAltTab As CheckBox
     Friend WithEvents pb100PWarning As PictureBox
     Friend WithEvents chkAutoCloseOnlyOnNoSome As CheckBox
-    Friend WithEvents chkIgnoreDPI As CheckBox
 End Class

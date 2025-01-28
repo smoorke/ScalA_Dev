@@ -24,7 +24,7 @@ Partial NotInheritable Class FrmMain
             dBug.Print($"Not AltPP?.IsRunning() {Me.WindowState}")
             Me.Show()
             FrmBehind.Show()
-            If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
+            If Not FrmSizeBorder.Visible AndAlso My.Settings.SizingBorder Then FrmSizeBorder.Show()
             If Not My.Settings.CycleOnClose Then
                 BringToFront()
                 cboAlt.SelectedIndex = 0

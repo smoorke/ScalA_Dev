@@ -63,9 +63,9 @@ Partial NotInheritable Class FrmMain
                                     If ownerHndl = ScalaHandle AndAlso wastopm Then
                                         SetWindowLong(activeHandle, GWL_HWNDPARENT, 0)
                                     Else
-                                        If System.Diagnostics.Debugger.IsAttached() Then
-                                            'Debugger.Break() 'WARNING: do not set GWL_HWNDPARENT to debugger. it will hang
-                                        End If
+                                        'If System.Diagnostics.Debugger.IsAttached() Then
+                                        '    'Debugger.Break() 'WARNING: do not set GWL_HWNDPARENT to debugger. it will hang
+                                        'End If
                                         SetWindowLong(activeHandle, GWL_HWNDPARENT, ScalaHandle)
                                         Try
                                             'todo: restore taskbar visibility?
@@ -190,10 +190,14 @@ Partial NotInheritable Class FrmMain
                     If Me.WindowState = FormWindowState.Maximized Then
                         FrmSizeBorder.Hide()
                     Else
-                        If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
+                        If Not FrmSizeBorder.Visible AndAlso My.Settings.SizingBorder Then FrmSizeBorder.Show(Me)
                     End If
                 End If
                 AltPP?.ResetCache()
+
+                'find out if screen to the left and top are at diffrent scaling modes
+                CheckScreenScalingModes()
+
                 Me.Invalidate()
                 moveBusy = False
             Case WM_SIZE ' = &h0005
@@ -268,6 +272,7 @@ Partial NotInheritable Class FrmMain
                     End If
                     FrmBehind.Hide()
                     FrmSizeBorder.Hide()
+                    frmOverlay.Hide()
                     wasMaximized = (Me.WindowState = FormWindowState.Maximized)
                     Me.DefWndProc(m)
                     Me.WindowState = FormWindowState.Minimized
@@ -275,13 +280,14 @@ Partial NotInheritable Class FrmMain
                 End If
                 If m.WParam = SW_NORMAL AndAlso m.LParam = SW_PARENTOPENING Then 'restore
                     dBug.print($"wasMaximized {wasMaximized}")
-                    If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
+                    If Not FrmSizeBorder.Visible AndAlso My.Settings.SizingBorder Then FrmSizeBorder.Show()
                     If wasMaximized Then
                         SetWindowPos(ScalaHandle, SWP_HWND.TOP, Bounds.X, Bounds.Y, MaximizedBounds.Width, MaximizedBounds.Height, SetWindowPosFlags.ShowWindow)
                         'Me.WindowState = FormWindowState.Maximized
                     End If
                     AltPP?.CenterBehind(pbZoom, 0, True, True) 'fix thumb breaking
                     FrmBehind.Show()
+                    frmOverlay.Show()
                 End If
             Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
                 'If posChangeBusy Then
@@ -290,13 +296,14 @@ Partial NotInheritable Class FrmMain
                 '    Exit Sub
                 'End If
                 Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
+
                 'dBug.print($"WM_WINDOWPOSCHANGED {winpos.x} {winpos.y} {winpos.cx} {winpos.cy} {winpos.flags} {Me.WindowState} {m.WParam} {AltPP?.HasExited} {AltPP?.IsRunning}")
                 If Me.WindowState = FormWindowState.Minimized AndAlso AltPP?.HasExited AndAlso cboAlt.SelectedIndex <> 0 Then
                     dBug.print("Sending restore")
                     Me.WndProc(Message.Create(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, Nothing))
                     Me.Show()
                     FrmBehind.Show()
-                    If Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(Me)
+                    If Not FrmSizeBorder.Visible AndAlso My.Settings.SizingBorder Then FrmSizeBorder.Show()
                 End If
 
                 If pbZoom IsNot Nothing Then
@@ -360,7 +367,7 @@ Partial NotInheritable Class FrmMain
                 End If
             Case WM_DISPLAYCHANGE
                 dBug.print($"WM_DISPLAYCHANGE w {m.WParam} w {m.LParam}")
-
+                CheckScreenScalingModes()
             Case WM_ENTERMENULOOP
                 dBug.print($"WM_ENTERMENULOOP {cmsQuickLaunch.Visible}")
                 SysMenu.Visible = Not cmsQuickLaunch.Visible
@@ -538,4 +545,49 @@ Partial NotInheritable Class FrmMain
 
     Dim prevLoc As Point
     Dim sizeMoveBusy As Boolean = False
+
+
+
+    ' Function to find out if screens to the left and top are at different scaling modes
+    Private Sub CheckScreenScalingModes()
+        Dim currentScreen = Screen.FromHandle(Me.Handle)
+        Dim currentScaling = currentScreen.ScalingPercent()
+
+        Dim leftScreens As New List(Of Screen)
+        Dim topScreens As New List(Of Screen)
+
+        For Each scr As Screen In Screen.AllScreens
+
+            If scr.Bounds.Right < currentScreen.Bounds.Left Then
+                leftScreens.Add(scr)
+            End If
+
+            If scr.Bounds.Bottom < currentScreen.Bounds.Top Then
+                topScreens.Add(scr)
+            End If
+        Next
+
+        dBug.Print($"self {currentScreen?.Bounds} {currentScreen?.ScalingPercent}")
+
+        For Each leftScreen In leftScreens
+            dBug.Print($"left {leftScreen?.Bounds} {leftScreen?.ScalingPercent}")
+            If leftScreen.ScalingPercent <> currentScaling Then
+                dBug.Print($"Left screen has different scaling: {leftScreen.ScalingPercent}%")
+                pnlWarning.Show()
+                Exit Sub
+            End If
+        Next
+
+        For Each topScreen In topScreens
+            dBug.Print($"top  {topScreen?.Bounds} {topScreen?.ScalingPercent}")
+            If topScreen.ScalingPercent <> currentScaling Then
+                dBug.Print($"Top screen has different scaling: {topScreen.ScalingPercent}%")
+                pnlWarning.Show()
+                Exit Sub
+            End If
+        Next
+        pnlWarning.Hide()
+
+    End Sub
+
 End Class

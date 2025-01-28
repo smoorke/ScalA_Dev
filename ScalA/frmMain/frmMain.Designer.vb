@@ -232,9 +232,8 @@ Partial NotInheritable Class FrmMain
         Me.pbWarning.Size = New System.Drawing.Size(17, 17)
         Me.pbWarning.TabIndex = 14
         Me.pbWarning.TabStop = False
-        Me.ttMain.SetToolTip(Me.pbWarning, "Warning: client isn't running as DPI aware." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "PIXEL mode disabled." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Click this ico" &
-        "n to set this Astonia " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  installation to the right DPI mode" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  and enable pixel" &
-        " mode.")
+        Me.ttMain.SetToolTip(Me.pbWarning, "Warning: Monitor to the left or above doesn't have" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "same Windows Scaling set as c" &
+        "urrent monitor. " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "This may cause issues when scaling down and Active Overview. " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
         '
         'chkDebug
         '
