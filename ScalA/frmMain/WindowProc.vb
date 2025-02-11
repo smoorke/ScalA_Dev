@@ -368,6 +368,9 @@ Partial NotInheritable Class FrmMain
             Case WM_DISPLAYCHANGE
                 dBug.print($"WM_DISPLAYCHANGE w {m.WParam} w {m.LParam}")
                 CheckScreenScalingModes()
+                ScreenManager.resetCache()
+                AstoniaProcess.BiggestWindowHeight = 0
+                AstoniaProcess.BiggestWindowWidth = 0
             Case WM_ENTERMENULOOP
                 dBug.print($"WM_ENTERMENULOOP {cmsQuickLaunch.Visible}")
                 SysMenu.Visible = Not cmsQuickLaunch.Visible
@@ -549,6 +552,7 @@ Partial NotInheritable Class FrmMain
 
 
     ' Function to find out if screens to the left and top are at different scaling modes
+    ' TODO: replace with screenmanager calls
     Private Sub CheckScreenScalingModes()
         Dim currentScreen = Screen.FromHandle(Me.Handle)
         Dim currentScaling = currentScreen.ScalingPercent()

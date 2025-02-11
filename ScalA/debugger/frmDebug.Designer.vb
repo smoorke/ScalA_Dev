@@ -45,6 +45,7 @@ Partial Class frmDebug
         Me.btnSaveLog = New System.Windows.Forms.Button()
         Me.tbLogLevel = New System.Windows.Forms.TrackBar()
         Me.lblLogLevel = New System.Windows.Forms.Label()
+        Me.btnTestScreenManager = New System.Windows.Forms.Button()
         lblMinimum = New System.Windows.Forms.Label()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
@@ -62,6 +63,16 @@ Partial Class frmDebug
         lblMinimum.Size = New System.Drawing.Size(44, 12)
         lblMinimum.TabIndex = 10
         lblMinimum.Text = "Minimum"
+        '
+        'ToolStripMenuItem1
+        '
+        ToolStripMenuItem1.Name = "ToolStripMenuItem1"
+        ToolStripMenuItem1.Size = New System.Drawing.Size(163, 6)
+        '
+        'ToolStripMenuItem2
+        '
+        ToolStripMenuItem2.Name = "ToolStripMenuItem2"
+        ToolStripMenuItem2.Size = New System.Drawing.Size(163, 6)
         '
         'txtDebugLog
         '
@@ -106,12 +117,12 @@ Partial Class frmDebug
         '
         Me.cmsSSDebug.Items.AddRange(New System.Windows.Forms.ToolStripItem() {ToolStripMenuItem1, Me.ToggleDPIToolStripMenuItem, ToolStripMenuItem2})
         Me.cmsSSDebug.Name = "cmsSSDebug"
-        Me.cmsSSDebug.Size = New System.Drawing.Size(181, 60)
+        Me.cmsSSDebug.Size = New System.Drawing.Size(167, 38)
         '
         'ToggleDPIToolStripMenuItem
         '
         Me.ToggleDPIToolStripMenuItem.Name = "ToggleDPIToolStripMenuItem"
-        Me.ToggleDPIToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.ToggleDPIToolStripMenuItem.Size = New System.Drawing.Size(166, 22)
         Me.ToggleDPIToolStripMenuItem.Text = "Toggle DPI Aware"
         '
         'ToolStripStatusLabel0
@@ -207,21 +218,21 @@ Partial Class frmDebug
         Me.lblLogLevel.TabIndex = 9
         Me.lblLogLevel.Text = "Log Level 1"
         '
-        'ToolStripMenuItem1
+        'btnTestScreenManager
         '
-        ToolStripMenuItem1.Name = "ToolStripMenuItem1"
-        ToolStripMenuItem1.Size = New System.Drawing.Size(177, 6)
-        '
-        'ToolStripMenuItem2
-        '
-        ToolStripMenuItem2.Name = "ToolStripMenuItem2"
-        ToolStripMenuItem2.Size = New System.Drawing.Size(177, 6)
+        Me.btnTestScreenManager.Location = New System.Drawing.Point(235, 402)
+        Me.btnTestScreenManager.Name = "btnTestScreenManager"
+        Me.btnTestScreenManager.Size = New System.Drawing.Size(75, 23)
+        Me.btnTestScreenManager.TabIndex = 11
+        Me.btnTestScreenManager.Text = "ScreenManager"
+        Me.btnTestScreenManager.UseVisualStyleBackColor = True
         '
         'frmDebug
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(748, 450)
+        Me.Controls.Add(Me.btnTestScreenManager)
         Me.Controls.Add(lblMinimum)
         Me.Controls.Add(Me.lblLogLevel)
         Me.Controls.Add(Me.btnSaveLog)
@@ -265,5 +276,6 @@ Partial Class frmDebug
     Friend WithEvents lblLogLevel As Label
     Friend WithEvents cmsSSDebug As ContextMenuStrip
     Friend WithEvents ToggleDPIToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents btnTestScreenManager As Button
 End Class
 #End If

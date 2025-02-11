@@ -165,6 +165,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="NativeMethods.vb" />
+    <Compile Include="ScreenManager.vb" />
     <Compile Include="Settings.vb" />
     <Compile Include="SystemUtitlity.vb" />
     <Compile Include="UpdateDialog.Designer.vb">

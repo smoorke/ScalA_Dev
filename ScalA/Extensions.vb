@@ -166,61 +166,8 @@ Module Extensions
         If (fromMax - fromMin) = 0 Then Return 0
         Return toMin + ((this - fromMin) * (toMax - toMin) / (fromMax - fromMin))
     End Function
-    Private Const DWMWA_EXTENDED_FRAME_BOUNDS = 9
-    <System.Runtime.CompilerServices.Extension()>
-    Public Function ScalingPercent(scrn As Screen) As Integer
-        Dim grab As New InactiveForm(scrn)
-        Dim GrabHandler As EventHandler = Sub()
-                                              grab.Location += New Point(1, 1) 'need to update the location so the frame changes
-                                              Dim rcFrame As RECT
-                                              DwmGetWindowAttribute(grab.Handle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
-                                              Dim rcWind As RECT
-                                              GetWindowRect(grab.Handle, rcWind)
-                                              grab.Tag = Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25
-                                              grab.Close()
-                                              RemoveHandler grab.Shown, GrabHandler 'remove handler so GC can do its thing
-                                              grab.Dispose()
-                                          End Sub
-        AddHandler grab.Shown, GrabHandler
-        grab.ShowDialog()
-        Return grab.Tag
-    End Function
 
-    <System.Runtime.CompilerServices.Extension()>
-    Public Function ScalingPercentTask(scrn As Screen) As Task(Of Integer)
-        Dim grab As New InactiveForm(scrn)
-        Dim tcs As New TaskCompletionSource(Of Integer)
-        Dim GrabHandler As EventHandler = Sub()
-                                              grab.Location += New Point(1, 1) 'need to update the location so the frame changes
-                                              Dim rcFrame As RECT
-                                              DwmGetWindowAttribute(grab.Handle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
-                                              Dim rcWind As RECT
-                                              GetWindowRect(grab.Handle, rcWind)
-                                              tcs.SetResult(Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25)
-                                              grab.Close()
-                                              RemoveHandler grab.Shown, GrabHandler 'remove handler so GC can do its thing
-                                              grab.Dispose()
-                                          End Sub
-        AddHandler grab.Shown, GrabHandler
-        grab.Show()
-        Return tcs.Task
-    End Function
 
-    Private NotInheritable Class InactiveForm : Inherits Form
-        Protected Overloads Overrides ReadOnly Property ShowWithoutActivation() As Boolean
-            Get
-                Return True
-            End Get
-        End Property
-        Public Sub New(scrn As Screen)
-            Me.FormBorderStyle = FormBorderStyle.None
-            Me.TransparencyKey = Color.White
-            Me.BackColor = Me.TransparencyKey
-            Me.ShowInTaskbar = False
-            Me.StartPosition = FormStartPosition.Manual
-            Me.Location = scrn.Bounds.Location
-        End Sub
-    End Class
 
     <System.Runtime.CompilerServices.Extension()>
     Public Sub SetFlag(ByRef flags As SetWindowPosFlags, value As SetWindowPosFlags)

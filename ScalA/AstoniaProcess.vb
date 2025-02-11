@@ -32,12 +32,24 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             End If
         End Get
     End Property
+
+    Public Shared BiggestWindowWidth As Integer
+    Public Shared BiggestWindowHeight As Integer
+
     Public ReadOnly Property WindowRect() As Rectangle
         Get
             Dim rcw As New Rectangle
             If proc Is Nothing Then Return New Rectangle
 
             GetWindowRect(Me.MainWindowHandle, rcw)
+
+            If rcw.Left - rcw.Width > BiggestWindowWidth Then
+                BiggestWindowWidth = rcw.Left - rcw.Width
+            End If
+
+            If rcw.Top - rcw.Height > BiggestWindowHeight Then
+                BiggestWindowHeight = rcw.Top - rcw.Height
+            End If
 
             Return rcw
         End Get

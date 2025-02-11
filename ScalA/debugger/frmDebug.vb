@@ -245,5 +245,9 @@ Public Class frmDebug
             dBug.Print("No Alt Proc Active", 1)
         End If
     End Sub
+
+    Private Sub btnTestScreenManager_Click(sender As Object, e As EventArgs) Handles btnTestScreenManager.Click
+        ScreenManagerTests.RunTests(Screen.FromControl(Me))
+    End Sub
 #End If
 End Class
