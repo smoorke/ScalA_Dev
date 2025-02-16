@@ -477,7 +477,7 @@ Public NotInheritable Class FrmSettings
         My.Settings.CloseAllCtrl = If(chkCACtrl.Checked, Hotkey.KeyModifier.Control, 0)
         My.Settings.CloseAllWin = If(chkCAWin.Checked, Hotkey.KeyModifier.Winkey, 0)
 
-        My.Settings.ToggleTop = chkCloseAll.Checked
+        My.Settings.ToggleTop = chkToggleTopMost.Checked
         My.Settings.ToggleTopKey = TogTopKey
 
         My.Settings.TogTopAlt = If(chkTogTopAlt.Checked, Hotkey.KeyModifier.Alt, 0)
