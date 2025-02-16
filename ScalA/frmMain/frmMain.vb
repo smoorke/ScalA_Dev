@@ -1350,12 +1350,14 @@ Partial Public NotInheritable Class FrmMain
         dBug.Print("btnMax_Click")
         suppressWM_MOVEcwp = True
         '🗖,🗗,⧠
-        If Me.WindowState = FormWindowState.Normal Then
+        If Me.WindowState = FormWindowState.Normal Then 'go maximized
             My.Settings.zoom = cmbResolution.SelectedIndex
-            'go maximized
-            If Me.Location <> New Point(-32000, -32000) Then
+
+            If Me.Location <> New Point(-32000, -32000) Then '-32K is minimized window location
                 restoreLoc = Me.Location
             End If
+
+#Region "border" 'to enable dragging maximized caption
             Dim scrn As Screen = Screen.FromPoint(restoreLoc + New Point(Me.Width / 2, Me.Height / 2))
             dBug.Print("screen workarea " & scrn.WorkingArea.ToString)
             dBug.Print("screen bounds " & scrn.Bounds.ToString)
@@ -1417,9 +1419,10 @@ Partial Public NotInheritable Class FrmMain
                                            scrn.WorkingArea.Top - scrn.Bounds.Top + topBorder,
                                            scrn.WorkingArea.Width - leftBorder - rightborder,
                                            scrn.WorkingArea.Height - topBorder - botBorder)
+#End Region
             dBug.Print("new maxbound " & MaximizedBounds.ToString)
             If Me.WindowState = FormWindowState.Normal AndAlso Me.Location <> New Point(-32000, -32000) Then
-                restoreLoc = Me.Location
+                restoreLoc = Me.Location 'todo: why is this duplicated?
                 dBug.Print("restoreLoc " & restoreLoc.ToString)
             End If
             'ReZoom()
