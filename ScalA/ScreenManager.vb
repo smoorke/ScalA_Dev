@@ -130,6 +130,7 @@
         If ScreenManagerCache.TryGetValue(scr, cachedManager) Then
             Return cachedManager
         Else
+            dBug.Print($"ScreenManager FromScreen Cachemiss {scr}", 0)
             Dim newManager As New ScreenManager(scr)
             ScreenManagerCache.Add(scr, newManager)
             Return newManager
@@ -141,13 +142,35 @@
     ''' Note: this is a timeconsuming blocking operation hence we implemented several caches.
     ''' </summary>
     ''' <returns></returns>
-    Public Function ScalingPercent() As Integer
-        If Me._Scaling IsNot Nothing Then
-            Return _Scaling
-        End If
+    Public ReadOnly Property ScalingPercent() As Integer
+        Get
+            If Me._Scaling Is Nothing Then _Scaling = Me._ScalingPercent()
 
-        _Scaling = Me._screen.ScalingPercent()
-        Return _Scaling
+            Return _Scaling
+        End Get
+    End Property
+
+    Private Const DWMWA_EXTENDED_FRAME_BOUNDS = 9
+    Private Function _ScalingPercent() As Integer
+        'TODO: investigate GetScaleFactorForMonitor (win8.1 and up only) and incorporate here if usefull
+        If Me._screen Is Nothing Then Throw New NullReferenceException("_screen is nothing")
+
+        Dim grab As New InactiveForm(Me._screen)
+        Dim GrabHandler As EventHandler = Sub()
+                                              grab.Location += New Point(1, 1) 'need to update the location so the frame changes
+                                              Dim rcFrame As RECT
+                                              DwmGetWindowAttribute(grab.Handle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
+                                              Dim rcWind As RECT
+                                              GetWindowRect(grab.Handle, rcWind)
+                                              grab.Tag = Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25
+                                              grab.Close()
+                                              RemoveHandler grab.Shown, GrabHandler 'remove handler so GC can do its thing
+                                              grab.Dispose()
+                                          End Sub
+        AddHandler grab.Shown, GrabHandler
+        grab.ShowDialog()
+        Return grab.Tag
+
     End Function
 
     ' Narrowing operator from ScreenManager to Screen
@@ -233,24 +256,9 @@ Module ScreenExtensions
 
     Private Const DWMWA_EXTENDED_FRAME_BOUNDS = 9
 
-    'TODO: investigate GetScaleFactorForMonitor (win8.1 and up only) and incorporate here if usefull
     <System.Runtime.CompilerServices.Extension()>
     Public Function ScalingPercent(scrn As Screen) As Integer
-        Dim grab As New InactiveForm(scrn)
-        Dim GrabHandler As EventHandler = Sub()
-                                              grab.Location += New Point(1, 1) 'need to update the location so the frame changes
-                                              Dim rcFrame As RECT
-                                              DwmGetWindowAttribute(grab.Handle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
-                                              Dim rcWind As RECT
-                                              GetWindowRect(grab.Handle, rcWind)
-                                              grab.Tag = Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25
-                                              grab.Close()
-                                              RemoveHandler grab.Shown, GrabHandler 'remove handler so GC can do its thing
-                                              grab.Dispose()
-                                          End Sub
-        AddHandler grab.Shown, GrabHandler
-        grab.ShowDialog()
-        Return grab.Tag
+        Return ScreenManager.FromScreen(scrn).ScalingPercent()
     End Function
 
     <System.Runtime.CompilerServices.Extension()>
@@ -273,7 +281,7 @@ Module ScreenExtensions
         Return tcs.Task
     End Function
 
-    Private NotInheritable Class InactiveForm : Inherits Form
+    Public NotInheritable Class InactiveForm : Inherits Form
         Protected Overloads Overrides ReadOnly Property ShowWithoutActivation() As Boolean
             Get
                 Return True
