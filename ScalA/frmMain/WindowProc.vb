@@ -343,17 +343,19 @@ Partial NotInheritable Class FrmMain
                     'posChangeBusy = False
                     Exit Sub
                 End If
-            Case WM_WININICHANGE '&H1A
-                dBug.print($"WM_WININICHANGE {m.LParam} {m.WParam}")
+            Case WM_WININICHANGE '&H1A 
+                'BUG: somethings cause hangs here? only when an alt is selected (chenge taskbar autohide, etc...) FIXED?
+                SetWindowLong(ScalaHandle, GWL_HWNDPARENT, 0)
+                dBug.Print($"WM_WININICHANGE {m.LParam} {m.WParam}")
                 Dim settingnname = Runtime.InteropServices.Marshal.PtrToStringAuto(m.LParam)
                 If settingnname = "VisualEffects" Then
                     AnimsEnabled = getAnimationsEnabled()
-                    dBug.print($"Animations {AnimsEnabled}")
-                End If
-                If SuppressWININICHANGECounter > 0 Then
-                    dBug.print($"ReschangeCounter {SuppressWININICHANGECounter}")
-                    SuppressWININICHANGECounter -= 1
+                    dBug.Print($"Animations {AnimsEnabled}")
                 Else
+                    SuppressWININICHANGECounter += 1
+                    dBug.Print($"ReschangeCounter {SuppressWININICHANGECounter}")
+                End If
+                If SuppressWININICHANGECounter >= 4 Then
                     If m.LParam = IntPtr.Zero AndAlso Me.WindowState = FormWindowState.Maximized Then
                         'handle taskbar changing
                         Dim newWA = Screen.FromPoint(Me.Location + New Point(Me.Width / 2, Me.Height / 2)).WorkingArea
@@ -364,6 +366,10 @@ Partial NotInheritable Class FrmMain
                             btnMax.PerformClick() 'todo replace with gracefull resizing
                         End If
                     End If
+                    If AltPP IsNot Nothing Then
+                        SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
+                    End If
+                    SuppressWININICHANGECounter = 0
                 End If
             Case WM_DISPLAYCHANGE
                 dBug.print($"WM_DISPLAYCHANGE w {m.WParam} w {m.LParam}")
