@@ -345,7 +345,7 @@ Partial NotInheritable Class FrmMain
                 End If
             Case WM_WININICHANGE '&H1A 
                 'BUG: somethings cause hangs here? only when an alt is selected (chenge taskbar autohide, etc...) FIXED?
-                SetWindowLong(ScalaHandle, GWL_HWNDPARENT, 0)
+                Detach(False) 'SetWindowLong(ScalaHandle, GWL_HWNDPARENT, 0)
                 dBug.Print($"WM_WININICHANGE {m.LParam} {m.WParam}")
                 Dim settingnname = Runtime.InteropServices.Marshal.PtrToStringAuto(m.LParam)
                 If settingnname = "VisualEffects" Then
@@ -366,9 +366,7 @@ Partial NotInheritable Class FrmMain
                             btnMax.PerformClick() 'todo replace with gracefull resizing
                         End If
                     End If
-                    If AltPP IsNot Nothing Then
-                        SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
-                    End If
+                    Attach(AltPP) 'SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
                     SuppressWININICHANGECounter = 0
                 End If
             Case WM_DISPLAYCHANGE
