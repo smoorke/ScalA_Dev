@@ -933,7 +933,31 @@ Partial Public NotInheritable Class FrmMain
 
     Private closeAllAtBottom As Boolean = True
 
+    Private Sub cmsQuickLaunch_Opened(sender As ContextMenuStrip, e As EventArgs) Handles cmsQuickLaunch.Opened
+        '    (2 cases here. QL wrong cus of Scaling mismatch And QL wrong when opened from tray due to change in visiblity hidden items.
 
+        Dim hwnd As IntPtr = sender.Handle
+        Dim rwM As RECT
+        Dim rcM As RECT
+        GetWindowRect(hwnd, rwM)
+        GetClientRect(hwnd, rcM)
+
+        Debug.Print($"QL opened {rwM.ToRectangle} {rcM.ToRectangle} {rcM.right}")
+
+        Dim loc As Point = New Point(rwM.left, rwM.top)
+
+        If sender.SourceControl Is Nothing Then 'opened from tray
+
+            loc = New Point(MousePosition - New Point(rcM.right, rcM.bottom))
+
+        End If
+
+        ' if scaling_mismatch
+        '   set loc to correct mapped location. (this will prolly depend on what scaling mismatch is 'up or down')
+
+        ' move QL to correct loc
+        SetWindowPos(hwnd, SWP_HWND.TOPMOST, loc.X, loc.Y, -1, -1, SetWindowPosFlags.IgnoreZOrder Or SetWindowPosFlags.IgnoreResize)
+    End Sub
 
 
     Dim cts As New Threading.CancellationTokenSource
@@ -1443,6 +1467,7 @@ Partial Public NotInheritable Class FrmMain
             End If
         End If
     End Sub
+
 
 End Class
 Module ImageExtension
