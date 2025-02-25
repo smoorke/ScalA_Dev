@@ -871,6 +871,21 @@ Partial Public NotInheritable Class FrmMain
     End Sub
     Shared ifrm As MenuScaleFixForm = Nothing
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
+        If Not (My.Computer.Keyboard.ShiftKeyDown AndAlso Not My.Computer.Keyboard.CtrlKeyDown) Then
+            If sender.SourceControl Is Nothing Then 'opened from tray
+                If ifrm Is Nothing Then
+                    ifrm = New MenuScaleFixForm(Screen.PrimaryScreen)
+                    ifrm.Show(Me)
+                    Task.Run(Sub() Me.Invoke(Sub() cmsQuickLaunch.Show(MousePosition)))
+                    e.Cancel = True
+                    Exit Sub
+                End If
+            Else
+                ifrm?.Close()
+                ifrm = Nothing
+            End If
+        End If
+
         CloseOtherDropDowns(cmsQuickLaunch.Items, New HashSet(Of ToolStripMenuItem))
         cmsQuickLaunch.Close()
         UntrapMouse(MouseButtons.Right)
@@ -890,20 +905,6 @@ Partial Public NotInheritable Class FrmMain
             e.Cancel = True
             Exit Sub
         End If
-
-        If sender.SourceControl Is Nothing Then 'opened from tray
-            If ifrm Is Nothing Then
-                ifrm = New MenuScaleFixForm(Screen.PrimaryScreen)
-                ifrm.Show()
-                Task.Run(Sub() Me.Invoke(Sub() cmsQuickLaunch.Show(MousePosition)))
-                e.Cancel = True
-                Exit Sub
-            End If
-        Else
-            ifrm?.Close()
-            ifrm = Nothing
-        End If
-
         'tmrTick.Interval = 1000
         sender.Items.Clear()
 
@@ -971,21 +972,14 @@ Partial Public NotInheritable Class FrmMain
             If rwM.right = rfM.right Then ' AndAlso msc <> Me.WindowsScaling Then
                 loc = New Point(MousePosition.X * msc / 100 - rcM.right, MousePosition.Y * msc / 100 - rcM.bottom)
             End If
-            If rwM.right <> rfM.right AndAlso msc <> Me.WindowsScaling Then
-                Debug.Print($"old loc = {loc}")
-
-                'loc = New Point(loc.X + 45, loc.Y - 230) ' ugh can't seem to find pattern here
-                ' solution? open invisible wind on main mon when/before opening?
-
-                Debug.Print($"new loc = {loc}")
-            End If
         End If
 
         ' if scaling_mismatch
         '   set loc to correct mapped location. (this will prolly depend on what scaling mismatch is 'up or down')
+        ' scaling mismatch partially handled by ScaleFixForm
 
         ' move QL to correct loc
-        SetWindowPos(hwnd, SWP_HWND.TOPMOST, loc.X, loc.Y, -1, -1, SetWindowPosFlags.IgnoreZOrder Or SetWindowPosFlags.IgnoreResize)
+        SetWindowPos(hwnd, SWP_HWND.TOPMOST, loc.X, loc.Y, -1, -1, SetWindowPosFlags.IgnoreZOrder Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
     End Sub
 
     Dim cts As New Threading.CancellationTokenSource
@@ -1514,7 +1508,7 @@ Public NotInheritable Class MenuScaleFixForm : Inherits Form
         Me.Location = scrn.Bounds.Location
     End Sub
     Public Sub frm_opening() Handles Me.Load
-        Me.Owner = FrmMain
+        'Me.Owner = FrmMain
     End Sub
     Public Sub frm_shown() Handles Me.Shown
         Me.Location += New Point(1, 1)
