@@ -40,7 +40,7 @@ Partial Public NotInheritable Class FrmMain
                                  procs.Any(Function(ap As AstoniaProcess) Not ap.HasExited)
                                CloseErrorDialog()
                                Threading.Thread.Sleep(34)
-                               dBug.print("busy error dialog closer")
+                               dBug.Print("busy error dialog closer")
                            End While
                        End Sub, ct)
         btnQuit.PerformClick()
@@ -97,7 +97,7 @@ Partial Public NotInheritable Class FrmMain
     Private Sub SelectToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles SelectToolStripMenuItem.Click
         Dim pp As AstoniaProcess = DirectCast(sender.Tag, AstoniaProcess)
         If pp Is Nothing Then Exit Sub
-        dBug.print("SelectToolStrip: " & pp.Name)
+        dBug.Print("SelectToolStrip: " & pp.Name)
         SelectAlt(pp)
     End Sub
 
@@ -111,7 +111,7 @@ Partial Public NotInheritable Class FrmMain
     Private Sub TopMostToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles TopMostToolStripMenuItem.Click
         Dim pp As AstoniaProcess = DirectCast(sender.Tag, AstoniaProcess)
         If pp Is Nothing Then Exit Sub
-        dBug.print("Topmost " & Not sender.Checked)
+        dBug.Print("Topmost " & Not sender.Checked)
         If Not sender.Checked Then
             SetWindowPos(pp.MainWindowHandle, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
         Else
@@ -153,7 +153,7 @@ Partial Public NotInheritable Class FrmMain
         SelectToolStripMenuItem.Tag = pp
 
 
-        dBug.print($"cmsAlt {pp.Name} {pp.hasLoggedIn} ""{pp.loggedInAs}""")
+        dBug.Print($"cmsAlt {pp.Name} {pp.hasLoggedIn} ""{pp.loggedInAs}""")
 
         If pp.Name = "Someone" Then
             ReLaunchToolStripMenuItem.Visible = True
@@ -165,7 +165,7 @@ Partial Public NotInheritable Class FrmMain
 
                 Dim nam As String = New String(cmdLine.Split("-").FirstOrDefault(Function(s) s.ToLower.StartsWith("u")).Skip(1).ToArray).Trim.FirstToUpper()
 
-                dBug.print($"ReLaunch ""{nam}""")
+                dBug.Print($"ReLaunch ""{nam}""")
                 ReLaunchToolStripMenuItem.Text = $"ReLaunch {nam}"
             Else
                 ReLaunchToolStripMenuItem.Text = $"ReLaunch {pp.loggedInAs}"
@@ -193,7 +193,7 @@ Partial Public NotInheritable Class FrmMain
 
         Dim other As String = If(pp.Name = "Someone", "Other ", "")
         Dim somecount As Integer = AstoniaProcess.EnumSomeone.Count(Function(p) p.Name = "Someone")
-        dBug.print($"somecount {somecount}")
+        dBug.Print($"somecount {somecount}")
         If somecount > 0 AndAlso Not (other = "Other " AndAlso somecount = 1) Then
             closeAllIdleTSMI = sender.Items.Add($"Close All {other}Someone", My.Resources.moreF12, AddressOf CloseAllIdle_Click)
             closeAllIdleTSMI.Tag = pp
@@ -210,13 +210,13 @@ Partial Public NotInheritable Class FrmMain
         KeepToolStripMenuItem.Visible = lst.Count > 0
         KeepToolStripMenuItem.CheckState = If(My.Settings.KeepOnOverview, CheckState.Indeterminate, CheckState.Unchecked)
 
-        dBug.print(sender.Tag.name)
+        dBug.Print(sender.Tag.name)
         Dim Rang = lst.Select(Function(p) New ToolStripMenuItem(p.ProcessName, Nothing, AddressOf MoveTo_Click) With {.Tag = New Tuple(Of AstoniaProcess, Process)(sender.Tag, p)}).ToArray
         MoveToolStripMenuItem.DropDownItems.AddRange(Rang)
     End Sub
 
     Private Sub KeepToolStripMenuItem_Mousedown(sender As ToolStripMenuItem, e As MouseEventArgs) Handles KeepToolStripMenuItem.MouseDown
-        dBug.print($"{sender.Owner}")
+        dBug.Print($"{sender.Owner}")
         CType(sender.Owner, ToolStripDropDownMenu).AutoClose = False 'this messes with topmost
         If e.Button = MouseButtons.Right Then
             If sender.CheckState <> CheckState.Indeterminate Then
@@ -326,7 +326,7 @@ Partial Public NotInheritable Class FrmMain
     Private Async Sub MoveTo_Click(sender As ToolStripMenuItem, e As EventArgs)
         Dim ap As AstoniaProcess = sender.Tag.item1
         Dim sp As Process = sender.Tag.Item2
-        dBug.print($"moving {ap.Name} to {sp.Id} {sp.ProcessName}")
+        dBug.Print($"moving {ap.Name} to {sp.Id} {sp.ProcessName}")
         IPC.AddToWhitelistOrRemoveFromBL(sp.Id, ap.Id)
 
         If KeepToolStripMenuItem.Checked Then Exit Sub
@@ -429,7 +429,7 @@ Partial Public NotInheritable Class FrmMain
             TopFirstToolStripMenuItem.Click, TopLastToolStripMenuItem.Click,
             BotFirstToolStripMenuItem.Click, BotLastToolStripMenuItem.Click
         Dim AltName As String = DirectCast(sender.OwnerItem.Tag, AstoniaProcess).Name
-        dBug.print($"Apply sorting {AltName} {sender.Tag}")
+        dBug.Print($"Apply sorting {AltName} {sender.Tag}")
 
         topSortList.Remove(AltName)
         botSortList.Remove(AltName)
@@ -471,7 +471,7 @@ Partial Public NotInheritable Class FrmMain
             Return iconCache.GetOrAdd(PathName,
                    Function()
 
-                       dBug.print($"iconCahceMiss: {PathName}")
+                       dBug.Print($"iconCahceMiss: {PathName}")
 
                        Dim bm As Bitmap
                        Dim fi As New SHFILEINFOW
@@ -480,7 +480,7 @@ Partial Public NotInheritable Class FrmMain
                        If PathName.EndsWith("\") Then
                            SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_ICON Or SHGFI_SMALLICON)
                            If fi.hIcon = IntPtr.Zero Then
-                               dBug.print("hIcon empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
+                               dBug.Print("hIcon empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
                                Throw New Exception
                            End If
                            ico = Icon.FromHandle(fi.hIcon)
@@ -491,7 +491,7 @@ Partial Public NotInheritable Class FrmMain
                            Dim hIcon As IntPtr = ImageList_GetIcon(list, fi.iIcon, 0)
                            ImageList_Destroy(list)
                            If hIcon = IntPtr.Zero Then
-                               dBug.print("iconlist empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
+                               dBug.Print("iconlist empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
                                Throw New Exception
                            End If
                            ico = Icon.FromHandle(hIcon)
@@ -504,7 +504,7 @@ Partial Public NotInheritable Class FrmMain
                        Return bm
                    End Function).AsTransparent(If(transp, If(My.Settings.DarkMode, 0.4, 0.5), 1))
         Catch
-            dBug.print("GetIcon Exception")
+            dBug.Print("GetIcon Exception")
             Return Nothing
         End Try
     End Function
@@ -606,7 +606,7 @@ Partial Public NotInheritable Class FrmMain
         cantok = cts.Token
         DeferredIconLoading(Dirs.Concat(Files), cantok)
 
-        dBug.print($"parsing ""{pth}"" took {watch.ElapsedMilliseconds} ms")
+        dBug.Print($"parsing ""{pth}"" took {watch.ElapsedMilliseconds} ms")
         watch.Stop()
         Return menuItems
     End Function
@@ -644,9 +644,9 @@ Partial Public NotInheritable Class FrmMain
                                               Me.BeginInvoke(Sub() it.Image = ico)
                                           End Sub), ct)
         Catch ex As System.Threading.Tasks.TaskCanceledException
-            dBug.print("deferredIconLoading Task canceled")
+            dBug.Print("deferredIconLoading Task canceled")
         Catch
-            dBug.print("deferredIconLoading general exception")
+            dBug.Print("deferredIconLoading general exception")
         End Try
     End Sub
     Public Sub CloseOtherDropDowns(items As ToolStripItemCollection, Optional keep As HashSet(Of ToolStripMenuItem) = Nothing)
@@ -657,15 +657,15 @@ Partial Public NotInheritable Class FrmMain
                 CloseOtherDropDowns(it.DropDownItems, keep)
                 If Not keep.Contains(it) Then
                     it.DropDown.Close()
-                    dBug.print($"Closing dropdown of {it.Text}")
+                    dBug.Print($"Closing dropdown of {it.Text}")
                 End If
             End If
         Next
     End Sub
 
     Private Sub ParseSubDir(sender As ToolStripMenuItem, e As EventArgs) ' Handles DummyToolStripMenuItem.DropDownOpening
-        dBug.print($"{sender.OwnerItem}")
-        dBug.print($"{sender}")
+        dBug.Print($"{sender.OwnerItem}")
+        dBug.Print($"{sender}")
 
         Dim keep As New HashSet(Of ToolStripMenuItem)
         Dim curr = sender.OwnerItem
@@ -681,7 +681,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
     Private foldericon = GetIcon(FileIO.SpecialDirectories.Temp, False)
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
-        dBug.print("addshortcut.sendertag:" & sender.Tag)
+        dBug.Print("addshortcut.sendertag:" & sender.Tag)
         sender.DropDownItems.Clear()
 
         sender.DropDownItems.Add(New ToolStripMenuItem("Folder", foldericon, AddressOf Ql_NewFolder) With {.Tag = sender.Tag})
@@ -701,11 +701,11 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub CreateNewFolder(newpath As String)
-        dBug.print($"NewFolder:{newpath}")
+        dBug.Print($"NewFolder:{newpath}")
 
         Dim rootFolder As String = newpath
 
-        dBug.print($"rootFolder: {rootFolder}")
+        dBug.Print($"rootFolder: {rootFolder}")
 
         Dim newfolderPath = IO.Path.Combine(rootFolder, "New Folder")
 
@@ -715,7 +715,7 @@ Partial Public NotInheritable Class FrmMain
             i += 1
         End While
 
-        dBug.print($"newfolderpath: {newfolderPath}")
+        dBug.Print($"newfolderpath: {newfolderPath}")
 
         Try
             IO.Directory.CreateDirectory(newfolderPath)
@@ -733,8 +733,8 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub Ql_NewFolder(sender As ToolStripMenuItem, e As EventArgs)
-        dBug.print($"QlCtxNewFolder sender:{sender}")
-        dBug.print($"tag:    {sender?.Tag}")
+        dBug.Print($"QlCtxNewFolder sender:{sender}")
+        dBug.Print($"tag:    {sender?.Tag}")
 
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
@@ -745,8 +745,8 @@ Partial Public NotInheritable Class FrmMain
     Private Shared ReadOnly pipe As Char() = {"|"c}
     Private Sub CreateShortCut(sender As ToolStripMenuItem, e As EventArgs)
 
-        dBug.print($"CreateShortCut")
-        dBug.print($"sender.text {sender.Text}")
+        dBug.Print($"CreateShortCut")
+        dBug.Print($"sender.text {sender.Text}")
 
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
@@ -765,7 +765,7 @@ Partial Public NotInheritable Class FrmMain
                 Case DialogResult.No
                     Exit Sub
                 Case Else
-                    dBug.print($"Cancel {sender.Tag} ""{sender.OwnerItem}"" {sender.Text}")
+                    dBug.Print($"Cancel {sender.Tag} ""{sender.OwnerItem}"" {sender.Text}")
                     If sender.OwnerItem?.Text <> "New" Then Throw New Exception("Abort")
             End Select
         End If
@@ -787,7 +787,7 @@ Partial Public NotInheritable Class FrmMain
             End 'program
             Exit Sub
         End If
-        dBug.print("cmdline:" & arguments)
+        dBug.Print("cmdline:" & arguments)
         If arguments.StartsWith("""") Then
             'arguments = arguments.Substring(1) 'skipped with startindex
             arguments = arguments.Substring(arguments.IndexOf("""", 1) + 1)
@@ -812,7 +812,7 @@ Partial Public NotInheritable Class FrmMain
 
         arguments = Strings.Join(arguments.Split("-").Distinct.ToArray, "-") 'remove duplicates
 
-        dBug.print("cmdline mang:" & arguments)
+        dBug.Print("cmdline mang:" & arguments)
 
         Dim exepath As String = ""
         Try
@@ -834,15 +834,15 @@ Partial Public NotInheritable Class FrmMain
             oLink.WindowStyle = 1
             oLink.Save()
         Catch ex As Exception
-            dBug.print($"except: {ex.Message}")
-            dBug.print($"{ShortCutLink}")
+            dBug.Print($"except: {ex.Message}")
+            dBug.Print($"{ShortCutLink}")
         End Try
 
     End Sub
 
     Private Sub AddAllShortcuts(sender As Object, e As EventArgs)
-        dBug.print($"Add All ShortCuts")
-        dBug.print($"sender.tag {sender.tag}")
+        dBug.Print($"Add All ShortCuts")
+        dBug.Print($"sender.tag {sender.tag}")
 
         Dim list As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name).ToList
 
@@ -852,11 +852,11 @@ Partial Public NotInheritable Class FrmMain
         Dim path As String = sender.tag
         If Not path.EndsWith("\") Then
             path = path.Substring(0, path.LastIndexOf("\") + 1)
-            dBug.print($"sanitized: {path}")
+            dBug.Print($"sanitized: {path}")
         End If
 
         For Each ap As AstoniaProcess In list
-            dBug.print($"adding {ap.Name}")
+            dBug.Print($"adding {ap.Name}")
             Try
                 CreateShortCut(New ToolStripMenuItem(ap.Name) With {.Tag = {ap, path}}, Nothing)
             Catch ex As Exception
@@ -869,6 +869,7 @@ Partial Public NotInheritable Class FrmMain
         Next
 
     End Sub
+    Shared ifrm As MenuScaleFixForm = Nothing
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
         CloseOtherDropDowns(cmsQuickLaunch.Items, New HashSet(Of ToolStripMenuItem))
         cmsQuickLaunch.Close()
@@ -883,7 +884,7 @@ Partial Public NotInheritable Class FrmMain
         pbZoom.Visible = False
         AButton.ActiveOverview = False
         If My.Computer.Keyboard.ShiftKeyDown AndAlso Not My.Computer.Keyboard.CtrlKeyDown Then
-            dBug.print("ShowSysMenu ")
+            dBug.Print("ShowSysMenu ")
             Dim pt As Point = sender.PointToClient(MousePosition)
             Me.ShowSysMenu(sender, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
             e.Cancel = True
@@ -937,19 +938,35 @@ Partial Public NotInheritable Class FrmMain
         '    (2 cases here. QL wrong cus of Scaling mismatch And QL wrong when opened from tray due to change in visiblity hidden items.
 
         Dim hwnd As IntPtr = sender.Handle
-        Dim rwM As RECT
-        Dim rcM As RECT
+        Dim rwM As RECT 'windowrect
+        Dim rcM As RECT 'cleintrect
+        Dim rfM As RECT 'framerect
+
         GetWindowRect(hwnd, rwM)
         GetClientRect(hwnd, rcM)
 
-        Debug.Print($"QL opened {rwM.ToRectangle} {rcM.ToRectangle} {rcM.right}")
+        DwmGetWindowAttribute(hwnd, DWMWA_EXTENDED_FRAME_BOUNDS, rfM, System.Runtime.InteropServices.Marshal.SizeOf(rfM))
+
+        Dim msc As Integer = ScreenManager.PrimaryScreen.ScalingPercent
+
+        Debug.Print($"QL opened {rwM.ToRectangle} {rcM.ToRectangle} {rfM.ToRectangle} {msc}% {Me.WindowsScaling}%")
 
         Dim loc As Point = New Point(rwM.left, rwM.top)
 
         If sender.SourceControl Is Nothing Then 'opened from tray
 
             loc = New Point(MousePosition - New Point(rcM.right, rcM.bottom))
+            If rwM.right = rfM.right Then ' AndAlso msc <> Me.WindowsScaling Then
+                loc = New Point(MousePosition.X * msc / 100 - rcM.right, MousePosition.Y * msc / 100 - rcM.bottom)
+            End If
+            If rwM.right <> rfM.right AndAlso msc <> Me.WindowsScaling Then
+                Debug.Print($"old loc = {loc}")
 
+                'loc = New Point(loc.X + 45, loc.Y - 230) ' ugh can't seem to find pattern here
+                ' solution? open invisible wind on main mon when/before opening?
+
+                Debug.Print($"new loc = {loc}")
+            End If
         End If
 
         ' if scaling_mismatch
@@ -959,14 +976,13 @@ Partial Public NotInheritable Class FrmMain
         SetWindowPos(hwnd, SWP_HWND.TOPMOST, loc.X, loc.Y, -1, -1, SetWindowPosFlags.IgnoreZOrder Or SetWindowPosFlags.IgnoreResize)
     End Sub
 
-
     Dim cts As New Threading.CancellationTokenSource
     Dim cantok As Threading.CancellationToken = cts.Token
     Private Sub CmsQuickLaunch_Closed(sender As ContextMenuStrip, e As ToolStripDropDownClosedEventArgs) Handles cmsQuickLaunch.Closed
         cts.Cancel() 'cancel deferred icon loading and setvis
         ctrlshift_pressed = False
         'sender.Items.Clear() 'this couses menu to stutter opening
-        dBug.print("cmsQuickLaunch closed reason:" & e.CloseReason.ToString)
+        dBug.Print("cmsQuickLaunch closed reason:" & e.CloseReason.ToString)
         'If AltPP IsNot Nothing AndAlso
         '    e.CloseReason <> ToolStripDropDownCloseReason.AppClicked AndAlso
         '    e.CloseReason <> ToolStripDropDownCloseReason.ItemClicked Then
@@ -995,13 +1011,13 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub QlCtxOpen(sender As MenuItem, e As EventArgs)
-        dBug.print($"QlCtxOpen sender:{sender}")
+        dBug.Print($"QlCtxOpen sender:{sender}")
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
         OpenLnk(sender.Parent.Tag, New MouseEventArgs(MouseButtons.Left, 1, MousePosition.X, MousePosition.Y, 0))
     End Sub
     Private Sub QlCtxOpenAll(sender As MenuItem, e As EventArgs)
-        dBug.print($"QlCtxOpenAll sender:{sender}")
+        dBug.Print($"QlCtxOpenAll sender:{sender}")
         Dim subitems As List(Of ToolStripMenuItem) = DirectCast(sender.Tag, ToolStripMenuItem).
                 DropDownItems.OfType(Of ToolStripMenuItem).
                 Where(Function(it) extensions.Contains(IO.Path.GetExtension(it.Tag(0))) AndAlso it.Visible).ToList()
@@ -1011,12 +1027,12 @@ Partial Public NotInheritable Class FrmMain
         If subitems.Count >= 10 Then
             If Not CustomMessageBox.Show(Me, $"This will open {subitems.Count} items.{vbCrLf}Continue?",
                                         "Confirm Opening", MessageBoxButtons.YesNo) = DialogResult.Yes Then
-                dBug.print("Too many subitems")
+                dBug.Print("Too many subitems")
                 Exit Sub
             End If
         End If
         For Each ddi As ToolStripMenuItem In subitems
-            dBug.print($"{ddi.Tag(0)}")
+            dBug.Print($"{ddi.Tag(0)}")
             OpenLnk(ddi, New MouseEventArgs(MouseButtons.Left, 1, MousePosition.X, MousePosition.Y, 0))
         Next
     End Sub
@@ -1025,7 +1041,7 @@ Partial Public NotInheritable Class FrmMain
         Dim Path As String = sender.Parent.Tag.Tag(0)
         Dim Name As String = sender.Parent.Tag.text
 
-        dBug.print($"QlCtxRename {Path} {Name}")
+        dBug.Print($"QlCtxRename {Path} {Name}")
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
         RenameMethod(Path, Name)
@@ -1041,7 +1057,7 @@ Partial Public NotInheritable Class FrmMain
                      While watch.ElapsedMilliseconds < 2000
                          Threading.Thread.Sleep(20)
                          hndl = FindWindow(scalaClass, title)
-                         dBug.print($"findwindow {hndl}")
+                         dBug.Print($"findwindow {hndl}")
                          If hndl <> IntPtr.Zero Then Exit While
                      End While
                      SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
@@ -1058,20 +1074,20 @@ Partial Public NotInheritable Class FrmMain
         Dim dialogTop = Math.Min(Math.Max(screenWA.Top, MousePosition.Y - 76), screenWA.Bottom - 152)
         Dim toName As String = InputBox("Enter New Name", title, currentName, dialogLeft, dialogTop).TrimEnd
         renameOpen = False
-        dBug.print($"Rename to {toName}")
+        dBug.Print($"Rename to {toName}")
         If toName <> "" AndAlso currentName <> toName Then
-            dBug.print($"oldpath: {Path}")
+            dBug.Print($"oldpath: {Path}")
             If hideExt.Contains(System.IO.Path.GetExtension(Path).ToLower) Then toName &= System.IO.Path.GetExtension(Path)
             'If Path.EndsWith("\") Then Path = System.IO.Path.GetDirectoryName(Path)
             If Path.EndsWith("\") Then Path = Path.TrimEnd("\")
-            dBug.print($"newpath: {System.IO.Path.GetDirectoryName(Path) & "\" & toName}")
+            dBug.Print($"newpath: {System.IO.Path.GetDirectoryName(Path) & "\" & toName}")
             If Not MoveFileW(Path, System.IO.Path.GetDirectoryName(Path) & "\" & toName) Then
                 Dim sb As New System.Text.StringBuilder(1024)
                 FormatMessage(Format_Message.FORMAT_MESSAGE_FROM_SYSTEM Or Format_Message.FORMAT_MESSAGE_IGNORE_INSERTS, 0,
                               Err.LastDllError, 0, sb, sb.Capacity, Nothing)
                 CustomMessageBox.Show(Me, $"Error renaming ""{currentName}"" to ""{toName}""{vbCrLf}{sb}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Else
-                dBug.print($"renamed to ""{toName}""")
+                dBug.Print($"renamed to ""{toName}""")
             End If
         End If
     End Sub
@@ -1082,7 +1098,7 @@ Partial Public NotInheritable Class FrmMain
         Dim Path As String = sender.Parent.Tag.tag(0)
         Dim name As String = sender.Parent.Tag.Text
 
-        dBug.print($"Delete {Path}")
+        dBug.Print($"Delete {Path}")
         Dim shiftdown = My.Computer.Keyboard.ShiftKeyDown
         Dim folderContentsMessage As String = vbCrLf
         If Path.EndsWith("\") Then
@@ -1111,8 +1127,8 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub QlCtxNewFolder(sender As MenuItem, e As EventArgs)
-        dBug.print($"QlCtxNewFolder sender:{sender}")
-        dBug.print($"tag:    {sender?.Tag}")
+        dBug.Print($"QlCtxNewFolder sender:{sender}")
+        dBug.Print($"tag:    {sender?.Tag}")
 
         Dim rootFolder As String = sender.Tag.Substring(0, sender.Tag.TrimEnd("\").LastIndexOf("\") + 1)
         'If rootFolder.EndsWith("\") Then
@@ -1127,8 +1143,8 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub QlCtxNewAlt(sender As MenuItem, e As EventArgs)
-        dBug.print($"newAlt: {sender.Text}")
-        dBug.print($"tag: {sender.Tag(1)}")
+        dBug.Print($"newAlt: {sender.Text}")
+        dBug.Print($"tag: {sender.Tag(1)}")
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
         Dim rootFolder As String = sender.Tag(1)
@@ -1149,7 +1165,7 @@ Partial Public NotInheritable Class FrmMain
     Private Sub QL_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs) 'Handles cmsQuickLaunch.mousedown
         If e.Button = MouseButtons.Right Then
 
-            dBug.print("QL_MouseDown")
+            dBug.Print("QL_MouseDown")
 
             DestroyMenu(QlCtxMenu.Handle) ' manual destroy old since we recreate everytime, might not be needed if we dispose
             QlCtxMenu.Dispose()           ' but better to err on the side of caution and do it anyways.
@@ -1224,7 +1240,7 @@ Partial Public NotInheritable Class FrmMain
                 SetMenuItemBitmaps(QlCtxNewMenu.Handle, i, MF_BYPOSITION, althbm, Nothing)
                 i += 1
             Next
-            dBug.print($"purgeList.Count {purgeList.Count}")
+            dBug.Print($"purgeList.Count {purgeList.Count}")
 
             TrackPopupMenuEx(QlCtxMenu.Handle, TPM_RECURSE Or TPM_RIGHTBUTTON, MousePosition.X, MousePosition.Y, ScalaHandle, Nothing)
 
@@ -1238,14 +1254,14 @@ Partial Public NotInheritable Class FrmMain
 
 
         ElseIf Not sender.Tag(0).EndsWith("\") Then 'do not process click on dirs as they are handled by doubleclick
-            dBug.print("clicked Not a dir")
+            dBug.Print("clicked Not a dir")
             Task.Run(Sub() OpenLnk(sender, e))
             'cmsQuickLaunch.Close(ToolStripDropDownCloseReason.ItemClicked)
         End If
     End Sub
 
     Private Sub OpenProps(ByVal sender As ToolStripMenuItem, ByVal e As MouseEventArgs) 'Handles smenu.MouseUp, item.MouseUp
-        dBug.print($"OpenProps {sender.Tag(0)} {sender.GetType}")
+        dBug.Print($"OpenProps {sender.Tag(0)} {sender.GetType}")
         Dim pth As String = sender.Tag(0).ToString.TrimEnd("\")
         If e.Button = MouseButtons.Right Then
             Dim sei As New SHELLEXECUTEINFO With {
@@ -1267,7 +1283,7 @@ Partial Public NotInheritable Class FrmMain
                                  While watch.ElapsedMilliseconds < 10000
                                      Await Task.Delay(20)
                                      hndl = FindWindow("#32770", WindowName)
-                                     dBug.print($"findwindow {hndl}")
+                                     dBug.Print($"findwindow {hndl}")
                                      If hndl <> IntPtr.Zero Then Exit While
                                  End While
                                  SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
@@ -1289,7 +1305,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub OpenLnk(ByVal sender As ToolStripItem, ByVal e As System.Windows.Forms.MouseEventArgs) 'handles item.MouseDown
-        dBug.print("openLnk: " & sender.Tag(0))
+        dBug.Print("openLnk: " & sender.Tag(0))
         If e Is Nothing Then Exit Sub
         If e.Button = MouseButtons.Right Then
             'OpenProps(sender, e)
@@ -1316,7 +1332,7 @@ Partial Public NotInheritable Class FrmMain
         Try
             pp.Start()
         Catch ex As Exception
-            dBug.print($"pp.start {ex.Message}")
+            dBug.Print($"pp.start {ex.Message}")
         Finally
             pp.Dispose()
             Task.Run(Sub()
@@ -1330,7 +1346,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub ChangeLinksDir()
-        dBug.print("changeLinksDir")
+        dBug.Print("changeLinksDir")
         Me.TopMost = False
         'Using fb As New FolderBrowserDialog
 
@@ -1357,13 +1373,13 @@ Partial Public NotInheritable Class FrmMain
 
     ReadOnly watchers As New List(Of System.IO.FileSystemWatcher)
     Public Sub UpdateWatchers(newPath As String)
-        dBug.print("updateWatchers")
+        dBug.Print("updateWatchers")
         For Each w As System.IO.FileSystemWatcher In watchers
             w.Path = newPath
         Next
     End Sub
     Private Sub InitWatchers()
-        dBug.print("initWatchers")
+        dBug.Print("initWatchers")
         For Each w As System.IO.FileSystemWatcher In watchers
             w.Dispose()
         Next
@@ -1426,9 +1442,9 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
     Private Sub OnDeleteDir(sender As System.IO.FileSystemWatcher, e As System.IO.FileSystemEventArgs)
-        dBug.print($"Delete Dir: {sender.NotifyFilter}")
-        dBug.print($"      Type: {e.ChangeType}")
-        dBug.print($"      Path: {e.FullPath}")
+        dBug.Print($"Delete Dir: {sender.NotifyFilter}")
+        dBug.Print($"      Type: {e.ChangeType}")
+        dBug.Print($"      Path: {e.FullPath}")
 
         If e.ChangeType = IO.WatcherChangeTypes.Deleted Then
             For Each key In iconCache.Keys.Where(Function(k) k.StartsWith(e.FullPath & "\"))
@@ -1437,9 +1453,9 @@ Partial Public NotInheritable Class FrmMain
         End If
     End Sub
     Private Sub OnRenamedDir(sender As System.IO.FileSystemWatcher, e As System.IO.RenamedEventArgs)
-        dBug.print($"Renamed Dir: {sender.NotifyFilter}")
-        dBug.print($"        Old: {e.OldFullPath}")
-        dBug.print($"        New: {e.FullPath}")
+        dBug.Print($"Renamed Dir: {sender.NotifyFilter}")
+        dBug.Print($"        Old: {e.OldFullPath}")
+        dBug.Print($"        New: {e.FullPath}")
 
         For Each key In iconCache.Keys.Where(Function(k) k.StartsWith(e.OldFullPath & "\"))
             Dim item As Bitmap = Nothing
@@ -1447,9 +1463,9 @@ Partial Public NotInheritable Class FrmMain
         Next
     End Sub
     Private Sub OnRenamed(sender As System.IO.FileSystemWatcher, e As System.IO.RenamedEventArgs)
-        dBug.print($"Renamed File: {sender.NotifyFilter}")
-        dBug.print($"         Old: {e.OldFullPath}")
-        dBug.print($"         New: {e.FullPath}")
+        dBug.Print($"Renamed File: {sender.NotifyFilter}")
+        dBug.Print($"         Old: {e.OldFullPath}")
+        dBug.Print($"         New: {e.FullPath}")
 
         Dim item As Bitmap = Nothing
         If iconCache.TryRemove(e.OldFullPath, item) Then iconCache.TryAdd(e.FullPath, item)
@@ -1457,8 +1473,8 @@ Partial Public NotInheritable Class FrmMain
     End Sub
     Private Sub OnChanged(sender As System.IO.FileSystemWatcher, e As System.IO.FileSystemEventArgs)
         If e.ChangeType = System.IO.WatcherChangeTypes.Changed Then
-            dBug.print(sender.ToString)
-            dBug.print($"Changed: {e.FullPath}")
+            dBug.Print(sender.ToString)
+            dBug.Print($"Changed: {e.FullPath}")
             If e.FullPath.ToLower.EndsWith("desktop.ini") Then
                 iconCache.TryRemove(e.FullPath.Substring(0, e.FullPath.LastIndexOf("\") + 1), Nothing)
             End If
