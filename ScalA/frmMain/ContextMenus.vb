@@ -891,6 +891,18 @@ Partial Public NotInheritable Class FrmMain
             Exit Sub
         End If
 
+        If sender.SourceControl Is Nothing Then 'opened from tray
+            If ifrm Is Nothing Then
+                ifrm = New MenuScaleFixForm(Screen.PrimaryScreen)
+                ifrm.Show()
+                Task.Run(Sub() Me.Invoke(Sub() cmsQuickLaunch.Show(MousePosition)))
+                e.Cancel = True
+                Exit Sub
+            End If
+        Else
+            ifrm?.Close()
+            ifrm = Nothing
+        End If
 
         'tmrTick.Interval = 1000
         sender.Items.Clear()
@@ -1486,6 +1498,30 @@ Partial Public NotInheritable Class FrmMain
 
 
 End Class
+
+Public NotInheritable Class MenuScaleFixForm : Inherits Form
+    Protected Overloads Overrides ReadOnly Property ShowWithoutActivation() As Boolean
+        Get
+            Return False
+        End Get
+    End Property
+    Public Sub New(scrn As Screen)
+        Me.FormBorderStyle = FormBorderStyle.None
+        Me.BackColor = Color.Red
+        Me.TransparencyKey = Me.BackColor
+        Me.ShowInTaskbar = False
+        Me.StartPosition = FormStartPosition.Manual
+        Me.Location = scrn.Bounds.Location
+    End Sub
+    Public Sub frm_opening() Handles Me.Load
+        Me.Owner = FrmMain
+    End Sub
+    Public Sub frm_shown() Handles Me.Shown
+        Me.Location += New Point(1, 1)
+    End Sub
+End Class
+
+
 Module ImageExtension
     ''' <summary>
     ''' Returns an image with desired opacity.
