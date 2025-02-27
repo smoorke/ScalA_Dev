@@ -176,7 +176,7 @@
                                           End Sub
         AddHandler grab.Shown, GrabHandler
 
-        'BUG: due to this blocking operation the user cannot drag across monitor boundaries
+        'BUG: due to this blocking operation the user cannot drag across monitor boundaries 'do not call in WM_poschange
         grab.ShowDialog()
 
         Return grab.Tag
