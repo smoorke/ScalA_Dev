@@ -273,11 +273,6 @@ Partial NotInheritable Class FrmMain
 
         Dim scm As ScreenManager = ScreenManager.FromScreen(Screen.FromControl(Me))
         Dim ssm As Boolean = scm.SameScalingModesNW
-        If ssm Then
-            pnlWarning.Hide()
-        Else
-            pnlWarning.Show()
-        End If
 
         Return
 
@@ -306,7 +301,7 @@ Partial NotInheritable Class FrmMain
             dBug.Print($"left {leftScreen?.Bounds} {leftScreen?.ScalingPercent}")
             If leftScreen.ScalingPercent <> currentScaling Then
                 dBug.Print($"Left screen has different scaling: {leftScreen.ScalingPercent}%")
-                pnlWarning.Show()
+                'pnlWarning.Show()
                 Exit Sub
             End If
         Next
@@ -315,25 +310,12 @@ Partial NotInheritable Class FrmMain
             dBug.Print($"top  {topScreen?.Bounds} {topScreen?.ScalingPercent}")
             If topScreen.ScalingPercent <> currentScaling Then
                 dBug.Print($"Top screen has different scaling: {topScreen.ScalingPercent}%")
-                pnlWarning.Show()
+                'pnlWarning.Show()
                 Exit Sub
             End If
         Next
         'pnlWarning.Hide()
 
-    End Sub
-    Private Sub CheckLeftMonitorScaling()
-        dBug.Print("-CheckLeftMonitorScaling-")
-        Dim curr As Screen = Screen.FromControl(Me)
-        If ScreenManager.FromScreen(curr).ScreensAdjacentToLeft().Any(Function(sm) sm.ScalingPercent <> curr.ScalingPercent) Then
-            dBug.Print("LeftScaling Warning Show", 1)
-            pnlWarning.Show()
-        Else
-            If pbWarning IsNot Nothing Then
-                dBug.Print("LeftScaling Warning Hide", 1)
-                pnlWarning.Hide()
-            End If
-        End If
     End Sub
 
 End Class

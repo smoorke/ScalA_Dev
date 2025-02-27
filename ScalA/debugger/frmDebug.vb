@@ -254,12 +254,5 @@ Public Class frmDebug
         FrmMain.pnlUpdate.Visible = Not FrmMain.pnlUpdate.Visible
     End Sub
 
-    Private Sub chkShowWarning_CheckedChanged(sender As Object, e As EventArgs) Handles chkShowWarning.CheckedChanged
-        FrmMain.pnlWarning.Visible = Not FrmMain.pnlWarning.Visible
-    End Sub
-
-
-
-
 #End If
 End Class

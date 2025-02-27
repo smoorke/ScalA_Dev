@@ -12,12 +12,12 @@ Partial NotInheritable Class FrmMain
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case Hotkey.WM_HOTKEY
-                dBug.print($"Hotkey {m.WParam} pressed")
+                dBug.Print($"Hotkey {m.WParam} pressed")
                 Select Case m.WParam
                     Case 1 'ctrl-tab
                         'only perform switch when astonia or scala Is active
                         Dim activeID = GetActiveProcessID()
-                        dBug.print("aID " & activeID & " selfPID " & scalaPID)
+                        dBug.Print("aID " & activeID & " selfPID " & scalaPID)
                         If activeID = scalaPID OrElse Process.GetProcessById(activeID).IsAstonia Then
                             If Me.WindowState = FormWindowState.Minimized Then
                                 SendMessage(ScalaHandle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
@@ -37,12 +37,12 @@ Partial NotInheritable Class FrmMain
                         Dim activeID As Integer = GetActiveProcessID()
                         Dim activeHandle = GetForegroundWindow()
                         Dim activeProc = Process.GetProcessById(activeID)
-                        dBug.print("--Before--")
-                        dBug.print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
-                        dBug.print($"Trget {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
-                        dBug.print($"tgtOwner {GetWindowLong(activeHandle, GWL_HWNDPARENT)}")
+                        dBug.Print("--Before--")
+                        dBug.Print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                        dBug.Print($"Trget {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                        dBug.Print($"tgtOwner {GetWindowLong(activeHandle, GWL_HWNDPARENT)}")
                         If activeID = scalaPID OrElse activeProc.IsScalA() Then
-                            dBug.print("Cannot set self topmost with hotkey")
+                            dBug.Print("Cannot set self topmost with hotkey")
                             Exit Sub
                         End If
                         If Not activeProc.IsAstonia Then
@@ -53,10 +53,10 @@ Partial NotInheritable Class FrmMain
                                                   -1, -1, -1, -1,
                                                   SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
 
-                                dBug.print("--Mid 1--")
-                                dBug.print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
-                                dBug.print($"Trget {activeProc.MainWindowTitle.Cap(10)} {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
-                                dBug.print($"tgtOwner {GetWindowLong(activeHandle, GWL_HWNDPARENT)}")
+                                dBug.Print("--Mid 1--")
+                                dBug.Print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                                dBug.Print($"Trget {activeProc.MainWindowTitle.Cap(10)} {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                                dBug.Print($"tgtOwner {GetWindowLong(activeHandle, GWL_HWNDPARENT)}")
 
                                 If My.Settings.topmost Then
                                     Dim ownerHndl As IntPtr = GetWindowLong(activeHandle, GWL_HWNDPARENT)
@@ -71,7 +71,7 @@ Partial NotInheritable Class FrmMain
                                             'todo: restore taskbar visibility?
                                             'AppActivate(activeID) 'doesn't work
                                         Catch ex As Exception
-                                            dBug.print(ex.Message)
+                                            dBug.Print(ex.Message)
                                         End Try
                                     End If
                                 End If
@@ -81,10 +81,10 @@ Partial NotInheritable Class FrmMain
                                 Me.TopMost = My.Settings.topmost
                             End Try
                         End If
-                        dBug.print("---After---")
-                        dBug.print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
-                        dBug.print($"Trget {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
-                        dBug.print($"tgtOwner {GetWindowLong(activeHandle, GWL_HWNDPARENT)}")
+                        dBug.Print("---After---")
+                        dBug.Print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                        dBug.Print($"Trget {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                        dBug.Print($"tgtOwner {GetWindowLong(activeHandle, GWL_HWNDPARENT)}")
                     Case 6 'AlterOverviewPlus
                         My.Settings.ExtraMaxColRow += 1
                     Case 7 'AlteroverviewMin
@@ -96,7 +96,7 @@ Partial NotInheritable Class FrmMain
             Case WM_SYSCOMMAND
                 Select Case m.WParam
                     Case SC_RESTORE
-                        dBug.print("SC_RESTORE " & m.LParam.ToString)
+                        dBug.Print("SC_RESTORE " & m.LParam.ToString)
                         Attach(AltPP)
 
                         SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
@@ -116,11 +116,11 @@ Partial NotInheritable Class FrmMain
                         End If
                         moveBusy = False
                         If WindowState = FormWindowState.Maximized Then
-                            dBug.print("Restore clicking btnMax")
+                            dBug.Print("Restore clicking btnMax")
                             btnMax.PerformClick()
                             Exit Sub
                         End If
-                        dBug.print("wasMax " & wasMaximized)
+                        dBug.Print("wasMax " & wasMaximized)
                         If wasMaximized Then
                             'suppressRestoreBounds = True
                             SetWindowPos(ScalaHandle, SWP_HWND.TOP, MaximizedBounds.X, MaximizedBounds.Y, MaximizedBounds.Width, MaximizedBounds.Height,
@@ -135,7 +135,7 @@ Partial NotInheritable Class FrmMain
                         suppressWM_MOVEcwp = False
                         Exit Sub
                     Case SC_MAXIMIZE
-                        dBug.print("SC_MAXIMIZE " & m.LParam.ToString)
+                        dBug.Print("SC_MAXIMIZE " & m.LParam.ToString)
                         If AltPP?.IsMinimized Then
                             AltPP.Restore()
                         End If
@@ -144,10 +144,10 @@ Partial NotInheritable Class FrmMain
                             'Me.Location = RestoreLoc
                         End If
                         btnMax.PerformClick()
-                        dBug.print("wasMax " & wasMaximized)
+                        dBug.Print("wasMax " & wasMaximized)
                         m.Result = 0
                     Case SC_MINIMIZE
-                        dBug.print("SC_MINIMIZE")
+                        dBug.Print("SC_MINIMIZE")
                         btnMin.PerformClick()
                         m.Result = 0
                         Exit Sub
@@ -156,7 +156,7 @@ Partial NotInheritable Class FrmMain
                         m.Result = 0
                         Exit Sub
                     Case MC_SETTINGS
-                        dBug.print("Settings called by sysMenu")
+                        dBug.Print("Settings called by sysMenu")
                         FrmSettings.Show()
                         FrmSettings.WindowState = FormWindowState.Normal
                         Exit Sub
@@ -184,7 +184,7 @@ Partial NotInheritable Class FrmMain
                     End If
                 End If
             Case WM_EXITSIZEMOVE
-                dBug.print($"WM_EXITSIZEMOVE")
+                dBug.Print($"WM_EXITSIZEMOVE")
                 If Not (My.Settings.gameOnOverview AndAlso cboAlt.SelectedIndex = 0) Then UpdateThumb(If(chkDebug.Checked, 128, 255))
                 If My.Settings.SizingBorder Then
                     If Me.WindowState = FormWindowState.Maximized Then
@@ -194,9 +194,6 @@ Partial NotInheritable Class FrmMain
                     End If
                 End If
                 AltPP?.ResetCache()
-
-                'find out if screen to the left and top are at diffrent scaling modes
-                CheckScreenScalingModes()
 
                 Me.Invalidate()
                 moveBusy = False
@@ -236,7 +233,7 @@ Partial NotInheritable Class FrmMain
                                          dBug.print("WM_SIZE Except")
                                      Finally
                                          sizeMoveBusy = False
-                                         ' moveBusy = False
+                                         moveBusy = False
                                      End Try
                                  End Sub)
                     End If
@@ -315,6 +312,7 @@ Partial NotInheritable Class FrmMain
                 If FrmSizeBorder IsNot Nothing AndAlso Me.WindowState = FormWindowState.Normal Then
                     FrmSizeBorder.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)
                 End If
+
                 If wasMaximized AndAlso caption_Mousedown Then
                     'Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
                     'winpos.flags = SetWindowPosFlags.IgnoreMove
@@ -336,43 +334,50 @@ Partial NotInheritable Class FrmMain
                     If cboAlt.SelectedIndex > 0 Then AltPP?.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition Or SetWindowPosFlags.DoNotActivate)
                     pnlTitleBar.Width = winpos.cx - pnlButtons.Width - pnlSys.Width
                     dBug.print($"winpos location {New Point(winpos.x, winpos.y)}")
-                dBug.print($"winpos size {New Size(winpos.cx, winpos.cy)}")
+                    dBug.Print($"winpos size {New Size(winpos.cx, winpos.cy)}")
                     'System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                     FrmSizeBorder.Opacity = If(chkDebug.Checked, 1, 0.01)
                     FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, FrmSizeBorder.Opacity, 0)
                     'posChangeBusy = False
                     Exit Sub
                 End If
+
             Case WM_WININICHANGE '&H1A 
-                'BUG: somethings cause hangs here? only when an alt is selected (chenge taskbar autohide, etc...) FIXED?
-                Detach(False) 'SetWindowLong(ScalaHandle, GWL_HWNDPARENT, 0)
+                Detach(False) 'Fix hang on changing taskbar autohide/size
                 dBug.Print($"WM_WININICHANGE {m.LParam} {m.WParam}")
                 Dim settingnname = Runtime.InteropServices.Marshal.PtrToStringAuto(m.LParam)
+                dBug.Print($"sn=""{settingnname}""")
                 If settingnname = "VisualEffects" Then
                     AnimsEnabled = getAnimationsEnabled()
                     dBug.Print($"Animations {AnimsEnabled}")
-                Else
-                    SuppressWININICHANGECounter += 1
-                    dBug.Print($"ReschangeCounter {SuppressWININICHANGECounter}")
+                    'Attach(AltPP)
                 End If
-                If SuppressWININICHANGECounter >= 4 Then
-                    If m.LParam = IntPtr.Zero AndAlso Me.WindowState = FormWindowState.Maximized Then
-                        'handle taskbar changing
-                        Dim newWA = Screen.FromPoint(Me.Location + New Point(Me.Width / 2, Me.Height / 2)).WorkingArea
-                        'only do adjustment when size change or moved from top/bottom to sides
-                        If newWA.Height <> prevWA.Height OrElse newWA.Width <> prevWA.Width Then
-                            dBug.print($"Taskbar changed {prevWA}->{newWA}")
-                            Me.WindowState = FormWindowState.Normal
-                            btnMax.PerformClick() 'todo replace with gracefull resizing
-                        End If
+                If m.LParam = IntPtr.Zero AndAlso Me.WindowState = FormWindowState.Maximized Then
+                    'handle taskbar changing
+                    Dim newWA = Screen.FromPoint(Me.Location + New Point(Me.Width / 2, Me.Height / 2)).WorkingArea
+                    'only do adjustment when size change or moved from top/bottom to sides
+                    If newWA.Height <> prevWA.Height OrElse newWA.Width <> prevWA.Width Then
+                        dBug.Print($"Taskbar changed {prevWA}->{newWA}")
+                        Me.WindowState = FormWindowState.Normal
+                        btnMax.PerformClick() 'todo replace with gracefull resizing
                     End If
-                    Attach(AltPP) 'SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
-                    SuppressWININICHANGECounter = 0
+                End If
+                dBug.Print($"sRC:{suppressResChange} sMB:{Me.sizeMoveBusy} swpB:{swpBusy} mB:{moveBusy}")
+                If m.WParam = 47 Then
+                    moveBusy = False
+                    If cboAlt.SelectedIndex > 0 Then
+                        CmbResolution_SelectedIndexChanged(cmbResolution, EventArgs.Empty)
+                    End If
                 End If
             Case WM_DISPLAYCHANGE
-                dBug.print($"WM_DISPLAYCHANGE w {m.WParam} w {m.LParam}")
-                CheckScreenScalingModes()
+                dBug.Print($"WM_DISPLAYCHANGE w {m.WParam} w {m.LParam}")
+                'cboAlt.SelectedIndex = 0
+                'Detach(False)
                 ScreenManager.resetCache()
+
+
+
+                'CheckScreenScalingModes()
                 AstoniaProcess.BiggestWindowHeight = 0
                 AstoniaProcess.BiggestWindowWidth = 0
             Case WM_ENTERMENULOOP
@@ -391,20 +396,20 @@ Partial NotInheritable Class FrmMain
                 '    SysMenu.Disable(SC_MINIMIZE)
                 'Else
                 If Me.WindowState = FormWindowState.Minimized Then
-                        SysMenu.Disable(SC_MINIMIZE)
-                    Else
-                        SysMenu.Enable(SC_MINIMIZE)
-                    End If
-                    If Me.WindowState = FormWindowState.Normal Then
-                        SysMenu.Disable(SC_RESTORE)
-                        SysMenu.Enable(SC_SIZE)
-                        SysMenu.Enable(SC_MOVE)
-                        SysMenu.Enable(SC_MAXIMIZE)
-                    Else
-                        SysMenu.Enable(SC_RESTORE)
-                        SysMenu.Disable(SC_SIZE)
-                        SysMenu.Disable(SC_MOVE)
-                    End If
+                    SysMenu.Disable(SC_MINIMIZE)
+                Else
+                    SysMenu.Enable(SC_MINIMIZE)
+                End If
+                If Me.WindowState = FormWindowState.Normal Then
+                    SysMenu.Disable(SC_RESTORE)
+                    SysMenu.Enable(SC_SIZE)
+                    SysMenu.Enable(SC_MOVE)
+                    SysMenu.Enable(SC_MAXIMIZE)
+                Else
+                    SysMenu.Enable(SC_RESTORE)
+                    SysMenu.Disable(SC_SIZE)
+                    SysMenu.Disable(SC_MOVE)
+                End If
                 'End If
             Case WM_DWMCOLORIZATIONCOLORCHANGED
                 If Not ThemeChanging Then
@@ -418,6 +423,7 @@ Partial NotInheritable Class FrmMain
                             Me.Invalidate()
                         End If
                     End If
+                    m.Result = 0
                     Task.Run(Sub()
                                  Threading.Thread.Sleep(7500)
                                  ThemeChanging = False
@@ -541,61 +547,24 @@ Partial NotInheritable Class FrmMain
 
             Case &H319 ' WM_APPCOMMAND
 
-            Case &HC059 To &HC2BC ' unknown
+            Case &HC059 To &HC2BC ' unknown VS/Debug messages?
 
             Case Else
                 Debug.Print($"Unhandeld WM_ 0x{m.Msg:X8} &H{m.Msg:X8} w{m.WParam} {m.LParam}")
 #End If
         End Select
+
         MyBase.WndProc(m)  ' allow form to process this message
+
+        If m.Msg = WM_WININICHANGE Then
+            Attach(AltPP)
+        End If
+
+
     End Sub
 
     Dim prevLoc As Point
     Dim sizeMoveBusy As Boolean = False
 
-
-
-    ' Function to find out if screens to the left and top are at different scaling modes
-    ' TODO: replace with screenmanager calls
-    Private Sub CheckScreenScalingModes()
-        Dim currentScreen = Screen.FromHandle(Me.Handle)
-        Dim currentScaling = currentScreen.ScalingPercent()
-
-        Dim leftScreens As New List(Of Screen)
-        Dim topScreens As New List(Of Screen)
-
-        For Each scr As Screen In Screen.AllScreens
-
-            If scr.Bounds.Right < currentScreen.Bounds.Left Then
-                leftScreens.Add(scr)
-            End If
-
-            If scr.Bounds.Bottom < currentScreen.Bounds.Top Then
-                topScreens.Add(scr)
-            End If
-        Next
-
-        dBug.Print($"self {currentScreen?.Bounds} {currentScreen?.ScalingPercent}")
-
-        For Each leftScreen In leftScreens
-            dBug.Print($"left {leftScreen?.Bounds} {leftScreen?.ScalingPercent}")
-            If leftScreen.ScalingPercent <> currentScaling Then
-                dBug.Print($"Left screen has different scaling: {leftScreen.ScalingPercent}%")
-                pnlWarning.Show()
-                Exit Sub
-            End If
-        Next
-
-        For Each topScreen In topScreens
-            dBug.Print($"top  {topScreen?.Bounds} {topScreen?.ScalingPercent}")
-            If topScreen.ScalingPercent <> currentScaling Then
-                dBug.Print($"Top screen has different scaling: {topScreen.ScalingPercent}%")
-                pnlWarning.Show()
-                Exit Sub
-            End If
-        Next
-        pnlWarning.Hide()
-
-    End Sub
 
 End Class

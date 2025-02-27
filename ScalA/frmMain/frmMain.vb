@@ -282,11 +282,10 @@ Partial Public NotInheritable Class FrmMain
         Dim rcWind As RECT
         GetWindowRect(ScalaHandle, rcWind)
         Dim percent = Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25
-        If percent = 100 Then
-            FrmSettings.pb100PWarning.Hide()
-        Else
-            FrmSettings.pb100PWarning.Show()
-        End If
+
+        FrmSettings.pb100PWarning.Visible = percent <> 100
+
+        dBug.Print($"WS: settings vis {FrmSettings.Visible}")
         If Double.IsNaN(percent) Then Return 100
         Return percent
     End Function
@@ -516,6 +515,7 @@ Partial Public NotInheritable Class FrmMain
         'spawn IPC waiter thread
         Dim waitThread As New Threading.Thread(AddressOf IPC.SelectSemaThread) With {.IsBackground = True}
         waitThread.Start(Me)
+
     End Sub
 
     Public bmShield As Bitmap
@@ -550,7 +550,7 @@ Partial Public NotInheritable Class FrmMain
 
         IPC.AddOrUpdateInstance(scalaPID, cboAlt.SelectedIndex = 0, If(cboAlt.SelectedIndex = 0, Nothing, cboAlt.SelectedItem.id), showingSomeone)
 
-        CheckScreenScalingModes()
+        'CheckScreenScalingModes()
 
         'Dim sb As Rectangle = Me.RectangleToScreen(pbZoom.Bounds)
         ' frmOverlay.Bounds = sb 'New Rectangle(sb.X, sb.Y + 21, sb.Width, sb.Height - 21)
@@ -1808,24 +1808,5 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
-    Private Sub pbWarning_Click(sender As Object, e As EventArgs) Handles pbWarning.Click
-        'Dim res As MsgBoxResult = MessageBox.Show(Me,
-        '                    "For best results Astonia needs to be running with" &
-        '           vbCrLf & " Application High DPI scaling override." &
-        '           vbCrLf &
-        '           vbCrLf & "Click Yes to apply this setting. (client restart required)" &
-        '           vbCrLf & "Click Cancel to ignore future warnings (hide icon)", "Information",
-        '                MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2)
-        'If res = MsgBoxResult.Yes Then
-        '    AltPP.RegHighDpiAware = True
-        '    If MessageBox.Show(Me, "Restart Required for settings to take effect.", "Restart Client?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1) = MsgBoxResult.Ok Then
-        '        AltPP.restart()
-        '    End If
-        'End If
-        'If res = MsgBoxResult.Cancel Then
-        '    'My.Settings.IgnoreWindowsScalingIssue = True
-        '    pnlWarning.Hide()
-        'End If
-    End Sub
 
 End Class
