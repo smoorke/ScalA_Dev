@@ -249,5 +249,17 @@ Public Class frmDebug
     Private Sub btnTestScreenManager_Click(sender As Object, e As EventArgs) Handles btnTestScreenManager.Click
         ScreenManagerTests.RunTests(Screen.FromControl(Me))
     End Sub
+
+    Private Sub chkForceShowUpdate_CheckedChanged(sender As Object, e As EventArgs) Handles chkForceShowUpdate.CheckedChanged
+        FrmMain.pnlUpdate.Visible = Not FrmMain.pnlUpdate.Visible
+    End Sub
+
+    Private Sub chkShowWarning_CheckedChanged(sender As Object, e As EventArgs) Handles chkShowWarning.CheckedChanged
+        FrmMain.pnlWarning.Visible = Not FrmMain.pnlWarning.Visible
+    End Sub
+
+
+
+
 #End If
 End Class

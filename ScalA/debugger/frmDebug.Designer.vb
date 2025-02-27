@@ -46,6 +46,8 @@ Partial Class frmDebug
         Me.tbLogLevel = New System.Windows.Forms.TrackBar()
         Me.lblLogLevel = New System.Windows.Forms.Label()
         Me.btnTestScreenManager = New System.Windows.Forms.Button()
+        Me.chkForceShowUpdate = New System.Windows.Forms.CheckBox()
+        Me.chkShowWarning = New System.Windows.Forms.CheckBox()
         lblMinimum = New System.Windows.Forms.Label()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
@@ -227,6 +229,26 @@ Partial Class frmDebug
         Me.btnTestScreenManager.Text = "ScreenManager"
         Me.btnTestScreenManager.UseVisualStyleBackColor = True
         '
+        'chkForceShowUpdate
+        '
+        Me.chkForceShowUpdate.AutoSize = True
+        Me.chkForceShowUpdate.Location = New System.Drawing.Point(611, 399)
+        Me.chkForceShowUpdate.Name = "chkForceShowUpdate"
+        Me.chkForceShowUpdate.Size = New System.Drawing.Size(125, 17)
+        Me.chkForceShowUpdate.TabIndex = 12
+        Me.chkForceShowUpdate.Text = "Show Update Button"
+        Me.chkForceShowUpdate.UseVisualStyleBackColor = True
+        '
+        'chkShowWarning
+        '
+        Me.chkShowWarning.AutoSize = True
+        Me.chkShowWarning.Location = New System.Drawing.Point(611, 413)
+        Me.chkShowWarning.Name = "chkShowWarning"
+        Me.chkShowWarning.Size = New System.Drawing.Size(123, 17)
+        Me.chkShowWarning.TabIndex = 13
+        Me.chkShowWarning.Text = "Show Warning Picto"
+        Me.chkShowWarning.UseVisualStyleBackColor = True
+        '
         'frmDebug
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -244,6 +266,8 @@ Partial Class frmDebug
         Me.Controls.Add(Me.chkAutoScroll)
         Me.Controls.Add(Me.txtDebugLog)
         Me.Controls.Add(Me.tbLogLevel)
+        Me.Controls.Add(Me.chkShowWarning)
+        Me.Controls.Add(Me.chkForceShowUpdate)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
@@ -277,5 +301,7 @@ Partial Class frmDebug
     Friend WithEvents cmsSSDebug As ContextMenuStrip
     Friend WithEvents ToggleDPIToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents btnTestScreenManager As Button
+    Friend WithEvents chkForceShowUpdate As CheckBox
+    Friend WithEvents chkShowWarning As CheckBox
 End Class
 #End If

@@ -44,20 +44,25 @@
 #End If
     End Function
 
+    Private _NWScaling As Boolean? = Nothing
     ''' <summary>
-    ''' Retruns True when one or more screens to the left and/or top are in different scaling modes.
-    ''' Result is not cached as this should be run infrequently
+    ''' Returns False when one or more screens to the left and/or top are in different scaling modes.
+    ''' Caches the result to avoid repeated calculations.
     ''' </summary>
     ''' <returns></returns>
-    Public Shared Function SameScalingModesNW(scr As Screen) As Boolean
+    ''' 
+    ''' TODO: cache result
+    Public Function SameScalingModesNW() As Boolean
 #If DEBUG Then
         Dim sw As Stopwatch = New Stopwatch
         Try
             sw.Start()
 #End If
+            If _NWScaling IsNot Nothing Then Return _NWScaling
+
             Dim allScreens As Screen() = Screen.AllScreens
             If allScreens.Length > 1 Then
-                Dim scrm As ScreenManager = ScreenManager.FromScreen(scr)
+                Dim scrm As ScreenManager = ScreenManager.FromScreen(Me._screen)
 
                 Dim currentScaling As Integer = scrm.ScalingPercent()
 
@@ -71,17 +76,18 @@
                     If (s.Bounds.IntersectsWith(leftRect) OrElse s.Bounds.IntersectsWith(topRect)) Then
                         Dim sM As ScreenManager = ScreenManager.FromScreen(s)
                         If sM.ScalingPercent() <> currentScaling Then
+                            _NWScaling = False
                             Return False
                         End If
                     End If
                 Next
             End If
-
+            _NWScaling = True
             Return True
 #If DEBUG Then
         Finally
             sw.Stop()
-            dBug.Print($"Checking scaling modes took {sw.ElapsedMilliseconds}ms")
+            dBug.Print($"Checking scaling modes took {sw.ElapsedMilliseconds}ms result:{_NWScaling}")
         End Try
         Return False
 #End If
@@ -153,6 +159,7 @@
     Private Const DWMWA_EXTENDED_FRAME_BOUNDS = 9
     Private Function _ScalingPercent() As Integer
         'TODO: investigate GetScaleFactorForMonitor (win8.1 and up only) and incorporate here if usefull
+
         If Me._screen Is Nothing Then Throw New NullReferenceException("_screen is nothing")
 
         Dim grab As New InactiveForm(Me._screen)
@@ -168,7 +175,10 @@
                                               grab.Dispose()
                                           End Sub
         AddHandler grab.Shown, GrabHandler
+
+        'BUG: due to this blocking operation the user cannot drag across monitor boundaries
         grab.ShowDialog()
+
         Return grab.Tag
 
     End Function
@@ -252,6 +262,85 @@
         End Get
     End Property
 End Class
+
+Partial NotInheritable Class FrmMain
+
+    ' Function to find out if screens to the left and top are at different scaling modes
+    ' TODO: replace with screenmanager calls
+    ' BUG: false positive on screen to NW (and SE?)
+    Private Sub CheckScreenScalingModes()
+
+
+        Dim scm As ScreenManager = ScreenManager.FromScreen(Screen.FromControl(Me))
+        Dim ssm As Boolean = scm.SameScalingModesNW
+        If ssm Then
+            pnlWarning.Hide()
+        Else
+            pnlWarning.Show()
+        End If
+
+        Return
+
+        '' OLD
+
+        Dim currentScreen = Screen.FromHandle(Me.Handle)
+        Dim currentScaling = currentScreen.ScalingPercent()
+
+        Dim leftScreens As New List(Of Screen)
+        Dim topScreens As New List(Of Screen)
+
+        For Each scr As Screen In Screen.AllScreens
+
+            If scr.Bounds.Right < currentScreen.Bounds.Left Then
+                leftScreens.Add(scr)
+            End If
+
+            If scr.Bounds.Bottom < currentScreen.Bounds.Top Then
+                topScreens.Add(scr)
+            End If
+        Next
+
+        dBug.Print($"self {currentScreen?.Bounds} {currentScreen?.ScalingPercent}")
+
+        For Each leftScreen In leftScreens
+            dBug.Print($"left {leftScreen?.Bounds} {leftScreen?.ScalingPercent}")
+            If leftScreen.ScalingPercent <> currentScaling Then
+                dBug.Print($"Left screen has different scaling: {leftScreen.ScalingPercent}%")
+                pnlWarning.Show()
+                Exit Sub
+            End If
+        Next
+
+        For Each topScreen In topScreens
+            dBug.Print($"top  {topScreen?.Bounds} {topScreen?.ScalingPercent}")
+            If topScreen.ScalingPercent <> currentScaling Then
+                dBug.Print($"Top screen has different scaling: {topScreen.ScalingPercent}%")
+                pnlWarning.Show()
+                Exit Sub
+            End If
+        Next
+        'pnlWarning.Hide()
+
+    End Sub
+    Private Sub CheckLeftMonitorScaling()
+        dBug.Print("-CheckLeftMonitorScaling-")
+        Dim curr As Screen = Screen.FromControl(Me)
+        If ScreenManager.FromScreen(curr).ScreensAdjacentToLeft().Any(Function(sm) sm.ScalingPercent <> curr.ScalingPercent) Then
+            dBug.Print("LeftScaling Warning Show", 1)
+            pnlWarning.Show()
+        Else
+            If pbWarning IsNot Nothing Then
+                dBug.Print("LeftScaling Warning Hide", 1)
+                pnlWarning.Hide()
+            End If
+        End If
+    End Sub
+
+End Class
+
+
+
+
 Module ScreenExtensions
 
     Private Const DWMWA_EXTENDED_FRAME_BOUNDS = 9
