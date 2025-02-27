@@ -871,6 +871,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
     Shared ifrm As MenuScaleFixForm = Nothing
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
+
         If Not (My.Computer.Keyboard.ShiftKeyDown AndAlso Not My.Computer.Keyboard.CtrlKeyDown) Then
             If sender.SourceControl Is Nothing Then 'opened from tray
                 If ifrm Is Nothing Then
@@ -905,6 +906,7 @@ Partial Public NotInheritable Class FrmMain
             e.Cancel = True
             Exit Sub
         End If
+
         'tmrTick.Interval = 1000
         sender.Items.Clear()
 
@@ -943,6 +945,8 @@ Partial Public NotInheritable Class FrmMain
 
         If watchers.Count = 0 Then InitWatchers()
 
+        ' Dim dummy = FrmSettings.Visible 'needed or frmsettings reference in cmsQuickLaunch.Opened event may cause it to close
+
     End Sub
 
     Private closeAllAtBottom As Boolean = True
@@ -962,7 +966,8 @@ Partial Public NotInheritable Class FrmMain
 
         Dim msc As Integer = ScreenManager.PrimaryScreen.ScalingPercent
 
-        Debug.Print($"QL opened {rwM.ToRectangle} {rcM.ToRectangle} {rfM.ToRectangle} {msc}% {Me.WindowsScaling}%")
+        Debug.Print($"QL opened {rwM.ToRectangle} {rcM.ToRectangle} {rfM.ToRectangle} {msc}%")
+        'Me.WindowsScaling() 'causes QL to close due to referencing frmsettings
 
         Dim loc As Point = New Point(rwM.left, rwM.top)
 
