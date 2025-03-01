@@ -869,21 +869,32 @@ Partial Public NotInheritable Class FrmMain
         Next
 
     End Sub
-    Shared ifrm As MenuScaleFixForm = Nothing
+    Shared scaleFixForm As MenuScaleFixForm = Nothing
+    Private NotInheritable Class MenuScaleFixForm : Inherits Form
+        Protected Overloads Overrides ReadOnly Property ShowWithoutActivation() As Boolean
+            Get
+                Return True
+            End Get
+        End Property
+        Public Sub New(scrn As Screen)
+            Me.FormBorderStyle = FormBorderStyle.None
+            Me.BackColor = Color.Red
+            Me.TransparencyKey = Me.BackColor
+            Me.TopMost = True
+            Me.ShowInTaskbar = False
+            Me.StartPosition = FormStartPosition.Manual
+            Me.Location = scrn.Bounds.Location
+        End Sub
+    End Class
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
 
         If Not (My.Computer.Keyboard.ShiftKeyDown AndAlso Not My.Computer.Keyboard.CtrlKeyDown) Then
-            If sender.SourceControl Is Nothing Then 'opened from tray
-                If ifrm Is Nothing Then
-                    ifrm = New MenuScaleFixForm(Screen.PrimaryScreen)
-                    ifrm.Show(Me)
-                    Task.Run(Sub() Me.Invoke(Sub() cmsQuickLaunch.Show(MousePosition)))
-                    e.Cancel = True
-                    Exit Sub
-                End If
-            Else
-                ifrm?.Close()
-                ifrm = Nothing
+            If scaleFixForm Is Nothing Then
+                scaleFixForm = New MenuScaleFixForm(If(sender.SourceControl Is Nothing, Screen.PrimaryScreen, Screen.FromControl(Me)))
+                scaleFixForm.Show()
+                Task.Run(Sub() Me.Invoke(Sub() cmsQuickLaunch.Show(MousePosition)))
+                e.Cancel = True
+                Exit Sub
             End If
         End If
 
@@ -952,7 +963,7 @@ Partial Public NotInheritable Class FrmMain
     Private closeAllAtBottom As Boolean = True
 
     Private Sub cmsQuickLaunch_Opened(sender As ContextMenuStrip, e As EventArgs) Handles cmsQuickLaunch.Opened
-        '    (2 cases here. QL wrong cus of Scaling mismatch And QL wrong when opened from tray due to change in visiblity hidden items.
+        '   QL wrong when opened from tray due to change in visiblity hidden items.
 
         Dim hwnd As IntPtr = sender.Handle
         Dim rwM As RECT 'windowrect
@@ -1019,6 +1030,10 @@ Partial Public NotInheritable Class FrmMain
                                  Attach(AltPP)
                              End Sub)
         Dim unused = RestoreClicking()
+
+        scaleFixForm?.Close()
+        scaleFixForm = Nothing
+
     End Sub
 
     Private Sub QlCtxOpen(sender As MenuItem, e As EventArgs)
@@ -1498,27 +1513,7 @@ Partial Public NotInheritable Class FrmMain
 
 End Class
 
-Public NotInheritable Class MenuScaleFixForm : Inherits Form
-    Protected Overloads Overrides ReadOnly Property ShowWithoutActivation() As Boolean
-        Get
-            Return False
-        End Get
-    End Property
-    Public Sub New(scrn As Screen)
-        Me.FormBorderStyle = FormBorderStyle.None
-        Me.BackColor = Color.Red
-        Me.TransparencyKey = Me.BackColor
-        Me.ShowInTaskbar = False
-        Me.StartPosition = FormStartPosition.Manual
-        Me.Location = scrn.Bounds.Location
-    End Sub
-    Public Sub frm_opening() Handles Me.Load
-        'Me.Owner = FrmMain
-    End Sub
-    Public Sub frm_shown() Handles Me.Shown
-        Me.Location += New Point(1, 1)
-    End Sub
-End Class
+
 
 
 Module ImageExtension
