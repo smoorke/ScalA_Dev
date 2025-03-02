@@ -1,3 +1,23 @@
+**Known Issues**
+QuickLaunch may fail to close when clicking outside of QL after clicking an item with ctrl held.
+Overview button layout sometimes messes up when sorting lists are huge.
+EQLock size is to big for SDL clients on non 100% windows scaling.
+Having 2 instances of ScalA on differently scaled monitors attached to same alt is wonky.
+ToggleTop is unreliable.
+
+**ScalA 1.6.6**
+Fixed Auto Scaling mode switches to pixel mode too soon on SDL clients with non 100% windows scaling.
+Fixed Settings doesn't save ToggleTop chechkbox setting.
+Fixed QuickLaunch opened from SysTray may open in wrong location on mixed scaling multi monitor setups.
+Fixed Reopening QuickLaunch from SysTray may open in wrong position when previous QL had hidden items shown and doesn't show them this time or vice versa.
+Fixed QuickLaunch opens in wrong location and with wrong scaling when the SettingsWindow is on another monitor with different scaling.
+Fixed Launching items from QuickLaunch erroneously creates AsInvoker.bat in C:\ScalA\ instead of %TEMP% directory.
+Fixed ScalA may occasionally appear to become unresponsive with Active Overview and Activate on Hover on.
+Reduced ScalA may hang when changing taskbar position/size, taskbar autohide and/or screen scaling.
+Added ReLaunch button on idled alts.
+Removed Alignment Setting as i think i misunderstood what the issue was this attempted to fix.
+Changed Activate on Hover now works on single selected alts.
+
 **ScalA 1.6.5**
 Fixed Autoclose doesn't work right when `not showing Someone` is not checked.
 Added Keep QuickLaunch open when clicking with ctrl held.

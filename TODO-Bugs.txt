@@ -1,17 +1,6 @@
-Known Issues/Bugs:
-- ScalA may occasionally appear to become unresponsive with Active Overview and Activate on Hover on.
-- Auto Scaling mode switches to pixel mode too soon on SDL clients with non 100% windows scaling.
-- Launching items from QuickLaunch erroneously creates AsInvoker.bat in C:\ScalA\ instead of %TEMP%directory.
-- Settings doesn't save ToggleTop chechkbox setting.
-- ScalA may hang when changing taskbar position, taskbar autohide and/or screen scaling.
-- QuickLaunch opened from SysTray may open in wrong location on mixed scaling multi monitor setups.
-- Reopening QuickLaunch from SysTray may open in wrong position when previous QL had hidden items shown and doesn't show them this time or vice versa.
-
+**Known Issues/Bugs**
 - QuickLaunch may fail to close when clicking outside of QL after clicking an item with ctrl held.
-- Alignment setting method broken once again. 
-  (might remove as i think i misunderstood what the issue was this attempted to fix)
 - Overview button layout sometimes messes up when sorting lists are huge.
 - EQLock size is to big for SDL clients on non 100% windows scaling.
-- Opening QL on 2 instances with different scaling attached to same alt is wonky.
+- Having 2 instances of ScalA on differently scaled monitors attached to same alt is wonky.
 - ToggleTop is unreliable.
-- QuickLaunch opens in wrong location and with wrong scaling when the SettingsWindow is on a monitor with different scaling.
