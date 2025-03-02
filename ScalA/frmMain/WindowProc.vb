@@ -343,6 +343,7 @@ Partial NotInheritable Class FrmMain
                 End If
 
             Case WM_WININICHANGE '&H1A 
+                If m.WParam = 159 Then Exit Sub 'fix hang on Monitor Scaling change?
                 Detach(False) 'Fix hang on changing taskbar autohide/size
                 dBug.Print($"WM_WININICHANGE {m.LParam} {m.WParam}")
                 Dim settingnname = Runtime.InteropServices.Marshal.PtrToStringAuto(m.LParam)
@@ -372,7 +373,7 @@ Partial NotInheritable Class FrmMain
             Case WM_DISPLAYCHANGE
                 dBug.Print($"WM_DISPLAYCHANGE w {m.WParam} w {m.LParam}")
                 'cboAlt.SelectedIndex = 0
-                'Detach(False)
+                Detach(False)
                 ScreenManager.resetCache()
 
 
