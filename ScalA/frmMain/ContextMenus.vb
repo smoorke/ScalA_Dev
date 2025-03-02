@@ -892,7 +892,7 @@ Partial Public NotInheritable Class FrmMain
             If scaleFixForm Is Nothing Then
                 scaleFixForm = New MenuScaleFixForm(If(sender.SourceControl Is Nothing, Screen.PrimaryScreen, Screen.FromControl(Me)))
                 scaleFixForm.Show()
-                Task.Run(Sub() Me.Invoke(Sub() cmsQuickLaunch.Show(MousePosition)))
+                Task.Run(Sub() Me.Invoke(Sub() cmsQuickLaunch.Show()))
                 e.Cancel = True
                 Exit Sub
             End If
@@ -941,11 +941,11 @@ Partial Public NotInheritable Class FrmMain
             If sender.SourceControl Is Nothing Then 'called from trayicon
                 sender.Items.Insert(0, New ToolStripSeparator())
                 sender.Items.Insert(0, New ToolStripMenuItem("Close All Someone", My.Resources.moreF12, AddressOf CloseAllIdle_Click))
-                closeAllAtBottom = False
+                'closeAllAtBottom = False
             Else
                 sender.Items.Add(New ToolStripSeparator())
                 sender.Items.Add("Close All Someone", My.Resources.moreF12, AddressOf CloseAllIdle_Click)
-                closeAllAtBottom = True
+                'closeAllAtBottom = True
             End If
         End If
 
@@ -960,42 +960,24 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
-    Private closeAllAtBottom As Boolean = True
+    'Private closeAllAtBottom As Boolean = True
 
     Private Sub cmsQuickLaunch_Opened(sender As ContextMenuStrip, e As EventArgs) Handles cmsQuickLaunch.Opened
         '   QL wrong when opened from tray due to change in visiblity hidden items.
 
-        Dim hwnd As IntPtr = sender.Handle
-        Dim rwM As RECT 'windowrect
-        Dim rcM As RECT 'cleintrect
-        Dim rfM As RECT 'framerect
-
-        GetWindowRect(hwnd, rwM)
-        GetClientRect(hwnd, rcM)
-
-        DwmGetWindowAttribute(hwnd, DWMWA_EXTENDED_FRAME_BOUNDS, rfM, System.Runtime.InteropServices.Marshal.SizeOf(rfM))
-
-        Dim msc As Integer = ScreenManager.PrimaryScreen.ScalingPercent
-
-        Debug.Print($"QL opened {rwM.ToRectangle} {rcM.ToRectangle} {rfM.ToRectangle} {msc}%")
-        'Me.WindowsScaling() 'causes QL to close due to referencing frmsettings
-
-        Dim loc As Point = New Point(rwM.left, rwM.top)
-
         If sender.SourceControl Is Nothing Then 'opened from tray
 
-            loc = New Point(MousePosition - New Point(rcM.right, rcM.bottom))
-            If rwM.right = rfM.right Then ' AndAlso msc <> Me.WindowsScaling Then
-                loc = New Point(MousePosition.X * msc / 100 - rcM.right, MousePosition.Y * msc / 100 - rcM.bottom)
-            End If
+            Dim hwnd As IntPtr = sender.Handle
+
+            Dim rcM As RECT 'clientrect
+            GetClientRect(hwnd, rcM)
+
+            Dim loc As Point = MousePosition - New Point(rcM.right, rcM.bottom)
+
+            ' move QL to correct loc
+            SetWindowPos(hwnd, SWP_HWND.TOPMOST, loc.X, loc.Y, -1, -1, SetWindowPosFlags.IgnoreZOrder Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
         End If
 
-        ' if scaling_mismatch
-        '   set loc to correct mapped location. (this will prolly depend on what scaling mismatch is 'up or down')
-        ' scaling mismatch partially handled by ScaleFixForm
-
-        ' move QL to correct loc
-        SetWindowPos(hwnd, SWP_HWND.TOPMOST, loc.X, loc.Y, -1, -1, SetWindowPosFlags.IgnoreZOrder Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
     End Sub
 
     Dim cts As New Threading.CancellationTokenSource
