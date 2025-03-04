@@ -838,6 +838,52 @@ Partial Public NotInheritable Class FrmMain
         AltPP?.CenterBehind(pbZoom)
 
     End Sub
+    Private Sub cmbResolution_MouseWheel(sender As ComboBox, e As MouseEventArgs) Handles cmbResolution.MouseWheel
+        If sender.SelectedIndex = 0 Then
+            ' Stop default behavior
+            DirectCast(e, HandledMouseEventArgs).Handled = True
+
+            ' Parse current resolution
+            Dim currentRes() As String = sender.SelectedItem.ToString().Split("x"c)
+            Dim size = New Size(Val(currentRes(0)), Val(currentRes(1)))
+
+            ' Find the closest resolution using resol array
+            Dim closest As Integer = FindClosestResolution(size, e.Delta)
+
+            dBug.Print($"closest{closest}")
+            ' Set the index to the found item
+            If closest > -1 Then sender.SelectedIndex = closest + 1 '+1 because idx0 is the custom res which isn't stored in zooms
+        End If
+
+        dBug.Print($"cmbRes mwh {sender.SelectedItem} {sender.SelectedIndex} {e.Delta}")
+    End Sub
+
+    Private Function FindClosestResolution(targetSize As Size, delta As Integer) As Integer
+
+        Dim minDiff As Integer = Integer.MaxValue
+        Dim closest As Integer = -1
+
+        For idx As Integer = 0 To zooms.Length - 1
+            Dim res As Size = zooms(idx)
+
+            ' Calculate difference (absolute sum of width and height differences)
+            Dim diff As Integer = Math.Abs(res.Width - targetSize.Width) + Math.Abs(res.Height - targetSize.Height)
+
+            ' Update closest if a smaller difference is found
+            If diff < minDiff Then
+                minDiff = diff
+                closest = idx
+                ' Adjust based on scroll direction
+                If delta > 0 AndAlso res.Width >= targetSize.Width AndAlso res.Height >= targetSize.Height AndAlso idx > 0 Then
+                    closest = idx - 1 ' Move to a smaller resolution
+                ElseIf delta < 0 AndAlso res.Width <= targetSize.Width AndAlso res.Height <= targetSize.Height AndAlso idx < zooms.Length - 1 Then
+                    closest = idx + 1 ' Move to a larger resolution
+                End If
+            End If
+        Next
+
+        Return closest
+    End Function
 
     Public Sub ReZoom(newSize As Size)
         dBug.Print($"reZoom {newSize}")

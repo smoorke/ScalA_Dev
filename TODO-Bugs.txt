@@ -1,5 +1,6 @@
 **Known Issues/Bugs**
 - QuickLaunch may fail to close when clicking outside of QL after clicking an item with ctrl held.
+	Fully fixing triggers too many VT false pos
 - Overview button layout sometimes messes up when sorting lists are huge.
 - EQLock size is to big for SDL clients on non 100% windows scaling.
 - Having 2 instances of ScalA on differently scaled monitors attached to same alt is wonky.
