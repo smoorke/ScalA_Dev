@@ -987,19 +987,7 @@ Partial Public NotInheritable Class FrmMain
         ctrlshift_pressed = False
         'sender.Items.Clear() 'this couses menu to stutter opening
         dBug.Print("cmsQuickLaunch closed reason:" & e.CloseReason.ToString)
-        'If AltPP IsNot Nothing AndAlso
-        '    e.CloseReason <> ToolStripDropDownCloseReason.AppClicked AndAlso
-        '    e.CloseReason <> ToolStripDropDownCloseReason.ItemClicked Then
-        '    'these couse ghosting of menu and blanking of zoom when closed by reopening when reason = appclicked
-        '    'SetWindowPos(AltPP.MainWindowHandle, -2, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
-        '    If sender.SourceControl IsNot Nothing AndAlso AltPP.Id <> 0 AndAlso Not renameOpen Then
-        '        Try
-        '            SetWindowLong(ScalaHandle, GWL_HWNDPARENT, AltPP.MainWindowHandle)
-        '            AppActivate(AltPP.Id)
-        '        Catch
-        '        End Try
-        '    End If
-        'End If
+
         If cboAlt.SelectedIndex > 0 Then
             If (AltPP?.IsActive OrElse GetActiveProcessID() = scalaPID) AndAlso e.CloseReason <> ToolStripDropDownCloseReason.AppClicked Then
                 AppActivate(scalaPID) 'Fixes astona popping to front
@@ -1007,14 +995,19 @@ Partial Public NotInheritable Class FrmMain
                 AltPP?.Activate()
             End If
         End If
-        Dim dummy = Task.Run(Sub()
-                                 Threading.Thread.Sleep(50)
-                                 Attach(AltPP)
-                             End Sub)
-        Dim unused = RestoreClicking()
 
         scaleFixForm?.Close()
         scaleFixForm = Nothing
+
+        QLwasOpenCaptDragDelay = True
+        Dim dummy = Task.Run(Sub()
+                                 Threading.Thread.Sleep(16)
+                                 Attach(AltPP)
+                                 Threading.Thread.Sleep(16)
+                                 QLwasOpenCaptDragDelay = False
+                             End Sub)
+
+        Dim unused = RestoreClicking()
 
     End Sub
 

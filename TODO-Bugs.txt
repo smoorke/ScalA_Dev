@@ -1,7 +1,16 @@
 **Known Issues/Bugs**
-- QuickLaunch may fail to close when clicking outside of QL after clicking an item with ctrl held.
-	Fully fixing triggers too many VT false pos
-- Overview button layout sometimes messes up when sorting lists are huge.
-- EQLock size is to big for SDL clients on non 100% windows scaling.
-- Having 2 instances of ScalA on differently scaled monitors attached to same alt is wonky.
-- ToggleTop is unreliable.
+QuickLaunch may fail to close when clicking outside of QL after clicking an item with ctrl held.
+-# The only fix i know for this yields too many false positives on VirusTotal. I don't want to get my github account locked again.
+Scrolling the resolution combobox doesn't work right when the first item is selected.
+-# This item is used for the custom resolution set by dragging the borders or when maximized.
+Having 2 instances of ScalA on differently scaled monitors attached to same alt is wonky.
+-# Don't know if i can fix this. Please use white-/blacklisting when using multiple profiles.
+Overview button layout sometimes messes up when sorting lists are huge.
+EQLock size is too big for SDL clients on non 100% windows scaling.
+ToggleTop is unreliable.
+When Maximized and QL is open a single click on caption unmaximizes ScalA, sets wrong size and causes cursor tracking to be wrong.
+There is an NVIDIA driver bug that makes zoom only go to max 2050 wide and tall and fills the rest with stripes.
+-# Using restart tool found in CRU will fix until next pc restart/reboot. but it has habit of hanging some apps/games.
+
+**ToDo**
+- always sort resolutions so combobox scroll fix works right

@@ -722,6 +722,7 @@ Partial Public NotInheritable Class FrmMain
     Private MoveForm_MousePosition As Point
     Private caption_Mousedown As Boolean = False
     Private captionMoveTrigger As Boolean = False
+    Private QLwasOpenCaptDragDelay As Boolean = False
 
     Public Sub MoveForm_MouseDown(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseDown, lblTitle.MouseDown
         'Me.TopMost = True
@@ -742,9 +743,11 @@ Partial Public NotInheritable Class FrmMain
                 captionMoveTrigger = True
                 wasMaximized = True
             End If
-            Dim msg As Message = Message.Create(ScalaHandle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
-            dBug.Print("WM_NCLBUTTONDOWN")
-            Me.WndProc(msg)
+            dBug.Print($"WM_NCLBUTTONDOWN {Me.WindowState} QLwasOpenDelay:{QLwasOpenCaptDragDelay}")
+            If Not (Me.WindowState = FormWindowState.Maximized AndAlso QLwasOpenCaptDragDelay) Then
+                Dim msg As Message = Message.Create(ScalaHandle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
+                Me.WndProc(msg) 'bug maximized QL open capt click bug here
+            End If
             caption_Mousedown = False
             captionMoveTrigger = False
             If Not pnlOverview.Visible Then
