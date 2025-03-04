@@ -846,11 +846,18 @@ Partial Public NotInheritable Class FrmMain
             ' Stop default behavior
             DirectCast(e, HandledMouseEventArgs).Handled = True
 
+            If Me.WindowState = FormWindowState.Maximized Then
+                Dim mp As Point = e.Location
+                btnMax.PerformClick()
+                Cursor.Position = sender.PointToScreen(mp)
+                Exit Sub
+            End If
+
             ' Parse current resolution
             Dim currentRes() As String = sender.SelectedItem.ToString().Split("x"c)
             Dim size = New Size(Val(currentRes(0)), Val(currentRes(1)))
 
-            ' Find the closest resolution using resol array
+            ' Find the closest resolution using zooms array
             Dim closest As Integer = FindClosestResolution(size, e.Delta)
 
             dBug.Print($"closest{closest}")
@@ -876,7 +883,7 @@ Partial Public NotInheritable Class FrmMain
             If diff < minDiff Then
                 minDiff = diff
                 closest = idx
-                ' Adjust based on scroll direction
+                ' Adjust based on scroll direction 'note zooms needs to be sorted for this
                 If delta > 0 AndAlso res.Width >= targetSize.Width AndAlso res.Height >= targetSize.Height AndAlso idx > 0 Then
                     closest = idx - 1 ' Move to a smaller resolution
                 ElseIf delta < 0 AndAlso res.Width <= targetSize.Width AndAlso res.Height <= targetSize.Height AndAlso idx < zooms.Length - 1 Then
