@@ -26,9 +26,11 @@
         MyBase.WndProc(m)
     End Sub
 
+
+
     Private Async Sub pbRestart_Click(sender As Object, e As EventArgs) Handles pbRestart.Click
         Dim targetname As String = FrmMain.AltPP.loggedInAs
-        dBug.print($"restarting {targetname}")
+        dBug.Print($"restarting {targetname}")
 
         Me.pbRestart.Hide()
 
@@ -54,6 +56,6 @@
     End Sub
 
     Private Sub pbRestart_Resize(sender As Object, e As EventArgs) Handles pbRestart.Resize
-        dBug.print($"pbRestart.Size {pbRestart.Size}")
+        dBug.Print($"pbRestart.Size {pbRestart.Size}")
     End Sub
 End Class
