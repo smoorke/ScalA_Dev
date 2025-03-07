@@ -842,7 +842,7 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
     Private Sub cmbResolution_MouseWheel(sender As ComboBox, e As MouseEventArgs) Handles cmbResolution.MouseWheel
-        If sender.SelectedIndex = 0 Then
+        If sender.SelectedIndex = 0 AndAlso Not sender.DroppedDown Then
             ' Stop default behavior
             DirectCast(e, HandledMouseEventArgs).Handled = True
 
