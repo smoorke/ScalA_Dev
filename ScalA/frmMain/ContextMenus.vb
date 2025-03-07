@@ -990,11 +990,13 @@ Partial Public NotInheritable Class FrmMain
 
         If cboAlt.SelectedIndex > 0 Then
             If (AltPP?.IsActive OrElse GetActiveProcessID() = scalaPID) AndAlso e.CloseReason <> ToolStripDropDownCloseReason.AppClicked Then
-                AppActivate(scalaPID) 'Fixes astona popping to front
-                Attach(AltPP)
-                AltPP?.Activate()
+                AppActivate(scalaPID)
+                If Me.WindowState = FormWindowState.Maximized Then 'Fixes astonia popping to front
+                    Attach(AltPP)
+                    AltPP?.Activate()
+                End If
             End If
-        End If
+            End If
 
         scaleFixForm?.Close()
         scaleFixForm = Nothing
@@ -1002,9 +1004,9 @@ Partial Public NotInheritable Class FrmMain
         QLwasOpenCaptDragDelay = True
         Dim dummy = Task.Run(Sub()
                                  Threading.Thread.Sleep(16)
-                                 Attach(AltPP)
-                                 Threading.Thread.Sleep(16)
                                  QLwasOpenCaptDragDelay = False
+                                 Threading.Thread.Sleep(16)
+                                 Attach(AltPP)
                              End Sub)
 
         Dim unused = RestoreClicking()
