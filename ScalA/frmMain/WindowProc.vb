@@ -244,12 +244,12 @@ Partial NotInheritable Class FrmMain
                 'dBug.print($"vers: {System.Environment.Version}")
                 'New Version(System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription.Split(" "c)(2))}
                 'dBug.print(New Version(System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription).ToString)
+                Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
                 If StructureToPtrSupported Then 'Marshal.StructureToPtr requires 4.5.1 or higher
-                    Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
                     If caption_Mousedown AndAlso captionMoveTrigger AndAlso New Point(winpos.x, winpos.y) = Me.RestoreBounds.Location Then
                         winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreMove
                         System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
-                        dBug.print($"Moveglitch fixed")
+                        dBug.Print($"Moveglitch fixed")
                         captionMoveTrigger = False
                     End If
                     If suppressRestoreBounds AndAlso New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy) = Me.RestoreBounds Then
@@ -259,6 +259,9 @@ Partial NotInheritable Class FrmMain
                         'suppressRestoreBounds = False
                     End If
                 End If
+                Debug.Print("WinposChanging:")
+                Debug.Print($"{winpos.flags}")
+                If Not Me.Disposing Then Debug.Print($"{winpos.hwndInsertAfter} {ScalaHandle} {FrmSizeBorder?.Handle} {frmOverlay?.Handle}")
             Case WM_SHOWWINDOW
                 dBug.print($"WM_SHOWWINDOW {m.WParam} {m.LParam}")
                 If m.WParam = SW_HIDE AndAlso m.LParam = SW_PARENTCLOSING Then 'minimize
