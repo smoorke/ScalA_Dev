@@ -357,7 +357,7 @@ Partial NotInheritable Class FrmMain
                             If cmsQuickLaunch.Visible OrElse cmsAlt.Visible Then
                                 Detach(False)
                             Else
-                                Attach(ap)
+                                'Attach(ap)
                                 If My.Settings.HoverActivate Then
                                     Dim id = GetActiveProcessID()
                                     If id <> 0 AndAlso id = scalaPID OrElse pnlOverview.Controls.OfType(Of AButton).Any(Function(ab As AButton) ab.pidCache = id) Then
@@ -421,6 +421,7 @@ Partial NotInheritable Class FrmMain
                                                               SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
                                                           End If
                                                           SetWindowPos(but.AP.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
+                                                          Attach(but.AP)
                                                           If prevWMMMpt <> MousePosition Then
                                                               SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
                                                           End If
