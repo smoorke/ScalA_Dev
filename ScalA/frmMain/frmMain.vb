@@ -1537,18 +1537,22 @@ Partial Public NotInheritable Class FrmMain
 
     Public ReadOnly restoreParent As UInteger = GetWindowLong(Me.Handle, GWL_HWNDPARENT)
     Private prevHWNDParent As IntPtr = restoreParent
-    Public Function Attach(ap As AstoniaProcess) As Long
-        If ap Is Nothing OrElse prevHWNDParent = ap.MainWindowHandle Then Return 0
-        dBug.Print($"Attach to: {ap.Name} {ap.Id}")
-        prevHWNDParent = ap.MainWindowHandle
-        If Not pnlOverview.Visible Then
-            Dim rcAst As RECT
-            GetWindowRect(ap.MainWindowHandle, rcAst)
-            If rcAst.top <= Me.Location.Y Then
-                SetWindowPos(ap.MainWindowHandle, ScalaHandle, Me.Location.X, Me.Location.Y + 2, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+    Public Function Attach(ap As AstoniaProcess, Optional activate As Boolean = False) As Long
+        Try
+            If ap Is Nothing OrElse prevHWNDParent = ap.MainWindowHandle Then Return 0
+            dBug.Print($"Attach to: {ap.Name} {ap.Id}")
+            prevHWNDParent = ap.MainWindowHandle
+            If Not pnlOverview.Visible Then
+                Dim rcAst As RECT
+                GetWindowRect(ap.MainWindowHandle, rcAst)
+                If rcAst.top <= Me.Location.Y Then
+                    SetWindowPos(ap.MainWindowHandle, ScalaHandle, Me.Location.X, Me.Location.Y + 2, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+                End If
             End If
-        End If
-        Return SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap.MainWindowHandle)
+            Return SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap.MainWindowHandle)
+        Finally
+            If activate Then AltPP?.Activate()
+        End Try
     End Function
 #If DEBUG Then
     Private prevDetach As String
