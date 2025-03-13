@@ -259,9 +259,9 @@ Partial NotInheritable Class FrmMain
                         'suppressRestoreBounds = False
                     End If
                 End If
-                Debug.Print("WinposChanging:")
-                Debug.Print($"{winpos.flags}")
-                If Not Me.Disposing Then Debug.Print($"{winpos.hwndInsertAfter} {ScalaHandle} {FrmSizeBorder?.Handle} {frmOverlay?.Handle}")
+               'Debug.Print("WinposChanging:")
+                'Debug.Print($"{winpos.flags}")
+               ' If Not Me.Disposing Then Debug.Print($"{winpos.hwndInsertAfter} {ScalaHandle} {FrmSizeBorder?.Handle} {frmOverlay?.Handle}")
             Case WM_SHOWWINDOW
                 dBug.print($"WM_SHOWWINDOW {m.WParam} {m.LParam}")
                 If m.WParam = SW_HIDE AndAlso m.LParam = SW_PARENTCLOSING Then 'minimize
@@ -437,7 +437,7 @@ Partial NotInheritable Class FrmMain
                 dBug.print($"WM_KEYDOWN w:{m.WParam} l:{m.LParam}")
                 dBug.print($"ScanCode {New LParamMap(m.LParam).scan}")
                 If cboAlt.SelectedIndex > 0 Then
-                    AltPP.Activate()
+                    Attach(AltPP, True)
                     Dim key As Keys = m.WParam
                     If Not AltPP.isSDL Then
                         SendMessage(AltPP.MainWindowHandle, WM_KEYDOWN, key, IntPtr.Zero)
@@ -458,7 +458,7 @@ Partial NotInheritable Class FrmMain
                 dBug.print($"WM_KEYUP w:{m.WParam} l:{m.LParam}")
                 dBug.print($"ScanCode {New LParamMap(m.LParam).scan}")
                 If cboAlt.SelectedIndex > 0 Then
-                    AltPP.Activate()
+                    Attach(AltPP, True)
                     Dim scan As Byte = New LParamMap(m.LParam)
                     If scan = 28 Then
                         If Not AltPP.isSDL Then
@@ -472,7 +472,7 @@ Partial NotInheritable Class FrmMain
                 dBug.print($"WM_CHAR w:{m.WParam} l:{m.LParam}")
                 dBug.print($"ScanCode {New LParamMap(m.LParam).scan}")
                 If cboAlt.SelectedIndex > 0 Then
-                    AltPP.Activate()
+                    Attach(AltPP, True)
                     If Not AltPP.isSDL Then
                         SendMessage(AltPP.MainWindowHandle, WM_CHAR, m.WParam, IntPtr.Zero)
                     End If
@@ -480,7 +480,7 @@ Partial NotInheritable Class FrmMain
             Case WM_SYSKEYDOWN
                 dBug.print($"WM_SYSKEY {m.WParam} {m.LParam}")
                 If cboAlt.SelectedIndex > 0 Then
-                    AltPP.Activate()
+                    Attach(AltPP, True)
                 End If
             Case WM_NCACTIVATE
                 dBug.print("WM_NCACTIVATE")

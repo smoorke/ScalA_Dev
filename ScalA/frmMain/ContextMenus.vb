@@ -986,25 +986,25 @@ Partial Public NotInheritable Class FrmMain
         cts.Cancel() 'cancel deferred icon loading and setvis
         ctrlshift_pressed = False
         'sender.Items.Clear() 'this couses menu to stutter opening
-        dBug.Print("cmsQuickLaunch closed reason:" & e.CloseReason.ToString)
+        dBug.Print($"QL closed reason: {e.CloseReason} {caption_Mousedown}")
 
-        If cboAlt.SelectedIndex > 0 Then
-            If (AltPP?.IsActive OrElse GetActiveProcessID() = scalaPID) AndAlso e.CloseReason <> ToolStripDropDownCloseReason.AppClicked Then
-                AppActivate(scalaPID)
-                If Me.WindowState = FormWindowState.Maximized Then 'Fixes astonia popping to front
-                    Attach(AltPP)
-                    AltPP?.Activate()
-                End If
-            End If
-            End If
+        'If cboAlt.SelectedIndex > 0 Then
+        '    If (AltPP?.IsActive OrElse GetActiveProcessID() = scalaPID) AndAlso e.CloseReason <> ToolStripDropDownCloseReason.AppClicked Then
+        '        AppActivate(scalaPID)
+        '        If Me.WindowState = FormWindowState.Maximized Then 'Fixes astonia popping to front
+        '            Attach(AltPP)
+        '            AltPP?.Activate()
+        '        End If
+        '    End If
+        'End If
 
         scaleFixForm?.Close()
         scaleFixForm = Nothing
 
-        Dim dummy = Task.Run(Sub()
-                                 Threading.Thread.Sleep(25)
-                                 Attach(AltPP)
-                             End Sub)
+        'Dim dummy = Task.Run(Sub()
+        '                         Threading.Thread.Sleep(25)
+        '                         Attach(AltPP)
+        '                     End Sub)
 
         Dim unused = RestoreClicking()
 

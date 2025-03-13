@@ -603,7 +603,7 @@ Partial NotInheritable Class FrmMain
             If Not FrmSettings.Visible Then
                 If Not pnlOverview.Visible Then
                     AltPP?.CenterBehind(pbZoom)
-                    AltPP?.Activate()
+                    Attach(AltPP, True)
                     dBug.print($"{moveBusy} {swpBusy}")
                     moveBusy = False
                 Else

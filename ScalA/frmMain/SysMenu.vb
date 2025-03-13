@@ -129,10 +129,10 @@ Partial NotInheritable Class FrmMain
                 Attach(AltPP)
             End If
 
-            If GetActiveProcessID() = scalaPID AndAlso ret <> MC_SETTINGS Then
-                dBug.print($"ShowSysMenu activating {AltPP?.Name}")
-                AltPP?.Activate()
-            End If
+            'If GetActiveProcessID() = scalaPID AndAlso ret <> MC_SETTINGS Then
+            '    dBug.print($"ShowSysMenu activating {AltPP?.Name}")
+            '    AltPP?.Activate() 'why no attach here?
+            'End If
         End If
     End Sub
 

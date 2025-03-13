@@ -109,8 +109,8 @@ Partial Public NotInheritable Class FrmMain
         'If AltPP.Id = 0 AndAlso that.SelectedIndex = 0 Then
         '    Exit Sub
         'End If
-#If Debug Then
-            TickCounter = 0
+#If DEBUG Then
+        TickCounter = 0
 #End If
 
         Detach(False)
@@ -249,8 +249,7 @@ Partial Public NotInheritable Class FrmMain
             '    UpdateThumb(If(chkDebug.Checked, 128, 255))
             'End If
 
-            Attach(AltPP)
-            AltPP.Activate()
+            Attach(AltPP, True)
 
             If My.Settings.topmost Then
                 AltPP.TopMost = True
@@ -744,15 +743,13 @@ Partial Public NotInheritable Class FrmMain
                 wasMaximized = True
             End If
 
-            scaleFixForm?.Close() 'fix bug maximized QL open capt click bug
-            scaleFixForm = Nothing
             Dim msg As Message = Message.Create(ScalaHandle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
             Me.WndProc(msg)
 
             caption_Mousedown = False
             captionMoveTrigger = False
             If Not pnlOverview.Visible Then
-                AltPP.Activate()
+                Attach(AltPP, True)
                 tmrTick.Start()
             End If
             dBug.Print("movetimer stopped")
@@ -1722,7 +1719,7 @@ Partial Public NotInheritable Class FrmMain
         'Me.BringToFront() 'doesn't work
         If AltPP IsNot Nothing AndAlso AltPP.Id <> 0 AndAlso AltPP.IsRunning Then
             SetWindowPos(AltPP.MainWindowHandle, SWP_HWND.NOTOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
-            AltPP.Activate()
+            Attach(AltPP, True)
         Else
             Me.TopMost = True
             Me.TopMost = My.Settings.topmost
@@ -1740,7 +1737,7 @@ Partial Public NotInheritable Class FrmMain
         If Not pnlOverview.Visible Then
             pbZoom.Visible = True
             If e.Button <> MouseButtons.None Then
-                AltPP?.Activate()
+                Attach(AltPP, True)
             End If
         Else
             AButton.ActiveOverview = My.Settings.gameOnOverview
@@ -1807,7 +1804,7 @@ Partial Public NotInheritable Class FrmMain
         If e.Button = MouseButtons.Middle OrElse e.Button = MouseButtons.Right Then
             PnlEqLock.Visible = False
             sender.Capture = False
-            AltPP?.Activate()
+            Attach(AltPP, True)
             SendMessage(AltPP.MainWindowHandle, If(e.Button = MouseButtons.Right, WM_RBUTTONDOWN, WM_MBUTTONDOWN), wparam, New LParamMap(mx, my))
         End If
 
@@ -1829,7 +1826,7 @@ Partial Public NotInheritable Class FrmMain
             '    Await Task.Delay(25)
             '    'EQLockClick = False
         End If
-        Await Task.Run(Sub() AltPP.Activate())
+        Await Task.Run(Sub() Attach(AltPP, True))
     End Sub
 
     Private Sub PnlEqLock_Mousemove(sender As Panel, e As MouseEventArgs) Handles PnlEqLock.MouseMove

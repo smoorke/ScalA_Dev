@@ -183,6 +183,7 @@ Public NotInheritable Class FrmSettings
         Hotkey.UnregHotkey(Me)
     End Sub
     Private Sub FrmSettings_Shown(sender As Object, e As EventArgs) Handles Me.Shown
+        Me.Owner = FrmMain
         startup = False
     End Sub
     Protected Overrides Sub WndProc(ByRef m As Message)
@@ -191,6 +192,9 @@ Public NotInheritable Class FrmSettings
                 SysMenu.Visible = True
             Case WM_EXITMENULOOP
                 SysMenu.Visible = False
+            Case WM_ACTIVATE
+                dBug.Print("frmsettings Activate")
+                FrmMain.Attach(FrmMain.AltPP)
         End Select
         If Me.Owner Is Nothing Then 'this to address ghost form when closing settings.
             Select Case m.Msg
@@ -611,7 +615,7 @@ Public NotInheritable Class FrmSettings
     Private Async Sub FrmSettings_Closed(sender As Form, e As FormClosedEventArgs) Handles Me.Closed
         dBug.print($"frmSettings.Closed {e.CloseReason} ""{sender.Owner}""")
         Await Task.Delay(100) 'hardcoded delay only partially effective. failsafe in wndproc
-        FrmMain.AltPP?.Activate()
+        FrmMain.Attach(FrmMain.AltPP, True)
     End Sub
     'Dim rcAstOffsetBase As Rectangle
     'Public ScalaMoved As Point
