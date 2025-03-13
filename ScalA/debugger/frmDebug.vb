@@ -254,5 +254,26 @@ Public Class frmDebug
         FrmMain.pnlUpdate.Visible = Not FrmMain.pnlUpdate.Visible
     End Sub
 
+    Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
+        If FrmMain.AltPP Is Nothing Then
+            dBug.Print("Alt is nothing", 1)
+            Exit Sub
+        End If
+        Dim hwnd As IntPtr = FrmMain.AltPP.MainWindowHandle
+
+        dBug.Print("This button does nothing", 1)
+
+        'Dim style As UInteger = GetWindowLong(hwnd, GWL_STYLE)
+        'style = style Or WindowStyles.WS_SIZEFRAME ' Add resizing capability
+        ' SetWindowLong(hwnd, GWL_STYLE, style)
+
+        'SetWindowPos(hwnd, IntPtr.Zero, 0, 0, 1600, 1200, SetWindowPosFlags.DoNotReposition)
+        'Const WM_ERASEBKGND = &H14
+        'Const WM_SYNCPAINT = &H88
+        'SendMessage(hwnd, WM_ERASEBKGND, 0, 0)
+        'SendMessage(hwnd, WM_SYNCPAINT, 0, 0)
+
+    End Sub
+
 #End If
 End Class

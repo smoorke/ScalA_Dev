@@ -48,6 +48,7 @@ Partial Class frmDebug
         Me.btnTestScreenManager = New System.Windows.Forms.Button()
         Me.chkForceShowUpdate = New System.Windows.Forms.CheckBox()
         Me.chkShowWarning = New System.Windows.Forms.CheckBox()
+        Me.btnTest = New System.Windows.Forms.Button()
         lblMinimum = New System.Windows.Forms.Label()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
@@ -249,11 +250,21 @@ Partial Class frmDebug
         Me.chkShowWarning.Text = "Show Warning Picto"
         Me.chkShowWarning.UseVisualStyleBackColor = True
         '
+        'btnTest
+        '
+        Me.btnTest.Location = New System.Drawing.Point(441, 402)
+        Me.btnTest.Name = "btnTest"
+        Me.btnTest.Size = New System.Drawing.Size(75, 23)
+        Me.btnTest.TabIndex = 14
+        Me.btnTest.Text = "Test"
+        Me.btnTest.UseVisualStyleBackColor = True
+        '
         'frmDebug
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(748, 450)
+        Me.Controls.Add(Me.btnTest)
         Me.Controls.Add(Me.btnTestScreenManager)
         Me.Controls.Add(lblMinimum)
         Me.Controls.Add(Me.lblLogLevel)
@@ -303,5 +314,6 @@ Partial Class frmDebug
     Friend WithEvents btnTestScreenManager As Button
     Friend WithEvents chkForceShowUpdate As CheckBox
     Friend WithEvents chkShowWarning As CheckBox
+    Friend WithEvents btnTest As Button
 End Class
 #End If
