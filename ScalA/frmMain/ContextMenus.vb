@@ -1001,11 +1001,8 @@ Partial Public NotInheritable Class FrmMain
         scaleFixForm?.Close()
         scaleFixForm = Nothing
 
-        QLwasOpenCaptDragDelay = True
         Dim dummy = Task.Run(Sub()
-                                 Threading.Thread.Sleep(16)
-                                 QLwasOpenCaptDragDelay = False
-                                 Threading.Thread.Sleep(16)
+                                 Threading.Thread.Sleep(25)
                                  Attach(AltPP)
                              End Sub)
 
