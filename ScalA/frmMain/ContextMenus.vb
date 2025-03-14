@@ -1001,10 +1001,10 @@ Partial Public NotInheritable Class FrmMain
         scaleFixForm?.Close()
         scaleFixForm = Nothing
 
-        'Dim dummy = Task.Run(Sub()
-        '                         Threading.Thread.Sleep(25)
-        '                         Attach(AltPP)
-        '                     End Sub)
+        Dim dummy = Task.Run(Sub()
+                                 Threading.Thread.Sleep(25)
+                                 If Not caption_Mousedown Then Attach(AltPP)
+                             End Sub)
 
         Dim unused = RestoreClicking()
 
