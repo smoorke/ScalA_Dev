@@ -35,7 +35,11 @@
         If cmd > 0 Then
             dBug.print("SendMessage " & cmd)
             Select Case cmd
+                Case SC_MOVE
+                    FrmMain.Detach(False)
+                    SendMessage(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
                 Case SC_SIZE
+                    FrmMain.Detach(False)
                     SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
                 Case Else
                     SendMessage(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
@@ -119,21 +123,21 @@ Partial NotInheritable Class FrmMain
 
             If Not Await RestoreClicking() Then Exit Sub
 
-            dBug.print($"ShowSysMenu awaited")
+            dBug.Print($"ShowSysMenu awaited")
 
             If ret = SC_MINIMIZE AndAlso My.Settings.MinMin AndAlso
-               My.Settings.gameOnOverview AndAlso pnlOverview.Visible Then
-                dBug.print("sysmenu no attach")
+               My.Settings.gameOnOverview AndAlso pnlOverview.Visible OrElse
+                caption_Mousedown Then
+                dBug.Print("sysmenu no attach")
             ElseIf ret <> SC_MINIMIZE OrElse (My.Settings.MinMin AndAlso AltPP?.isSDL) Then
                 dBug.print("sysmenu attach")
                 Attach(AltPP)
             End If
-
-            'If GetActiveProcessID() = scalaPID AndAlso ret <> MC_SETTINGS Then
-            '    dBug.print($"ShowSysMenu activating {AltPP?.Name}")
-            '    AltPP?.Activate() 'why no attach here?
-            'End If
-        End If
+                'If GetActiveProcessID() = scalaPID AndAlso ret <> MC_SETTINGS Then
+                '    dBug.print($"ShowSysMenu activating {AltPP?.Name}")
+                '    AltPP?.Activate() 'why no attach here?
+                'End If
+            End If
     End Sub
 
 End Class

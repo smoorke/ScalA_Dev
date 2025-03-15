@@ -734,7 +734,9 @@ Partial Public NotInheritable Class FrmMain
         '        MoveForm_MousePosition = e.Location
         '    End If
         'Else
+        dBug.Print("Caption.MouseDown")
         If e.Button = MouseButtons.Left AndAlso e.Clicks = 1 Then
+            Detach(False) 'enable smooth dragging on lecacy clients with sleeps
             sender.Capture = False
             tmrTick.Stop()
             caption_Mousedown = True
@@ -1538,7 +1540,7 @@ Partial Public NotInheritable Class FrmMain
     Public Function Attach(ap As AstoniaProcess, Optional activate As Boolean = False) As Long
         Try
             If ap Is Nothing OrElse prevHWNDParent = ap.MainWindowHandle Then Return 0
-            dBug.Print($"Attach to: {ap.Name} {ap.Id}")
+            dBug.Print($"Attach to: {ap.Name} {ap.Id} activate {activate}")
             prevHWNDParent = ap.MainWindowHandle
             If Not pnlOverview.Visible Then
                 Dim rcAst As RECT
@@ -1557,7 +1559,7 @@ Partial Public NotInheritable Class FrmMain
 #End If
     Public Function Detach(show As Boolean) As Long
 #If DEBUG Then
-        If prevDetach <> AltPP?.Name Then
+        If True OrElse prevDetach <> AltPP?.Name Then
             dBug.Print($"Detach from: {AltPP?.Name} show:{show}")
             prevDetach = AltPP?.Name
         End If
@@ -1865,6 +1867,5 @@ Partial Public NotInheritable Class FrmMain
         SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
 
     End Sub
-
 
 End Class

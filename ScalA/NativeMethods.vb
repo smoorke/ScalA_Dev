@@ -929,6 +929,9 @@ Module NativeMethods
 
     Public Const WM_PAINT = &HF
 
+    Public Const WM_QUERYOPEN = &H13
+    Public Const WM_ERASEBKGND = &H14
+
     Public Const WM_SHOWWINDOW = &H18
     Public Const WM_WININICHANGE = &H1A
 

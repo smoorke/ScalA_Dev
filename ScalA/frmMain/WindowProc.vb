@@ -161,6 +161,10 @@ Partial NotInheritable Class FrmMain
                         FrmSettings.WindowState = FormWindowState.Normal
                         Exit Sub
                 End Select
+            Case WM_QUERYOPEN
+                Attach(AltPP)
+            Case WM_ERASEBKGND
+
             Case WM_MOVE
                 'dBug.print($"WM_MOVE {Me.WindowState}")
                 'FrmBehind.Location = New LParamMap(m.LParam)

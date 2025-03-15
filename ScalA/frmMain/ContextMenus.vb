@@ -1001,10 +1001,12 @@ Partial Public NotInheritable Class FrmMain
         scaleFixForm?.Close()
         scaleFixForm = Nothing
 
-        Dim dummy = Task.Run(Sub()
-                                 Threading.Thread.Sleep(25)
-                                 If Not caption_Mousedown Then Attach(AltPP)
-                             End Sub)
+        Attach(AltPP)
+
+        'Dim dummy = Task.Run(Sub()
+        '                         Threading.Thread.Sleep(25)
+        '                         If Not caption_Mousedown Then Attach(AltPP)
+        '                     End Sub)
 
         Dim unused = RestoreClicking()
 
@@ -1027,7 +1029,7 @@ Partial Public NotInheritable Class FrmMain
         If subitems.Count >= 10 Then
             If Not CustomMessageBox.Show(Me, $"This will open {subitems.Count} items.{vbCrLf}Continue?",
                                         "Confirm Opening", MessageBoxButtons.YesNo) = DialogResult.Yes Then
-                dBug.Print("Too many subitems")
+                dBug.Print($"Too many subitems {subitems.Count}")
                 Exit Sub
             End If
         End If
