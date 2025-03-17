@@ -785,7 +785,7 @@ Partial Public NotInheritable Class FrmMain
             dBug.Print("Mouseup")
             MovingForm = False
             If AltPP?.IsRunning Then ' AndAlso Not FrmSettings.chkDoAlign.Checked Then
-                AltPP?.CenterBehind(pbZoom, SetWindowPosFlags.DoNotActivate)
+                AltPP?.CenterBehind(pbZoom, SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.ASyncWindowPosition)
             End If
         End If
     End Sub
@@ -1433,7 +1433,7 @@ Partial Public NotInheritable Class FrmMain
             Dim botBorder As Integer = scrn.WorkingArea.Height * My.Settings.MaxBorderBot / 1000
 
             'find out where taskbar is and add 1 pixel at that location
-            'dirty hack to enable dragging when maximized
+            'dirty hack to enable dragging when maximized, TODO: split up frmmain into 2, caption and zoom
             If leftBorder + rightborder + topBorder + botBorder = 0 Then
                 If scrn.WorkingArea.Left <> scrn.Bounds.Left Then leftBorder = 1
                 If scrn.WorkingArea.Top <> scrn.Bounds.Top Then topBorder = 1
@@ -1635,7 +1635,7 @@ Partial Public NotInheritable Class FrmMain
         End Try
     End Sub
 
-    Private Sub Title_MouseDoubleClick(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.DoubleClick, lblTitle.DoubleClick
+    Private Sub Title_MouseDoubleClick(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseDoubleClick, lblTitle.MouseDoubleClick
         dBug.Print("title_DoubleClick")
         If e.Button = MouseButtons.Left Then btnMax.PerformClick()
         'FrmSizeBorder.Bounds = Me.Bounds
