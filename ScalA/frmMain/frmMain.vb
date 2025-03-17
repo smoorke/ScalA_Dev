@@ -722,6 +722,7 @@ Partial Public NotInheritable Class FrmMain
     Private caption_Mousedown As Boolean = False
     Private captionMoveTrigger As Boolean = False
     'Private QLwasOpenCaptDragDelay As Boolean = False
+    Private doubleclicktimer As Stopwatch = Stopwatch.StartNew
 
     Public Sub MoveForm_MouseDown(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseDown, lblTitle.MouseDown
         'Me.TopMost = True
@@ -735,8 +736,9 @@ Partial Public NotInheritable Class FrmMain
         '    End If
         'Else
         dBug.Print("Caption.MouseDown")
-        If e.Button = MouseButtons.Left AndAlso e.Clicks = 1 Then
-            Detach(False) 'enable smooth dragging on lecacy clients with sleeps
+        If e.Button = MouseButtons.Left AndAlso e.Clicks = 1 AndAlso doubleclicktimer.ElapsedMilliseconds > 500 Then
+            dBug.Print($"dctimer {doubleclicktimer.ElapsedMilliseconds}")
+            doubleclicktimer.Restart()
             sender.Capture = False
             tmrTick.Stop()
             caption_Mousedown = True
@@ -745,8 +747,14 @@ Partial Public NotInheritable Class FrmMain
                 wasMaximized = True
             End If
 
+            Task.Run(Sub()
+                         Threading.Thread.Sleep(500)
+                         If Not caption_Mousedown Then Exit Sub
+                         Detach(False) 'enable smooth dragging on lecacy clients with sleeps, breaks double click in a weird way hence the delayed task and DCTimer
+                     End Sub)
             Dim msg As Message = Message.Create(ScalaHandle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
             Me.WndProc(msg)
+
 
             caption_Mousedown = False
             captionMoveTrigger = False
