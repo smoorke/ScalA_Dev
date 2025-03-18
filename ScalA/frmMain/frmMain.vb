@@ -722,7 +722,7 @@ Partial Public NotInheritable Class FrmMain
     Private caption_Mousedown As Boolean = False
     Private captionMoveTrigger As Boolean = False
     'Private QLwasOpenCaptDragDelay As Boolean = False
-    Private doubleclicktimer As Stopwatch = Stopwatch.StartNew
+    'Private doubleclicktimer As Stopwatch = Stopwatch.StartNew
 
     Public Sub MoveForm_MouseDown(sender As Control, e As MouseEventArgs) Handles pnlTitleBar.MouseDown, lblTitle.MouseDown
         'Me.TopMost = True
@@ -736,9 +736,9 @@ Partial Public NotInheritable Class FrmMain
         '    End If
         'Else
         dBug.Print("Caption.MouseDown")
-        If e.Button = MouseButtons.Left AndAlso e.Clicks = 1 AndAlso doubleclicktimer.ElapsedMilliseconds > 500 Then
-            dBug.Print($"dctimer {doubleclicktimer.ElapsedMilliseconds}")
-            doubleclicktimer.Restart()
+        If e.Button = MouseButtons.Left AndAlso e.Clicks = 1 Then ' AndAlso doubleclicktimer.ElapsedMilliseconds > 500 Then
+            'dBug.Print($"dctimer {doubleclicktimer.ElapsedMilliseconds}")
+            'doubleclicktimer.Restart()
             sender.Capture = False
             tmrTick.Stop()
             caption_Mousedown = True
@@ -1558,10 +1558,9 @@ Partial Public NotInheritable Class FrmMain
                 End If
             End If
             Dim ret = SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap.MainWindowHandle)
-            Dim ignoredID As Integer
-            Dim saTid As Integer = GetWindowThreadProcessId(ScalaHandle, ignoredID)
-            Dim apTid As Integer = GetWindowThreadProcessId(ap.MainWindowHandle, ignoredID)
-            AttachThreadInput(apTid, saTid, False) 'detach input so ctrl, shift and alt still work when there is an elevation mismatch, also fixes sleepy legacy clients lagging ScalA
+            Dim ScalAThreadId As Integer = GetWindowThreadProcessId(ScalaHandle, Nothing)
+            Dim AstoniaThreadId As Integer = GetWindowThreadProcessId(ap.MainWindowHandle, Nothing)
+            AttachThreadInput(AstoniaThreadId, ScalAThreadId, False) 'detach input so ctrl, shift and alt still work when there is an elevation mismatch, also fixes sleepy legacy clients lagging ScalA
             Return ret
         Finally
             If activate Then AltPP?.Activate()

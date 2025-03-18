@@ -204,9 +204,9 @@ Module NativeMethods
     Public Const GW_HWNDNEXT As UInteger = 2
     Public Const GW_HWNDPREV As UInteger = 3
 
-    Public Declare Function GetWindowThreadProcessId Lib "user32.dll" (
-    ByVal hWnd As IntPtr,
-    ByRef lpdwProcessId As Integer) As Integer
+    'Public Declare Function GetWindowThreadProcessId Lib "user32.dll" (
+    'ByVal hWnd As IntPtr,
+    'ByRef lpdwProcessId As Integer) As Integer
 
     Public Declare Function AttachThreadInput Lib "user32.dll" (
     ByVal idAttach As Integer,
