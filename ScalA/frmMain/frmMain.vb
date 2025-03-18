@@ -747,11 +747,11 @@ Partial Public NotInheritable Class FrmMain
                 wasMaximized = True
             End If
 
-            Task.Run(Sub()
-                         Threading.Thread.Sleep(500)
-                         If Not caption_Mousedown Then Exit Sub
-                         Detach(False) 'enable smooth dragging on lecacy clients with sleeps, breaks double click in a weird way hence the delayed task and DCTimer
-                     End Sub)
+            'Task.Run(Sub()
+            '             Threading.Thread.Sleep(500)
+            '             If Not caption_Mousedown Then Exit Sub
+            '             Detach(False) 'enable smooth dragging on lecacy clients with sleeps, breaks double click in a weird way hence the delayed task and DCTimer
+            '         End Sub)
             Dim msg As Message = Message.Create(ScalaHandle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
             Me.WndProc(msg)
 
@@ -1557,7 +1557,12 @@ Partial Public NotInheritable Class FrmMain
                     SetWindowPos(ap.MainWindowHandle, ScalaHandle, Me.Location.X, Me.Location.Y + 2, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
                 End If
             End If
-            Return SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap.MainWindowHandle)
+            Dim ret = SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap.MainWindowHandle)
+            Dim ignoredID As Integer
+            Dim saTid As Integer = GetWindowThreadProcessId(ScalaHandle, ignoredID)
+            Dim apTid As Integer = GetWindowThreadProcessId(ap.MainWindowHandle, ignoredID)
+            AttachThreadInput(apTid, saTid, False) 'detach input so ctrl, shift and alt still work when there is an elevation mismatch, also fixes sleepy legacy clients lagging ScalA
+            Return ret
         Finally
             If activate Then AltPP?.Activate()
         End Try
@@ -1567,7 +1572,7 @@ Partial Public NotInheritable Class FrmMain
 #End If
     Public Function Detach(show As Boolean) As Long
 #If DEBUG Then
-        If True OrElse prevDetach <> AltPP?.Name Then
+        If prevDetach <> AltPP?.Name Then
             dBug.Print($"Detach from: {AltPP?.Name} show:{show}")
             prevDetach = AltPP?.Name
         End If

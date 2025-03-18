@@ -80,7 +80,7 @@
             dBug.print("border WM_ENTERSIZEMOVE")
             FrmMain.Resizing = True
             suppressWM_SIZING = True
-            FrmMain.Detach(False) 'fix sluggish sizing on ugaris/vanilla
+            'FrmMain.Detach(False) 'fix sluggish sizing on ugaris/vanilla
             Task.Run(Sub() 'this to supress wmsizing with bad bounds cause of the detach
                          Threading.Thread.Sleep(50)
                          suppressWM_SIZING = False

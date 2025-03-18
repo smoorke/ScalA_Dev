@@ -355,7 +355,7 @@ Partial NotInheritable Class FrmMain
                         Else
 
                             If cmsQuickLaunch.Visible OrElse cmsAlt.Visible Then
-                                Detach(False)
+                                'Detach(False)
                             Else
                                 'Attach(ap)
                                 If My.Settings.HoverActivate Then

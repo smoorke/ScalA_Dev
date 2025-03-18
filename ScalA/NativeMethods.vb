@@ -204,6 +204,15 @@ Module NativeMethods
     Public Const GW_HWNDNEXT As UInteger = 2
     Public Const GW_HWNDPREV As UInteger = 3
 
+    Public Declare Function GetWindowThreadProcessId Lib "user32.dll" (
+    ByVal hWnd As IntPtr,
+    ByRef lpdwProcessId As Integer) As Integer
+
+    Public Declare Function AttachThreadInput Lib "user32.dll" (
+    ByVal idAttach As Integer,
+    ByVal idAttachTo As Integer,
+    ByVal fAttach As Boolean) As Boolean
+
 
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function IsWindowVisible(ByVal hWnd As IntPtr) As Boolean : End Function
@@ -312,7 +321,7 @@ Module NativeMethods
     <DllImport("user32.dll")>
     Public Function LoadImage(hinst As IntPtr, lpszName As String, uType As UInt32, cxDesired As Integer, cyDesired As Integer, fuLoad As UInt32) As IntPtr : End Function
     <DllImport("user32.dll")>
-    Public Function SetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer, ByVal dwNewLong As UInteger) As Integer : End Function
+    Public Function SetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer, ByVal dwNewLong As UInteger) As Long : End Function
     <DllImport("user32.dll")>
     Public Function GetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer) As UInteger : End Function
 

@@ -36,10 +36,10 @@
             dBug.print("SendMessage " & cmd)
             Select Case cmd
                 Case SC_MOVE
-                    FrmMain.Detach(False)
+                    'FrmMain.Detach(False)
                     SendMessage(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
                 Case SC_SIZE
-                    FrmMain.Detach(False)
+                    'FrmMain.Detach(False)
                     SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)
                 Case Else
                     SendMessage(_form.Handle, WM_SYSCOMMAND, cmd, IntPtr.Zero)

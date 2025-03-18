@@ -132,7 +132,7 @@ Partial Public NotInheritable Class FrmMain
             e.Cancel = True
             Exit Sub
         End If
-        Detach(False)
+        'Detach(False)
         UntrapMouse(MouseButtons.Right)
         AppActivate(scalaPID) 'fix right click drag bug
 
@@ -538,7 +538,7 @@ Partial Public NotInheritable Class FrmMain
                 AddHandler smenu.DoubleClick, AddressOf DblClickDir
                 AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
                 'AddHandler smenu.DropDownOpened, AddressOf DeferredIconLoading
-                AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunchDropDown_Closing
+                AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
 
                 Dirs.Add(smenu)
                 isEmpty = False
@@ -628,7 +628,7 @@ Partial Public NotInheritable Class FrmMain
             End Sub))
     End Sub
 
-    Private Sub CmsQuickLaunchDropDown_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs) Handles cmsQuickLaunch.Closing
+    Private Sub CmsQuickLaunch_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs) Handles cmsQuickLaunch.Closing
         If My.Computer.Keyboard.CtrlKeyDown AndAlso
                 (e.CloseReason = ToolStripDropDownCloseReason.ItemClicked OrElse e.CloseReason = ToolStripDropDownCloseReason.AppFocusChange) Then
             e.Cancel = True
@@ -905,7 +905,7 @@ Partial Public NotInheritable Class FrmMain
             AppActivate(scalaPID) 'fix right click drag bug
         Catch
         End Try
-        If Not My.Settings.MinMin OrElse Not AltPP?.isSDL Then Detach(False)
+        'If Not My.Settings.MinMin OrElse Not AltPP?.isSDL Then Detach(False)
         ttMain.Hide(cboAlt)
         ttMain.Hide(btnStart)
         pbZoom.Visible = False
@@ -1001,12 +1001,10 @@ Partial Public NotInheritable Class FrmMain
         scaleFixForm?.Close()
         scaleFixForm = Nothing
 
-        Attach(AltPP)
-
-        'Dim dummy = Task.Run(Sub()
-        '                         Threading.Thread.Sleep(25)
-        '                         If Not caption_Mousedown Then Attach(AltPP)
-        '                     End Sub)
+        Dim dummy = Task.Run(Sub()
+                                 Threading.Thread.Sleep(25)
+                                 If Not caption_Mousedown Then Attach(AltPP)
+                             End Sub)
 
         Dim unused = RestoreClicking()
 
