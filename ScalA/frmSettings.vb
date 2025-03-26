@@ -172,6 +172,9 @@ Public NotInheritable Class FrmSettings
         chkNoAltTab.Checked = My.Settings.NoAltTab
         chkOnlyEsc.Checked = My.Settings.OnlyEsc
 
+        chkAllowShiftEsc.Checked = My.Settings.AllowCtrlShiftEsc
+        chkAllowShiftEsc.Enabled = My.Settings.OnlyEsc
+
         chkAutoCloseSomeone.Checked = My.Settings.AutoCloseIdle
         chkAutoCloseOnlyOnNoSome.Enabled = My.Settings.AutoCloseIdle
         chkAutoCloseOnlyOnNoSome.Checked = My.Settings.OnlyAutoCloseOnNoSomeone
@@ -582,6 +585,8 @@ Public NotInheritable Class FrmSettings
         My.Settings.DisableWinKey = chkBlockWin.Checked
         My.Settings.NoAltTab = chkNoAltTab.Checked
         My.Settings.OnlyEsc = chkOnlyEsc.Checked
+
+        My.Settings.AllowCtrlShiftEsc = chkAllowShiftEsc.Checked
 
         If My.Settings.DisableWinKey OrElse My.Settings.OnlyEsc OrElse My.Settings.NoAltTab Then
             keybHook.Hook()
@@ -1024,6 +1029,11 @@ Public NotInheritable Class FrmSettings
     End Sub
 
     Private init_validate As Boolean = True
+
+    Private Sub chkOnlyEsc_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkOnlyEsc.CheckedChanged
+        chkAllowShiftEsc.Enabled = sender.Checked
+    End Sub
+
     Private Sub validate_hotkey(sender As Object, e As EventArgs) Handles _
                     chkSwitchToOverview.CheckedChanged, chkCycleAlts.CheckedChanged, chkCloseAll.CheckedChanged, chkToggleTopMost.CheckedChanged, chkAlterOverview.CheckedChanged,
                     chkStoAlt.CheckedChanged, chkStoCtrl.CheckedChanged, chkStoShift.CheckedChanged, txtStoKey.KeyUp, chkStoWin.CheckedChanged,
@@ -1039,7 +1049,7 @@ Public NotInheritable Class FrmSettings
         If sender Is Nothing Then init_validate = False
         If init_validate Then Exit Sub
 
-        dBug.print($"Validate {sender} {e?.GetType}")
+        dBug.Print($"Validate {sender} {e?.GetType}")
 
 
         Dim modi As Hotkey.KeyModifier
@@ -1055,7 +1065,7 @@ Public NotInheritable Class FrmSettings
             If Hotkey.RegisterHotkey(Me, 1, modi, StoKey) Then
                 txtStoKey.ForeColor = Color.Black
             Else
-                dBug.print("Invalid hotkey")
+                dBug.Print("Invalid hotkey")
                 txtStoKey.ForeColor = Color.Red
             End If
         End If

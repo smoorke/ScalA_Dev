@@ -68,10 +68,10 @@ Public Class KeyboardHook : Implements IDisposable
                             End Using
                         End If
                     Case Keys.Escape
-                        If Not alreadySendingEsc AndAlso My.Settings.OnlyEsc AndAlso My.Computer.Keyboard.CtrlKeyDown Then
+                        If Not alreadySendingEsc AndAlso My.Settings.OnlyEsc AndAlso My.Computer.Keyboard.CtrlKeyDown AndAlso Not (My.Settings.AllowCtrlShiftEsc AndAlso My.Computer.Keyboard.ShiftKeyDown) Then
                             Using proc As Process = Process.GetProcessById(GetActiveProcessID())
                                 If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
-                                    dBug.print("ctrl esc")
+                                    dBug.Print("ctrl esc")
                                     alreadySendingEsc = True
                                     Try
                                         BlockInput(True)
@@ -88,7 +88,7 @@ Public Class KeyboardHook : Implements IDisposable
                 End Select
             Case WM_KEYUP
                 If My.Settings.OnlyEsc AndAlso My.Computer.Keyboard.CtrlKeyDown AndAlso Marshal.PtrToStructure(Of UInteger)(lParam) = Keys.Escape Then
-                    dBug.print($"esc up {My.Computer.Keyboard.CtrlKeyDown} {alreadySendingEsc}")
+                    dBug.Print($"esc up {My.Computer.Keyboard.CtrlKeyDown} {alreadySendingEsc}")
                     Using proc As Process = Process.GetProcessById(GetActiveProcessID())
                         If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
                             SendInput(1, CtrlDownInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
@@ -100,7 +100,7 @@ Public Class KeyboardHook : Implements IDisposable
                 If My.Settings.OnlyEsc AndAlso key = Keys.Escape Then
                     Using proc As Process = Process.GetProcessById(GetActiveProcessID())
                         If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
-                            dBug.print("alt esc")
+                            dBug.Print("alt esc")
                             SendInput(AltEscKeyInput.Count, AltEscKeyInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
                             Return 1
                         End If
