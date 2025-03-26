@@ -893,7 +893,7 @@ Partial Public NotInheritable Class FrmMain
         Protected Overrides ReadOnly Property CreateParams As CreateParams
             Get
                 Dim param = MyBase.CreateParams
-                param.ExStyle = param.ExStyle And Not WindowStylesEx.WS_EX_TRANSPARENT
+                param.ExStyle = param.ExStyle Or WindowStylesEx.WS_EX_TRANSPARENT
                 Return param
             End Get
         End Property
