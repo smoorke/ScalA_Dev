@@ -70,17 +70,17 @@ Public Class KeyboardHook : Implements IDisposable
                             End Using
                         End If
                     Case Keys.Escape
-                        If Not alreadySendingEsc AndAlso My.Settings.OnlyEsc AndAlso My.Computer.Keyboard.CtrlKeyDown Then ' AndAlso Not (My.Settings.AllowCtrlShiftEsc AndAlso My.Computer.Keyboard.ShiftKeyDown) Then
+                        If Not alreadySendingEsc AndAlso My.Settings.OnlyEsc AndAlso My.Computer.Keyboard.CtrlKeyDown Then
                             Using proc As Process = Process.GetProcessById(GetActiveProcessID())
                                 If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
                                     dBug.Print("ctrl esc")
                                     alreadySendingEsc = True
                                     Try
                                         BlockInput(True)
-                                        SendInput(CtrlEscKeyInput.Count, CtrlEscKeyInput, InputSize)
+                                        SendInput(CtrlUpEscDownInput.Count, CtrlUpEscDownInput, InputSize)
                                         If My.Settings.AllowCtrlShiftEsc AndAlso My.Computer.Keyboard.ShiftKeyDown Then
                                             SendInput(1, CtrlDownInput, InputSize)
-                                            SendInput(1, CtrlEscKeyInput.Skip(1).ToArray, InputSize)
+                                            SendInput(1, CtrlUpEscDownInput.Skip(1).ToArray, InputSize)
                                         End If
                                         Return 1
                                     Finally
@@ -107,7 +107,7 @@ Public Class KeyboardHook : Implements IDisposable
                     Using proc As Process = Process.GetProcessById(GetActiveProcessID())
                         If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
                             dBug.Print("alt esc")
-                            SendInput(AltEscKeyInput.Count, AltEscKeyInput, InputSize)
+                            SendInput(AltUpEscDownAltDownInput.Count, AltUpEscDownAltDownInput, InputSize)
                             Return 1
                         End If
                     End Using
@@ -124,7 +124,7 @@ Public Class KeyboardHook : Implements IDisposable
         Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
     End Function
 
-    Private ReadOnly AltEscKeyInput() As INPUT = {
+    Private ReadOnly AltUpEscDownAltDownInput() As INPUT = {
                    New INPUT With {.type = InputType.INPUT_KEYBOARD,
                         .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wVk = Keys.Menu}}
                    },
@@ -136,7 +136,7 @@ Public Class KeyboardHook : Implements IDisposable
                    }
              }
 
-    Private ReadOnly CtrlEscKeyInput() As INPUT = {
+    Private ReadOnly CtrlUpEscDownInput() As INPUT = {
                    New INPUT With {.type = InputType.INPUT_KEYBOARD,
                         .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wVk = Keys.ControlKey}}
                    },
