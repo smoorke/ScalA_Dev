@@ -878,23 +878,39 @@ Partial Public NotInheritable Class FrmMain
         End Property
         Public Sub New(scrn As Screen)
             Me.FormBorderStyle = FormBorderStyle.None
-            Me.BackColor = Color.Red
-            Me.TransparencyKey = Me.BackColor
+            Me.BackColor = Color.Lime
+            If FrmMain.chkDebug.Checked Then
+                Me.Opacity = 0.1
+            Else
+                Me.TransparencyKey = Me.BackColor
+            End If
             Me.TopMost = True
             Me.ShowInTaskbar = False
             Me.StartPosition = FormStartPosition.Manual
-            Me.Location = scrn.Bounds.Location
+            Me.Bounds = scrn.Bounds
         End Sub
+
+        Protected Overrides ReadOnly Property CreateParams As CreateParams
+            Get
+                Dim param = MyBase.CreateParams
+                param.ExStyle = param.ExStyle And Not WindowStylesEx.WS_EX_TRANSPARENT
+                Return param
+            End Get
+        End Property
+
     End Class
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
 
         If Not (My.Computer.Keyboard.ShiftKeyDown AndAlso Not My.Computer.Keyboard.CtrlKeyDown) Then
             If scaleFixForm Is Nothing Then
+                dBug.Print("spawning scalefixform")
                 scaleFixForm = New MenuScaleFixForm(If(sender.SourceControl Is Nothing, Screen.PrimaryScreen, Screen.FromControl(Me)))
                 scaleFixForm.Show()
                 Task.Run(Sub() Me.Invoke(Sub() cmsQuickLaunch.Show()))
                 e.Cancel = True
                 Exit Sub
+            Else
+                scaleFixForm.Bounds = If(sender.SourceControl Is Nothing, Screen.PrimaryScreen, Screen.FromControl(Me)).Bounds
             End If
         End If
 
@@ -998,13 +1014,22 @@ Partial Public NotInheritable Class FrmMain
         '    End If
         'End If
 
-        scaleFixForm?.Close()
-        scaleFixForm = Nothing
+        Task.Run(Sub()
+                     Threading.Thread.Sleep(25)
+                     Me.Invoke(Sub()
+                                   If cmsQuickLaunch.Visible Then
+                                       dBug.Print("Double QL?")
+                                       Exit Sub 'this fixes closing on immediatly reopening QL, TODO: check if this affects scaling issue
+                                   End If
+                                   scaleFixForm?.Close()
+                                   scaleFixForm = Nothing
+                               End Sub)
+                 End Sub)
 
-        Dim dummy = Task.Run(Sub()
-                                 Threading.Thread.Sleep(25)
-                                 If Not caption_Mousedown Then Attach(AltPP)
-                             End Sub)
+        'Dim dummy = Task.Run(Sub()
+        '                         Threading.Thread.Sleep(25)
+        'If Not caption_Mousedown Then Attach(AltPP)
+        '                     End Sub)
 
         Dim unused = RestoreClicking()
 

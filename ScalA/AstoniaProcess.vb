@@ -33,6 +33,41 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End Get
     End Property
 
+    Private TIattached As Boolean = False
+    Private Shared AttachedThreads As New HashSet(Of Integer)()
+
+    Public Sub ThreadInput(attach As Boolean)
+        If TIattached = attach Then Exit Sub
+
+        If attach Then
+            If AttachThreadInput(ScalaThreadId, Me.MainThreadId, True) Then
+                dBug.Print($"ThreadInput Attach {Me.Name}")
+                AttachedThreads.Add(Me.MainThreadId)
+            End If
+        Else
+            dBug.Print($"ThreadInput Detach {AttachedThreads.Count}")
+            For Each tid In AttachedThreads
+                AttachThreadInput(ScalaThreadId, tid, False)
+            Next
+            AttachedThreads.Clear()
+        End If
+        TIattached = attach
+    End Sub
+    Private _ScalAThreadId As Integer?
+    Private ReadOnly Property ScalaThreadId() As String
+        Get
+            If _ScalAThreadId Is Nothing Then _ScalAThreadId = GetWindowThreadProcessId(FrmMain.ScalaHandle, Nothing)
+            Return _ScalAThreadId
+        End Get
+    End Property
+    Private _MainThreadId As Integer?
+    Public ReadOnly Property MainThreadId() As Integer?
+        Get
+            If _MainThreadId Is Nothing Then _MainThreadId = GetWindowThreadProcessId(Me.MainWindowHandle, Nothing)
+            Return _MainThreadId
+        End Get
+    End Property
+
     Public Shared BiggestWindowWidth As Integer
     Public Shared BiggestWindowHeight As Integer
 

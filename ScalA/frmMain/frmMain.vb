@@ -739,6 +739,8 @@ Partial Public NotInheritable Class FrmMain
         If e.Button = MouseButtons.Left AndAlso e.Clicks = 1 Then ' AndAlso doubleclicktimer.ElapsedMilliseconds > 500 Then
             'dBug.Print($"dctimer {doubleclicktimer.ElapsedMilliseconds}")
             'doubleclicktimer.Restart()
+            'AltPP?.ThreadInput(False)
+
             sender.Capture = False
             tmrTick.Stop()
             caption_Mousedown = True
@@ -755,6 +757,7 @@ Partial Public NotInheritable Class FrmMain
             Dim msg As Message = Message.Create(ScalaHandle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
             Me.WndProc(msg)
 
+            'AltPP?.ThreadInput(True)
 
             caption_Mousedown = False
             captionMoveTrigger = False
@@ -1019,6 +1022,8 @@ Partial Public NotInheritable Class FrmMain
             If button = MouseButtons.Middle Then PostMessage(AltPP?.MainWindowHandle, WM_MBUTTONUP, 0, 0)
             'End If
         Catch
+        Finally
+            MouseButtonStale = MouseButtons.None
         End Try
     End Sub
     ''' <summary>
@@ -1560,7 +1565,7 @@ Partial Public NotInheritable Class FrmMain
             Dim ret = SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap.MainWindowHandle)
             Dim ScalAThreadId As Integer = GetWindowThreadProcessId(ScalaHandle, Nothing)
             Dim AstoniaThreadId As Integer = GetWindowThreadProcessId(ap.MainWindowHandle, Nothing)
-            AttachThreadInput(AstoniaThreadId, ScalAThreadId, False) 'detach input so ctrl, shift and alt still work when there is an elevation mismatch, also fixes sleepy legacy clients lagging ScalA
+            AttachThreadInput(AstoniaThreadId, ScalAThreadId, False) 'detach input so ctrl, shift and alt still work when there is an elevation mismatch, also fixes sleepy legacy clients lagging ScalA, breaks eqlock r-clicking, has bringtofgnd bug
             Return ret
         Finally
             If activate Then AltPP?.Activate()
@@ -1856,7 +1861,7 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
     Private prevMPX As Integer
-    Private Sub Caption_MouseMove(sender As Object, e As MouseEventArgs) Handles pnlSys.MouseMove, btnStart.MouseMove, cboAlt.MouseMove, cmbResolution.MouseMove,
+    Private Sub Caption_MouseMove(sender As Object, e As MouseEventArgs) Handles btnStart.MouseMove, cboAlt.MouseMove, cmbResolution.MouseMove,
                                                                                  pnlTitleBar.MouseMove, lblTitle.MouseMove,
                                                                                  pnlUpdate.MouseMove, pbUpdateAvailable.MouseMove, ChkEqLock.MouseMove,
                                                                                  pnlSys.MouseMove, btnMin.MouseMove, btnMax.MouseMove, btnQuit.MouseMove
@@ -1880,4 +1885,27 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
+    Private Sub Caption_MouseEnter(sender As Control, e As EventArgs) Handles btnStart.MouseEnter, cboAlt.MouseEnter, cmbResolution.MouseEnter,
+                                                                              pnlTitleBar.MouseEnter, lblTitle.MouseEnter,
+                                                                              pnlUpdate.MouseEnter, pbUpdateAvailable.MouseEnter, ChkEqLock.MouseEnter,
+                                                                              pnlSys.MouseEnter, btnMin.MouseEnter, btnMax.MouseEnter, btnQuit.MouseEnter
+        'dBug.Print($"MouseEnter {sender.Name} {AltPP?.IsActive} {MouseButtonStale}")
+
+        'AltPP?.ThreadInput(False)
+
+
+        'If Not MouseButtonStale.HasFlag(MouseButtons.Right) OrElse Not MouseButtonStale.HasFlag(MouseButtons.Middle) Then
+        '    UntrapMouse(MouseButtonStale)
+        'End If
+
+    End Sub
+
+    Private Sub pnlUpdate_MouseLeave(sender As Object, e As EventArgs) Handles btnStart.MouseLeave, cboAlt.MouseLeave, cmbResolution.MouseLeave,
+                                                                              pnlTitleBar.MouseLeave, lblTitle.MouseLeave,
+                                                                              pnlUpdate.MouseLeave, pbUpdateAvailable.MouseLeave, ChkEqLock.MouseLeave,
+                                                                              pnlSys.MouseLeave, btnMin.MouseLeave, btnMax.MouseLeave, btnQuit.MouseLeave
+        'If caption_Mousedown Then Exit Sub
+        'dBug.Print($"MouseLeave {sender.Name} {AltPP?.IsActive} {MouseButtonStale}")
+        'AltPP?.ThreadInput(True)
+    End Sub
 End Class

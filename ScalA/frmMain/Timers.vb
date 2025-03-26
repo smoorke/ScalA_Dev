@@ -501,6 +501,24 @@ Partial NotInheritable Class FrmMain
     Private AutoCloseCounter As Integer = 0
     Private Async Sub TmrActive_Tick(sender As Timer, e As EventArgs) Handles tmrActive.Tick
 
+        If MouseButtonStale <> MouseButtons AndAlso MouseButtons <> MouseButtons.None Then
+            MouseButtonStale = MouseButtons
+        End If
+
+        'If MouseButtons.HasFlag(MouseButtons.Left) AndAlso PnlEqLock.Contains(MousePosition) AndAlso Not (cmsQuickLaunch.Visible OrElse cmsAlt.Visible) Then
+        '    Dim wp = WindowFromPoint(MousePosition)
+        '    If wp = AltPP?.MainWindowHandle OrElse wp = ScalaHandle Then
+        '        Try
+        '            AppActivate(scalaPID)
+        '            PnlEqLock.Capture = True
+        '            AppActivate(AltPP.Id)
+        '        Catch ex As Exception
+
+        '        End Try
+        '    End If
+        'End If
+
+
         activeID = GetActiveProcessID() ' this returns 0 when switching tasks
         Try
             activeIsAstonia = Process.GetProcessById(activeID).IsAstonia
@@ -511,8 +529,10 @@ Partial NotInheritable Class FrmMain
                 (My.Settings.gameOnOverview AndAlso pnlOverview.Visible AndAlso
                 pnlOverview.Controls.OfType(Of AButton).Any(Function(ab) ab.Visible AndAlso ab.AP IsNot Nothing AndAlso ab.AP.Id = activeID)) Then ' is on overview
             setActive(True)
+            AltPP?.ThreadInput(False)
         ElseIf activeID <> 0 Then 'inactive
             setActive(False)
+            AltPP?.ThreadInput(True) 'fix bringtofront bug?
         End If
         If activeIsAstonia AndAlso Not My.Computer.Keyboard.CtrlKeyDown Then
             CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)

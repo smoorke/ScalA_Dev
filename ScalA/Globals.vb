@@ -4,6 +4,8 @@
 
     Public keybHook As New KeyboardHook
 
+    Public MouseButtonStale As MouseButtons
+
     Public Function WinUsingDarkTheme() As Boolean
         Using key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\Microsoft\Windows\CurrentVersion\Themes\Personalize")
             Dim value = key?.GetValue("AppsUseLightTheme")
