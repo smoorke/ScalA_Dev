@@ -1700,6 +1700,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkAllowShiftEsc.Size = New System.Drawing.Size(224, 17)
         Me.chkAllowShiftEsc.TabIndex = 27
         Me.chkAllowShiftEsc.Text = "Allow Ctrl-Shift-Esc to Open TaskManager"
+        Me.ttSettings.SetToolTip(Me.chkAllowShiftEsc, "This will send Esc to Astonia in addition to Opening TaskManager")
         Me.chkAllowShiftEsc.UseVisualStyleBackColor = True
         '
         'FrmSettings

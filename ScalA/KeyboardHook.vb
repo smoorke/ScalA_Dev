@@ -46,6 +46,8 @@ Public Class KeyboardHook : Implements IDisposable
 
     Private alreadySendingEsc As Boolean = False
 
+    Private InputSize = Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT))
+
     Private Function KeyProc(
         ByVal nCode As Integer,
         ByVal wParam As IntPtr,
@@ -68,17 +70,21 @@ Public Class KeyboardHook : Implements IDisposable
                             End Using
                         End If
                     Case Keys.Escape
-                        If Not alreadySendingEsc AndAlso My.Settings.OnlyEsc AndAlso My.Computer.Keyboard.CtrlKeyDown AndAlso Not (My.Settings.AllowCtrlShiftEsc AndAlso My.Computer.Keyboard.ShiftKeyDown) Then
+                        If Not alreadySendingEsc AndAlso My.Settings.OnlyEsc AndAlso My.Computer.Keyboard.CtrlKeyDown Then ' AndAlso Not (My.Settings.AllowCtrlShiftEsc AndAlso My.Computer.Keyboard.ShiftKeyDown) Then
                             Using proc As Process = Process.GetProcessById(GetActiveProcessID())
                                 If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
                                     dBug.Print("ctrl esc")
                                     alreadySendingEsc = True
                                     Try
                                         BlockInput(True)
-                                        SendInput(CtrlEscKeyInput.Count, CtrlEscKeyInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                                        SendInput(CtrlEscKeyInput.Count, CtrlEscKeyInput, InputSize)
+                                        If My.Settings.AllowCtrlShiftEsc AndAlso My.Computer.Keyboard.ShiftKeyDown Then
+                                            SendInput(1, CtrlDownInput, InputSize)
+                                            SendInput(1, CtrlEscKeyInput.Skip(1).ToArray, InputSize)
+                                        End If
                                         Return 1
                                     Finally
-                                        SendInput(1, CtrlDownInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                                        SendInput(1, CtrlDownInput, InputSize)
                                         alreadySendingEsc = False
                                         BlockInput(False)
                                     End Try
@@ -91,7 +97,7 @@ Public Class KeyboardHook : Implements IDisposable
                     dBug.Print($"esc up {My.Computer.Keyboard.CtrlKeyDown} {alreadySendingEsc}")
                     Using proc As Process = Process.GetProcessById(GetActiveProcessID())
                         If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
-                            SendInput(1, CtrlDownInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                            SendInput(1, CtrlDownInput, InputSize)
                         End If
                     End Using
                 End If
@@ -101,7 +107,7 @@ Public Class KeyboardHook : Implements IDisposable
                     Using proc As Process = Process.GetProcessById(GetActiveProcessID())
                         If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
                             dBug.Print("alt esc")
-                            SendInput(AltEscKeyInput.Count, AltEscKeyInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                            SendInput(AltEscKeyInput.Count, AltEscKeyInput, InputSize)
                             Return 1
                         End If
                     End Using
