@@ -39,7 +39,7 @@ Partial NotInheritable Class FrmMain
                         Dim activeProc = Process.GetProcessById(activeID)
                         dBug.Print("--Before--")
                         dBug.Print($"Scala {ScalaHandle} Top:{(GetWindowLong(ScalaHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
-                        dBug.Print($"Trget {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
+                        dBug.Print($"Trget {activeProc.MainWindowTitle.Cap(10)} {activeHandle} Top:{(GetWindowLong(activeHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST}")
                         dBug.Print($"tgtOwner {GetWindowLong(activeHandle, GWL_HWNDPARENT)}")
                         If activeID = scalaPID OrElse activeProc.IsScalA() Then
                             dBug.Print("Cannot set self topmost with hotkey")
