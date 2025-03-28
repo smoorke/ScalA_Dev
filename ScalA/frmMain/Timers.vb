@@ -196,7 +196,7 @@ Partial NotInheritable Class FrmMain
     Friend Shared apSorter As AstoniaProcessSorter
     Private ovBusy As Boolean = False
     Private Shared lockObject As New Object()
-    Private Sub TimerOverview_Tick(sender As Timer, e As EventArgs) Handles tmrOverview.Tick
+    Private Async Sub TimerOverview_Tick(sender As Timer, e As EventArgs) Handles tmrOverview.Tick
 
         If Me.WindowState = FormWindowState.Minimized Then
             altSelectedOrOverview = Nothing
@@ -227,65 +227,66 @@ Partial NotInheritable Class FrmMain
         'Dim butCounter = 0
         Dim eqLockShown = False
 
-
-        Parallel.ForEach(visibleButtons, New ParallelOptions With {.MaxDegreeOfParallelism = -1},
-                         Sub(but As AButton, ls As ParallelLoopState, butCounter As Integer)
-                             Try
-                                 Dim apCounter = butCounter
-                                 If apCounter >= topCount Then apCounter = butCounter - skipCount + topCount
-                                 'dBug.print($"pfe tick{TickCounter} but{butCounter} ap{apCounter} bot{botCount} top{topCount} skip{skipCount}")
-                                 If apCounter < alts.Count AndAlso
+        Await Task.Run(
+            Sub()
+                Parallel.ForEach(visibleButtons, New ParallelOptions With {.MaxDegreeOfParallelism = -1},
+                    Sub(but As AButton, ls As ParallelLoopState, butCounter As Integer)
+                        Try
+                            Dim apCounter = butCounter
+                            If apCounter >= topCount Then apCounter = butCounter - skipCount + topCount
+                            'dBug.print($"pfe tick{TickCounter} but{butCounter} ap{apCounter} bot{botCount} top{topCount} skip{skipCount}")
+                            If apCounter < alts.Count AndAlso
                                     (butCounter < topCount OrElse butCounter >= skipCount) AndAlso
                                     Not alts(apCounter).HasExited Then
-                                     'buttons with alts
+                                'buttons with alts
 
-                                     Dim ap As AstoniaProcess = alts(apCounter)
-                                     Dim apID = ap.Id
-                                     but.AP = ap
-                                     but.BeginInvoke(Sub() but.Text = ap.Name)
+                                Dim ap As AstoniaProcess = alts(apCounter)
+                                Dim apID = ap.Id
+                                but.AP = ap
+                                but.BeginInvoke(Sub() but.Text = ap.Name)
 
-                                     If ap.IsActive() Then
-                                         but.Font = New Font("Microsoft Sans Serif", 8.25, FontStyle.Bold)
-                                         but.BeginInvoke(Sub() but.Select())
-                                     Else
-                                         but.Font = New Font("Microsoft Sans Serif", 8.25)
-                                     End If
+                                If ap.IsActive() Then
+                                    but.Font = New Font("Microsoft Sans Serif", 8.25, FontStyle.Bold)
+                                    but.BeginInvoke(Sub() but.Select())
+                                Else
+                                    but.Font = New Font("Microsoft Sans Serif", 8.25)
+                                End If
 
-                                     If but.pidCache <> ap.Id Then but.BackgroundImage = Nothing
-                                     If but.BackgroundImage Is Nothing Then
-                                         Using ico As Bitmap = ap.GetIcon?.ToBitmap
-                                             Dim img As Image = Nothing
-                                             If ico IsNot Nothing Then
-                                                 img = New Bitmap(ico, New Size(16, 16))
-                                                 dBug.print($"{ap.Name} icon updated")
-                                             End If
-                                             Me.BeginInvoke(Sub() but.BackgroundImage = img)
-                                         End Using
-                                     End If
-                                     but.pidCache = ap.Id
+                                If but.pidCache <> ap.Id Then but.BackgroundImage = Nothing
+                                If but.BackgroundImage Is Nothing Then
+                                    Using ico As Bitmap = ap.GetIcon?.ToBitmap
+                                        Dim img As Image = Nothing
+                                        If ico IsNot Nothing Then
+                                            img = New Bitmap(ico, New Size(16, 16))
+                                            dBug.Print($"{ap.Name} icon updated")
+                                        End If
+                                        Me.BeginInvoke(Sub() but.BackgroundImage = img)
+                                    End Using
+                                End If
+                                but.pidCache = ap.Id
 
-                                     Dim sw = swDict.GetOrAdd(ap.Id, Stopwatch.StartNew)
-                                     If but.Image Is Nothing OrElse sw.ElapsedMilliseconds > 66 Then
-                                         Task.Run(Sub()
-                                                      Dim img As Image = ap.GetHealthbar
-                                                      Me.BeginInvoke(Sub() but.Image = img)
-                                                  End Sub)
-                                         sw.Restart()
-                                     End If
+                                Dim sw = swDict.GetOrAdd(ap.Id, Stopwatch.StartNew)
+                                If but.Image Is Nothing OrElse sw.ElapsedMilliseconds > 66 Then
+                                    Task.Run(Sub()
+                                                 Dim img As Image = ap.GetHealthbar
+                                                 Me.BeginInvoke(Sub() but.Image = img)
+                                             End Sub)
+                                    sw.Restart()
+                                End If
 
-                                     but.ContextMenuStrip = cmsAlt
-                                     'Me.Invoke(Function() cboAlt.SelectedIndex = 0) 'do not use index as it changes when hovering dropdown items
-                                     If pnlOverview.Visible Then
-                                         If Not startThumbsDict.ContainsKey(apID) Then
+                                but.ContextMenuStrip = cmsAlt
+                                'Me.Invoke(Function() cboAlt.SelectedIndex = 0) 'do not use index as it changes when hovering dropdown items
+                                If pnlOverview.Visible Then
+                                    If Not startThumbsDict.ContainsKey(apID) Then
 
-                                             Dim thumbid As IntPtr = IntPtr.Zero
-                                             DwmRegisterThumbnail(ScalaHandle, ap.MainWindowHandle, thumbid)
-                                             startThumbsDict(apID) = thumbid
-                                             dBug.print($"registered thumb {startThumbsDict(apID)} {ap.Name} {apID}")
-                                         End If
+                                        Dim thumbid As IntPtr = IntPtr.Zero
+                                        DwmRegisterThumbnail(ScalaHandle, ap.MainWindowHandle, thumbid)
+                                        startThumbsDict(apID) = thumbid
+                                        dBug.Print($"registered thumb {startThumbsDict(apID)} {ap.Name} {apID}")
+                                    End If
 
-                                         rectDic(apID) = but.ThumbRECT
-                                         Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
+                                    rectDic(apID) = but.ThumbRECT
+                                    Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
                                            .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY,
                                            .opacity = opaDict.GetValueOrDefault(apID, If(chkDebug.Checked, 128, 255)),
                                            .fVisible = True,
@@ -293,19 +294,20 @@ Partial NotInheritable Class FrmMain
                                            .fSourceClientAreaOnly = True}
 
 
-                                         DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
-                                     End If
-                                 Else 'buttons w/o alts
-                                     but.BeginInvoke(Sub() but.Text = "")
-                                     but.AP = Nothing
-                                     but.ContextMenuStrip = cmsQuickLaunch
-                                     but.BackgroundImage = Nothing
-                                     but.Image = Nothing
-                                     but.pidCache = 0
-                                 End If
-                             Catch
-                             End Try
-                         End Sub)
+                                    DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
+                                End If
+                            Else 'buttons w/o alts
+                                but.BeginInvoke(Sub() but.Text = "")
+                                but.AP = Nothing
+                                but.ContextMenuStrip = cmsQuickLaunch
+                                but.BackgroundImage = Nothing
+                                but.Image = Nothing
+                                but.pidCache = 0
+                            End If
+                        Catch
+                        End Try
+                    End Sub)
+            End Sub)
 
         Dim thumbContainedMouse As Boolean = False
 
