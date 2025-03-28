@@ -265,9 +265,11 @@ Partial NotInheritable Class FrmMain
                                      but.pidCache = ap.Id
 
                                      Dim sw = swDict.GetOrAdd(ap.Id, Stopwatch.StartNew)
-                                     If but.Image Is Nothing OrElse sw.ElapsedMilliseconds > 42 Then
-                                         Dim img As Image = ap.GetHealthbar
-                                         Me.BeginInvoke(Sub() but.Image = img)
+                                     If but.Image Is Nothing OrElse sw.ElapsedMilliseconds > 66 Then
+                                         Task.Run(Sub()
+                                                      Dim img As Image = ap.GetHealthbar
+                                                      Me.BeginInvoke(Sub() but.Image = img)
+                                                  End Sub)
                                          sw.Restart()
                                      End If
 
