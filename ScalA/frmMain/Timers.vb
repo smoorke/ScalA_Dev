@@ -364,7 +364,7 @@ Partial NotInheritable Class FrmMain
                                 'Attach(ap)
                                 If My.Settings.HoverActivate Then
                                     Dim id = GetActiveProcessID()
-                                    If id <> 0 AndAlso id = scalaPID OrElse pnlOverview.Controls.OfType(Of AButton).Any(Function(ab As AButton) ab.pidCache = id) Then
+                                    If id = scalaPID OrElse isAstoniaOrScalA(id) Then
                                         If Not (SysMenu.Visible OrElse cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse
                                                 FrmSettings.Visible OrElse UpdateDialog.Contains(MousePosition) OrElse
                                                 renameOpen OrElse CustomMessageBox.visible) Then
@@ -373,7 +373,7 @@ Partial NotInheritable Class FrmMain
 #End If
                                                 'ap.Activate() doesn't work if not debugging
                                                 If Not ap.IsActive AndAlso WindowFromPoint(MousePosition) = ap.MainWindowHandle Then
-                                                    dBug.print($"Activating {ap.Name}")
+                                                    dBug.Print($"Activating {ap.Name}")
                                                     SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
                                                 End If
 #If DEBUG Then
@@ -431,7 +431,7 @@ Partial NotInheritable Class FrmMain
                                                           End If
                                                           prevWMMMpt = MousePosition
                                                       Catch ex As Exception
-                                                          dBug.print(ex.Message)
+                                                          dBug.Print(ex.Message)
                                                       Finally
                                                           AOBusy = False
                                                       End Try
@@ -479,7 +479,7 @@ Partial NotInheritable Class FrmMain
         End If
 
         For Each ppid As Integer In purgelist 'tolist needed as we mutate the thumbsdict
-            dBug.print("unregister thumb " & startThumbsDict(ppid).ToString)
+            dBug.Print("unregister thumb " & startThumbsDict(ppid).ToString)
             DwmUnregisterThumbnail(startThumbsDict(ppid))
             startThumbsDict.TryRemove(ppid, Nothing)
             rectDic.TryRemove(ppid, Nothing)
@@ -491,13 +491,31 @@ Partial NotInheritable Class FrmMain
         Next
 
         altSelectedOrOverview = alts
-#If debug Then
+#If DEBUG Then
         TickCounter += 1
         If TickCounter >= visibleButtons.Count Then TickCounter = 0
 #End If
         'End SyncLock
         ovBusy = False
     End Sub
+
+    ''' <summary>
+    ''' Checks if process with id is Astonia or ScalA
+    ''' </summary>
+    ''' <param name="id"></param>
+    ''' <returns></returns>
+    Private Function isAstoniaOrScalA(id As Integer)
+        If id = 0 Then Return False
+        Using proc As Process = Process.GetProcessById(id)
+            Try
+                If (proc.IsAstonia AndAlso Not proc.HasExited) OrElse proc.IsScalA Then Return True
+            Catch
+                CType(proc, AstoniaProcess).IsRunning() 'elevate self
+            End Try
+        End Using
+        Return False
+    End Function
+
 
     Private activeID As Integer = 0
     Private activeIsAstonia As Boolean = False
@@ -674,7 +692,7 @@ Partial NotInheritable Class FrmMain
         ''locked 🔒
         ''unlocked 🔓
 
-        If Not pnlOverview.Visible AndAlso AltPP.loggedInAs <> "Someone" AndAlso AltPP.Name = "Someone" Then
+        If Not pnlOverview.Visible AndAlso AltPP?.loggedInAs <> "Someone" AndAlso AltPP?.Name = "Someone" Then
             Dim sb As Rectangle = Me.Bounds
             frmOverlay.Bounds = New Rectangle(sb.X, sb.Y + 21, sb.Width, sb.Height - 21)
             SetWindowPos(frmOverlay.Handle, 0, sb.X, sb.Y + 21, sb.Width, sb.Height - 21, SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder)
