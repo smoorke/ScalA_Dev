@@ -57,7 +57,7 @@ Partial Class frmOverlay
         '
         Me.HideThisToolStripMenuItem.Name = "HideThisToolStripMenuItem"
         Me.HideThisToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
-        Me.HideThisToolStripMenuItem.Text = "Hide This"
+        Me.HideThisToolStripMenuItem.Text = "Hide This Button"
         '
         'frmOverlay
         '
