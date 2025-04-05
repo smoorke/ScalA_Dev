@@ -27,8 +27,11 @@
     End Sub
 
 
+    Private Async Sub pbRestart_Click(sender As Object, e As MouseEventArgs) Handles pbRestart.MouseClick
+        If e.Button <> MouseButtons.Left Then
+            Exit Sub
+        End If
 
-    Private Async Sub pbRestart_Click(sender As Object, e As EventArgs) Handles pbRestart.Click
         Dim targetname As String = FrmMain.AltPP.loggedInAs
         dBug.Print($"restarting {targetname}")
 
@@ -57,5 +60,15 @@
 
     Private Sub pbRestart_Resize(sender As Object, e As EventArgs) Handles pbRestart.Resize
         dBug.Print($"pbRestart.Size {pbRestart.Size}")
+    End Sub
+
+    Private Sub HideThisToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles HideThisToolStripMenuItem.Click
+        If FrmMain.AltPP IsNot Nothing Then
+            FrmMain.AltPP.hideRestart = True
+        End If
+    End Sub
+
+    Private Sub cmsRestartHide_Opening(sender As ContextMenuStrip, e As EventArgs) Handles cmsRestartHide.Opened
+        sender.Location = pbRestart.PointToScreen(New Point(0, pbRestart.Height))
     End Sub
 End Class

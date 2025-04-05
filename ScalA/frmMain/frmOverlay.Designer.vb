@@ -24,8 +24,11 @@ Partial Class frmOverlay
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Me.pbRestart = New System.Windows.Forms.PictureBox()
+        Me.cmsRestartHide = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.HideThisToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ttOverlay = New System.Windows.Forms.ToolTip(Me.components)
         CType(Me.pbRestart, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.cmsRestartHide.SuspendLayout()
         Me.SuspendLayout()
         '
         'pbRestart
@@ -33,6 +36,7 @@ Partial Class frmOverlay
         Me.pbRestart.BackColor = System.Drawing.Color.Transparent
         Me.pbRestart.BackgroundImage = Global.ScalA.My.Resources.Resources.RefreshB
         Me.pbRestart.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch
+        Me.pbRestart.ContextMenuStrip = Me.cmsRestartHide
         Me.pbRestart.Location = New System.Drawing.Point(671, 7)
         Me.pbRestart.Margin = New System.Windows.Forms.Padding(0)
         Me.pbRestart.Name = "pbRestart"
@@ -41,6 +45,19 @@ Partial Class frmOverlay
         Me.pbRestart.TabStop = False
         Me.ttOverlay.SetToolTip(Me.pbRestart, "Restart Client")
         Me.pbRestart.Visible = False
+        '
+        'cmsRestartHide
+        '
+        Me.cmsRestartHide.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.HideThisToolStripMenuItem})
+        Me.cmsRestartHide.Name = "cmsRestartHide"
+        Me.cmsRestartHide.ShowImageMargin = False
+        Me.cmsRestartHide.Size = New System.Drawing.Size(156, 48)
+        '
+        'HideThisToolStripMenuItem
+        '
+        Me.HideThisToolStripMenuItem.Name = "HideThisToolStripMenuItem"
+        Me.HideThisToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.HideThisToolStripMenuItem.Text = "Hide This"
         '
         'frmOverlay
         '
@@ -55,10 +72,13 @@ Partial Class frmOverlay
         Me.Text = "Overlay"
         Me.TransparencyKey = System.Drawing.Color.Black
         CType(Me.pbRestart, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.cmsRestartHide.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
 
     Friend WithEvents pbRestart As PictureBox
     Friend WithEvents ttOverlay As ToolTip
+    Friend WithEvents cmsRestartHide As ContextMenuStrip
+    Friend WithEvents HideThisToolStripMenuItem As ToolStripMenuItem
 End Class

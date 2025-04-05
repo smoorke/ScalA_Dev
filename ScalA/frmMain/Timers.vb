@@ -554,8 +554,9 @@ Partial NotInheritable Class FrmMain
             AltPP?.ThreadInput(False)
         ElseIf activeID <> 0 Then 'inactive
             setActive(False)
-            AltPP?.ThreadInput(True) 'fix bringtofront bug?
+            AltPP?.ThreadInput(True) 'fix bringtofront bug
         End If
+
         If activeIsAstonia AndAlso Not My.Computer.Keyboard.CtrlKeyDown Then
             CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
             cmsQuickLaunch.Close()
@@ -692,7 +693,7 @@ Partial NotInheritable Class FrmMain
         ''locked 🔒
         ''unlocked 🔓
 
-        If Not pnlOverview.Visible AndAlso AltPP?.loggedInAs <> "Someone" AndAlso AltPP?.Name = "Someone" Then
+        If Not pnlOverview.Visible AndAlso AltPP?.loggedInAs <> "Someone" AndAlso AltPP?.Name = "Someone" AndAlso Not AltPP?.hideRestart Then
             Dim sb As Rectangle = Me.Bounds
             frmOverlay.Bounds = New Rectangle(sb.X, sb.Y + 21, sb.Width, sb.Height - 21)
             SetWindowPos(frmOverlay.Handle, 0, sb.X, sb.Y + 21, sb.Width, sb.Height - 21, SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder)

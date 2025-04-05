@@ -46,7 +46,7 @@ Partial Public NotInheritable Class FrmMain
         sender.Items.Clear()
         sender.Items.Add(New AstoniaProcess) 'Someone
 
-        sender.Items.AddRange(AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name, apSorter).ToArray)
+        sender.Items.AddRange(AstoniaProcess.Enumerate(blackList, True).OrderBy(Function(ap) ap.Name, apSorter).ToArray)
 
         If current IsNot Nothing AndAlso sender.Items.Contains(current) Then
             sender.SelectedItem = current
@@ -88,7 +88,7 @@ Partial Public NotInheritable Class FrmMain
     End Function
 
     Private prevItem As New AstoniaProcess()
-    Private updatingCombobox As Boolean = False
+    Public updatingCombobox As Boolean = False
     Private Async Sub CboAlt_SelectedIndexChanged(sender As ComboBox, e As EventArgs) Handles cboAlt.SelectedIndexChanged
 
         If updatingCombobox Then Exit Sub
@@ -484,6 +484,7 @@ Partial Public NotInheritable Class FrmMain
         cmsAlt.Renderer = New ToolStripProfessionalRenderer(New CustomColorTable)
         cmsQuickLaunch.Renderer = cmsAlt.Renderer
         cmsQuit.Renderer = cmsAlt.Renderer
+        frmOverlay.cmsRestartHide.Renderer = cmsAlt.Renderer
 
         If My.Settings.Theme = 0 Then 'undefined, system, light, dark
             If My.Settings.DarkMode Then
