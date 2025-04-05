@@ -184,6 +184,9 @@ Public NotInheritable Class FrmSettings
         validate_hotkey(Nothing, Nothing)
 
         Hotkey.UnregHotkey(Me)
+
+        txtResolutions.SelectionStart = txtResolutions.TextLength
+
     End Sub
     Private Sub FrmSettings_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         Me.Owner = FrmMain
@@ -792,13 +795,27 @@ Public NotInheritable Class FrmSettings
 
     End Sub
 
-    Private Sub BtnSort_Click(sender As Object, e As EventArgs) Handles btnSort.Click
-        Dim sb As New StringBuilder
-        For Each line In txtResolutions.Text.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries).OrderBy(Function(res) Val(res))
-            sb.AppendLine(line)
-        Next
-        sb.Remove(sb.Length - 2, 2)
-        txtResolutions.Text = sb.ToString
+    Private Sub SortResolutions()
+
+        Dim currentitem As String = txtResolutions.Lines(txtResolutions.GetLineFromCharIndex(txtResolutions.GetFirstCharIndexOfCurrentLine)) & vbCrLf
+        Dim caretPositionInLine As Integer = txtResolutions.SelectionStart - txtResolutions.GetFirstCharIndexOfCurrentLine()
+
+        dBug.Print($"currentitem ""{currentitem}""")
+
+        txtResolutions.Lines = txtResolutions.Lines() _
+                                .Where(Function(line) Not String.IsNullOrWhiteSpace(line)) _ 'filter empty
+                                .OrderBy(Function(res) Val(res)) _                           'sort
+                                .ThenBy(Function(res) Val(res.Split("x").Skip(1).FirstOrDefault)) _
+                                .Distinct(StringComparer.OrdinalIgnoreCase) _                'remove dups
+                                .ToArray()
+
+        'find currentitem and set caret to the correct position
+        Dim index As Integer = txtResolutions.Text.IndexOf(currentitem)
+        If index >= 0 Then
+            txtResolutions.SelectionStart = index + caretPositionInLine
+            txtResolutions.ScrollToCaret()
+        End If
+
     End Sub
 
     Private Sub BtnHelp_Click(sender As Object, e As EventArgs) Handles btnHelp.Click
@@ -812,7 +829,7 @@ Public NotInheritable Class FrmSettings
 
     Private Sub BtnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
 
-        dBug.print("btnTest_Click")
+        dBug.Print("btnTest_Click")
 
         FrmMain.topSortList = txtTopSort.Lines.Where(Function(s) s <> "").ToList
         FrmMain.botSortList = txtBotSort.Lines.Where(Function(s) s <> "").ToList
@@ -827,12 +844,12 @@ Public NotInheritable Class FrmSettings
         IPC.AddOrUpdateInstance(FrmMain.scalaPID, FrmMain.cboAlt.SelectedIndex = 0, If(FrmMain.cboAlt.SelectedIndex = 0, Nothing, FrmMain.cboAlt.SelectedItem.id), FrmMain.showingSomeone)
 
 #If DEBUG Then
-        dBug.print("Top:")
-        FrmMain.topSortList.ForEach(Sub(el) dBug.print(el))
-        dBug.print("Bot:")
-        FrmMain.botSortList.ForEach(Sub(el) dBug.print(el))
-        dBug.print("blacklist:")
-        FrmMain.blackList.ForEach(Sub(el) dBug.print(el))
+        dBug.Print("Top:")
+        FrmMain.topSortList.ForEach(Sub(el) dBug.Print(el))
+        dBug.Print("Bot:")
+        FrmMain.botSortList.ForEach(Sub(el) dBug.Print(el))
+        dBug.Print("blacklist:")
+        FrmMain.blackList.ForEach(Sub(el) dBug.Print(el))
 #End If
     End Sub
 
@@ -862,7 +879,7 @@ Public NotInheritable Class FrmSettings
     Private Sub btnGrabCurrent_Click(sender As Object, e As EventArgs) Handles btnGrabCurrent.Click
         Dim bounds = FrmMain.Bounds
         Dim workarea = Screen.FromControl(FrmMain).WorkingArea
-        dBug.print($"b {bounds} wa {workarea}")
+        dBug.Print($"b {bounds} wa {workarea}")
         NumBorderTop.Value = Math.Max(0, (bounds.Top - workarea.Top) * 1000 / workarea.Height)
         NumBorderLeft.Value = Math.Max(0, (bounds.Left - workarea.Left) * 1000 / workarea.Width)
         NumBorderRight.Value = Math.Max(0, (workarea.Right - bounds.Right) * 1000 / workarea.Width)
@@ -871,9 +888,9 @@ Public NotInheritable Class FrmSettings
 
     Private Sub btnAddCurrentRes_Click(sender As Object, e As EventArgs) Handles btnAddCurrentRes.Click
         Dim res As String = FrmMain.cmbResolution.SelectedItem
-        dBug.print(res)
+        dBug.Print(res)
         If txtResolutions.Lines.Contains(res) Then
-            dBug.print("already present")
+            dBug.Print("already present")
             txtResolutions.SelectionStart = txtResolutions.Text.IndexOf(res)
             txtResolutions.SelectionLength = res.Length
             txtResolutions.ScrollToCaret()
@@ -928,7 +945,7 @@ Public NotInheritable Class FrmSettings
     Private Sub TxtShortcuts_PreviewKeyDown(sender As TextBox, e As PreviewKeyDownEventArgs) _
         Handles txtStoKey.PreviewKeyDown, txtCycleKeyUp.PreviewKeyDown, txtCycleKeyDown.PreviewKeyDown, txtCloseAll.PreviewKeyDown, txtTogTop.PreviewKeyDown,
                 txtAlterOverviewMinKey.PreviewKeyDown, txtAlterOverviewPlusKey.PreviewKeyDown, txtAlterOverviewStarKey.PreviewKeyDown
-        dBug.print(e.KeyCode)
+        dBug.Print(e.KeyCode)
         If e.KeyCode = 16 OrElse 'shift
            e.KeyCode = 17 OrElse 'ctrl
            e.KeyCode = 18 OrElse 'alt
@@ -958,7 +975,7 @@ Public NotInheritable Class FrmSettings
                 AlterOvervieKeyStar = e.KeyCode
 
         End Select
-        dBug.print($"key: {e.KeyCode}")
+        dBug.Print($"key: {e.KeyCode}")
     End Sub
 
     Private Async Sub CheckNowToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CheckNowToolStripMenuItem.Click
@@ -1032,6 +1049,18 @@ Public NotInheritable Class FrmSettings
 
     Private Sub chkOnlyEsc_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkOnlyEsc.CheckedChanged
         chkAllowShiftEsc.Enabled = sender.Checked
+    End Sub
+
+    Private Sub txtResolutions_Leave(sender As Object, e As EventArgs) Handles txtResolutions.Leave
+        SortResolutions()
+    End Sub
+
+    Private Sub tabResolutions_Click(sender As Object, e As EventArgs) Handles tabResolutions.Click
+        SortResolutions()
+    End Sub
+
+    Private Sub FrmSettings_Click(sender As Object, e As EventArgs) Handles MyBase.Click
+        SortResolutions()
     End Sub
 
     Private Sub validate_hotkey(sender As Object, e As EventArgs) Handles _

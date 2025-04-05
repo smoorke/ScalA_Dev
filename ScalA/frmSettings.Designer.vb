@@ -85,6 +85,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkNoAltTab = New System.Windows.Forms.CheckBox()
         Me.pb100PWarning = New System.Windows.Forms.PictureBox()
         Me.chkAutoCloseOnlyOnNoSome = New System.Windows.Forms.CheckBox()
+        Me.chkAllowShiftEsc = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
@@ -93,7 +94,6 @@ Partial NotInheritable Class FrmSettings
         Me.cmsRestore = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.LastSavedToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.DefaultToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.btnSort = New System.Windows.Forms.Button()
         Me.btnGenerate = New System.Windows.Forms.Button()
         Me.cmsGenerate = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.X60043ToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -164,7 +164,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
-        Me.chkAllowShiftEsc = New System.Windows.Forms.CheckBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
@@ -811,6 +810,17 @@ Partial NotInheritable Class FrmSettings
         Me.ttSettings.SetToolTip(Me.chkAutoCloseOnlyOnNoSome, resources.GetString("chkAutoCloseOnlyOnNoSome.ToolTip"))
         Me.chkAutoCloseOnlyOnNoSome.UseVisualStyleBackColor = True
         '
+        'chkAllowShiftEsc
+        '
+        Me.chkAllowShiftEsc.AutoSize = True
+        Me.chkAllowShiftEsc.Location = New System.Drawing.Point(39, 56)
+        Me.chkAllowShiftEsc.Name = "chkAllowShiftEsc"
+        Me.chkAllowShiftEsc.Size = New System.Drawing.Size(224, 17)
+        Me.chkAllowShiftEsc.TabIndex = 27
+        Me.chkAllowShiftEsc.Text = "Allow Ctrl-Shift-Esc to Open TaskManager"
+        Me.ttSettings.SetToolTip(Me.chkAllowShiftEsc, "This will send Esc to Astonia in addition to Opening TaskManager")
+        Me.chkAllowShiftEsc.UseVisualStyleBackColor = True
+        '
         'tbcSettings
         '
         Me.tbcSettings.Appearance = System.Windows.Forms.TabAppearance.FlatButtons
@@ -835,7 +845,6 @@ Partial NotInheritable Class FrmSettings
         Me.tabResolutions.Controls.Add(Label15)
         Me.tabResolutions.Controls.Add(Me.btnAddCurrentRes)
         Me.tabResolutions.Controls.Add(Me.btnRestore)
-        Me.tabResolutions.Controls.Add(Me.btnSort)
         Me.tabResolutions.Controls.Add(Me.btnGenerate)
         Me.tabResolutions.Controls.Add(Me.txtResolutions)
         Me.tabResolutions.Location = New System.Drawing.Point(4, 25)
@@ -895,15 +904,6 @@ Partial NotInheritable Class FrmSettings
         Me.DefaultToolStripMenuItem.Name = "DefaultToolStripMenuItem"
         Me.DefaultToolStripMenuItem.Size = New System.Drawing.Size(104, 22)
         Me.DefaultToolStripMenuItem.Text = "Default"
-        '
-        'btnSort
-        '
-        Me.btnSort.Location = New System.Drawing.Point(105, 60)
-        Me.btnSort.Name = "btnSort"
-        Me.btnSort.Size = New System.Drawing.Size(75, 23)
-        Me.btnSort.TabIndex = 3
-        Me.btnSort.Text = "Sort"
-        Me.btnSort.UseVisualStyleBackColor = True
         '
         'btnGenerate
         '
@@ -1692,17 +1692,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
-        'chkAllowShiftEsc
-        '
-        Me.chkAllowShiftEsc.AutoSize = True
-        Me.chkAllowShiftEsc.Location = New System.Drawing.Point(39, 56)
-        Me.chkAllowShiftEsc.Name = "chkAllowShiftEsc"
-        Me.chkAllowShiftEsc.Size = New System.Drawing.Size(224, 17)
-        Me.chkAllowShiftEsc.TabIndex = 27
-        Me.chkAllowShiftEsc.Text = "Allow Ctrl-Shift-Esc to Open TaskManager"
-        Me.ttSettings.SetToolTip(Me.chkAllowShiftEsc, "This will send Esc to Astonia in addition to Opening TaskManager")
-        Me.chkAllowShiftEsc.UseVisualStyleBackColor = True
-        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1792,7 +1781,6 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents chkCycleDownCtrl As CheckBox
     Friend WithEvents txtCycleKeyDown As TextBox
     Friend WithEvents btnRestore As Button
-    Friend WithEvents btnSort As Button
     Friend WithEvents btnGenerate As Button
     Friend WithEvents cmsGenerate As ContextMenuStrip
     Friend WithEvents X60043ToolStripMenuItem As ToolStripMenuItem
