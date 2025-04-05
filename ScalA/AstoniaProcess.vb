@@ -360,13 +360,16 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 If nam <> "Someone" AndAlso Not String.IsNullOrEmpty(nam) Then
                     loggedIns.TryAdd(Me.Id, Me)
                     loggedInAs = nam
+                    If Not hasLoggedIn AndAlso FrmMain.cboAlt.SelectedItem?.Id = Me.Id Then
+                        FrmMain.PopDropDown(FrmMain.cboAlt)
+                    End If
                     hasLoggedIn = True
                 End If
                 Return nam
             Catch ex As InvalidOperationException 'process has exited
                 Return "Someone"
             Catch ex As Exception
-                dBug.print($"Name exception {ex.Message}")
+                dBug.Print($"Name exception {ex.Message}")
                 Return "Someone"
             End Try
         End Get
