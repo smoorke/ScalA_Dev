@@ -233,8 +233,8 @@ Public NotInheritable Class FrmSettings
                     'Me.Close()
                     Exit Sub
                 Case WM_KEYUP
-                    dBug.print($"GhostSettings WM_KEYUP {m.WParam} {m.LParam}")
-                    dBug.print($"ScanCode {New LParamMap(m.LParam).scan}")
+                    dBug.Print($"GhostSettings WM_KEYUP {m.WParam} {m.LParam}")
+                    dBug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
                     If FrmMain.cboAlt.SelectedIndex > 0 Then
                         FrmMain.AltPP.Activate()
                         Dim scan As Byte = New LParamMap(m.LParam)
@@ -249,8 +249,8 @@ Public NotInheritable Class FrmSettings
                     'Me.Close()
                     Exit Sub
                 Case WM_CHAR
-                    dBug.print($"GhostSettings WM_CHAR {m.WParam} {m.LParam}")
-                    dBug.print($"ScanCode {New LParamMap(m.LParam).scan}")
+                    dBug.Print($"GhostSettings WM_CHAR {m.WParam} {m.LParam}")
+                    dBug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
                     If FrmMain.cboAlt.SelectedIndex > 0 Then
                         FrmMain.AltPP.Activate()
                         If Not FrmMain.AltPP.isSDL Then
@@ -259,7 +259,7 @@ Public NotInheritable Class FrmSettings
                     End If
                     'Me.Close()
                 Case WM_SYSKEYDOWN
-                    dBug.print($"GhostSettings WM_SYSKEY {m.WParam} {m.LParam}")
+                    dBug.Print($"GhostSettings WM_SYSKEY {m.WParam} {m.LParam}")
                     If FrmMain.cboAlt.SelectedIndex > 0 Then
                         FrmMain.AltPP.Activate()
                     End If
@@ -364,12 +364,12 @@ Public NotInheritable Class FrmSettings
         Const success = True
         Dim resList As New List(Of Size)
         Try
-            dBug.print("parseRes")
+            dBug.Print("parseRes")
             For Each line As String In txtResolutions.Lines
-                dBug.print($"""{line}""")
+                dBug.Print($"""{line}""")
                 If line = "" Then Continue For
                 Dim parts() As String = line.ToUpper.Split("X")
-                dBug.print(parts(width) & " " & parts(height))
+                dBug.Print(parts(width) & " " & parts(height))
                 If parts(width) < 400 OrElse parts(height) < 300 Then
                     CustomMessageBox.Show(Me, "Error: " & line & " is too small a resolution.", icon:=MessageBoxIcon.Error)
                     Return fail
@@ -458,9 +458,9 @@ Public NotInheritable Class FrmSettings
         My.Settings.StoShift = If(chkStoShift.Checked, Hotkey.KeyModifier.Shift, 0)
         My.Settings.StoWin = If(chkStoWin.Checked, Hotkey.KeyModifier.Winkey, 0)
 
-        dBug.print($"My.Settings.StoAlt {My.Settings.StoAlt}")
-        dBug.print($"My.Settings.StoCtrl {My.Settings.StoCtrl}")
-        dBug.print($"My.Settings.StoShift {My.Settings.StoShift}")
+        dBug.Print($"My.Settings.StoAlt {My.Settings.StoAlt}")
+        dBug.Print($"My.Settings.StoCtrl {My.Settings.StoCtrl}")
+        dBug.Print($"My.Settings.StoShift {My.Settings.StoShift}")
 
 
         My.Settings.CycleAlt = chkCycleAlts.Checked
@@ -621,7 +621,7 @@ Public NotInheritable Class FrmSettings
         FrmMain.tmrHotkeys.Start()
     End Sub
     Private Async Sub FrmSettings_Closed(sender As Form, e As FormClosedEventArgs) Handles Me.Closed
-        dBug.print($"frmSettings.Closed {e.CloseReason} ""{sender.Owner}""")
+        dBug.Print($"frmSettings.Closed {e.CloseReason} ""{sender.Owner}""")
         Await Task.Delay(100) 'hardcoded delay only partially effective. failsafe in wndproc
         FrmMain.Attach(FrmMain.AltPP, True)
     End Sub
@@ -681,7 +681,7 @@ Public NotInheritable Class FrmSettings
     End Sub
 
     Private Function ChangeLinksDir(current As String) As String
-        dBug.print("changeLinksDir")
+        dBug.Print("changeLinksDir")
 
         Try
             Dim fp As New FolderPicker With {
@@ -750,10 +750,10 @@ Public NotInheritable Class FrmSettings
         Dim baseRes As New Size(Val(sender_tag),
                                 Val(sender_tag.Substring(sender_tag.IndexOf("x") + 1)))
 
-        dBug.print($"baseRes {baseRes}")
+        dBug.Print($"baseRes {baseRes}")
 
         Dim gcd = Me.GCD(baseRes.Width, baseRes.Height)
-        dBug.print($"aspect  {baseRes.Width / gcd}:{baseRes.Height / gcd}")
+        dBug.Print($"aspect  {baseRes.Width / gcd}:{baseRes.Height / gcd}")
 
         sb.AppendLine($"{baseRes.Width}x{baseRes.Height}")
 
@@ -797,25 +797,26 @@ Public NotInheritable Class FrmSettings
 
     Private Sub SortResolutions()
 
-        Dim currentitem As String = txtResolutions.Lines(txtResolutions.GetLineFromCharIndex(txtResolutions.GetFirstCharIndexOfCurrentLine)) & vbCrLf
-        Dim caretPositionInLine As Integer = txtResolutions.SelectionStart - txtResolutions.GetFirstCharIndexOfCurrentLine()
+        Dim firstChar As Integer = txtResolutions.GetFirstCharIndexOfCurrentLine()
+        Dim caretPositionInLine As Integer = txtResolutions.SelectionStart - firstChar
+        Dim lineIndex As Integer = Math.Min(txtResolutions.GetLineFromCharIndex(firstChar), txtResolutions.Lines.Length - 1)
+        Dim currentItem As String = txtResolutions.Lines(lineIndex)
 
-        dBug.Print($"currentitem ""{currentitem}""")
+        dBug.Print($"currentitem ""{currentItem}""")
 
         txtResolutions.Lines = txtResolutions.Lines() _
-                                .Where(Function(line) Not String.IsNullOrWhiteSpace(line)) _ 'filter empty
-                                .OrderBy(Function(res) Val(res)) _                           'sort
-                                .ThenBy(Function(res) Val(res.Split("x").Skip(1).FirstOrDefault)) _
-                                .Distinct(StringComparer.OrdinalIgnoreCase) _                'remove dups
-                                .ToArray()
+                            .OrderBy(Function(res) If(String.IsNullOrWhiteSpace(res), Integer.MaxValue, Val(res))) _ 'sort by width
+                            .ThenBy(Function(res) Val(res.Split("x").Skip(1).FirstOrDefault)) _        'then by height
+                            .Distinct(StringComparer.OrdinalIgnoreCase) _                                            'remove dups
+                            .ToArray()
 
         'find currentitem and set caret to the correct position
-        Dim index As Integer = txtResolutions.Text.IndexOf(currentitem)
-        If index >= 0 Then
-            txtResolutions.SelectionStart = index + caretPositionInLine
+        Dim newIndex As Integer = Array.FindIndex(txtResolutions.Lines, Function(line) line.Equals(currentItem, StringComparison.OrdinalIgnoreCase))
+
+        If newIndex >= 0 Then
+            txtResolutions.SelectionStart = txtResolutions.GetFirstCharIndexFromLine(newIndex) + caretPositionInLine
             txtResolutions.ScrollToCaret()
         End If
-
     End Sub
 
     Private Sub BtnHelp_Click(sender As Object, e As EventArgs) Handles btnHelp.Click
