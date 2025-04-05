@@ -350,6 +350,7 @@ Partial NotInheritable Class FrmMain
                     'posChangeBusy = False
                     Exit Sub
                 End If
+                Me.Invalidate() 'fix transparency on caption buttons when restore from min
 
             Case WM_WININICHANGE '&H1A 
                 If m.WParam = 159 Then Exit Sub 'fix hang on Monitor Scaling change?

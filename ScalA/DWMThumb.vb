@@ -58,7 +58,7 @@ Partial Public NotInheritable Class FrmMain
         Dim mode = My.Settings.ScalingMode '0 auto, 1 blur, 2 pixel , pixel on non 100% DPI
         If My.Settings.ScalingMode = 0 Then
             Dim compsz As Size = pbZoom.Size
-            Dim factor = If(AltPP.RegHighDpiAware, AltPP.WindowsScaling / 100, 1) 'todo: refactor this to AstoniaProcess
+            Dim factor = 1 ' If(AltPP.RegHighDpiAware, AltPP.WindowsScaling / 100, 1) 'todo: refactor this to AstoniaProcess
             dBug.print($"UpdateThumb pbzoom {pbZoom.Size}")
             If (compsz.Width / (AltPP.ClientRect.Width * factor) >= 2) AndAlso
                (compsz.Height / (AltPP.ClientRect.Height * factor) >= 2) Then
@@ -70,7 +70,8 @@ Partial Public NotInheritable Class FrmMain
             End If
         End If
 
-        If Me.WindowsScaling <> 100 Then 'handle windows scaling
+        dBug.Print($"WindowsScaling {Me.WindowsScaling} {AltPP.WindowsScaling}")
+        If Me.WindowsScaling <> 100 OrElse AltPP.WindowsScaling <> 100 Then 'handle windows scaling
             twp.rcDestination = New Rectangle(pbZoom.Left, pbZoom.Top - 1, pbZoom.Right, pbZoom.Bottom)
             mode = 1
             dBug.Print($"pixel mode disabled {Me.WindowsScaling}")
