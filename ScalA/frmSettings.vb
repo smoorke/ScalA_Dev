@@ -662,7 +662,14 @@ Public NotInheritable Class FrmSettings
             e.KeyChar = "x"
         End If
     End Sub
+    Private Sub txtResolutions_KeyUp(sender As Object, e As KeyEventArgs) Handles txtResolutions.KeyUp
+        Dim currentLineIndex As Integer = Math.Min(txtResolutions.GetLineFromCharIndex(txtResolutions.SelectionStart), txtResolutions.Lines.Length - 1)
+        Dim currentLine As String = txtResolutions.Lines(currentLineIndex)
 
+        If Not String.IsNullOrWhiteSpace(currentLine) Then
+            SortResolutions()
+        End If
+    End Sub
     'Private Sub BtnResetAlign_Click(sender As Object, e As EventArgs)
     '    tmrAlign.Stop()
     '    chkDoAlign.Checked = False
@@ -1220,4 +1227,6 @@ Public NotInheritable Class FrmSettings
             FrmMain.cmsQuickLaunch.Close()
         End If
     End Sub
+
+
 End Class
