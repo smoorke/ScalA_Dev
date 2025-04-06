@@ -834,8 +834,8 @@ Partial NotInheritable Class FrmSettings
         Me.lblElevated.Size = New System.Drawing.Size(57, 13)
         Me.lblElevated.TabIndex = 17
         Me.lblElevated.Text = "UnElevate"
-        Me.ttSettings.SetToolTip(Me.lblElevated, "ScalA is running as Administrtor." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Click here to UnElevate." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: ScalA will Re-" &
-        "Elevate when it needs to.")
+        Me.ttSettings.SetToolTip(Me.lblElevated, "ScalA is running as Administrtor." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Click here to drop Admin rights." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: ScalA " &
+        "will ReElevate when it needs to." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
         '
         'tbcSettings
         '
@@ -1725,6 +1725,8 @@ Partial NotInheritable Class FrmSettings
         Me.pbUnElevate.Size = New System.Drawing.Size(24, 24)
         Me.pbUnElevate.TabIndex = 18
         Me.pbUnElevate.TabStop = False
+        Me.ttSettings.SetToolTip(Me.pbUnElevate, "ScalA is running as Administrtor." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Click here to drop Admin rights." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: ScalA " &
+        "will ReElevate when it needs to." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
         '
         'FrmSettings
         '

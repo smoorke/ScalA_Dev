@@ -187,15 +187,14 @@ Public NotInheritable Class FrmSettings
 
         txtResolutions.SelectionStart = txtResolutions.TextLength
 
-        Dim image = LoadImage(IntPtr.Zero, "#106", 1, 16, 16, 0)
-        If image <> IntPtr.Zero Then
-            Using Ico = Icon.FromHandle(image)
-                pbUnElevate.Image = Ico.ToBitmap
-                DestroyIcon(Ico.Handle)
-            End Using
-        End If
-        'set shield if runing as admin
         If My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then
+            Dim imge = LoadImage(IntPtr.Zero, "#106", 1, 16, 16, 0)
+            If imge <> IntPtr.Zero Then
+                Using Ico = Icon.FromHandle(imge)
+                    pbUnElevate.Image = Ico.ToBitmap
+                    DestroyIcon(Ico.Handle)
+                End Using
+            End If
             pnlElevation.Visible = True
         End If
 
