@@ -187,6 +187,18 @@ Public NotInheritable Class FrmSettings
 
         txtResolutions.SelectionStart = txtResolutions.TextLength
 
+        Dim image = LoadImage(IntPtr.Zero, "#106", 1, 16, 16, 0)
+        If image <> IntPtr.Zero Then
+            Using Ico = Icon.FromHandle(image)
+                pbUnElevate.Image = Ico.ToBitmap
+                DestroyIcon(Ico.Handle)
+            End Using
+        End If
+        'set shield if runing as admin
+        If My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then
+            pnlElevation.Visible = True
+        End If
+
     End Sub
     Private Sub FrmSettings_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         Me.Owner = FrmMain
@@ -1069,6 +1081,11 @@ Public NotInheritable Class FrmSettings
 
     Private Sub FrmSettings_Click(sender As Object, e As EventArgs) Handles MyBase.Click
         SortResolutions()
+    End Sub
+
+    Private Sub lblElevated_Click(sender As Object, e As EventArgs) Handles lblElevated.Click, pbUnElevate.Click
+        btnOK.PerformClick()
+        FrmMain.UnelevateSelf()
     End Sub
 
     Private Sub validate_hotkey(sender As Object, e As EventArgs) Handles _

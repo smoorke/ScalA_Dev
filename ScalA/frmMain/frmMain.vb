@@ -456,17 +456,17 @@ Partial Public NotInheritable Class FrmMain
 
 
 
-        Dim image = LoadImage(IntPtr.Zero, "#106", 1, 16, 16, 0)
-        If image <> IntPtr.Zero Then
-            Using Ico = Icon.FromHandle(image)
-                bmShield = Ico.ToBitmap
-                DestroyIcon(Ico.Handle)
-            End Using
-        End If
-        'set shield if runing as admin
-        If My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then
-            btnStart.Image = bmShield
-        End If
+        'Dim image = LoadImage(IntPtr.Zero, "#106", 1, 16, 16, 0)
+        'If image <> IntPtr.Zero Then
+        '    Using Ico = Icon.FromHandle(image)
+        '        bmShield = Ico.ToBitmap
+        '        DestroyIcon(Ico.Handle)
+        '    End Using
+        'End If
+        ''set shield if runing as admin
+        'If My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then
+        '    btnStart.Image = bmShield
+        'End If
 
         If System.IO.File.Exists(FileIO.SpecialDirectories.Temp & "\ScalA\tmp.lnk") Then
             dBug.Print("Deleting shortcut")
@@ -506,7 +506,7 @@ Partial Public NotInheritable Class FrmMain
 
         dBug.Print($"Anims {AnimsEnabled}")
 
-        tmrOverview.Interval = If(My.Settings.gameOnOverview, 33, 66)
+        tmrOverview.Interval = If(My.Settings.gameOnOverview, 30, 60)
 
         AddHandler Application.Idle, AddressOf Application_Idle
 

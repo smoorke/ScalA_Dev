@@ -86,6 +86,7 @@ Partial NotInheritable Class FrmSettings
         Me.pb100PWarning = New System.Windows.Forms.PictureBox()
         Me.chkAutoCloseOnlyOnNoSome = New System.Windows.Forms.CheckBox()
         Me.chkAllowShiftEsc = New System.Windows.Forms.CheckBox()
+        Me.lblElevated = New System.Windows.Forms.Label()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
@@ -164,6 +165,8 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
+        Me.pnlElevation = New System.Windows.Forms.Panel()
+        Me.pbUnElevate = New System.Windows.Forms.PictureBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
@@ -208,6 +211,8 @@ Partial NotInheritable Class FrmSettings
         Me.tabSortAndBL.SuspendLayout()
         Me.tabMaximized.SuspendLayout()
         Me.tabMisc.SuspendLayout()
+        Me.pnlElevation.SuspendLayout()
+        CType(Me.pbUnElevate, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'grpQLPath
@@ -820,6 +825,17 @@ Partial NotInheritable Class FrmSettings
         Me.chkAllowShiftEsc.Text = "Allow Ctrl-Shift-Esc to Open TaskManager"
         Me.ttSettings.SetToolTip(Me.chkAllowShiftEsc, "This will send Esc to Astonia in addition to Opening TaskManager")
         Me.chkAllowShiftEsc.UseVisualStyleBackColor = True
+        '
+        'lblElevated
+        '
+        Me.lblElevated.AutoSize = True
+        Me.lblElevated.Location = New System.Drawing.Point(28, 7)
+        Me.lblElevated.Name = "lblElevated"
+        Me.lblElevated.Size = New System.Drawing.Size(57, 13)
+        Me.lblElevated.TabIndex = 17
+        Me.lblElevated.Text = "UnElevate"
+        Me.ttSettings.SetToolTip(Me.lblElevated, "ScalA is running as Administrtor." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Click here to UnElevate." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: ScalA will Re-" &
+        "Elevate when it needs to.")
         '
         'tbcSettings
         '
@@ -1692,12 +1708,31 @@ Partial NotInheritable Class FrmSettings
         Me.chkRoundCorners.Text = "Rounded Corners"
         Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
+        'pnlElevation
+        '
+        Me.pnlElevation.Controls.Add(Me.lblElevated)
+        Me.pnlElevation.Controls.Add(Me.pbUnElevate)
+        Me.pnlElevation.Location = New System.Drawing.Point(7, 212)
+        Me.pnlElevation.Name = "pnlElevation"
+        Me.pnlElevation.Size = New System.Drawing.Size(92, 28)
+        Me.pnlElevation.TabIndex = 17
+        Me.pnlElevation.Visible = False
+        '
+        'pbUnElevate
+        '
+        Me.pbUnElevate.Location = New System.Drawing.Point(11, 6)
+        Me.pbUnElevate.Name = "pbUnElevate"
+        Me.pbUnElevate.Size = New System.Drawing.Size(24, 24)
+        Me.pbUnElevate.TabIndex = 18
+        Me.pbUnElevate.TabStop = False
+        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
         Me.ClientSize = New System.Drawing.Size(309, 244)
+        Me.Controls.Add(Me.pnlElevation)
         Me.Controls.Add(Me.tbcSettings)
         Me.Controls.Add(Me.btnCancel)
         Me.Controls.Add(Me.btnOK)
@@ -1745,6 +1780,9 @@ Partial NotInheritable Class FrmSettings
         Me.tabMaximized.PerformLayout()
         Me.tabMisc.ResumeLayout(False)
         Me.tabMisc.PerformLayout()
+        Me.pnlElevation.ResumeLayout(False)
+        Me.pnlElevation.PerformLayout()
+        CType(Me.pbUnElevate, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
@@ -1868,4 +1906,7 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents pb100PWarning As PictureBox
     Friend WithEvents chkAutoCloseOnlyOnNoSome As CheckBox
     Friend WithEvents chkAllowShiftEsc As CheckBox
+    Friend WithEvents pnlElevation As Panel
+    Friend WithEvents pbUnElevate As PictureBox
+    Friend WithEvents lblElevated As Label
 End Class
