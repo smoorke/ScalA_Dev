@@ -1881,8 +1881,9 @@ Partial Public NotInheritable Class FrmMain
         Dim flags = swpFlags
         If Not AltPP.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
         If AltPP.IsBelow(ScalaHandle) Then flags.SetFlag(SetWindowPosFlags.IgnoreZOrder)
-
-        SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
+        Task.Run(Sub()
+                     SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
+                 End Sub)
 
     End Sub
 
