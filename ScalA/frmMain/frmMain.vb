@@ -1823,19 +1823,25 @@ Partial Public NotInheritable Class FrmMain
 
         If e.Button = MouseButtons.Middle OrElse e.Button = MouseButtons.Right Then
             PnlEqLock.Visible = False
-            sender.Capture = False
-            Attach(AltPP, True)
-            SendMessage(AltPP.MainWindowHandle, If(e.Button = MouseButtons.Right, WM_RBUTTONDOWN, WM_MBUTTONDOWN), wparam, New LParamMap(mx, my))
+            If Not AltPP?.isSDL Then sender.Capture = False
+            Application.DoEvents()
+            'Attach(AltPP, True)
+
+            AltPP?.ThreadInput(True)
+
+            'SendMouseInput(If(e.Button = MouseButtons.Right, MouseEventF.RightDown, MouseEventF.MiddleDown))
+
+            SendMessage(AltPP?.MainWindowHandle, If(e.Button = MouseButtons.Right, WM_RBUTTONDOWN, WM_MBUTTONDOWN), wparam, New LParamMap(mx, my))
         End If
 
 
     End Sub
-    Private Async Sub PnlEqLock_MouseUp(sender As Panel, e As MouseEventArgs) Handles PnlEqLock.MouseUp
+    Private Sub PnlEqLock_MouseUp(sender As Panel, e As MouseEventArgs) Handles PnlEqLock.MouseUp
         dBug.Print($"pnlEqLock.MouseUp {e.Button} lock vis {PnlEqLock.Visible}")
         If (e.Button = MouseButtons.Right OrElse e.Button = MouseButtons.Middle) AndAlso PnlEqLock.Contains(MousePosition) Then
             '    'EQLockClick = True
             PnlEqLock.Visible = False
-            sender.Capture = False
+            'sender.Capture = False
             If e.Button = MouseButtons.Right Then
                 SendMouseInput(MouseEventF.RightUp)
             Else
@@ -1846,7 +1852,7 @@ Partial Public NotInheritable Class FrmMain
             '    Await Task.Delay(25)
             '    'EQLockClick = False
         End If
-        Await Task.Run(Sub() Attach(AltPP, True))
+        'Await Task.Run(Sub() Attach(AltPP, True))
     End Sub
 
     Private Sub PnlEqLock_Mousemove(sender As Panel, e As MouseEventArgs) Handles PnlEqLock.MouseMove

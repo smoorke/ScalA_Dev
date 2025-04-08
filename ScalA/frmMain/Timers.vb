@@ -551,7 +551,7 @@ Partial NotInheritable Class FrmMain
                 (My.Settings.gameOnOverview AndAlso pnlOverview.Visible AndAlso
                 pnlOverview.Controls.OfType(Of AButton).Any(Function(ab) ab.Visible AndAlso ab.AP IsNot Nothing AndAlso ab.AP.Id = activeID)) Then ' is on overview
             setActive(True)
-            AltPP?.ThreadInput(False)
+            If Not MouseButtons.HasFlag(MouseButtons.Middle) AndAlso Not MouseButtons.HasFlag(MouseButtons.Right) Then AltPP?.ThreadInput(False)
         ElseIf activeID <> 0 Then 'inactive
             setActive(False)
             AltPP?.ThreadInput(True) 'fix bringtofront bug
