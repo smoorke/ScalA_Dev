@@ -9,6 +9,10 @@ Partial NotInheritable Class FrmMain
     Dim suppressRestoreBounds As Boolean = False
 
     Dim StructureToPtrSupported As Boolean = False
+
+
+    Dim moveSW As Stopwatch = Stopwatch.StartNew
+
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case Hotkey.WM_HOTKEY
@@ -175,9 +179,10 @@ Partial NotInheritable Class FrmMain
 #If DEBUG Then
                     pbZoom.Visible = True
 #End If
-                    If Not suppressWM_MOVEcwp AndAlso Not wasMaximized AndAlso cboAlt.SelectedIndex > 0 Then
+                    If Not suppressWM_MOVEcwp AndAlso Not wasMaximized AndAlso cboAlt.SelectedIndex > 0 AndAlso moveSW.ElapsedMilliseconds > 5 Then
                         'dBug.print($"WM_MOVE {Me.WindowState}")
                         moveBusy = True
+                        moveSW.Restart()
                         Task.Run(Sub()
                                      'Exit Sub
                                      AltPP?.CenterWindowPos(ScalaHandle,

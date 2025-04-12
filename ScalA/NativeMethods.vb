@@ -140,7 +140,7 @@ Module NativeMethods
     Public Structure SHFILEINFOW
         Public hIcon As IntPtr
         Public iIcon As Integer
-        Public dwAttributes As Integer
+        Public dwAttributes As UInteger
         <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=260)> Public szDisplayName As String
         <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=80)> Public szTypeName As String
     End Structure
@@ -163,7 +163,7 @@ Module NativeMethods
     End Structure
 
     <DllImport("shell32.dll", EntryPoint:="SHGetFileInfoW", SetLastError:=True)>
-    Public Function SHGetFileInfoW(<InAttribute(), MarshalAs(UnmanagedType.LPTStr)> ByVal pszPath As String, ByVal dwFileAttributes As Integer, ByRef psfi As SHFILEINFOW, ByVal cbFileInfo As Integer, ByVal uFlags As Integer) As Integer
+    Public Function SHGetFileInfoW(<InAttribute(), MarshalAs(UnmanagedType.LPTStr)> ByVal pszPath As String, ByVal dwFileAttributes As Integer, ByRef psfi As SHFILEINFOW, ByVal cbFileInfo As Integer, ByVal uFlags As Integer) As IntPtr
     End Function
     Public ASFW_ANY As UInteger = &HFFFFFFFFUI
     <DllImport("user32.dll", SetLastError:=True)>
@@ -174,7 +174,7 @@ Module NativeMethods
     End Function
 
     <DllImport("comctl32.dll", SetLastError:=True)>
-    Public Function ImageList_GetIcon(hIml As IntPtr, index As Integer, flags As UInteger) As IntPtr 'this tends to fail in MTA (need coinit?)
+    Public Function ImageList_GetIcon(hIml As IntPtr, index As Integer, flags As UInteger) As IntPtr
     End Function
 
     <DllImport("comctl32.dll", SetLastError:=True)>
@@ -828,12 +828,12 @@ Module NativeMethods
         Dim fType As Integer
         Dim fState As Integer
         Dim wID As Integer
-        Dim hSubMenu As Integer
+        Dim hSubMenu As IntPtr
         Dim hbmpChecked As IntPtr
         Dim hbmpUnchecked As IntPtr
         Dim dwItemData As Integer
         Dim dwTypeData As String
-        Dim cch As Integer
+        Dim cch As Integer 'GetMenuItemInfo only?
         Dim hbmpItem As IntPtr
     End Structure
     Public Enum MFS As Long

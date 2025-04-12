@@ -485,18 +485,24 @@ Partial Public NotInheritable Class FrmMain
                            End If
                            ico = Icon.FromHandle(fi.hIcon)
                            bm = ico.ToBitmap
-                           DestroyIcon(fi.hIcon)
+                           DestroyIcon(ico.Handle)
                        Else 'not a folder
+
                            Dim list As IntPtr = SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_SYSICONINDEX Or SHGFI_SMALLICON)
+
+                           If list = IntPtr.Zero Then
+                               Dim lastError = Runtime.InteropServices.Marshal.GetLastWin32Error()
+                               dBug.Print($"SHGetFileInfoW list empty: {lastError}")
+                           End If
                            Dim hIcon As IntPtr = ImageList_GetIcon(list, fi.iIcon, 0)
                            ImageList_Destroy(list)
                            If hIcon = IntPtr.Zero Then
-                               dBug.Print("iconlist empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
-                               Throw New Exception
+                               Dim lastError = Runtime.InteropServices.Marshal.GetLastWin32Error()
+                               dBug.Print($"ImageList_GetIcon empty: {lastError}")
                            End If
                            ico = Icon.FromHandle(hIcon)
                            bm = ico.ToBitmap
-                           DestroyIcon(hIcon)
+                           DestroyIcon(ico.Handle)
                        End If
                        DestroyIcon(ico.Handle)
                        ico.Dispose()
