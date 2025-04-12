@@ -1,9 +1,23 @@
-**Known Issues**
-QuickLaunch may fail to close when clicking outside of QL after clicking an item with ctrl held.
-Overview button layout sometimes messes up when sorting lists are huge.
-EQLock size is to big for SDL clients on non 100% windows scaling.
-Having 2 instances of ScalA on differently scaled monitors attached to same alt is wonky.
-ToggleTop is unreliable.
+**ScalA 1.7.0**
+Compiled as AnyCPU with prefer 32bit off for drastically improved performance on 64 bit systems.
+Fixed when ScalA is elevated but client isn't modifier keys (ctrl, shift and alt) don't work.
+Fixed Maximized ScalA with QL open single click on Caption glitch.
+Fixed Scrolling the resolution combobox doesn't work right when the first item is selected.
+Added Automatic sorting and de-duplication of resolution list.
+Stopped Selection of all text in resolution list on opening settings.
+Fixed Active Overview glitching ScalA position on non 100% windows monitor scaling.
+Fixed Moving/Resizing ScalA is laggy when a sleepy legacy client is selected/on overview.
+Fixed Activate on Hover on Active Overview has issues when white/blacklisting and using multiple instances of ScalA.
+Added Setting to allow Ctrl-Shift-Esc to Open TaskManager when Only Send Esc is enabled.
+Fixed when not Blacklisting Someone the Alt ComboBox may display Someone when selecting an Alt while it's logging in.
+Added contextmenu to RestartButton to temporarily hide it.
+Fixed Maximizing ScalA by double clicking Caption doesn't work.
+Fixed Minimizing and then restoring ScalA causes part of the caption to be transparent.
+Fixed Minimizing and then restoring ScalA may result in client popping.
+Fixed Caption buttons are laggy when Client is inactive.
+Improved Right and Middle Click on EQLock.
+Fixed Flicker on moving mouse over EQLock for SDL clients.
+Moved UnElevate option to settings.
 
 **ScalA 1.6.6**
 Fixed Auto Scaling mode switches to pixel mode too soon on SDL clients with non 100% windows scaling.
