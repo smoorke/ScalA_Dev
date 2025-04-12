@@ -1,1 +1,27 @@
-TODO: Populate This
+**Known Issues/Bugs**
+- QuickLaunch may fail to close when clicking outside of QL after clicking an item with ctrl held.
+- Having 2 instances of ScalA on differently scaled monitors attached to same alt is wonky.
+  Having 2 instances of ScalA attached to same alt partially overlap leads to undesired results.
+-# Please use white-/blacklisting when using multiple profiles.
+- Overview button layout sometimes messes up when sorting lists are huge and/or closing a lot of Alts at once.
+- ScalA may hang when changing taskbar position/size, taskbar autohide and/or screen scaling.
+- EQLock size is too big for SDL clients on non 100% windows scaling.
+- ToggleTop is unreliable.
+- For SDL clients when ScalA is maximized and the screen to the left and/is the Main Screen are/is in a bigger windows scaling mode it glitches when moving the cursor to the left border.
+- Active Overview may cause cursor box to shake on non 100% Windows Scaling.
+- On SDL clients EQLock doesn't work if you left-drag from inside client and release on EQ.
+- There are still a bunch shenanigans on non 100% windows scaling.
+- On SDL clients with spell icons enabled EQLock doesn't block right clicks.
+
+There is an NVIDIA driver bug that makes zoom only go to max 2050 wide and tall and fills the rest with stripes.
+-# Using restart tool found in CRU will fix until next pc restart/reboot. but it has habit of hanging some apps/games. ScalA does not have to be running while applying this.
+
+
+**WhishList**
+- Option to always start on Overview instead of autoselecting if there is only 1 alt.
+- Autoselect Active Astonia Client.
+- Show Idled alt names on caption. eg `Bool (Someone)` or `Someone (Bool)` instead of just `Someone`. This for Overview as well as selected alts. 
+- Option to only list Alts on the same desktop as ScalA.
+-# This is a no go w/o an official windows api to see what window is on which desktop.(unofficial hacks have too many edge cases for different windows build versions)
+
+-# Note: Items on wishlist may not be implemented at all. Feel free to post below with additional features you want added.
