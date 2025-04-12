@@ -318,6 +318,7 @@ Partial Public NotInheritable Class FrmMain
         Me.Text = "ScalA" & titleSuff
         sysTrayIcon.Text = traytooltip.Cap(63)
         With My.Application.Info.Version
+            Dim build = .Build + If(.Revision, 1, 0)
             Dim rev As String = If(.Revision, $"b{ .Revision}", "")
             lblTitle.Text = $"- ScalA v{ .Major}.{ .Minor}.{ .Build}{rev}{titleSuff}"
         End With
@@ -564,10 +565,7 @@ Partial Public NotInheritable Class FrmMain
                     response.EnsureSuccessStatusCode()
                     Dim responseBody As String = Await response.Content.ReadAsStringAsync()
 
-                    Dim newver = New Version(responseBody)
-                    Dim thisver = My.Application.Info.Version
-
-                    If newver > My.Application.Info.Version OrElse (newver.Revision = 0 AndAlso thisver.Revision > 0 AndAlso New Version(newver.Major, newver.Minor, newver.Build) >= New Version(thisver.Major, thisver.Minor, thisver.Build)) Then
+                    If New Version(responseBody) > My.Application.Info.Version Then
                         FrmMain.pnlUpdate.Visible = True
                     Else
                         FrmMain.pnlUpdate.Visible = False

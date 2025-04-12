@@ -1,4 +1,4 @@
-**ScalA 1.7.0**
+**ScalA 1.7.1**
 Compiled as AnyCPU with prefer 32bit off for drastically improved performance on 64 bit systems.
 Fixed when ScalA is elevated but client isn't modifier keys (ctrl, shift and alt) don't work.
 Fixed Maximized ScalA with QL open single click on Caption glitch.
