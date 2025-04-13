@@ -179,18 +179,31 @@ Partial NotInheritable Class FrmMain
 #If DEBUG Then
                     pbZoom.Visible = True
 #End If
-                    If Not suppressWM_MOVEcwp AndAlso Not wasMaximized AndAlso cboAlt.SelectedIndex > 0 AndAlso moveSW.ElapsedMilliseconds > 5 Then
-                        'dBug.print($"WM_MOVE {Me.WindowState}")
-                        moveBusy = True
-                        moveSW.Restart()
-                        Task.Run(Sub()
-                                     'Exit Sub
-                                     AltPP?.CenterWindowPos(ScalaHandle,
+                    If Not suppressWM_MOVEcwp AndAlso Not wasMaximized AndAlso cboAlt.SelectedIndex > 0 Then
+                        If moveSW.ElapsedMilliseconds > 10 Then
+                            'dBug.print($"WM_MOVE {Me.WindowState}")
+                            moveBusy = True
+                            moveSW.Restart()
+                            Task.Run(Sub()
+                                         'Exit Sub
+                                         AltPP?.CenterWindowPos(ScalaHandle,
                                                         Me.Left + pbZoom.Left + (pbZoom.Width / 2),
                                                         Me.Top + pbZoom.Top + (pbZoom.Height / 2),
                                                         SetWindowPosFlags.ASyncWindowPosition Or SetWindowPosFlags.DoNotActivate,
                                                         True)
-                                 End Sub)
+                                     End Sub)
+                        Else
+                            Task.Run(Sub()
+                                         Threading.Thread.Sleep(10)
+                                         If moveSW.ElapsedMilliseconds > 10 Then
+                                             AltPP?.CenterWindowPos(ScalaHandle,
+                                                        Me.Left + pbZoom.Left + (pbZoom.Width / 2),
+                                                        Me.Top + pbZoom.Top + (pbZoom.Height / 2),
+                                                        SetWindowPosFlags.ASyncWindowPosition Or SetWindowPosFlags.DoNotActivate,
+                                                        True)
+                                         End If
+                                     End Sub)
+                        End If
                     End If
                 End If
             Case WM_ENTERSIZEMOVE
@@ -580,7 +593,7 @@ Partial NotInheritable Class FrmMain
     End Sub
 
 #If DEBUG Then
-    Public Enum WM_
+    Public Enum WM_ 'getnerated by chadGPT, needs sanity check
         WM_NULL = &H0
         WM_CREATE = &H1
         WM_DESTROY = &H2
