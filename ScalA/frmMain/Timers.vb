@@ -671,7 +671,7 @@ Partial NotInheritable Class FrmMain
                    Not SysMenu.Contains(MousePosition) AndAlso
                    Not FrmSettings.SysMenu.Contains(MousePosition) Then
                         Cursor.Current = Cursors.No
-                    ElseIf SysMenu.Contains(MousePosition) OrElse FrmSettings.SysMenu.Contains(MousePosition) Then
+                    ElseIf SysMenu?.Contains(MousePosition) OrElse FrmSettings.SysMenu?.Contains(MousePosition) Then
                         Cursor.Current = Cursors.Default
                     End If
                     ChkEqLock.CheckState = CheckState.Checked
@@ -695,8 +695,8 @@ Partial NotInheritable Class FrmMain
 
         If Not pnlOverview.Visible AndAlso AltPP?.loggedInAs <> "Someone" AndAlso AltPP?.Name = "Someone" AndAlso Not AltPP?.hideRestart Then
             Dim sb As Rectangle = Me.Bounds
-            frmOverlay.Bounds = New Rectangle(sb.X, sb.Y + 21, sb.Width, sb.Height - 21)
-            SetWindowPos(frmOverlay.Handle, 0, sb.X, sb.Y + 21, sb.Width, sb.Height - 21, SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder)
+            'frmOverlay.Bounds = New Rectangle(sb.X, sb.Y + 21, sb.Width, sb.Height - 21)
+            'SetWindowPos(frmOverlay.Handle, 0, sb.X, sb.Y + 21, sb.Width, sb.Height - 21, SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder Or SetWindowPosFlags.DoNotSendChangingEvent)
             frmOverlay.pbRestart.Show()
         Else
             frmOverlay.pbRestart.Hide()

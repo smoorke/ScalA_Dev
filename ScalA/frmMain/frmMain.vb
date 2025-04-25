@@ -512,6 +512,10 @@ Partial Public NotInheritable Class FrmMain
 
         If My.Settings.DisableWinKey OrElse My.Settings.OnlyEsc OrElse My.Settings.NoAltTab Then keybHook.Hook()
 
+
+
+
+
         'spawn IPC waiter thread
         Dim waitThread As New Threading.Thread(AddressOf IPC.SelectSemaThread) With {.IsBackground = True}
         waitThread.Start(Me)
@@ -552,8 +556,9 @@ Partial Public NotInheritable Class FrmMain
 
         'CheckScreenScalingModes()
 
-        'Dim sb As Rectangle = Me.RectangleToScreen(pbZoom.Bounds)
-        ' frmOverlay.Bounds = sb 'New Rectangle(sb.X, sb.Y + 21, sb.Width, sb.Height - 21)
+        Dim sb As Rectangle = Me.RectangleToScreen(pbZoom.Bounds)
+        frmOverlay.Bounds = sb 'New Rectangle(sb.X, sb.Y + 21, sb.Width, sb.Height - 21)
+        'SetWindowPos(frmOverlay.Handle, 0, sb.X, sb.Y, sb.Width, sb.Height - 21, SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder)
 
     End Sub
     Friend Shared updateToVersion As String = "Error"
