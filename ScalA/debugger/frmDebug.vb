@@ -254,6 +254,10 @@ Public Class frmDebug
         FrmMain.pnlUpdate.Visible = Not FrmMain.pnlUpdate.Visible
     End Sub
 
+
+    Private crtMode As Boolean = frmCrt.Visible
+
+
     Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
         If FrmMain.AltPP Is Nothing Then
             dBug.Print("Alt is nothing", 1)
@@ -261,8 +265,17 @@ Public Class frmDebug
         End If
         Dim hwnd As IntPtr = FrmMain.AltPP.MainWindowHandle
 
-        dBug.Print("This button does nothing", 1)
 
+        If Not crtMode Then
+            If frmCrt.IsDisposed Then frmCrt = New CrtForm
+            frmCrt.Show()
+        Else
+            frmCrt.Close()
+        End If
+
+
+
+        crtMode = Not crtMode
         'Dim style As UInteger = GetWindowLong(hwnd, GWL_STYLE)
         'style = style Or WindowStyles.WS_SIZEFRAME ' Add resizing capability
         ' SetWindowLong(hwnd, GWL_STYLE, style)
@@ -274,6 +287,45 @@ Public Class frmDebug
         'SendMessage(hwnd, WM_SYNCPAINT, 0, 0)
 
     End Sub
-
 #End If
 End Class
+#If DEBUG Then
+Module glob
+    Public NotInheritable Class CrtForm : Inherits Form
+        Sub New()
+            Me.Owner = FrmMain
+            Me.BackColor = Color.Red
+            Me.TransparencyKey = Me.BackColor
+            Me.Opacity = 0.125
+            Me.FormBorderStyle = BorderStyle.None
+            Me.ShowInTaskbar = False
+        End Sub
+
+        Sub ctr_shown(sender As Object, e As EventArgs) Handles Me.Shown
+            dBug.Print($"{FrmMain.pbZoom.Bounds}", 1)
+            dBug.Print($"{FrmMain.RectangleToScreen(FrmMain.pbZoom.Bounds)}", 1)
+            dBug.Print($"{FrmMain.pbZoom.RectangleToScreen(FrmMain.pbZoom.Bounds)}", 1)
+
+            Me.Bounds = FrmMain.RectangleToScreen(FrmMain.pbZoom.Bounds)
+        End Sub
+        Protected Overrides ReadOnly Property CreateParams As CreateParams
+            Get
+                Dim cp As CreateParams = MyBase.CreateParams
+                'cp.Style = cp.Style Or WindowStyles.WS_SYSMENU Or WindowStyles.WS_MINIMIZEBOX
+                cp.ExStyle = cp.ExStyle Or WindowStylesEx.WS_EX_TRANSPARENT
+                'cp.ClassStyle = cp.ClassStyle Or CS_DROPSHADOW
+                Return cp
+            End Get
+        End Property
+        Protected Overrides Sub OnPaint(e As PaintEventArgs)
+            MyBase.OnPaint(e)
+
+            Dim p As Pen = New Pen(If(My.Settings.DarkMode, Color.Black, Color.White))
+            For i = 1 To Me.Height - 1 Step 3
+                e.Graphics.DrawLine(p, 0, i, Me.Width, i)
+            Next
+        End Sub
+    End Class
+    Public frmCrt As New CrtForm
+End Module
+#End If
