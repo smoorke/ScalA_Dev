@@ -826,8 +826,9 @@ Partial Public NotInheritable Class FrmMain
         End Get
     End Property
 
-    Public Sub CmbResolution_MouseDown(sender As ComboBox, e As MouseEventArgs) Handles cmbResolution.MouseDown
+    Public Sub CmbResolution_MouseUp(sender As ComboBox, e As MouseEventArgs) Handles cmbResolution.MouseUp
         If e.Button = MouseButtons.Right Then
+            UntrapMouse(MouseButtons.Right)
             CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
             cmsQuickLaunch.Close()
             FrmSettings.Tag = FrmSettings.tabResolutions
