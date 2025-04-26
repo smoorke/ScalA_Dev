@@ -826,7 +826,7 @@ Partial Public NotInheritable Class FrmMain
         End Get
     End Property
 
-    Private Sub CmbResolution_MouseDown(sender As ComboBox, e As MouseEventArgs) Handles cmbResolution.MouseDown
+    Public Sub CmbResolution_MouseDown(sender As ComboBox, e As MouseEventArgs) Handles cmbResolution.MouseDown
         If e.Button = MouseButtons.Right Then
             CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
             cmsQuickLaunch.Close()
@@ -1880,11 +1880,12 @@ Partial Public NotInheritable Class FrmMain
         If cboAlt.SelectedIndex = 0 Then Exit Sub
         If prevMPX = MousePosition.X Then Exit Sub
         prevMPX = MousePosition.X
+        If Not Me.RectangleToScreen(New Rectangle(0, 0, Me.Width, pnlTitleBar.Height)).Contains(MousePosition) Then Exit Sub
 
         'TODO: move follwing code to tmrTick and test sizeborder drag
         Dim ptZ As Point = Me.PointToScreen(pbZoom.Location)
 
-        ' dBug.print("CaptionMouseMove")
+        dBug.Print("CaptionMouseMove")
 
         newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AltPP.ClientOffset.X '- My.Settings.offset.X
         newY = Me.Location.Y

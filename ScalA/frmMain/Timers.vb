@@ -541,6 +541,9 @@ Partial NotInheritable Class FrmMain
         'End If
 
 
+
+
+
         activeID = GetActiveProcessID() ' this returns 0 when switching tasks
         Try
             activeIsAstonia = Process.GetProcessById(activeID).IsAstonia
@@ -555,6 +558,18 @@ Partial NotInheritable Class FrmMain
         ElseIf activeID <> 0 Then 'inactive
             setActive(False)
             AltPP?.ThreadInput(True) 'fix bringtofront bug
+        End If
+
+        If MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle) AndAlso AltPP?.IsActive() Then
+            AltPP.ThreadInput(True)
+        End If
+
+        If AltPP IsNot Nothing AndAlso AltPP.isSDL() AndAlso AltPP.IsActive AndAlso MouseButtons.HasFlag(MouseButtons.Right) Then
+            Dim mp = MousePosition
+            Dim rect = Me.RectangleToScreen(New Rectangle(0, 0, Me.Width, pnlTitleBar.Height))
+            If rect.Contains(mp) Then
+                Caption_MouseMove(Nothing, New MouseEventArgs(MouseButtons.Right, 1, mp.X, mp.Y, 0))
+            End If
         End If
 
         If activeIsAstonia AndAlso Not My.Computer.Keyboard.CtrlKeyDown Then

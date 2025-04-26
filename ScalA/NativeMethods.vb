@@ -719,12 +719,12 @@ Module NativeMethods
         INPUT_HARDWARE
     End Enum
     <StructLayout(LayoutKind.Explicit)>
-    Structure InputUnion
+    Public Structure InputUnion
         <FieldOffset(0)> Public mi As MOUSEINPUT
         <FieldOffset(0)> Public ki As KEYBDINPUT
         <FieldOffset(0)> Public hi As HARDWAREINPUT
     End Structure
-    Structure MOUSEINPUT
+    Public Structure MOUSEINPUT
         Public dx As Integer
         Public dy As Integer
         Public mouseData As Integer
@@ -732,19 +732,19 @@ Module NativeMethods
         Public time As Integer
         Public dwExtraInfo As IntPtr
     End Structure
-    Structure KEYBDINPUT
+    Public Structure KEYBDINPUT
         Public wVk As UShort
         Public wScan As UShort
         Public dwFlags As Integer
         Public time As Integer
         Public dwExtraInfo As IntPtr
     End Structure
-    Structure HARDWAREINPUT
+    Public Structure HARDWAREINPUT
         Public uMsg As Integer
         Public wParamL As Short
         Public wParamH As Short
     End Structure
-    Structure INPUT
+    Public Structure INPUT
         Public type As Integer
         Public u As InputUnion
     End Structure
@@ -778,12 +778,12 @@ Module NativeMethods
     Public Function GetMessageExtraInfo() As IntPtr : End Function
 
     <StructLayout(LayoutKind.Sequential)>
-    Structure PT
+    Public Structure PT
         Public x As Int32
         Public y As Int32
     End Structure
     <StructLayout(LayoutKind.Sequential)>
-    Structure CURSORINFO
+    Public Structure CURSORINFO
         Public cbSize As Int32
         Public flags As Int32
         Public hCursor As IntPtr
@@ -822,6 +822,11 @@ Module NativeMethods
     Public Function GetMenuItemInfo(hMenu As IntPtr, uItem As UInt32, fByPosition As Boolean, ByRef lpmii As MENUITEMINFO) As Boolean : End Function
     <DllImport("user32.dll")>
     Public Function SetMenuItemInfo(hMenu As IntPtr, uItem As UInt32, fByPosition As Boolean, ByRef lpmii As MENUITEMINFO) As Boolean : End Function
+
+
+    <DllImport("user32.dll")>
+    Public Function ChildWindowFromPoint(ByVal hWndParent As IntPtr, ByVal pt As Point) As IntPtr : End Function
+
     Public Structure MENUITEMINFO
         Dim cbSize As Integer
         Dim fMask As Integer

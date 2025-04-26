@@ -907,6 +907,8 @@ Partial Public NotInheritable Class FrmMain
     End Class
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
 
+        UntrapMouse(MouseButtons.Right)
+
         If Not (My.Computer.Keyboard.ShiftKeyDown AndAlso Not My.Computer.Keyboard.CtrlKeyDown) Then
             If scaleFixForm Is Nothing Then
                 dBug.Print("spawning scalefixform")
@@ -922,7 +924,6 @@ Partial Public NotInheritable Class FrmMain
 
         CloseOtherDropDowns(cmsQuickLaunch.Items, New HashSet(Of ToolStripMenuItem))
         cmsQuickLaunch.Close()
-        UntrapMouse(MouseButtons.Right)
         Try
             AppActivate(scalaPID) 'fix right click drag bug
         Catch

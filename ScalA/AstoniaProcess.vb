@@ -339,6 +339,17 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     '    End Get
     'End Property
 
+    Friend ReadOnly EscDownAndUpInput() As INPUT = {
+                   New INPUT With {.type = InputType.INPUT_KEYBOARD,
+                        .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wScan = 1, .wVk = Keys.Escape}}
+                   },
+                   New INPUT With {.type = InputType.INPUT_KEYBOARD,
+                        .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wScan = 1, .wVk = Keys.Escape}}
+                   }
+             }
+
+
+
     Private Shared ReadOnly memCache As New System.Runtime.Caching.MemoryCache("nameCache")
     Private Shared ReadOnly cacheItemPolicy As New System.Runtime.Caching.CacheItemPolicy With {
                     .SlidingExpiration = TimeSpan.FromMinutes(1)} ' Cache for 1 minute with sliding expiration
@@ -352,8 +363,31 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 If proc.MainWindowTitle = "" Then
                     Dim nm As String = TryCast(memCache.Get(proc.Id), String)
                     If Not String.IsNullOrEmpty(nm) Then
-                        dBug.print($"name fail {nm} ""{Me.WindowClass}""")
-                        Return nm
+                        dBug.Print($"name fail {nm} ""{Me.WindowClass}""")
+
+                        If FrmMain.AltPP?.isSDL Then 'SDL client sysmenu open. close it and open our own or correct menu for whatever button is hovered.
+                            'TODO: double check if clients sysmenu is open
+                            'send esc to close client sysmenu
+                            SendInput(2, EscDownAndUpInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                            'open sysmenu 'TODO: open quicklaunch/settings when over specific button
+                            Dim pt As Point = FrmMain.PointToClient(FrmMain.MousePosition)
+                            Dim ctl As Control = FrmMain.GetChildAtPoint(pt)
+                            If ctl Is FrmMain.pnlSys Then
+                                'pt = FrmMain.pnlSys.PointToClient(FrmMain.MousePosition)
+                                ctl = FrmMain.pnlSys.GetChildAtPoint(pt)
+                                pt = ctl.PointToClient(Control.MousePosition)
+                            End If
+                            dBug.Print($"Rmb: {ctl?.Name} {pt}")
+                            Select Case ctl?.Name
+                                Case FrmMain.btnStart.Name, FrmMain.cboAlt.Name
+                                    FrmMain.cmsQuickLaunch.Show(ctl, pt)
+                                Case FrmMain.cmbResolution.Name
+                                    FrmMain.CmbResolution_MouseDown(FrmMain.cmbResolution, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
+                                Case Else
+                                    FrmMain.ShowSysMenu(FrmMain, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
+                            End Select
+                        End If
+                            Return nm
                     End If
                     Return "Someone"
                 End If

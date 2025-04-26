@@ -152,6 +152,7 @@ Public Class KeyboardHook : Implements IDisposable
             }
 
 
+
     Private mhCallBack As HookCallBack = New HookCallBack(AddressOf KeyProc)
     Private disposedValue As Boolean
 
