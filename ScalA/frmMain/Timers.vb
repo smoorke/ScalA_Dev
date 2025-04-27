@@ -560,8 +560,8 @@ Partial NotInheritable Class FrmMain
             AltPP?.ThreadInput(True) 'fix bringtofront bug
         End If
 
-        If MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle) AndAlso AltPP?.IsActive() Then
-            AltPP.ThreadInput(True)
+        If (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) AndAlso AltPP?.IsActive() Then
+            AltPP?.ThreadInput(True)
         End If
 
         If AltPP IsNot Nothing AndAlso AltPP.isSDL() AndAlso AltPP.IsActive AndAlso MouseButtons.HasFlag(MouseButtons.Right) Then
