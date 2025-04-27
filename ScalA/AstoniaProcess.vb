@@ -364,8 +364,9 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     Dim nm As String = TryCast(memCache.Get(proc.Id), String)
                     If Not String.IsNullOrEmpty(nm) Then
                         dBug.Print($"name fail {nm} ""{Me.WindowClass}""")
-
-                        If FrmMain.AltPP?.IsActive() AndAlso FrmMain.AltPP?.isSDL Then 'SDL client sysmenu open. close it and open our own or correct menu for whatever button is hovered.
+                        dBug.Print($"altpp {FrmMain.AltPP?.Id} {FrmMain.AltPP?.loggedInAs}")
+                        dBug.Print($"{Me.IsActive()} {Me.isSDL}")
+                        If FrmMain.AltPP?.Id <> 0 AndAlso Me.IsActive() AndAlso Me.isSDL Then 'SDL client sysmenu open. close it and open our own or correct menu for whatever button is hovered.
                             'TODO: double check if clients sysmenu is open
                             'send esc to close client sysmenu
                             SendInput(2, EscDownAndUpInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
