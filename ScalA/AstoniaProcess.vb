@@ -365,7 +365,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     If Not String.IsNullOrEmpty(nm) Then
                         dBug.Print($"name fail {nm} ""{Me.WindowClass}""")
 
-                        If FrmMain.AltPP?.isSDL Then 'SDL client sysmenu open. close it and open our own or correct menu for whatever button is hovered.
+                        If FrmMain.AltPP?.IsActive() AndAlso FrmMain.AltPP?.isSDL Then 'SDL client sysmenu open. close it and open our own or correct menu for whatever button is hovered.
                             'TODO: double check if clients sysmenu is open
                             'send esc to close client sysmenu
                             SendInput(2, EscDownAndUpInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
@@ -387,7 +387,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                                     FrmMain.ShowSysMenu(FrmMain, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
                             End Select
                         End If
-                            Return nm
+                        Return nm
                     End If
                     Return "Someone"
                 End If
