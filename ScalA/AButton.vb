@@ -9,6 +9,7 @@ Public NotInheritable Class AButton
         Me.Text = text
         Me.Location = New Point(left, top)
         Me.Size = New Size(width, height)
+        Me.Name = "AButton"
 
         SetStyle(ControlStyles.AllPaintingInWmPaint Or
                  ControlStyles.Selectable Or

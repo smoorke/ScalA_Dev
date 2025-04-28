@@ -148,17 +148,17 @@ Partial Public NotInheritable Class FrmMain
         DebugToolStripMenuItem.Tag = pp
 #End If
 #End If
-        SelectToolStripMenuItem.Text = "Select " & pp.Name
-        SelectToolStripMenuItem.Image = pp.GetIcon?.ToBitmap
+        SelectToolStripMenuItem.Text = "Select " & pp?.Name
+        SelectToolStripMenuItem.Image = pp?.GetIcon?.ToBitmap
         SelectToolStripMenuItem.Tag = pp
 
 
-        dBug.Print($"cmsAlt {pp.Name} {pp.hasLoggedIn} ""{pp.loggedInAs}""")
+        dBug.Print($"cmsAlt {pp?.Name} {pp?.hasLoggedIn} ""{pp?.loggedInAs}""")
 
-        If pp.Name = "Someone" Then
+        If pp?.Name = "Someone" Then
             ReLaunchToolStripMenuItem.Visible = True
-            If String.IsNullOrWhiteSpace(pp.loggedInAs) Then
-                Dim QS As New Management.ManagementObjectSearcher(“Select * from Win32_Process WHERE ProcessID=" & pp.Id)
+            If String.IsNullOrWhiteSpace(pp?.loggedInAs) Then
+                Dim QS As New Management.ManagementObjectSearcher(“Select * from Win32_Process WHERE ProcessID=" & pp?.Id)
                 Dim objCol As Management.ManagementObjectCollection = QS.Get
 
                 Dim cmdLine As String = objCol(0)("commandline")
@@ -168,14 +168,14 @@ Partial Public NotInheritable Class FrmMain
                 dBug.Print($"ReLaunch ""{nam}""")
                 ReLaunchToolStripMenuItem.Text = $"ReLaunch {nam}"
             Else
-                ReLaunchToolStripMenuItem.Text = $"ReLaunch {pp.loggedInAs}"
+                ReLaunchToolStripMenuItem.Text = $"ReLaunch {pp?.loggedInAs}"
             End If
         Else
             ReLaunchToolStripMenuItem.Visible = False
         End If
         ReLaunchToolStripMenuItem.Tag = pp
 
-        TopMostToolStripMenuItem.Checked = pp.TopMost()
+        TopMostToolStripMenuItem.Checked = pp?.TopMost()
         TopMostToolStripMenuItem.Tag = pp
 
         SortSubToolStripMenuItem.Tag = pp
@@ -189,9 +189,9 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         sender.Items.RemoveAt(sender.Items.Count - 1)
-        sender.Items.Add("Close " & pp.Name, My.Resources.F12, AddressOf CloseToolStripMenuItem_Click).Tag = pp
+        sender.Items.Add("Close " & pp?.Name, My.Resources.F12, AddressOf CloseToolStripMenuItem_Click).Tag = pp
 
-        Dim other As String = If(pp.Name = "Someone", "Other ", "")
+        Dim other As String = If(pp?.Name = "Someone", "Other ", "")
         Dim somecount As Integer = AstoniaProcess.EnumSomeone.Count(Function(p) p.Name = "Someone")
         dBug.Print($"somecount {somecount}")
         If somecount > 0 AndAlso Not (other = "Other " AndAlso somecount = 1) Then

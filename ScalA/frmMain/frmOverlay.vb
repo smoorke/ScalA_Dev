@@ -17,9 +17,9 @@
                                 If FrmMain.AltPP.isSDL Then
                                     nudge = (FrmMain.AltPP.ClientRect.Width Mod 800) \ 2
                                 End If
-                                Debug.Print(nudge)
+                            'Debug.Print(nudge)
 
-                                Dim tr = New Rectangle(671.Map(0, 800, 0, winpos.cx),
+                            Dim tr = New Rectangle(671.Map(0, 800, 0, winpos.cx),
                                                         10.Map(0, 600, 0, winpos.cy),
                                                         24.Map(0, 800, 0, winpos.cx),
                                                         24.Map(0, 600, 0, winpos.cy))

@@ -347,7 +347,16 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                         .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wScan = 1, .wVk = Keys.Escape}}
                    }
              }
-
+    Friend ReadOnly CtrlUpInput() As INPUT = {
+        New INPUT With {.type = InputType.INPUT_KEYBOARD,
+                          .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wVk = Keys.ControlKey}}
+                   }
+        }
+    Friend ReadOnly CtrlDownInput() As INPUT = {
+        New INPUT With {.type = InputType.INPUT_KEYBOARD,
+                          .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wVk = Keys.ControlKey}}
+                   }
+        }
 
 
     Private Shared ReadOnly memCache As New System.Runtime.Caching.MemoryCache("nameCache")
@@ -363,29 +372,87 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 If proc.MainWindowTitle = "" Then
                     Dim nm As String = TryCast(memCache.Get(proc.Id), String)
                     If Not String.IsNullOrEmpty(nm) Then
-                        dBug.Print($"name fail {nm} ""{Me.WindowClass}""")
-                        dBug.Print($"altpp {FrmMain.AltPP?.Id} {FrmMain.AltPP?.loggedInAs}")
-                        dBug.Print($"{Me.IsActive()} {Me.isSDL}")
-                        If FrmMain.AltPP?.Id <> 0 AndAlso Me.IsActive() AndAlso Me.isSDL Then 'SDL client sysmenu open. close it and open our own or correct menu for whatever button is hovered.
+#If DEBUG Then
+                        'dBug.Print($"name fail {nm} ""{Me.WindowClass}""")
+                        'dBug.Print($"altpp {Me.Id} {Me.loggedInAs}")
+                        'dBug.Print($"{Me.IsActive()} {Me.isSDL}")
+
+                        'Dim wfp As IntPtr = WindowFromPoint(Cursor.Position)
+                        'dBug.Print($"wfp:{wfp} isscala? {wfp = FrmMain.ScalaHandle}")
+
+                        'dBug.Print($"wc: {GetWindowClass(wfp)}")
+
+                        'Dim nextwnd = GetWindow(wfp, GW_HWNDNEXT) 'SysShadow
+                        'nextwnd = GetWindow(nextwnd, GW_HWNDNEXT) 'Auto-Suggest Dropdown
+                        'nextwnd = GetWindow(nextwnd, GW_HWNDNEXT) 'tooltips_class32
+                        'dBug.Print($"next: {nextwnd} isscala? {nextwnd = FrmMain.ScalaHandle}")
+                        'dBug.Print($"wcn: {GetWindowClass(nextwnd)}")
+
+                        'Dim prevwnd = GetWindow(wfp, GW_HWNDPREV) 'tooltips_class32
+                        'prevwnd = GetWindow(prevwnd, GW_HWNDPREV) 'tooltips_class32
+                        'prevwnd = GetWindow(prevwnd, GW_HWNDPREV) 'tooltips_class32
+                        'prevwnd = GetWindow(prevwnd, GW_HWNDPREV) '
+
+                        'dBug.Print($"prev: {prevwnd} isscala? {prevwnd = FrmMain.ScalaHandle}")
+                        'dBug.Print($"wcp: {GetWindowClass(prevwnd)}")
+
+
+                        'Dim pid As Integer = 0
+                        'Dim dummy = GetWindowThreadProcessId(wfp, pid)
+                        'Dim proc As Process = Nothing
+                        'Try
+                        '    proc = Process.GetProcessById(pid)
+                        '    Debug.Print($"pid:{pid} {proc?.ProcessName} {proc?.MainWindowTitle}")
+                        'Catch ex As Exception
+
+                        'End Try
+
+#End If
+
+
+
+                        If FrmMain.Bounds.Contains(Control.MousePosition) AndAlso Me.IsActive() AndAlso Me.isSDL Then 'SDL client sysmenu open. close it and open our own or correct menu for whatever button is hovered.
                             'TODO: double check if clients sysmenu is open
                             'send esc to close client sysmenu
+                            Dim ctrldown As Boolean = My.Computer.Keyboard.CtrlKeyDown
+                            If ctrldown Then SendInput(1, CtrlUpInput, Marshal.SizeOf(GetType(INPUT)))
                             SendInput(2, EscDownAndUpInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                            If ctrldown Then SendInput(1, CtrlDownInput, Marshal.SizeOf(GetType(INPUT)))
+
+
                             'open sysmenu 'TODO: open quicklaunch/settings when over specific button
                             Dim pt As Point = FrmMain.PointToClient(FrmMain.MousePosition)
+                            'Dim pt = Control.MousePosition
                             Dim ctl As Control = FrmMain.GetChildAtPoint(pt)
+                            dBug.Print($"Rmb: {ctl?.Name} {pt}")
                             If ctl Is FrmMain.pnlSys Then
                                 'pt = FrmMain.pnlSys.PointToClient(FrmMain.MousePosition)
                                 ctl = FrmMain.pnlSys.GetChildAtPoint(pt)
                                 pt = ctl.PointToClient(Control.MousePosition)
                             End If
-                            dBug.Print($"Rmb: {ctl?.Name} {pt}")
+                            If ctl Is FrmMain.pnlOverview Then
+                                ctl = FrmMain.pnlOverview.GetChildAtPoint(pt)
+                                If ctl Is FrmMain.pnlMessage Then
+                                    ctl = FrmMain.pnlOverview.Controls.OfType(Of AButton).FirstOrDefault(Function(c) c.Visible)
+                                    dBug.Print($"pnlmessage skip?: {ctl?.Name} {pt}")
+                                End If
+                                pt = ctl.PointToClient(Control.MousePosition)
+                                dBug.Print($"alt menu override: {ctl?.Name} {pt} {ctrldown}")
+
+                                If ctrldown Then
+                                    FrmMain.cmsQuickLaunch.Show(ctl, pt)
+                                Else
+                                    FrmMain.cmsAlt.Show(ctl, pt)
+                                End If
+                                Return nm
+                            End If
                             Select Case ctl?.Name
                                 Case FrmMain.btnStart.Name, FrmMain.cboAlt.Name
                                     FrmMain.cmsQuickLaunch.Show(ctl, pt)
                                 Case FrmMain.cmbResolution.Name
                                     FrmMain.CmbResolution_MouseUp(FrmMain.cmbResolution, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
                                 Case Else
-                                    FrmMain.ShowSysMenu(FrmMain, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
+                                    'FrmMain.ShowSysMenu(FrmMain, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
                             End Select
                         End If
                         Return nm
