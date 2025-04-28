@@ -1,3 +1,8 @@
+**ScalA 1.7.3**
+Fixed SysMenu of non-selected SDL clients gets replaced with ScalA's if that Alt is on overview.
+Fixed Active Overview throws an exception when pressing rmb when not clicking on an Alt.
+Fixed SDL clients SysMenu gets replaced too late when rmb dragging from Active Overview to thumb caption and opens wrong menu.
+
 **ScalA 1.7.2**
 Actually ticked the right box for 64 bit release.
 Improved performance when moving ScalA with an Alt selected.
