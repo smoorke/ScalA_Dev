@@ -130,8 +130,10 @@ Partial NotInheritable Class FrmMain
 
             Dim ptZ As Point = Me.PointToScreen(pbZoom.Location)
 
-            newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AltPP.ClientOffset.X '- My.Settings.offset.X
-            newY = MousePosition.Y.Map(ptZ.Y, ptZ.Y + pbZoom.Height, ptZ.Y, ptZ.Y + pbZoom.Height - rcC.Height) - AltPP.ClientOffset.Y '- My.Settings.offset.Y
+            If AltPP Is Nothing Then Exit Sub
+
+            newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AltPP?.ClientOffset.X '- My.Settings.offset.X
+            newY = MousePosition.Y.Map(ptZ.Y, ptZ.Y + pbZoom.Height, ptZ.Y, ptZ.Y + pbZoom.Height - rcC.Height) - AltPP?.ClientOffset.Y '- My.Settings.offset.Y
 
             If Not swpBusy AndAlso Not moveBusy AndAlso Not Resizing Then
                 swpBusy = True
@@ -563,8 +565,14 @@ Partial NotInheritable Class FrmMain
 
         If (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) AndAlso AltPP?.IsActive() Then
             PrevMouseAlt = AltPP
+            'Debug.Print($"{PrevMouseAlt?.Name}")
             If Not (My.Computer.Keyboard.AltKeyDown OrElse My.Computer.Keyboard.ShiftKeyDown OrElse My.Computer.Keyboard.CtrlKeyDown) Then
                 AltPP?.ThreadInput(True)
+            End If
+        Else
+            If PrevMouseAlt IsNot Nothing AndAlso WindowFromPoint(MousePosition) <> PrevMouseAlt?.MainWindowHandle AndAlso MouseButtons = MouseButtons.None Then
+                UntrapMouse(MouseButtonStale)
+                PrevMouseAlt = Nothing
             End If
         End If
 

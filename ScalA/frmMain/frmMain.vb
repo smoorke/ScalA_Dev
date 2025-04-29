@@ -1021,7 +1021,8 @@ Partial Public NotInheritable Class FrmMain
     Public Sub UntrapMouse(button As MouseButtons)
         Dim activePID = GetActiveProcessID()
         'dBug.print($"active {activePID} is AltPP.id {activePID = AltPP?.Id}")
-        Dim ap As AstoniaProcess = If(AltPP?.Id <> 0, AltPP, PrevMouseAlt)
+        dBug.Print($"Untrap ""{AltPP?.Name}"" ""{PrevMouseAlt?.Name}""")
+        Dim ap As AstoniaProcess = If(PrevMouseAlt, AltPP)
         If activePID <> ap?.Id Then Exit Sub 'only when dragged from client
         Try
             'If My.Settings.gameOnOverview OrElse (Not pnlOverview.Visible AndAlso Not pbZoom.Contains(MousePosition)) Then
