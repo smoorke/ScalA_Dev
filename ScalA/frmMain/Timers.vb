@@ -563,7 +563,9 @@ Partial NotInheritable Class FrmMain
             AltPP?.ThreadInput(True) 'fix bringtofront bug
         End If
 
-        If (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) AndAlso AltPP?.IsActive() Then
+        If (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) AndAlso
+           AltPP?.IsActive() AndAlso
+           WindowFromPoint(MousePosition) = AltPP?.MainWindowHandle Then
             PrevMouseAlt = AltPP
             'Debug.Print($"{PrevMouseAlt?.Name}")
             If Not (My.Computer.Keyboard.AltKeyDown OrElse My.Computer.Keyboard.ShiftKeyDown OrElse My.Computer.Keyboard.CtrlKeyDown) Then
