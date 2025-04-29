@@ -1025,7 +1025,7 @@ Partial Public NotInheritable Class FrmMain
         If activePID <> ap?.Id Then Exit Sub 'only when dragged from client
         Try
             'If My.Settings.gameOnOverview OrElse (Not pnlOverview.Visible AndAlso Not pbZoom.Contains(MousePosition)) Then
-            dBug.Print($"untrap mouse {button}")
+            dBug.Print($"untrap {ap?.Name} mouse {button}")
             If button = MouseButtons.Right Then PostMessage(ap?.MainWindowHandle, WM_RBUTTONUP, 0, 0)
             If button = MouseButtons.Middle Then PostMessage(ap?.MainWindowHandle, WM_MBUTTONUP, 0, 0)
             'End If
