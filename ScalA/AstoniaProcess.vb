@@ -716,11 +716,27 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
         Return If(ProcCache.Find(Function(ap)
                                      If ap.HasExited Then Return False
-                                     'If ap.Id = p.Id Then ' AndAlso (ap.Name = "Bool" OrElse ap.Name = "Someone") Then
-                                     '    dBug.print($"got from cache {ap.Name} {ap.hasLoggedIn}")
-                                     'End If
                                      Return ap.Id = p.Id
                                  End Function), New AstoniaProcess(p))
+    End Function
+
+    Private Shared Function GetFromCacheById(pid As Integer) As AstoniaProcess
+        Return If(ProcCache.Find(Function(ap)
+                                     If ap.HasExited Then Return False
+                                     Return ap.Id = pid
+                                 End Function), New AstoniaProcess(p))
+    End Function
+
+    Public Shared Function FromHWnd(hWnd As IntPtr) As AstoniaProcess
+        Dim pid As Integer = 0
+        GetWindowThreadProcessId(hWnd, pid)
+        If pid <> 0 Then
+            Try
+                Return GetFromCacheById(pid)
+            Catch ex As Exception
+            End Try
+        End If
+        Return Nothing
     End Function
 
     Public Shared Function Enumerate(blacklist As IEnumerable(Of String), Optional useCache As Boolean = False) As IEnumerable(Of AstoniaProcess)
