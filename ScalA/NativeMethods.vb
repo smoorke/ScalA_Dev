@@ -360,9 +360,14 @@ Module NativeMethods
     Public Const RDW_FRAME As UInteger = &H400
     Public Const RDW_NOFRAME As UInteger = &H800
 
+    <StructLayout(LayoutKind.Sequential)>
+    Public Structure StyleStruct
+        Public styleOld As UInteger
+        Public styleNew As UInteger
+    End Structure
 
     <Flags()>
-    Public Enum WindowStyles As Long
+    Public Enum WindowStyles As UInteger
         WS_BORDER = &H800000
         WS_CAPTION = &HC00000
         WS_CHILD = &H40000000
@@ -954,6 +959,8 @@ Module NativeMethods
 
     Public Const WM_WINDOWPOSCHANGING = &H46
     Public Const WM_WINDOWPOSCHANGED = &H47
+
+    Public Const WM_STYLECHANGING As Integer = &H7C
 
     Public Const WM_DISPLAYCHANGE = &H7E
 

@@ -371,6 +371,17 @@ Partial NotInheritable Class FrmMain
                 End If
                 Me.Invalidate() 'fix transparency on caption buttons when restore from min
 
+            Case WM_STYLECHANGING '&h7C
+                Dim ss As StyleStruct = CType(System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(StyleStruct)), StyleStruct)
+                dBug.Print($"WM_STYLECHANGING")
+                If m.WParam = -20 Then 'ExStyle
+                    dBug.Print($"From: {CType(ss.styleOld, WindowStylesEx)}")
+                    dBug.Print($"  To: {CType(ss.styleNew, WindowStylesEx)}")
+                ElseIf m.WParam = -16 Then 'Style
+                    dBug.Print($"From: {CType(ss.styleOld, WindowStyles)}")
+                    dBug.Print($"  To: {CType(ss.styleNew, WindowStyles)}")
+                End If
+
             Case WM_WININICHANGE '&H1A 
                 If m.WParam = 159 Then Exit Sub 'fix hang on Monitor Scaling change?
                 Detach(False) 'Fix hang on changing taskbar autohide/size
