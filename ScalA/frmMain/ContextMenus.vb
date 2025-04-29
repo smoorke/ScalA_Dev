@@ -907,7 +907,7 @@ Partial Public NotInheritable Class FrmMain
     End Class
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
 
-        UntrapMouse(MouseButtons.Right)
+        UntrapMouse(MouseButtonStale)
 
         If Not (My.Computer.Keyboard.ShiftKeyDown AndAlso Not My.Computer.Keyboard.CtrlKeyDown) Then
             If scaleFixForm Is Nothing Then

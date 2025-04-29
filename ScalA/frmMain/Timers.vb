@@ -570,8 +570,10 @@ Partial NotInheritable Class FrmMain
                 AltPP?.ThreadInput(True)
             End If
         Else
-            If PrevMouseAlt IsNot Nothing AndAlso WindowFromPoint(MousePosition) <> PrevMouseAlt?.MainWindowHandle AndAlso MouseButtons = MouseButtons.None Then
-                UntrapMouse(MouseButtonStale)
+            If PrevMouseAlt IsNot Nothing AndAlso MouseButtons = MouseButtons.None Then
+                If WindowFromPoint(MousePosition) <> PrevMouseAlt?.MainWindowHandle Then
+                    UntrapMouse(MouseButtonStale)
+                End If
                 MouseButtonStale = MouseButtons.None
                 PrevMouseAlt = Nothing
             End If
