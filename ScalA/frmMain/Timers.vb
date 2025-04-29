@@ -561,7 +561,9 @@ Partial NotInheritable Class FrmMain
         End If
 
         If (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) AndAlso AltPP?.IsActive() Then
-            AltPP?.ThreadInput(True)
+            If Not (My.Computer.Keyboard.AltKeyDown OrElse My.Computer.Keyboard.ShiftKeyDown OrElse My.Computer.Keyboard.CtrlKeyDown) Then
+                AltPP?.ThreadInput(True)
+            End If
         End If
 
         If AltPP IsNot Nothing AndAlso AltPP.isSDL() AndAlso AltPP.IsActive AndAlso MouseButtons.HasFlag(MouseButtons.Right) Then
