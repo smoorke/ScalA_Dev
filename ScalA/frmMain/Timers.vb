@@ -521,6 +521,7 @@ Partial NotInheritable Class FrmMain
     Private activeIsAstonia As Boolean = False
     Private swAutoClose As Stopwatch = Stopwatch.StartNew
     Private AutoCloseCounter As Integer = 0
+    Public PrevMouseAlt As AstoniaProcess
     Private Async Sub TmrActive_Tick(sender As Timer, e As EventArgs) Handles tmrActive.Tick
 
         If MouseButtonStale <> MouseButtons AndAlso MouseButtons <> MouseButtons.None Then
@@ -561,6 +562,7 @@ Partial NotInheritable Class FrmMain
         End If
 
         If (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) AndAlso AltPP?.IsActive() Then
+            PrevMouseAlt = AltPP
             If Not (My.Computer.Keyboard.AltKeyDown OrElse My.Computer.Keyboard.ShiftKeyDown OrElse My.Computer.Keyboard.CtrlKeyDown) Then
                 AltPP?.ThreadInput(True)
             End If
