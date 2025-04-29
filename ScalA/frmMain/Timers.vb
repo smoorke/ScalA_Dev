@@ -572,6 +572,7 @@ Partial NotInheritable Class FrmMain
         Else
             If PrevMouseAlt IsNot Nothing AndAlso WindowFromPoint(MousePosition) <> PrevMouseAlt?.MainWindowHandle AndAlso MouseButtons = MouseButtons.None Then
                 UntrapMouse(MouseButtonStale)
+                MouseButtonStale = MouseButtons.None
                 PrevMouseAlt = Nothing
             End If
         End If
