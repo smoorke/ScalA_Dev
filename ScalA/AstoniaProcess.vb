@@ -720,7 +720,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                                  End Function), New AstoniaProcess(p))
     End Function
 
-    Private Shared Function GetFromCacheById(pid As Integer) As AstoniaProcess
+    Private Shared Function GetFromCache(pid As Integer) As AstoniaProcess
         Return If(ProcCache.Find(Function(ap)
                                      If ap.HasExited Then Return False
                                      Return ap.Id = pid
@@ -732,7 +732,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         GetWindowThreadProcessId(hWnd, pid)
         If pid <> 0 Then
             Try
-                Return GetFromCacheById(pid)
+                Return GetFromCache(pid)
             Catch ex As Exception
             End Try
         End If
