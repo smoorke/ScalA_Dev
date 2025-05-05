@@ -1212,7 +1212,7 @@ Partial Public NotInheritable Class FrmMain
             sender.BackColor = Color.FromArgb(&HFFB5D7F3) 'this to fix a glitch where sender gets unselected
 
             Dim newFolderItem As New MenuItem("Folder", AddressOf QlCtxNewFolder)
-            QlCtxNewMenu = New MenuItem("New", {
+            QlCtxNewMenu = New MenuItem($"←New---", {
                                              newFolderItem,
                                              New MenuItem("-")})
 
@@ -1263,7 +1263,7 @@ Partial Public NotInheritable Class FrmMain
             End If
 
             SetMenuItemBitmaps(QlCtxNewMenu.Handle, 0, MF_BYPOSITION, folderHbm, Nothing)
-            SetMenuItemBitmaps(QlCtxMenu.Handle, 7, MF_BYPOSITION, plusHbm, Nothing)
+            SetMenuItemBitmaps(QlCtxMenu.Handle, If(path.EndsWith("\"), 8, 7), MF_BYPOSITION, plusHbm, Nothing)
 
             Dim purgeList As New List(Of IntPtr)
 
