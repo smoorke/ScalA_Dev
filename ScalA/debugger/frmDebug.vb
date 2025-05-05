@@ -287,6 +287,13 @@ Public Class frmDebug
         'SendMessage(hwnd, WM_SYNCPAINT, 0, 0)
 
     End Sub
+
+    Private Sub btnIpcInfo_Click(sender As Object, e As EventArgs) Handles btnIpcInfo.Click
+        dBug.Print($"IPC: {IPC.getInstances.Count}")
+        For Each ip In IPC.getInstances
+            dBug.Print($"{ip.AltPPid} {AstoniaProcess.FromHWnd(Process.GetProcessById(ip.AltPPid).MainWindowHandle).Name}")
+        Next
+    End Sub
 #End If
 End Class
 #If DEBUG Then

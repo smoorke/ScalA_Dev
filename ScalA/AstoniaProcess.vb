@@ -724,7 +724,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Return If(ProcCache.Find(Function(ap)
                                      If ap.HasExited Then Return False
                                      Return ap.Id = pid
-                                 End Function), New AstoniaProcess(p))
+                                 End Function), New AstoniaProcess(Process.GetProcessById(pid)))
     End Function
 
     Public Shared Function FromHWnd(hWnd As IntPtr) As AstoniaProcess

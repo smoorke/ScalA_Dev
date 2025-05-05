@@ -49,6 +49,7 @@ Partial Class frmDebug
         Me.chkForceShowUpdate = New System.Windows.Forms.CheckBox()
         Me.chkShowWarning = New System.Windows.Forms.CheckBox()
         Me.btnTest = New System.Windows.Forms.Button()
+        Me.btnIpcInfo = New System.Windows.Forms.Button()
         lblMinimum = New System.Windows.Forms.Label()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
@@ -259,11 +260,21 @@ Partial Class frmDebug
         Me.btnTest.Text = "Test"
         Me.btnTest.UseVisualStyleBackColor = True
         '
+        'btnIpcInfo
+        '
+        Me.btnIpcInfo.Location = New System.Drawing.Point(316, 402)
+        Me.btnIpcInfo.Name = "btnIpcInfo"
+        Me.btnIpcInfo.Size = New System.Drawing.Size(75, 23)
+        Me.btnIpcInfo.TabIndex = 15
+        Me.btnIpcInfo.Text = "IPC Info"
+        Me.btnIpcInfo.UseVisualStyleBackColor = True
+        '
         'frmDebug
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(748, 450)
+        Me.Controls.Add(Me.btnIpcInfo)
         Me.Controls.Add(Me.btnTest)
         Me.Controls.Add(Me.btnTestScreenManager)
         Me.Controls.Add(lblMinimum)
@@ -315,5 +326,6 @@ Partial Class frmDebug
     Friend WithEvents chkForceShowUpdate As CheckBox
     Friend WithEvents chkShowWarning As CheckBox
     Friend WithEvents btnTest As Button
+    Friend WithEvents btnIpcInfo As Button
 End Class
 #End If
