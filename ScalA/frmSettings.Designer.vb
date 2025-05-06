@@ -87,6 +87,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkAutoCloseOnlyOnNoSome = New System.Windows.Forms.CheckBox()
         Me.chkAllowShiftEsc = New System.Windows.Forms.CheckBox()
         Me.lblElevated = New System.Windows.Forms.Label()
+        Me.pbUnElevate = New System.Windows.Forms.PictureBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
@@ -166,7 +167,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
         Me.pnlElevation = New System.Windows.Forms.Panel()
-        Me.pbUnElevate = New System.Windows.Forms.PictureBox()
         grpQLPath = New System.Windows.Forms.GroupBox()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
@@ -198,6 +198,7 @@ Partial NotInheritable Class FrmSettings
         CType(Me.NumBorderLeft, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.cmsUpdate.SuspendLayout()
         CType(Me.pb100PWarning, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.pbUnElevate, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tbcSettings.SuspendLayout()
         Me.tabResolutions.SuspendLayout()
         Me.cmsRestore.SuspendLayout()
@@ -212,7 +213,6 @@ Partial NotInheritable Class FrmSettings
         Me.tabMaximized.SuspendLayout()
         Me.tabMisc.SuspendLayout()
         Me.pnlElevation.SuspendLayout()
-        CType(Me.pbUnElevate, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'grpQLPath
@@ -680,7 +680,7 @@ Partial NotInheritable Class FrmSettings
         Me.ChkMinMin.Size = New System.Drawing.Size(104, 17)
         Me.ChkMinMin.TabIndex = 30
         Me.ChkMinMin.Text = "Min. on Minimize"
-        Me.ttSettings.SetToolTip(Me.ChkMinMin, "Minimizing ScalA will also Minimise Astonia" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: This has no effect on legacy c" &
+        Me.ttSettings.SetToolTip(Me.ChkMinMin, "Minimizing ScalA will also Minimize Astonia" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: This has no effect on legacy c" &
         "lients")
         Me.ChkMinMin.UseVisualStyleBackColor = True
         '
@@ -836,6 +836,16 @@ Partial NotInheritable Class FrmSettings
         Me.lblElevated.Text = "UnElevate"
         Me.ttSettings.SetToolTip(Me.lblElevated, "ScalA is running as Administrtor." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Click here to drop Admin rights." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: ScalA " &
         "will ReElevate when it needs to." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
+        '
+        'pbUnElevate
+        '
+        Me.pbUnElevate.Location = New System.Drawing.Point(11, 6)
+        Me.pbUnElevate.Name = "pbUnElevate"
+        Me.pbUnElevate.Size = New System.Drawing.Size(24, 24)
+        Me.pbUnElevate.TabIndex = 18
+        Me.pbUnElevate.TabStop = False
+        Me.ttSettings.SetToolTip(Me.pbUnElevate, "ScalA is running as Administrtor." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Click here to drop Admin rights." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: ScalA " &
+        "will ReElevate when it needs to." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
         '
         'tbcSettings
         '
@@ -1718,16 +1728,6 @@ Partial NotInheritable Class FrmSettings
         Me.pnlElevation.TabIndex = 17
         Me.pnlElevation.Visible = False
         '
-        'pbUnElevate
-        '
-        Me.pbUnElevate.Location = New System.Drawing.Point(11, 6)
-        Me.pbUnElevate.Name = "pbUnElevate"
-        Me.pbUnElevate.Size = New System.Drawing.Size(24, 24)
-        Me.pbUnElevate.TabIndex = 18
-        Me.pbUnElevate.TabStop = False
-        Me.ttSettings.SetToolTip(Me.pbUnElevate, "ScalA is running as Administrtor." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Click here to drop Admin rights." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: ScalA " &
-        "will ReElevate when it needs to." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
-        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1759,6 +1759,7 @@ Partial NotInheritable Class FrmSettings
         CType(Me.NumBorderLeft, System.ComponentModel.ISupportInitialize).EndInit()
         Me.cmsUpdate.ResumeLayout(False)
         CType(Me.pb100PWarning, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.pbUnElevate, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tbcSettings.ResumeLayout(False)
         Me.tabResolutions.ResumeLayout(False)
         Me.tabResolutions.PerformLayout()
@@ -1784,7 +1785,6 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc.PerformLayout()
         Me.pnlElevation.ResumeLayout(False)
         Me.pnlElevation.PerformLayout()
-        CType(Me.pbUnElevate, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
