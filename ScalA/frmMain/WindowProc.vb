@@ -593,7 +593,7 @@ Partial NotInheritable Class FrmMain
             Case &HC059 To &HC2BC ' unknown VS/Debug messages?
 
             Case Else
-                Debug.Print($"Unhandeld {CType(m.Msg, WM_)} &H{m.Msg:X8} w{m.WParam} {m.LParam}")
+                Debug.Print($"Unhandeld {CType(m.Msg, WM_)} {m}")
 #End If
         End Select
 
