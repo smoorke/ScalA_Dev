@@ -997,6 +997,10 @@ Partial Public NotInheritable Class FrmMain
 
             Dim loc As Point = MousePosition - New Point(rcM.right, rcM.bottom)
 
+            Dim pswa = Screen.PrimaryScreen.WorkingArea
+
+            loc = New Point(Math.Max(pswa.X, loc.X), Math.Max(pswa.Y, loc.Y))
+
             ' move QL to correct loc
             SetWindowPos(hwnd, SWP_HWND.TOPMOST, loc.X, loc.Y, -1, -1, SetWindowPosFlags.IgnoreZOrder Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
         End If
