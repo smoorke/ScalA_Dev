@@ -189,18 +189,25 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     If Me.HasExited Then
                         Return New Point
                     End If
-                    Dim ptt As New Point
-                    ClientToScreen(Me.MainWindowHandle, ptt)
-                    Dim rcW As New RECT
+                    'Dim ptt As New Point
+                    'ClientToScreen(Me.MainWindowHandle, ptt)
+                    Dim rcW As RECT
                     GetWindowRect(Me.MainWindowHandle, rcW)
-                    Dim extrapixel As Integer = 0
-                    Select Case Me.WindowsScaling
-                        Case 125
-                            extrapixel = 1
-                        Case 175
-                            extrapixel = 1
-                    End Select
-                    _CO = New Point(ptt.X - rcW.left, ptt.Y - rcW.top + extrapixel)
+                    Dim rcC As RECT
+                    GetClientRect(Me.MainWindowHandle, rcC)
+                    'Dim extrapixel As Integer = 0
+                    'Select Case Me.WindowsScaling
+                    '    Case 125
+                    '        extrapixel = 1
+                    '    Case 175
+                    '        extrapixel = 1
+                    'End Select
+                    '_CO = New Point(ptt.X - rcW.left, ptt.Y - rcW.top + extrapixel)
+
+                    Dim border As Integer = (rcW.right - rcW.left - rcC.right) \ 2
+
+                    _CO = New Point(border, rcW.bottom - rcW.top - rcC.bottom - border)
+
                     dBug.print($"co {_CO}")
                     Return _CO
                 Catch ex As Exception
