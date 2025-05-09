@@ -353,6 +353,12 @@ Partial Public NotInheritable Class FrmMain
         End If
     End Sub
     Private Sub CmsAlt_Closed(sender As Object, e As ToolStripDropDownClosedEventArgs) Handles cmsAlt.Closed
+        If TypeOf sender.SourceControl Is AButton Then
+            Dim but As AButton = sender.sourcecontrol
+            If Not but.Contains(MousePosition) Then
+                but.BackColor = If(My.Settings.DarkMode, Color.DarkGray, Color.FromArgb(&HFFE1E1E1))
+            End If
+        End If
         AButton.ActiveOverview = My.Settings.gameOnOverview
         Me.TopMost = My.Settings.topmost
     End Sub
@@ -1010,6 +1016,10 @@ Partial Public NotInheritable Class FrmMain
     Dim cts As New Threading.CancellationTokenSource
     Dim cantok As Threading.CancellationToken = cts.Token
     Private Sub CmsQuickLaunch_Closed(sender As ContextMenuStrip, e As ToolStripDropDownClosedEventArgs) Handles cmsQuickLaunch.Closed
+
+
+
+
         cts.Cancel() 'cancel deferred icon loading and setvis
         ctrlshift_pressed = False
         'sender.Items.Clear() 'this couses menu to stutter opening

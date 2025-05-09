@@ -248,10 +248,10 @@ Partial NotInheritable Class FrmMain
                                 but.BeginInvoke(Sub() but.Text = ap.Name)
 
                                 If ap.IsActive() Then
-                                    but.Font = New Font("Microsoft Sans Serif", 8.25, FontStyle.Bold)
+                                    but.Font = AButton.BoldFont
                                     but.BeginInvoke(Sub() but.Select())
                                 Else
-                                    but.Font = New Font("Microsoft Sans Serif", 8.25)
+                                    but.Font = AButton.NormalFont
                                 End If
 
                                 If but.pidCache <> ap.Id Then but.BackgroundImage = Nothing

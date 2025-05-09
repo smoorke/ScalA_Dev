@@ -23,10 +23,13 @@ Public NotInheritable Class AButton
         Me.Padding = New Padding(0)
         Me.Margin = New Padding(0)
         Me.TextAlign = ContentAlignment.TopCenter
-        Me.Font = New Font("Microsoft Sans Serif", 8.25)
+        Me.Font = NormalFont
         Me.Visible = False
         Me.BackColor = If(My.Settings.DarkMode, Color.DarkGray, Color.FromArgb(&HFFE1E1E1))
     End Sub
+
+    Public Shared NormalFont As Font = New Font("Microsoft Sans Serif", 12, GraphicsUnit.Pixel)
+    Public Shared BoldFont As Font = New Font("Microsoft Sans Serif", 13, FontStyle.Bold, GraphicsUnit.Pixel)
 
     Public pidCache As Integer
     Public AP As AstoniaProcess
@@ -64,9 +67,9 @@ Public NotInheritable Class AButton
     Protected Overrides Sub OnMouseLeave(e As EventArgs)
         MyBase.OnMouseLeave(e)
         If My.Settings.DarkMode Then
-            Me.BackColor = Color.DarkGray
+            Me.BackColor = If(Me.ContextMenuStrip?.Visible AndAlso Me.ContextMenuStrip Is FrmMain.cmsAlt, Color.FromArgb(&HFFA2A2A2), Color.DarkGray)
         Else
-            Me.BackColor = Color.FromArgb(&HFFE1E1E1)
+            Me.BackColor = If(Me.ContextMenuStrip?.Visible AndAlso Me.ContextMenuStrip Is FrmMain.cmsAlt, Color.FromArgb(&HFFE5F1FB), Color.FromArgb(&HFFE1E1E1))
         End If
     End Sub
 
