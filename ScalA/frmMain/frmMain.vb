@@ -831,8 +831,10 @@ Partial Public NotInheritable Class FrmMain
             UntrapMouse(MouseButtons.Right)
             CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
             cmsQuickLaunch.Close()
-            FrmSettings.Tag = FrmSettings.tabResolutions
-            FrmSettings.Show()
+            If sender.Contains(MousePosition) Then
+                FrmSettings.Tag = FrmSettings.tabResolutions
+                FrmSettings.Show()
+            End If
         End If
     End Sub
 
@@ -1888,9 +1890,9 @@ Partial Public NotInheritable Class FrmMain
         'TODO: move follwing code to tmrTick and test sizeborder drag
         Dim ptZ As Point = Me.PointToScreen(pbZoom.Location)
 
-        dBug.Print("CaptionMouseMove")
+        'dBug.Print("CaptionMouseMove")
 
-        newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AltPP.ClientOffset.X '- My.Settings.offset.X
+        newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AltPP.ClientOffset.X
         newY = Me.Location.Y
 
         Dim flags = swpFlags
