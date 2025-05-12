@@ -254,6 +254,14 @@ Partial NotInheritable Class FrmMain
                                     but.Font = AButton.NormalFont
                                 End If
 
+                                If Not ap.isSDL Then
+                                    Dim exStyle As UInteger = GetWindowLong(ap.MainWindowHandle, GWL_EXSTYLE)
+                                    If (exStyle And WindowStylesEx.WS_EX_COMPOSITED) <> WindowStylesEx.WS_EX_COMPOSITED Then
+                                        SetWindowLong(ap.MainWindowHandle, GWL_EXSTYLE, exStyle Or WindowStylesEx.WS_EX_COMPOSITED)
+                                        Debug.Print($"set {ap.Name} as composited")
+                                    End If
+                                End If
+
                                 If but.pidCache <> ap.Id Then but.BackgroundImage = Nothing
                                 If but.BackgroundImage Is Nothing Then
                                     Using ico As Bitmap = ap.GetIcon?.ToBitmap
