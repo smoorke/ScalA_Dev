@@ -599,7 +599,13 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Shared ReadOnly pathIcnCache As New Concurrent.ConcurrentDictionary(Of String, Icon) 'path, icon
     Public Function GetIcon(Optional invalidateCache As Boolean = False) As Icon
         If invalidateCache Then
+            For Each tup In nameIconCache.Values
+                DestroyIcon(tup.Item1.Handle)
+            Next
             nameIconCache.Clear()
+            For Each icn In pathIcnCache.Values
+                DestroyIcon(icn.Handle)
+            Next
             pathIcnCache.Clear()
         End If
         If proc Is Nothing Then Return Nothing
@@ -611,10 +617,13 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             If ID > 0 AndAlso nameIconCache.TryGetValue(ID, IcoNam) AndAlso IcoNam.Item2 = Me.Name Then
                 Return IcoNam.Item1
             Else
-                nameIconCache.TryRemove(ID, Nothing)
+                Dim tup As Tuple(Of Icon, String) = New Tuple(Of Icon, String)(Nothing, String.Empty)
+                If nameIconCache.TryRemove(ID, tup) Then
+                    dBug.Print($"evicted {ID} {tup.Item2}") ' do NOT destroyicon(item1) here, it is duplicated in PathIcnCache
+                End If
             End If
 
-            Dim path As String = Me.Path()
+            Dim path As String = Me.FinalPath()
 
             If Not String.IsNullOrEmpty(path) Then
                 Dim ico As Icon = Nothing

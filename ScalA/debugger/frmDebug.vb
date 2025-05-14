@@ -265,13 +265,16 @@ Public Class frmDebug
         End If
         Dim hwnd As IntPtr = FrmMain.AltPP.MainWindowHandle
 
+        Dim exStyle As WindowStylesEx = GetWindowLong(FrmMain.AltPP.MainWindowHandle, GWL_EXSTYLE)
 
-        If Not crtMode Then
-            If frmCrt.IsDisposed Then frmCrt = New CrtForm
-            frmCrt.Show()
-        Else
-            frmCrt.Close()
-        End If
+        dBug.Print($"exstyles {exStyle}", 1)
+
+        'If Not crtMode Then
+        '    If frmCrt.IsDisposed Then frmCrt = New CrtForm
+        '    frmCrt.Show()
+        'Else
+        '    frmCrt.Close()
+        'End If
 
 
 

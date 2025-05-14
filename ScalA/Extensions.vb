@@ -71,6 +71,7 @@ Module Extensions
     <Extension()>
     Public Function Contains(ctrl As Control, screenPt As Point) As Boolean
         Dim box As ComboBox = TryCast(ctrl, ComboBox)
+        If TypeOf ctrl Is Label Then Return CType(ctrl, Label).Contains(screenPt)
         If TypeOf ctrl IsNot Form Then screenPt = ctrl.FindForm?.PointToClient(screenPt)
         Return ctrl.Bounds.Contains(screenPt) OrElse
                 (box IsNot Nothing AndAlso box.DroppedDown AndAlso
@@ -80,11 +81,15 @@ Module Extensions
     ' duplications due to hot path
 
     ''' <summary>
-    ''' Checks button contains a given point in screen coords
+    ''' Checks lablel contains a given point in screen coords
     ''' </summary>
-    ''' <param name="but"></param>
+    ''' <param name="lbl"></param>
     ''' <param name="screenPt"></param>
     ''' <returns></returns>
+    <Extension()>
+    Public Function Contains(lbl As Label, screenPt As Point) As Boolean
+        Return lbl.RectangleToScreen(lbl.Bounds).Contains(screenPt)
+    End Function
 
     <Extension()>
     Public Function Contains(but As Button, screenPt As Point) As Boolean

@@ -320,7 +320,7 @@ Partial Public NotInheritable Class FrmMain
         With My.Application.Info.Version
             Dim build = .Build + If(.Revision, 1, 0)
             Dim rev As String = If(.Revision, $"b{ .Revision}", "")
-            lblTitle.Text = $"- ScalA v{ .Major}.{ .Minor}.{ .Build}{rev}{titleSuff}"
+            lblTitle.Text = $"- ScalA v{ .Major}.{ .Minor}.{build}{rev}{titleSuff}"
         End With
         Return True
     End Function
@@ -1891,40 +1891,17 @@ Partial Public NotInheritable Class FrmMain
         Dim ptZ As Point = Me.PointToScreen(pbZoom.Location)
 
         'dBug.Print("CaptionMouseMove")
-
-        newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AltPP.ClientOffset.X
+        If AltPP Is Nothing Then Exit Sub
+        newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - If(AltPP?.ClientOffset.X, 0)
         newY = Me.Location.Y
 
         Dim flags = swpFlags
-        If Not AltPP.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
-        If AltPP.IsBelow(ScalaHandle) Then flags.SetFlag(SetWindowPosFlags.IgnoreZOrder)
+        If Not AltPP?.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
+        If AltPP?.IsBelow(ScalaHandle) Then flags.SetFlag(SetWindowPosFlags.IgnoreZOrder)
         Task.Run(Sub()
-                     SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
+                     SetWindowPos(If(AltPP?.MainWindowHandle, IntPtr.Zero), ScalaHandle, newX, newY, -1, -1, flags)
                  End Sub)
 
     End Sub
 
-    Private Sub Caption_MouseEnter(sender As Control, e As EventArgs) Handles btnStart.MouseEnter, cboAlt.MouseEnter, cmbResolution.MouseEnter,
-                                                                              pnlTitleBar.MouseEnter, lblTitle.MouseEnter,
-                                                                              pnlUpdate.MouseEnter, pbUpdateAvailable.MouseEnter, ChkEqLock.MouseEnter,
-                                                                              pnlSys.MouseEnter, btnMin.MouseEnter, btnMax.MouseEnter, btnQuit.MouseEnter
-        'dBug.Print($"MouseEnter {sender.Name} {AltPP?.IsActive} {MouseButtonStale}")
-
-        'AltPP?.ThreadInput(False)
-
-
-        'If Not MouseButtonStale.HasFlag(MouseButtons.Right) OrElse Not MouseButtonStale.HasFlag(MouseButtons.Middle) Then
-        '    UntrapMouse(MouseButtonStale)
-        'End If
-
-    End Sub
-
-    Private Sub pnlUpdate_MouseLeave(sender As Object, e As EventArgs) Handles btnStart.MouseLeave, cboAlt.MouseLeave, cmbResolution.MouseLeave,
-                                                                              pnlTitleBar.MouseLeave, lblTitle.MouseLeave,
-                                                                              pnlUpdate.MouseLeave, pbUpdateAvailable.MouseLeave, ChkEqLock.MouseLeave,
-                                                                              pnlSys.MouseLeave, btnMin.MouseLeave, btnMax.MouseLeave, btnQuit.MouseLeave
-        'If caption_Mousedown Then Exit Sub
-        'dBug.Print($"MouseLeave {sender.Name} {AltPP?.IsActive} {MouseButtonStale}")
-        'AltPP?.ThreadInput(True)
-    End Sub
 End Class

@@ -116,7 +116,7 @@ Partial NotInheritable Class FrmMain
                         If Not chkDebug.ContextMenuStrip.Visible Then
 #End If
                             'ap.Activate() doesn't work if not debugging
-                            If Not AltPP.IsActive AndAlso WindowFromPoint(MousePosition) = AltPP?.MainWindowHandle Then
+                            If Not AltPP?.IsActive AndAlso WindowFromPoint(MousePosition) = AltPP?.MainWindowHandle Then
                                 dBug.Print($"Activating {AltPP?.Name}")
                                 SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
                             End If
@@ -132,8 +132,8 @@ Partial NotInheritable Class FrmMain
 
             If AltPP Is Nothing Then Exit Sub
 
-            newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - AltPP?.ClientOffset.X '- My.Settings.offset.X
-            newY = MousePosition.Y.Map(ptZ.Y, ptZ.Y + pbZoom.Height, ptZ.Y, ptZ.Y + pbZoom.Height - rcC.Height) - AltPP?.ClientOffset.Y '- My.Settings.offset.Y
+            newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - If(AltPP?.ClientOffset.X, 0) '- My.Settings.offset.X
+            newY = MousePosition.Y.Map(ptZ.Y, ptZ.Y + pbZoom.Height, ptZ.Y, ptZ.Y + pbZoom.Height - rcC.Height) - If(AltPP?.ClientOffset.Y, 0) '- My.Settings.offset.Y
 
             If Not swpBusy AndAlso Not moveBusy AndAlso Not Resizing Then
                 swpBusy = True
@@ -145,17 +145,17 @@ Partial NotInheritable Class FrmMain
                                  If ci.flags = 0 Then Exit Sub
                                  swpBusy = True
                                  Dim flags = swpFlags
-                                 If Not AltPP.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
-                                 If AltPP.IsBelow(ScalaHandle) Then flags.SetFlag(SetWindowPosFlags.IgnoreZOrder)
-                                 Dim pt As Point = MousePosition - New Point(newX + AltPP.ClientOffset.X, newY + AltPP.ClientOffset.Y)
+                                 If Not AltPP?.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
+                                 If AltPP?.IsBelow(ScalaHandle) Then flags.SetFlag(SetWindowPosFlags.IgnoreZOrder)
+                                 Dim pt As Point = MousePosition - New Point(newX + If(AltPP?.ClientOffset.X, 0), newY + If(AltPP?.ClientOffset.Y, 0))
                                  Dim wparam = WM_MOUSEMOVE_CreateWParam()
                                  Dim lparam = New LParamMap(pt)
                                  If prevWMMMpt <> MousePosition Then
-                                     SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
+                                     SendMessage(If(AltPP?.MainWindowHandle, IntPtr.Zero), WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
                                  End If
-                                 SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, newX, newY, -1, -1, flags)
+                                 SetWindowPos(If(AltPP?.MainWindowHandle, IntPtr.Zero), ScalaHandle, newX, newY, -1, -1, flags)
                                  If prevWMMMpt <> MousePosition Then
-                                     SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
+                                     SendMessage(If(AltPP?.MainWindowHandle, IntPtr.Zero), WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
                                  End If
                                  prevWMMMpt = MousePosition
                              Catch ex As Exception

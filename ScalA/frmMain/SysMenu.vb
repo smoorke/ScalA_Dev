@@ -114,7 +114,8 @@ Partial NotInheritable Class FrmMain
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
         UntrapMouse(e.Button) ' fix mousebutton stuck bug
-        If e.Button = MouseButtons.Right Then
+
+        If e.Button = MouseButtons.Right AndAlso (pnlTitleBar.Contains(MousePosition) OrElse btnMin.Contains(MousePosition) OrElse btnMax.Contains(MousePosition)) Then
 
             pbZoom.Visible = False
             AButton.ActiveOverview = False
@@ -130,7 +131,7 @@ Partial NotInheritable Class FrmMain
                 caption_Mousedown Then
                 dBug.Print("sysmenu no attach")
             ElseIf ret <> SC_MINIMIZE OrElse (My.Settings.MinMin AndAlso AltPP?.isSDL) Then
-                dBug.print("sysmenu attach")
+                dBug.Print("sysmenu attach")
                 Attach(AltPP)
             End If
             'If GetActiveProcessID() = scalaPID AndAlso ret <> MC_SETTINGS Then
