@@ -318,6 +318,12 @@ Module NativeMethods
     Public Function ShellExecuteEx(ByRef lpExecInfo As SHELLEXECUTEINFO) As Boolean
     End Function
 
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Sub SwitchToThisWindow(hWnd As IntPtr, fAltTab As Boolean) : End Sub
+
+    <DllImport("user32.dll", SetLastError:=False)>
+    Public Function GetDesktopWindow() As IntPtr : End Function
+
     <DllImport("user32.dll")>
     Public Function LoadImage(hinst As IntPtr, lpszName As String, uType As UInt32, cxDesired As Integer, cyDesired As Integer, fuLoad As UInt32) As IntPtr : End Function
     <DllImport("user32.dll")>
@@ -368,27 +374,114 @@ Module NativeMethods
 
     <Flags()>
     Public Enum WindowStyles As UInteger
+        ''' <summary>
+        ''' The window has a thin-line border.
+        ''' </summary>
         WS_BORDER = &H800000
+
+        ''' <summary>
+        ''' The window has a title bar (includes the WS_BORDER style).
+        ''' </summary>
         WS_CAPTION = &HC00000
+
+        ''' <summary>
+        ''' The window is a child window. A window with this style cannot have a menu bar. This style cannot be used with the WS_POPUP style.
+        ''' </summary>
         WS_CHILD = &H40000000
+
+        ''' <summary>
+        ''' Excludes the area occupied by child windows when drawing occurs within the parent window. This style is used when creating the parent window.
+        ''' </summary>
         WS_CLIPCHILDREN = &H2000000
+
+        ''' <summary>
+        ''' Clips child windows relative to each other; that is, when a particular child window receives a WM_PAINT message, the WS_CLIPSIBLINGS style clips all other overlapping child windows out of the region of the child window to be updated. If WS_CLIPSIBLINGS is not specified and child windows overlap, it is possible, when drawing within the client area of a child window, to draw within the client area of a neighboring child window.
+        ''' </summary>
         WS_CLIPSIBLINGS = &H4000000
+
+        ''' <summary>
+        ''' The window is initially disabled. A disabled window cannot receive input from the user.
+        ''' </summary>
         WS_DISABLED = &H8000000
+
+        ''' <summary>
+        ''' The window has a border of a style typically used with dialog boxes. A window with this style cannot have a title bar.
+        ''' </summary>
         WS_DLGFRAME = &H400000
+
+        ''' <summary>
+        ''' The window is the first control of a group of controls. The group consists of this first control and all controls defined after it, up to the next control with the WS_GROUP style. The first control in each group usually has the WS_TABSTOP style so that the user can move from group to group. The user can subsequently change the keyboard focus from one control in the group to the next control in the group by using the direction keys.
+        ''' </summary>
         WS_GROUP = &H20000
+
+        ''' <summary>
+        ''' The window has a horizontal scroll bar.
+        ''' </summary>
         WS_HSCROLL = &H100000
+
+        ''' <summary>
+        ''' The window is initially maximized.
+        ''' </summary>
         WS_MAXIMIZE = &H1000000
+
+        ''' <summary>
+        ''' The window has a maximize button. Cannot be combined with the WS_EX_CONTEXTHELP style. The WS_SYSMENU style must also be specified.
+        ''' </summary>
         WS_MAXIMIZEBOX = &H10000
+
+        ''' <summary>
+        ''' The window is initially minimized.
+        ''' </summary>
         WS_MINIMIZE = &H20000000
+
+        ''' <summary>
+        ''' The window has a minimize button. Cannot be combined with the WS_EX_CONTEXTHELP style. The WS_SYSMENU style must also be specified.
+        ''' </summary>
         WS_MINIMIZEBOX = &H20000
+
+        ''' <summary>
+        ''' The window is an overlapped window. An overlapped window has a title bar and a border. Same as the WS_TILED style.
+        ''' </summary>
         WS_OVERLAPPED = &H0
+
+        ''' <summary>
+        ''' The window is an overlapped window. Same as the WS_TILEDWINDOW style.
+        ''' </summary>
         WS_OVERLAPPEDWINDOW = WS_OVERLAPPED Or WS_CAPTION Or WS_SYSMENU Or WS_SIZEFRAME Or WS_MINIMIZEBOX Or WS_MAXIMIZEBOX
+
+        ''' <summary>
+        ''' The window is a pop-up window. This style cannot be used with the WS_CHILD style.
+        ''' </summary>
         WS_POPUP = &H80000000UI
+
+        ''' <summary>
+        ''' The window is a pop-up window. The WS_BORDER, WS_POPUP, and WS_SYSMENU styles must be combined to make the window menu visible.
+        ''' </summary>
         WS_POPUPWINDOW = WS_POPUP Or WS_BORDER Or WS_SYSMENU
+
+        ''' <summary>
+        ''' The window has a sizing border. Same as the WS_THICKFRAME style.
+        ''' </summary>
         WS_SIZEFRAME = &H40000
+
+        ''' <summary>
+        ''' The window has a window menu on its title bar. The WS_CAPTION style must also be specified.
+        ''' </summary>
         WS_SYSMENU = &H80000
+
+        ''' <summary>
+        ''' The window is a control that can receive the keyboard focus when the user presses the TAB key. Pressing the TAB key changes the keyboard focus to the next control with the WS_TABSTOP style.
+        ''' </summary>
         WS_TABSTOP = &H10000
+
+        ''' <summary>
+        ''' The window is initially visible. This style can be turned on and off by using the ShowWindow or SetWindowPos function.
+        ''' </summary>
         WS_VISIBLE = &H10000000
+
+        ''' <summary>
+        ''' The window has a vertical scroll bar.
+        ''' </summary>
         WS_VSCROLL = &H200000
     End Enum
     <Flags()>
