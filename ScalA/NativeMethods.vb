@@ -183,6 +183,13 @@ Module NativeMethods
 
     <DllImport("user32.dll", SetLastError:=True, CharSet:=Runtime.InteropServices.CharSet.Auto)>
     Public Function FindWindow(ByVal lpClassName As String, ByVal lpWindowName As String) As IntPtr : End Function
+
+
+    ''' <summary>
+    ''' note: this may need GetAncestor(hWnd, GA_ROOT) since it can return child controls
+    ''' </summary>
+    ''' <param name="pt"></param>
+    ''' <returns></returns>
     <DllImport("user32.dll", SetLastError:=True, CharSet:=Runtime.InteropServices.CharSet.Auto)>
     Public Function WindowFromPoint(pt As Point) As IntPtr : End Function
 
