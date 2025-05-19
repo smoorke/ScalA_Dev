@@ -951,6 +951,9 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     ReadOnly bl As New SolidBrush(Color.FromArgb(217, 217, 30))
     ReadOnly bb As New SolidBrush(Color.FromArgb(&HFF297DFF))
 
+
+    Dim paneOpen As Boolean = False
+
     Public Function GetHealthbar(Optional width As Integer = 75, Optional height As Integer = 15) As Bitmap
         Dim bmp As New Bitmap(width, height)
 
@@ -992,49 +995,49 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
             Dim rows = 3
 
-            'Dim barX As Integer = 388
-            Dim barX As Integer = grab.Width / 2 - 12.Map(0, 800, 0, grab.Width)
-            'Dim barY As Integer = 205 + RebornResolutionOffset(grab.Height)
-            Dim barY As Integer = grab.Height / 2 - 95.Map(0, 600, 0, grab.Height)
+            Dim barX As Integer = 388
 
             Dim BadColorCount As Integer
             Dim blackCount As Integer = 0
 
-            For dy As Integer = 0 To grab.Height / 300 Step grab.Height / 600
+            For dy As Integer = 0 To 2
                 BadColorCount = 0
                 blackCount = 0
-                For dx As Integer = 0 To grab.Width / 32 - 1
-                    Dim currentCol As Integer = grab.GetPixel(barX + dx, barY + dy).ToArgb
-                    'dBug.print($"current{dy}/{dx}:{currentCol:X8}")
+                For dx As Integer = 0 To 24
+                    Dim currentCol As Integer = grab.GetPixel(barX + dx, 205 + dy).ToArgb
+                    'Debug.Print($"current{dy}/{dx}:{currentCol:X8}")
                     If {&HFF000000, &HFF000400}.Contains(currentCol) Then
                         blackCount += 1
                     End If
 
                     If Not validColors.Contains(currentCol) Then
-                        'dBug.print($"badcolor row{dy} &H{grab.GetPixel(barX + dx, 205 + dy).ToArgb.ToString("X8")}")
+                        'Debug.Print($"badcolor row{dy} &H{grab.GetPixel(barX + dx, 205 + dy).ToArgb.ToString("X8")}")
                         BadColorCount += 1
                     End If
                     If dy = 0 Then
                         If BadColorCount > 1 OrElse blackCount = 25 Then
-                            'dBug.print("Pane open?")
+                            Debug.Print("Pane open?")
+                            paneOpen = True
                             blackCount = 0
-                            barX += 110.Map(0, 800, 0, grab.Width)
+                            barX += 110
                             Exit For
+                        Else
+                            paneOpen = False
                         End If
                     End If
                     If BadColorCount >= 5 Then Exit For
-                Next dx
+                Next
                 If BadColorCount >= 5 OrElse blackCount = 25 Then
                     rows -= 1
                     Continue For
                 End If
-            Next dy
+            Next
 
             g.InterpolationMode = Drawing2D.InterpolationMode.NearestNeighbor
             g.PixelOffsetMode = Drawing2D.PixelOffsetMode.Half
             g.DrawImage(grab,
                         New Rectangle(0, 0, bmp.Width, bmp.Height),
-                        New Rectangle(barX, barY, grab.Width / 32, rows * grab.Height / 600),
+                        New Rectangle(barX, 205, 25, rows),
                         GraphicsUnit.Pixel)
         End Using 'g, grab
         Return bmp
