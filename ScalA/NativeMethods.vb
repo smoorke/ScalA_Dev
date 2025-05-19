@@ -1034,6 +1034,7 @@ Module NativeMethods
     Public Const MK_XBUTTON2 = &H40 ' The second X button is down.
 
     Public Const HTCAPTION As Integer = 2
+    Public Const HTMAXBUTTON As Integer = 9
 
     Public Const WM_MOVE = &H3
     Public Const WM_SIZE = &H5

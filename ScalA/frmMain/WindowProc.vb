@@ -313,7 +313,7 @@ Partial NotInheritable Class FrmMain
                     End If
                     AltPP?.CenterBehind(pbZoom, 0, True, True) 'fix thumb breaking
                     FrmBehind.Show()
-                    frmOverlay.Show()
+                    If Not frmOverlay.Visible Then frmOverlay.Show(Me)
                 End If
             Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
                 'If posChangeBusy Then
@@ -334,7 +334,8 @@ Partial NotInheritable Class FrmMain
 
                 If pbZoom IsNot Nothing Then
                     'frmOverlay.Bounds = New Rectangle(winpos.x, winpos.y + 21, winpos.cx, winpos.cy - 21)
-                    SetWindowPos(frmOverlay.Handle, 0, winpos.x, winpos.y + 21, winpos.cx, winpos.cy - 21, SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder)
+                    'SetWindowPos(frmOverlay.Handle, 0, winpos.x, winpos.y + 21, winpos.cx, winpos.cy - 21, SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder Or SetWindowPosFlags.DoNotReposition)
+                    frmOverlay.Bounds = New Rectangle(winpos.x, winpos.y + 21, winpos.cx, winpos.cy - 21)
                 End If
 
                 FrmBehind.Bounds = New Rectangle(winpos.x, winpos.y + 21, winpos.cx, winpos.cy - 21)
