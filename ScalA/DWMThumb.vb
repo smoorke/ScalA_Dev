@@ -70,7 +70,7 @@ Partial Public NotInheritable Class FrmMain
             End If
         End If
 
-        dBug.Print($"WindowsScaling {Me.WindowsScaling} {AltPP.WindowsScaling}")
+        dBug.Print($"WindowsScaling {Me.WindowsScaling} {AltPP?.WindowsScaling}")
         If Me.WindowsScaling <> 100 OrElse AltPP.WindowsScaling <> 100 Then 'handle windows scaling
             twp.rcDestination = New Rectangle(pbZoom.Left, pbZoom.Top - 1, pbZoom.Right, pbZoom.Bottom)
             mode = 1
@@ -105,7 +105,7 @@ Partial Public NotInheritable Class FrmMain
         Dim ret As Integer? = Nothing
         If prevMode <> mode Then
             Dim oldThumb = thumb
-            DwmRegisterThumbnail(ScalaHandle, AltPP.MainWindowHandle, thumb)
+            DwmRegisterThumbnail(ScalaHandle, If(AltPP?.MainWindowHandle, IntPtr.Zero), thumb)
             ret = DwmUpdateThumbnailProperties(thumb, twp)
             DwmUnregisterThumbnail(oldThumb)
             prevMode = mode
