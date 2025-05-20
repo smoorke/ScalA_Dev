@@ -163,7 +163,7 @@ Partial Public NotInheritable Class FrmMain
 
                 Dim cmdLine As String = objCol(0)("commandline")
 
-                Dim nam As String = New String(cmdLine.Split("-").FirstOrDefault(Function(s) s.ToLower.StartsWith("u")).Skip(1).ToArray).Trim.FirstToUpper()
+                Dim nam As String = New String(cmdLine.Split("-").FirstOrDefault(Function(s) s.ToLower.StartsWith("u")).Skip(1).ToArray).Trim.FirstToUpper(True)
 
                 dBug.Print($"ReLaunch ""{nam}""")
                 ReLaunchToolStripMenuItem.Text = $"ReLaunch {nam}"
