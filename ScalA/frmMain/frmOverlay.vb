@@ -47,11 +47,7 @@
         End If
 
         'TODO: add getting name from MOS commandlineargs in AstoniaProcess.vb
-        Dim targetname As String = If(FrmMain.AltPP?.Name = "Someone", FrmMain.AltPP?.loggedInAs, FrmMain.AltPP.Name)
-
-        '        Dim targetname As String = If(FrmMain.AltPP?.Name = "Someone", If(String.IsNullOrEmpty(FrmMain.AltPP?.loggedInAs), FrmMain.AltPP.Name, FrmMain.AltPP?.loggedInAs))
-
-        ' targetname = targetname.FirstToUpper()
+        Dim targetname As String = FrmMain.AltPP?.UserName
 
         dBug.Print($"restarting {targetname}")
 
@@ -65,7 +61,7 @@
         While Not String.IsNullOrEmpty(targetname)
             count += 1
             Await Task.Delay(50)
-            Dim targetPPs As AstoniaProcess = AstoniaProcess.Enumerate(FrmMain.blackList).FirstOrDefault(Function(ap) ap.Name.Contains(targetname))
+            Dim targetPPs As AstoniaProcess = AstoniaProcess.Enumerate().FirstOrDefault(Function(ap) ap.UserName = targetname)
             If targetPPs IsNot Nothing AndAlso targetPPs.Id <> 0 Then
                 FrmMain.PopDropDown(FrmMain.cboAlt)
                 FrmMain.cboAlt.SelectedItem = targetPPs

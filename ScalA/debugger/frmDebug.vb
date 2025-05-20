@@ -263,11 +263,9 @@ Public Class frmDebug
             dBug.Print("Alt is nothing", 1)
             Exit Sub
         End If
-        Dim hwnd As IntPtr = FrmMain.AltPP.MainWindowHandle
 
-        Dim exStyle As WindowStylesEx = GetWindowLong(FrmMain.AltPP.MainWindowHandle, GWL_EXSTYLE)
 
-        dBug.Print($"exstyles {exStyle}", 1)
+        FrmMain.AltPP?.DebugListAllArgs()
 
         'If Not crtMode Then
         '    If frmCrt.IsDisposed Then frmCrt = New CrtForm
@@ -294,7 +292,7 @@ Public Class frmDebug
     Private Sub btnIpcInfo_Click(sender As Object, e As EventArgs) Handles btnIpcInfo.Click
         dBug.Print($"IPC: {IPC.getInstances.Count}")
         For Each ip In IPC.getInstances
-            dBug.Print($"{ip.AltPPid} {AstoniaProcess.FromHWnd(Process.GetProcessById(ip.AltPPid).MainWindowHandle).Name}")
+            dBug.Print($"{ip.AltPPid} {AstoniaProcess.FromHWnd(Process.GetProcessById(ip.AltPPid).MainWindowHandle).UserName}")
         Next
     End Sub
 #End If

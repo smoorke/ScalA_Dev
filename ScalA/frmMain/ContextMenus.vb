@@ -57,8 +57,8 @@ Partial Public NotInheritable Class FrmMain
             CloseBothToolStripMenuItem.Visible = False
             CloseAllOverviewToolStripMenuItem.Visible = pnlOverview.Controls.OfType(Of AButton).Any(Function(ab) ab.AP IsNot Nothing)
         Else
-            CloseAstoniaToolStripMenuItem.Text = $"Close {AltPP.Name}"
-            CloseBothToolStripMenuItem.Text = $"Close {AltPP.Name} && ScalA"
+            CloseAstoniaToolStripMenuItem.Text = $"Close {AltPP.UserName}"
+            CloseBothToolStripMenuItem.Text = $"Close {AltPP.UserName} && ScalA"
             CloseAstoniaToolStripMenuItem.Visible = True
             CloseBothToolStripMenuItem.Visible = True
             CloseAllOverviewToolStripMenuItem.Visible = False
@@ -97,7 +97,7 @@ Partial Public NotInheritable Class FrmMain
     Private Sub SelectToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles SelectToolStripMenuItem.Click
         Dim pp As AstoniaProcess = DirectCast(sender.Tag, AstoniaProcess)
         If pp Is Nothing Then Exit Sub
-        dBug.Print("SelectToolStrip: " & pp.Name)
+        dBug.Print("SelectToolStrip: " & pp.UserName)
         SelectAlt(pp)
     End Sub
 
@@ -148,25 +148,17 @@ Partial Public NotInheritable Class FrmMain
         DebugToolStripMenuItem.Tag = pp
 #End If
 #End If
-        SelectToolStripMenuItem.Text = "Select " & pp?.Name
+        SelectToolStripMenuItem.Text = "Select " & pp?.UserName
         SelectToolStripMenuItem.Image = pp?.GetIcon?.ToBitmap
         SelectToolStripMenuItem.Tag = pp
 
 
-        dBug.Print($"cmsAlt {pp?.Name} {pp?.hasLoggedIn} ""{pp?.loggedInAs}""")
+        dBug.Print($"cmsAlt {pp?.Name} ""{pp?.loggedInAs}"" {pp?.UserName}")
 
         If pp?.Name = "Someone" Then
             ReLaunchToolStripMenuItem.Visible = True
             If String.IsNullOrWhiteSpace(pp?.loggedInAs) Then
-                Dim QS As New Management.ManagementObjectSearcher(“Select * from Win32_Process WHERE ProcessID=" & pp?.Id)
-                Dim objCol As Management.ManagementObjectCollection = QS.Get
-
-                Dim cmdLine As String = objCol(0)("commandline")
-
-                Dim nam As String = New String(cmdLine.Split("-").FirstOrDefault(Function(s) s.ToLower.StartsWith("u")).Skip(1).ToArray).Trim.FirstToUpper(True)
-
-                dBug.Print($"ReLaunch ""{nam}""")
-                ReLaunchToolStripMenuItem.Text = $"ReLaunch {nam}"
+                ReLaunchToolStripMenuItem.Text = $"ReLaunch {pp.UserName}"
             Else
                 ReLaunchToolStripMenuItem.Text = $"ReLaunch {pp?.loggedInAs}"
             End If
@@ -189,7 +181,7 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         sender.Items.RemoveAt(sender.Items.Count - 1)
-        sender.Items.Add("Close " & pp?.Name, My.Resources.F12, AddressOf CloseToolStripMenuItem_Click).Tag = pp
+        sender.Items.Add("Close " & pp?.UserName, My.Resources.F12, AddressOf CloseToolStripMenuItem_Click).Tag = pp
 
         Dim other As String = If(pp?.Name = "Someone", "Other ", "")
         Dim somecount As Integer = AstoniaProcess.EnumSomeone.Count(Function(p) p.Name = "Someone")
@@ -338,10 +330,10 @@ Partial Public NotInheritable Class FrmMain
         Loop Until IPC.AddToWhitelistOrRemoveFromBL(sp.Id) = 0 OrElse i >= 20
         If IPC.AddToWhitelistOrRemoveFromBL(sp.Id) = 0 Then
             If My.Settings.Whitelist Then
-                topSortList.RemoveAll(Function(it) it = ap.Name)
-                botSortList.RemoveAll(Function(it) it = ap.Name)
+                topSortList.RemoveAll(Function(it) it = ap.UserName)
+                botSortList.RemoveAll(Function(it) it = ap.UserName)
             Else
-                blackList.Add(ap.Name)
+                blackList.Add(ap.UserName)
             End If
             My.Settings.topSort = String.Join(vbCrLf, blackList.Concat(topSortList))
             My.Settings.botSort = String.Join(vbCrLf, blackList.Concat(botSortList))
@@ -394,7 +386,7 @@ Partial Public NotInheritable Class FrmMain
             item.CheckState = CheckState.Unchecked
         Next
 
-        Dim AltName As String = DirectCast(sender.Tag, AstoniaProcess).Name
+        Dim AltName As String = DirectCast(sender.Tag, AstoniaProcess).UserName
 
         Dim topContains As Boolean = topSortList.Contains(AltName)
         Dim botContains As Boolean = botSortList.Contains(AltName)
@@ -434,7 +426,7 @@ Partial Public NotInheritable Class FrmMain
     Private Sub NoneSortToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles NoneSortToolStripMenuItem.Click,
             TopFirstToolStripMenuItem.Click, TopLastToolStripMenuItem.Click,
             BotFirstToolStripMenuItem.Click, BotLastToolStripMenuItem.Click
-        Dim AltName As String = DirectCast(sender.OwnerItem.Tag, AstoniaProcess).Name
+        Dim AltName As String = DirectCast(sender.OwnerItem.Tag, AstoniaProcess).UserName
         dBug.Print($"Apply sorting {AltName} {sender.Tag}")
 
         topSortList.Remove(AltName)
@@ -699,8 +691,8 @@ Partial Public NotInheritable Class FrmMain
         sender.DropDownItems.Add(New ToolStripMenuItem("Folder", foldericon, AddressOf Ql_NewFolder) With {.Tag = sender.Tag})
         sender.DropDownItems.Add(New ToolStripSeparator())
 
-        For Each alt As AstoniaProcess In AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name)
-            sender.DropDownItems.Add(New ToolStripMenuItem(alt.Name, alt.GetIcon?.ToBitmap, AddressOf CreateShortCut) With {
+        For Each alt As AstoniaProcess In AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.UserName)
+            sender.DropDownItems.Add(New ToolStripMenuItem(alt.UserName, alt.GetIcon?.ToBitmap, AddressOf CreateShortCut) With {
                                                .Tag = {alt, sender.Tag}}) ' sender.tag is parent menu location
         Next
         If sender.DropDownItems.Count = 2 Then
@@ -765,12 +757,12 @@ Partial Public NotInheritable Class FrmMain
 
         Dim alt As AstoniaProcess = DirectCast(sender.Tag(0), AstoniaProcess)
         Dim ShortCutPath As String = sender.Tag(1)
-        Dim ShortCutName As String = sender.Text
-        If ShortCutName = "Someone" Then Exit Sub
+        Dim ShortCutName As String = alt.UserName
+        'If ShortCutName = "Someone" Then Exit Sub
         Dim ShortCutLink As String = ShortCutPath & "\" & ShortCutName & ".lnk"
 
         If System.IO.File.Exists(ShortCutLink) Then
-            Select Case CustomMessageBox.Show(Me, $"""{alt.Name}"" already exists. Overwrite?",
+            Select Case CustomMessageBox.Show(Me, $"""{alt.UserName}"" already exists. Overwrite?",
                            "Notice", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)
                 Case DialogResult.Yes
                     'do nothing
@@ -778,7 +770,7 @@ Partial Public NotInheritable Class FrmMain
                     Exit Sub
                 Case Else
                     dBug.Print($"Cancel {sender.Tag} ""{sender.OwnerItem}"" {sender.Text}")
-                    If sender.OwnerItem?.Text <> "New" Then Throw New Exception("Abort")
+                    If sender.OwnerItem?.Text <> QlCtxNewMenu.Text Then Throw New Exception("Abort")
             End Select
         End If
         'Dim QS As New ManagementObjectSearcher(“Select * from Win32_Process WHERE ProcessID=" & alt.Id.ToString)
@@ -856,7 +848,7 @@ Partial Public NotInheritable Class FrmMain
         dBug.Print($"Add All ShortCuts")
         dBug.Print($"sender.tag {sender.tag}")
 
-        Dim list As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name).ToList
+        Dim list As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.UserName).ToList
 
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
@@ -868,9 +860,9 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         For Each ap As AstoniaProcess In list
-            dBug.Print($"adding {ap.Name}")
+            dBug.Print($"adding {ap.UserName}")
             Try
-                CreateShortCut(New ToolStripMenuItem(ap.Name) With {.Tag = {ap, path}}, Nothing)
+                CreateShortCut(New ToolStripMenuItem(ap.UserName) With {.Tag = {ap, path}}, Nothing)
             Catch ex As Exception
                 If ex.Message = "Abort" Then
                     Exit Sub
@@ -1256,9 +1248,9 @@ Partial Public NotInheritable Class FrmMain
             Dim QlCtxNewMenuStaticItemsCount As Integer = QlCtxNewMenu.MenuItems.Count
 
             'dynamically add menuitems
-            Dim aplist As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name).ToList
+            Dim aplist As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.UserName).ToList
             For Each ap As AstoniaProcess In aplist
-                QlCtxNewMenu.MenuItems.Add(New MenuItem(ap.Name, AddressOf QlCtxNewAlt) With {.Tag = {ap, path}})
+                QlCtxNewMenu.MenuItems.Add(New MenuItem(ap.UserName, AddressOf QlCtxNewAlt) With {.Tag = {ap, path}})
             Next
             If aplist.Count = 0 Then
                 QlCtxNewMenu.MenuItems.Add(New MenuItem("(None)") With {.Enabled = False})

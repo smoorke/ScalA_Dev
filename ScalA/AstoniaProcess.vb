@@ -449,6 +449,28 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End Get
     End Property
 
+
+
+    Public ReadOnly Property DisplayName As String
+        Get
+            Dim dpname As String = Me.Name
+            If dpname <> "Someone" Then
+                Return Me.Name
+            Else
+                If Not String.IsNullOrEmpty(Me.loggedInAs) Then
+                    Return Me.loggedInAs & $" (Someone)"
+                Else
+                    If Me.Id <> 0 Then
+                        If Me.UserName <> "Someone" Then
+                            Return Me.UserName & $" (Someone)"
+                        End If
+                    End If
+                End If
+            End If
+            Return dpname
+        End Get
+    End Property
+
     Private _commandLine As String = String.Empty
     Public ReadOnly Property CommandLine As String
         Get
@@ -467,24 +489,65 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End Get
     End Property
 
+    Private _OptionDict As Dictionary(Of String, String)
+    Public Function getCMDoption(opt As String) As String
+        If _OptionDict Is Nothing Then
+            _OptionDict = New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase)
+            Dim cmdLine = Me.CommandLine
+            If Not String.IsNullOrEmpty(cmdLine) Then
+                ' Split on dashes, skip the first part (exe path)
+                Dim parts = cmdLine.Split("-"c).Skip(1)
+                For Each part In parts
+                    Dim trimmed = part.Trim()
+                    If trimmed.Length > 0 Then
+                        Dim key = trimmed.Substring(0, 1).ToLower()
+                        Dim val = trimmed.Substring(1).Trim()
+                        ' Only add if not already present (first occurrence wins)
+                        If Not _OptionDict.ContainsKey(key) Then
+                            _OptionDict.Add(key, val)
+                        End If
+                    End If
+                Next
+            End If
+        End If
+
+        Dim value As String = String.Empty
+        _OptionDict.TryGetValue(opt.ToLower, value)
+        Return value
+    End Function
+
+
+#If DEBUG Then
+    Public Sub DebugListAllArgs()
+        dBug.Print($"Current Alt: {Me.Name} ({Me.loggedInAs}) {Me.UserName}", 1)
+        For Each kvp As KeyValuePair(Of String, String) In _OptionDict
+            Dim val = kvp.Value
+            If kvp.Key = "p" Then val = "**REDACTED**"
+            dBug.Print($"{kvp.Key} : {val}", 1)
+        Next
+        dBug.Print("---", 1)
+    End Sub
+#End If
+
     Private _userName As String = String.Empty
     Public ReadOnly Property UserName As String
         Get
             If Not String.IsNullOrEmpty(_userName) Then Return _userName
 
-            Dim cmdLine = Me.CommandLine
+            'Dim cmdLine = Me.CommandLine
 
-            If String.IsNullOrEmpty(cmdLine) Then
-                _userName = String.Empty
-                Return _userName
-            End If
+            'If String.IsNullOrEmpty(cmdLine) Then
+            '    _userName = String.Empty
+            '    Return _userName
+            'End If
 
-            Dim userArg = cmdLine.Split("-"c).FirstOrDefault(Function(s) s.ToLower().StartsWith("u"))
+            'Dim userArg = cmdLine.Split("-"c).FirstOrDefault(Function(s) s.ToLower().StartsWith("u"))
+            Dim userArg = getCMDoption("u")
             If String.IsNullOrEmpty(userArg) Then
                 _userName = String.Empty
                 Return _userName
             End If
-            _userName = New String(userArg.Skip(1).ToArray()).Trim().FirstToUpper(True)
+            _userName = userArg.Trim().FirstToUpper(True)
             Return _userName
         End Get
     End Property
@@ -616,7 +679,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
             Dim IcoNam As New Tuple(Of Icon, String)(Nothing, Nothing)
 
-            If ID > 0 AndAlso nameIconCache.TryGetValue(ID, IcoNam) AndAlso IcoNam.Item2 = Me.Name Then
+            If ID > 0 AndAlso nameIconCache.TryGetValue(ID, IcoNam) AndAlso IcoNam.Item2 = Me.UserName Then
                 Return IcoNam.Item1
             Else
                 Dim tup As Tuple(Of Icon, String) = New Tuple(Of Icon, String)(Nothing, String.Empty)
@@ -630,12 +693,12 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             If Not String.IsNullOrEmpty(path) Then
                 Dim ico As Icon = Nothing
                 If pathIcnCache.TryGetValue(path, ico) Then
-                    nameIconCache.TryAdd(ID, New Tuple(Of Icon, String)(ico, Me.Name))
+                    nameIconCache.TryAdd(ID, New Tuple(Of Icon, String)(ico, Me.UserName))
                     Return ico
                 Else
                     ico = Icon.ExtractAssociatedIcon(path)
                     If ico IsNot Nothing Then
-                        nameIconCache.TryAdd(ID, New Tuple(Of Icon, String)(ico, Me.Name))
+                        nameIconCache.TryAdd(ID, New Tuple(Of Icon, String)(ico, Me.UserName))
                         pathIcnCache.TryAdd(path, ico)
                     End If
                     Return ico
@@ -666,7 +729,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public Overrides Function Equals(obj As Object) As Boolean
         Dim proc2 As AstoniaProcess = TryCast(obj, AstoniaProcess)
         'dBug.print($"obj {proc2?._proc?.Id} eqals _proc {_proc?.Id}")
-        Return proc2?.proc IsNot Nothing AndAlso Me.proc IsNot Nothing AndAlso proc2.proc.Id = Me.proc.Id AndAlso proc2.Name = Me.Name
+        Return proc2?.proc IsNot Nothing AndAlso Me.proc IsNot Nothing AndAlso proc2.proc.Id = Me.proc.Id AndAlso proc2.UserName = Me.UserName
     End Function
     'Public Shared Operator =(left As AstoniaProcess, right As AstoniaProcess) As Boolean
     '    dBug.print("AP ==")
@@ -713,7 +776,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
         Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p) If(useCache, GetFromCache(p), New AstoniaProcess(p)))) _
                     .Where(Function(ap)
-                               Dim nam = ap.Name
+                               Dim nam = ap.UserName
                                Return Not String.IsNullOrEmpty(nam) AndAlso Not blacklist.Contains(nam) AndAlso
                                      (Not My.Settings.Whitelist OrElse FrmMain.topSortList.Concat(FrmMain.botSortList).Contains(nam)) AndAlso
                                       ap.IsAstoniaClass()
@@ -1239,7 +1302,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             Return
         End Try
 
-        Dim targetName As String = Me.Name
+        Dim targetName As String = Me.UserName
 
         'SendMessage(Me.MainWindowHandle, &H100, Keys.F12, IntPtr.Zero)
         Me.CloseOrKill()
@@ -1273,7 +1336,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         While True
             count += 1
             Await Task.Delay(50)
-            Dim targetPPs As AstoniaProcess() = AstoniaProcess.Enumerate(FrmMain.blackList).Where(Function(ap) ap.Name = targetName).ToArray()
+            Dim targetPPs As AstoniaProcess() = AstoniaProcess.Enumerate(FrmMain.blackList).Where(Function(ap) ap.UserName = targetName).ToArray()
             If targetPPs.Length > 0 AndAlso targetPPs(0) IsNot Nothing AndAlso targetPPs(0).Id <> 0 Then
                 FrmMain.PopDropDown(FrmMain.cboAlt)
                 FrmMain.cboAlt.SelectedItem = targetPPs(0)
@@ -1359,7 +1422,7 @@ NotInheritable Class AstoniaProcessSorter
     End Sub
 
     Public Function Compare(ap1 As String, ap2 As String) As Integer Implements IComparer(Of String).Compare
-        'equal = 0, ap1 > ap2 = 1, ap1 < ap2 = -1
+        'equal = 0, ap1 > ap2 = 1, ap1 <ap2 = -1
 
         Dim top1 As Boolean = topOrder.Contains(ap1)
         Dim top2 As Boolean = topOrder.Contains(ap2)

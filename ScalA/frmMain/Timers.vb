@@ -217,11 +217,11 @@ Partial NotInheritable Class FrmMain
         chkDebug.Text = $"{If(HeartBeat, "♡", "")}{TickCounter}"
 #End If
 
-        Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList, True).OrderBy(Function(ap) ap.Name, apSorter).ToList
+        Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList, True).OrderBy(Function(ap) ap.UserName, apSorter).ToList
 
         Dim visibleButtons As List(Of AButton) = UpdateButtonLayout(alts.Count)
 
-        Dim botCount = alts.Where(Function(ap) botSortList.Contains(ap.Name)).Count()
+        Dim botCount = alts.Where(Function(ap) botSortList.Contains(ap.UserName)).Count()
         Dim topCount = alts.Count - botCount
         Dim skipCount = visibleButtons.Count - botCount
 
@@ -245,7 +245,7 @@ Partial NotInheritable Class FrmMain
                                 Dim ap As AstoniaProcess = alts(apCounter)
                                 Dim apID = ap.Id
                                 but.AP = ap
-                                but.BeginInvoke(Sub() but.Text = ap.Name)
+                                but.BeginInvoke(Sub() but.Text = ap.DisplayName)
 
                                 If ap.IsActive() Then
                                     but.Font = AButton.BoldFont
@@ -423,7 +423,7 @@ Partial NotInheritable Class FrmMain
                                                           GetCursorInfo(ci)
                                                           If ci.flags = 0 Then Exit Sub
                                                           AOBusy = True
-                                                          Dim flags = swpFlags
+                                                          Dim flags = SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate
                                                           If Not but.AP.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
                                                           'If but.Tag?.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                                                           Dim pt As Point = MousePosition - New Point(newXB + ap.ClientOffset.X, newYB + ap.ClientOffset.Y)
@@ -607,7 +607,7 @@ Partial NotInheritable Class FrmMain
         Dim addID As Integer = IPC.AddToWhitelistOrRemoveFromBL()
         If addID <> 0 Then
             Dim addAP = CType(Process.GetProcessById(addID), AstoniaProcess)
-            Dim nam As String = addAP.Name
+            Dim nam As String = addAP.UserName
 
             If FrmSettings.Visible Then
                 FrmSettings.tbcSettings.SelectedTab = FrmSettings.tabSortAndBL

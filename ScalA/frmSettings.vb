@@ -798,7 +798,7 @@ Public NotInheritable Class FrmSettings
     Private Sub FromToolStripMenuItem_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) Handles FromToolStripMenuItem.DropDownOpening
         sender.DropDownItems.Clear()
 
-        For Each ap As AstoniaProcess In AstoniaProcess.Enumerate().OrderBy(Function(p) p.Name)
+        For Each ap As AstoniaProcess In AstoniaProcess.Enumerate().OrderBy(Function(p) p.UserName)
 
             Dim rcC As Rectangle = ap.ClientRect
 
@@ -807,7 +807,7 @@ Public NotInheritable Class FrmSettings
             Dim aspect As String = $"({baseRes.Width / gcd}:{baseRes.Height / gcd})"
             If aspect = "(8:5)" Then aspect = "(16:10)"
 
-            sender.DropDownItems.Add($"{ap.Name} {baseRes.Width}x{baseRes.Height} {aspect}", ap.GetIcon?.ToBitmap, AddressOf GenerateToolStripMenuItem_Click).Tag = $"{baseRes.Width}x{baseRes.Height}"
+            sender.DropDownItems.Add($"{ap.UserName} {baseRes.Width}x{baseRes.Height} {aspect}", ap.GetIcon?.ToBitmap, AddressOf GenerateToolStripMenuItem_Click).Tag = $"{baseRes.Width}x{baseRes.Height}"
         Next
         If sender.DropDownItems.Count = 0 Then sender.DropDownItems.Add("(None)").Enabled = False
 
@@ -840,7 +840,7 @@ Public NotInheritable Class FrmSettings
     Private Sub BtnHelp_Click(sender As Object, e As EventArgs) Handles btnHelp.Click
         Dim bl As String = vbTab & """" & String.Join($"""{vbCrLf & vbTab}""", txtTopSort.Lines.Intersect(txtBotSort.Lines).Where(Function(s) s <> "")) & """"
         If bl = vbTab & """""" Then bl = $"{vbTab}(None)"
-        CustomMessageBox.Show(Me, $"Names are case sensitive.{vbCrLf}Left list Sorts to top, Right one to bottom.{vbCrLf}" &
+        CustomMessageBox.Show(Me, $"Names are case sensitive {vbCrLf} and should NOT include tilte (eg. ""Sir"") or suffixes.{vbCrLf}Left list Sorts to top, Right one to bottom.{vbCrLf}" &
                         $"If whitelist is enabled ScalA will only show alts in lists{vbCrLf}   except those that are blacklisted{vbCrLf}" &
                         $"Names appearing in both lists are blacklisted.{vbCrLf}{vbCrLf}" &
                         $"Current Blacklist:{vbCrLf}{bl}", "Sorting & Black/Whitelist Info", MessageBoxButtons.OK, MessageBoxIcon.Information)

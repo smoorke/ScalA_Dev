@@ -191,10 +191,10 @@ Module dBug
         While True
             count += 1
             Await Task.Delay(100)
-            Dim targetPPs As AstoniaProcess() = AstoniaProcess.Enumerate(FrmMain.blackList).Where(Function(ap) ap.Name = targetname).ToArray()
-            If targetPPs.Length > 0 AndAlso targetPPs(0) IsNot Nothing AndAlso targetPPs(0).Id <> 0 Then
+            Dim targetPPs As AstoniaProcess = AstoniaProcess.Enumerate().FirstOrDefault(Function(ap) ap.UserName = targetname)
+            If targetPPs IsNot Nothing AndAlso targetPPs.Id <> 0 Then
                 FrmMain.PopDropDown(FrmMain.cboAlt)
-                FrmMain.cboAlt.SelectedItem = targetPPs(0)
+                FrmMain.cboAlt.SelectedItem = targetPPs
                 Exit While
             End If
             If count >= 100 Then

@@ -1,4 +1,5 @@
 ﻿Imports System.Net.Http
+Imports System.Net.Security
 
 Partial Public NotInheritable Class FrmMain
 
@@ -46,7 +47,7 @@ Partial Public NotInheritable Class FrmMain
         sender.Items.Clear()
         sender.Items.Add(New AstoniaProcess) 'Someone
 
-        sender.Items.AddRange(AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.Name, apSorter).ToArray)
+        sender.Items.AddRange(AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.UserName, apSorter).ToArray)
 
         If current IsNot Nothing AndAlso sender.Items.Contains(current) Then
             sender.SelectedItem = current
@@ -309,7 +310,14 @@ Partial Public NotInheritable Class FrmMain
             Try
                 Dim title As String = AltPP.MainWindowTitle
                 If String.IsNullOrEmpty(title) Then Return False
-                titleSuff = " - " & title
+                If AltPP.Name = "Someone" Then
+                    If Not String.IsNullOrEmpty(AltPP.loggedInAs) Then
+                        If AltPP?.loggedInAs <> "Someone" Then title = $"{AltPP.loggedInAs} - {title}"
+                    Else
+                        If AltPP?.UserName <> "Someone" Then title = $"{AltPP.UserName} - {title}"
+                    End If
+                End If
+                titleSuff &= " - " & title
                 traytooltip = title
             Catch e As Exception
                 Return False
@@ -331,7 +339,7 @@ Partial Public NotInheritable Class FrmMain
         CheckForIllegalCrossThreadCalls = True
 
         If Environment.OSVersion.Version.Major < 6 AndAlso Environment.OSVersion.Version.Minor < 1 Then
-            MessageBox.Show("ScalA requires Windows 7 or later", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            MessageBox.Show("ScalA requires Windows 7 Or later", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             End
         End If
 
@@ -422,8 +430,8 @@ Partial Public NotInheritable Class FrmMain
         Dim APlist As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).ToList
         For Each ap As AstoniaProcess In APlist
             cboAlt.Items.Add(ap)
-            If args.Count > 1 AndAlso ap.Name = args(1) Then
-                dBug.Print($"Selecting '{ap.Name}'")
+            If args.Count > 1 AndAlso ap.UserName = args(1) Then
+                dBug.Print($"Selecting '{ap.UserName}'")
                 cboAlt.SelectedItem = ap
             End If
         Next
@@ -1587,9 +1595,9 @@ Partial Public NotInheritable Class FrmMain
 #End If
     Public Function Detach(show As Boolean) As Long
 #If DEBUG Then
-        If prevDetach <> AltPP?.Name Then
-            dBug.Print($"Detach from: {AltPP?.Name} show:{show}")
-            prevDetach = AltPP?.Name
+        If prevDetach <> AltPP?.UserName Then
+            dBug.Print($"Detach from: {AltPP?.UserName} show:{show}")
+            prevDetach = AltPP?.UserName
         End If
 #End If
         Try
@@ -1671,7 +1679,7 @@ Partial Public NotInheritable Class FrmMain
         Dim procStartInfo As New ProcessStartInfo With {
             .UseShellExecute = True,
             .FileName = Environment.GetCommandLineArgs()(0),
-            .Arguments = """" & CType(Me.cboAlt.SelectedItem, AstoniaProcess)?.Name & """",
+            .Arguments = """" & CType(Me.cboAlt.SelectedItem, AstoniaProcess)?.UserName & """",
             .WindowStyle = ProcessWindowStyle.Normal,
             .Verb = If(asAdmin, "runas", "") 'add this to prompt for elevation
         }
@@ -1906,4 +1914,43 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
+    Private Sub BtnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
+
+    End Sub
+
+    Private Sub btnstart_MouseDown(sender As Object, e As MouseEventArgs) Handles btnStart.MouseDown
+
+    End Sub
+
+    Private Sub Various_MouseUp(sender As Object, e As MouseEventArgs) Handles pnlSys.MouseUp, pnlButtons.MouseUp, MyBase.MouseUp, ChkEqLock.MouseUp, cboAlt.MouseUp, btnStart.MouseUp, btnQuit.MouseUp
+
+    End Sub
+
+    Private Sub CmbResolution_DropDown(sender As Object, e As EventArgs) Handles cmbResolution.DropDown
+
+    End Sub
+
+    Private Sub CmbResolution_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cmbResolution.SelectedIndexChanged
+
+    End Sub
+
+    Private Sub ComboBoxes_DropDownClosed(sender As Object, e As EventArgs) Handles cmbResolution.DropDownClosed, cboAlt.DropDownClosed
+
+    End Sub
+
+    Private Sub CmbResolution_MouseUp(sender As Object, e As MouseEventArgs) Handles cmbResolution.MouseUp
+
+    End Sub
+
+    Private Sub cmbResolution_MouseWheel(sender As Object, e As MouseEventArgs) Handles cmbResolution.MouseWheel
+
+    End Sub
+
+    Private Sub CboAlt_DropDown(sender As Object, e As EventArgs) Handles cboAlt.DropDown
+
+    End Sub
+
+    Private Sub CboAlt_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboAlt.SelectedIndexChanged
+
+    End Sub
 End Class
