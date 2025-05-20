@@ -840,7 +840,7 @@ Public NotInheritable Class FrmSettings
     Private Sub BtnHelp_Click(sender As Object, e As EventArgs) Handles btnHelp.Click
         Dim bl As String = vbTab & """" & String.Join($"""{vbCrLf & vbTab}""", txtTopSort.Lines.Intersect(txtBotSort.Lines).Where(Function(s) s <> "")) & """"
         If bl = vbTab & """""" Then bl = $"{vbTab}(None)"
-        CustomMessageBox.Show(Me, $"Names are case sensitive {vbCrLf} and should NOT include tilte (eg. ""Sir"") or suffixes.{vbCrLf}Left list Sorts to top, Right one to bottom.{vbCrLf}" &
+        CustomMessageBox.Show(Me, $"Names are case sensitive{vbCrLf} and should NOT include tilte (eg. ""Sir"") or suffixes.{vbCrLf}Left list Sorts to top/topleft,{vbCrLf} Right one to bottom/bottomright.{vbCrLf}" &
                         $"If whitelist is enabled ScalA will only show alts in lists{vbCrLf}   except those that are blacklisted{vbCrLf}" &
                         $"Names appearing in both lists are blacklisted.{vbCrLf}{vbCrLf}" &
                         $"Current Blacklist:{vbCrLf}{bl}", "Sorting & Black/Whitelist Info", MessageBoxButtons.OK, MessageBoxIcon.Information)

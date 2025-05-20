@@ -777,7 +777,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p) If(useCache, GetFromCache(p), New AstoniaProcess(p)))) _
                     .Where(Function(ap)
                                Dim nam = ap.UserName
-                               Return Not String.IsNullOrEmpty(nam) AndAlso Not blacklist.Contains(nam) AndAlso
+                               Return Not String.IsNullOrEmpty(nam) AndAlso Not blacklist.Contains(ap.Name) AndAlso
                                      (Not My.Settings.Whitelist OrElse FrmMain.topSortList.Concat(FrmMain.botSortList).Contains(nam)) AndAlso
                                       ap.IsAstoniaClass()
                            End Function).ToList
