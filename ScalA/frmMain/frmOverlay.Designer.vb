@@ -51,12 +51,12 @@ Partial Class frmOverlay
         Me.cmsRestartHide.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.HideThisToolStripMenuItem})
         Me.cmsRestartHide.Name = "cmsRestartHide"
         Me.cmsRestartHide.ShowImageMargin = False
-        Me.cmsRestartHide.Size = New System.Drawing.Size(156, 48)
+        Me.cmsRestartHide.Size = New System.Drawing.Size(138, 26)
         '
         'HideThisToolStripMenuItem
         '
         Me.HideThisToolStripMenuItem.Name = "HideThisToolStripMenuItem"
-        Me.HideThisToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.HideThisToolStripMenuItem.Size = New System.Drawing.Size(137, 22)
         Me.HideThisToolStripMenuItem.Text = "Hide This Button"
         '
         'frmOverlay

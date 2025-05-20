@@ -41,35 +41,45 @@
     End Sub
 
 
-    Private Async Sub pbRestart_Click(sender As Object, e As MouseEventArgs) Handles pbRestart.MouseClick
+    Private Async Sub pbRestart_Click(sender As PictureBox, e As MouseEventArgs) Handles pbRestart.MouseClick
         If e.Button <> MouseButtons.Left Then
             Exit Sub
         End If
 
-        Dim targetname As String = FrmMain.AltPP.loggedInAs
+        'TODO: add getting name from MOS commandlineargs in AstoniaProcess.vb
+        Dim targetname As String = If(FrmMain.AltPP?.Name = "Someone", FrmMain.AltPP?.loggedInAs, FrmMain.AltPP.Name)
+
+        '        Dim targetname As String = If(FrmMain.AltPP?.Name = "Someone", If(String.IsNullOrEmpty(FrmMain.AltPP?.loggedInAs), FrmMain.AltPP.Name, FrmMain.AltPP?.loggedInAs))
+
+        ' targetname = targetname.FirstToUpper()
+
         dBug.Print($"restarting {targetname}")
 
         Me.pbRestart.Hide()
 
-        FrmMain.AltPP.restart()
         FrmMain.Cursor = Cursors.WaitCursor
+        Me.UseWaitCursor = True
+        FrmMain.AltPP.restart()
         Dim count As Integer = 0
 
         While Not String.IsNullOrEmpty(targetname)
             count += 1
             Await Task.Delay(50)
-            Dim targetPPs As AstoniaProcess() = AstoniaProcess.Enumerate(FrmMain.blackList).Where(Function(ap) ap.Name = targetname).ToArray()
-            If targetPPs.Length > 0 AndAlso targetPPs(0) IsNot Nothing AndAlso targetPPs(0).Id <> 0 Then
+            Dim targetPPs As AstoniaProcess = AstoniaProcess.Enumerate(FrmMain.blackList).FirstOrDefault(Function(ap) ap.Name.Contains(targetname))
+            If targetPPs IsNot Nothing AndAlso targetPPs.Id <> 0 Then
                 FrmMain.PopDropDown(FrmMain.cboAlt)
-                FrmMain.cboAlt.SelectedItem = targetPPs(0)
+                FrmMain.cboAlt.SelectedItem = targetPPs
                 Exit While
             End If
             If count >= 100 Then
+                FrmMain.Cursor = Cursors.Default
+                Me.UseWaitCursor = False
                 CustomMessageBox.Show(FrmMain, "Restarting failed")
                 Exit While
             End If
         End While
         FrmMain.Cursor = Cursors.Default
+        Me.UseWaitCursor = False
     End Sub
 
     Private Sub pbRestart_Resize(sender As Object, e As EventArgs) Handles pbRestart.Resize
@@ -82,7 +92,9 @@
         End If
     End Sub
 
-    Private Sub cmsRestartHide_Opening(sender As ContextMenuStrip, e As EventArgs) Handles cmsRestartHide.Opened
+    Private Sub cmsRestartHide_Opened(sender As ContextMenuStrip, e As EventArgs) Handles cmsRestartHide.Opened
         sender.Location = pbRestart.PointToScreen(New Point(0, pbRestart.Height))
     End Sub
+
+
 End Class
