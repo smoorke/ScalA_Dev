@@ -295,6 +295,23 @@ Partial Public NotInheritable Class FrmMain
             tsmi.Image = DrawArrow(menuitPos, targetPos)
         Next
 
+        'TODO: figure out why this won't work.
+        'Dim tooltipHWnd = FindWindow("WindowsForms10.tooltips_class32.app.0.141b42a_r9_ad1", Nothing)
+        'SetWindowPos(tooltipHWnd, SWP_HWND.TOP, -1, -1, -1, -1, SetWindowPosFlags.DoNotActivate) ' Or SetWindowPosFlags.IgnoreMove)
+
+        BringAllTooltipsToTop()
+
+    End Sub
+
+    Private Sub BringAllTooltipsToTop()
+        EnumWindows(Function(hWnd, lParam)
+                        Dim className As New System.Text.StringBuilder(256)
+                        GetClassName(hWnd, className, className.Capacity)
+                        If className.ToString().ToLower().Contains("tooltips_class32") Then
+                            SetWindowPos(hWnd, SWP_HWND.TOP, -1, -1, -1, -1, SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
+                        End If
+                        Return True
+                    End Function, IntPtr.Zero)
     End Sub
     Private Function DrawArrow(startPoint As Point, endPoint As Point) As Image
 

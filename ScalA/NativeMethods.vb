@@ -351,6 +351,10 @@ Module NativeMethods
     Public Const GWL_EXSTYLE As Integer = -20
 
 
+    <DllImport("user32.dll", SetLastError:=True, CharSet:=CharSet.Auto)>
+    Public Function EnumWindows(lpEnumFunc As EnumWindowsProc, lParam As IntPtr) As Boolean : End Function
+    Public Delegate Function EnumWindowsProc(hWnd As IntPtr, lParam As IntPtr) As Boolean
+
     Public Declare Function RedrawWindow Lib "user32.dll" (
     ByVal hWnd As IntPtr,
     ByRef lprcUpdate As RECT,

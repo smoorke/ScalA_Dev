@@ -1081,7 +1081,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     End If
                     If dy = 0 Then
                         If BadColorCount > 1 OrElse blackCount = 25 Then
-                            Debug.Print("Pane open?")
+                            'Debug.Print("Pane open?")
                             paneOpen = True
                             blackCount = 0
                             barX += 110
