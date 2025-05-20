@@ -54,10 +54,11 @@ Module Extensions
     ''' Returns the input string with the first character converted to uppercase, Or mutates any nulls passed into string.Empty
     ''' </summary>
     <Extension>
-    Public Function FirstToUpper(s As String) As String
+    Public Function FirstToUpper(s As String, Optional restLower As Boolean = False) As String
         If (String.IsNullOrEmpty(s)) Then Return String.Empty
 
-        Dim a As Char() = s.ToLower.ToCharArray()
+        If restLower Then s = s.ToLower()
+        Dim a As Char() = s.ToCharArray()
         a(0) = Char.ToUpper(a(0))
         Return New String(a)
     End Function
