@@ -379,44 +379,6 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 If proc.MainWindowTitle = "" Then
                     Dim nm As String = TryCast(memCache.Get(proc.Id), String)
                     If Not String.IsNullOrEmpty(nm) Then
-#If DEBUG Then
-                        'dBug.Print($"name fail {nm} ""{Me.WindowClass}""")
-                        'dBug.Print($"altpp {Me.Id} {Me.loggedInAs}")
-                        'dBug.Print($"{Me.IsActive()} {Me.isSDL}")
-
-                        'Dim wfp As IntPtr = WindowFromPoint(Cursor.Position)
-                        'dBug.Print($"wfp:{wfp} isscala? {wfp = FrmMain.ScalaHandle}")
-
-                        'dBug.Print($"wc: {GetWindowClass(wfp)}")
-
-                        'Dim nextwnd = GetWindow(wfp, GW_HWNDNEXT) 'SysShadow
-                        'nextwnd = GetWindow(nextwnd, GW_HWNDNEXT) 'Auto-Suggest Dropdown
-                        'nextwnd = GetWindow(nextwnd, GW_HWNDNEXT) 'tooltips_class32
-                        'dBug.Print($"next: {nextwnd} isscala? {nextwnd = FrmMain.ScalaHandle}")
-                        'dBug.Print($"wcn: {GetWindowClass(nextwnd)}")
-
-                        'Dim prevwnd = GetWindow(wfp, GW_HWNDPREV) 'tooltips_class32
-                        'prevwnd = GetWindow(prevwnd, GW_HWNDPREV) 'tooltips_class32
-                        'prevwnd = GetWindow(prevwnd, GW_HWNDPREV) 'tooltips_class32
-                        'prevwnd = GetWindow(prevwnd, GW_HWNDPREV) '
-
-                        'dBug.Print($"prev: {prevwnd} isscala? {prevwnd = FrmMain.ScalaHandle}")
-                        'dBug.Print($"wcp: {GetWindowClass(prevwnd)}")
-
-
-                        'Dim pid As Integer = 0
-                        'Dim dummy = GetWindowThreadProcessId(wfp, pid)
-                        'Dim proc As Process = Nothing
-                        'Try
-                        '    proc = Process.GetProcessById(pid)
-                        '    Debug.Print($"pid:{pid} {proc?.ProcessName} {proc?.MainWindowTitle}")
-                        'Catch ex As Exception
-
-                        'End Try
-
-#End If
-
-
 
                         If FrmMain.Bounds.Contains(Control.MousePosition) AndAlso Me.IsActive() AndAlso Me.isSDL Then 'SDL client sysmenu open. close it and open our own or correct menu for whatever button is hovered.
                             'TODO: double check if clients sysmenu is open
@@ -484,6 +446,46 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 dBug.Print($"Name exception {ex.Message}")
                 Return "Someone"
             End Try
+        End Get
+    End Property
+
+    Private _commandLine As String = String.Empty
+    Public ReadOnly Property CommandLine As String
+        Get
+            If Not String.IsNullOrEmpty(_commandLine) Then Return _commandLine
+
+            Try
+                Dim QS As New Management.ManagementObjectSearcher($"Select * from Win32_Process WHERE ProcessID={Me.Id}")
+                Dim objCol = QS.Get()
+                _commandLine = objCol.Cast(Of Management.ManagementObject)().FirstOrDefault()?("commandline")?.ToString()
+                If _commandLine Is Nothing Then _commandLine = String.Empty
+            Catch
+                _commandLine = String.Empty
+            End Try
+
+            Return _commandLine
+        End Get
+    End Property
+
+    Private _userName As String = String.Empty
+    Public ReadOnly Property UserName As String
+        Get
+            If Not String.IsNullOrEmpty(_userName) Then Return _userName
+
+            Dim cmdLine = Me.CommandLine
+
+            If String.IsNullOrEmpty(cmdLine) Then
+                _userName = String.Empty
+                Return _userName
+            End If
+
+            Dim userArg = cmdLine.Split("-"c).FirstOrDefault(Function(s) s.ToLower().StartsWith("u"))
+            If String.IsNullOrEmpty(userArg) Then
+                _userName = String.Empty
+                Return _userName
+            End If
+            _userName = New String(userArg.Skip(1).ToArray()).Trim().FirstToUpper(True)
+            Return _userName
         End Get
     End Property
 
