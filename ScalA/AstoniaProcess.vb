@@ -1055,85 +1055,89 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         If alreadylaunched Then
             Exit Sub
         End If
-
-        ' Log process details
-        dBug.print($"Restarting process: {proc.ProcessName} {proc.Id}")
-
-        Dim shortcutlink As String = FileIO.SpecialDirectories.Temp & "\ScalA\restart.lnk"
-        Dim mos As Management.ManagementObject = New Management.ManagementObjectSearcher($"Select * from Win32_Process WHERE ProcessID={proc.Id}").Get()(0)
-
-        ' Get the current command-line arguments and executable path
-        Dim arguments As String = mos("commandline")
-        Dim exepath As String = mos("ExecutablePath")
-
-        'dBug.print($"Original arguments: ""{arguments}""")
-        dBug.print($"Executable Path: ""{exepath}""")
-
-        If arguments = "" Then
-            dBug.print("Access denied! Restart process with elevated permissions.")
-            Exit Sub
-        End If
-
-        ' Get the working directory
-        Dim workdir As String = proc.GetCurrentDirectory()
-        dBug.print($"Working Directory: {workdir}")
-
-        If workdir.EndsWith("bin") Then
-            workdir = workdir.Substring(0, workdir.LastIndexOf("\"))
-        End If
-
-        If arguments.Contains(exepath) Then arguments = arguments.Replace(exepath, "")
-        If arguments.Contains("""""") Then arguments = arguments.Replace("""""", "")
-
-        ' Create a shortcut to relaunch the process
-        Dim oLink As Object
         Try
-            oLink = CreateObject("WScript.Shell").CreateShortcut(shortcutlink)
-            oLink.TargetPath = exepath
-            oLink.Arguments = arguments
-            oLink.WorkingDirectory = workdir
-            oLink.WindowStyle = 1
-            oLink.Save()
-        Catch ex As Exception
-            dBug.print($"Failed to create shortcut: {ex.Message}")
-            Exit Sub
-        End Try
 
-        ' Close or kill the current process
-        Me.CloseOrKill()
+            ' Log process details
+            dBug.print($"Restarting process: {proc.ProcessName} {proc.Id}")
 
-        ' Start the new process using a batch script to avoid admin rights prompt
-        Dim bat As String = "\AsInvoker.bat"
-        Dim tmpDir As String = FileIO.SpecialDirectories.Temp & "\ScalA"
+            Dim shortcutlink As String = FileIO.SpecialDirectories.Temp & "\ScalA\restart.lnk"
+            Dim mos As Management.ManagementObject = New Management.ManagementObjectSearcher($"Select * from Win32_Process WHERE ProcessID={proc.Id}").Get()(0)
+            If mos Is Nothing Then Exit Sub
+            ' Get the current command-line arguments and executable path
+            Dim arguments As String = mos("commandline")
+            Dim exepath As String = mos("ExecutablePath")
 
-        If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
-        If Not FileIO.FileSystem.FileExists(tmpDir & bat) Then FileIO.FileSystem.WriteAllText(tmpDir & bat, My.Resources.AsInvoker, False)
+            'dBug.print($"Original arguments: ""{arguments}""")
+            dBug.print($"Executable Path: ""{exepath}""")
 
-        Dim pp As New Process With {
-        .StartInfo = New ProcessStartInfo With {
-            .FileName = tmpDir & bat,
-            .Arguments = """" & shortcutlink & """",
-            .WindowStyle = ProcessWindowStyle.Hidden,
-            .CreateNoWindow = True
-        }
-    }
+            If arguments = "" Then
+                dBug.print("Access denied! Restart process with elevated permissions.")
+                Exit Sub
+            End If
 
-        ' Start the new process
-        Try
-            alreadylaunched = True
-            pp.Start()
-        Catch ex As Exception
-            dBug.print($"Failed to restart process: {ex.Message}")
-        Finally
-            pp.Dispose()
+            ' Get the working directory
+            Dim workdir As String = proc.GetCurrentDirectory()
+            dBug.print($"Working Directory: {workdir}")
+
+            If workdir.EndsWith("bin") Then
+                workdir = workdir.Substring(0, workdir.LastIndexOf("\"))
+            End If
+
+            If arguments.Contains(exepath) Then arguments = arguments.Replace(exepath, "")
+            If arguments.Contains("""""") Then arguments = arguments.Replace("""""", "")
+
+            ' Create a shortcut to relaunch the process
+            Dim oLink As Object
             Try
-                'todo delete link when proc succesfully launched
-                'FileIO.FileSystem.DeleteFile(shortcutlink) 'this deletes too soon
+                oLink = CreateObject("WScript.Shell").CreateShortcut(shortcutlink)
+                oLink.TargetPath = exepath
+                oLink.Arguments = arguments
+                oLink.WorkingDirectory = workdir
+                oLink.WindowStyle = 1
+                oLink.Save()
             Catch ex As Exception
-
+                dBug.print($"Failed to create shortcut: {ex.Message}")
+                Exit Sub
             End Try
+
+            ' Close or kill the current process
+            Me.CloseOrKill()
+
+            ' Start the new process using a batch script to avoid admin rights prompt
+            Dim bat As String = "\AsInvoker.bat"
+            Dim tmpDir As String = FileIO.SpecialDirectories.Temp & "\ScalA"
+
+            If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
+            If Not FileIO.FileSystem.FileExists(tmpDir & bat) Then FileIO.FileSystem.WriteAllText(tmpDir & bat, My.Resources.AsInvoker, False)
+
+            Dim pp As New Process With {
+            .StartInfo = New ProcessStartInfo With {
+                .FileName = tmpDir & bat,
+                .Arguments = """" & shortcutlink & """",
+                .WindowStyle = ProcessWindowStyle.Hidden,
+                .CreateNoWindow = True
+            }
+        }
+
+            ' Start the new process
+            Try
+                alreadylaunched = True
+                pp.Start()
+            Catch ex As Exception
+                dBug.print($"Failed to restart process: {ex.Message}")
+            Finally
+                pp.Dispose()
+                Try
+                    'todo delete link when proc succesfully launched
+                    'FileIO.FileSystem.DeleteFile(shortcutlink) 'this deletes too soon
+                Catch ex As Exception
+
+                End Try
+            End Try
+        Catch ex As Exception
+        Finally
+            alreadylaunched = False
         End Try
-        alreadylaunched = False
     End Sub
 
     Friend Async Function ReOpenAsWindowed() As Task
