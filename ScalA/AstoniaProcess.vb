@@ -534,18 +534,19 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Get
             If Not String.IsNullOrEmpty(_userName) Then Return _userName
 
-            'Dim cmdLine = Me.CommandLine
+            Dim userArg = getCMDoption("u") 'this can be empty on elevation mismatch
 
-            'If String.IsNullOrEmpty(cmdLine) Then
-            '    _userName = String.Empty
-            '    Return _userName
-            'End If
-
-            'Dim userArg = cmdLine.Split("-"c).FirstOrDefault(Function(s) s.ToLower().StartsWith("u"))
-            Dim userArg = getCMDoption("u")
             If String.IsNullOrEmpty(userArg) Then
                 _userName = String.Empty
-                Return _userName
+                Dim nam = Me.Name
+                If nam.Contains(" ") Then
+                    nam = nam.Replace("Sir ", "").Replace("Lady ", "")
+                    'don't know how to handle this w/o hardcoding all titles
+                    If nam.Contains(" ") Then
+                        nam = nam.Split(" ")(0)
+                    End If
+                End If
+                Return nam
             End If
             _userName = userArg.Trim().FirstToUpper(True)
             Return _userName
