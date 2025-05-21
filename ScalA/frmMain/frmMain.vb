@@ -38,7 +38,7 @@ Partial Public NotInheritable Class FrmMain
     End Property
     'Private WndClass() As String = {"MAINWNDMOAC", "䅍义乗䵄䅏C"}
 #Region " Alt Dropdown "
-    Friend Sub PopDropDown(sender As ComboBox)
+    Friend Sub PopDropDown(sender As ComboBox, Optional bList As Boolean = True)
 
         Dim current As AstoniaProcess = DirectCast(sender.SelectedItem, AstoniaProcess)
         sender.BeginUpdate()
@@ -47,7 +47,7 @@ Partial Public NotInheritable Class FrmMain
         sender.Items.Clear()
         sender.Items.Add(New AstoniaProcess) 'Someone
 
-        sender.Items.AddRange(AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.UserName, apSorter).ToArray)
+        sender.Items.AddRange(AstoniaProcess.Enumerate(If(bList, blackList, New List(Of String))).OrderBy(Function(ap) ap.UserName, apSorter).ToArray)
 
         If current IsNot Nothing AndAlso sender.Items.Contains(current) Then
             sender.SelectedItem = current

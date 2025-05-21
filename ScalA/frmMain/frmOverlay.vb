@@ -63,7 +63,7 @@
             Await Task.Delay(50)
             Dim targetPPs As AstoniaProcess = AstoniaProcess.Enumerate().FirstOrDefault(Function(ap) ap.UserName = targetname)
             If targetPPs IsNot Nothing AndAlso targetPPs.Id <> 0 Then
-                FrmMain.PopDropDown(FrmMain.cboAlt)
+                FrmMain.PopDropDown(FrmMain.cboAlt, False)
                 FrmMain.cboAlt.SelectedItem = targetPPs
                 Exit While
             End If
