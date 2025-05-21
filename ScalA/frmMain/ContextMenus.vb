@@ -1544,7 +1544,28 @@ Partial Public NotInheritable Class FrmMain
         End If
     End Sub
 
+    Private Sub cmsQuit_Opened(sender As ContextMenuStrip, e As EventArgs) Handles cmsQuit.Opened
+        If Me.WindowState = FormWindowState.Maximized Then
+            Dim hwnd As IntPtr = sender.Handle
 
+            Dim rcC As RECT 'clientrect
+            GetClientRect(hwnd, rcC)
+
+            'Dim rcW As RECT
+            'GetWindowRect(hwnd, rcW)
+
+            Dim QBloc As Point = pnlButtons.PointToScreen(btnQuit.Location)
+
+            Dim loc As Point = New Point(QBloc.X + btnQuit.Width - rcC.right, QBloc.Y + btnQuit.Height)
+
+            'Dim pswa = Screen.FromPoint(btnQuit.Location).WorkingArea
+
+            'loc = New Point(Math.Max(pswa.X, loc.X), Math.Max(pswa.Y, loc.Y))
+
+            ' move menu to correct loc
+            SetWindowPos(hwnd, SWP_HWND.TOPMOST, loc.X, loc.Y, -1, -1, SetWindowPosFlags.IgnoreZOrder Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+        End If
+    End Sub
 End Class
 
 
