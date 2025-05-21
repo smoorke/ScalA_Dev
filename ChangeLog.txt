@@ -1,3 +1,22 @@
+**ScalA 1.7.4**
+Fixed programatically setting ScalA Z-order (setwinpos in external app) leaves restartbutton on top.
+Fixed Spelling Error in Min. on Minimize Tooltip in Settings.
+Resolved ambiguity between `Always on Top` on Overview Alt Menu and the one in Settings. Alt Menu now says `TopMost`.
+Fixed Missing Plus Icon on QL Contextmenu `Add` item for Folders.
+Added an arrow to QL Contextmenu `Add` Item to make more clear where it will add the new item.
+Fixed QL opened from Tray opening offscreen when taskbar isn't at bottom.
+Changed Overview Active Alts have a bigger font so it is more obvious it is active.
+Enabled Offscreen rendering for legacy clients on overview. (tho framerate takes a hit for the part of window that isn't displayed)
+Fixed Exceptions when `Activate on Hover` is enabled.
+Changed Method to show ScalA on taskbar after deselecting an Alt to be more reliable. 
+ ScalA shows on taskbar when switching to Non-Active Overview or when minimizing ScalA with a legacy client selected.
+Fixed Overview healthbars for legacy clients with DPI override on scaled monitors.
+Added showing of Username of Idled alt on captions. This for Selected Alts and on Overview.
+ Note: I had to change the way sorting works, You should now NOT add Alt Titles (eg. "Sir") or suffixes. 
+ Also Alts logging in will now correctly sort to their username instead of where someone would be if someone isn't blacklisted.
+Fixed Tooltip on Overview Alt menu SideBar Mode item occasionally opens behind menu.
+Fixed The Quitbutton contextmenu may open on wrong screen.
+
 **ScalA 1.7.3**
 Fixed SysMenu of non-selected SDL clients gets replaced with ScalA's if that Alt is on overview.
 Fixed Active Overview throws an exception when pressing rmb when not clicking on an Alt.
