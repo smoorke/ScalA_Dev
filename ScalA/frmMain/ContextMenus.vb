@@ -1286,7 +1286,7 @@ Partial Public NotInheritable Class FrmMain
             End If
 
             SetMenuItemBitmaps(QlCtxNewMenu.Handle, 0, MF_BYPOSITION, folderHbm, Nothing)
-            SetMenuItemBitmaps(QlCtxMenu.Handle, If(path.EndsWith("\"), 8, 7), MF_BYPOSITION, plusHbm, Nothing)
+            SetMenuItemBitmaps(QlCtxMenu.Handle, QlCtxMenu.MenuItems.OfType(Of MenuItem).Where(Function(it) it.Visible).Count - 1, MF_BYPOSITION, plusHbm, Nothing)
 
             Dim purgeList As New List(Of IntPtr)
 
