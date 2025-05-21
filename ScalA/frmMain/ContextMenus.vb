@@ -299,18 +299,21 @@ Partial Public NotInheritable Class FrmMain
         'Dim tooltipHWnd = FindWindow("WindowsForms10.tooltips_class32.app.0.141b42a_r9_ad1", Nothing)
         'SetWindowPos(tooltipHWnd, SWP_HWND.TOP, -1, -1, -1, -1, SetWindowPosFlags.DoNotActivate) ' Or SetWindowPosFlags.IgnoreMove)
 
-        BringAllTooltipsToTop()
+        BringTooltipToTop()
 
     End Sub
 
-    Private Sub BringAllTooltipsToTop()
+    Private Sub BringTooltipToTop()
         EnumWindows(Function(hWnd, lParam)
-                        Dim className As New System.Text.StringBuilder(256)
-                        GetClassName(hWnd, className, className.Capacity)
-                        If className.ToString().ToLower().Contains("tooltips_class32") Then
-                            SetWindowPos(hWnd, SWP_HWND.TOP, -1, -1, -1, -1, SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
+                        If IsWindowVisible(hWnd) Then
+                            Dim className As New System.Text.StringBuilder(256)
+                            GetClassName(hWnd, className, className.Capacity)
+                            If className.ToString().Contains("tooltips_class32") Then
+                                SetWindowPos(hWnd, SWP_HWND.TOP, -1, -1, -1, -1, SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
+                                Return False 'stop enumeration, note: IsWindowVisible is needed as enumeration includes non-visible tts
+                            End If
                         End If
-                        Return True
+                        Return True 'continue enumeration
                     End Function, IntPtr.Zero)
     End Sub
     Private Function DrawArrow(startPoint As Point, endPoint As Point) As Image
