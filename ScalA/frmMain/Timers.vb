@@ -254,10 +254,12 @@ Partial NotInheritable Class FrmMain
                                     but.Font = AButton.NormalFont
                                 End If
 
-                                Dim exStyle As UInteger = GetWindowLong(ap.MainWindowHandle, GWL_EXSTYLE)
-                                If (exStyle And WindowStylesEx.WS_EX_COMPOSITED) <> WindowStylesEx.WS_EX_COMPOSITED Then
-                                    SetWindowLong(ap.MainWindowHandle, GWL_EXSTYLE, exStyle Or WindowStylesEx.WS_EX_COMPOSITED)
-                                    Debug.Print($"set {ap.Name} as composited")
+                                If Not ap.isSDL Then
+                                    Dim exStyle As UInteger = GetWindowLong(ap.MainWindowHandle, GWL_EXSTYLE)
+                                    If (exStyle And WindowStylesEx.WS_EX_COMPOSITED) <> WindowStylesEx.WS_EX_COMPOSITED Then
+                                        SetWindowLong(ap.MainWindowHandle, GWL_EXSTYLE, exStyle Or WindowStylesEx.WS_EX_COMPOSITED)
+                                        Debug.Print($"set {ap.Name} as composited")
+                                    End If
                                 End If
 
                                 If but.pidCache <> ap.Id Then but.BackgroundImage = Nothing
@@ -295,11 +297,11 @@ Partial NotInheritable Class FrmMain
 
                                     rectDic(apID) = but.ThumbRECT
                                     Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
-                                           .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY,
-                                           .opacity = opaDict.GetValueOrDefault(apID, If(chkDebug.Checked, 128, 255)),
-                                           .fVisible = True,
-                                           .rcDestination = rectDic(apID),
-                                           .fSourceClientAreaOnly = True}
+                                       .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY,
+                                       .opacity = opaDict.GetValueOrDefault(apID, If(chkDebug.Checked, 128, 255)),
+                                       .fVisible = True,
+                                       .rcDestination = rectDic(apID),
+                                       .fSourceClientAreaOnly = True}
 
 
                                     DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
