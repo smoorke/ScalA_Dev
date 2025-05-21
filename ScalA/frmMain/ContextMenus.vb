@@ -1046,14 +1046,14 @@ Partial Public NotInheritable Class FrmMain
 
         Task.Run(Sub()
                      Threading.Thread.Sleep(25)
-                     Me.Invoke(Sub()
-                                   If cmsQuickLaunch.Visible Then
-                                       dBug.Print("Double QL?")
-                                       Exit Sub 'this fixes closing on immediatly reopening QL, TODO: check if this affects scaling issue
-                                   End If
-                                   scaleFixForm?.Close()
-                                   scaleFixForm = Nothing
-                               End Sub)
+                     If Not Me.Disposing Then Me.Invoke(Sub()
+                                                            If cmsQuickLaunch.Visible Then
+                                                                dBug.Print("Double QL?")
+                                                                Exit Sub 'this fixes closing on immediatly reopening QL, TODO: check if this affects scaling issue
+                                                            End If
+                                                            scaleFixForm?.Close()
+                                                            scaleFixForm = Nothing
+                                                        End Sub)
                  End Sub)
 
         'Dim dummy = Task.Run(Sub()
@@ -1286,7 +1286,7 @@ Partial Public NotInheritable Class FrmMain
             End If
 
             SetMenuItemBitmaps(QlCtxNewMenu.Handle, 0, MF_BYPOSITION, folderHbm, Nothing)
-            SetMenuItemBitmaps(QlCtxMenu.Handle, QlCtxMenu.MenuItems.OfType(Of MenuItem).Where(Function(it) it.Visible).Count - 1, MF_BYPOSITION, plusHbm, Nothing)
+            SetMenuItemBitmaps(QlCtxMenu.Handle, QlCtxMenu.MenuItems.OfType(Of MenuItem).Count(Function(it) it.Visible) - 1, MF_BYPOSITION, plusHbm, Nothing)
 
             Dim purgeList As New List(Of IntPtr)
 
