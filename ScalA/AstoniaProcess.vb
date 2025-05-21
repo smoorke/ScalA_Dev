@@ -534,7 +534,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Get
             If Not String.IsNullOrEmpty(_userName) Then Return _userName
 
-            Dim userArg = getCMDoption("u") 'this can be empty on elevation mismatch
+            Dim userArg As String = getCMDoption("u") 'this can be empty on elevation mismatch
 
             If String.IsNullOrEmpty(userArg) Then
                 _userName = String.Empty
