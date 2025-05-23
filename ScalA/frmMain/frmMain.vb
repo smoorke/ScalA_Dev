@@ -492,7 +492,7 @@ Partial Public NotInheritable Class FrmMain
         cmsAlt.Renderer = New ToolStripProfessionalRenderer(New CustomColorTable)
         cmsQuickLaunch.Renderer = cmsAlt.Renderer
         cmsQuit.Renderer = cmsAlt.Renderer
-        frmOverlay.cmsRestartHide.Renderer = cmsAlt.Renderer
+        frmOverlay.cmsRestart.Renderer = cmsAlt.Renderer
 
         If My.Settings.Theme = 0 Then 'undefined, system, light, dark
             If My.Settings.DarkMode Then

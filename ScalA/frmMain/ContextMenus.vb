@@ -1320,6 +1320,41 @@ Partial Public NotInheritable Class FrmMain
         End If
     End Sub
 
+    Dim restartCM As ContextMenu = New ContextMenu({New MenuItem("Restart w/o Closing", AddressOf restartWoClosing)})
+
+    Private Sub restartWoClosing(sender As MenuItem, e As EventArgs)
+        dBug.Print("Restart w/o Closing")
+        dBug.Print($"parent: {sender.Parent}")
+        dBug.Print($"tag: {sender.Parent.Tag}")
+        'get owneritem?
+
+        CType(sender.Parent.Tag, AstoniaProcess).restart(False)
+
+    End Sub
+
+    Dim restartBitmapInstalled As Boolean = False
+    Private Sub restart_Mousedown(sender As ToolStripMenuItem, e As MouseEventArgs) Handles ReLaunchToolStripMenuItem.MouseDown
+        If e.Button.HasFlag(MouseButtons.Right) Then
+
+            If Not restartBitmapInstalled Then
+
+                Using bmp As Bitmap = New Bitmap(My.Resources.Refresh, New Size(16, 16))
+                    Dim restartHbm As IntPtr = bmp.GetHbitmap(Color.Red)
+                    SetMenuItemBitmaps(restartCM.Handle, 0, MF_BYPOSITION, restartHbm, Nothing)
+                End Using
+
+                restartBitmapInstalled = True
+
+            End If
+
+            sender.Select()
+            sender.BackColor = Color.FromArgb(&HFFB5D7F3) 'this to fix a glitch where sender gets unselected
+            restartCM.Tag = sender.Tag
+            TrackPopupMenuEx(restartCM.Handle, TPM_RECURSE Or TPM_RIGHTBUTTON, MousePosition.X, MousePosition.Y, ScalaHandle, Nothing)
+            sender.BackColor = Color.Transparent
+        End If
+    End Sub
+
     Private Sub OpenProps(ByVal sender As ToolStripMenuItem, ByVal e As MouseEventArgs) 'Handles smenu.MouseUp, item.MouseUp
         dBug.Print($"OpenProps {sender.Tag(0)} {sender.GetType}")
         Dim pth As String = sender.Tag(0).ToString.TrimEnd("\")

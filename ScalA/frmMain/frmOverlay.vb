@@ -88,9 +88,37 @@
         End If
     End Sub
 
-    Private Sub cmsRestartHide_Opened(sender As ContextMenuStrip, e As EventArgs) Handles cmsRestartHide.Opened
+    Private Sub cmsRestartHide_Opened(sender As ContextMenuStrip, e As EventArgs) Handles cmsRestart.Opened
         sender.Location = pbRestart.PointToScreen(New Point(0, pbRestart.Height))
     End Sub
 
+    Private Async Sub RestartWoClosingToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles RestartWoClosingToolStripMenuItem.Click
+        FrmMain.Cursor = Cursors.WaitCursor
+        Me.UseWaitCursor = True
 
+        Dim targetname As String = FrmMain.AltPP?.UserName
+        Dim currentpid = FrmMain.AltPP?.Id
+
+        FrmMain.AltPP.restart(False)
+        Dim count As Integer = 0
+
+        While Not String.IsNullOrEmpty(targetname)
+            count += 1
+            Await Task.Delay(50)
+            Dim targetPPs As AstoniaProcess = AstoniaProcess.Enumerate().FirstOrDefault(Function(ap) ap.UserName = targetname AndAlso ap.Id <> currentpid)
+            If targetPPs IsNot Nothing AndAlso targetPPs.Id <> 0 Then
+                FrmMain.PopDropDown(FrmMain.cboAlt, False)
+                FrmMain.cboAlt.SelectedItem = targetPPs
+                Exit While
+            End If
+            If count >= 100 Then
+                FrmMain.Cursor = Cursors.Default
+                Me.UseWaitCursor = False
+                CustomMessageBox.Show(FrmMain, "Restarting failed")
+                Exit While
+            End If
+        End While
+        FrmMain.Cursor = Cursors.Default
+        Me.UseWaitCursor = False
+    End Sub
 End Class

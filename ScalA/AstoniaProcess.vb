@@ -1116,7 +1116,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Private alreadylaunched As Boolean = False
     Private disposedValue As Boolean
 
-    Friend Sub restart()
+    Friend Sub restart(Optional close As Boolean = True)
         ' Ensure process is restarted only once
         If alreadylaunched Then
             Exit Sub
@@ -1124,7 +1124,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Try
 
             ' Log process details
-            dBug.print($"Restarting process: {proc.ProcessName} {proc.Id}")
+            dBug.Print($"Restarting process: {proc.ProcessName} {proc.Id}")
 
             Dim shortcutlink As String = FileIO.SpecialDirectories.Temp & "\ScalA\restart.lnk"
             Dim mos As Management.ManagementObject = New Management.ManagementObjectSearcher($"Select * from Win32_Process WHERE ProcessID={proc.Id}").Get()(0)
@@ -1134,16 +1134,16 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             Dim exepath As String = mos("ExecutablePath")
 
             'dBug.print($"Original arguments: ""{arguments}""")
-            dBug.print($"Executable Path: ""{exepath}""")
+            dBug.Print($"Executable Path: ""{exepath}""")
 
             If arguments = "" Then
-                dBug.print("Access denied! Restart process with elevated permissions.")
+                dBug.Print("Access denied! Restart process with elevated permissions.")
                 Exit Sub
             End If
 
             ' Get the working directory
             Dim workdir As String = proc.GetCurrentDirectory()
-            dBug.print($"Working Directory: {workdir}")
+            dBug.Print($"Working Directory: {workdir}")
 
             If workdir.EndsWith("bin") Then
                 workdir = workdir.Substring(0, workdir.LastIndexOf("\"))
@@ -1162,12 +1162,12 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 oLink.WindowStyle = 1
                 oLink.Save()
             Catch ex As Exception
-                dBug.print($"Failed to create shortcut: {ex.Message}")
+                dBug.Print($"Failed to create shortcut: {ex.Message}")
                 Exit Sub
             End Try
 
             ' Close or kill the current process
-            Me.CloseOrKill()
+            If close Then Me.CloseOrKill()
 
             ' Start the new process using a batch script to avoid admin rights prompt
             Dim bat As String = "\AsInvoker.bat"
@@ -1190,7 +1190,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 alreadylaunched = True
                 pp.Start()
             Catch ex As Exception
-                dBug.print($"Failed to restart process: {ex.Message}")
+                dBug.Print($"Failed to restart process: {ex.Message}")
             Finally
                 pp.Dispose()
                 Try
