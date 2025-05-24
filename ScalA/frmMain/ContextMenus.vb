@@ -1049,14 +1049,19 @@ Partial Public NotInheritable Class FrmMain
 
         Task.Run(Sub()
                      Threading.Thread.Sleep(25)
-                     If Not Me.Disposing Then Me.Invoke(Sub()
-                                                            If cmsQuickLaunch.Visible Then
-                                                                dBug.Print("Double QL?")
-                                                                Exit Sub 'this fixes closing on immediatly reopening QL, TODO: check if this affects scaling issue
-                                                            End If
-                                                            scaleFixForm?.Close()
-                                                            scaleFixForm = Nothing
-                                                        End Sub)
+                     If Not Me.Disposing Then
+                         Try
+                             Me.Invoke(Sub()
+                                           If cmsQuickLaunch.Visible Then
+                                               dBug.Print("Double QL?")
+                                               Exit Sub 'this fixes closing on immediatly reopening QL, TODO: check if this affects scaling issue
+                                           End If
+                                           scaleFixForm?.Close()
+                                           scaleFixForm = Nothing
+                                       End Sub)
+                         Catch
+                         End Try
+                     End If
                  End Sub)
 
         'Dim dummy = Task.Run(Sub()
@@ -1216,8 +1221,8 @@ Partial Public NotInheritable Class FrmMain
         End Try
     End Sub
 
-    Private ReadOnly folderHbm As IntPtr = foldericon?.GetHbitmap(Color.Red)
-    Private ReadOnly plusHbm As IntPtr = New Bitmap(My.Resources.Add, New Size(16, 16)).GetHbitmap(Color.Red)
+    Private ReadOnly folderHbm As IntPtr = foldericon?.GetHbitmap(Color.Black)
+    Private ReadOnly plusHbm As IntPtr = New Bitmap(My.Resources.Add, New Size(16, 16)).GetHbitmap(Color.Black)
 
     'Dim QlCtxIsOpen As Boolean = False 'to handle glitch in contextmenu when moving astonia window
     Dim QlCtxNewMenu As New MenuItem
@@ -1284,7 +1289,7 @@ Partial Public NotInheritable Class FrmMain
             ModifyMenuA(QlCtxMenu.Handle, 0, MF_BYPOSITION, GetMenuItemID(QlCtxMenu.Handle, 0), $"{name}")
             Dim hbm = IntPtr.Zero
             If sender.Image IsNot Nothing Then
-                hbm = DirectCast(sender.Image, Bitmap).GetHbitmap(Color.Red)
+                hbm = DirectCast(sender.Image, Bitmap).GetHbitmap(Color.Black)
                 SetMenuItemBitmaps(QlCtxMenu.Handle, 0, MF_BYPOSITION, hbm, Nothing)
             End If
 
@@ -1295,7 +1300,7 @@ Partial Public NotInheritable Class FrmMain
 
             Dim i = QlCtxNewMenuStaticItemsCount
             For Each item As MenuItem In QlCtxNewMenu.MenuItems.OfType(Of MenuItem).Skip(i).Where(Function(m) m.Tag IsNot Nothing AndAlso TypeOf (m.Tag) IsNot String)
-                Dim althbm As IntPtr = New Bitmap(DirectCast(item.Tag(0), AstoniaProcess).GetIcon?.ToBitmap, New Size(16, 16)).GetHbitmap(Color.Red)
+                Dim althbm As IntPtr = New Bitmap(DirectCast(item.Tag(0), AstoniaProcess).GetIcon?.ToBitmap, New Size(16, 16)).GetHbitmap(Color.Black)
                 purgeList.Add(althbm)
                 SetMenuItemBitmaps(QlCtxNewMenu.Handle, i, MF_BYPOSITION, althbm, Nothing)
                 i += 1
@@ -1339,8 +1344,11 @@ Partial Public NotInheritable Class FrmMain
             If Not restartBitmapInstalled Then
 
                 Using bmp As Bitmap = New Bitmap(My.Resources.Refresh, New Size(16, 16))
-                    Dim restartHbm As IntPtr = bmp.GetHbitmap(Color.Red)
+                    Dim restartHbm As IntPtr = bmp.GetHbitmap(Color.Black)
                     SetMenuItemBitmaps(restartCM.Handle, 0, MF_BYPOSITION, restartHbm, Nothing)
+                    ' The HBITMAP handle is created once and used for the lifetime of the app.
+                    ' It is intentionally not released, as the OS will clean up GDI resources on process exit.
+                    ' Releasing it here will make it not show up in menu.
                 End Using
 
                 restartBitmapInstalled = True
@@ -1352,6 +1360,9 @@ Partial Public NotInheritable Class FrmMain
             restartCM.Tag = sender.Tag
             TrackPopupMenuEx(restartCM.Handle, TPM_RECURSE Or TPM_RIGHTBUTTON, MousePosition.X, MousePosition.Y, ScalaHandle, Nothing)
             sender.BackColor = Color.Transparent
+
+            cmsAlt.Close()
+
         End If
     End Sub
 

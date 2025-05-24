@@ -1217,4 +1217,16 @@ Module NativeMethods
     <System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError:=True)>
     Public Function GetExitCodeProcess(hHandle As IntPtr, ByRef eCode As Integer) As Boolean : End Function
 
+#Region "Undocumented"
+
+    <System.Runtime.InteropServices.DllImport("uxtheme.dll", EntryPoint:="#135", CharSet:=CharSet.Unicode, SetLastError:=True)>
+    Public Function SetPreferredAppMode(preferredAppMode As Integer) As Integer : End Function
+
+    <System.Runtime.InteropServices.DllImport("uxtheme.dll", EntryPoint:="#136", CharSet:=CharSet.Unicode, SetLastError:=True)>
+    Public Function FlushMenuThemes() As Integer : End Function
+
+#End Region
+
+
+
 End Module

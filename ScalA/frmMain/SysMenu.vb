@@ -74,8 +74,8 @@
     Public Function SetBitmaps(item As Integer, bmUnchecked As Bitmap, bmChecked As Bitmap, Optional byPos As Boolean = False) As Boolean
         Return SetMenuItemBitmaps(Me.Handle, item,
                                   If(byPos, MF_BYPOSITION, MF_BYCOMMAND),
-                                  If(bmUnchecked IsNot Nothing, bmUnchecked.GetHbitmap(Color.Red), Nothing),
-                                  If(bmChecked IsNot Nothing, bmChecked.GetHbitmap(Color.Red), Nothing))
+                                  If(bmUnchecked IsNot Nothing, bmUnchecked.GetHbitmap(Color.Black), Nothing),
+                                  If(bmChecked IsNot Nothing, bmChecked.GetHbitmap(Color.Black), Nothing))
     End Function
     Public Function InsertSeperator(pos As Integer) As Boolean
         Return InsertMenuA(Me.Handle, pos, MF_SEPARATOR Or MF_BYPOSITION, 0, String.Empty)

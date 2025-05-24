@@ -714,6 +714,20 @@ Partial Public NotInheritable Class FrmMain
         cmbResolution.DarkTheme = darkmode
         cboAlt.DarkTheme = darkmode
         btnStart.DarkTheme = darkmode
+
+        dBug.Print($"Environment.OSVersion.Version {Environment.OSVersion.Version}", 1)
+
+        'Theme SysMenu and similar menus
+        If Environment.OSVersion.Version.Major = 10 Then
+            ' Windows 10 or 11
+            Dim build = Environment.OSVersion.Version.Build
+            dBug.Print($"Os.build:{build}")
+            If build >= 17763 Then
+                SetPreferredAppMode(If(darkmode, 2, 3))
+                FlushMenuThemes()
+            End If
+        End If
+
     End Sub
 
     Private Shared Function GetResolutions() As Size()
