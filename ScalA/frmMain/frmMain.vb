@@ -721,7 +721,7 @@ Partial Public NotInheritable Class FrmMain
         If Environment.OSVersion.Version.Major = 10 Then
             ' Windows 10 or 11
             Dim build = Environment.OSVersion.Version.Build
-            dBug.Print($"Os.build:{build}")
+            'dBug.Print($"Os.build:{build}")
             If build >= 17763 Then
                 SetPreferredAppMode(If(darkmode, 2, 3))
                 FlushMenuThemes()
