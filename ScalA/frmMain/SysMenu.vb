@@ -115,7 +115,14 @@ Partial NotInheritable Class FrmMain
         cmsQuickLaunch.Close()
         UntrapMouse(e.Button) ' fix mousebutton stuck bug
 
-        If e.Button = MouseButtons.Right AndAlso (pnlTitleBar.Contains(MousePosition) OrElse btnMin.Contains(MousePosition) OrElse btnMax.Contains(MousePosition)) Then
+        Debug.Print($"Sysmenu: ""{sender}""")
+
+
+        If e.Button = MouseButtons.Right AndAlso
+        (pnlTitleBar.Contains(MousePosition) OrElse
+         btnMin.Contains(MousePosition) OrElse
+         btnMax.Contains(MousePosition) OrElse
+        (TryCast(sender, ContextMenuStrip)?.SourceControl Is Nothing)) Then
 
             pbZoom.Visible = False
             AButton.ActiveOverview = False

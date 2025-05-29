@@ -148,7 +148,7 @@ Partial NotInheritable Class FrmMain
         'cmsQuickLaunch
         '
         Me.cmsQuickLaunch.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DummyToolStripMenuItem})
-        Me.cmsQuickLaunch.Name = "cmsBlank"
+        Me.cmsQuickLaunch.Name = "cmsQuickLaunch"
         Me.cmsQuickLaunch.Size = New System.Drawing.Size(138, 26)
         '
         'DummyToolStripMenuItem

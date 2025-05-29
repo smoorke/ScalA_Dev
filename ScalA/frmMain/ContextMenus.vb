@@ -971,7 +971,7 @@ Partial Public NotInheritable Class FrmMain
         pbZoom.Visible = False
         AButton.ActiveOverview = False
         If My.Computer.Keyboard.ShiftKeyDown AndAlso Not My.Computer.Keyboard.CtrlKeyDown Then
-            dBug.Print("ShowSysMenu ")
+            dBug.Print($"ShowSysMenu {sender}")
             Dim pt As Point = sender.PointToClient(MousePosition)
             Me.ShowSysMenu(sender, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
             e.Cancel = True
