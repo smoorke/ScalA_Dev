@@ -115,7 +115,7 @@ Partial NotInheritable Class FrmMain
         cmsQuickLaunch.Close()
         UntrapMouse(e.Button) ' fix mousebutton stuck bug
 
-        Debug.Print($"Sysmenu: ""{sender}""")
+        Debug.Print($"Sysmenu: ""{sender}"" ""{TryCast(sender, ContextMenuStrip)?.SourceControl}""")
 
 
         If e.Button = MouseButtons.Right AndAlso
