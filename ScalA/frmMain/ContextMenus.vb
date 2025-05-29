@@ -46,9 +46,17 @@ Partial Public NotInheritable Class FrmMain
         btnQuit.PerformClick()
     End Sub
 
+    Private Sub CloseAllExceptToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CloseAllExceptToolStripMenuItem.Click
+        Parallel.ForEach(AstoniaProcess.ListProcesses(blackList, False).Where(Function(ap) ap.Id <> AltPP.Id), Sub(pp As AstoniaProcess)
+                                                                                                                   pp.CloseOrKill()
+                                                                                                               End Sub)
+        AppActivate(scalaPID)
+    End Sub
+
     Private Sub CloseAllOverviewToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseAllOverviewToolStripMenuItem.Click
         Dim procs = pnlOverview.Controls().OfType(Of AButton).Select(Of AstoniaProcess)(Function(ab) ab.AP)
         Parallel.ForEach(procs, Sub(ap) ap?.CloseOrKill())
+        AppActivate(scalaPID)
     End Sub
 
     Private Sub cmsQuit_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuit.Opening
@@ -56,12 +64,15 @@ Partial Public NotInheritable Class FrmMain
             CloseAstoniaToolStripMenuItem.Visible = False
             CloseBothToolStripMenuItem.Visible = False
             CloseAllOverviewToolStripMenuItem.Visible = pnlOverview.Controls.OfType(Of AButton).Any(Function(ab) ab.AP IsNot Nothing)
+            CloseAllExceptToolStripMenuItem.Visible = False
         Else
             CloseAstoniaToolStripMenuItem.Text = $"Close {AltPP.UserName}"
             CloseBothToolStripMenuItem.Text = $"Close {AltPP.UserName} && ScalA"
             CloseAstoniaToolStripMenuItem.Visible = True
             CloseBothToolStripMenuItem.Visible = True
             CloseAllOverviewToolStripMenuItem.Visible = False
+            CloseAllExceptToolStripMenuItem.Text = $"Close All but {AltPP.UserName}"
+            Task.Run(Sub() Me.BeginInvoke(Sub() CloseAllExceptToolStripMenuItem.Visible = AstoniaProcess.ListProcesses(blackList, True).Any(Function(ap As AstoniaProcess) ap.Id <> AltPP.Id)))
         End If
         Dim aps = AstoniaProcess.Enumerate(False).ToList
         If aps.Count = 0 OrElse (aps.Count = 1 AndAlso cboAlt.SelectedIndex > 0) Then
@@ -72,11 +83,13 @@ Partial Public NotInheritable Class FrmMain
             CloseAllToolStripMenuItem.Visible = True
         End If
 
-        If AstoniaProcess.EnumSomeone.Any() Then
-            CloseAllIdleToolStripMenuItem.Visible = True
-        Else
-            CloseAllIdleToolStripMenuItem.Visible = False
-        End If
+        Task.Run(Sub()
+                     If AstoniaProcess.EnumSomeone.Any() Then
+                         Me.BeginInvoke(Sub() CloseAllIdleToolStripMenuItem.Visible = True)
+                     Else
+                         Me.BeginInvoke(Sub() CloseAllIdleToolStripMenuItem.Visible = False)
+                     End If
+                 End Sub)
 
         ttMain.Hide(btnQuit)
         pbZoom.Visible = False

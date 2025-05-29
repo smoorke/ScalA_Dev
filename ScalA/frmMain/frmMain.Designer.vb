@@ -49,6 +49,7 @@ Partial NotInheritable Class FrmMain
         Me.CloseBothToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CloseAllSeparator = New System.Windows.Forms.ToolStripSeparator()
         Me.CloseAllOverviewToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.CloseAllExceptToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CloseAllToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.tmrTick = New System.Windows.Forms.Timer(Me.components)
         Me.tmrOverview = New System.Windows.Forms.Timer(Me.components)
@@ -299,9 +300,9 @@ Partial NotInheritable Class FrmMain
         '
         'cmsQuit
         '
-        Me.cmsQuit.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CloseScalAToolStripMenuItem, Me.CloseAstoniaToolStripMenuItem, Me.CloseAllIdleToolStripMenuItem, Me.CloseBothToolStripMenuItem, Me.CloseAllSeparator, Me.CloseAllOverviewToolStripMenuItem, Me.CloseAllToolStripMenuItem})
+        Me.cmsQuit.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CloseScalAToolStripMenuItem, Me.CloseAstoniaToolStripMenuItem, Me.CloseAllIdleToolStripMenuItem, Me.CloseBothToolStripMenuItem, Me.CloseAllSeparator, Me.CloseAllOverviewToolStripMenuItem, Me.CloseAllExceptToolStripMenuItem, Me.CloseAllToolStripMenuItem})
         Me.cmsQuit.Name = "cmsQuit"
-        Me.cmsQuit.Size = New System.Drawing.Size(190, 164)
+        Me.cmsQuit.Size = New System.Drawing.Size(190, 186)
         '
         'CloseScalAToolStripMenuItem
         '
@@ -343,6 +344,14 @@ Partial NotInheritable Class FrmMain
         Me.CloseAllOverviewToolStripMenuItem.Name = "CloseAllOverviewToolStripMenuItem"
         Me.CloseAllOverviewToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
         Me.CloseAllOverviewToolStripMenuItem.Text = "Close All on Overview"
+        '
+        'CloseAllExceptToolStripMenuItem
+        '
+        Me.CloseAllExceptToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.moreF12
+        Me.CloseAllExceptToolStripMenuItem.Name = "CloseAllExceptToolStripMenuItem"
+        Me.CloseAllExceptToolStripMenuItem.Size = New System.Drawing.Size(189, 22)
+        Me.CloseAllExceptToolStripMenuItem.Text = "Close All Except"
+        Me.CloseAllExceptToolStripMenuItem.Visible = False
         '
         'CloseAllToolStripMenuItem
         '
@@ -729,4 +738,5 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents SidebarModeToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents NoOtherScalAsToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ReLaunchToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents CloseAllExceptToolStripMenuItem As ToolStripMenuItem
 End Class
