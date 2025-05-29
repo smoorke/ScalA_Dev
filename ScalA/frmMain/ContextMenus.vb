@@ -74,14 +74,20 @@ Partial Public NotInheritable Class FrmMain
             CloseAllExceptToolStripMenuItem.Text = $"Close All but {AltPP.UserName}"
             Task.Run(Sub() Me.BeginInvoke(Sub() CloseAllExceptToolStripMenuItem.Visible = AstoniaProcess.ListProcesses(blackList, True).Any(Function(ap As AstoniaProcess) ap.Id <> AltPP.Id)))
         End If
-        Dim aps = AstoniaProcess.Enumerate(False).ToList
-        If aps.Count = 0 OrElse (aps.Count = 1 AndAlso cboAlt.SelectedIndex > 0) Then
-            CloseAllSeparator.Visible = False
-            CloseAllToolStripMenuItem.Visible = False
-        Else
-            CloseAllSeparator.Visible = True
-            CloseAllToolStripMenuItem.Visible = True
-        End If
+        Task.Run(Sub()
+                     Dim aps = AstoniaProcess.Enumerate(False).ToList
+                     If aps.Count = 0 OrElse (aps.Count = 1 AndAlso DirectCast(Me.Invoke(Function() cboAlt.SelectedIndex > 0), Boolean)) Then
+                         Me.BeginInvoke(Sub()
+                                            CloseAllSeparator.Visible = False
+                                            CloseAllToolStripMenuItem.Visible = False
+                                        End Sub)
+                     Else
+                         Me.BeginInvoke(Sub()
+                                            CloseAllSeparator.Visible = True
+                                            CloseAllToolStripMenuItem.Visible = True
+                                        End Sub)
+                     End If
+                 End Sub)
 
         Task.Run(Sub()
                      If AstoniaProcess.EnumSomeone.Any() Then
