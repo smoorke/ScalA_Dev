@@ -951,7 +951,7 @@ Partial Public NotInheritable Class FrmMain
                 dBug.Print("spawning scalefixform")
                 scaleFixForm = New MenuScaleFixForm(If(sender.SourceControl Is Nothing, Screen.PrimaryScreen, Screen.FromControl(Me)))
                 scaleFixForm.Show()
-                Task.Run(Sub() Me.Invoke(Sub() cmsQuickLaunch.Show()))
+                Task.Run(Sub() Me.BeginInvoke(Sub() cmsQuickLaunch.Show()))
                 e.Cancel = True
                 Exit Sub
             Else
