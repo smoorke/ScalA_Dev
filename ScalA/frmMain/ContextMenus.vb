@@ -1398,22 +1398,22 @@ Partial Public NotInheritable Class FrmMain
             }
             CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
             cmsQuickLaunch.Close()
-            Task.Run(action:=Async Sub()
-                                 ShellExecuteEx(sei) 'open properties
-                                 'set properties to topmost
-                                 Dim watch As Stopwatch = Stopwatch.StartNew()
-                                 Dim WindowName As String = pth.ToLower.Substring(pth.LastIndexOf("\") + 1).Replace(".url", "").Replace(".lnk", "") & " Properties"
-                                 'findwindow ignores case
-                                 Dim hndl As IntPtr
-                                 While watch.ElapsedMilliseconds < 10000
-                                     Await Task.Delay(20)
-                                     hndl = FindWindow("#32770", WindowName)
-                                     dBug.Print($"findwindow {hndl}")
-                                     If hndl <> IntPtr.Zero Then Exit While
-                                 End While
-                                 SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
-                                 watch.Stop()
-                             End Sub)
+            Task.Run(Sub()
+                         ShellExecuteEx(sei) 'open properties
+                         'set properties to topmost
+                         Dim watch As Stopwatch = Stopwatch.StartNew()
+                         Dim WindowName As String = pth.ToLower.Substring(pth.LastIndexOf("\") + 1).Replace(".url", "").Replace(".lnk", "") & " Properties"
+                         'findwindow ignores case
+                         Dim hndl As IntPtr
+                         While watch.ElapsedMilliseconds < 10000
+                             Threading.Thread.Sleep(50)
+                             hndl = FindWindow("#32770", WindowName)
+                             dBug.Print($"findwindow {hndl}")
+                             If hndl <> IntPtr.Zero Then Exit While
+                         End While
+                         SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                         watch.Stop()
+                     End Sub)
         End If
     End Sub
 
