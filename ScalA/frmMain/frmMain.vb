@@ -282,7 +282,8 @@ Partial Public NotInheritable Class FrmMain
                 AllowSetForegroundWindow(ASFW_ANY)
 
                 SwitchToThisWindow(GetDesktopWindow(), True)
-                Threading.Thread.Sleep(50)
+                Await Task.Delay(50)
+                AllowSetForegroundWindow(ASFW_ANY)
                 SwitchToThisWindow(ScalaHandle, True)
 
             Finally
