@@ -123,6 +123,7 @@ Partial Public NotInheritable Class FrmMain
         If sender.SelectedIndex = 0 Then
             If Not My.Settings.gameOnOverview Then
                 Try
+                    AllowSetForegroundWindow(ASFW_ANY)
                     AppActivate(scalaPID)
                 Catch
                 End Try
@@ -272,6 +273,21 @@ Partial Public NotInheritable Class FrmMain
             frmOverlay.Bounds = New Rectangle(sb.X, sb.Y + 21, sb.Width, sb.Height - 21)
         Else
             AButton.ActiveOverview = My.Settings.gameOnOverview
+            Dim fgw As IntPtr = GetForegroundWindow()
+            Dim fgt = GetWindowThreadProcessId(fgw, Nothing)
+            Dim met = GetWindowThreadProcessId(ScalaHandle, Nothing)
+            Try
+                AttachThreadInput(fgt, met, True)
+
+                AllowSetForegroundWindow(ASFW_ANY)
+
+                SwitchToThisWindow(GetDesktopWindow(), True)
+                Threading.Thread.Sleep(50)
+                SwitchToThisWindow(ScalaHandle, True)
+
+            Finally
+                AttachThreadInput(fgt, met, False)
+            End Try
         End If
 
     End Sub
