@@ -699,7 +699,8 @@ Module NativeMethods
     Public Function SetLayeredWindowAttributes(hWnd As IntPtr, crKey As UInteger, bAlpha As Byte, dwFlags As UInteger) As Boolean : End Function
     Public Const LWA_COLORKEY As Integer = &H1
     Public Const LWA_ALPHA As Integer = &H2
-
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function SetForegroundWindow(hWnd As IntPtr) As Boolean : End Function
 
 #Region " SetWindowPos "
 
