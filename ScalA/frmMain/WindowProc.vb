@@ -413,6 +413,17 @@ Partial NotInheritable Class FrmMain
                         CmbResolution_SelectedIndexChanged(cmbResolution, EventArgs.Empty)
                     End If
                 End If
+
+                If My.Settings.Theme = 1 Then
+                    Dim darkmode As Boolean = WinUsingDarkTheme()
+                    dBug.Print($"Theme Changing dark={darkmode}")
+
+                    If darkmode <> My.Settings.DarkMode Then
+                        ApplyTheme(darkmode)
+                        Me.Invalidate()
+                    End If
+                End If
+
             Case WM_DISPLAYCHANGE
                 dBug.Print($"WM_DISPLAYCHANGE w {m.WParam} w {m.LParam}")
                 'cboAlt.SelectedIndex = 0
@@ -456,23 +467,7 @@ Partial NotInheritable Class FrmMain
                 End If
                 'End If
             Case WM_DWMCOLORIZATIONCOLORCHANGED
-                If Not ThemeChanging Then
-                    ThemeChanging = True
-                    If My.Settings.Theme = 1 Then
-                        Dim darkmode As Boolean = WinUsingDarkTheme()
-                        dBug.Print($"Theme Changing dark={darkmode}")
 
-                        If darkmode <> My.Settings.DarkMode Then
-                            ApplyTheme(darkmode)
-                            Me.Invalidate()
-                        End If
-                    End If
-                    m.Result = 0
-                    Task.Run(Sub()
-                                 Threading.Thread.Sleep(7500)
-                                 ThemeChanging = False
-                             End Sub)
-                End If
             Case WM_KEYDOWN
                 dBug.Print($"WM_KEYDOWN w:{m.WParam} l:{m.LParam}")
                 dBug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
