@@ -169,6 +169,8 @@ Module NativeMethods
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function AllowSetForegroundWindow(dwProcessId As UInt32) As Integer : End Function
 
+    Public Declare Function ExtractIcon Lib "shell32.dll" Alias "ExtractIconA" (ByVal hInst As IntPtr, ByVal lpszExeFileName As String, ByVal nIconIndex As Integer) As IntPtr
+
     <DllImport("user32.dll", EntryPoint:="DestroyIcon")>
     Public Function DestroyIcon(ByVal hIcon As System.IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
     End Function
