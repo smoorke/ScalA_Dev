@@ -524,7 +524,43 @@ Partial Public NotInheritable Class FrmMain
                            bm = ico.ToBitmap
                            DestroyIcon(ico.Handle)
                        Else 'not a folder
+                           If PathName.ToLower.EndsWith(".url") Then
+                               Try
+                                   Dim iconPath As String = Nothing
+                                   Dim iconIndex As Integer = 0
+                                   For Each line In IO.File.ReadLines(PathName)
+                                       If line.StartsWith("IconFile=", StringComparison.OrdinalIgnoreCase) Then
+                                           iconPath = line.Substring("IconFile=".Length).Trim()
+                                       ElseIf line.StartsWith("IconIndex=", StringComparison.OrdinalIgnoreCase) Then
+                                           Integer.TryParse(line.Substring("IconIndex=".Length).Trim(), iconIndex)
+                                       End If
+                                   Next
 
+                                   If Not String.IsNullOrEmpty(iconPath) AndAlso IO.File.Exists(iconPath) Then
+                                       If iconIndex = 0 Then
+                                           ' Load the icon directly from file
+                                           ico = New Icon(iconPath)
+                                           bm = ico.ToBitmap()
+                                           DestroyIcon(ico.Handle)
+                                           Return bm
+                                       Else
+                                           Dim hIc As IntPtr = IntPtr.Zero
+                                           ' Extract icon from file with index (e.g., from DLL/EXE)
+                                           hIc = ExtractIcon(IntPtr.Zero, iconPath, iconIndex)
+                                           If hIc <> IntPtr.Zero Then
+                                               ico = Icon.FromHandle(hIc)
+                                               bm = ico.ToBitmap()
+                                               DestroyIcon(hIc)
+                                               ' Do NOT call icon.Dispose() here
+                                               Return bm
+                                           End If
+                                       End If
+                                   End If
+                               Catch ex As Exception
+                                   Debug.Print("Failed to load .url icon: " & ex.Message)
+                               End Try
+                               Return Nothing
+                           End If
                            Dim list As IntPtr = SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_SYSICONINDEX Or SHGFI_SMALLICON)
 
                            If list = IntPtr.Zero Then
