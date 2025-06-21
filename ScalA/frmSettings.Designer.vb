@@ -262,26 +262,25 @@ Partial NotInheritable Class FrmSettings
         '
         'cmsQLFolder
         '
-        Me.cmsQLFolder.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.cmsQLFolder.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenInExplorerToolStripMenuItem, ToolStripMenuItem1, Me.ResetIconCacheToolStripMenuItem})
         Me.cmsQLFolder.Name = "cmsQLFolder"
-        Me.cmsQLFolder.Size = New System.Drawing.Size(184, 54)
+        Me.cmsQLFolder.Size = New System.Drawing.Size(183, 54)
         '
         'OpenInExplorerToolStripMenuItem
         '
         Me.OpenInExplorerToolStripMenuItem.Name = "OpenInExplorerToolStripMenuItem"
-        Me.OpenInExplorerToolStripMenuItem.Size = New System.Drawing.Size(183, 22)
+        Me.OpenInExplorerToolStripMenuItem.Size = New System.Drawing.Size(182, 22)
         Me.OpenInExplorerToolStripMenuItem.Text = "Open in File Explorer"
         '
         'ToolStripMenuItem1
         '
         ToolStripMenuItem1.Name = "ToolStripMenuItem1"
-        ToolStripMenuItem1.Size = New System.Drawing.Size(180, 6)
+        ToolStripMenuItem1.Size = New System.Drawing.Size(179, 6)
         '
         'ResetIconCacheToolStripMenuItem
         '
         Me.ResetIconCacheToolStripMenuItem.Name = "ResetIconCacheToolStripMenuItem"
-        Me.ResetIconCacheToolStripMenuItem.Size = New System.Drawing.Size(183, 22)
+        Me.ResetIconCacheToolStripMenuItem.Size = New System.Drawing.Size(182, 22)
         Me.ResetIconCacheToolStripMenuItem.Text = "Reset Icon Cache"
         '
         'Label3
@@ -296,7 +295,7 @@ Partial NotInheritable Class FrmSettings
         'ToolStripSeparator1
         '
         ToolStripSeparator1.Name = "ToolStripSeparator1"
-        ToolStripSeparator1.Size = New System.Drawing.Size(155, 6)
+        ToolStripSeparator1.Size = New System.Drawing.Size(177, 6)
         '
         'Label4
         '
@@ -653,10 +652,9 @@ Partial NotInheritable Class FrmSettings
         '
         'cmsUpdate
         '
-        Me.cmsUpdate.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.cmsUpdate.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CheckNowToolStripMenuItem, Me.OpenChangelogToolStripMenuItem})
         Me.cmsUpdate.Name = "cmsUpdate"
-        Me.cmsUpdate.Size = New System.Drawing.Size(169, 56)
+        Me.cmsUpdate.Size = New System.Drawing.Size(181, 70)
         '
         'CheckNowToolStripMenuItem
         '
@@ -913,7 +911,6 @@ Partial NotInheritable Class FrmSettings
         '
         'cmsRestore
         '
-        Me.cmsRestore.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.cmsRestore.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.LastSavedToolStripMenuItem, Me.DefaultToolStripMenuItem})
         Me.cmsRestore.Name = "cmsRestore"
         Me.cmsRestore.ShowImageMargin = False
@@ -943,23 +940,22 @@ Partial NotInheritable Class FrmSettings
         '
         'cmsGenerate
         '
-        Me.cmsGenerate.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.cmsGenerate.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.X60043ToolStripMenuItem, Me.X720169ToolStripMenuItem, ToolStripSeparator1, Me.FromToolStripMenuItem})
         Me.cmsGenerate.Name = "cmsGenerate"
-        Me.cmsGenerate.Size = New System.Drawing.Size(159, 88)
+        Me.cmsGenerate.Size = New System.Drawing.Size(154, 76)
         Me.cmsGenerate.Tag = "800x600 (4:3)"
         '
         'X60043ToolStripMenuItem
         '
         Me.X60043ToolStripMenuItem.Name = "X60043ToolStripMenuItem"
-        Me.X60043ToolStripMenuItem.Size = New System.Drawing.Size(158, 26)
+        Me.X60043ToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.X60043ToolStripMenuItem.Tag = "800x600 (4:3)"
         Me.X60043ToolStripMenuItem.Text = "800x600 (4:3)"
         '
         'X720169ToolStripMenuItem
         '
         Me.X720169ToolStripMenuItem.Name = "X720169ToolStripMenuItem"
-        Me.X720169ToolStripMenuItem.Size = New System.Drawing.Size(158, 26)
+        Me.X720169ToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.X720169ToolStripMenuItem.Tag = "1280x720 (16:9)"
         Me.X720169ToolStripMenuItem.Text = "1280x720 (16:9)"
         '
@@ -968,14 +964,14 @@ Partial NotInheritable Class FrmSettings
         Me.FromToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DummyToolStripMenuItem})
         Me.FromToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.moa31
         Me.FromToolStripMenuItem.Name = "FromToolStripMenuItem"
-        Me.FromToolStripMenuItem.Size = New System.Drawing.Size(158, 26)
+        Me.FromToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.FromToolStripMenuItem.Text = "From"
         '
         'DummyToolStripMenuItem
         '
         Me.DummyToolStripMenuItem.Enabled = False
         Me.DummyToolStripMenuItem.Name = "DummyToolStripMenuItem"
-        Me.DummyToolStripMenuItem.Size = New System.Drawing.Size(125, 22)
+        Me.DummyToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.DummyToolStripMenuItem.Text = "(Dummy)"
         '
         'txtResolutions

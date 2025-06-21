@@ -900,7 +900,7 @@ Partial Public NotInheritable Class FrmMain
 
         End Try
 
-        Dim oLink As Object
+        Dim oLink As IWshRuntimeLibrary.IWshShortcut
 
         Try
 

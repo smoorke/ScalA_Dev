@@ -418,10 +418,10 @@ Partial NotInheritable Class FrmMain
                     Dim darkmode As Boolean = WinUsingDarkTheme()
                     dBug.Print($"Theme Changing dark={darkmode}")
 
-                    If darkmode <> My.Settings.DarkMode Then
-                        ApplyTheme(darkmode)
-                        Me.Invalidate()
-                    End If
+
+                    ApplyTheme(darkmode)
+                    Me.Invalidate()
+
                 End If
 
             Case WM_DISPLAYCHANGE

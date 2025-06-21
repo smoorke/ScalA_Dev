@@ -1145,7 +1145,13 @@ Module NativeMethods
         wp = wp Or ((Control.MouseButtons >> 18) And &H70)  ' 01110000 (Extract middle and X buttons)
         Return New IntPtr(wp)
     End Function
-
+    Public Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (
+    ByVal hwnd As IntPtr,
+    ByVal lpOperation As String,
+    ByVal lpFile As String,
+    ByVal lpParameters As String,
+    ByVal lpDirectory As String,
+    ByVal nShowCmd As Integer) As Integer
     Public Enum FileAccess
         Read = &H80000000
         Write = &H40000000
