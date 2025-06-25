@@ -619,6 +619,8 @@ Partial Public NotInheritable Class FrmMain
                 'AddHandler smenu.DropDownOpened, AddressOf DeferredIconLoading
                 AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
 
+                AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
+
                 Dirs.Add(smenu)
                 isEmpty = False
                 If watch.ElapsedMilliseconds > TOTALTIMEOUT Then
@@ -656,6 +658,7 @@ Partial Public NotInheritable Class FrmMain
             AddHandler item.MouseDown, AddressOf QL_MouseDown
             'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
             'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
+            AddHandler item.Paint, AddressOf QLMenuItem_Paint
 
             Files.Add(item)
             isEmpty = False
@@ -689,6 +692,15 @@ Partial Public NotInheritable Class FrmMain
         watch.Stop()
         Return menuItems
     End Function
+
+    Dim QLCtxMenuOpenedOn As ToolStripMenuItem
+
+    Private Sub QLMenuItem_Paint(sender As ToolStripMenuItem, e As PaintEventArgs)
+        If QLCtxMenuOpenedOn Is sender Then
+            QLCtxMenuOpenedOn.Select()
+        End If
+    End Sub
+
     Private ctrlshift_pressed As Boolean = False
     Sub Application_Idle(sender As Object, e As EventArgs)
         If cmsQuickLaunch.Visible AndAlso My.Computer.Keyboard.CtrlKeyDown AndAlso My.Computer.Keyboard.ShiftKeyDown AndAlso Not ctrlshift_pressed Then
@@ -1292,11 +1304,6 @@ Partial Public NotInheritable Class FrmMain
             DestroyMenu(QlCtxNewMenu.Handle)
             QlCtxNewMenu.Dispose()
 
-            'QlCtxIsOpen = True
-
-            sender.Select()
-            sender.BackColor = Color.FromArgb(&HFFB5D7F3) 'this to fix a glitch where sender gets unselected
-
             Dim newFolderItem As New MenuItem("Folder", AddressOf QlCtxNewFolder)
             QlCtxNewMenu = New MenuItem($"←New", {
                                              newFolderItem,
@@ -1323,6 +1330,12 @@ Partial Public NotInheritable Class FrmMain
             Dim name As String = sender.Text
 
             QlCtxMenu.Tag = sender
+
+            'this in conjunction with paintevent handles sender getting unselected when opening contextmenu
+            'QLMenuItem_Paint
+            sender.Select()
+            QLCtxMenuOpenedOn = sender
+
             newFolderItem.Tag = path
 
             Dim QlCtxNewMenuStaticItemsCount As Integer = QlCtxNewMenu.MenuItems.Count
@@ -1364,7 +1377,8 @@ Partial Public NotInheritable Class FrmMain
 
             TrackPopupMenuEx(QlCtxMenu.Handle, TPM_RECURSE Or TPM_RIGHTBUTTON, MousePosition.X, MousePosition.Y, ScalaHandle, Nothing)
 
-            sender.BackColor = Color.Transparent
+            'sender.BackColor = Color.Transparent
+            QLCtxMenuOpenedOn = Nothing
 
             'free up recources
             DeleteObject(hbm)
