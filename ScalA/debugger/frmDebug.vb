@@ -292,7 +292,7 @@ Public Class frmDebug
     Private Sub btnIpcInfo_Click(sender As Object, e As EventArgs) Handles btnIpcInfo.Click
         dBug.Print($"IPC: {IPC.getInstances.Count}")
         For Each ip In IPC.getInstances
-            dBug.Print($"{ip.AltPPid} {AstoniaProcess.FromHWnd(Process.GetProcessById(ip.AltPPid).MainWindowHandle).UserName}")
+            dBug.Print($"{ip.AltPPid} {ip.handle.ToString("X8")} {AstoniaProcess.FromHWnd(Process.GetProcessById(ip.AltPPid)?.MainWindowHandle)?.UserName}")
         Next
     End Sub
 #End If
