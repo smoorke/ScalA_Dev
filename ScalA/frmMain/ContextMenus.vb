@@ -608,7 +608,11 @@ Partial Public NotInheritable Class FrmMain
                 Dim hidden As Boolean = False
                 If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then hidden = True
 
-                Dim smenu As New ToolStripMenuItem(System.IO.Path.GetFileName(fullDirs)) With {.Tag = {fullDirs & "\", hidden}, .Visible = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden}
+
+                Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
+                Dim dispname As String = System.IO.Path.GetFileName(fullDirs)
+
+                Dim smenu As New ToolStripMenuItem(If(vis, dispname, "(Hidden)")) With {.Tag = {fullDirs & "\", hidden, dispname}, .Visible = vis}
 
                 smenu.DropDownItems.Add("(Dummy)").Enabled = False
                 smenu.DoubleClickEnabled = True
@@ -622,7 +626,9 @@ Partial Public NotInheritable Class FrmMain
                 AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
 
                 Dirs.Add(smenu)
-                isEmpty = False
+                If Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden Then
+                    isEmpty = False
+                End If
                 If watch.ElapsedMilliseconds > TOTALTIMEOUT Then
                     timedout = True
                     Exit For
@@ -654,21 +660,25 @@ Partial Public NotInheritable Class FrmMain
                 linkName = System.IO.Path.GetFileName(fullLink)
             End If
 
-            Dim item As New ToolStripMenuItem(linkName) With {.Tag = {fullLink, hidden}, .Visible = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden}
+            Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
+
+            Dim item As New ToolStripMenuItem(If(vis, linkName, "(Hidden)")) With {.Tag = {fullLink, hidden, linkName}, .Visible = vis}
             AddHandler item.MouseDown, AddressOf QL_MouseDown
             'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
             'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
             AddHandler item.Paint, AddressOf QLMenuItem_Paint
 
             Files.Add(item)
-            isEmpty = False
+            If vis Then
+                isEmpty = False
+            End If
             If watch.ElapsedMilliseconds > TOTALTIMEOUT Then
                 timedout = True
                 Exit For
             End If
         Next
 
-        menuItems = Dirs.OrderBy(Function(d) d.Text, nsSorter).Concat(
+        menuItems = Dirs.OrderBy(Function(d) d.Tag(0), nsSorter).Concat(
                    Files.OrderBy(Function(f) f.Tag(0), nsSorter)).ToList
 
         If timedout Then
@@ -712,7 +722,10 @@ Partial Public NotInheritable Class FrmMain
     Sub SetVisRecurse(col As ToolStripItemCollection)
         Task.Run(Sub() Parallel.ForEach(col.Cast(Of ToolStripItem),
             Sub(it)
-                Me.BeginInvoke(Sub() it.Visible = True)
+                Me.BeginInvoke(Sub()
+                                   If it.Text = "(Hidden)" Then it.Text = it.Tag(2)
+                                   it.Visible = it.Text <> "(Empty)"
+                               End Sub)
                 If TypeOf it Is ToolStripMenuItem AndAlso DirectCast(it, ToolStripMenuItem).HasDropDownItems Then
                     SetVisRecurse(DirectCast(it, ToolStripMenuItem).DropDownItems)
                 End If
