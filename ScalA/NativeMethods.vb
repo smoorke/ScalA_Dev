@@ -9,7 +9,15 @@ Module NativeMethods
     Public Const SHGFI_ICON As Integer = &H100
     Public Const SHGFI_LARGEICON As Integer = &H0
     Public Const SHGFI_SMALLICON As Integer = &H1
+    Public Const SHGFI_SHELLICONSIZE As Integer = &H4
+    Public Const SHGFI_USEFILEATTRIBUTES As Integer = &H10
+    Public Const SHGFI_ICONLOCATION As Integer = &H1000
+
     Public Const SHGFI_SYSICONINDEX As Integer = &H4000
+
+
+    Public Const FILE_ATTRIBUTE_NORMAL As UInteger = &H80
+
 
     <DllImport("user32.dll", CharSet:=CharSet.Auto, ExactSpelling:=True)>
     Public Function MonitorFromPoint(pt As Point, dwFlags As MONITORFLAGS) As IntPtr : End Function
@@ -170,6 +178,8 @@ Module NativeMethods
     Public Function AllowSetForegroundWindow(dwProcessId As UInt32) As Integer : End Function
 
     Public Declare Function ExtractIcon Lib "shell32.dll" Alias "ExtractIconA" (ByVal hInst As IntPtr, ByVal lpszExeFileName As String, ByVal nIconIndex As Integer) As IntPtr
+    <DllImport("shell32.dll", CharSet:=CharSet.Auto)>
+    Public Function ExtractIconEx(ByVal lpszFile As String, ByVal nIconIndex As Integer, ByVal phiconLarge() As IntPtr, ByVal phiconSmall() As IntPtr, ByVal nIcons As Integer) As Integer : End Function
 
     <DllImport("user32.dll", EntryPoint:="DestroyIcon")>
     Public Function DestroyIcon(ByVal hIcon As System.IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean

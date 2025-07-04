@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Concurrent
+Imports System.Runtime.InteropServices
 
 Public NotInheritable Class ContextMenus
     'dummy class to prevent form being generated
@@ -500,7 +501,7 @@ Partial Public NotInheritable Class FrmMain
 
     Friend ReadOnly iconCache As New ConcurrentDictionary(Of String, Bitmap)
 
-    Private Function GetIcon(ByVal PathName As String, transp As Boolean) As Bitmap
+    Private Function GetIconFromCache(ByVal PathName As String, transp As Boolean) As Bitmap
 
         If PathName Is Nothing Then Return Nothing
 
@@ -526,41 +527,50 @@ Partial Public NotInheritable Class FrmMain
                        Else 'not a folder
                            If PathName.ToLower.EndsWith(".url") Then
                                Try
-                                   Dim iconPath As String = Nothing
+
+                                   'Dim iconPath As String = Nothing
                                    Dim iconIndex As Integer = 0
+                                   Dim URLPath As String = Nothing
+
+
                                    For Each line In IO.File.ReadLines(PathName)
                                        If line.StartsWith("IconFile=", StringComparison.OrdinalIgnoreCase) Then
-                                           iconPath = line.Substring("IconFile=".Length).Trim()
+                                           URLPath = line.Substring("IconFile=".Length).Trim()
                                        ElseIf line.StartsWith("IconIndex=", StringComparison.OrdinalIgnoreCase) Then
                                            Integer.TryParse(line.Substring("IconIndex=".Length).Trim(), iconIndex)
                                        End If
+                                       'If Not String.IsNullOrEmpty(URLPath) AndAlso iconIndex <> 0 Then Exit For
                                    Next
 
-                                   If Not String.IsNullOrEmpty(iconPath) AndAlso IO.File.Exists(iconPath) Then
-                                       If iconIndex = 0 Then
-                                           ' Load the icon directly from file
-                                           ico = New Icon(iconPath)
-                                           bm = ico.ToBitmap()
-                                           DestroyIcon(ico.Handle)
-                                           Return bm
-                                       Else
-                                           Dim hIc As IntPtr = IntPtr.Zero
-                                           ' Extract icon from file with index (e.g., from DLL/EXE)
-                                           hIc = ExtractIcon(IntPtr.Zero, iconPath, iconIndex)
-                                           If hIc <> IntPtr.Zero Then
-                                               ico = Icon.FromHandle(hIc)
-                                               bm = ico.ToBitmap()
-                                               DestroyIcon(hIc)
-                                               ' Do NOT call icon.Dispose() here
-                                               Return bm
-                                           End If
-                                       End If
+                                   If Not String.IsNullOrEmpty(URLPath) Then
+                                       'Dim hIcoA As IntPtr() = {IntPtr.Zero}
+                                       'Dim ret As Integer = ExtractIconEx(URLPath, iconIndex, Nothing, hIcoA, 1)
+                                       'Debug.Print($"ExtractIconEx {ret} ""{URLPath}"" {iconIndex} ""{PathName}""")
+                                       'ico = Icon.FromHandle(hIcoA(0))
+
+                                       Dim ret = ExtractIcon(IntPtr.Zero, URLPath, iconIndex)
+                                       ico = Icon.FromHandle(ret)
+
+                                       bm = ico.ToBitmap
+                                       DestroyIcon(ico.Handle)
+
+                                       Return bm
+                                   Else
+                                       'todo: invoke windows url icon handler to get the icon
+
+                                       'error: this loads incorrect icon with shortcutoverlay
+                                       Dim ret = SHGetFileInfoW(PathName, FILE_ATTRIBUTE_NORMAL, fi, Marshal.SizeOf(fi), SHGFI_USEFILEATTRIBUTES Or SHGFI_SMALLICON Or SHGFI_ICON)
+                                       ico = Icon.FromHandle(fi.hIcon)
+                                       bm = ico.ToBitmap
+                                       DestroyIcon(ico.Handle)
+                                       ' Return bm
                                    End If
+
                                Catch ex As Exception
                                    Debug.Print("Failed to load .url icon: " & ex.Message)
                                End Try
-                               Return Nothing
                            End If
+
                            Dim list As IntPtr = SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_SYSICONINDEX Or SHGFI_SMALLICON)
 
                            If list = IntPtr.Zero Then
@@ -744,7 +754,7 @@ Partial Public NotInheritable Class FrmMain
         Try
             Task.Run(Sub() Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested),
                                           Sub(it As ToolStripItem)
-                                              Dim ico = GetIcon(it.Tag(0), it.Tag(1))
+                                              Dim ico = GetIconFromCache(it.Tag(0), it.Tag(1))
                                               Me.BeginInvoke(Sub() it.Image = ico)
                                           End Sub), ct)
         Catch ex As System.Threading.Tasks.TaskCanceledException
@@ -783,7 +793,7 @@ Partial Public NotInheritable Class FrmMain
         sender.DropDownItems.Clear()
         sender.DropDownItems.AddRange(ParseDir(sender.Tag(0)).ToArray)
     End Sub
-    Private foldericon = GetIcon(FileIO.SpecialDirectories.Temp, False)
+    Private foldericon = GetIconFromCache(FileIO.SpecialDirectories.Temp, False)
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
         dBug.Print("addshortcut.sendertag:" & sender.Tag)
         sender.DropDownItems.Clear()
