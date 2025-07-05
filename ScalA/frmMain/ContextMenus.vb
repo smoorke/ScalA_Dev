@@ -1,5 +1,8 @@
 ﻿Imports System.Collections.Concurrent
+Imports System.IO
 Imports System.Runtime.InteropServices
+Imports System.Threading
+Imports Microsoft.Win32
 
 Public NotInheritable Class ContextMenus
     'dummy class to prevent form being generated
@@ -499,7 +502,7 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
-    Friend ReadOnly iconCache As New ConcurrentDictionary(Of String, Bitmap)
+    Friend Shared ReadOnly iconCache As New ConcurrentDictionary(Of String, Bitmap)
 
     Private Function GetIconFromCache(ByVal PathName As String, transp As Boolean) As Bitmap
 
@@ -511,7 +514,7 @@ Partial Public NotInheritable Class FrmMain
 
                        dBug.Print($"iconCahceMiss: {PathName}")
 
-                       Dim bm As Bitmap
+                       Dim bm As Bitmap = Nothing
                        Dim fi As New SHFILEINFOW
                        Dim ico As Icon
 
@@ -530,25 +533,33 @@ Partial Public NotInheritable Class FrmMain
 
                                    'Dim iconPath As String = Nothing
                                    Dim iconIndex As Integer = 0
-                                   Dim URLPath As String = Nothing
+                                   Dim iconFilePath As String = Nothing
+                                   Dim URLTarget As String = Nothing
 
 
                                    For Each line In IO.File.ReadLines(PathName)
                                        If line.StartsWith("IconFile=", StringComparison.OrdinalIgnoreCase) Then
-                                           URLPath = line.Substring("IconFile=".Length).Trim()
+                                           iconFilePath = line.Substring("IconFile=".Length).Trim()
                                        ElseIf line.StartsWith("IconIndex=", StringComparison.OrdinalIgnoreCase) Then
                                            Integer.TryParse(line.Substring("IconIndex=".Length).Trim(), iconIndex)
+                                       ElseIf line.StartsWith("URL=", StringComparison.OrdinalIgnoreCase) Then
+                                           URLTarget = line.Substring("URL=".Length).Trim()
                                        End If
-                                       'If Not String.IsNullOrEmpty(URLPath) AndAlso iconIndex <> 0 Then Exit For
                                    Next
 
-                                   If Not String.IsNullOrEmpty(URLPath) Then
+                                   If String.IsNullOrEmpty(iconFilePath) AndAlso Not String.IsNullOrEmpty(URLTarget) AndAlso URLTarget.Substring(0, 8).Contains("://") AndAlso URLTarget.Length > 3 Then
+                                       Dim proto = URLTarget.Split(":")(0)
+                                       If {"https", "http", "ftp"}.Contains(proto) Then bm = GetDefaultBrowserIcon(proto)
+                                       If bm IsNot Nothing Then Return bm
+                                   End If
+
+                                   If Not String.IsNullOrEmpty(iconFilePath) Then
                                        'Dim hIcoA As IntPtr() = {IntPtr.Zero}
                                        'Dim ret As Integer = ExtractIconEx(URLPath, iconIndex, Nothing, hIcoA, 1)
                                        'Debug.Print($"ExtractIconEx {ret} ""{URLPath}"" {iconIndex} ""{PathName}""")
                                        'ico = Icon.FromHandle(hIcoA(0))
 
-                                       Dim ret = ExtractIcon(IntPtr.Zero, URLPath, iconIndex)
+                                       Dim ret = ExtractIcon(IntPtr.Zero, iconFilePath, iconIndex)
                                        ico = Icon.FromHandle(ret)
 
                                        bm = ico.ToBitmap
@@ -558,7 +569,7 @@ Partial Public NotInheritable Class FrmMain
                                    Else
                                        'todo: invoke windows url icon handler to get the icon
 
-                                       'error: this loads incorrect icon with shortcutoverlay
+                                       'error: this loads incorrect icon
                                        Dim ret = SHGetFileInfoW(PathName, FILE_ATTRIBUTE_NORMAL, fi, Marshal.SizeOf(fi), SHGFI_USEFILEATTRIBUTES Or SHGFI_SMALLICON Or SHGFI_ICON)
                                        ico = Icon.FromHandle(fi.hIcon)
                                        bm = ico.ToBitmap
@@ -596,6 +607,72 @@ Partial Public NotInheritable Class FrmMain
             dBug.Print("GetIcon Exception")
             Return Nothing
         End Try
+    End Function
+
+    Public Shared DefURLicons As ConcurrentDictionary(Of String, Bitmap) = New ConcurrentDictionary(Of String, Bitmap)
+
+    Function GetDefaultBrowserIcon(urlScheme As String) As Bitmap
+        urlScheme = urlScheme.ToLowerInvariant()
+        Debug.Print($"getDefBrowserIcon {urlScheme} {DefURLicons.Keys.Contains(urlScheme)}")
+        Return DefURLicons.GetOrAdd(urlScheme,
+                           Function(proto)
+                               dBug.Print($"DefURLicon cachemiss {proto}")
+
+                               Dim progId As String = Nothing
+
+                               ' 1. Try UserChoice (per-user)
+                               Using key = Registry.CurrentUser.OpenSubKey(GetUserChoiceKeyPath(proto))
+                                   If key IsNot Nothing Then
+                                       progId = TryCast(key.GetValue("ProgId"), String)
+                                   End If
+                               End Using
+
+                               ' 2. Fallback: system-wide association
+                               ' Uncomment if you want to support fallback:
+                               'If String.IsNullOrEmpty(progId) Then
+                               '    Using key = Registry.ClassesRoot.OpenSubKey(proto)
+                               '        If key IsNot Nothing Then
+                               '            progId = TryCast(key.GetValue(Nothing), String)
+                               '        End If
+                               '    End Using
+                               'End If
+
+                               If String.IsNullOrEmpty(progId) Then Return Nothing
+
+                               RegistryWatcher.Init(proto)
+
+                               ' 3. Get DefaultIcon for the ProgId
+                               Using iconKey = Registry.ClassesRoot.OpenSubKey(progId & "\DefaultIcon")
+                                   If iconKey IsNot Nothing Then
+                                       Dim iconValue = TryCast(iconKey.GetValue(Nothing), String)
+                                       If Not String.IsNullOrEmpty(iconValue) Then
+                                           iconValue = iconValue.Trim()
+                                           Dim idx As Integer = 0
+                                           Dim pth As String
+                                           If iconValue.Contains(",") Then
+                                               Dim parts() As String = iconValue.Split(",")
+                                               pth = parts(0).Trim
+                                               Integer.TryParse(parts(1).Trim, idx)
+                                           Else
+                                               pth = iconValue
+                                           End If
+                                           pth = pth.Trim(""""c)
+
+                                           Dim icns() As IntPtr = {IntPtr.Zero}
+                                           Dim ret = ExtractIconEx(pth, idx, {IntPtr.Zero}, icns, 1)
+
+                                           If ret = 0 OrElse icns(0) = IntPtr.Zero Then Return Nothing
+
+                                           Dim icn As Icon = Icon.FromHandle(icns(0))
+                                           Dim bm = icn.ToBitmap
+                                           DestroyIcon(icn.Handle)
+                                           Return bm
+                                       End If
+                                   End If
+                               End Using
+
+                               Return Nothing
+                           End Function)
     End Function
 
     Private Shared ReadOnly nsSorter As IComparer(Of String) = New NaturalStringSorter
@@ -689,7 +766,7 @@ Partial Public NotInheritable Class FrmMain
         Next
 
         menuItems = Dirs.OrderBy(Function(d) d.Tag(0), nsSorter).Concat(
-                   Files.OrderBy(Function(f) f.Tag(0), nsSorter)).ToList
+                   Files.OrderBy(Function(f) IO.Path.GetFileNameWithoutExtension(f.Tag(0)), nsSorter)).ToList
 
         If timedout Then
             menuItems.Add(New ToolStripMenuItem("<TimedOut>") With {.Enabled = False})
@@ -1085,7 +1162,7 @@ Partial Public NotInheritable Class FrmMain
         '    sender.Items.Add("UnElevate", btnStart.Image, AddressOf UnelevateSelf).ToolTipText = $"Drop Admin Rights{vbCrLf}Use this If you can't use ctrl, alt and/or shift."
         'End If
 
-        If watchers.Count = 0 Then InitWatchers()
+        If fsWatchers.Count = 0 Then InitWatchers()
 
         ' Dim dummy = FrmSettings.Visible 'needed or frmsettings reference in cmsQuickLaunch.Opened event may cause it to close
 
@@ -1569,19 +1646,142 @@ Partial Public NotInheritable Class FrmMain
         End Try
     End Sub
 
-    ReadOnly watchers As New List(Of System.IO.FileSystemWatcher)
+#Region "Watchers"
+    'Private Shared usingLatestReg As String = Nothing
+    Private Shared Function GetUserChoiceKeyPath(protocol As String) As String
+        'If Not String.IsNullOrEmpty(usingLatestReg) Then Return usingLatestReg
+        Dim suff As String = "UserChoice"
+        Dim base = $"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\{protocol}\"
+        Using latestKey = Registry.CurrentUser.OpenSubKey(base & "UserChoiceLatest")
+            If latestKey IsNot Nothing Then suff = "UserChoiceLatest\ProgId"
+        End Using
+        Dim usingLatestReg = base & suff
+        Return usingLatestReg
+    End Function
+
+    Public Class RegistryWatcher
+        Implements IDisposable
+
+        Shared ReadOnly regWatchers As New ConcurrentDictionary(Of String, RegistryWatcher)
+        Public Shared ReadOnly regLock As New Object()
+
+        Public Shared Sub Init(proto As String)
+            Dim key As String = proto.ToLowerInvariant()
+            If regWatchers.ContainsKey(key) Then Exit Sub
+
+            SyncLock regLock
+                If Not regWatchers.ContainsKey(key) Then
+                    Dim watcher As New RegistryWatcher(key)
+                    AddHandler watcher.RegistryChanged, AddressOf OnRegistryChanged
+                    watcher.Start()
+                    regWatchers.TryAdd(key, watcher)
+                    dBug.Print($"Started watcher for protocol: {key}")
+                End If
+            End SyncLock
+        End Sub
+
+        Public Shared Sub OnRegistryChanged(proto As String)
+            dBug.Print($"Registry changed for protocol: {proto}")
+            FrmMain.DefURLicons.TryRemove(proto, Nothing)
+            If FrmMain.DefURLicons.Keys.Contains(proto) Then Throw New Exception
+
+            For Each key In FrmMain.iconCache.Keys.Where(Function(k) k.EndsWith(".url")).ToArray
+                FrmMain.iconCache.TryRemove(key, Nothing)
+            Next
+            If FrmMain.iconCache.Keys.Any(Function(k) k.ToLower.EndsWith(".url")) Then Throw New Exception
+
+        End Sub
+
+        Private ReadOnly keyPath As String
+        Private ReadOnly protocol As String
+        Private watcherThread As Thread
+        Private running As Boolean
+
+        Public Event RegistryChanged(protocol As String)
+
+        Public Sub New(protocol As String)
+            Me.protocol = protocol.ToLowerInvariant()
+            keyPath = GetUserChoiceKeyPath(Me.protocol)
+        End Sub
+
+        Public Sub Start()
+            If watcherThread IsNot Nothing Then Return
+            running = True
+            watcherThread = New Thread(AddressOf WatchLoop) With {.IsBackground = True}
+            watcherThread.Start()
+        End Sub
+
+        Public Sub StopWatcher()
+            running = False
+            watcherThread = Nothing
+        End Sub
+
+        Private Sub WatchLoop()
+            Using key = Registry.CurrentUser.OpenSubKey(keyPath, False)
+                If key Is Nothing Then Return
+                Dim handle = key.Handle.DangerousGetHandle()
+                While running
+                    RegNotifyChangeKeyValue(handle, False, RegChangeNotifyFilter.Value, IntPtr.Zero, False)
+                    RaiseEvent RegistryChanged(protocol)
+                End While
+            End Using
+        End Sub
+
+        Private disposedValue As Boolean = False
+
+        Public Sub Dispose() Implements IDisposable.Dispose
+            Dispose(True)
+            GC.SuppressFinalize(Me)
+        End Sub
+
+        Protected Overridable Sub Dispose(disposing As Boolean)
+            If Not disposedValue Then
+                If disposing Then
+                    StopWatcher()
+                    If watcherThread IsNot Nothing AndAlso watcherThread.IsAlive Then
+                        Try
+                            watcherThread.Join(500)
+                        Catch ex As Exception
+                            ' Optionally log or ignore
+                        End Try
+                    End If
+                    watcherThread = Nothing
+                End If
+                disposedValue = True
+            End If
+        End Sub
+
+        Protected Overrides Sub Finalize()
+            Dispose(False)
+            MyBase.Finalize()
+        End Sub
+
+        <Flags>
+        Private Enum RegChangeNotifyFilter As UInteger
+            Name = 1
+            Attributes = 2
+            Value = 4
+            Security = 8
+        End Enum
+
+        <DllImport("advapi32.dll", SetLastError:=True)>
+        Private Shared Function RegNotifyChangeKeyValue(hKey As IntPtr, bWatchSubtree As Boolean, dwNotifyFilter As RegChangeNotifyFilter, hEvent As IntPtr, fAsynchronous As Boolean) As Integer : End Function
+    End Class
+
+    ReadOnly fsWatchers As New List(Of System.IO.FileSystemWatcher)
+
     Public Sub UpdateWatchers(newPath As String)
         dBug.Print("updateWatchers")
-        For Each w As System.IO.FileSystemWatcher In watchers
+        For Each w As System.IO.FileSystemWatcher In fsWatchers
             w.Path = newPath
         Next
     End Sub
     Private Sub InitWatchers()
         dBug.Print("initWatchers")
-        For Each w As System.IO.FileSystemWatcher In watchers
+        For Each w As System.IO.FileSystemWatcher In fsWatchers
             w.Dispose()
         Next
-        watchers.Clear()
+        fsWatchers.Clear()
 
         Dim iniWatcher As New System.IO.FileSystemWatcher(My.Settings.links) With {
             .NotifyFilter = System.IO.NotifyFilters.LastWrite,
@@ -1592,7 +1792,7 @@ Partial Public NotInheritable Class FrmMain
         AddHandler iniWatcher.Changed, AddressOf OnChanged
         iniWatcher.EnableRaisingEvents = True
 
-        watchers.Add(iniWatcher)
+        fsWatchers.Add(iniWatcher)
 
 
 
@@ -1607,7 +1807,7 @@ Partial Public NotInheritable Class FrmMain
         AddHandler lnkWatcher.Changed, AddressOf OnChanged
         lnkWatcher.EnableRaisingEvents = True
 
-        watchers.Add(lnkWatcher)
+        fsWatchers.Add(lnkWatcher)
 
 
 
@@ -1622,7 +1822,7 @@ Partial Public NotInheritable Class FrmMain
         AddHandler urlWatcher.Changed, AddressOf OnChanged
         urlWatcher.EnableRaisingEvents = True
 
-        watchers.Add(urlWatcher)
+        fsWatchers.Add(urlWatcher)
 
 
 
@@ -1635,7 +1835,7 @@ Partial Public NotInheritable Class FrmMain
         AddHandler dirWatcher.Deleted, AddressOf OnDeleteDir
         dirWatcher.EnableRaisingEvents = True
 
-        watchers.Add(dirWatcher)
+        fsWatchers.Add(dirWatcher)
 
 
     End Sub
@@ -1682,6 +1882,7 @@ Partial Public NotInheritable Class FrmMain
         End If
     End Sub
 
+#End Region
     Private Sub cmsQuit_Opened(sender As ContextMenuStrip, e As EventArgs) Handles cmsQuit.Opened
         Dim hwnd As IntPtr = sender.Handle
 
