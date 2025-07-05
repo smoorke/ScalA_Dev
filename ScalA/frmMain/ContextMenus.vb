@@ -1647,16 +1647,29 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
 #Region "Watchers"
-    'Private Shared usingLatestReg As String = Nothing
+    Private Shared usingLatestReg As Boolean? = Nothing
     Private Shared Function GetUserChoiceKeyPath(protocol As String) As String
-        'If Not String.IsNullOrEmpty(usingLatestReg) Then Return usingLatestReg
-        Dim suff As String = "UserChoice"
+        Dim suff As String = ""
         Dim base = $"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\{protocol}\"
-        Using latestKey = Registry.CurrentUser.OpenSubKey(base & "UserChoiceLatest")
-            If latestKey IsNot Nothing Then suff = "UserChoiceLatest\ProgId"
-        End Using
-        Dim usingLatestReg = base & suff
-        Return usingLatestReg
+        If usingLatestReg IsNot Nothing Then
+            If usingLatestReg Then
+                suff = "UserChoiceLatest\ProgId"
+            Else
+                suff = "UserChoice"
+            End If
+        End If
+        If String.IsNullOrEmpty(suff) Then
+            Using latestKey = Registry.CurrentUser.OpenSubKey(base & "UserChoiceLatest")
+                If latestKey IsNot Nothing Then
+                    suff = "UserChoiceLatest\ProgId"
+                    usingLatestReg = True
+                Else
+                    suff = "UserChoice"
+                    usingLatestReg = False
+                End If
+            End Using
+        End If
+        Return base & suff
     End Function
 
     Public Class RegistryWatcher
