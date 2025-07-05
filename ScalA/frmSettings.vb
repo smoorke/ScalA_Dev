@@ -1031,6 +1031,7 @@ Public NotInheritable Class FrmSettings
 
     Private Sub ResetIconCacheToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ResetIconCacheToolStripMenuItem.Click
         FrmMain.iconCache.Clear()
+        FrmMain.DefURLicons.Clear()
     End Sub
 
     Private Sub btnGoToAdjustHotkey_Click(sender As Object, e As EventArgs) Handles btnGoToAdjustHotkey.Click
