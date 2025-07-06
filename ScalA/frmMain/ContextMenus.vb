@@ -554,13 +554,13 @@ Partial Public NotInheritable Class FrmMain
                                    End If
 
                                    If Not String.IsNullOrEmpty(iconFilePath) Then
-                                       'Dim hIcoA As IntPtr() = {IntPtr.Zero}
-                                       'Dim ret As Integer = ExtractIconEx(URLPath, iconIndex, Nothing, hIcoA, 1)
-                                       'Debug.Print($"ExtractIconEx {ret} ""{URLPath}"" {iconIndex} ""{PathName}""")
-                                       'ico = Icon.FromHandle(hIcoA(0))
+                                       Dim hIcoA As IntPtr() = {IntPtr.Zero}
+                                       Dim ret As Integer = ExtractIconEx(iconFilePath, iconIndex, Nothing, hIcoA, 1)
+                                       Debug.Print($"ExtractIconEx {ret} ""{iconFilePath}"" {iconIndex} ""{PathName}""")
+                                       ico = Icon.FromHandle(hIcoA(0))
 
-                                       Dim ret = ExtractIcon(IntPtr.Zero, iconFilePath, iconIndex)
-                                       ico = Icon.FromHandle(ret)
+                                       'Dim ret = ExtractIcon(IntPtr.Zero, iconFilePath, iconIndex)
+                                       'ico = Icon.FromHandle(ret)
 
                                        bm = ico.ToBitmap
                                        DestroyIcon(ico.Handle)
