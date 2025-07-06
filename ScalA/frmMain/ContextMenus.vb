@@ -1676,13 +1676,13 @@ Partial Public NotInheritable Class FrmMain
         Implements IDisposable
 
         Shared ReadOnly regWatchers As New ConcurrentDictionary(Of String, RegistryWatcher)
-        Public Shared ReadOnly regLock As New Object()
+        Public Shared ReadOnly regWatcherLock As New Object()
 
         Public Shared Sub Init(proto As String)
             Dim key As String = proto.ToLowerInvariant()
             If regWatchers.ContainsKey(key) Then Exit Sub
 
-            SyncLock regLock
+            SyncLock regWatcherLock
                 If Not regWatchers.ContainsKey(key) Then
                     Dim watcher As New RegistryWatcher(key)
                     AddHandler watcher.RegistryChanged, AddressOf OnRegistryChanged
@@ -1724,9 +1724,9 @@ Partial Public NotInheritable Class FrmMain
             watcherThread.Start()
         End Sub
 
-        Public Sub StopWatcher()
+        Public Sub SignalStop()
             running = False
-            watcherThread = Nothing
+            'watcherThread = Nothing
         End Sub
 
         Private Sub WatchLoop()
@@ -1750,7 +1750,7 @@ Partial Public NotInheritable Class FrmMain
         Protected Overridable Sub Dispose(disposing As Boolean)
             If Not disposedValue Then
                 If disposing Then
-                    StopWatcher()
+                    SignalStop()
                     If watcherThread IsNot Nothing AndAlso watcherThread.IsAlive Then
                         Try
                             watcherThread.Join(500)
