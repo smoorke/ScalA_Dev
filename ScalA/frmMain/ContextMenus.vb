@@ -1720,16 +1720,11 @@ Partial Public NotInheritable Class FrmMain
         Public Sub Start()
             If watcherThread IsNot Nothing Then Return
             running = True
-            watcherThread = New Thread(AddressOf WatchLoop) With {.IsBackground = True}
+            watcherThread = New Thread(AddressOf WatchLoopMethod) With {.IsBackground = True}
             watcherThread.Start()
         End Sub
 
-        Public Sub SignalStop()
-            running = False
-            'watcherThread = Nothing
-        End Sub
-
-        Private Sub WatchLoop()
+        Private Sub WatchLoopMethod()
             Using key = Registry.CurrentUser.OpenSubKey(keyPath, False)
                 If key Is Nothing Then Return
                 Dim handle = key.Handle.DangerousGetHandle()
@@ -1750,16 +1745,10 @@ Partial Public NotInheritable Class FrmMain
         Protected Overridable Sub Dispose(disposing As Boolean)
             If Not disposedValue Then
                 If disposing Then
-                    SignalStop()
-                    If watcherThread IsNot Nothing AndAlso watcherThread.IsAlive Then
-                        Try
-                            watcherThread.Join(500)
-                        Catch ex As Exception
-                            ' Optionally log or ignore
-                        End Try
-                    End If
-                    watcherThread = Nothing
+                    ' No need to stop or join the thread
+                    ' If you had other managed resources, dispose them here
                 End If
+
                 disposedValue = True
             End If
         End Sub
