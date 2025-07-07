@@ -565,7 +565,7 @@ Partial Public NotInheritable Class FrmMain
                                        bm = ico.ToBitmap
                                        DestroyIcon(ico.Handle)
 
-                                       Return bm
+                                       If bm IsNot Nothing Then Return bm
                                    Else
                                        'todo: invoke windows url icon handler to get the icon
 
@@ -574,7 +574,7 @@ Partial Public NotInheritable Class FrmMain
                                        ico = Icon.FromHandle(fi.hIcon)
                                        bm = ico.ToBitmap
                                        DestroyIcon(ico.Handle)
-                                       ' Return bm
+                                       If bm IsNot Nothing Then Return bm
                                    End If
 
                                Catch ex As Exception
@@ -1561,6 +1561,7 @@ Partial Public NotInheritable Class FrmMain
                              dBug.Print($"findwindow {hndl}")
                              If hndl <> IntPtr.Zero Then Exit While
                          End While
+                         If My.Settings.topmost Then SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
                          SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
                          watch.Stop()
                      End Sub)
@@ -1720,11 +1721,11 @@ Partial Public NotInheritable Class FrmMain
         Public Sub Start()
             If watcherThread IsNot Nothing Then Return
             running = True
-            watcherThread = New Thread(AddressOf WatchLoopMethod) With {.IsBackground = True}
+            watcherThread = New Thread(AddressOf WatchLoop) With {.IsBackground = True}
             watcherThread.Start()
         End Sub
 
-        Private Sub WatchLoopMethod()
+        Private Sub WatchLoop()
             Using key = Registry.CurrentUser.OpenSubKey(keyPath, False)
                 If key Is Nothing Then Return
                 Dim handle = key.Handle.DangerousGetHandle()

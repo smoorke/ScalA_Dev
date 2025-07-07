@@ -15,6 +15,8 @@ Public Class frmDebug
         tbLogLevel.Value = dBug.minLogLevel
         lblLogLevel.Text = $"Log Level {dBug.minLogLevel}"
 
+        Me.Owner = FrmMain
+
         dBug.Print("FrmDebug Load", 1)
     End Sub
 
@@ -259,13 +261,16 @@ Public Class frmDebug
 
 
     Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
-        If FrmMain.AltPP Is Nothing Then
-            dBug.Print("Alt is nothing", 1)
-            Exit Sub
-        End If
+        'If FrmMain.AltPP Is Nothing Then
+        '    dBug.Print("Alt is nothing", 1)
+        '    Exit Sub
+        'End If
 
 
-        FrmMain.AltPP?.DebugListAllArgs()
+        'FrmMain.AltPP?.DebugListAllArgs()
+
+
+        FrmMain.pnlUpdate.Visible = Not FrmMain.pnlUpdate.Visible
 
         'If Not crtMode Then
         '    If frmCrt.IsDisposed Then frmCrt = New CrtForm
@@ -276,7 +281,10 @@ Public Class frmDebug
 
 
 
-        crtMode = Not crtMode
+        'crtMode = Not crtMode
+
+
+
         'Dim style As UInteger = GetWindowLong(hwnd, GWL_STYLE)
         'style = style Or WindowStyles.WS_SIZEFRAME ' Add resizing capability
         ' SetWindowLong(hwnd, GWL_STYLE, style)
