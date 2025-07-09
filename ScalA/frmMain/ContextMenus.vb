@@ -504,7 +504,7 @@ Partial Public NotInheritable Class FrmMain
 
     Friend Shared ReadOnly iconCache As New ConcurrentDictionary(Of String, Bitmap)
 
-    Private Function GetIconFromCache(ByVal PathName As String, transp As Boolean) As Bitmap
+    Private Function GetIconFromCache(ByVal PathName As String, transp As Boolean, Optional defFolder As Boolean = False) As Bitmap
 
         If PathName Is Nothing Then Return Nothing
 
@@ -519,7 +519,11 @@ Partial Public NotInheritable Class FrmMain
                        Dim ico As Icon
 
                        If PathName.EndsWith("\") Then
-                           SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_ICON Or SHGFI_SMALLICON)
+
+                           Dim flags As UInteger = SHGFI_ICON Or SHGFI_SMALLICON
+                           If defFolder Then flags = flags Or SHGFI_USEFILEATTRIBUTES
+
+                           SHGetFileInfoW(PathName, FILE_ATTRIBUTE_DIRECTORY, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), flags)
                            If fi.hIcon = IntPtr.Zero Then
                                dBug.Print("hIcon empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
                                Throw New Exception
@@ -870,7 +874,7 @@ Partial Public NotInheritable Class FrmMain
         sender.DropDownItems.Clear()
         sender.DropDownItems.AddRange(ParseDir(sender.Tag(0)).ToArray)
     End Sub
-    Private foldericon = GetIconFromCache(FileIO.SpecialDirectories.Temp, False)
+    Private foldericon = GetIconFromCache(FileIO.SpecialDirectories.Temp, False, True)
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
         dBug.Print("addshortcut.sendertag:" & sender.Tag)
         sender.DropDownItems.Clear()

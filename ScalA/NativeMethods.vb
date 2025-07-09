@@ -17,7 +17,7 @@ Module NativeMethods
 
 
     Public Const FILE_ATTRIBUTE_NORMAL As UInteger = &H80
-
+    Public Const FILE_ATTRIBUTE_DIRECTORY As UInteger = &H10
 
     <DllImport("user32.dll", CharSet:=CharSet.Auto, ExactSpelling:=True)>
     Public Function MonitorFromPoint(pt As Point, dwFlags As MONITORFLAGS) As IntPtr : End Function
