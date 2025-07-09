@@ -874,7 +874,7 @@ Partial Public NotInheritable Class FrmMain
         sender.DropDownItems.Clear()
         sender.DropDownItems.AddRange(ParseDir(sender.Tag(0)).ToArray)
     End Sub
-    Private foldericon = GetIconFromCache(FileIO.SpecialDirectories.Temp, False, True)
+    Private foldericon = GetIconFromCache(FileIO.SpecialDirectories.Temp & "\", False, True)
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
         dBug.Print("addshortcut.sendertag:" & sender.Tag)
         sender.DropDownItems.Clear()
@@ -1392,7 +1392,7 @@ Partial Public NotInheritable Class FrmMain
         End Try
     End Sub
 
-    Private ReadOnly folderHbm As IntPtr = foldericon?.GetHbitmap(Color.Black)
+    Private ReadOnly folderHbm As IntPtr = foldericon.GetHbitmap(Color.Black)
     Private ReadOnly plusHbm As IntPtr = New Bitmap(My.Resources.Add, New Size(16, 16)).GetHbitmap(Color.Black)
 
     'Dim QlCtxIsOpen As Boolean = False 'to handle glitch in contextmenu when moving astonia window
