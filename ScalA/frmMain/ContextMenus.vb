@@ -699,7 +699,7 @@ Partial Public NotInheritable Class FrmMain
                 Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
                 Dim dispname As String = System.IO.Path.GetFileName(fullDirs)
 
-                Dim smenu As New ToolStripMenuItem(If(vis, dispname, "(Hidden)")) With {.Tag = {fullDirs & "\", hidden, dispname}, .Visible = vis}
+                Dim smenu As New ToolStripMenuItem(If(vis, dispname, "(Hidden)"), foldericon) With {.Tag = {fullDirs & "\", hidden, dispname}, .Visible = vis}
 
                 smenu.DropDownItems.Add("(Dummy)").Enabled = False
                 smenu.DoubleClickEnabled = True
