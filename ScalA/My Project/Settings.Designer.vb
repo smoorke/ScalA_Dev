@@ -1135,6 +1135,18 @@ Namespace My
                 Me("QLResolveLnk") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("jar | txt")>  _
+        Public Property AdditionalExtentions() As String
+            Get
+                Return CType(Me("AdditionalExtentions"),String)
+            End Get
+            Set
+                Me("AdditionalExtentions") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

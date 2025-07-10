@@ -1,5 +1,7 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.Runtime.InteropServices
+Imports IWshRuntimeLibrary
+Imports Microsoft.VisualBasic.FileIO
 Imports Microsoft.Win32
 
 Public NotInheritable Class ContextMenus
@@ -600,16 +602,6 @@ Partial Public NotInheritable Class FrmMain
                            bm = ico.ToBitmap
                            DestroyIcon(ico.Handle)
 
-                           If My.Settings.QLResolveLnk AndAlso PathName.ToLower.EndsWith(".lnk") Then
-                               Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(PathName)
-                               Dim target As String = oLink.TargetPath
-                               If IO.Directory.Exists(target) Then
-                                   Using g As Graphics = Graphics.FromImage(bm)
-                                       g.DrawIcon(My.Resources.shortcut_overlay, New Rectangle(New Point, bm.Size))
-                                   End Using
-                               End If
-                           End If
-
                        End If
                        DestroyIcon(ico.Handle)
                        ico.Dispose()
@@ -689,7 +681,6 @@ Partial Public NotInheritable Class FrmMain
     End Function
 
     Private Shared ReadOnly nsSorter As IComparer(Of String) = New NaturalStringSorter
-    Private Shared ReadOnly extensions As String() = {".exe", ".jar", ".lnk", ".url", ".txt"}
 
     Private Function ParseDir(pth As String) As List(Of ToolStripItem)
         Dim menuItems As New List(Of ToolStripItem)
@@ -742,7 +733,7 @@ Partial Public NotInheritable Class FrmMain
 
         Dim Files As New List(Of ToolStripItem)
         For Each fullLink As String In System.IO.Directory.EnumerateFiles(pth) _
-                                       .Where(Function(p) extensions.Contains(System.IO.Path.GetExtension(p).ToLower))
+                                       .Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower))
             'dBug.print(System.IO.Path.GetFileName(fullLink))
 
             Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullLink).Attributes
@@ -872,11 +863,39 @@ Partial Public NotInheritable Class FrmMain
     End Sub
     Private Sub DeferredIconLoading(items As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
         Try
-            Task.Run(Sub() Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested),
+            Task.Run(Sub()
+                         Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested),
                                           Sub(it As ToolStripItem)
                                               Dim ico = GetIconFromCache(it.Tag(0), it.Tag(1))
-                                              Me.BeginInvoke(Sub() it.Image = ico)
-                                          End Sub), ct)
+                                              Me.Invoke(Sub() it.Image = ico)
+                                          End Sub)
+
+                         Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested),
+                                          Sub(it As ToolStripItem)
+                                              Dim PathName As String = it.Tag(0)
+                                              If My.Settings.QLResolveLnk AndAlso PathName.ToLower.EndsWith(".lnk") Then
+                                                  Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(PathName) 'this is very slow. hence it is run seperately
+                                                  Dim target As String = oLink.TargetPath
+                                                  If IO.Directory.Exists(target) Then
+                                                      Dim bm = it.Image
+                                                      If bm Is Nothing Then
+                                                          Dim sw As Stopwatch = Stopwatch.StartNew()
+                                                          Do While bm Is Nothing OrElse sw.ElapsedMilliseconds > "2000"
+                                                              Threading.Thread.Sleep(50)
+                                                              bm = it.Image
+                                                          Loop
+                                                      End If
+                                                      Using g As Graphics = Graphics.FromImage(bm)
+                                                              g.DrawIcon(My.Resources.shortcut_overlay, New Rectangle(New Point, bm.Size))
+                                                          End Using
+                                                          Me.Invoke(Sub()
+                                                                        it.Image = bm
+                                                                        it.Invalidate()
+                                                                    End Sub)
+                                                      End If
+                                                  End If
+                                          End Sub)
+                     End Sub, ct)
         Catch ex As System.Threading.Tasks.TaskCanceledException
             dBug.Print("deferredIconLoading Task canceled")
         Catch
@@ -1296,7 +1315,7 @@ Partial Public NotInheritable Class FrmMain
         dBug.Print($"QlCtxOpenAll sender:{sender}")
         Dim subitems As List(Of ToolStripMenuItem) = DirectCast(sender.Tag, ToolStripMenuItem).
                 DropDownItems.OfType(Of ToolStripMenuItem).
-                Where(Function(it) extensions.Contains(IO.Path.GetExtension(it.Tag(0))) AndAlso it.Visible).ToList()
+                Where(Function(it) QLFilter.Contains(IO.Path.GetExtension(it.Tag(0))) AndAlso it.Visible).ToList()
 
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
@@ -1462,7 +1481,7 @@ Partial Public NotInheritable Class FrmMain
                 New MenuItem($"Open All{vbTab}-->", AddressOf QlCtxOpenAll) With {
                                 .Visible = path.EndsWith("\") AndAlso
                                 sender.DropDownItems.OfType(Of ToolStripMenuItem) _
-                                      .Any(Function(it) it.Visible AndAlso it.Tag IsNot Nothing AndAlso extensions.Contains(IO.Path.GetExtension(it.Tag(0)))),
+                                      .Any(Function(it) it.Visible AndAlso it.Tag IsNot Nothing AndAlso QLFilter.Contains(IO.Path.GetExtension(it.Tag(0)))),
                                 .Tag = sender
                                             },
                 New MenuItem("-"),

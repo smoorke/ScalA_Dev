@@ -289,5 +289,8 @@
     <Setting Name="QLResolveLnk" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="AdditionalExtentions" Type="System.String" Scope="User">
+      <Value Profile="(Default)">jar | txt</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

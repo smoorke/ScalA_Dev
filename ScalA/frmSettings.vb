@@ -1,5 +1,7 @@
 ﻿Imports System.ComponentModel
+Imports System.IO
 Imports System.Net.Http
+Imports System.Runtime.Serialization.Formatters.Binary
 Imports System.Text
 
 Public NotInheritable Class FrmSettings
@@ -198,6 +200,10 @@ Public NotInheritable Class FrmSettings
             End If
             pnlElevation.Visible = True
         End If
+
+        btnRefreshICdisplay.PerformClick()
+
+        TxtFilterAddExt.Text = My.Settings.AdditionalExtentions
 
     End Sub
     Private Sub FrmSettings_Shown(sender As Object, e As EventArgs) Handles Me.Shown
@@ -619,6 +625,12 @@ Public NotInheritable Class FrmSettings
         My.Settings.AutoCloseIdle = chkAutoCloseSomeone.Checked
         My.Settings.OnlyAutoCloseOnNoSomeone = chkAutoCloseOnlyOnNoSome.Checked
 
+
+        My.Settings.AdditionalExtentions = TxtFilterAddExt.Text
+
+        QLFilter = getQLFilter(My.Settings.AdditionalExtentions).ToArray()
+
+
         My.Settings.Save()
 
         FrmSizeBorder.Invalidate()
@@ -699,7 +711,7 @@ Public NotInheritable Class FrmSettings
     '    manualNumUpdate = True
     'End Sub
 
-    Private Sub BtnOpenFolderDialog_Click(sender As Object, e As EventArgs)
+    Private Sub BtnOpenFolderDialog_Click(sender As Object, e As EventArgs) Handles btnOpenFolderDialog.Click
         txtQuickLaunchPath.SuspendLayout()
         txtQuickLaunchPath.Text = ChangeLinksDir(My.Settings.links)
         txtQuickLaunchPath.SelectionStart = txtQuickLaunchPath.TextLength
@@ -1040,6 +1052,8 @@ Public NotInheritable Class FrmSettings
     Private Sub ResetIconCacheToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ResetIconCacheToolStripMenuItem.Click
         FrmMain.iconCache.Clear()
         FrmMain.DefURLicons.Clear()
+        lblICacheCount.Text = "Count: 0"
+        lblICSize.Text = "Size: ? KB"
     End Sub
 
     Private Sub btnGoToAdjustHotkey_Click(sender As Object, e As EventArgs) Handles btnGoToAdjustHotkey.Click
@@ -1094,6 +1108,41 @@ Public NotInheritable Class FrmSettings
     Private Sub lblElevated_Click(sender As Object, e As EventArgs) Handles lblElevated.Click, pbUnElevate.Click
         btnOK.PerformClick()
         FrmMain.UnelevateSelf()
+    End Sub
+
+    Private Async Sub btnRefreshICdisplay_Click(sender As Object, e As EventArgs) Handles btnRefreshICdisplay.Click
+        lblICacheCount.Text = "Count: ?"
+        lblICSize.Text = "Size: ? KB"
+
+        Await Task.Delay(100)
+
+        lblICacheCount.Text = $"Count: {FrmMain.iconCache.Count()}"
+        Dim size As Double = GetObjectSize(FrmMain.iconCache) / 1024.0
+        Dim suff As String = "KB"
+        If size > 1024 Then
+            size = size / 1024.0
+            suff = "MB"
+        End If
+        If size > 1024 Then
+            size = size / 1024.0
+            suff = "GB"
+        End If
+
+        lblICSize.Text = $"Size: {size:F2} {suff}"
+    End Sub
+
+    Public Function GetObjectSize(ByVal obj As Object) As Long
+        If obj Is Nothing Then Return 0
+
+        Using ms As New MemoryStream()
+            Dim bf As New BinaryFormatter()
+            bf.Serialize(ms, obj)
+            Return ms.Length
+        End Using
+    End Function
+
+    Private Sub btnResetCache_Click(sender As Object, e As EventArgs) Handles btnResetCache.Click
+        ResetIconCacheToolStripMenuItem_Click(sender, e)
     End Sub
 
     Private Sub validate_hotkey(sender As Object, e As EventArgs) Handles _

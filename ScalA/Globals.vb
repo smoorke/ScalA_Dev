@@ -1,4 +1,5 @@
-﻿Module Globals
+﻿Imports System.Linq
+Module Globals
 
     Public startup As Boolean = True
 
@@ -7,6 +8,20 @@
     Public MouseButtonStale As MouseButtons
 
     Public ReadOnly hideExt As String() = {".lnk", ".url"}
+    Public QLFilter As String() = getQLFilter(My.Settings.AdditionalExtentions).ToArray()
+
+    Public Function getQLFilter(addFts) As IEnumerable(Of String)
+        Dim ft = CType(("exe | lnk | url |" & addFts).Split({"|"c}, StringSplitOptions.RemoveEmptyEntries), IEnumerable(Of String)).Select(Function(f As String)
+                                                                                                                                               f = f.Trim()
+                                                                                                                                               Return If(f.StartsWith("."), "", ".") & f.Trim
+                                                                                                                                           End Function)
+        dBug.Print($"QLFilter:")
+        For Each fil In ft
+            dBug.Print($"""{fil}""")
+        Next
+        dBug.Print("---")
+        Return ft
+    End Function
 
     Public Function WinUsingDarkTheme() As Boolean
         Using key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\Microsoft\Windows\CurrentVersion\Themes\Personalize")
@@ -29,7 +44,7 @@
     Public Function getAnimationsEnabled() As Boolean
         Dim enabled As Boolean = False
         If Not SystemParametersInfo(SPI.GETCLIENTAREAANIMATION, 0, enabled, 0) Then
-            dBug.print("SystemParametersInfo SPI_GETCLIENTAREAANIMATION FAIL!")
+            dBug.Print("SystemParametersInfo SPI_GETCLIENTAREAANIMATION FAIL!")
         End If
         Return enabled
     End Function
