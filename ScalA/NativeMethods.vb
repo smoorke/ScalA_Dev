@@ -78,6 +78,26 @@ Module NativeMethods
         End Function
     End Structure
 
+    Public Const IDLE_PRIORITY_CLASS As Integer = &H40
+    Public Const BELOW_NORMAL_PRIORITY_CLASS As Integer = &H4000
+    Public Const NORMAL_PRIORITY_CLASS As Integer = &H20
+    Public Const ABOVE_NORMAL_PRIORITY_CLASS As Integer = &H8000
+    Public Const HIGH_PRIORITY_CLASS As Integer = &H80
+    Public Const REALTIME_PRIORITY_CLASS As Integer = &H100
+
+    <DllImport("kernel32.dll", SetLastError:=True)>
+    Public Function SetPriorityClass(hProcess As IntPtr, dwPriorityClass As UInteger) As Boolean
+    End Function
+    <DllImport("kernel32.dll")>
+    Public Function GetCurrentThread() As IntPtr : End Function
+
+    <DllImport("kernel32.dll", SetLastError:=True)>
+    Public Function SetThreadPriority(hThread As IntPtr, nPriority As Integer) As Boolean : End Function
+
+    <DllImport("kernel32.dll", SetLastError:=True)>
+    Public Function GetCurrentProcess() As IntPtr
+    End Function
+
     <StructLayout(LayoutKind.Explicit)>
     Public Structure LParamMap
         Public Sub New(value As IntPtr)

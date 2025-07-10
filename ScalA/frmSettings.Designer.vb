@@ -44,6 +44,7 @@ Partial NotInheritable Class FrmSettings
         Dim Label6 As System.Windows.Forms.Label
         Dim grpQLPath As System.Windows.Forms.GroupBox
         Dim gbFilter As System.Windows.Forms.GroupBox
+        Dim Label1 As System.Windows.Forms.Label
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmSettings))
         Me.btnGoToAdjustHotkey = New System.Windows.Forms.Button()
         Me.chkApplyAlterNormal = New System.Windows.Forms.CheckBox()
@@ -92,6 +93,8 @@ Partial NotInheritable Class FrmSettings
         Me.pbUnElevate = New System.Windows.Forms.PictureBox()
         Me.ChkQLShowHidden = New System.Windows.Forms.CheckBox()
         Me.btnRefreshICdisplay = New System.Windows.Forms.Button()
+        Me.lblICSize = New System.Windows.Forms.Label()
+        Me.ChkQLResolveLnk = New System.Windows.Forms.CheckBox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
@@ -165,11 +168,10 @@ Partial NotInheritable Class FrmSettings
         Me.chkStartupMax = New System.Windows.Forms.CheckBox()
         Me.TabQL = New System.Windows.Forms.TabPage()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
-        Me.lblICSize = New System.Windows.Forms.Label()
         Me.lblICacheCount = New System.Windows.Forms.Label()
         Me.btnResetCache = New System.Windows.Forms.Button()
-        Me.ChkQLResolveLnk = New System.Windows.Forms.CheckBox()
         Me.tabMisc = New System.Windows.Forms.TabPage()
+        Me.cmbPriority = New System.Windows.Forms.ComboBox()
         Me.cmbTheme = New System.Windows.Forms.ComboBox()
         Me.Label16 = New System.Windows.Forms.Label()
         Me.txtExe = New System.Windows.Forms.TextBox()
@@ -198,6 +200,7 @@ Partial NotInheritable Class FrmSettings
         Label6 = New System.Windows.Forms.Label()
         grpQLPath = New System.Windows.Forms.GroupBox()
         gbFilter = New System.Windows.Forms.GroupBox()
+        Label1 = New System.Windows.Forms.Label()
         grpAlterOverviewMinMax.SuspendLayout()
         CType(Me.NumExtraMax, System.ComponentModel.ISupportInitialize).BeginInit()
         grpQLPath.SuspendLayout()
@@ -512,16 +515,24 @@ Partial NotInheritable Class FrmSettings
         Me.TxtFilterAddExt.Name = "TxtFilterAddExt"
         Me.TxtFilterAddExt.Size = New System.Drawing.Size(234, 20)
         Me.TxtFilterAddExt.TabIndex = 31
-        Me.TxtFilterAddExt.Text = "jar | txt"
         '
         'lblDefaultFilter
         '
         Me.lblDefaultFilter.AutoSize = True
-        Me.lblDefaultFilter.Location = New System.Drawing.Point(5, 18)
+        Me.lblDefaultFilter.Location = New System.Drawing.Point(5, 17)
         Me.lblDefaultFilter.Name = "lblDefaultFilter"
         Me.lblDefaultFilter.Size = New System.Drawing.Size(70, 13)
         Me.lblDefaultFilter.TabIndex = 30
         Me.lblDefaultFilter.Text = "exe | lnk | url |"
+        '
+        'Label1
+        '
+        Label1.AutoSize = True
+        Label1.Location = New System.Drawing.Point(147, 86)
+        Label1.Name = "Label1"
+        Label1.Size = New System.Drawing.Size(38, 13)
+        Label1.TabIndex = 28
+        Label1.Text = "Priority"
         '
         'btnOK
         '
@@ -895,6 +906,27 @@ Partial NotInheritable Class FrmSettings
         Me.btnRefreshICdisplay.Text = "↺"
         Me.ttSettings.SetToolTip(Me.btnRefreshICdisplay, "Recalculate Icon Cache Count & Size")
         Me.btnRefreshICdisplay.UseVisualStyleBackColor = True
+        '
+        'lblICSize
+        '
+        Me.lblICSize.AutoSize = True
+        Me.lblICSize.Location = New System.Drawing.Point(104, 18)
+        Me.lblICSize.Name = "lblICSize"
+        Me.lblICSize.Size = New System.Drawing.Size(56, 13)
+        Me.lblICSize.TabIndex = 19
+        Me.lblICSize.Text = "Size: ? KB"
+        Me.ttSettings.SetToolTip(Me.lblICSize, "There will always be a small overhead even with 0 items in the Cache")
+        '
+        'ChkQLResolveLnk
+        '
+        Me.ChkQLResolveLnk.AutoSize = True
+        Me.ChkQLResolveLnk.Location = New System.Drawing.Point(167, 62)
+        Me.ChkQLResolveLnk.Name = "ChkQLResolveLnk"
+        Me.ChkQLResolveLnk.Size = New System.Drawing.Size(119, 17)
+        Me.ChkQLResolveLnk.TabIndex = 27
+        Me.ChkQLResolveLnk.Text = "Resolve Lnk to Dirs"
+        Me.ttSettings.SetToolTip(Me.ChkQLResolveLnk, "Have .Lnk Shortcuts pointing to Directories be parsed as Folders" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
+        Me.ChkQLResolveLnk.UseVisualStyleBackColor = True
         '
         'tbcSettings
         '
@@ -1713,15 +1745,6 @@ Partial NotInheritable Class FrmSettings
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "Icon Cache"
         '
-        'lblICSize
-        '
-        Me.lblICSize.AutoSize = True
-        Me.lblICSize.Location = New System.Drawing.Point(104, 18)
-        Me.lblICSize.Name = "lblICSize"
-        Me.lblICSize.Size = New System.Drawing.Size(56, 13)
-        Me.lblICSize.TabIndex = 19
-        Me.lblICSize.Text = "Size: ? KB"
-        '
         'lblICacheCount
         '
         Me.lblICacheCount.AutoSize = True
@@ -1740,18 +1763,10 @@ Partial NotInheritable Class FrmSettings
         Me.btnResetCache.Text = "Reset"
         Me.btnResetCache.UseVisualStyleBackColor = True
         '
-        'ChkQLResolveLnk
-        '
-        Me.ChkQLResolveLnk.AutoSize = True
-        Me.ChkQLResolveLnk.Location = New System.Drawing.Point(167, 62)
-        Me.ChkQLResolveLnk.Name = "ChkQLResolveLnk"
-        Me.ChkQLResolveLnk.Size = New System.Drawing.Size(119, 17)
-        Me.ChkQLResolveLnk.TabIndex = 27
-        Me.ChkQLResolveLnk.Text = "Resolve Lnk to Dirs"
-        Me.ChkQLResolveLnk.UseVisualStyleBackColor = True
-        '
         'tabMisc
         '
+        Me.tabMisc.Controls.Add(Me.cmbPriority)
+        Me.tabMisc.Controls.Add(Label1)
         Me.tabMisc.Controls.Add(Me.chkShowEnd)
         Me.tabMisc.Controls.Add(Me.chkHoverActivate)
         Me.tabMisc.Controls.Add(Me.cmbTheme)
@@ -1771,6 +1786,16 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc.TabIndex = 1
         Me.tabMisc.Text = "Misc"
         Me.tabMisc.UseVisualStyleBackColor = True
+        '
+        'cmbPriority
+        '
+        Me.cmbPriority.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cmbPriority.FormattingEnabled = True
+        Me.cmbPriority.Items.AddRange(New Object() {"High : 13", "Above Normal : 10", "Normal : 8", "Below Norlmal : 6", "Idle : 4 "})
+        Me.cmbPriority.Location = New System.Drawing.Point(189, 82)
+        Me.cmbPriority.Name = "cmbPriority"
+        Me.cmbPriority.Size = New System.Drawing.Size(113, 21)
+        Me.cmbPriority.TabIndex = 29
         '
         'cmbTheme
         '
@@ -2037,4 +2062,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents lblICacheCount As Label
     Friend WithEvents btnResetCache As Button
     Friend WithEvents TxtFilterAddExt As TextBox
+    Friend WithEvents cmbPriority As ComboBox
 End Class

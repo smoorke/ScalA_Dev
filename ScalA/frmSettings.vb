@@ -201,11 +201,14 @@ Public NotInheritable Class FrmSettings
             pnlElevation.Visible = True
         End If
 
-        btnRefreshICdisplay.PerformClick()
+        'btnRefreshICdisplay.PerformClick() 'this doesn't work when tab isn't in view
 
         TxtFilterAddExt.Text = My.Settings.AdditionalExtentions
 
+        cmbPriority.SelectedIndex = mapPriorityToCmbIndex(My.Settings.Priority)
+
     End Sub
+
     Private Sub FrmSettings_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         Me.Owner = FrmMain
         startup = False
@@ -223,13 +226,13 @@ Public NotInheritable Class FrmSettings
         If Me.Owner Is Nothing Then 'this to address ghost form when closing settings.
             Select Case m.Msg
                 Case WM_ENTERMENULOOP
-                    dBug.print("GhostSettings EnterMenuLoop")
+                    dBug.Print("GhostSettings EnterMenuLoop")
                     FrmMain.AltPP?.Activate()
                     Me.Close()
                     Exit Sub
                 Case WM_KEYDOWN
-                    dBug.print($"GhostSettings WM_KEYDOWN {m.WParam} {m.LParam}")
-                    dBug.print($"ScanCode {New LParamMap(m.LParam).scan}")
+                    dBug.Print($"GhostSettings WM_KEYDOWN {m.WParam} {m.LParam}")
+                    dBug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
                     If FrmMain.cboAlt.SelectedIndex > 0 Then
                         FrmMain.AltPP.Activate()
                         Dim key As Keys = m.WParam
@@ -630,6 +633,9 @@ Public NotInheritable Class FrmSettings
 
         QLFilter = getQLFilter(My.Settings.AdditionalExtentions).ToArray()
 
+        My.Settings.Priority = mapCmbIndexToPriority(cmbPriority.SelectedIndex)
+        setPriority(My.Settings.Priority)
+
 
         My.Settings.Save()
 
@@ -685,6 +691,38 @@ Public NotInheritable Class FrmSettings
     '    End If
 
     'End Sub
+    Private Function mapCmbIndexToPriority(pri As Integer) As Integer
+        Select Case pri
+            Case 0
+                Return HIGH_PRIORITY_CLASS
+            Case 1
+                Return ABOVE_NORMAL_PRIORITY_CLASS
+            Case 2
+                Return NORMAL_PRIORITY_CLASS
+            Case 3
+                Return BELOW_NORMAL_PRIORITY_CLASS
+            Case 4
+                Return IDLE_PRIORITY_CLASS
+            Case Else
+                Return ABOVE_NORMAL_PRIORITY_CLASS
+        End Select
+    End Function
+    Private Function mapPriorityToCmbIndex(pri As Integer) As Integer
+        Select Case pri
+            Case HIGH_PRIORITY_CLASS
+                Return 0
+            Case ABOVE_NORMAL_PRIORITY_CLASS
+                Return 1
+            Case NORMAL_PRIORITY_CLASS
+                Return 2
+            Case BELOW_NORMAL_PRIORITY_CLASS
+                Return 3
+            Case IDLE_PRIORITY_CLASS
+                Return 4
+            Case Else
+                Return -1
+        End Select
+    End Function
 
     Private Sub TxtResolutions_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtResolutions.KeyPress
         If Not (Char.IsDigit(e.KeyChar) Or Char.IsControl(e.KeyChar) Or e.KeyChar.ToString.ToLower = "x") Then
@@ -1052,8 +1090,7 @@ Public NotInheritable Class FrmSettings
     Private Sub ResetIconCacheToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ResetIconCacheToolStripMenuItem.Click
         FrmMain.iconCache.Clear()
         FrmMain.DefURLicons.Clear()
-        lblICacheCount.Text = "Count: 0"
-        lblICSize.Text = "Size: ? KB"
+        btnRefreshICdisplay.PerformClick()
     End Sub
 
     Private Sub btnGoToAdjustHotkey_Click(sender As Object, e As EventArgs) Handles btnGoToAdjustHotkey.Click
@@ -1271,6 +1308,9 @@ Public NotInheritable Class FrmSettings
 
     Private Sub tbcSettings_SelectedIndexChanged(sender As TabControl, e As EventArgs) Handles tbcSettings.SelectedIndexChanged
         My.Settings.remeberSettingsTab = sender.SelectedIndex
+        If sender.SelectedTab Is TabQL Then
+            btnRefreshICdisplay.PerformClick()
+        End If
     End Sub
 
     Private Sub chkApplyAlterNormal_CheckedChanged(sender As Object, e As EventArgs) Handles chkMinMaxOnSwitch.CheckedChanged

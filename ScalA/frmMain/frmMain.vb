@@ -360,6 +360,9 @@ Partial Public NotInheritable Class FrmMain
             End
         End If
 
+
+        setPriority(My.Settings.Priority)
+
         dBug.InitDebug()
 
         If My.Settings.SingleInstance AndAlso IPC.AlreadyOpen Then

@@ -79,7 +79,7 @@ Module FsWatcher
         Public Sub Start()
             If watcherThread IsNot Nothing Then Return
             running = True
-            watcherThread = New Thread(AddressOf WatchLoop) With {.IsBackground = True}
+            watcherThread = New Thread(AddressOf WatchLoop) With {.IsBackground = True, .Priority = ThreadPriority.Lowest}
             watcherThread.Start()
         End Sub
 
@@ -218,7 +218,7 @@ Module FsWatcher
 
     End Sub
 
-    Private ReadOnly iconCache = FrmMain.iconCache
+    Private ReadOnly iconCache As ConcurrentDictionary(Of String, Bitmap) = FrmMain.iconCache
 
     Private Sub OnDeleteDir(sender As System.IO.FileSystemWatcher, e As System.IO.FileSystemEventArgs)
         dBug.Print($"Delete Dir: {sender.NotifyFilter}")
@@ -226,7 +226,7 @@ Module FsWatcher
         dBug.Print($"      Path: {e.FullPath}")
 
         If e.ChangeType = IO.WatcherChangeTypes.Deleted Then
-            For Each key In iconCache.Keys.Where(Function(k) k.StartsWith(e.FullPath & "\"))
+            For Each key In iconCache.Keys.Where(Function(k As String) k.StartsWith(e.FullPath & "\"))
                 iconCache.TryRemove(key, Nothing)
             Next
         End If

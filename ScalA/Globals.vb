@@ -1,4 +1,4 @@
-﻿Imports System.Linq
+﻿Imports System.Runtime.InteropServices
 Module Globals
 
     Public startup As Boolean = True
@@ -8,12 +8,27 @@ Module Globals
     Public MouseButtonStale As MouseButtons
 
     Public ReadOnly hideExt As String() = {".lnk", ".url"}
-    Public QLFilter As String() = getQLFilter(My.Settings.AdditionalExtentions).ToArray()
 
+
+    Public Sub setPriority(pri As Integer)
+        Dim hProcess As IntPtr = GetCurrentProcess()
+        Dim result As Boolean = SetPriorityClass(hProcess, pri)
+
+        If result Then
+            Debug.Print($"Process priority set to {pri}")
+        Else
+            Debug.Print("Failed to set priority. LastError = " & Marshal.GetLastWin32Error())
+        End If
+    End Sub
+
+
+
+
+    Public QLFilter As String() = getQLFilter(My.Settings.AdditionalExtentions).ToArray()
     Public Function getQLFilter(addFts) As IEnumerable(Of String)
         Dim ft = CType(("exe | lnk | url |" & addFts).Split({"|"c}, StringSplitOptions.RemoveEmptyEntries), IEnumerable(Of String)).Select(Function(f As String)
-                                                                                                                                               f = f.Trim()
-                                                                                                                                               Return If(f.StartsWith("."), "", ".") & f.Trim
+                                                                                                                                               f = f.Trim().ToLowerInvariant()
+                                                                                                                                               Return If(f.StartsWith("."), f, "." & f)
                                                                                                                                            End Function)
         dBug.Print($"QLFilter:")
         For Each fil In ft
