@@ -599,6 +599,17 @@ Partial Public NotInheritable Class FrmMain
                            ico = Icon.FromHandle(hIcon)
                            bm = ico.ToBitmap
                            DestroyIcon(ico.Handle)
+
+                           If My.Settings.QLResolveLnk AndAlso PathName.ToLower.EndsWith(".lnk") Then
+                               Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(PathName)
+                               Dim target As String = oLink.TargetPath
+                               If IO.Directory.Exists(target) Then
+                                   Using g As Graphics = Graphics.FromImage(bm)
+                                       g.DrawIcon(My.Resources.shortcut_overlay, New Rectangle(New Point, bm.Size))
+                                   End Using
+                               End If
+                           End If
+
                        End If
                        DestroyIcon(ico.Handle)
                        ico.Dispose()
@@ -742,6 +753,36 @@ Partial Public NotInheritable Class FrmMain
             If System.IO.Path.GetFileName(fullLink) = System.IO.Path.GetFileName(Environment.GetCommandLineArgs(0)) Then Continue For
             If fullLink = Environment.GetCommandLineArgs(0) Then Continue For
 
+            If My.Settings.QLResolveLnk AndAlso fullLink.ToLower.EndsWith(".lnk") Then
+                Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(fullLink)
+                Dim target As String = oLink.TargetPath
+                If IO.Directory.Exists(target) Then
+
+                    Dim hid As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
+                    Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
+
+                    Dim smenu As New ToolStripMenuItem(If(hid, dispname, "(Hidden)"), foldericon) With {.Tag = {fullLink, hidden, dispname, target & "\"}, .Visible = hid}
+
+                    smenu.DropDownItems.Add("(Dummy)").Enabled = False
+                    smenu.DoubleClickEnabled = True
+
+                    AddHandler smenu.MouseDown, AddressOf QL_MouseDown
+                    AddHandler smenu.DoubleClick, AddressOf DblClickDir
+                    AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
+                    'AddHandler smenu.DropDownOpened, AddressOf ddo
+
+
+                    AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
+
+                    addLinkWatcher(target)
+
+                    Dirs.Add(smenu)
+                    isEmpty = False
+
+                    Continue For
+                End If
+            End If
+
             Dim linkName As String
             If hideExt.Contains(System.IO.Path.GetExtension(fullLink).ToLower) Then
                 linkName = System.IO.Path.GetFileNameWithoutExtension(fullLink)
@@ -785,7 +826,7 @@ Partial Public NotInheritable Class FrmMain
         cts?.Dispose()
         cts = New Threading.CancellationTokenSource
         cantok = cts.Token
-        DeferredIconLoading(Dirs.Concat(Files), cantok)
+        DeferredIconLoading(Files.Concat(Dirs), cantok)
 
         dBug.Print($"parsing ""{pth}"" took {watch.ElapsedMilliseconds} ms")
         watch.Stop()
@@ -870,7 +911,10 @@ Partial Public NotInheritable Class FrmMain
         CloseOtherDropDowns(cmsQuickLaunch.Items, keep)
 
         sender.DropDownItems.Clear()
-        sender.DropDownItems.AddRange(ParseDir(sender.Tag(0)).ToArray)
+
+        Dim target = If(sender.Tag.length >= 4, sender.Tag(3), sender.Tag(0))
+
+        sender.DropDownItems.AddRange(ParseDir(target).ToArray)
     End Sub
     Private foldericon = GetIconFromCache(FileIO.SpecialDirectories.Temp & "\", False, True)
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
@@ -1164,7 +1208,7 @@ Partial Public NotInheritable Class FrmMain
         '    sender.Items.Add("UnElevate", btnStart.Image, AddressOf UnelevateSelf).ToolTipText = $"Drop Admin Rights{vbCrLf}Use this If you can't use ctrl, alt and/or shift."
         'End If
 
-        If fsWatchers.Count = 0 Then InitWatchers()
+        If fsWatchers.Count = 0 Then InitWatchers(My.Settings.links, fsWatchers)
 
         ' Dim dummy = FrmSettings.Visible 'needed or frmsettings reference in cmsQuickLaunch.Opened event may cause it to close
 
@@ -1489,7 +1533,7 @@ Partial Public NotInheritable Class FrmMain
             Next
 
 
-        ElseIf Not sender.Tag(0).EndsWith("\") Then 'do not process click on dirs as they are handled by doubleclick
+        ElseIf Not sender.Tag(0).EndsWith("\") AndAlso Not (My.Settings.QLResolveLnk AndAlso sender.Tag.length >= 4) Then 'do not process click on dirs as they are handled by doubleclick
             dBug.Print("clicked Not a dir")
             Task.Run(Sub() OpenLnk(sender, e))
             'cmsQuickLaunch.Close(ToolStripDropDownCloseReason.ItemClicked)

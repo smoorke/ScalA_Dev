@@ -1123,6 +1123,18 @@ Namespace My
                 Me("AllowCtrlShiftEsc") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property QLResolveLnk() As Boolean
+            Get
+                Return CType(Me("QLResolveLnk"),Boolean)
+            End Get
+            Set
+                Me("QLResolveLnk") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

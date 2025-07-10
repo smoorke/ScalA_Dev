@@ -152,6 +152,7 @@ Public NotInheritable Class FrmSettings
         ChkMinMin.Checked = My.Settings.MinMin
 
         ChkQLShowHidden.Checked = My.Settings.QLShowHidden
+        ChkQLResolveLnk.Checked = My.Settings.QLResolveLnk
 
         grpOverviewShortcut.Enabled = chkSwitchToOverview.Checked
         grpCycleShortcut.Enabled = chkCycleAlts.Checked
@@ -586,6 +587,13 @@ Public NotInheritable Class FrmSettings
 
         My.Settings.QLShowHidden = ChkQLShowHidden.Checked
 
+        If My.Settings.QLResolveLnk <> ChkQLResolveLnk.Checked Then
+            My.Settings.QLResolveLnk = ChkQLResolveLnk.Checked
+            For Each it As String In FrmMain.iconCache.Keys.Where(Function(i) i.EndsWith(".lnk"))
+                FrmMain.iconCache.TryRemove(it, Nothing)
+            Next
+        End If
+
         My.Settings.HoverActivate = chkHoverActivate.Checked
 
         My.Settings.ShowEnd = chkShowEnd.Checked
@@ -691,7 +699,7 @@ Public NotInheritable Class FrmSettings
     '    manualNumUpdate = True
     'End Sub
 
-    Private Sub BtnOpenFolderDialog_Click(sender As Object, e As EventArgs) Handles btnOpenFolderDialog.Click
+    Private Sub BtnOpenFolderDialog_Click(sender As Object, e As EventArgs)
         txtQuickLaunchPath.SuspendLayout()
         txtQuickLaunchPath.Text = ChangeLinksDir(My.Settings.links)
         txtQuickLaunchPath.SelectionStart = txtQuickLaunchPath.TextLength
@@ -718,7 +726,7 @@ Public NotInheritable Class FrmSettings
         Return current
     End Function
 
-    Private Sub TxtQuickLaunchPath_DoubleClick(sender As Object, e As EventArgs) Handles txtQuickLaunchPath.DoubleClick
+    Private Sub TxtQuickLaunchPath_DoubleClick(sender As Object, e As EventArgs)
         txtQuickLaunchPath.SelectionStart = 0
         txtQuickLaunchPath.SelectionLength = txtQuickLaunchPath.TextLength
     End Sub

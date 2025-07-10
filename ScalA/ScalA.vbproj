@@ -221,6 +221,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\shortcut_overlay.ico" />
     <None Include="Resources\Refresh.png" />
     <None Include="Resources\RefreshB.png" />
     <None Include="Resources\Warning.png" />

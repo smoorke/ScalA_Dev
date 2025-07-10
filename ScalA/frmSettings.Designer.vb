@@ -23,7 +23,6 @@ Partial NotInheritable Class FrmSettings
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Dim grpQLPath As System.Windows.Forms.GroupBox
         Dim ToolStripMenuItem1 As System.Windows.Forms.ToolStripSeparator
         Dim Label3 As System.Windows.Forms.Label
         Dim ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
@@ -44,9 +43,7 @@ Partial NotInheritable Class FrmSettings
         Dim grpAlterOverviewMinMax As System.Windows.Forms.GroupBox
         Dim Label6 As System.Windows.Forms.Label
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmSettings))
-        Me.txtQuickLaunchPath = New System.Windows.Forms.TextBox()
-        Me.ChkQLShowHidden = New System.Windows.Forms.CheckBox()
-        Me.btnOpenFolderDialog = New System.Windows.Forms.Button()
+        Dim grpQLPath As System.Windows.Forms.GroupBox
         Me.cmsQLFolder = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.OpenInExplorerToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ResetIconCacheToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -167,7 +164,11 @@ Partial NotInheritable Class FrmSettings
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
         Me.pnlElevation = New System.Windows.Forms.Panel()
-        grpQLPath = New System.Windows.Forms.GroupBox()
+        Me.TabQL = New System.Windows.Forms.TabPage()
+        Me.txtQuickLaunchPath = New System.Windows.Forms.TextBox()
+        Me.ChkQLShowHidden = New System.Windows.Forms.CheckBox()
+        Me.btnOpenFolderDialog = New System.Windows.Forms.Button()
+        Me.ChkQLResolveLnk = New System.Windows.Forms.CheckBox()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
@@ -187,7 +188,7 @@ Partial NotInheritable Class FrmSettings
         Label17 = New System.Windows.Forms.Label()
         grpAlterOverviewMinMax = New System.Windows.Forms.GroupBox()
         Label6 = New System.Windows.Forms.Label()
-        grpQLPath.SuspendLayout()
+        grpQLPath = New System.Windows.Forms.GroupBox()
         Me.cmsQLFolder.SuspendLayout()
         grpAlterOverviewMinMax.SuspendLayout()
         CType(Me.NumExtraMax, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -213,52 +214,9 @@ Partial NotInheritable Class FrmSettings
         Me.tabMaximized.SuspendLayout()
         Me.tabMisc.SuspendLayout()
         Me.pnlElevation.SuspendLayout()
+        Me.TabQL.SuspendLayout()
+        grpQLPath.SuspendLayout()
         Me.SuspendLayout()
-        '
-        'grpQLPath
-        '
-        grpQLPath.Controls.Add(Me.txtQuickLaunchPath)
-        grpQLPath.Controls.Add(Me.ChkQLShowHidden)
-        grpQLPath.Controls.Add(Me.btnOpenFolderDialog)
-        grpQLPath.Location = New System.Drawing.Point(7, -2)
-        grpQLPath.Name = "grpQLPath"
-        grpQLPath.Size = New System.Drawing.Size(291, 40)
-        grpQLPath.TabIndex = 16
-        grpQLPath.TabStop = False
-        grpQLPath.Text = "QuickLaunch"
-        '
-        'txtQuickLaunchPath
-        '
-        Me.txtQuickLaunchPath.Location = New System.Drawing.Point(5, 16)
-        Me.txtQuickLaunchPath.Name = "txtQuickLaunchPath"
-        Me.txtQuickLaunchPath.Size = New System.Drawing.Size(259, 20)
-        Me.txtQuickLaunchPath.TabIndex = 0
-        Me.txtQuickLaunchPath.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
-        '
-        'ChkQLShowHidden
-        '
-        Me.ChkQLShowHidden.AutoSize = True
-        Me.ChkQLShowHidden.Location = New System.Drawing.Point(140, 1)
-        Me.ChkQLShowHidden.Name = "ChkQLShowHidden"
-        Me.ChkQLShowHidden.Size = New System.Drawing.Size(126, 17)
-        Me.ChkQLShowHidden.TabIndex = 26
-        Me.ChkQLShowHidden.Text = "Always Show Hidden"
-        Me.ttSettings.SetToolTip(Me.ChkQLShowHidden, "Always Show Hidden and System Items." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Press Ctrl + Shift to override when this se" &
-        "tting is off.")
-        Me.ChkQLShowHidden.UseVisualStyleBackColor = True
-        '
-        'btnOpenFolderDialog
-        '
-        Me.btnOpenFolderDialog.ContextMenuStrip = Me.cmsQLFolder
-        Me.btnOpenFolderDialog.FlatAppearance.BorderSize = 0
-        Me.btnOpenFolderDialog.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnOpenFolderDialog.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-        Me.btnOpenFolderDialog.Location = New System.Drawing.Point(263, 16)
-        Me.btnOpenFolderDialog.Name = "btnOpenFolderDialog"
-        Me.btnOpenFolderDialog.Size = New System.Drawing.Size(22, 20)
-        Me.btnOpenFolderDialog.TabIndex = 1
-        Me.btnOpenFolderDialog.Text = ".."
-        Me.btnOpenFolderDialog.UseVisualStyleBackColor = True
         '
         'cmsQLFolder
         '
@@ -286,7 +244,7 @@ Partial NotInheritable Class FrmSettings
         'Label3
         '
         Label3.AutoSize = True
-        Label3.Location = New System.Drawing.Point(250, 140)
+        Label3.Location = New System.Drawing.Point(297, 140)
         Label3.Name = "Label3"
         Label3.Size = New System.Drawing.Size(27, 13)
         Label3.TabIndex = 18
@@ -295,13 +253,13 @@ Partial NotInheritable Class FrmSettings
         'ToolStripSeparator1
         '
         ToolStripSeparator1.Name = "ToolStripSeparator1"
-        ToolStripSeparator1.Size = New System.Drawing.Size(177, 6)
+        ToolStripSeparator1.Size = New System.Drawing.Size(150, 6)
         '
         'Label4
         '
         Label4.AutoSize = True
         Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Label4.Location = New System.Drawing.Point(52, 3)
+        Label4.Location = New System.Drawing.Point(54, 3)
         Label4.Name = "Label4"
         Label4.Size = New System.Drawing.Size(18, 9)
         Label4.TabIndex = 3
@@ -311,7 +269,7 @@ Partial NotInheritable Class FrmSettings
         '
         Label5.AutoSize = True
         Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Label5.Location = New System.Drawing.Point(212, 3)
+        Label5.Location = New System.Drawing.Point(225, 3)
         Label5.Name = "Label5"
         Label5.Size = New System.Drawing.Size(29, 9)
         Label5.TabIndex = 4
@@ -392,7 +350,7 @@ Partial NotInheritable Class FrmSettings
         'Label15
         '
         Label15.AutoSize = True
-        Label15.Location = New System.Drawing.Point(197, 36)
+        Label15.Location = New System.Drawing.Point(211, 36)
         Label15.Name = "Label15"
         Label15.Size = New System.Drawing.Size(72, 13)
         Label15.TabIndex = 7
@@ -436,7 +394,7 @@ Partial NotInheritable Class FrmSettings
         grpAlterOverviewMinMax.Controls.Add(Me.ChkLessRowCol)
         grpAlterOverviewMinMax.Controls.Add(Me.NumExtraMax)
         grpAlterOverviewMinMax.Controls.Add(Label6)
-        grpAlterOverviewMinMax.Location = New System.Drawing.Point(15, 86)
+        grpAlterOverviewMinMax.Location = New System.Drawing.Point(28, 86)
         grpAlterOverviewMinMax.Name = "grpAlterOverviewMinMax"
         grpAlterOverviewMinMax.Size = New System.Drawing.Size(156, 66)
         grpAlterOverviewMinMax.TabIndex = 31
@@ -496,7 +454,7 @@ Partial NotInheritable Class FrmSettings
         '
         'btnOK
         '
-        Me.btnOK.Location = New System.Drawing.Point(141, 214)
+        Me.btnOK.Location = New System.Drawing.Point(171, 214)
         Me.btnOK.Name = "btnOK"
         Me.btnOK.Size = New System.Drawing.Size(77, 23)
         Me.btnOK.TabIndex = 2
@@ -507,7 +465,7 @@ Partial NotInheritable Class FrmSettings
         'btnCancel
         '
         Me.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnCancel.Location = New System.Drawing.Point(224, 214)
+        Me.btnCancel.Location = New System.Drawing.Point(254, 214)
         Me.btnCancel.Name = "btnCancel"
         Me.btnCancel.Size = New System.Drawing.Size(77, 23)
         Me.btnCancel.TabIndex = 3
@@ -524,7 +482,7 @@ Partial NotInheritable Class FrmSettings
         'ChkSingleInstance
         '
         Me.ChkSingleInstance.AutoSize = True
-        Me.ChkSingleInstance.Location = New System.Drawing.Point(12, 95)
+        Me.ChkSingleInstance.Location = New System.Drawing.Point(26, 85)
         Me.ChkSingleInstance.Name = "ChkSingleInstance"
         Me.ChkSingleInstance.Size = New System.Drawing.Size(99, 17)
         Me.ChkSingleInstance.TabIndex = 6
@@ -549,7 +507,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpReserveSpace.Controls.Add(Label14)
         Me.grpReserveSpace.Controls.Add(Label13)
         Me.grpReserveSpace.Controls.Add(Label12)
-        Me.grpReserveSpace.Location = New System.Drawing.Point(50, 17)
+        Me.grpReserveSpace.Location = New System.Drawing.Point(63, 17)
         Me.grpReserveSpace.Name = "grpReserveSpace"
         Me.grpReserveSpace.Size = New System.Drawing.Size(212, 67)
         Me.grpReserveSpace.TabIndex = 2
@@ -607,7 +565,7 @@ Partial NotInheritable Class FrmSettings
         'chkOverViewIsGame
         '
         Me.chkOverViewIsGame.AutoSize = True
-        Me.chkOverViewIsGame.Location = New System.Drawing.Point(169, 44)
+        Me.chkOverViewIsGame.Location = New System.Drawing.Point(196, 10)
         Me.chkOverViewIsGame.Name = "chkOverViewIsGame"
         Me.chkOverViewIsGame.Size = New System.Drawing.Size(107, 17)
         Me.chkOverViewIsGame.TabIndex = 7
@@ -620,7 +578,7 @@ Partial NotInheritable Class FrmSettings
         Me.cboScalingMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cboScalingMode.FormattingEnabled = True
         Me.cboScalingMode.Items.AddRange(New Object() {"Auto", "Blur", "Pixel"})
-        Me.cboScalingMode.Location = New System.Drawing.Point(192, 52)
+        Me.cboScalingMode.Location = New System.Drawing.Point(206, 52)
         Me.cboScalingMode.Name = "cboScalingMode"
         Me.cboScalingMode.Size = New System.Drawing.Size(106, 21)
         Me.cboScalingMode.TabIndex = 8
@@ -642,7 +600,7 @@ Partial NotInheritable Class FrmSettings
         '
         Me.chkCheckForUpdate.AutoSize = True
         Me.chkCheckForUpdate.ContextMenuStrip = Me.cmsUpdate
-        Me.chkCheckForUpdate.Location = New System.Drawing.Point(12, 113)
+        Me.chkCheckForUpdate.Location = New System.Drawing.Point(26, 111)
         Me.chkCheckForUpdate.Name = "chkCheckForUpdate"
         Me.chkCheckForUpdate.Size = New System.Drawing.Size(165, 17)
         Me.chkCheckForUpdate.TabIndex = 23
@@ -654,26 +612,26 @@ Partial NotInheritable Class FrmSettings
         '
         Me.cmsUpdate.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CheckNowToolStripMenuItem, Me.OpenChangelogToolStripMenuItem})
         Me.cmsUpdate.Name = "cmsUpdate"
-        Me.cmsUpdate.Size = New System.Drawing.Size(181, 70)
+        Me.cmsUpdate.Size = New System.Drawing.Size(165, 48)
         '
         'CheckNowToolStripMenuItem
         '
         Me.CheckNowToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.Sync
         Me.CheckNowToolStripMenuItem.Name = "CheckNowToolStripMenuItem"
-        Me.CheckNowToolStripMenuItem.Size = New System.Drawing.Size(168, 26)
+        Me.CheckNowToolStripMenuItem.Size = New System.Drawing.Size(164, 22)
         Me.CheckNowToolStripMenuItem.Text = "Check Now"
         '
         'OpenChangelogToolStripMenuItem
         '
         Me.OpenChangelogToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.List
         Me.OpenChangelogToolStripMenuItem.Name = "OpenChangelogToolStripMenuItem"
-        Me.OpenChangelogToolStripMenuItem.Size = New System.Drawing.Size(168, 26)
+        Me.OpenChangelogToolStripMenuItem.Size = New System.Drawing.Size(164, 22)
         Me.OpenChangelogToolStripMenuItem.Text = "Open Changelog"
         '
         'ChkMinMin
         '
         Me.ChkMinMin.AutoSize = True
-        Me.ChkMinMin.Location = New System.Drawing.Point(178, 126)
+        Me.ChkMinMin.Location = New System.Drawing.Point(191, 126)
         Me.ChkMinMin.Name = "ChkMinMin"
         Me.ChkMinMin.Size = New System.Drawing.Size(104, 17)
         Me.ChkMinMin.TabIndex = 30
@@ -697,7 +655,7 @@ Partial NotInheritable Class FrmSettings
         'chkHoverActivate
         '
         Me.chkHoverActivate.AutoSize = True
-        Me.chkHoverActivate.Location = New System.Drawing.Point(169, 62)
+        Me.chkHoverActivate.Location = New System.Drawing.Point(196, 35)
         Me.chkHoverActivate.Name = "chkHoverActivate"
         Me.chkHoverActivate.Size = New System.Drawing.Size(112, 17)
         Me.chkHoverActivate.TabIndex = 26
@@ -708,7 +666,7 @@ Partial NotInheritable Class FrmSettings
         'chkShowEnd
         '
         Me.chkShowEnd.AutoSize = True
-        Me.chkShowEnd.Location = New System.Drawing.Point(12, 41)
+        Me.chkShowEnd.Location = New System.Drawing.Point(26, 10)
         Me.chkShowEnd.Name = "chkShowEnd"
         Me.chkShowEnd.Size = New System.Drawing.Size(111, 17)
         Me.chkShowEnd.TabIndex = 27
@@ -770,7 +728,7 @@ Partial NotInheritable Class FrmSettings
         'chkAutoCloseSomeone
         '
         Me.chkAutoCloseSomeone.AutoSize = True
-        Me.chkAutoCloseSomeone.Location = New System.Drawing.Point(14, 169)
+        Me.chkAutoCloseSomeone.Location = New System.Drawing.Point(16, 169)
         Me.chkAutoCloseSomeone.Name = "chkAutoCloseSomeone"
         Me.chkAutoCloseSomeone.Size = New System.Drawing.Size(120, 17)
         Me.chkAutoCloseSomeone.TabIndex = 7
@@ -795,7 +753,7 @@ Partial NotInheritable Class FrmSettings
         '
         Me.pb100PWarning.BackgroundImage = Global.ScalA.My.Resources.Resources.Warning
         Me.pb100PWarning.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch
-        Me.pb100PWarning.Location = New System.Drawing.Point(273, 32)
+        Me.pb100PWarning.Location = New System.Drawing.Point(287, 32)
         Me.pb100PWarning.Name = "pb100PWarning"
         Me.pb100PWarning.Size = New System.Drawing.Size(18, 18)
         Me.pb100PWarning.TabIndex = 10
@@ -805,7 +763,7 @@ Partial NotInheritable Class FrmSettings
         'chkAutoCloseOnlyOnNoSome
         '
         Me.chkAutoCloseOnlyOnNoSome.AutoSize = True
-        Me.chkAutoCloseOnlyOnNoSome.Location = New System.Drawing.Point(133, 169)
+        Me.chkAutoCloseOnlyOnNoSome.Location = New System.Drawing.Point(135, 169)
         Me.chkAutoCloseOnlyOnNoSome.Name = "chkAutoCloseOnlyOnNoSome"
         Me.chkAutoCloseOnlyOnNoSome.Size = New System.Drawing.Size(163, 17)
         Me.chkAutoCloseOnlyOnNoSome.TabIndex = 15
@@ -852,12 +810,13 @@ Partial NotInheritable Class FrmSettings
         Me.tbcSettings.Controls.Add(Me.tabHotkeys)
         Me.tbcSettings.Controls.Add(Me.tabSortAndBL)
         Me.tbcSettings.Controls.Add(Me.tabMaximized)
+        Me.tbcSettings.Controls.Add(Me.TabQL)
         Me.tbcSettings.Controls.Add(Me.tabMisc)
         Me.tbcSettings.Location = New System.Drawing.Point(-1, 0)
         Me.tbcSettings.Multiline = True
         Me.tbcSettings.Name = "tbcSettings"
         Me.tbcSettings.SelectedIndex = 0
-        Me.tbcSettings.Size = New System.Drawing.Size(316, 212)
+        Me.tbcSettings.Size = New System.Drawing.Size(341, 212)
         Me.tbcSettings.TabIndex = 14
         Me.tbcSettings.TabStop = False
         '
@@ -874,15 +833,15 @@ Partial NotInheritable Class FrmSettings
         Me.tabResolutions.Location = New System.Drawing.Point(4, 25)
         Me.tabResolutions.Name = "tabResolutions"
         Me.tabResolutions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabResolutions.Size = New System.Drawing.Size(308, 183)
+        Me.tabResolutions.Size = New System.Drawing.Size(333, 183)
         Me.tabResolutions.TabIndex = 0
-        Me.tabResolutions.Text = "Resolutions"
+        Me.tabResolutions.Text = "Resolution"
         Me.tabResolutions.UseVisualStyleBackColor = True
         '
         'ChkSizeBorder
         '
         Me.ChkSizeBorder.AutoSize = True
-        Me.ChkSizeBorder.Location = New System.Drawing.Point(192, 80)
+        Me.ChkSizeBorder.Location = New System.Drawing.Point(206, 80)
         Me.ChkSizeBorder.Name = "ChkSizeBorder"
         Me.ChkSizeBorder.Size = New System.Drawing.Size(88, 17)
         Me.ChkSizeBorder.TabIndex = 9
@@ -892,7 +851,7 @@ Partial NotInheritable Class FrmSettings
         'btnAddCurrentRes
         '
         Me.btnAddCurrentRes.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
-        Me.btnAddCurrentRes.Location = New System.Drawing.Point(105, 89)
+        Me.btnAddCurrentRes.Location = New System.Drawing.Point(119, 89)
         Me.btnAddCurrentRes.Name = "btnAddCurrentRes"
         Me.btnAddCurrentRes.Size = New System.Drawing.Size(75, 23)
         Me.btnAddCurrentRes.TabIndex = 6
@@ -902,7 +861,7 @@ Partial NotInheritable Class FrmSettings
         'btnRestore
         '
         Me.btnRestore.ContextMenuStrip = Me.cmsRestore
-        Me.btnRestore.Location = New System.Drawing.Point(105, 126)
+        Me.btnRestore.Location = New System.Drawing.Point(119, 126)
         Me.btnRestore.Name = "btnRestore"
         Me.btnRestore.Size = New System.Drawing.Size(75, 23)
         Me.btnRestore.TabIndex = 5
@@ -931,7 +890,7 @@ Partial NotInheritable Class FrmSettings
         'btnGenerate
         '
         Me.btnGenerate.ContextMenuStrip = Me.cmsGenerate
-        Me.btnGenerate.Location = New System.Drawing.Point(105, 31)
+        Me.btnGenerate.Location = New System.Drawing.Point(119, 31)
         Me.btnGenerate.Name = "btnGenerate"
         Me.btnGenerate.Size = New System.Drawing.Size(75, 23)
         Me.btnGenerate.TabIndex = 2
@@ -948,14 +907,14 @@ Partial NotInheritable Class FrmSettings
         'X60043ToolStripMenuItem
         '
         Me.X60043ToolStripMenuItem.Name = "X60043ToolStripMenuItem"
-        Me.X60043ToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.X60043ToolStripMenuItem.Size = New System.Drawing.Size(153, 22)
         Me.X60043ToolStripMenuItem.Tag = "800x600 (4:3)"
         Me.X60043ToolStripMenuItem.Text = "800x600 (4:3)"
         '
         'X720169ToolStripMenuItem
         '
         Me.X720169ToolStripMenuItem.Name = "X720169ToolStripMenuItem"
-        Me.X720169ToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.X720169ToolStripMenuItem.Size = New System.Drawing.Size(153, 22)
         Me.X720169ToolStripMenuItem.Tag = "1280x720 (16:9)"
         Me.X720169ToolStripMenuItem.Text = "1280x720 (16:9)"
         '
@@ -964,19 +923,19 @@ Partial NotInheritable Class FrmSettings
         Me.FromToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DummyToolStripMenuItem})
         Me.FromToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.moa31
         Me.FromToolStripMenuItem.Name = "FromToolStripMenuItem"
-        Me.FromToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.FromToolStripMenuItem.Size = New System.Drawing.Size(153, 22)
         Me.FromToolStripMenuItem.Text = "From"
         '
         'DummyToolStripMenuItem
         '
         Me.DummyToolStripMenuItem.Enabled = False
         Me.DummyToolStripMenuItem.Name = "DummyToolStripMenuItem"
-        Me.DummyToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.DummyToolStripMenuItem.Size = New System.Drawing.Size(125, 22)
         Me.DummyToolStripMenuItem.Text = "(Dummy)"
         '
         'txtResolutions
         '
-        Me.txtResolutions.Location = New System.Drawing.Point(5, 0)
+        Me.txtResolutions.Location = New System.Drawing.Point(19, 0)
         Me.txtResolutions.Multiline = True
         Me.txtResolutions.Name = "txtResolutions"
         Me.txtResolutions.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
@@ -1005,9 +964,9 @@ Partial NotInheritable Class FrmSettings
         Me.tabHotkeys.Controls.Add(Me.grpOverviewShortcut)
         Me.tabHotkeys.Location = New System.Drawing.Point(4, 25)
         Me.tabHotkeys.Name = "tabHotkeys"
-        Me.tabHotkeys.Size = New System.Drawing.Size(308, 183)
+        Me.tabHotkeys.Size = New System.Drawing.Size(333, 183)
         Me.tabHotkeys.TabIndex = 2
-        Me.tabHotkeys.Text = "Hotkeys"
+        Me.tabHotkeys.Text = "Hotkey"
         Me.tabHotkeys.UseVisualStyleBackColor = True
         '
         'chkBlockWin
@@ -1545,14 +1504,14 @@ Partial NotInheritable Class FrmSettings
         Me.tabSortAndBL.Margin = New System.Windows.Forms.Padding(0)
         Me.tabSortAndBL.Name = "tabSortAndBL"
         Me.tabSortAndBL.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabSortAndBL.Size = New System.Drawing.Size(308, 183)
+        Me.tabSortAndBL.Size = New System.Drawing.Size(333, 183)
         Me.tabSortAndBL.TabIndex = 3
-        Me.tabSortAndBL.Text = "Sorting"
+        Me.tabSortAndBL.Text = "Sort"
         Me.tabSortAndBL.UseVisualStyleBackColor = True
         '
         'btnTest
         '
-        Me.btnTest.Location = New System.Drawing.Point(142, 47)
+        Me.btnTest.Location = New System.Drawing.Point(155, 47)
         Me.btnTest.Name = "btnTest"
         Me.btnTest.Size = New System.Drawing.Size(21, 61)
         Me.btnTest.TabIndex = 5
@@ -1563,7 +1522,7 @@ Partial NotInheritable Class FrmSettings
         '
         Me.btnHelp.BackgroundImage = Global.ScalA.My.Resources.Resources.About
         Me.btnHelp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch
-        Me.btnHelp.Location = New System.Drawing.Point(142, 18)
+        Me.btnHelp.Location = New System.Drawing.Point(155, 18)
         Me.btnHelp.Margin = New System.Windows.Forms.Padding(0)
         Me.btnHelp.Name = "btnHelp"
         Me.btnHelp.Size = New System.Drawing.Size(22, 23)
@@ -1572,28 +1531,28 @@ Partial NotInheritable Class FrmSettings
         '
         'txtBotSort
         '
-        Me.txtBotSort.Location = New System.Drawing.Point(168, 15)
+        Me.txtBotSort.Location = New System.Drawing.Point(181, 15)
         Me.txtBotSort.Multiline = True
         Me.txtBotSort.Name = "txtBotSort"
         Me.txtBotSort.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.txtBotSort.Size = New System.Drawing.Size(130, 150)
+        Me.txtBotSort.Size = New System.Drawing.Size(140, 150)
         Me.txtBotSort.TabIndex = 1
         Me.txtBotSort.Text = "Someone"
         '
         'txtTopSort
         '
-        Me.txtTopSort.Location = New System.Drawing.Point(8, 15)
+        Me.txtTopSort.Location = New System.Drawing.Point(10, 15)
         Me.txtTopSort.Multiline = True
         Me.txtTopSort.Name = "txtTopSort"
         Me.txtTopSort.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.txtTopSort.Size = New System.Drawing.Size(130, 150)
+        Me.txtTopSort.Size = New System.Drawing.Size(140, 150)
         Me.txtTopSort.TabIndex = 0
         Me.txtTopSort.Text = "Someone"
         '
         'chkWhitelist
         '
         Me.chkWhitelist.AutoSize = True
-        Me.chkWhitelist.Location = New System.Drawing.Point(115, -1)
+        Me.chkWhitelist.Location = New System.Drawing.Point(128, -1)
         Me.chkWhitelist.Name = "chkWhitelist"
         Me.chkWhitelist.Size = New System.Drawing.Size(66, 17)
         Me.chkWhitelist.TabIndex = 6
@@ -1609,7 +1568,7 @@ Partial NotInheritable Class FrmSettings
         Me.tabMaximized.Controls.Add(Me.grpReserveSpace)
         Me.tabMaximized.Location = New System.Drawing.Point(4, 25)
         Me.tabMaximized.Name = "tabMaximized"
-        Me.tabMaximized.Size = New System.Drawing.Size(308, 183)
+        Me.tabMaximized.Size = New System.Drawing.Size(333, 183)
         Me.tabMaximized.TabIndex = 4
         Me.tabMaximized.Text = "Min/Max"
         Me.tabMaximized.UseVisualStyleBackColor = True
@@ -1617,7 +1576,7 @@ Partial NotInheritable Class FrmSettings
         'chkMinMaxOnSwitch
         '
         Me.chkMinMaxOnSwitch.AutoSize = True
-        Me.chkMinMaxOnSwitch.Location = New System.Drawing.Point(26, 158)
+        Me.chkMinMaxOnSwitch.Location = New System.Drawing.Point(39, 158)
         Me.chkMinMaxOnSwitch.Name = "chkMinMaxOnSwitch"
         Me.chkMinMaxOnSwitch.Size = New System.Drawing.Size(257, 17)
         Me.chkMinMaxOnSwitch.TabIndex = 32
@@ -1627,7 +1586,7 @@ Partial NotInheritable Class FrmSettings
         'chkStartupMax
         '
         Me.chkStartupMax.AutoSize = True
-        Me.chkStartupMax.Location = New System.Drawing.Point(178, 104)
+        Me.chkStartupMax.Location = New System.Drawing.Point(191, 104)
         Me.chkStartupMax.Name = "chkStartupMax"
         Me.chkStartupMax.Size = New System.Drawing.Size(100, 17)
         Me.chkStartupMax.TabIndex = 29
@@ -1641,7 +1600,6 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc.Controls.Add(Me.cmbTheme)
         Me.tabMisc.Controls.Add(Me.Label16)
         Me.tabMisc.Controls.Add(Me.txtExe)
-        Me.tabMisc.Controls.Add(grpQLPath)
         Me.tabMisc.Controls.Add(Label3)
         Me.tabMisc.Controls.Add(Me.txtClass)
         Me.tabMisc.Controls.Add(Me.chkOverViewIsGame)
@@ -1652,7 +1610,7 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc.Location = New System.Drawing.Point(4, 25)
         Me.tabMisc.Name = "tabMisc"
         Me.tabMisc.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabMisc.Size = New System.Drawing.Size(308, 183)
+        Me.tabMisc.Size = New System.Drawing.Size(333, 183)
         Me.tabMisc.TabIndex = 1
         Me.tabMisc.Text = "Misc"
         Me.tabMisc.UseVisualStyleBackColor = True
@@ -1662,7 +1620,7 @@ Partial NotInheritable Class FrmSettings
         Me.cmbTheme.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cmbTheme.FormattingEnabled = True
         Me.cmbTheme.Items.AddRange(New Object() {"System", "Light", "Dark"})
-        Me.cmbTheme.Location = New System.Drawing.Point(200, 85)
+        Me.cmbTheme.Location = New System.Drawing.Point(220, 58)
         Me.cmbTheme.Name = "cmbTheme"
         Me.cmbTheme.Size = New System.Drawing.Size(82, 21)
         Me.cmbTheme.TabIndex = 25
@@ -1670,7 +1628,7 @@ Partial NotInheritable Class FrmSettings
         'Label16
         '
         Me.Label16.AutoSize = True
-        Me.Label16.Location = New System.Drawing.Point(156, 90)
+        Me.Label16.Location = New System.Drawing.Point(176, 63)
         Me.Label16.Name = "Label16"
         Me.Label16.Size = New System.Drawing.Size(40, 13)
         Me.Label16.TabIndex = 24
@@ -1681,7 +1639,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtExe.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtExe.Location = New System.Drawing.Point(12, 137)
         Me.txtExe.Name = "txtExe"
-        Me.txtExe.Size = New System.Drawing.Size(238, 20)
+        Me.txtExe.Size = New System.Drawing.Size(286, 20)
         Me.txtExe.TabIndex = 8
         Me.txtExe.Text = "moac | new"
         '
@@ -1690,14 +1648,14 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtClass.Location = New System.Drawing.Point(12, 163)
         Me.txtClass.Name = "txtClass"
-        Me.txtClass.Size = New System.Drawing.Size(266, 20)
+        Me.txtClass.Size = New System.Drawing.Size(312, 20)
         Me.txtClass.TabIndex = 9
         Me.txtClass.Text = "MAINWNDMOAC | 䅍义乗䵄䅏C"
         '
         'chkTopMost
         '
         Me.chkTopMost.AutoSize = True
-        Me.chkTopMost.Location = New System.Drawing.Point(12, 77)
+        Me.chkTopMost.Location = New System.Drawing.Point(26, 60)
         Me.chkTopMost.Name = "chkTopMost"
         Me.chkTopMost.Size = New System.Drawing.Size(98, 17)
         Me.chkTopMost.TabIndex = 3
@@ -1707,7 +1665,7 @@ Partial NotInheritable Class FrmSettings
         'chkRoundCorners
         '
         Me.chkRoundCorners.AutoSize = True
-        Me.chkRoundCorners.Location = New System.Drawing.Point(12, 59)
+        Me.chkRoundCorners.Location = New System.Drawing.Point(26, 35)
         Me.chkRoundCorners.Name = "chkRoundCorners"
         Me.chkRoundCorners.Size = New System.Drawing.Size(109, 17)
         Me.chkRoundCorners.TabIndex = 2
@@ -1724,12 +1682,78 @@ Partial NotInheritable Class FrmSettings
         Me.pnlElevation.TabIndex = 17
         Me.pnlElevation.Visible = False
         '
+        'TabQL
+        '
+        Me.TabQL.Controls.Add(Me.ChkQLResolveLnk)
+        Me.TabQL.Controls.Add(Me.ChkQLShowHidden)
+        Me.TabQL.Controls.Add(grpQLPath)
+        Me.TabQL.Location = New System.Drawing.Point(4, 25)
+        Me.TabQL.Name = "TabQL"
+        Me.TabQL.Size = New System.Drawing.Size(333, 183)
+        Me.TabQL.TabIndex = 5
+        Me.TabQL.Text = "QL"
+        Me.TabQL.UseVisualStyleBackColor = True
+        '
+        'grpQLPath
+        '
+        grpQLPath.Controls.Add(Me.btnOpenFolderDialog)
+        grpQLPath.Controls.Add(Me.txtQuickLaunchPath)
+        grpQLPath.Location = New System.Drawing.Point(9, 16)
+        grpQLPath.Name = "grpQLPath"
+        grpQLPath.Size = New System.Drawing.Size(315, 40)
+        grpQLPath.TabIndex = 17
+        grpQLPath.TabStop = False
+        grpQLPath.Text = "QuickLaunch Root Folder"
+        '
+        'txtQuickLaunchPath
+        '
+        Me.txtQuickLaunchPath.Location = New System.Drawing.Point(6, 14)
+        Me.txtQuickLaunchPath.Name = "txtQuickLaunchPath"
+        Me.txtQuickLaunchPath.Size = New System.Drawing.Size(274, 20)
+        Me.txtQuickLaunchPath.TabIndex = 0
+        Me.txtQuickLaunchPath.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
+        '
+        'ChkQLShowHidden
+        '
+        Me.ChkQLShowHidden.AutoSize = True
+        Me.ChkQLShowHidden.Location = New System.Drawing.Point(33, 62)
+        Me.ChkQLShowHidden.Name = "ChkQLShowHidden"
+        Me.ChkQLShowHidden.Size = New System.Drawing.Size(126, 17)
+        Me.ChkQLShowHidden.TabIndex = 26
+        Me.ChkQLShowHidden.Text = "Always Show Hidden"
+        Me.ttSettings.SetToolTip(Me.ChkQLShowHidden, "Always Show Hidden and System Items." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Press Ctrl + Shift to override when this se" &
+        "tting is off.")
+        Me.ChkQLShowHidden.UseVisualStyleBackColor = True
+        '
+        'btnOpenFolderDialog
+        '
+        Me.btnOpenFolderDialog.ContextMenuStrip = Me.cmsQLFolder
+        Me.btnOpenFolderDialog.FlatAppearance.BorderSize = 0
+        Me.btnOpenFolderDialog.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnOpenFolderDialog.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.btnOpenFolderDialog.Location = New System.Drawing.Point(286, 15)
+        Me.btnOpenFolderDialog.Name = "btnOpenFolderDialog"
+        Me.btnOpenFolderDialog.Size = New System.Drawing.Size(22, 20)
+        Me.btnOpenFolderDialog.TabIndex = 1
+        Me.btnOpenFolderDialog.Text = ".."
+        Me.btnOpenFolderDialog.UseVisualStyleBackColor = True
+        '
+        'ChkQLResolveLnk
+        '
+        Me.ChkQLResolveLnk.AutoSize = True
+        Me.ChkQLResolveLnk.Location = New System.Drawing.Point(168, 62)
+        Me.ChkQLResolveLnk.Name = "ChkQLResolveLnk"
+        Me.ChkQLResolveLnk.Size = New System.Drawing.Size(119, 17)
+        Me.ChkQLResolveLnk.TabIndex = 27
+        Me.ChkQLResolveLnk.Text = "Resolve Lnk to Dirs"
+        Me.ChkQLResolveLnk.UseVisualStyleBackColor = True
+        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
-        Me.ClientSize = New System.Drawing.Size(309, 244)
+        Me.ClientSize = New System.Drawing.Size(339, 244)
         Me.Controls.Add(Me.pnlElevation)
         Me.Controls.Add(Me.tbcSettings)
         Me.Controls.Add(Me.btnCancel)
@@ -1741,8 +1765,6 @@ Partial NotInheritable Class FrmSettings
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "ScalA Settings"
         Me.TopMost = True
-        grpQLPath.ResumeLayout(False)
-        grpQLPath.PerformLayout()
         Me.cmsQLFolder.ResumeLayout(False)
         grpAlterOverviewMinMax.ResumeLayout(False)
         grpAlterOverviewMinMax.PerformLayout()
@@ -1781,6 +1803,10 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc.PerformLayout()
         Me.pnlElevation.ResumeLayout(False)
         Me.pnlElevation.PerformLayout()
+        Me.TabQL.ResumeLayout(False)
+        Me.TabQL.PerformLayout()
+        grpQLPath.ResumeLayout(False)
+        grpQLPath.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -1804,8 +1830,6 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents txtExe As TextBox
     Friend WithEvents chkTopMost As CheckBox
     Friend WithEvents chkRoundCorners As CheckBox
-    Friend WithEvents btnOpenFolderDialog As Button
-    Friend WithEvents txtQuickLaunchPath As TextBox
     Friend WithEvents txtClass As TextBox
     Friend WithEvents chkCycleAlts As CheckBox
     Friend WithEvents chkCycleUpAlt As CheckBox
@@ -1860,7 +1884,6 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents cmsUpdate As ContextMenuStrip
     Friend WithEvents CheckNowToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents OpenChangelogToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents ChkQLShowHidden As CheckBox
     Friend WithEvents chkHoverActivate As CheckBox
     Friend WithEvents chkShowEnd As CheckBox
     Friend WithEvents chkToggleTopMost As CheckBox
@@ -1907,4 +1930,9 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents pnlElevation As Panel
     Friend WithEvents pbUnElevate As PictureBox
     Friend WithEvents lblElevated As Label
+    Friend WithEvents TabQL As TabPage
+    Friend WithEvents ChkQLResolveLnk As CheckBox
+    Friend WithEvents ChkQLShowHidden As CheckBox
+    Friend WithEvents btnOpenFolderDialog As Button
+    Friend WithEvents txtQuickLaunchPath As TextBox
 End Class

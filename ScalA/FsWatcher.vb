@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Concurrent
+Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Threading
 Imports Microsoft.Win32
@@ -130,22 +131,37 @@ Module FsWatcher
 
     Public ReadOnly fsWatchers As New List(Of System.IO.FileSystemWatcher)
 
-    'Public ReadOnly ResolvedLinkWatchers As New Concurrent.ConcurrentDictionary(Of String, IO.FileSystemWatcher)
+    Public ReadOnly ResolvedLinkWatchers As New Concurrent.ConcurrentDictionary(Of String, List(Of IO.FileSystemWatcher))
+
+    Public Sub addLinkWatcher(pth As String)
+        Task.Run(Sub()
+                     If Not pth.Contains(My.Settings.links) AndAlso Not ResolvedLinkWatchers.Keys.Any(Function(wl As String) pth.Contains(wl)) Then
+                         dBug.Print($"addLinkWatcher {pth}")
+                         Dim ws As New List(Of FileSystemWatcher)
+                         InitWatchers(pth, ws)
+                         ResolvedLinkWatchers.TryAdd(pth, ws)
+                     End If
+                 End Sub)
+    End Sub
 
     Public Sub UpdateWatchers(newPath As String)
         dBug.Print("updateWatchers")
         For Each w As System.IO.FileSystemWatcher In fsWatchers
             w.Path = newPath
         Next
+        For Each ws As FileSystemWatcher In ResolvedLinkWatchers.Values.SelectMany(Function(fws As List(Of IO.FileSystemWatcher)) fws)
+            ws.Dispose()
+        Next
+        ResolvedLinkWatchers.Clear()
     End Sub
-    Public Sub InitWatchers()
-        dBug.Print("initWatchers")
-        For Each w As System.IO.FileSystemWatcher In fsWatchers
+    Public Sub InitWatchers(path As String, ByRef watchers As List(Of IO.FileSystemWatcher))
+        dBug.Print($"initWatchers {path}")
+        For Each w As System.IO.FileSystemWatcher In watchers
             w.Dispose()
         Next
-        fsWatchers.Clear()
+        watchers.Clear()
 
-        Dim iniWatcher As New System.IO.FileSystemWatcher(My.Settings.links) With {
+        Dim iniWatcher As New System.IO.FileSystemWatcher(path) With {
             .NotifyFilter = System.IO.NotifyFilters.LastWrite,
             .Filter = "desktop.ini",
             .IncludeSubdirectories = True
@@ -154,11 +170,11 @@ Module FsWatcher
         AddHandler iniWatcher.Changed, AddressOf OnChanged
         iniWatcher.EnableRaisingEvents = True
 
-        fsWatchers.Add(iniWatcher)
+        watchers.Add(iniWatcher)
 
 
 
-        Dim lnkWatcher As New System.IO.FileSystemWatcher(My.Settings.links) With {
+        Dim lnkWatcher As New System.IO.FileSystemWatcher(path) With {
             .NotifyFilter = System.IO.NotifyFilters.LastWrite Or
                             System.IO.NotifyFilters.FileName,
             .Filter = "*.lnk",
@@ -169,11 +185,11 @@ Module FsWatcher
         AddHandler lnkWatcher.Changed, AddressOf OnChanged
         lnkWatcher.EnableRaisingEvents = True
 
-        fsWatchers.Add(lnkWatcher)
+        watchers.Add(lnkWatcher)
 
 
 
-        Dim urlWatcher As New System.IO.FileSystemWatcher(My.Settings.links) With {
+        Dim urlWatcher As New System.IO.FileSystemWatcher(path) With {
             .NotifyFilter = System.IO.NotifyFilters.LastWrite Or
                             System.IO.NotifyFilters.FileName,
             .Filter = "*.url",
@@ -184,11 +200,11 @@ Module FsWatcher
         AddHandler urlWatcher.Changed, AddressOf OnChanged
         urlWatcher.EnableRaisingEvents = True
 
-        fsWatchers.Add(urlWatcher)
+        watchers.Add(urlWatcher)
 
 
 
-        Dim dirWatcher As New System.IO.FileSystemWatcher(My.Settings.links) With {
+        Dim dirWatcher As New System.IO.FileSystemWatcher(path) With {
             .NotifyFilter = System.IO.NotifyFilters.DirectoryName,
             .IncludeSubdirectories = True
         }
@@ -197,7 +213,7 @@ Module FsWatcher
         AddHandler dirWatcher.Deleted, AddressOf OnDeleteDir
         dirWatcher.EnableRaisingEvents = True
 
-        fsWatchers.Add(dirWatcher)
+        watchers.Add(dirWatcher)
 
 
     End Sub
