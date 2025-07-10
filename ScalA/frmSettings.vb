@@ -29,6 +29,15 @@ Public NotInheritable Class FrmSettings
         chkTopMost.Checked = My.Settings.topmost
         chkRoundCorners.Checked = My.Settings.roundCorners
         chkOverViewIsGame.Checked = My.Settings.gameOnOverview
+        ChkAlwaysStartOnOverview.Checked = My.Settings.AlwaysStartOnOverview
+
+        If chkOverViewIsGame.Checked Then
+            ChkAlwaysStartOnOverview.CheckState = If(ChkAlwaysStartOnOverview.CheckState <> CheckState.Unchecked, CheckState.Indeterminate, CheckState.Unchecked)
+            ChkAlwaysStartOnOverview.Enabled = False
+        Else
+            ChkAlwaysStartOnOverview.CheckState = If(ChkAlwaysStartOnOverview.CheckState <> CheckState.Unchecked, CheckState.Checked, CheckState.Unchecked)
+            ChkAlwaysStartOnOverview.Enabled = True
+        End If
 
         'chkAspect.Checked = My.Settings.lockAspect
         'cmbAnchor.SelectedIndex = My.Settings.anchor
@@ -203,7 +212,7 @@ Public NotInheritable Class FrmSettings
 
         'btnRefreshICdisplay.PerformClick() 'this doesn't work when tab isn't in view
 
-        TxtFilterAddExt.Text = My.Settings.AdditionalExtentions
+        TxtFilterAddExt.Text = My.Settings.AdditionalExtensions
 
         cmbPriority.SelectedIndex = mapPriorityToCmbIndex(My.Settings.Priority)
 
@@ -459,6 +468,8 @@ Public NotInheritable Class FrmSettings
             End If
         End If
 
+        My.Settings.AlwaysStartOnOverview = ChkAlwaysStartOnOverview.CheckState <> CheckState.Unchecked
+
         My.Settings.roundCorners = chkRoundCorners.Checked
 
         FrmMain.cornerNW.Visible = chkRoundCorners.Checked
@@ -629,9 +640,9 @@ Public NotInheritable Class FrmSettings
         My.Settings.OnlyAutoCloseOnNoSomeone = chkAutoCloseOnlyOnNoSome.Checked
 
 
-        My.Settings.AdditionalExtentions = TxtFilterAddExt.Text
+        My.Settings.AdditionalExtensions = TxtFilterAddExt.Text
 
-        QLFilter = getQLFilter(My.Settings.AdditionalExtentions).ToArray()
+        QLFilter = getQLFilter(My.Settings.AdditionalExtensions).ToArray()
 
         My.Settings.Priority = mapCmbIndexToPriority(cmbPriority.SelectedIndex)
         setPriority(My.Settings.Priority)
@@ -1180,6 +1191,16 @@ Public NotInheritable Class FrmSettings
 
     Private Sub btnResetCache_Click(sender As Object, e As EventArgs) Handles btnResetCache.Click
         ResetIconCacheToolStripMenuItem_Click(sender, e)
+    End Sub
+
+    Private Sub chkOverViewIsGame_CheckedChanged(sender As CheckBox, e As EventArgs) Handles chkOverViewIsGame.CheckedChanged
+        If sender.Checked Then
+            ChkAlwaysStartOnOverview.CheckState = If(ChkAlwaysStartOnOverview.CheckState <> CheckState.Unchecked, CheckState.Indeterminate, CheckState.Unchecked)
+            ChkAlwaysStartOnOverview.Enabled = False
+        Else
+            ChkAlwaysStartOnOverview.CheckState = If(ChkAlwaysStartOnOverview.CheckState <> CheckState.Unchecked, CheckState.Checked, CheckState.Unchecked)
+            ChkAlwaysStartOnOverview.Enabled = True
+        End If
     End Sub
 
     Private Sub validate_hotkey(sender As Object, e As EventArgs) Handles _

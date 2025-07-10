@@ -1139,12 +1139,12 @@ Namespace My
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("jar | txt")>  _
-        Public Property AdditionalExtentions() As String
+        Public Property AdditionalExtensions() As String
             Get
-                Return CType(Me("AdditionalExtentions"),String)
+                Return CType(Me("AdditionalExtensions"),String)
             End Get
             Set
-                Me("AdditionalExtentions") = value
+                Me("AdditionalExtensions") = value
             End Set
         End Property
         
@@ -1157,6 +1157,18 @@ Namespace My
             End Get
             Set
                 Me("Priority") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property AlwaysStartOnOverview() As Boolean
+            Get
+                Return CType(Me("AlwaysStartOnOverview"),Boolean)
+            End Get
+            Set
+                Me("AlwaysStartOnOverview") = value
             End Set
         End Property
     End Class

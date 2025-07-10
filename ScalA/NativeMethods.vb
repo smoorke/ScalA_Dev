@@ -1108,6 +1108,8 @@ Module NativeMethods
     Public Const WM_NCLBUTTONDOWN As Integer = &HA1
     Public Const WM_NCLBUTTONUP As Integer = &HA2
 
+    Public Const BM_CLICK As Integer = &HF5
+
     Public Const WM_KEYDOWN As Integer = &H100
     Public Const WM_KEYUP = &H101
     Public Const WM_CHAR As Integer = &H102

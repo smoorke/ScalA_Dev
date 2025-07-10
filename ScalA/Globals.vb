@@ -24,7 +24,7 @@ Module Globals
 
 
 
-    Public QLFilter As String() = getQLFilter(My.Settings.AdditionalExtentions).ToArray()
+    Public QLFilter As String() = getQLFilter(My.Settings.AdditionalExtensions).ToArray()
     Public Function getQLFilter(addFts) As IEnumerable(Of String)
         Dim ft = CType(("exe | lnk | url |" & addFts).Split({"|"c}, StringSplitOptions.RemoveEmptyEntries), IEnumerable(Of String)).Select(Function(f As String)
                                                                                                                                                f = f.Trim().ToLowerInvariant()

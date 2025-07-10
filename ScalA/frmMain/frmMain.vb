@@ -464,7 +464,7 @@ Partial Public NotInheritable Class FrmMain
         AddAButtons()
         UpdateButtonLayout(APlist.Count)
 
-        If cboAlt.SelectedIndex = 0 AndAlso args.Count = 1 Then
+        If Not My.Settings.AlwaysStartOnOverview AndAlso cboAlt.SelectedIndex = 0 AndAlso args.Count = 1 Then
             dBug.Print("Selecting Default")
             cboAlt.SelectedIndex = If(cboAlt.Items.Count = 2 AndAlso Not My.Settings.gameOnOverview, 1, 0)
         End If
@@ -1689,7 +1689,7 @@ Partial Public NotInheritable Class FrmMain
                    FindWindowEx(errorHwnd, Nothing, "Static", "Copy new->moac failed: 5") <> IntPtr.Zero Then
                     Dim butHandle = FindWindowEx(errorHwnd, Nothing, "Button", "OK")
                     If butHandle <> IntPtr.Zero Then
-                        SendMessage(butHandle, &HF5, IntPtr.Zero, IntPtr.Zero)
+                        SendMessage(butHandle, BM_CLICK, IntPtr.Zero, IntPtr.Zero)
                         dBug.Print("Error dialog closed")
                     End If
                 End If

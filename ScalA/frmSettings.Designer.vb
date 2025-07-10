@@ -179,6 +179,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
         Me.pnlElevation = New System.Windows.Forms.Panel()
+        Me.ChkAlwaysStartOnOverview = New System.Windows.Forms.CheckBox()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
@@ -507,7 +508,7 @@ Partial NotInheritable Class FrmSettings
         gbFilter.Size = New System.Drawing.Size(315, 40)
         gbFilter.TabIndex = 2
         gbFilter.TabStop = False
-        gbFilter.Text = "Extention Filter"
+        gbFilter.Text = "Extension Filter"
         '
         'TxtFilterAddExt
         '
@@ -647,7 +648,7 @@ Partial NotInheritable Class FrmSettings
         'chkOverViewIsGame
         '
         Me.chkOverViewIsGame.AutoSize = True
-        Me.chkOverViewIsGame.Location = New System.Drawing.Point(196, 10)
+        Me.chkOverViewIsGame.Location = New System.Drawing.Point(155, 10)
         Me.chkOverViewIsGame.Name = "chkOverViewIsGame"
         Me.chkOverViewIsGame.Size = New System.Drawing.Size(107, 17)
         Me.chkOverViewIsGame.TabIndex = 7
@@ -737,7 +738,7 @@ Partial NotInheritable Class FrmSettings
         'chkHoverActivate
         '
         Me.chkHoverActivate.AutoSize = True
-        Me.chkHoverActivate.Location = New System.Drawing.Point(196, 35)
+        Me.chkHoverActivate.Location = New System.Drawing.Point(155, 40)
         Me.chkHoverActivate.Name = "chkHoverActivate"
         Me.chkHoverActivate.Size = New System.Drawing.Size(112, 17)
         Me.chkHoverActivate.TabIndex = 26
@@ -1761,14 +1762,16 @@ Partial NotInheritable Class FrmSettings
         Me.btnResetCache.Size = New System.Drawing.Size(75, 23)
         Me.btnResetCache.TabIndex = 0
         Me.btnResetCache.Text = "Reset"
+        Me.ttSettings.SetToolTip(Me.btnResetCache, "Evict All Cached Icons")
         Me.btnResetCache.UseVisualStyleBackColor = True
         '
         'tabMisc
         '
+        Me.tabMisc.Controls.Add(Me.chkHoverActivate)
+        Me.tabMisc.Controls.Add(Me.ChkAlwaysStartOnOverview)
         Me.tabMisc.Controls.Add(Me.cmbPriority)
         Me.tabMisc.Controls.Add(Label1)
         Me.tabMisc.Controls.Add(Me.chkShowEnd)
-        Me.tabMisc.Controls.Add(Me.chkHoverActivate)
         Me.tabMisc.Controls.Add(Me.cmbTheme)
         Me.tabMisc.Controls.Add(Me.Label16)
         Me.tabMisc.Controls.Add(Me.txtExe)
@@ -1802,7 +1805,7 @@ Partial NotInheritable Class FrmSettings
         Me.cmbTheme.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cmbTheme.FormattingEnabled = True
         Me.cmbTheme.Items.AddRange(New Object() {"System", "Light", "Dark"})
-        Me.cmbTheme.Location = New System.Drawing.Point(220, 59)
+        Me.cmbTheme.Location = New System.Drawing.Point(189, 59)
         Me.cmbTheme.Name = "cmbTheme"
         Me.cmbTheme.Size = New System.Drawing.Size(82, 21)
         Me.cmbTheme.TabIndex = 25
@@ -1810,7 +1813,7 @@ Partial NotInheritable Class FrmSettings
         'Label16
         '
         Me.Label16.AutoSize = True
-        Me.Label16.Location = New System.Drawing.Point(176, 63)
+        Me.Label16.Location = New System.Drawing.Point(145, 63)
         Me.Label16.Name = "Label16"
         Me.Label16.Size = New System.Drawing.Size(40, 13)
         Me.Label16.TabIndex = 24
@@ -1863,6 +1866,16 @@ Partial NotInheritable Class FrmSettings
         Me.pnlElevation.Size = New System.Drawing.Size(92, 28)
         Me.pnlElevation.TabIndex = 17
         Me.pnlElevation.Visible = False
+        '
+        'ChkAlwaysStartOnOverview
+        '
+        Me.ChkAlwaysStartOnOverview.AutoSize = True
+        Me.ChkAlwaysStartOnOverview.Location = New System.Drawing.Point(155, 25)
+        Me.ChkAlwaysStartOnOverview.Name = "ChkAlwaysStartOnOverview"
+        Me.ChkAlwaysStartOnOverview.Size = New System.Drawing.Size(149, 17)
+        Me.ChkAlwaysStartOnOverview.TabIndex = 30
+        Me.ChkAlwaysStartOnOverview.Text = "Always Start On Overview"
+        Me.ChkAlwaysStartOnOverview.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
@@ -2063,4 +2076,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents btnResetCache As Button
     Friend WithEvents TxtFilterAddExt As TextBox
     Friend WithEvents cmbPriority As ComboBox
+    Friend WithEvents ChkAlwaysStartOnOverview As CheckBox
 End Class
