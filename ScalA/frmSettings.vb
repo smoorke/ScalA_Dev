@@ -422,7 +422,7 @@ Public NotInheritable Class FrmSettings
             End If
             FrmMain.iconCache.Clear()
             My.Settings.links = txtQuickLaunchPath.Text
-            FrmMain.UpdateWatchers(My.Settings.links)
+            UpdateWatchers(My.Settings.links)
         End If
 
         My.Settings.resolutions = txtResolutions.Text
