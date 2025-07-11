@@ -859,6 +859,7 @@ Partial Public NotInheritable Class FrmMain
         End If
         cts?.Cancel()
     End Sub
+    Friend Shared doneShortcutOverlayPaths As New ConcurrentDictionary(Of String, Byte)
     Private Sub DeferredIconLoading(items As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
         Try
             Task.Run(Sub()
@@ -869,13 +870,12 @@ Partial Public NotInheritable Class FrmMain
                                           End Sub)
 
                          If My.Settings.QLResolveLnk Then
-                             Dim donePaths As New ConcurrentDictionary(Of String, Byte)
                              Dim iconLocks As New ConcurrentDictionary(Of String, Object)
                              Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested).Where(Function(i) CStr(i.Tag(0)).ToLower().EndsWith(".lnk")),
                                           Sub(it As ToolStripItem)
                                               Dim PathName As String = it.Tag(0)
 
-                                              If Not donePaths.TryAdd(PathName, 0) Then Exit Sub
+                                              If doneShortcutOverlayPaths.TryGetValue(PathName, Nothing) Then Exit Sub
 
                                               Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(PathName) 'this is very slow. hence it is run seperately
                                               Dim target As String = oLink.TargetPath
@@ -896,8 +896,10 @@ Partial Public NotInheritable Class FrmMain
                                                                         it.Image = ico
                                                                         it.Invalidate()
                                                                     End Sub)
+                                                          doneShortcutOverlayPaths.TryAdd(PathName, 0)
+                                                          dBug.Print($"Overlay applied to: {PathName}")
                                                       Catch
-                                                          Debug.Print("Exception on drawing overlay")
+                                                          dBug.Print("Exception on drawing icon shotcut overlay")
                                                       End Try
                                                   End SyncLock
                                               End If

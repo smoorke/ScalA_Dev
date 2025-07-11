@@ -57,7 +57,7 @@ Module FsWatcher
             FrmMain.DefURLicons.TryRemove(proto, Nothing)
             If FrmMain.DefURLicons.Keys.Contains(proto) Then Throw New Exception
 
-            For Each key In FrmMain.iconCache.Keys.Where(Function(k) k.EndsWith(".url")).ToArray
+            For Each key In FrmMain.iconCache.Keys.Where(Function(k) k.EndsWith(".url"))
                 FrmMain.iconCache.TryRemove(key, Nothing)
             Next
             If FrmMain.iconCache.Keys.Any(Function(k) k.ToLower.EndsWith(".url")) Then Throw New Exception
@@ -144,12 +144,30 @@ Module FsWatcher
                  End Sub)
     End Sub
 
+    Public Sub removeLinkWatcher(pth As String)
+        Dim removed As List(Of IO.FileSystemWatcher) = Nothing
+        If ResolvedLinkWatchers.TryRemove(pth, removed) Then
+            For Each watcher In removed
+                Try
+                    watcher.EnableRaisingEvents = False
+                    watcher.Dispose()
+                Catch ex As Exception
+                    dBug.Print($"Error disposing watcher: {ex.Message}")
+                End Try
+            Next
+            dBug.Print($"removeLinkWatcher {pth}")
+        End If
+    End Sub
+
     Public Sub UpdateWatchers(newPath As String)
         dBug.Print("updateWatchers")
         For Each w As System.IO.FileSystemWatcher In fsWatchers
+            w.EnableRaisingEvents = False
             w.Path = newPath
+            w.EnableRaisingEvents = True
         Next
         For Each ws As FileSystemWatcher In ResolvedLinkWatchers.Values.SelectMany(Function(fws As List(Of IO.FileSystemWatcher)) fws)
+            ws.EnableRaisingEvents = False
             ws.Dispose()
         Next
         ResolvedLinkWatchers.Clear()
@@ -157,6 +175,7 @@ Module FsWatcher
     Public Sub InitWatchers(path As String, ByRef watchers As List(Of IO.FileSystemWatcher))
         dBug.Print($"initWatchers {path}")
         For Each w As System.IO.FileSystemWatcher In watchers
+            w.EnableRaisingEvents = False
             w.Dispose()
         Next
         watchers.Clear()
