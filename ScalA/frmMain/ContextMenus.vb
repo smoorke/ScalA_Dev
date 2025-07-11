@@ -868,31 +868,35 @@ Partial Public NotInheritable Class FrmMain
                                               Me.Invoke(Sub() it.Image = ico)
                                           End Sub)
 
-                         If My.Settings.QLResolveLnk Then Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested),
+                         If My.Settings.QLResolveLnk Then
+                             Dim donePaths As New ConcurrentDictionary(Of String, Byte)
+                             Dim iconLocks As New ConcurrentDictionary(Of String, Object)
+                             Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested).Where(Function(i) CStr(i.Tag(0)).ToLower().EndsWith(".lnk")),
                                           Sub(it As ToolStripItem)
                                               Dim PathName As String = it.Tag(0)
-                                              If PathName.ToLower.EndsWith(".lnk") Then
-                                                  Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(PathName) 'this is very slow. hence it is run seperately
-                                                  Dim target As String = oLink.TargetPath
-                                                  If IO.Directory.Exists(target) Then
-                                                      Dim bm = it.Image
-                                                      If bm Is Nothing Then
-                                                          Dim sw As Stopwatch = Stopwatch.StartNew()
-                                                          Do While bm Is Nothing AndAlso sw.ElapsedMilliseconds < 2000
-                                                              Threading.Thread.Sleep(50)
-                                                              bm = it.Image
-                                                          Loop
-                                                      End If
-                                                      Using g As Graphics = Graphics.FromImage(bm)
+
+                                              If Not donePaths.TryAdd(PathName, 0) Then Exit Sub
+
+                                              Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(PathName) 'this is very slow. hence it is run seperately
+                                              Dim target As String = oLink.TargetPath
+                                              If IO.Directory.Exists(target) Then
+                                                  Dim bm As Bitmap = GetIconFromCache(it.Tag(0), it.Tag(1)) '?.Clone()
+                                                  If bm Is Nothing Then Exit Sub
+                                                  Dim lockObj = iconLocks.GetOrAdd(PathName, Function(__) New Object())
+                                                  SyncLock lockObj
+                                                      Dim ico As Bitmap = bm.Clone
+                                                      Using g As Graphics = Graphics.FromImage(ico)
                                                           g.DrawIcon(My.Resources.shortcut_overlay, New Rectangle(New Point, bm.Size))
                                                       End Using
+                                                      iconCache.TryUpdate(PathName, ico, Nothing)
                                                       Me.Invoke(Sub()
-                                                                    it.Image = bm
+                                                                    it.Image = ico
                                                                     it.Invalidate()
                                                                 End Sub)
-                                                  End If
+                                                  End SyncLock
                                               End If
                                           End Sub)
+                         End If
                      End Sub, ct)
         Catch ex As System.Threading.Tasks.TaskCanceledException
             dBug.Print("deferredIconLoading Task canceled")
