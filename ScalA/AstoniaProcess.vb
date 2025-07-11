@@ -1153,7 +1153,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             If arguments.Contains("""""") Then arguments = arguments.Replace("""""", "")
 
             ' Create a shortcut to relaunch the process
-            Dim oLink As IWshRuntimeLibrary.IWshShortcut
+            Dim oLink As Object
             Try
                 oLink = CreateObject("WScript.Shell").CreateShortcut(shortcutlink)
                 oLink.TargetPath = exepath
@@ -1288,7 +1288,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End If
 
 
-        Dim oLink As IWshRuntimeLibrary.IWshShortcut
+        Dim oLink As Object
         Try
 
             oLink = CreateObject("WScript.Shell").CreateShortcut(shortcutlink)

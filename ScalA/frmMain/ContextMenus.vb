@@ -1,7 +1,5 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.Runtime.InteropServices
-Imports IWshRuntimeLibrary
-Imports Microsoft.VisualBasic.FileIO
 Imports Microsoft.Win32
 
 Public NotInheritable Class ContextMenus
@@ -1077,7 +1075,7 @@ Partial Public NotInheritable Class FrmMain
 
         End Try
 
-        Dim oLink As IWshRuntimeLibrary.IWshShortcut
+        Dim oLink As Object
 
         Try
 

@@ -609,9 +609,22 @@ Public NotInheritable Class FrmSettings
 
         If My.Settings.QLResolveLnk <> ChkQLResolveLnk.Checked Then
             My.Settings.QLResolveLnk = ChkQLResolveLnk.Checked
-            For Each it As String In FrmMain.iconCache.Keys.Where(Function(i) i.EndsWith(".lnk"))
-                FrmMain.iconCache.TryRemove(it, Nothing)
-            Next
+            Task.Run(Sub()
+                         Dim count As Integer = 0
+                         For Each it As String In FrmMain.iconCache.Keys.Where(Function(i) i.EndsWith(".lnk"))
+                             Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(it) 'this is very slow. hence it is run in a task
+                             Dim target As String = oLink.TargetPath
+                             If IO.Directory.Exists(target) Then
+                                 If FrmMain.iconCache.TryRemove(it, Nothing) Then
+                                     count += 1
+                                 End If
+                                 For Each t As String In FrmMain.iconCache.Keys.Where(Function(l) l.StartsWith(target))
+                                     If FrmMain.iconCache.TryRemove(t, Nothing) Then count += 1
+                                 Next
+                             End If
+                         Next
+                         dBug.Print($"Evicted {count} Icons from Cache")
+                     End Sub)
         End If
 
         My.Settings.HoverActivate = chkHoverActivate.Checked
