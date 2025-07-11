@@ -884,15 +884,21 @@ Partial Public NotInheritable Class FrmMain
                                                   If bm Is Nothing Then Exit Sub
                                                   Dim lockObj = iconLocks.GetOrAdd(PathName, Function(__) New Object())
                                                   SyncLock lockObj
-                                                      Dim ico As Bitmap = bm.Clone
-                                                      Using g As Graphics = Graphics.FromImage(ico)
-                                                          g.DrawIcon(My.Resources.shortcut_overlay, New Rectangle(New Point, bm.Size))
-                                                      End Using
-                                                      iconCache.TryUpdate(PathName, ico, Nothing)
-                                                      Me.Invoke(Sub()
-                                                                    it.Image = ico
-                                                                    it.Invalidate()
-                                                                End Sub)
+                                                      Dim ico As Bitmap
+                                                      Try
+                                                          ico = bm.Clone()
+
+                                                          Using g As Graphics = Graphics.FromImage(ico)
+                                                              g.DrawIcon(My.Resources.shortcut_overlay, New Rectangle(New Point, ico.Size))
+                                                          End Using
+                                                          iconCache.TryUpdate(PathName, ico, bm)
+                                                          Me.Invoke(Sub()
+                                                                        it.Image = ico
+                                                                        it.Invalidate()
+                                                                    End Sub)
+                                                      Catch
+                                                          Debug.Print("Exception on drawing overlay")
+                                                      End Try
                                                   End SyncLock
                                               End If
                                           End Sub)
