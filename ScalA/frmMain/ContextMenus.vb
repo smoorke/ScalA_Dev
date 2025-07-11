@@ -868,30 +868,30 @@ Partial Public NotInheritable Class FrmMain
                                               Me.Invoke(Sub() it.Image = ico)
                                           End Sub)
 
-                         Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested),
+                         If My.Settings.QLResolveLnk Then Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested),
                                           Sub(it As ToolStripItem)
                                               Dim PathName As String = it.Tag(0)
-                                              If My.Settings.QLResolveLnk AndAlso PathName.ToLower.EndsWith(".lnk") Then
+                                              If PathName.ToLower.EndsWith(".lnk") Then
                                                   Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(PathName) 'this is very slow. hence it is run seperately
                                                   Dim target As String = oLink.TargetPath
                                                   If IO.Directory.Exists(target) Then
                                                       Dim bm = it.Image
                                                       If bm Is Nothing Then
                                                           Dim sw As Stopwatch = Stopwatch.StartNew()
-                                                          Do While bm Is Nothing OrElse sw.ElapsedMilliseconds > "2000"
+                                                          Do While bm Is Nothing AndAlso sw.ElapsedMilliseconds < 2000
                                                               Threading.Thread.Sleep(50)
                                                               bm = it.Image
                                                           Loop
                                                       End If
                                                       Using g As Graphics = Graphics.FromImage(bm)
-                                                              g.DrawIcon(My.Resources.shortcut_overlay, New Rectangle(New Point, bm.Size))
-                                                          End Using
-                                                          Me.Invoke(Sub()
-                                                                        it.Image = bm
-                                                                        it.Invalidate()
-                                                                    End Sub)
-                                                      End If
+                                                          g.DrawIcon(My.Resources.shortcut_overlay, New Rectangle(New Point, bm.Size))
+                                                      End Using
+                                                      Me.Invoke(Sub()
+                                                                    it.Image = bm
+                                                                    it.Invalidate()
+                                                                End Sub)
                                                   End If
+                                              End If
                                           End Sub)
                      End Sub, ct)
         Catch ex As System.Threading.Tasks.TaskCanceledException
