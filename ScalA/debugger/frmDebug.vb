@@ -268,9 +268,12 @@ Public Class frmDebug
 
 
         'FrmMain.AltPP?.DebugListAllArgs()
-
-
-        FrmMain.pnlUpdate.Visible = Not FrmMain.pnlUpdate.Visible
+        dBug.Print("linkwatchers")
+        For Each kvp In ResolvedLinkWatchers
+            dBug.Print(kvp.Key)
+        Next
+        dBug.Print("---")
+        'FrmMain.pnlUpdate.Visible = Not FrmMain.pnlUpdate.Visible
 
         'If Not crtMode Then
         '    If frmCrt.IsDisposed Then frmCrt = New CrtForm

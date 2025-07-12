@@ -441,6 +441,7 @@ Public NotInheritable Class FrmSettings
             End If
             FrmMain.iconCache.Clear()
             FrmMain.doneShortcutOverlayPaths.Clear()
+            ResolvedLinkwatchers_Clear()
             My.Settings.links = txtQuickLaunchPath.Text
             UpdateWatchers(My.Settings.links)
         End If
@@ -1120,6 +1121,7 @@ Public NotInheritable Class FrmSettings
         FrmMain.iconCache.Clear()
         FrmMain.doneShortcutOverlayPaths.Clear()
         FrmMain.DefURLicons.Clear()
+
         btnRefreshICdisplay.PerformClick()
     End Sub
 

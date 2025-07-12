@@ -139,11 +139,17 @@ Module FsWatcher
                          dBug.Print($"addLinkWatcher {pth}")
                          Dim ws As New List(Of FileSystemWatcher)
                          InitWatchers(pth, ws)
-                         ResolvedLinkWatchers.TryAdd(pth, ws)
+                         If ResolvedLinkWatchers.TryAdd(pth, ws) Then StartDirectoryPoller()
                      End If
                  End Sub)
     End Sub
-
+    Public Sub ResolvedLinkwatchers_Clear()
+        For Each ws As FileSystemWatcher In ResolvedLinkWatchers.Values.SelectMany(Function(fws As List(Of IO.FileSystemWatcher)) fws)
+            ws.EnableRaisingEvents = False
+            ws.Dispose()
+        Next
+        ResolvedLinkWatchers.Clear()
+    End Sub
     Public Sub removeLinkWatcher(pth As String)
         Dim removed As List(Of IO.FileSystemWatcher) = Nothing
         If ResolvedLinkWatchers.TryRemove(pth, removed) Then
@@ -158,7 +164,45 @@ Module FsWatcher
             dBug.Print($"removeLinkWatcher {pth}")
         End If
     End Sub
+    Public PollerThread As Thread
+    Public PollerRunning As Boolean = False
+    Private ReadOnly PollerLock As New Object()
+    Public Sub StartDirectoryPoller()
+        SyncLock PollerLock
+            If PollerRunning Then Exit Sub
 
+            PollerRunning = True
+            PollerThread = New Thread(AddressOf DirectoryPollerLoop) With {.IsBackground = True, .Priority = ThreadPriority.Lowest}
+            PollerThread.Start()
+            dBug.Print("Directory poller started.")
+        End SyncLock
+    End Sub
+
+    Public Sub StopDirectoryPoller()
+        PollerRunning = False
+        If PollerThread IsNot Nothing AndAlso PollerThread.IsAlive Then
+            'PollerThread.Join(500)
+            dBug.Print("Directory poller stopped.")
+        End If
+    End Sub
+
+    Private Sub DirectoryPollerLoop()
+        Do While PollerRunning
+            Try
+                For Each Pth As String In ResolvedLinkWatchers.Keys.ToList()
+                    If Not IO.Directory.Exists(Pth) Then
+                        dBug.Print($"Directory missing during poll: {Pth}")
+                        removeLinkWatcher(Pth)
+                    End If
+                Next
+            Catch ex As Exception
+                dBug.Print($"Poller error: {ex.Message}")
+            End Try
+            If ResolvedLinkWatchers.Count = 0 Then Exit Do
+            Thread.Sleep(3210) ' 3ish-second interval
+        Loop
+        StopDirectoryPoller()
+    End Sub
     Public Sub UpdateWatchers(newPath As String)
         dBug.Print("updateWatchers")
         For Each w As System.IO.FileSystemWatcher In fsWatchers
@@ -166,11 +210,7 @@ Module FsWatcher
             w.Path = newPath
             w.EnableRaisingEvents = True
         Next
-        For Each ws As FileSystemWatcher In ResolvedLinkWatchers.Values.SelectMany(Function(fws As List(Of IO.FileSystemWatcher)) fws)
-            ws.EnableRaisingEvents = False
-            ws.Dispose()
-        Next
-        ResolvedLinkWatchers.Clear()
+        ResolvedLinkwatchers_Clear()
     End Sub
     Public Sub InitWatchers(path As String, ByRef watchers As List(Of IO.FileSystemWatcher))
         dBug.Print($"initWatchers {path}")
@@ -247,6 +287,11 @@ Module FsWatcher
         If e.ChangeType = IO.WatcherChangeTypes.Deleted Then
             For Each key In iconCache.Keys.Where(Function(k As String) k.StartsWith(e.FullPath & "\"))
                 iconCache.TryRemove(key, Nothing)
+            Next
+            For Each kvp In ResolvedLinkWatchers.ToList()
+                If String.Equals(kvp.Key, e.FullPath, StringComparison.OrdinalIgnoreCase) Then
+                    removeLinkWatcher(kvp.Key)
+                End If
             Next
         End If
     End Sub
