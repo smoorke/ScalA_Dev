@@ -181,27 +181,49 @@ Module FsWatcher
     Public Sub StopDirectoryPoller()
         PollerRunning = False
         If PollerThread IsNot Nothing AndAlso PollerThread.IsAlive Then
-            'PollerThread.Join(500)
-            dBug.Print("Directory poller stopped.")
+            PollerThread.Join(500)
         End If
+        PollerThread = Nothing
+        dBug.Print("Directory poller stopped (external call).")
     End Sub
 
     Private Sub DirectoryPollerLoop()
         Do While PollerRunning
             Try
-                For Each Pth As String In ResolvedLinkWatchers.Keys.ToList()
+                Dim allPaths = ResolvedLinkWatchers.Keys.ToList()
+                For Each Pth As String In allPaths
+                    ' Remove missing dirs
                     If Not IO.Directory.Exists(Pth) Then
                         dBug.Print($"Directory missing during poll: {Pth}")
                         removeLinkWatcher(Pth)
+                        Continue For
                     End If
+                    ' Check for redundancy
+                    For Each other In allPaths
+                        If other.Equals(Pth, StringComparison.OrdinalIgnoreCase) Then Continue For 'skip self
+
+                        If Pth.StartsWith(other.TrimEnd("\"c) & "\", StringComparison.OrdinalIgnoreCase) Then
+                            dBug.Print($"Redundant path detected during poll: {Pth} (already covered by {other})")
+                            removeLinkWatcher(Pth)
+                            Exit For ' Stop checking after removing
+                        End If
+                    Next
                 Next
             Catch ex As Exception
                 dBug.Print($"Poller error: {ex.Message}")
             End Try
-            If ResolvedLinkWatchers.Count = 0 Then Exit Do
-            Thread.Sleep(3210) ' 3ish-second interval
+
+            If ResolvedLinkWatchers.Count = 0 Then
+                dBug.Print("Directory poller exiting: no paths to monitor.")
+                Exit Do
+            End If
+
+            Thread.Sleep(3210)
         Loop
-        StopDirectoryPoller()
+
+        PollerRunning = False
+        PollerThread = Nothing
+        dBug.Print("Directory poller thread has stopped.")
     End Sub
     Public Sub UpdateWatchers(newPath As String)
         dBug.Print("updateWatchers")

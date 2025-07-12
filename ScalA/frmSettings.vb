@@ -1121,7 +1121,7 @@ Public NotInheritable Class FrmSettings
         FrmMain.iconCache.Clear()
         FrmMain.doneShortcutOverlayPaths.Clear()
         FrmMain.DefURLicons.Clear()
-
+        ResolvedLinkwatchers_Clear()
         btnRefreshICdisplay.PerformClick()
     End Sub
 
