@@ -1,3 +1,26 @@
+**ScalA 1.7.5**
+Added `Restart w/o Closing` contextmenu to Overview Alt menu Restart Item / option to Restartbutton ContextMenu.
+ Note this item is only visible when the alt has idled (or is named `Someone`)
+Added `Close All but <Name>` to QuitButton/Overview Alt ContextMenu when appropriate.
+Enabled Theming for SysMenu and similar menus.
+ Note this uses undocumented ordinal syscalls and may break in future windows versions.
+Partially Fixed Shift-Right-Click on SysTray doesn't open SysMenu.
+ In case of failure perform a regular Right-Click first.
+Fixed some instances of ScalA may occasionally fall behind other windows when closing alts.
+Fixed Automatic theme switching (`System`) while ScalA is running doesn't work on Windows 11.
+Mostly Fixed .URL files show wrong icon. (had to resort to hardcoding some iconlookups)
+ Note: Untested on Win 7, 8 and 8.1 / **May Break on future Windows Versions**
+Fixed QL folders which contain only hidden items fail to open when not showing hidden items.
+FIxed With `Always On Top` and `Activate on Hover` a QL items property window falls behind ScalA when moving mouse over Client.
+Fixed if a user changed a certain special directory's icon ScalA would erroneously use that icon in some places.
+Made Folders in QL start with the default folder icon and then load their custom icons.
+ This temporary display of the default icon shouldn't really be noticeable except on VERY slow computers. (single core CPUs with HDDs both pegged at 100% types of slow)
+Made a Seperate Tab for QuickLaunch in Settings.
+Added a few options for QL in this new Tab. (Resolve Lnk, Extension Filter and Icon Cache Info/Reset)
+Added a Priority Option to Misc Settings and defaulted it to `Above Normal`.
+Added `Always Start On Overview` to Misc Settings.
+Fixed an issue where fsWatcher could be left in an invalid state and fail to evict icons from QL cache.
+
 **ScalA 1.7.4**
 Fixed programatically setting ScalA Z-order (setwinpos in external app) leaves restartbutton on top.
 Fixed Spelling Error in Min. on Minimize Tooltip in Settings.
