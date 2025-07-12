@@ -165,6 +165,7 @@ Partial Public NotInheritable Class FrmMain
         AppActivate(scalaPID) 'fix right click drag bug
 
         Dim pp As AstoniaProcess = DirectCast(sender.SourceControl, AButton).AP
+        sender.Tag = pp
 
 #If 0 Then
 #If DEBUG Then
@@ -409,7 +410,7 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub CmsAlt_Opened(sender As Object, e As EventArgs) Handles cmsAlt.Opened
         AButton.ActiveOverview = False
-        Task.Run(Sub() Me.BeginInvoke(Sub() CloseAllButNameToolStripMenuItem.Visible = AstoniaProcess.ListProcesses(blackList, True).Any(Function(ap As AstoniaProcess) ap.Id <> AltPP.Id)))
+        Task.Run(Sub() Me.BeginInvoke(Sub() CloseAllButNameToolStripMenuItem.Visible = AstoniaProcess.ListProcesses(blackList, True).Any(Function(ap As AstoniaProcess) ap.Id <> sender.Tag.Id)))
     End Sub
     Private Sub SortSubToolStripMenuItem_MouseEnter(sender As ToolStripMenuItem, e As EventArgs) Handles SortSubToolStripMenuItem.MouseEnter
         If MouseButtons And MouseButtons.Right = MouseButtons.Right Then
