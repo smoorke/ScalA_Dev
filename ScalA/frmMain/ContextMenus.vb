@@ -48,10 +48,17 @@ Partial Public NotInheritable Class FrmMain
         btnQuit.PerformClick()
     End Sub
 
-    Private Sub CloseAllExceptToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CloseAllExceptToolStripMenuItem.Click
+    Private Sub CloseAllExceptToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseAllExceptToolStripMenuItem.Click
         Parallel.ForEach(AstoniaProcess.ListProcesses(blackList, False).Where(Function(ap) ap.Id <> AltPP.Id), Sub(pp As AstoniaProcess)
                                                                                                                    pp.CloseOrKill()
                                                                                                                End Sub)
+        AppActivate(scalaPID)
+    End Sub
+
+    Private Sub CloseAllButNameToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseAllButNameToolStripMenuItem.Click
+        Parallel.ForEach(AstoniaProcess.ListProcesses(blackList, False).Where(Function(ap) ap.Id <> sender.Tag.Id), Sub(pp As AstoniaProcess)
+                                                                                                                        pp.CloseOrKill()
+                                                                                                                    End Sub)
         AppActivate(scalaPID)
     End Sub
 
@@ -211,6 +218,10 @@ Partial Public NotInheritable Class FrmMain
             closeAllIdleTSMI = sender.Items.Add($"Close All {other}Someone", My.Resources.moreF12, AddressOf CloseAllIdle_Click)
             closeAllIdleTSMI.Tag = pp
         End If
+
+        CloseAllButNameToolStripMenuItem.Text = $"Close All but {pp?.UserName}"
+        CloseAllButNameToolStripMenuItem.Tag = pp
+
     End Sub
     Private Sub MoveToolStripMenuItem_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) Handles MoveToolStripMenuItem.DropDownOpening
         Dim lst = EnumOtherOverviews.OrderBy(Function(p) p.ProcessName, nsSorter).ToList
@@ -398,6 +409,7 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub CmsAlt_Opened(sender As Object, e As EventArgs) Handles cmsAlt.Opened
         AButton.ActiveOverview = False
+        Task.Run(Sub() Me.BeginInvoke(Sub() CloseAllButNameToolStripMenuItem.Visible = AstoniaProcess.ListProcesses(blackList, True).Any(Function(ap As AstoniaProcess) ap.Id <> AltPP.Id)))
     End Sub
     Private Sub SortSubToolStripMenuItem_MouseEnter(sender As ToolStripMenuItem, e As EventArgs) Handles SortSubToolStripMenuItem.MouseEnter
         If MouseButtons And MouseButtons.Right = MouseButtons.Right Then

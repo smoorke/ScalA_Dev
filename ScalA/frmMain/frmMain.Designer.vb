@@ -72,6 +72,7 @@ Partial NotInheritable Class FrmMain
         Me.TopMostToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.SidebarModeToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.NoOtherScalAsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.CloseAllButNameToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.CloseToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.pnlOverview = New System.Windows.Forms.FlowLayoutPanel()
         Me.pnlMessage = New System.Windows.Forms.Panel()
@@ -112,7 +113,7 @@ Partial NotInheritable Class FrmMain
         'ToolStripSeparator1
         '
         ToolStripSeparator1.Name = "ToolStripSeparator1"
-        ToolStripSeparator1.Size = New System.Drawing.Size(144, 6)
+        ToolStripSeparator1.Size = New System.Drawing.Size(177, 6)
         '
         'NoneSortSeperator1
         '
@@ -127,12 +128,12 @@ Partial NotInheritable Class FrmMain
         'ToolStripSeparator2
         '
         ToolStripSeparator2.Name = "ToolStripSeparator2"
-        ToolStripSeparator2.Size = New System.Drawing.Size(144, 6)
+        ToolStripSeparator2.Size = New System.Drawing.Size(177, 6)
         '
         'ToolStripMenuItem1
         '
         ToolStripMenuItem1.Name = "ToolStripMenuItem1"
-        ToolStripMenuItem1.Size = New System.Drawing.Size(144, 6)
+        ToolStripMenuItem1.Size = New System.Drawing.Size(177, 6)
         '
         'pnlSys
         '
@@ -414,29 +415,29 @@ Partial NotInheritable Class FrmMain
         '
         'cmsAlt
         '
-        Me.cmsAlt.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SelectToolStripMenuItem, Me.ReLaunchToolStripMenuItem, ToolStripSeparator1, Me.SortSubToolStripMenuItem, Me.MoveToolStripMenuItem, Me.TopMostToolStripMenuItem, ToolStripSeparator2, Me.SidebarModeToolStripMenuItem, ToolStripMenuItem1, Me.CloseToolStripMenuItem})
+        Me.cmsAlt.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SelectToolStripMenuItem, Me.ReLaunchToolStripMenuItem, ToolStripSeparator1, Me.SortSubToolStripMenuItem, Me.MoveToolStripMenuItem, Me.TopMostToolStripMenuItem, ToolStripSeparator2, Me.SidebarModeToolStripMenuItem, ToolStripMenuItem1, Me.CloseAllButNameToolStripMenuItem, Me.CloseToolStripMenuItem})
         Me.cmsAlt.Name = "cmsAlt"
-        Me.cmsAlt.Size = New System.Drawing.Size(148, 176)
+        Me.cmsAlt.Size = New System.Drawing.Size(181, 220)
         '
         'SelectToolStripMenuItem
         '
         Me.SelectToolStripMenuItem.Name = "SelectToolStripMenuItem"
         Me.SelectToolStripMenuItem.ShortcutKeyDisplayString = ""
-        Me.SelectToolStripMenuItem.Size = New System.Drawing.Size(147, 22)
+        Me.SelectToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.SelectToolStripMenuItem.Text = "Select"
         '
         'ReLaunchToolStripMenuItem
         '
         Me.ReLaunchToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.Refresh
         Me.ReLaunchToolStripMenuItem.Name = "ReLaunchToolStripMenuItem"
-        Me.ReLaunchToolStripMenuItem.Size = New System.Drawing.Size(147, 22)
+        Me.ReLaunchToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.ReLaunchToolStripMenuItem.Text = "ReLaunch"
         '
         'SortSubToolStripMenuItem
         '
         Me.SortSubToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TopFirstToolStripMenuItem, Me.TopLastToolStripMenuItem, NoneSortSeperator1, Me.NoneSortToolStripMenuItem, NoneSortSeperator2, Me.BotFirstToolStripMenuItem, Me.BotLastToolStripMenuItem})
         Me.SortSubToolStripMenuItem.Name = "SortSubToolStripMenuItem"
-        Me.SortSubToolStripMenuItem.Size = New System.Drawing.Size(147, 22)
+        Me.SortSubToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.SortSubToolStripMenuItem.Text = "Sort"
         '
         'TopFirstToolStripMenuItem
@@ -478,7 +479,7 @@ Partial NotInheritable Class FrmMain
         '
         Me.MoveToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.NoOtherOverviewsToolStripMenuItem, Me.KeepToolStripMenuItem})
         Me.MoveToolStripMenuItem.Name = "MoveToolStripMenuItem"
-        Me.MoveToolStripMenuItem.Size = New System.Drawing.Size(147, 22)
+        Me.MoveToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.MoveToolStripMenuItem.Text = "Move To"
         '
         'NoOtherOverviewsToolStripMenuItem
@@ -497,14 +498,14 @@ Partial NotInheritable Class FrmMain
         'TopMostToolStripMenuItem
         '
         Me.TopMostToolStripMenuItem.Name = "TopMostToolStripMenuItem"
-        Me.TopMostToolStripMenuItem.Size = New System.Drawing.Size(147, 22)
+        Me.TopMostToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.TopMostToolStripMenuItem.Text = "TopMost"
         '
         'SidebarModeToolStripMenuItem
         '
         Me.SidebarModeToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.NoOtherScalAsToolStripMenuItem})
         Me.SidebarModeToolStripMenuItem.Name = "SidebarModeToolStripMenuItem"
-        Me.SidebarModeToolStripMenuItem.Size = New System.Drawing.Size(147, 22)
+        Me.SidebarModeToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.SidebarModeToolStripMenuItem.Text = "Sidebar Mode"
         Me.SidebarModeToolStripMenuItem.ToolTipText = resources.GetString("SidebarModeToolStripMenuItem.ToolTipText")
         '
@@ -515,11 +516,20 @@ Partial NotInheritable Class FrmMain
         Me.NoOtherScalAsToolStripMenuItem.Size = New System.Drawing.Size(168, 22)
         Me.NoOtherScalAsToolStripMenuItem.Text = "(No Other ScalAs)"
         '
+        'CloseAllButNameToolStripMenuItem
+        '
+        Me.CloseAllButNameToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.moreF12
+        Me.CloseAllButNameToolStripMenuItem.Name = "CloseAllButNameToolStripMenuItem"
+        Me.CloseAllButNameToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.CloseAllButNameToolStripMenuItem.Text = "Close All but Name"
+        Me.CloseAllButNameToolStripMenuItem.Visible = False
+        '
         'CloseToolStripMenuItem
         '
+        Me.CloseToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.F12
         Me.CloseToolStripMenuItem.Name = "CloseToolStripMenuItem"
         Me.CloseToolStripMenuItem.ShortcutKeyDisplayString = ""
-        Me.CloseToolStripMenuItem.Size = New System.Drawing.Size(147, 22)
+        Me.CloseToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.CloseToolStripMenuItem.Text = "Close This"
         '
         'pnlOverview
@@ -739,4 +749,5 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents NoOtherScalAsToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ReLaunchToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents CloseAllExceptToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents CloseAllButNameToolStripMenuItem As ToolStripMenuItem
 End Class

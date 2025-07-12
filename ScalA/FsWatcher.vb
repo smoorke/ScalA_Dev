@@ -2,8 +2,6 @@
 Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Threading
-Imports Microsoft.Win32
-
 Module FsWatcher
 
     Private usingLatestReg As Boolean? = Nothing
@@ -18,7 +16,7 @@ Module FsWatcher
             End If
         End If
         If String.IsNullOrEmpty(suff) Then
-            Using latestKey = Registry.CurrentUser.OpenSubKey(base & "UserChoiceLatest")
+            Using latestKey = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(base & "UserChoiceLatest")
                 If latestKey IsNot Nothing Then
                     suff = "UserChoiceLatest\ProgId"
                     usingLatestReg = True
@@ -84,7 +82,7 @@ Module FsWatcher
         End Sub
 
         Private Sub WatchLoop()
-            Using key = Registry.CurrentUser.OpenSubKey(keyPath, False)
+            Using key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(keyPath, False)
                 If key Is Nothing Then Return
                 Dim handle = key.Handle.DangerousGetHandle()
                 While running
