@@ -302,7 +302,7 @@ Partial Public NotInheritable Class FrmMain
 
         FrmSettings.pb100PWarning.Visible = percent <> 100
 
-        dBug.Print($"WS: settings vis {FrmSettings.Visible}")
+        'dBug.Print($"WS: settings vis {FrmSettings.Visible}")
         If Double.IsNaN(percent) Then Return 100
         Return percent
     End Function
@@ -582,7 +582,7 @@ Partial Public NotInheritable Class FrmMain
 
         IPC.AddOrUpdateInstance(scalaPID, cboAlt.SelectedIndex = 0, If(cboAlt.SelectedIndex = 0, Nothing, cboAlt.SelectedItem.id), showingSomeone)
 
-        'CheckScreenScalingModes()
+        'CheckScreenScalingMode()
 
         Dim sb As Rectangle = Me.RectangleToScreen(pbZoom.Bounds)
         frmOverlay.Bounds = sb 'New Rectangle(sb.X, sb.Y + 21, sb.Width, sb.Height - 21)

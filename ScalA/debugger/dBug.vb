@@ -10,6 +10,7 @@ Module dBug
     <Conditional("DEBUG")>
     Friend Sub Print(Message As String, Optional Level As Integer = 0)
         Debug.Print(Message)
+        lastlog = Message
 #If DEBUG Then
         If Level >= minLogLevel AndAlso logbuilder IsNot Nothing Then
             ' Check if appending the message would exceed MaxCapacity
@@ -203,6 +204,13 @@ Module dBug
             End If
         End While
         FrmMain.Cursor = Cursors.Default
+    End Sub
+
+    Private lastlog As String = ""
+    Friend Sub log(msg As String, Optional loglevel As Integer = 0)
+        If lastlog <> msg Then
+            dBug.Print(msg, loglevel)
+        End If
     End Sub
 
 #If 0 Then

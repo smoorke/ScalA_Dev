@@ -53,30 +53,33 @@ Partial Public NotInheritable Class FrmMain
         twp.opacity = opacity
         twp.fVisible = True
         'twp.rcSource = New Rectangle(AltPP.ClientOffset.X, AltPP.ClientOffset.Y, rcC.Width + AltPP.ClientOffset.X, rcC.Height + AltPP.ClientOffset.Y)
-        twp.rcDestination = New Rectangle(pbZoom.Left, pbZoom.Top, pbZoom.Right, pbZoom.Bottom)
 
         Dim mode = My.Settings.ScalingMode '0 auto, 1 blur, 2 pixel , pixel on non 100% DPI
         If My.Settings.ScalingMode = 0 Then
             Dim compsz As Size = pbZoom.Size
-            Dim factor = 1 ' If(AltPP.RegHighDpiAware, AltPP.WindowsScaling / 100, 1) 'todo: refactor this to AstoniaProcess
-            dBug.print($"UpdateThumb pbzoom {pbZoom.Size}")
+            Dim factor = AltPP.WindowsScaling / 100 'todo: refactor this to AstoniaProcess
+            dBug.Print($"UpdateThumb pbzoom pz {compsz.Width} cz {AltPP.ClientRect.Width} factor {factor}")
             If (compsz.Width / (AltPP.ClientRect.Width * factor) >= 2) AndAlso
                (compsz.Height / (AltPP.ClientRect.Height * factor) >= 2) Then
-                dBug.print($"auto mode 2 selected {compsz} {AltPP.ClientRect} {AltPP.ClientRect.Width * factor}")
+                dBug.Print($"auto mode 2 selected {compsz} {AltPP.ClientRect} {AltPP.ClientRect.Width * factor}")
                 mode = 2
             Else
-                dBug.print($"auto mode 1 selected {compsz} {AltPP.ClientRect} {AltPP.ClientRect.Width * factor}")
+                dBug.Print($"auto mode 1 selected {compsz} {AltPP.ClientRect} {AltPP.ClientRect.Width * factor}")
                 mode = 1
             End If
         End If
 
-        dBug.Print($"WindowsScaling {Me.WindowsScaling} {AltPP?.WindowsScaling}")
-        If Me.WindowsScaling <> 100 OrElse AltPP.WindowsScaling <> 100 Then 'handle windows scaling
-            twp.rcDestination = New Rectangle(pbZoom.Left, pbZoom.Top - 1, pbZoom.Right, pbZoom.Bottom)
+        dBug.Print($"WindowsScaling {Me.WindowsScaling} AP.WS {AltPP?.WindowsScaling} AP.DPI {AltPP.RegHighDpiAware}")
+        If AltPP.WindowsScaling <> 100 AndAlso Not AltPP.RegHighDpiAware Then 'handle windows scaling
+            dBug.Print($"pixel mode disabled {AltPP?.WindowsScaling}")
             mode = 1
-            dBug.Print($"pixel mode disabled {Me.WindowsScaling}")
         End If
 
+        If Me.WindowsScaling <> 100 Then
+            twp.rcDestination = New Rectangle(pbZoom.Left, pbZoom.Top - 1, pbZoom.Right, pbZoom.Bottom)
+        Else
+            twp.rcDestination = New Rectangle(pbZoom.Left, pbZoom.Top, pbZoom.Right, pbZoom.Bottom)
+        End If
         'If AltPP.WindowsScaling <> 100 Then 'todo divise check to see if astonia is forced DPI aware
         '    dBug.print($"scaling not 100: {AltPP.RegHighDpiAware} {AltPP.WindowsScaling} {AltPP.WindowRect}")
         '    mode = 1
@@ -100,6 +103,7 @@ Partial Public NotInheritable Class FrmMain
             twp.fSourceClientAreaOnly = False
             twp.dwFlags = twp.dwFlags Or DwmThumbnailFlags.DWM_TNP_RECTSOURCE
             twp.rcSource = AltPP.rcSource(pbZoom.Size, mode)
+            dBug.Print($"rcSource {twp.rcSource} rcC {AltPP.ClientRect}")
         End If
 
         Dim ret As Integer? = Nothing
