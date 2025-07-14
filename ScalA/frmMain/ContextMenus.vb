@@ -748,7 +748,8 @@ Partial Public NotInheritable Class FrmMain
         Dim Files As New ConcurrentBag(Of ToolStripItem)
         'For Each fullLink As String In System.IO.Directory.EnumerateFiles(pth) _
         '.Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower))
-        Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).ToArray().Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)),
+        Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell"))
+            Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).ToArray().Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)),
                          Sub(fullLink As String)
 
                              'dBug.print(System.IO.Path.GetFileName(fullLink))
@@ -763,7 +764,6 @@ Partial Public NotInheritable Class FrmMain
 
                              If My.Settings.QLResolveLnk AndAlso fullLink.ToLower.EndsWith(".lnk") Then
 
-                                 Dim shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell"))
                                  Dim oLink As Object = shellLocal.Value.CreateShortcut(fullLink)
                                  Dim target As String = oLink.TargetPath
                                  If IO.Directory.Exists(target) Then
@@ -818,8 +818,7 @@ Partial Public NotInheritable Class FrmMain
                                  'Exit For
                              End If
                          End Sub)
-        'Next
-
+        End Using
         menuItems = Dirs.OrderBy(Function(d) d.Tag(0), nsSorter).Concat(
                     Files.OrderBy(Function(f) IO.Path.GetFileNameWithoutExtension(f.Tag(0)), nsSorter)).ToList
 
@@ -894,7 +893,8 @@ Partial Public NotInheritable Class FrmMain
 
                          If My.Settings.QLResolveLnk Then
                              Dim iconLocks As New ConcurrentDictionary(Of String, Object)
-                             Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested).Where(Function(i) CStr(i.Tag(0)).ToLower().EndsWith(".lnk")),
+                             Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell"))
+                                 Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested).Where(Function(i) CStr(i.Tag(0)).ToLower().EndsWith(".lnk")),
                                           Sub(it As ToolStripItem)
                                               Dim PathName As String = it.Tag(0)
 
@@ -902,7 +902,6 @@ Partial Public NotInheritable Class FrmMain
 
                                               'Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(PathName) 'this is very slow. hence it is run seperately
                                               'Dim target As String = oLink.TargetPath
-                                              Dim shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell"))
                                               Dim oLink As Object = shellLocal.Value.CreateShortcut(PathName)
                                               Dim target As String = oLink.TargetPath
 
@@ -931,6 +930,7 @@ Partial Public NotInheritable Class FrmMain
                                                   End SyncLock
                                               End If
                                           End Sub)
+                             End Using
                          End If
                      End Sub, ct)
         Catch ex As System.Threading.Tasks.TaskCanceledException
