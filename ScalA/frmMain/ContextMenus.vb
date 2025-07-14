@@ -885,7 +885,9 @@ Partial Public NotInheritable Class FrmMain
     Private Sub DeferredIconLoading(items As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
         Try
             Task.Run(Sub()
-                         Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested),
+                         Dim opts As New ParallelOptions With {.CancellationToken = ct}
+
+                         Parallel.ForEach(items, opts,
                                           Sub(it As ToolStripItem)
                                               Dim ico = GetIconFromCache(it.Tag(0), it.Tag(1))
                                               Me.Invoke(Sub() it.Image = ico)
@@ -894,7 +896,7 @@ Partial Public NotInheritable Class FrmMain
                          If My.Settings.QLResolveLnk Then
                              Dim iconLocks As New ConcurrentDictionary(Of String, Object)
                              Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell"))
-                                 Parallel.ForEach(items.TakeWhile(Function(__) Not ct.IsCancellationRequested).Where(Function(i) CStr(i.Tag(0)).ToLower().EndsWith(".lnk")),
+                                 Parallel.ForEach(items.Where(Function(i) CStr(i.Tag(0)).ToLower().EndsWith(".lnk")), opts,
                                           Sub(it As ToolStripItem)
                                               Dim PathName As String = it.Tag(0)
 
