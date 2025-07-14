@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Concurrent
+Imports System.IO
 Imports System.Runtime.InteropServices
 Imports Microsoft.Win32
 
@@ -702,116 +703,122 @@ Partial Public NotInheritable Class FrmMain
 
         Dim watch As Stopwatch = Stopwatch.StartNew()
 
-        Dim Dirs As New List(Of ToolStripItem)
+        Dim Dirs As New Concurrent.ConcurrentBag(Of ToolStripItem)
         Try
-            For Each fullDirs As String In System.IO.Directory.EnumerateDirectories(pth)
+            Parallel.ForEach(System.IO.Directory.EnumerateDirectories(pth).ToArray,
+                             Sub(fullDirs As String)
 
-                Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullDirs).Attributes
-                Dim hidden As Boolean = False
-                If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then hidden = True
+                                 Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullDirs).Attributes
+                                 Dim hidden As Boolean = False
+                                 If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then hidden = True
 
 
-                Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
-                Dim dispname As String = System.IO.Path.GetFileName(fullDirs)
+                                 Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
+                                 Dim dispname As String = System.IO.Path.GetFileName(fullDirs)
 
-                Dim smenu As New ToolStripMenuItem(If(vis, dispname, "(Hidden)"), foldericon) With {.Tag = {fullDirs & "\", hidden, dispname}, .Visible = vis}
+                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname, "(Hidden)"), foldericon) With {.Tag = {fullDirs & "\", hidden, dispname}, .Visible = vis}
 
-                smenu.DropDownItems.Add("(Dummy)").Enabled = False
-                smenu.DoubleClickEnabled = True
+                                 smenu.DropDownItems.Add("(Dummy)").Enabled = False
+                                 smenu.DoubleClickEnabled = True
 
-                AddHandler smenu.MouseDown, AddressOf QL_MouseDown
-                AddHandler smenu.DoubleClick, AddressOf DblClickDir
-                AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
-                'AddHandler smenu.DropDownOpened, AddressOf DeferredIconLoading
-                AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
+                                 AddHandler smenu.MouseDown, AddressOf QL_MouseDown
+                                 AddHandler smenu.DoubleClick, AddressOf DblClickDir
+                                 AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
+                                 'AddHandler smenu.DropDownOpened, AddressOf DeferredIconLoading
+                                 AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
 
-                AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
+                                 AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
 
-                Dirs.Add(smenu)
-                If Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden Then
-                    isEmpty = False
-                End If
-                If watch.ElapsedMilliseconds > TOTALTIMEOUT Then
-                    timedout = True
-                    Exit For
-                End If
-            Next
+                                 Dirs.Add(smenu)
+                                 If Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden Then
+                                     isEmpty = False
+                                 End If
+                                 If watch.ElapsedMilliseconds > TOTALTIMEOUT Then
+                                     timedout = True
+                                     Exit Sub
+                                 End If
+                             End Sub)
 
         Catch
             menuItems.Add(New ToolStripMenuItem("<Access Denied>") With {.Enabled = False})
             Return menuItems
         End Try
 
-        Dim Files As New List(Of ToolStripItem)
-        For Each fullLink As String In System.IO.Directory.EnumerateFiles(pth) _
-                                       .Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower))
-            'dBug.print(System.IO.Path.GetFileName(fullLink))
+        Dim Files As New ConcurrentBag(Of ToolStripItem)
+        'For Each fullLink As String In System.IO.Directory.EnumerateFiles(pth) _
+        '.Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower))
+        Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).ToArray().Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)),
+                         Sub(fullLink As String)
 
-            Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullLink).Attributes
-            Dim hidden As Boolean = False
-            If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then hidden = True
+                             'dBug.print(System.IO.Path.GetFileName(fullLink))
 
-            'don't add self to list
-            If System.IO.Path.GetFileName(fullLink) = System.IO.Path.GetFileName(Environment.GetCommandLineArgs(0)) Then Continue For
-            If fullLink = Environment.GetCommandLineArgs(0) Then Continue For
+                             Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullLink).Attributes
+                             Dim hidden As Boolean = False
+                             If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then hidden = True
 
-            If My.Settings.QLResolveLnk AndAlso fullLink.ToLower.EndsWith(".lnk") Then
-                Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(fullLink)
-                Dim target As String = oLink.TargetPath
-                If IO.Directory.Exists(target) Then
+                             'don't add self to list
+                             If System.IO.Path.GetFileName(fullLink) = System.IO.Path.GetFileName(Environment.GetCommandLineArgs(0)) Then Exit Sub
+                             If fullLink = Environment.GetCommandLineArgs(0) Then Exit Sub
 
-                    Dim hid As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
-                    Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
+                             If My.Settings.QLResolveLnk AndAlso fullLink.ToLower.EndsWith(".lnk") Then
+                                 Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(fullLink)
+                                 Dim target As String = oLink.TargetPath
+                                 If IO.Directory.Exists(target) Then
 
-                    Dim smenu As New ToolStripMenuItem(If(hid, dispname, "(Hidden)"), foldericon) With {.Tag = {fullLink, hidden, dispname, target & "\"}, .Visible = hid}
+                                     Dim hid As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
+                                     Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
 
-                    smenu.DropDownItems.Add("(Dummy)").Enabled = False
-                    smenu.DoubleClickEnabled = True
+                                     Dim smenu As New ToolStripMenuItem(If(hid, dispname, "(Hidden)"), foldericon) With {.Tag = {fullLink, hidden, dispname, target & "\"}, .Visible = hid}
 
-                    AddHandler smenu.MouseDown, AddressOf QL_MouseDown
-                    AddHandler smenu.DoubleClick, AddressOf DblClickDir
-                    AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
-                    'AddHandler smenu.DropDownOpened, AddressOf ddo
+                                     smenu.DropDownItems.Add("(Dummy)").Enabled = False
+                                     smenu.DoubleClickEnabled = True
+
+                                     AddHandler smenu.MouseDown, AddressOf QL_MouseDown
+                                     AddHandler smenu.DoubleClick, AddressOf DblClickDir
+                                     AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
+                                     'AddHandler smenu.DropDownOpened, AddressOf ddo
 
 
-                    AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
+                                     AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
 
-                    addLinkWatcher(target)
+                                     addLinkWatcher(target)
 
-                    Dirs.Add(smenu)
-                    isEmpty = False
+                                     Dirs.Add(smenu)
+                                     isEmpty = False
 
-                    Continue For
-                End If
-            End If
+                                     'Continue For
+                                     Exit Sub
+                                 End If
+                             End If
 
-            Dim linkName As String
-            If hideExt.Contains(System.IO.Path.GetExtension(fullLink).ToLower) Then
-                linkName = System.IO.Path.GetFileNameWithoutExtension(fullLink)
-            Else
-                linkName = System.IO.Path.GetFileName(fullLink)
-            End If
+                             Dim linkName As String
+                             If hideExt.Contains(System.IO.Path.GetExtension(fullLink).ToLower) Then
+                                 linkName = System.IO.Path.GetFileNameWithoutExtension(fullLink)
+                             Else
+                                 linkName = System.IO.Path.GetFileName(fullLink)
+                             End If
 
-            Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
+                             Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
 
-            Dim item As New ToolStripMenuItem(If(vis, linkName, "(Hidden)")) With {.Tag = {fullLink, hidden, linkName}, .Visible = vis}
-            AddHandler item.MouseDown, AddressOf QL_MouseDown
-            'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
-            'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
-            AddHandler item.Paint, AddressOf QLMenuItem_Paint
+                             Dim item As New ToolStripMenuItem(If(vis, linkName, "(Hidden)")) With {.Tag = {fullLink, hidden, linkName}, .Visible = vis}
+                             AddHandler item.MouseDown, AddressOf QL_MouseDown
+                             'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
+                             'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
+                             AddHandler item.Paint, AddressOf QLMenuItem_Paint
 
-            Files.Add(item)
-            If vis Then
-                isEmpty = False
-            End If
-            If watch.ElapsedMilliseconds > TOTALTIMEOUT Then
-                timedout = True
-                Exit For
-            End If
-        Next
+                             Files.Add(item)
+                             If vis Then
+                                 isEmpty = False
+                             End If
+                             If watch.ElapsedMilliseconds > TOTALTIMEOUT Then
+                                 timedout = True
+                                 'Exit For
+                             End If
+                         End Sub)
+        'Next
 
         menuItems = Dirs.OrderBy(Function(d) d.Tag(0), nsSorter).Concat(
-                   Files.OrderBy(Function(f) IO.Path.GetFileNameWithoutExtension(f.Tag(0)), nsSorter)).ToList
+                    Files.OrderBy(Function(f) IO.Path.GetFileNameWithoutExtension(f.Tag(0)), nsSorter)).ToList
 
         If timedout Then
             menuItems.Add(New ToolStripMenuItem("<TimedOut>") With {.Enabled = False})
@@ -952,11 +959,13 @@ Partial Public NotInheritable Class FrmMain
 
         CloseOtherDropDowns(cmsQuickLaunch.Items, keep)
 
-        sender.DropDownItems.Clear()
 
         Dim target = If(sender.Tag.length >= 4, sender.Tag(3), sender.Tag(0))
 
+        cmsQuickLaunch.SuspendLayout()
+        sender.DropDownItems.Clear()
         sender.DropDownItems.AddRange(ParseDir(target).ToArray)
+        cmsQuickLaunch.ResumeLayout()
     End Sub
     Private foldericon = GetIconFromCache(FileIO.SpecialDirectories.Temp & "\", False, True)
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
@@ -1215,7 +1224,6 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         'tmrTick.Interval = 1000
-        sender.Items.Clear()
 
         If Not FileIO.FileSystem.DirectoryExists(My.Settings.links) Then My.Settings.links = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) & "\ScalA"
 
@@ -1226,7 +1234,10 @@ Partial Public NotInheritable Class FrmMain
 
         If My.Computer.Keyboard.CtrlKeyDown AndAlso My.Computer.Keyboard.ShiftKeyDown Then ctrlshift_pressed = True
 
+        cmsQuickLaunch.SuspendLayout()
+        sender.Items.Clear()
         sender.Items.AddRange(ParseDir(IO.Path.GetFullPath(My.Settings.links)).ToArray)
+        cmsQuickLaunch.ResumeLayout()
 
         'If My.Computer.Keyboard.CtrlKeyDown Then
         '    sender.Items.Add(New ToolStripSeparator())
