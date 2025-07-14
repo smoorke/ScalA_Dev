@@ -752,7 +752,7 @@ Partial Public NotInheritable Class FrmMain
 
                              'dBug.print(System.IO.Path.GetFileName(fullLink))
 
-                             Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullLink).Attributes
+                             Dim attr As System.IO.FileAttributes = New System.IO.FileInfo(fullLink).Attributes
                              Dim hidden As Boolean = False
                              If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then hidden = True
 
