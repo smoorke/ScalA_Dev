@@ -1,6 +1,7 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.IO
 Imports System.Runtime.InteropServices
+Imports System.Threading
 Imports Microsoft.Win32
 
 Public NotInheritable Class ContextMenus
@@ -761,7 +762,9 @@ Partial Public NotInheritable Class FrmMain
                              If fullLink = Environment.GetCommandLineArgs(0) Then Exit Sub
 
                              If My.Settings.QLResolveLnk AndAlso fullLink.ToLower.EndsWith(".lnk") Then
-                                 Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(fullLink)
+
+                                 Dim shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell"))
+                                 Dim oLink As Object = shellLocal.Value.CreateShortcut(fullLink)
                                  Dim target As String = oLink.TargetPath
                                  If IO.Directory.Exists(target) Then
 
@@ -897,8 +900,12 @@ Partial Public NotInheritable Class FrmMain
 
                                               If doneShortcutOverlayPaths.TryGetValue(PathName, Nothing) Then Exit Sub
 
-                                              Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(PathName) 'this is very slow. hence it is run seperately
+                                              'Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(PathName) 'this is very slow. hence it is run seperately
+                                              'Dim target As String = oLink.TargetPath
+                                              Dim shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell"))
+                                              Dim oLink As Object = shellLocal.Value.CreateShortcut(PathName)
                                               Dim target As String = oLink.TargetPath
+
                                               If IO.Directory.Exists(target) Then
                                                   Dim bm As Bitmap = GetIconFromCache(it.Tag(0), it.Tag(1)) '?.Clone()
                                                   If bm Is Nothing Then Exit Sub
