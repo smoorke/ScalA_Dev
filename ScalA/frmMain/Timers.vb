@@ -134,7 +134,7 @@ Partial NotInheritable Class FrmMain
 
             Dim factor = 1 ' ScreenManager.PrimaryScreen.ScalingPercent / AltPP.WindowsScaling
 
-            dBug.log($"factor {factor}")
+            'dBug.log($"factor {factor}")
 
             newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width * factor) - If(AltPP?.ClientOffset.X, 0) '- My.Settings.offset.X
             newY = MousePosition.Y.Map(ptZ.Y, ptZ.Y + pbZoom.Height, ptZ.Y, ptZ.Y + pbZoom.Height - rcC.Height * factor) - If(AltPP?.ClientOffset.Y, 0) '- My.Settings.offset.Y

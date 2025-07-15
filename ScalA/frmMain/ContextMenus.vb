@@ -1,5 +1,5 @@
 ﻿Imports System.Collections.Concurrent
-Imports System.IO
+Imports System.ComponentModel
 Imports System.Runtime.InteropServices
 Imports System.Threading
 Imports Microsoft.Win32
@@ -517,13 +517,13 @@ Partial Public NotInheritable Class FrmMain
 
     Friend Shared ReadOnly iconCache As New ConcurrentDictionary(Of String, Bitmap)
 
-    Private Function GetIconFromCache(ByVal PathName As String, transp As Boolean, Optional defFolder As Boolean = False) As Bitmap
+    Private Function GetIconFromCache(ByVal Path As String, transp As Boolean, Optional defFolder As Boolean = False) As Bitmap
 
-        If PathName Is Nothing Then Return Nothing
+        If Path Is Nothing Then Return Nothing
 
         Try
-            Return iconCache.GetOrAdd(PathName,
-                   Function()
+            Return iconCache.GetOrAdd(Path,
+                   Function(PathName As String)
 
                        dBug.Print($"iconCahceMiss: {PathName}")
 
@@ -544,6 +544,8 @@ Partial Public NotInheritable Class FrmMain
                            ico = Icon.FromHandle(fi.hIcon)
                            bm = ico.ToBitmap
                            DestroyIcon(ico.Handle)
+                           Return bm
+
                        Else 'not a folder
                            If PathName.ToLower.EndsWith(".url") Then
                                Try
@@ -704,20 +706,20 @@ Partial Public NotInheritable Class FrmMain
 
         Dim watch As Stopwatch = Stopwatch.StartNew()
 
-        Dim Dirs As New Concurrent.ConcurrentBag(Of ToolStripItem)
+        Dim Dirs As New ConcurrentBag(Of ToolStripItem)
         Try
-            Parallel.ForEach(System.IO.Directory.EnumerateDirectories(pth).ToArray,
-                             Sub(fullDirs As String)
+            Dim opts As New ParallelOptions With {.CancellationToken = cantok}
+            Parallel.ForEach(System.IO.Directory.EnumerateDirectories(pth).ToArray(),
+                             Sub(fulldirs As String)
 
-                                 Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fullDirs).Attributes
+                                 Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fulldirs).Attributes
                                  Dim hidden As Boolean = False
                                  If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then hidden = True
 
-
                                  Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
-                                 Dim dispname As String = System.IO.Path.GetFileName(fullDirs)
+                                 Dim dispname As String = System.IO.Path.GetFileName(fulldirs)
 
-                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname, "(Hidden)"), foldericon) With {.Tag = {fullDirs & "\", hidden, dispname}, .Visible = vis}
+                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname, "*Hidden*"), foldericon) With {.Tag = {fulldirs & "\", hidden, dispname}, .Visible = vis}
 
                                  smenu.DropDownItems.Add("(Dummy)").Enabled = False
                                  smenu.DoubleClickEnabled = True
@@ -736,34 +738,28 @@ Partial Public NotInheritable Class FrmMain
                                  End If
                                  If watch.ElapsedMilliseconds > TOTALTIMEOUT Then
                                      timedout = True
-                                     Exit Sub
                                  End If
                              End Sub)
-
-        Catch
+        Catch ex As Win32Exception
             menuItems.Add(New ToolStripMenuItem("<Access Denied>") With {.Enabled = False})
             Return menuItems
         End Try
 
         Dim Files As New ConcurrentBag(Of ToolStripItem)
-        'For Each fullLink As String In System.IO.Directory.EnumerateFiles(pth) _
-        '.Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower))
+
         Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell"))
             Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).ToArray().Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)),
                          Sub(fullLink As String)
-
-                             'dBug.print(System.IO.Path.GetFileName(fullLink))
 
                              Dim attr As System.IO.FileAttributes = New System.IO.FileInfo(fullLink).Attributes
                              Dim hidden As Boolean = False
                              If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then hidden = True
 
                              'don't add self to list
-                             If System.IO.Path.GetFileName(fullLink) = System.IO.Path.GetFileName(Environment.GetCommandLineArgs(0)) Then Exit Sub
-                             If fullLink = Environment.GetCommandLineArgs(0) Then Exit Sub
+                             If System.IO.Path.GetFileName(fullLink) = System.IO.Path.GetFileName(Environment.GetCommandLineArgs(0)) Then Exit Sub 'Continue For
+                             If fullLink = Environment.GetCommandLineArgs(0) Then Exit Sub 'Continue For
 
                              If My.Settings.QLResolveLnk AndAlso fullLink.ToLower.EndsWith(".lnk") Then
-
                                  Dim oLink As Object = shellLocal.Value.CreateShortcut(fullLink)
                                  Dim target As String = oLink.TargetPath
                                  If IO.Directory.Exists(target) Then
@@ -771,7 +767,7 @@ Partial Public NotInheritable Class FrmMain
                                      Dim hid As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
                                      Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
 
-                                     Dim smenu As New ToolStripMenuItem(If(hid, dispname, "(Hidden)"), foldericon) With {.Tag = {fullLink, hidden, dispname, target & "\"}, .Visible = hid}
+                                     Dim smenu As New ToolStripMenuItem(If(hid, dispname, "*Hidden*"), foldericon) With {.Tag = {fullLink, hidden, dispname, target & "\"}, .Visible = hid}
 
                                      smenu.DropDownItems.Add("(Dummy)").Enabled = False
                                      smenu.DoubleClickEnabled = True
@@ -789,8 +785,7 @@ Partial Public NotInheritable Class FrmMain
                                      Dirs.Add(smenu)
                                      isEmpty = False
 
-                                     'Continue For
-                                     Exit Sub
+                                     Exit Sub 'Continue For
                                  End If
                              End If
 
@@ -803,7 +798,7 @@ Partial Public NotInheritable Class FrmMain
 
                              Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
 
-                             Dim item As New ToolStripMenuItem(If(vis, linkName, "(Hidden)")) With {.Tag = {fullLink, hidden, linkName}, .Visible = vis}
+                             Dim item As New ToolStripMenuItem(If(vis, linkName, "*Hidden*")) With {.Tag = {fullLink, hidden, linkName}, .Visible = vis}
                              AddHandler item.MouseDown, AddressOf QL_MouseDown
                              'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
                              'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
@@ -815,7 +810,6 @@ Partial Public NotInheritable Class FrmMain
                              End If
                              If watch.ElapsedMilliseconds > TOTALTIMEOUT Then
                                  timedout = True
-                                 'Exit For
                              End If
                          End Sub)
         End Using
@@ -837,7 +831,7 @@ Partial Public NotInheritable Class FrmMain
         cts?.Dispose()
         cts = New Threading.CancellationTokenSource
         cantok = cts.Token
-        DeferredIconLoading(Files.Concat(Dirs), cantok)
+        DeferredIconLoading(Dirs, Files, cantok)
 
         dBug.Print($"parsing ""{pth}"" took {watch.ElapsedMilliseconds} ms")
         watch.Stop()
@@ -864,7 +858,7 @@ Partial Public NotInheritable Class FrmMain
         Task.Run(Sub() Parallel.ForEach(col.Cast(Of ToolStripItem),
             Sub(it)
                 Me.BeginInvoke(Sub()
-                                   If it.Text = "(Hidden)" Then it.Text = it.Tag(2)
+                                   If it.Text = "*Hidden*" Then it.Text = it.Tag(2)
                                    it.Visible = it.Text <> "(Empty)"
                                End Sub)
                 If TypeOf it Is ToolStripMenuItem AndAlso DirectCast(it, ToolStripMenuItem).HasDropDownItems Then
@@ -882,11 +876,11 @@ Partial Public NotInheritable Class FrmMain
         cts?.Cancel()
     End Sub
     Friend Shared doneShortcutOverlayPaths As New ConcurrentDictionary(Of String, Byte)
-    Private Sub DeferredIconLoading(items As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
-        Try
-            Task.Run(Sub()
+    Private Sub DeferredIconLoading(Dirs As IEnumerable(Of ToolStripItem), Files As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
+        Task.Run(Sub()
+                     Try
                          Dim opts As New ParallelOptions With {.CancellationToken = ct}
-
+                         Dim items = Files.Concat(Dirs)
                          Parallel.ForEach(items, opts,
                                           Sub(it As ToolStripItem)
                                               Dim ico = GetIconFromCache(it.Tag(0), it.Tag(1))
@@ -895,51 +889,45 @@ Partial Public NotInheritable Class FrmMain
 
                          If My.Settings.QLResolveLnk Then
                              Dim iconLocks As New ConcurrentDictionary(Of String, Object)
-                             Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell"))
-                                 Parallel.ForEach(items.Where(Function(i) CStr(i.Tag(0)).ToLower().EndsWith(".lnk")), opts,
+                             'Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell"))
+                             Parallel.ForEach(Dirs.Where(Function(i) CStr(i.Tag(0)).ToLower().EndsWith(".lnk")), opts,
                                           Sub(it As ToolStripItem)
                                               Dim PathName As String = it.Tag(0)
 
                                               If doneShortcutOverlayPaths.TryGetValue(PathName, Nothing) Then Exit Sub
 
-                                              'Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(PathName) 'this is very slow. hence it is run seperately
-                                              'Dim target As String = oLink.TargetPath
-                                              Dim oLink As Object = shellLocal.Value.CreateShortcut(PathName)
-                                              Dim target As String = oLink.TargetPath
+                                              Dim bm As Bitmap = GetIconFromCache(it.Tag(0), it.Tag(1)) '?.Clone()
+                                              If bm Is Nothing Then Exit Sub
+                                              Dim lockObj = iconLocks.GetOrAdd(PathName, Function(__) New Object())
+                                              SyncLock lockObj
+                                                  Dim ico As Bitmap
+                                                  Try
+                                                      ico = bm '.Clone()
 
-                                              If IO.Directory.Exists(target) Then
-                                                  Dim bm As Bitmap = GetIconFromCache(it.Tag(0), it.Tag(1)) '?.Clone()
-                                                  If bm Is Nothing Then Exit Sub
-                                                  Dim lockObj = iconLocks.GetOrAdd(PathName, Function(__) New Object())
-                                                  SyncLock lockObj
-                                                      Dim ico As Bitmap
-                                                      Try
-                                                          ico = bm.Clone()
-
-                                                          Using g As Graphics = Graphics.FromImage(ico)
-                                                              g.DrawIcon(My.Resources.shortcut_overlay, New Rectangle(New Point, ico.Size))
-                                                          End Using
-                                                          iconCache.TryUpdate(PathName, ico, bm)
-                                                          Me.Invoke(Sub()
-                                                                        it.Image = ico
-                                                                        it.Invalidate()
-                                                                    End Sub)
-                                                          doneShortcutOverlayPaths.TryAdd(PathName, 0)
-                                                          dBug.Print($"Overlay applied to: {PathName}")
-                                                      Catch
-                                                          dBug.Print("Exception on drawing icon shotcut overlay")
-                                                      End Try
-                                                  End SyncLock
-                                              End If
+                                                      Using g As Graphics = Graphics.FromImage(ico)
+                                                          g.DrawIcon(My.Resources.shortcut_overlay, New Rectangle(New Point, ico.Size))
+                                                      End Using
+                                                      'iconCache.TryUpdate(PathName, ico, bm)
+                                                      Me.Invoke(Sub()
+                                                                    'it.Image = ico
+                                                                    it.Invalidate()
+                                                                End Sub)
+                                                      doneShortcutOverlayPaths.TryAdd(PathName, 0)
+                                                      dBug.Print($"Overlay applied to: {PathName}")
+                                                  Catch
+                                                      dBug.Print("Exception on drawing icon shotcut overlay")
+                                                  End Try
+                                              End SyncLock
+                                              'End If
                                           End Sub)
-                             End Using
+                             'End Using
                          End If
-                     End Sub, ct)
-        Catch ex As System.Threading.Tasks.TaskCanceledException
-            dBug.Print("deferredIconLoading Task canceled")
-        Catch
-            dBug.Print("deferredIconLoading general exception")
-        End Try
+                     Catch ex As System.OperationCanceledException
+                         dBug.Print("deferrediconloading operationCanceled")
+                     Catch
+                         dBug.Print("deferredIconLoading general exception")
+                     End Try
+                 End Sub, ct)
     End Sub
     Public Sub CloseOtherDropDowns(items As ToolStripItemCollection, Optional keep As HashSet(Of ToolStripMenuItem) = Nothing)
         If keep Is Nothing Then keep = New HashSet(Of ToolStripMenuItem)
@@ -968,13 +956,14 @@ Partial Public NotInheritable Class FrmMain
 
         CloseOtherDropDowns(cmsQuickLaunch.Items, keep)
 
-
         Dim target = If(sender.Tag.length >= 4, sender.Tag(3), sender.Tag(0))
 
-        cmsQuickLaunch.SuspendLayout()
-        sender.DropDownItems.Clear()
+        'sender.DropDownItems.Clear()
+        Dim olditems = sender.DropDownItems.Cast(Of ToolStripItem).ToArray()
         sender.DropDownItems.AddRange(ParseDir(target).ToArray)
-        cmsQuickLaunch.ResumeLayout()
+        For Each it As ToolStripItem In olditems
+            sender.DropDownItems.Remove(it)
+        Next
     End Sub
     Private foldericon = GetIconFromCache(FileIO.SpecialDirectories.Temp & "\", False, True)
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
@@ -1233,6 +1222,7 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         'tmrTick.Interval = 1000
+        sender.Items.Clear()
 
         If Not FileIO.FileSystem.DirectoryExists(My.Settings.links) Then My.Settings.links = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) & "\ScalA"
 
@@ -1243,10 +1233,7 @@ Partial Public NotInheritable Class FrmMain
 
         If My.Computer.Keyboard.CtrlKeyDown AndAlso My.Computer.Keyboard.ShiftKeyDown Then ctrlshift_pressed = True
 
-        cmsQuickLaunch.SuspendLayout()
-        sender.Items.Clear()
         sender.Items.AddRange(ParseDir(IO.Path.GetFullPath(My.Settings.links)).ToArray)
-        cmsQuickLaunch.ResumeLayout()
 
         'If My.Computer.Keyboard.CtrlKeyDown Then
         '    sender.Items.Add(New ToolStripSeparator())
