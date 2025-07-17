@@ -92,205 +92,211 @@ Partial Public NotInheritable Class FrmMain
     Private Async Sub CboAlt_SelectedIndexChanged(sender As ComboBox, e As EventArgs) Handles cboAlt.SelectedIndexChanged
 
         If updatingCombobox Then Exit Sub
+        Try
 
-        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
-        cmsQuickLaunch.Close()
-        'IPC.AddOrUpdateInstance(scalaPID, sender.SelectedIndex = 0)
+            CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+            cmsQuickLaunch.Close()
+            'IPC.AddOrUpdateInstance(scalaPID, sender.SelectedIndex = 0)
 
-        dBug.Print($"CboAlt_SelectedIndexChanged {sender.SelectedIndex}")
+            dBug.Print($"CboAlt_SelectedIndexChanged {sender.SelectedIndex}")
 
-        'btnAlt1.Focus()
+            'btnAlt1.Focus()
 
-        'If AltPP IsNot Nothing AndAlso AltPP.Id <> 0 AndAlso AltPP.Equals(CType(that.SelectedItem, AstoniaProcess)) Then
-        '    AltPP.Activate()
-        '    Exit Sub
-        'End If
-
-        'If AltPP.Id = 0 AndAlso that.SelectedIndex = 0 Then
-        '    Exit Sub
-        'End If
-#If DEBUG Then
-        TickCounter = 0
-#End If
-
-        Detach(False)
-        AstoniaProcess.RestorePos()
-        AltPP = sender.SelectedItem
-        'IPC.AddOrUpdateInstance(scalaPID, sender.SelectedIndex = 0, AltPP.Id)
-        UpdateTitle()
-
-        If sender.SelectedIndex = 0 Then
-            If Not My.Settings.gameOnOverview Then
-                Try
-                    AllowSetForegroundWindow(ASFW_ANY)
-                    AppActivate(scalaPID)
-                Catch
-                End Try
-            End If
-            'pnlOverview.SuspendLayout()
-            pnlOverview.Show()
-            AstoniaProcess.CacheCounter = 0
-            AstoniaProcess.ProcCache.Clear()
-            Dim visbut = UpdateButtonLayout(AstoniaProcess.Enumerate(blackList, True).Count)
-            For Each but As AButton In visbut.Where(Function(b) b.Text <> "")
-                but.Image = Nothing
-                but.BackgroundImage = Nothing
-                but.Text = String.Empty
-            Next
-            'pnlOverview.ResumeLayout()
-            tmrOverview.Enabled = True
-            tmrTick.Enabled = False
-            If prevItem.Id <> 0 Then DwmUnregisterThumbnail(thumb)
-            sysTrayIcon.Icon = My.Resources.moa3
-            prevItem = DirectCast(sender.SelectedItem, AstoniaProcess)
-            PnlEqLock.Visible = False
-            AOshowEqLock = False
-            Me.TopMost = My.Settings.topmost
-            If Not startup AndAlso My.Settings.MaxNormOverview AndAlso Me.WindowState <> FormWindowState.Maximized Then
-                btnMax.PerformClick()
-            End If
-            Exit Sub
-        Else
-            pnlOverview.Hide()
-            tmrOverview.Enabled = False
-            PnlEqLock.Visible = True
-        End If
-
-        If Not AltPP?.IsRunning Then
-            Dim idx As Integer = sender.SelectedIndex
-            sender.Items.RemoveAt(idx)
-            sender.SelectedIndex = Math.Min(idx, sender.Items.Count - 1)
-            Exit Sub
-        End If
-
-
-        If Not AltPP?.Id = 0 Then
-            If AltPP.IsMinimized Then AltPP.Restore()
-
-            'AltPP.ResetCache()
-
-            Dim rcW As Rectangle = AltPP.WindowRect
-            rcC = AltPP.ClientRect
-
-            Dim ptC As Point
-            ClientToScreen(AltPP.MainWindowHandle, ptC)
-
-            dBug.Print($"rcW:{rcW}")
-            dBug.Print($"rcC:{rcC}")
-            dBug.Print($"ptC:{ptC}")
-
-            'check if target is running as windowed. if not ask to run it with -w
-            If rcC.Width = 0 AndAlso rcC.Height = 0 OrElse
-               rcC.X = ptC.X AndAlso rcC.Y = ptC.Y Then
-                'MessageBox.Show("Client is not running in windowed mode", "Error")
-                dBug.Print("Astonia Not Windowed")
-                Await AltPP.ReOpenAsWindowed()
-                'cboAlt.SelectedIndex = 0
-                Exit Sub
-            End If
-            AltPP.SavePos(rcW.Location)
-
-            dBug.Print("tmrTick.Enabled")
-            tmrTick.Enabled = True
-
-            dBug.Print("AltPPTopMost " & AltPP.TopMost.ToString)
-            dBug.Print("SelfTopMost " & Process.GetCurrentProcess.IsTopMost.ToString)
-
-            Dim item As AstoniaProcess = DirectCast(sender.SelectedItem, AstoniaProcess)
-            If startThumbsDict.ContainsKey(item.Id) Then
-                dBug.Print($"reassignThumb {item.Id} {startThumbsDict(item.Id)} {item.Name}")
-                thumb = startThumbsDict(item.Id)
-            End If
-
-            For Each thumbid As IntPtr In startThumbsDict.Values
-                If thumbid = thumb Then Continue For
-                DwmUnregisterThumbnail(thumbid)
-            Next
-            startThumbsDict.Clear()
-            If My.Settings.MaxNormOverview AndAlso WindowState = FormWindowState.Maximized Then
-                btnMax.PerformClick()
-            End If
-            dBug.Print($"updateThumb pbzoom {pbZoom.Size}")
-            AltPP.CenterBehind(pbZoom, SetWindowPosFlags.DoNotActivate, True, True)
-            If Not My.Settings.MaxNormOverview AndAlso AnimsEnabled AndAlso rectDic.ContainsKey(item.Id) Then
-                AnimateThumb(rectDic(item.Id), New Rectangle(pbZoom.Left, pbZoom.Top, pbZoom.Right, pbZoom.Bottom))
-            Else
-                prevMode = 0
-                UpdateThumb(If(chkDebug.Checked, 128, 255))
-            End If
-            rectDic.Clear()
-            sysTrayIcon.Icon = AltPP?.GetIcon
-
-            Dim ScalAWinScaling = Me.WindowsScaling()
-
-            dBug.Print($"{ScalAWinScaling}% ScalA windows scaling")
-            dBug.Print($"{AltPP.WindowsScaling}% altPP windows scaling")
-
-            'Dim failcounter = 0
-            'If AltPP.WindowsScaling <> ScalAWinScaling Then 'scala is scaled diffrent than Alt
-            '    Const timeout As Integer = 500
-            '    Dim sw As Stopwatch = Stopwatch.StartNew()
-            '    Do 'looped delay until alt is scaled same
-            '        AltPP.CenterBehind(pbZoom, Nothing, True)
-            '        Dim rc As RECT
-            '        GetWindowRect(AltPP.MainWindowHandle, rc)
-            '        SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, rc.left + 1, rc.top + 1, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.FrameChanged)
-            '        dBug.print($"Scaling Delay {sw.ElapsedMilliseconds}ms {ScalAWinScaling}% vs {AltPP.WindowsScaling}")
-            '        Await Task.Delay(16)
-            '        If sw.ElapsedMilliseconds > timeout Then
-            '            sw.Stop()
-            '            dBug.print($"Scaling Delay Timeout! {failcounter}")
-            '            AstoniaProcess.RestorePos(True)
-            '            Await Task.Delay(16)
-            '            sw = Stopwatch.StartNew()
-            '            failcounter += 1
-            '        End If
-            '    Loop Until ScalAWinScaling = AltPP.WindowsScaling OrElse failcounter >= 3
-            '    AltPP.ResetCache()
-            '    UpdateThumb(If(chkDebug.Checked, 128, 255))
+            'If AltPP IsNot Nothing AndAlso AltPP.Id <> 0 AndAlso AltPP.Equals(CType(that.SelectedItem, AstoniaProcess)) Then
+            '    AltPP.Activate()
+            '    Exit Sub
             'End If
 
-            Attach(AltPP, True)
+            'If AltPP.Id = 0 AndAlso that.SelectedIndex = 0 Then
+            '    Exit Sub
+            'End If
+#If DEBUG Then
+            TickCounter = 0
+#End If
 
-            If My.Settings.topmost Then
-                AltPP.TopMost = True
+            Detach(False)
+            AstoniaProcess.RestorePos()
+            AltPP = sender.SelectedItem
+            'IPC.AddOrUpdateInstance(scalaPID, sender.SelectedIndex = 0, AltPP.Id)
+            UpdateTitle()
+
+            If sender.SelectedIndex = 0 Then
+                If Not My.Settings.gameOnOverview Then
+                    Try
+                        AllowSetForegroundWindow(ASFW_ANY)
+                        AppActivate(scalaPID)
+                    Catch
+                    End Try
+                End If
+                'pnlOverview.SuspendLayout()
+                pnlOverview.Show()
+                AstoniaProcess.CacheCounter = 0
+                AstoniaProcess.ProcCache.Clear()
+                Dim visbut = UpdateButtonLayout(AstoniaProcess.Enumerate(blackList, True).Count)
+                For Each but As AButton In visbut.Where(Function(b) b.Text <> "")
+                    but.Image = Nothing
+                    but.BackgroundImage = Nothing
+                    but.Text = String.Empty
+                Next
+                'pnlOverview.ResumeLayout()
+                tmrOverview.Enabled = True
+                tmrTick.Enabled = False
+                If prevItem.Id <> 0 Then DwmUnregisterThumbnail(thumb)
+                sysTrayIcon.Icon = My.Resources.moa3
+                prevItem = DirectCast(sender.SelectedItem, AstoniaProcess)
+                PnlEqLock.Visible = False
+                AOshowEqLock = False
+                Me.TopMost = My.Settings.topmost
+                If Not startup AndAlso My.Settings.MaxNormOverview AndAlso Me.WindowState <> FormWindowState.Maximized Then
+                    btnMax.PerformClick()
+                End If
+                Exit Sub
+            Else
+                pnlOverview.Hide()
+                tmrOverview.Enabled = False
+                PnlEqLock.Visible = True
+            End If
+
+            If Not AltPP?.IsRunning Then
+                Dim idx As Integer = sender.SelectedIndex
+                sender.Items.RemoveAt(idx)
+                sender.SelectedIndex = Math.Min(idx, sender.Items.Count - 1)
+                Exit Sub
             End If
 
 
-            moveBusy = False
-        Else 'AltPP.Id = 0
+            If Not AltPP?.Id = 0 Then
+                If AltPP.IsMinimized Then AltPP.Restore()
+
+                'AltPP.ResetCache()
+
+                Dim rcW As Rectangle = AltPP.WindowRect
+                rcC = AltPP.ClientRect
+
+                Dim ptC As Point
+                ClientToScreen(AltPP.MainWindowHandle, ptC)
+
+                dBug.Print($"rcW:{rcW}")
+                dBug.Print($"rcC:{rcC}")
+                dBug.Print($"ptC:{ptC}")
+
+                'check if target is running as windowed. if not ask to run it with -w
+                If rcC.Width = 0 AndAlso rcC.Height = 0 OrElse
+                   rcC.X = ptC.X AndAlso rcC.Y = ptC.Y Then
+                    'MessageBox.Show("Client is not running in windowed mode", "Error")
+                    dBug.Print("Astonia Not Windowed")
+                    Await AltPP.ReOpenAsWindowed()
+                    'cboAlt.SelectedIndex = 0
+                    Exit Sub
+                End If
+                AltPP.SavePos(rcW.Location)
+
+                dBug.Print("tmrTick.Enabled")
+                tmrTick.Enabled = True
+
+                dBug.Print("AltPPTopMost " & AltPP.TopMost.ToString)
+                dBug.Print("SelfTopMost " & Process.GetCurrentProcess.IsTopMost.ToString)
+
+                Dim item As AstoniaProcess = DirectCast(sender.SelectedItem, AstoniaProcess)
+                If startThumbsDict.ContainsKey(item.Id) Then
+                    dBug.Print($"reassignThumb {item.Id} {startThumbsDict(item.Id)} {item.Name}")
+                    thumb = startThumbsDict(item.Id)
+                End If
+
+                For Each thumbid As IntPtr In startThumbsDict.Values
+                    If thumbid = thumb Then Continue For
+                    DwmUnregisterThumbnail(thumbid)
+                Next
+                startThumbsDict.Clear()
+                If My.Settings.MaxNormOverview AndAlso WindowState = FormWindowState.Maximized Then
+                    btnMax.PerformClick()
+                End If
+                dBug.Print($"updateThumb pbzoom {pbZoom.Size}")
+                AltPP.CenterBehind(pbZoom, SetWindowPosFlags.DoNotActivate, True, True)
+                If Not My.Settings.MaxNormOverview AndAlso AnimsEnabled AndAlso rectDic.ContainsKey(item.Id) Then
+                    AnimateThumb(rectDic(item.Id), New Rectangle(pbZoom.Left, pbZoom.Top, pbZoom.Right, pbZoom.Bottom))
+                Else
+                    prevMode = 0
+                    UpdateThumb(If(chkDebug.Checked, 128, 255))
+                End If
+                rectDic.Clear()
+                sysTrayIcon.Icon = AltPP?.GetIcon
+
+                Dim ScalAWinScaling = Me.WindowsScaling()
+
+                dBug.Print($"{ScalAWinScaling}% ScalA windows scaling")
+                dBug.Print($"{AltPP.WindowsScaling}% altPP windows scaling")
+
+                'Dim failcounter = 0
+                'If AltPP.WindowsScaling <> ScalAWinScaling Then 'scala is scaled diffrent than Alt
+                '    Const timeout As Integer = 500
+                '    Dim sw As Stopwatch = Stopwatch.StartNew()
+                '    Do 'looped delay until alt is scaled same
+                '        AltPP.CenterBehind(pbZoom, Nothing, True)
+                '        Dim rc As RECT
+                '        GetWindowRect(AltPP.MainWindowHandle, rc)
+                '        SetWindowPos(AltPP.MainWindowHandle, ScalaHandle, rc.left + 1, rc.top + 1, -1, -1, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.FrameChanged)
+                '        dBug.print($"Scaling Delay {sw.ElapsedMilliseconds}ms {ScalAWinScaling}% vs {AltPP.WindowsScaling}")
+                '        Await Task.Delay(16)
+                '        If sw.ElapsedMilliseconds > timeout Then
+                '            sw.Stop()
+                '            dBug.print($"Scaling Delay Timeout! {failcounter}")
+                '            AstoniaProcess.RestorePos(True)
+                '            Await Task.Delay(16)
+                '            sw = Stopwatch.StartNew()
+                '            failcounter += 1
+                '        End If
+                '    Loop Until ScalAWinScaling = AltPP.WindowsScaling OrElse failcounter >= 3
+                '    AltPP.ResetCache()
+                '    UpdateThumb(If(chkDebug.Checked, 128, 255))
+                'End If
+
+                Attach(AltPP, True)
+
+                If My.Settings.topmost Then
+                    AltPP.TopMost = True
+                End If
 
 
-        End If
+                moveBusy = False
+            Else 'AltPP.Id = 0
 
-        DoEqLock(pbZoom.Size)
-        prevItem = sender.SelectedItem
 
-        If sender.SelectedIndex > 0 Then
-            pbZoom.Visible = True
-            Dim sb As Rectangle = Me.Bounds
-            frmOverlay.Bounds = New Rectangle(sb.X, sb.Y + 21, sb.Width, sb.Height - 21)
-        Else
-            AButton.ActiveOverview = My.Settings.gameOnOverview
-            Dim fgw As IntPtr = GetForegroundWindow()
-            Dim fgt = GetWindowThreadProcessId(fgw, Nothing)
-            Dim met = GetWindowThreadProcessId(ScalaHandle, Nothing)
-            Try
-                AttachThreadInput(fgt, met, True)
+            End If
 
-                AllowSetForegroundWindow(ASFW_ANY)
+            DoEqLock(pbZoom.Size)
+            prevItem = sender.SelectedItem
 
-                SwitchToThisWindow(GetDesktopWindow(), True)
-                SetForegroundWindow(GetDesktopWindow())
-                Threading.Thread.Sleep(50)
-                AllowSetForegroundWindow(ASFW_ANY)
-                SwitchToThisWindow(ScalaHandle, True)
-                SetForegroundWindow(ScalaHandle)
-            Finally
-                AttachThreadInput(fgt, met, False)
-            End Try
-        End If
 
+
+            If sender.SelectedIndex > 0 Then
+                pbZoom.Visible = True
+                Dim sb As Rectangle = Me.Bounds
+                frmOverlay.Bounds = New Rectangle(sb.X, sb.Y + 21, sb.Width, sb.Height - 21)
+            End If
+        Finally
+            If sender.SelectedIndex = 0 Then
+                AButton.ActiveOverview = My.Settings.gameOnOverview
+                Dim fgw As IntPtr = GetForegroundWindow()
+                dBug.Print($"FgHwnd: {fgw}")
+                Dim fgt = GetWindowThreadProcessId(fgw, Nothing)
+                Dim met = GetWindowThreadProcessId(ScalaHandle, Nothing)
+                Try
+                    AttachThreadInput(fgt, met, True)
+
+                    AllowSetForegroundWindow(ASFW_ANY)
+
+                    SwitchToThisWindow(GetDesktopWindow(), True)
+                    SetForegroundWindow(GetDesktopWindow())
+                    Threading.Thread.Sleep(50)
+                    AllowSetForegroundWindow(ASFW_ANY)
+                    SwitchToThisWindow(ScalaHandle, True)
+                    SetForegroundWindow(ScalaHandle)
+                Finally
+                    AttachThreadInput(fgt, met, False)
+                End Try
+            End If
+        End Try
     End Sub
     Private Const DWMWA_EXTENDED_FRAME_BOUNDS As Integer = 9
     Public Function WindowsScaling() As Integer
@@ -580,7 +586,7 @@ Partial Public NotInheritable Class FrmMain
         End If
         FrmSizeBorder.Opacity = If(My.Settings.SizingBorder AndAlso Me.WindowState = FormWindowState.Normal, 0.01, 0)
 
-        IPC.AddOrUpdateInstance(scalaPID, cboAlt.SelectedIndex = 0, If(cboAlt.SelectedIndex = 0, Nothing, cboAlt.SelectedItem.id), showingSomeone)
+        IPC.AddOrUpdateInstance(scalaPID, cboAlt.SelectedIndex = 0, If(cboAlt.SelectedIndex = 0, Nothing, cboAlt.SelectedItem?.id), showingSomeone)
 
         'CheckScreenScalingMode()
 
