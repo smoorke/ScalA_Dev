@@ -1881,6 +1881,11 @@ Partial Public NotInheritable Class FrmMain
         dBug.Print($"mx:{mx} my:{my}")
 
 
+
+        'Dim isSdlWithSpallIcons
+        'todo:: block right clicks when SDL and spellIcons
+
+
         If e.Button = MouseButtons.Middle OrElse e.Button = MouseButtons.Right Then
             PnlEqLock.Visible = False
             If Not AltPP?.isSDL Then sender.Capture = False
