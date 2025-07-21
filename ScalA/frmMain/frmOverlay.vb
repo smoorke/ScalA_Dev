@@ -48,6 +48,9 @@
 
         'TODO: add getting name from MOS commandlineargs in AstoniaProcess.vb
         Dim targetname As String = FrmMain.AltPP?.UserName
+        Dim currentpath = FrmMain.AltPP.Path
+        Dim wasSdl = FrmMain.AltPP.isSDL
+        Dim server As String = If(FrmMain.AltPP.isSDL, FrmMain.AltPP.ServerName, "")
 
         dBug.Print($"restarting {targetname}")
 
@@ -61,7 +64,12 @@
         While Not String.IsNullOrEmpty(targetname)
             count += 1
             Await Task.Delay(50)
-            Dim targetPPs As AstoniaProcess = AstoniaProcess.Enumerate().FirstOrDefault(Function(ap) ap.UserName = targetname)
+            Dim targetPPs As AstoniaProcess = AstoniaProcess.Enumerate().FirstOrDefault(Function(ap)
+                                                                                            Return ap.UserName = targetname AndAlso
+                                                                                                   ap.Path = currentpath AndAlso
+                                                                                                   ap.isSDL = wasSdl AndAlso
+                                                                                                   ap.ServerName = server
+                                                                                        End Function)
             If targetPPs IsNot Nothing AndAlso targetPPs.Id <> 0 Then
                 FrmMain.PopDropDown(FrmMain.cboAlt, False)
                 FrmMain.cboAlt.SelectedItem = targetPPs
@@ -98,6 +106,9 @@
 
         Dim targetname As String = FrmMain.AltPP?.UserName
         Dim currentpid = FrmMain.AltPP?.Id
+        Dim currentpath = FrmMain.AltPP.Path
+        Dim wasSdl = FrmMain.AltPP.isSDL
+        Dim server As String = If(FrmMain.AltPP.isSDL, FrmMain.AltPP.ServerName, "")
 
         FrmMain.AltPP.restart(False)
         Dim count As Integer = 0
@@ -105,7 +116,13 @@
         While Not String.IsNullOrEmpty(targetname)
             count += 1
             Await Task.Delay(50)
-            Dim targetPPs As AstoniaProcess = AstoniaProcess.Enumerate().FirstOrDefault(Function(ap) ap.UserName = targetname AndAlso ap.Id <> currentpid)
+            Dim targetPPs As AstoniaProcess = AstoniaProcess.Enumerate().FirstOrDefault(Function(ap)
+                                                                                            Return ap.UserName = targetname AndAlso
+                                                                                                   ap.Id <> currentpid AndAlso
+                                                                                                   ap.Path = currentpath AndAlso
+                                                                                                   ap.isSDL = wasSdl AndAlso
+                                                                                                   ap.ServerName = server
+                                                                                        End Function)
             If targetPPs IsNot Nothing AndAlso targetPPs.Id <> 0 Then
                 FrmMain.PopDropDown(FrmMain.cboAlt, False)
                 FrmMain.cboAlt.SelectedItem = targetPPs

@@ -553,6 +553,18 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End Get
     End Property
 
+    Private _serverName As String
+    Public ReadOnly Property ServerName() As String
+        Get
+            If Not String.IsNullOrEmpty(_serverName) Then Return _serverName
+
+            _serverName = getCMDoption("d")?.Trim() 'this can be empty on elevation mismatch
+
+            Return _serverName
+        End Get
+    End Property
+
+
     Public Property TopMost() As Boolean
         Get
 
