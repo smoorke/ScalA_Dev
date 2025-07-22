@@ -747,7 +747,8 @@ Partial Public NotInheritable Class FrmMain
 
         Dim Files As New ConcurrentBag(Of ToolStripItem)
 
-        Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell"))
+        Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell")),
+              shortcutSemaphore As New SemaphoreSlim(12)
             Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).ToArray().Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)),
                          Sub(fullLink As String)
 
@@ -760,7 +761,15 @@ Partial Public NotInheritable Class FrmMain
                              If fullLink = Environment.GetCommandLineArgs(0) Then Exit Sub 'Continue For
 
                              If My.Settings.QLResolveLnk AndAlso fullLink.ToLower.EndsWith(".lnk") Then
-                                 Dim oLink As Object = shellLocal.Value.CreateShortcut(fullLink)
+                                 Dim oLink As Object
+                                 'SyncLock shellLock
+                                 shortcutSemaphore.Wait() 'need semaphore to limit number of parallel acesses
+                                 Try
+                                     oLink = shellLocal.Value.CreateShortcut(fullLink)
+                                 Finally
+                                     shortcutSemaphore.Release()
+                                 End Try
+                                 'End SyncLock
                                  Dim target As String = oLink.TargetPath
                                  If IO.Directory.Exists(target) Then
 
