@@ -231,7 +231,7 @@ Partial NotInheritable Class FrmMain
 
         'Dim apCounter = 0
         'Dim butCounter = 0
-        Dim eqLockShown = False
+        Dim eqLockShown = True
 
         Await Task.Run(
             Sub()
