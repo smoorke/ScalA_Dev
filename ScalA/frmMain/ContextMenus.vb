@@ -911,7 +911,7 @@ Partial Public NotInheritable Class FrmMain
                                               SyncLock lockObj
                                                   Dim ico As Bitmap
                                                   Try
-                                                      ico = bm '.Clone()
+                                                      ico = bm '.Clone() 'we don't clone. we update the icon in the cache in place
 
                                                       Using g As Graphics = Graphics.FromImage(ico)
                                                           g.DrawIcon(My.Resources.shortcut_overlay, New Rectangle(New Point, ico.Size))
@@ -1518,7 +1518,7 @@ Partial Public NotInheritable Class FrmMain
             QlCtxMenu = New ContextMenu({
                 New MenuItem("Open", AddressOf QlCtxOpen) With {.DefaultItem = True},
                 New MenuItem($"Open All{vbTab}-->", AddressOf QlCtxOpenAll) With {
-                                .Visible = path.EndsWith("\") AndAlso
+                                .Visible = (path.EndsWith("\") OrElse (My.Settings.QLResolveLnk AndAlso path.ToLower.EndsWith(".lnk"))) AndAlso
                                 sender.DropDownItems.OfType(Of ToolStripMenuItem) _
                                       .Any(Function(it) it.Visible AndAlso it.Tag IsNot Nothing AndAlso QLFilter.Contains(IO.Path.GetExtension(it.Tag(0)))),
                                 .Tag = sender

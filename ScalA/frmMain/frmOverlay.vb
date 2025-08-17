@@ -12,20 +12,20 @@
 
 
                             Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
-                                'Debug.Print(winpos.flags.ToString)
-                                Dim nudge As Integer = 0
-                                If FrmMain.AltPP.isSDL Then
-                                    nudge = (FrmMain.AltPP.ClientRect.Width Mod 800) \ 2
-                                End If
+                            'Debug.Print(winpos.flags.ToString)
+                            Dim nudge As Integer = 0
+                            If FrmMain.AltPP.isSDL Then
+                                nudge = (FrmMain.AltPP.ClientRect.Width Mod 800) \ 2
+                            End If
                             'Debug.Print(nudge)
 
                             Dim tr = New Rectangle(671.Map(0, 800, 0, winpos.cx),
-                                                        10.Map(0, 600, 0, winpos.cy),
-                                                        24.Map(0, 800, 0, winpos.cx),
-                                                        24.Map(0, 600, 0, winpos.cy))
-                                If tr <> Rectangle.Empty Then
-                                    pbRestart.Bounds = tr
-                                End If
+                                                    10.Map(0, 600, 0, winpos.cy),
+                                                    24.Map(0, 800, 0, winpos.cx),
+                                                    24.Map(0, 600, 0, winpos.cy))
+                            If tr <> Rectangle.Empty Then
+                                pbRestart.Bounds = tr
+                            End If
 
 
                             'pbRestart.Location = New Point(671.Map(0, FrmMain.AltPP.ClientRect.Width, 0, winpos.cx),

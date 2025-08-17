@@ -25,10 +25,10 @@ Partial Class frmOverlay
         Me.components = New System.ComponentModel.Container()
         Me.pbRestart = New System.Windows.Forms.PictureBox()
         Me.cmsRestart = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.RestartWoClosingToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Me.HideThisToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ttOverlay = New System.Windows.Forms.ToolTip(Me.components)
-        Me.ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
-        Me.RestartWoClosingToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         CType(Me.pbRestart, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.cmsRestart.SuspendLayout()
         Me.SuspendLayout()
@@ -53,24 +53,24 @@ Partial Class frmOverlay
         Me.cmsRestart.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.RestartWoClosingToolStripMenuItem, Me.ToolStripMenuItem1, Me.HideThisToolStripMenuItem})
         Me.cmsRestart.Name = "cmsRestartHide"
         Me.cmsRestart.ShowImageMargin = False
-        Me.cmsRestart.Size = New System.Drawing.Size(156, 76)
-        '
-        'HideThisToolStripMenuItem
-        '
-        Me.HideThisToolStripMenuItem.Name = "HideThisToolStripMenuItem"
-        Me.HideThisToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
-        Me.HideThisToolStripMenuItem.Text = "Hide This Button"
-        '
-        'ToolStripMenuItem1
-        '
-        Me.ToolStripMenuItem1.Name = "ToolStripMenuItem1"
-        Me.ToolStripMenuItem1.Size = New System.Drawing.Size(152, 6)
+        Me.cmsRestart.Size = New System.Drawing.Size(153, 54)
         '
         'RestartWoClosingToolStripMenuItem
         '
         Me.RestartWoClosingToolStripMenuItem.Name = "RestartWoClosingToolStripMenuItem"
-        Me.RestartWoClosingToolStripMenuItem.Size = New System.Drawing.Size(155, 22)
+        Me.RestartWoClosingToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.RestartWoClosingToolStripMenuItem.Text = "Restart w/o Closing"
+        '
+        'ToolStripMenuItem1
+        '
+        Me.ToolStripMenuItem1.Name = "ToolStripMenuItem1"
+        Me.ToolStripMenuItem1.Size = New System.Drawing.Size(149, 6)
+        '
+        'HideThisToolStripMenuItem
+        '
+        Me.HideThisToolStripMenuItem.Name = "HideThisToolStripMenuItem"
+        Me.HideThisToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.HideThisToolStripMenuItem.Text = "Hide This Button"
         '
         'frmOverlay
         '
@@ -82,7 +82,7 @@ Partial Class frmOverlay
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.Name = "frmOverlay"
         Me.ShowInTaskbar = False
-        Me.Text = "Overlay"
+        Me.Text = "ScalA"
         Me.TransparencyKey = System.Drawing.Color.Black
         CType(Me.pbRestart, System.ComponentModel.ISupportInitialize).EndInit()
         Me.cmsRestart.ResumeLayout(False)
