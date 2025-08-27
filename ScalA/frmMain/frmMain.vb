@@ -1624,7 +1624,7 @@ Partial Public NotInheritable Class FrmMain
             Dim ret = SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap.MainWindowHandle)
             Dim ScalAThreadId As Integer = GetWindowThreadProcessId(ScalaHandle, Nothing)
             Dim AstoniaThreadId As Integer = GetWindowThreadProcessId(ap.MainWindowHandle, Nothing)
-            AttachThreadInput(AstoniaThreadId, ScalAThreadId, False) 'detach input so ctrl, shift and alt still work when there is an elevation mismatch, also fixes sleepy legacy clients lagging ScalA, breaks eqlock r-clicking, has bringtofgnd bug
+            AttachThreadInput(AstoniaThreadId, ScalAThreadId, False) 'detach input so ctrl, shift and alt still work when there is an elevation mismatch, also fixes sleepy legacy clients lagging ScalA
             Return ret
         Finally
             If activate Then AltPP?.Activate()
