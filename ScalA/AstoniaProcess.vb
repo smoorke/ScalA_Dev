@@ -382,25 +382,40 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     If Not String.IsNullOrEmpty(nm) Then
 
                         If FrmMain.Bounds.Contains(Control.MousePosition) AndAlso Me.IsActive() AndAlso Me.isSDL Then 'SDL client sysmenu open. close it and open our own or correct menu for whatever button is hovered.
+
+
+                            'Check if alt is selected andalso check if alt is on activeoverview
+                            If Me IsNot FrmMain.AltPP AndAlso
+                               Not (My.Settings.gameOnOverview AndAlso FrmMain.pnlOverview.Controls.OfType(Of AButton).Any(Function(ab As AButton)
+                                                                                                                               Dim abScreenrect = ab.RectangleToScreen(ab.ClientRectangle)
+                                                                                                                               Return (ab.AP Is Me) AndAlso abScreenrect.Contains(Control.MousePosition)
+                                                                                                                           End Function)) Then
+                                Return nm
+                            End If
+
                             Dim ctrldown As Boolean = My.Computer.Keyboard.CtrlKeyDown
                             'double check if clients sysmenu is open
-                            If GetGUIThreadInfo(Me.MainThreadId, gti) AndAlso (gti.flags And &H24) Then
+                            If GetGUIThreadInfo(Me.MainThreadId, gti) AndAlso (gti.flags = 20) Then
+                                dBug.Print($"gti.flags {gti.flags}")
                                 'send esc to close client sysmenu
                                 If ctrldown Then SendInput(1, CtrlUpInput, Marshal.SizeOf(GetType(INPUT)))
                                 SendInput(2, EscDownAndUpInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
                                 If ctrldown Then SendInput(1, CtrlDownInput, Marshal.SizeOf(GetType(INPUT)))
                             End If
 
-                            'open sysmenu or open quicklaunch/settings when over specific button
+                            'determine cotrol beneath cursor
                             Dim pt As Point = FrmMain.PointToClient(FrmMain.MousePosition)
                             'Dim pt = Control.MousePosition
                             Dim ctl As Control = FrmMain.GetChildAtPoint(pt)
                             dBug.Print($"Rmb: {ctl?.Name} {pt}")
+
                             If ctl Is FrmMain.pnlSys Then
                                 'pt = FrmMain.pnlSys.PointToClient(FrmMain.MousePosition)
                                 ctl = FrmMain.pnlSys.GetChildAtPoint(pt)
-                                pt = ctl.PointToClient(Control.MousePosition)
+                                pt = ctl?.PointToClient(Control.MousePosition)
                             End If
+
+                            'open altmenu or QL when on overview
                             If ctl Is FrmMain.pnlOverview Then
                                 ctl = FrmMain.pnlOverview.GetChildAtPoint(pt)
                                 If ctl Is FrmMain.pnlMessage Then
@@ -417,6 +432,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                                 End If
                                 Return nm
                             End If
+
+                            'open sysmenu or open quicklaunch/settings when over specific button
                             Select Case ctl?.Name
                                 Case FrmMain.btnStart.Name, FrmMain.cboAlt.Name
                                     FrmMain.cmsQuickLaunch.Show(ctl, pt)
@@ -426,6 +443,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                                     FrmMain.ShowSysMenu(FrmMain, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
                                     'FrmMain.ShowSysMenu(FrmMain, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
                             End Select
+
                         End If
                         Return nm
                     End If
