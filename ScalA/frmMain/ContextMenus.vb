@@ -1579,7 +1579,7 @@ Partial Public NotInheritable Class FrmMain
             Next
             dBug.Print($"purgeList.Count {purgeList.Count}")
 
-            TrackPopupMenuEx(QlCtxMenu.Handle, TPM_RECURSE Or TPM_RIGHTBUTTON, MousePosition.X, MousePosition.Y, ScalaHandle, Nothing)
+            TrackPopupMenuEx(QlCtxMenu.Handle, TPM_RECURSE, MousePosition.X, MousePosition.Y, ScalaHandle, Nothing)
 
             'sender.BackColor = Color.Transparent
             QLCtxMenuOpenedOn = Nothing
