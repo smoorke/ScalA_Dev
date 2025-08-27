@@ -308,7 +308,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public Sub Activate()
         If proc Is Nothing Then Exit Sub
         Try
-            AllowSetForegroundWindow(FrmMain.scalaPID)
+            AllowSetForegroundWindow(ASFW_ANY)
             AppActivate(proc.Id)
         Catch ex As Exception
             dBug.print("activate exception")
