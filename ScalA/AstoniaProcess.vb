@@ -371,6 +371,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     .SlidingExpiration = TimeSpan.FromMinutes(1)} ' Cache for 1 minute with sliding expiration
     Public hasLoggedIn As Boolean = False
     Public loggedInAs As String = String.Empty
+    Dim gti As New GUITHREADINFO() With {.cbSize = CUInt(Marshal.SizeOf(GetType(GUITHREADINFO)))}
     Public ReadOnly Property Name As String
         Get
             If proc Is Nothing Then Return "Someone"
@@ -381,15 +382,16 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     If Not String.IsNullOrEmpty(nm) Then
 
                         If FrmMain.Bounds.Contains(Control.MousePosition) AndAlso Me.IsActive() AndAlso Me.isSDL Then 'SDL client sysmenu open. close it and open our own or correct menu for whatever button is hovered.
-                            'TODO: double check if clients sysmenu is open
-                            'send esc to close client sysmenu
                             Dim ctrldown As Boolean = My.Computer.Keyboard.CtrlKeyDown
-                            If ctrldown Then SendInput(1, CtrlUpInput, Marshal.SizeOf(GetType(INPUT)))
-                            SendInput(2, EscDownAndUpInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
-                            If ctrldown Then SendInput(1, CtrlDownInput, Marshal.SizeOf(GetType(INPUT)))
+                            'double check if clients sysmenu is open
+                            If GetGUIThreadInfo(Me.MainThreadId, gti) AndAlso (gti.flags And &H24) Then
+                                'send esc to close client sysmenu
+                                If ctrldown Then SendInput(1, CtrlUpInput, Marshal.SizeOf(GetType(INPUT)))
+                                SendInput(2, EscDownAndUpInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                                If ctrldown Then SendInput(1, CtrlDownInput, Marshal.SizeOf(GetType(INPUT)))
+                            End If
 
-
-                            'open sysmenu 'TODO: open quicklaunch/settings when over specific button
+                            'open sysmenu or open quicklaunch/settings when over specific button
                             Dim pt As Point = FrmMain.PointToClient(FrmMain.MousePosition)
                             'Dim pt = Control.MousePosition
                             Dim ctl As Control = FrmMain.GetChildAtPoint(pt)

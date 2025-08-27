@@ -98,6 +98,24 @@ Module NativeMethods
     Public Function GetCurrentProcess() As IntPtr
     End Function
 
+
+    <StructLayout(LayoutKind.Sequential)>
+    Public Structure GUITHREADINFO
+        Public cbSize As UInteger
+        Public flags As UInteger
+        Public hwndActive As IntPtr
+        Public hwndFocus As IntPtr
+        Public hwndCapture As IntPtr
+        Public hwndMenuOwner As IntPtr
+        Public hwndMoveSize As IntPtr
+        Public hwndCaret As IntPtr
+        Public rcCaret As RECT
+    End Structure
+
+    <DllImport("user32.dll")>
+    Public Function GetGUIThreadInfo(idThread As UInteger, ByRef lpgui As GUITHREADINFO) As Boolean : End Function
+
+
     <StructLayout(LayoutKind.Explicit)>
     Public Structure LParamMap
         Public Sub New(value As IntPtr)
