@@ -151,7 +151,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     End Sub
     Public Sub RestoreSinglePos(Optional behind As Integer = 0)
         If Me._restoreLoc IsNot Nothing AndAlso Not Me.HasExited() Then
-            dBug.print($"restoresingle {behind}")
+            dBug.Print($"restoresingle {behind}")
             If behind = 0 Then
                 SetWindowPos(Me.MainWindowHandle, If(Me._wasTopmost, SWP_HWND.TOPMOST, FrmMain.ScalaHandle),
                              Me._restoreLoc?.X, Me._restoreLoc?.Y, -1, -1,
@@ -208,10 +208,10 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
                     _CO = New Point(border, rcW.bottom - rcW.top - rcC.bottom - border)
 
-                    dBug.print($"co {_CO}")
+                    dBug.Print($"co {_CO}")
                     Return _CO
                 Catch ex As Exception
-                    dBug.print(message:=$"ex on CO {ex.Message}")
+                    dBug.Print(Message:=$"ex on CO {ex.Message}")
                     Return New Point
                 End Try
             End If
@@ -286,7 +286,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                                 -1, -1,
                                 SetWindowPosFlags.IgnoreResize Or extraSWPFlags)
         Catch
-            dBug.print("CenterWindowPos exception")
+            dBug.Print("CenterWindowPos exception")
             Return False
         End Try
     End Function
@@ -311,7 +311,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             AllowSetForegroundWindow(ASFW_ANY)
             AppActivate(proc.Id)
         Catch ex As Exception
-            dBug.print("activate exception")
+            dBug.Print("activate exception")
         End Try
     End Sub
 
@@ -323,7 +323,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 _mwhCache = If(proc?.MainWindowHandle, IntPtr.Zero)
                 Return _mwhCache
             Catch
-                dBug.print("MainWindowHandle exeption")
+                dBug.Print("MainWindowHandle exeption")
                 Return IntPtr.Zero
             End Try
         End Get
@@ -372,6 +372,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public hasLoggedIn As Boolean = False
     Public loggedInAs As String = String.Empty
     Dim gti As New GUITHREADINFO() With {.cbSize = CUInt(Marshal.SizeOf(GetType(GUITHREADINFO)))}
+    Dim DoNotReplaceHwnd As IntPtr = IntPtr.Zero
     Public ReadOnly Property Name As String
         Get
             If proc Is Nothing Then Return "Someone"
@@ -379,10 +380,23 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 proc.Refresh()
                 If proc.MainWindowTitle = "" Then
                     Dim nm As String = TryCast(memCache.Get(proc.Id), String)
-                    If Not String.IsNullOrEmpty(nm) Then
+                    If Not String.IsNullOrEmpty(nm) AndAlso Me.IsActive() AndAlso Me.isSDL Then
 
-                        If FrmMain.Bounds.Contains(Control.MousePosition) AndAlso Me.IsActive() AndAlso Me.isSDL Then 'SDL client sysmenu open. close it and open our own or correct menu for whatever button is hovered.
+                        'check if sysmenu is opened from taskbar/tbthumb
 
+                        Dim hwnd = GetAncestor(WindowFromPoint(Control.MousePosition), GA_ROOT)
+                        Dim clss = GetWindowClass(hwnd)
+                        If {"Shell_TrayWnd", "Shell_SecondaryTrayWnd", "XamlExplorerHostIslandWindow", "TaskListThumbnailWnd"}.Contains(clss) Then 'list is possibly incomplete  (win 7?? 8??)
+                            DoNotReplaceHwnd = GetWindow(hwnd, GW_ENABLEDPOPUP)
+                        End If
+
+                        If GetWindow(hwnd, GW_ENABLEDPOPUP) = DoNotReplaceHwnd Then  'don't close when flag set
+                            Return nm
+                        Else
+                            DoNotReplaceHwnd = FrmMain.ScalaHandle 'set flag on menu close to scalahandle to denote invalid state (can't use intptr.zero)
+                        End If
+
+                        If FrmMain.Bounds.Contains(Control.MousePosition) Then 'SDL client sysmenu open. close it and open our own or correct menu for whatever button is hovered.
 
                             'Check if alt is selected andalso check if alt is on activeoverview
                             If Me IsNot FrmMain.AltPP AndAlso

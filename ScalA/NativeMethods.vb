@@ -1,4 +1,5 @@
 ﻿Imports System.Runtime.InteropServices
+Imports System.Text
 
 Module NativeMethods
 
@@ -97,7 +98,6 @@ Module NativeMethods
     <DllImport("kernel32.dll", SetLastError:=True)>
     Public Function GetCurrentProcess() As IntPtr
     End Function
-
 
     <StructLayout(LayoutKind.Sequential)>
     Public Structure GUITHREADINFO
@@ -260,6 +260,9 @@ Module NativeMethods
     Public Const GW_HWNDLAST As UInteger = 1
     Public Const GW_HWNDNEXT As UInteger = 2
     Public Const GW_HWNDPREV As UInteger = 3
+    Public Const GW_OWNER As UInteger = 4
+    Public Const GW_CHILD As UInteger = 5
+    Public Const GW_ENABLEDPOPUP As UInteger = 6
 
     'Public Declare Function GetWindowThreadProcessId Lib "user32.dll" (
     'ByVal hWnd As IntPtr,
@@ -400,7 +403,6 @@ Module NativeMethods
     Public Const GWL_STYLE As Integer = -16
     Public Const GWL_EXSTYLE As Integer = -20
 
-
     <DllImport("user32.dll", SetLastError:=True, CharSet:=CharSet.Auto)>
     Public Function EnumWindows(lpEnumFunc As EnumWindowsProc, lParam As IntPtr) As Boolean : End Function
     Public Delegate Function EnumWindowsProc(hWnd As IntPtr, lParam As IntPtr) As Boolean
@@ -411,6 +413,14 @@ Module NativeMethods
     ByVal hrgnUpdate As IntPtr,
     ByVal flags As UInteger
 ) As Boolean
+
+
+    Public Const GA_PARENT As UInteger = 1
+    Public Const GA_ROOT As UInteger = 2
+    Public Const GA_ROOTOWNER As UInteger = 3
+
+    <DllImport("user32.dll", SetLastError:=False)>
+    Public Function GetAncestor(hWnd As IntPtr, gaFlags As UInteger) As IntPtr : End Function
 
 
     ' RedrawWindow flags
@@ -1102,6 +1112,8 @@ Module NativeMethods
     Public Const WM_SIZE = &H5
     Public Const WM_ACTIVATE = &H6
 
+    Public Const WM_GETTEXT As Integer = &HD
+    Public Const WM_GETTEXTLENGTH As Integer = &HE
     Public Const WM_PAINT = &HF
 
     Public Const WM_QUERYOPEN = &H13
@@ -1185,6 +1197,22 @@ Module NativeMethods
     Public Function TrackPopupMenuEx(ByVal hmenu As IntPtr, ByVal fuFlags As UInteger, ByVal x As Integer, ByVal y As Integer, ByVal hwnd As IntPtr, ByVal lptpm As Integer) As Integer : End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>
     Public Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByVal lParam As IntPtr) As IntPtr : End Function
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
+    Public Function SendMessage(ByVal hWnd As IntPtr, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As StringBuilder) As IntPtr : End Function
+
+
+    Public Function GetWindowText(hWnd As IntPtr) As String
+        Dim length As Integer = NativeMethods.SendMessage(hWnd, WM_GETTEXTLENGTH, IntPtr.Zero, IntPtr.Zero).ToInt32()
+        If length > 0 Then
+            Dim sb As New StringBuilder(length + 1)
+            NativeMethods.SendMessage(hWnd, WM_GETTEXT, sb.Capacity, sb)
+            Return sb.ToString()
+        Else
+            Return String.Empty
+        End If
+    End Function
+
+
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>
     Public Function PostMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByVal lParam As IntPtr) As Boolean : End Function
 
