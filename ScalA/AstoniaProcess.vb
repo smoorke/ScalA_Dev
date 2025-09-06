@@ -443,7 +443,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                                 Return nm
                             End If
 
-                            'open sysmenu or open quicklaunch/settings when over specific button
+                            'open own sysmenu or open quicklaunch/settings when over specific button
                             Select Case ctl?.Name
                                 Case FrmMain.btnStart.Name, FrmMain.cboAlt.Name
                                     FrmMain.cmsQuickLaunch.Show(ctl, pt)
