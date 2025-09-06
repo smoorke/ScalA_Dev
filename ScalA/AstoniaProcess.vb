@@ -451,7 +451,6 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                                     FrmMain.CmbResolution_MouseUp(FrmMain.cmbResolution, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
                                 Case FrmMain.pnlTitleBar.Name, FrmMain.lblTitle.Name
                                     FrmMain.ShowSysMenu(FrmMain, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
-                                    'FrmMain.ShowSysMenu(FrmMain, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
                             End Select
 
                         End If

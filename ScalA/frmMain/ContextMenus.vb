@@ -1,5 +1,6 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.ComponentModel
+Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Threading
 Imports Microsoft.Win32
@@ -524,110 +525,116 @@ Partial Public NotInheritable Class FrmMain
         Try
             Return iconCache.GetOrAdd(Path,
                    Function(PathName As String)
-
-                       dBug.Print($"iconCahceMiss: {PathName}")
-
-                       Dim bm As Bitmap = Nothing
-                       Dim fi As New SHFILEINFOW
-                       Dim ico As Icon
-
-                       If PathName.EndsWith("\") Then
-
-                           Dim flags As UInteger = SHGFI_ICON Or SHGFI_SMALLICON
-                           If defFolder Then flags = flags Or SHGFI_USEFILEATTRIBUTES
-
-                           SHGetFileInfoW(PathName, FILE_ATTRIBUTE_DIRECTORY, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), flags)
-                           If fi.hIcon = IntPtr.Zero Then
-                               dBug.Print("hIcon empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
-                               Throw New Exception
-                           End If
-                           ico = Icon.FromHandle(fi.hIcon)
-                           bm = ico.ToBitmap
-                           DestroyIcon(ico.Handle)
-                           Return bm
-
-                       Else 'not a folder
-                           If PathName.ToLower.EndsWith(".url") Then
-                               Try
-
-                                   'Dim iconPath As String = Nothing
-                                   Dim iconIndex As Integer = 0
-                                   Dim iconFilePath As String = Nothing
-                                   Dim URLTarget As String = Nothing
-
-
-                                   For Each line In IO.File.ReadLines(PathName)
-                                       If line.StartsWith("IconFile=", StringComparison.OrdinalIgnoreCase) Then
-                                           iconFilePath = line.Substring("IconFile=".Length).Trim()
-                                       ElseIf line.StartsWith("IconIndex=", StringComparison.OrdinalIgnoreCase) Then
-                                           Integer.TryParse(line.Substring("IconIndex=".Length).Trim(), iconIndex)
-                                       ElseIf line.StartsWith("URL=", StringComparison.OrdinalIgnoreCase) Then
-                                           URLTarget = line.Substring("URL=".Length).Trim()
-                                       End If
-                                   Next
-
-                                   If String.IsNullOrEmpty(iconFilePath) AndAlso Not String.IsNullOrEmpty(URLTarget) AndAlso URLTarget.Substring(0, 8).Contains("://") AndAlso URLTarget.Length > 3 Then
-                                       Dim proto = URLTarget.Split(":")(0)
-                                       If {"https", "http", "ftp"}.Contains(proto) Then bm = GetDefaultBrowserIcon(proto)
-                                       If bm IsNot Nothing Then Return bm
-                                   End If
-
-                                   If Not String.IsNullOrEmpty(iconFilePath) Then
-                                       Dim hIcoA As IntPtr() = {IntPtr.Zero}
-                                       Dim ret As Integer = ExtractIconEx(iconFilePath, iconIndex, Nothing, hIcoA, 1)
-                                       Debug.Print($"ExtractIconEx {ret} ""{iconFilePath}"" {iconIndex} ""{PathName}""")
-                                       ico = Icon.FromHandle(hIcoA(0))
-
-                                       'Dim ret = ExtractIcon(IntPtr.Zero, iconFilePath, iconIndex)
-                                       'ico = Icon.FromHandle(ret)
-
-                                       bm = ico.ToBitmap
-                                       DestroyIcon(ico.Handle)
-
-                                       If bm IsNot Nothing Then Return bm
-                                   Else
-                                       'todo: invoke windows url icon handler to get the icon
-
-                                       'error: this loads incorrect icon
-                                       Dim ret = SHGetFileInfoW(PathName, FILE_ATTRIBUTE_NORMAL, fi, Marshal.SizeOf(fi), SHGFI_USEFILEATTRIBUTES Or SHGFI_SMALLICON Or SHGFI_ICON)
-                                       ico = Icon.FromHandle(fi.hIcon)
-                                       bm = ico.ToBitmap
-                                       DestroyIcon(ico.Handle)
-                                       If bm IsNot Nothing Then Return bm
-                                   End If
-
-                               Catch ex As Exception
-                                   Debug.Print("Failed to load .url icon: " & ex.Message)
-                               End Try
-                           End If
-
-                           Dim list As IntPtr = SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_SYSICONINDEX Or SHGFI_SMALLICON)
-
-                           If list = IntPtr.Zero Then
-                               Dim lastError = Runtime.InteropServices.Marshal.GetLastWin32Error()
-                               dBug.Print($"SHGetFileInfoW list empty: {lastError}")
-                           End If
-                           Dim hIcon As IntPtr = ImageList_GetIcon(list, fi.iIcon, 0)
-                           ImageList_Destroy(list)
-                           If hIcon = IntPtr.Zero Then
-                               Dim lastError = Runtime.InteropServices.Marshal.GetLastWin32Error()
-                               dBug.Print($"ImageList_GetIcon empty: {lastError}")
-                           End If
-                           ico = Icon.FromHandle(hIcon)
-                           bm = ico.ToBitmap
-                           DestroyIcon(ico.Handle)
-
-                       End If
-                       DestroyIcon(ico.Handle)
-                       ico.Dispose()
-
-                       Return bm
+                       Return GetIconFromFile(PathName, defFolder)
                    End Function).AsTransparent(If(transp, If(My.Settings.DarkMode, 0.4, 0.5), 1))
         Catch
             dBug.Print("GetIcon Exception")
             Return Nothing
         End Try
     End Function
+
+    Public Function GetIconFromFile(PathName As String, Optional deffolder As Boolean = False) As Bitmap
+
+        dBug.Print($"iconCahceMiss: {PathName}")
+
+        Dim bm As Bitmap = Nothing
+        Dim fi As New SHFILEINFOW
+        Dim ico As Icon
+
+        If PathName.EndsWith("\") Then
+
+            Dim flags As UInteger = SHGFI_ICON Or SHGFI_SMALLICON
+            If deffolder Then flags = flags Or SHGFI_USEFILEATTRIBUTES
+
+            SHGetFileInfoW(PathName, FILE_ATTRIBUTE_DIRECTORY, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), flags)
+            If fi.hIcon = IntPtr.Zero Then
+                dBug.Print("hIcon empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
+                Throw New Exception
+            End If
+            ico = Icon.FromHandle(fi.hIcon)
+            bm = ico.ToBitmap
+            DestroyIcon(ico.Handle)
+            Return bm
+
+        Else 'not a folder
+            If PathName.ToLower.EndsWith(".url") Then
+                Try
+
+                    'Dim iconPath As String = Nothing
+                    Dim iconIndex As Integer = 0
+                    Dim iconFilePath As String = Nothing
+                    Dim URLTarget As String = Nothing
+
+
+                    For Each line In IO.File.ReadLines(PathName)
+                        If line.StartsWith("IconFile=", StringComparison.OrdinalIgnoreCase) Then
+                            iconFilePath = line.Substring("IconFile=".Length).Trim()
+                        ElseIf line.StartsWith("IconIndex=", StringComparison.OrdinalIgnoreCase) Then
+                            Integer.TryParse(line.Substring("IconIndex=".Length).Trim(), iconIndex)
+                        ElseIf line.StartsWith("URL=", StringComparison.OrdinalIgnoreCase) Then
+                            URLTarget = line.Substring("URL=".Length).Trim()
+                        End If
+                    Next
+
+                    If String.IsNullOrEmpty(iconFilePath) AndAlso Not String.IsNullOrEmpty(URLTarget) AndAlso URLTarget.Substring(0, 8).Contains("://") AndAlso URLTarget.Length > 3 Then
+                        Dim proto = URLTarget.Split(":")(0)
+                        If {"https", "http", "ftp"}.Contains(proto) Then bm = GetDefaultBrowserIcon(proto)
+                        If bm IsNot Nothing Then Return bm
+                    End If
+
+                    If Not String.IsNullOrEmpty(iconFilePath) Then
+                        Dim hIcoA As IntPtr() = {IntPtr.Zero}
+                        Dim ret As Integer = ExtractIconEx(iconFilePath, iconIndex, Nothing, hIcoA, 1)
+                        Debug.Print($"ExtractIconEx {ret} ""{iconFilePath}"" {iconIndex} ""{PathName}""")
+                        ico = Icon.FromHandle(hIcoA(0))
+
+                        'Dim ret = ExtractIcon(IntPtr.Zero, iconFilePath, iconIndex)
+                        'ico = Icon.FromHandle(ret)
+
+                        bm = ico.ToBitmap
+                        DestroyIcon(ico.Handle)
+
+                        If bm IsNot Nothing Then Return bm
+                    Else
+                        'todo: invoke windows url icon handler to get the icon
+
+                        'error: this loads incorrect icon
+                        Dim ret = SHGetFileInfoW(PathName, FILE_ATTRIBUTE_NORMAL, fi, Marshal.SizeOf(fi), SHGFI_USEFILEATTRIBUTES Or SHGFI_SMALLICON Or SHGFI_ICON)
+                        ico = Icon.FromHandle(fi.hIcon)
+                        bm = ico.ToBitmap
+                        DestroyIcon(ico.Handle)
+                        If bm IsNot Nothing Then Return bm
+                    End If
+
+                Catch ex As Exception
+                    Debug.Print("Failed to load .url icon: " & ex.Message)
+                End Try
+            End If
+
+            Dim list As IntPtr = SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_SYSICONINDEX Or SHGFI_SMALLICON)
+
+            If list = IntPtr.Zero Then
+                Dim lastError = Runtime.InteropServices.Marshal.GetLastWin32Error()
+                dBug.Print($"SHGetFileInfoW list empty: {lastError}")
+            End If
+            Dim hIcon As IntPtr = ImageList_GetIcon(list, fi.iIcon, 0)
+            ImageList_Destroy(list)
+            If hIcon = IntPtr.Zero Then
+                Dim lastError = Runtime.InteropServices.Marshal.GetLastWin32Error()
+                dBug.Print($"ImageList_GetIcon empty: {lastError}")
+            End If
+            ico = Icon.FromHandle(hIcon)
+            bm = ico.ToBitmap
+            DestroyIcon(ico.Handle)
+
+        End If
+        DestroyIcon(ico.Handle)
+        ico.Dispose()
+
+        Return bm
+    End Function
+
+
 
     Public Shared DefURLicons As ConcurrentDictionary(Of String, Bitmap) = New ConcurrentDictionary(Of String, Bitmap)
 
@@ -829,7 +836,44 @@ Partial Public NotInheritable Class FrmMain
             menuItems.Add(New ToolStripMenuItem("<TimedOut>") With {.Enabled = False})
         End If
 
-        If isEmpty Then menuItems.Add(New ToolStripMenuItem("(Empty)") With {.Enabled = False})
+        If isEmpty Then
+            menuItems.Add(New ToolStripMenuItem("(Empty)") With {.Enabled = False})
+            clipBoardInfo = GetClipboardFilesAndAction()
+            If clipBoardInfo.Files?.Count > 0 Then
+
+                menuItems.Add(New ToolStripSeparator)
+
+                pasteTSItem = New ToolStripMenuItem("", Nothing, AddressOf ClipAction)
+
+                menuItems.Add(pasteTSItem)
+                If clipBoardInfo.Action = ClipboardAction.Copy Then
+                    pasteLinkTSItem = New ToolStripMenuItem("Paste .Lnk", Nothing, AddressOf ClipAction)
+                    menuItems.Add(pasteLinkTSItem)
+                End If
+
+                pasteTSItem.Tag = {pth & "Empty", "Paste"}
+                pasteLinkTSItem.Tag = {pth & "Empty", "PasteLink"}
+
+                If clipBoardInfo.Files.Count = 1 Then
+                    Dim nm As String = IO.Path.GetFileName(clipBoardInfo.Files(0))
+                    If hideExt.Contains(IO.Path.GetExtension(nm)) Then
+                        nm = IO.Path.GetFileNameWithoutExtension(nm)
+                    End If
+                    pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} ""{nm}"""
+                    pasteTSItem.Image = GetIconFromFile(clipBoardInfo.Files(0))
+
+                    pasteLinkTSItem.Text = "Paste .Lnk"
+                    pasteLinkTSItem.Image = addOverlay(pasteTSItem.Image)
+                Else
+                    pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} Mulitple"
+                    pasteTSItem.Image = multiPasteBitmap
+
+                    pasteLinkTSItem.Text = "Paste .Lnks"
+                    pasteLinkTSItem.Image = addOverlay(pasteTSItem.Image)
+                End If
+
+            End If
+        End If
 
         menuItems.Add(New ToolStripSeparator With {.Visible = isEmpty OrElse ctrlshift_pressed})
         Dim addShortcutMenu As New ToolStripMenuItem("New", My.Resources.Add) With {.Tag = pth, .Visible = isEmpty OrElse ctrlshift_pressed}
@@ -845,6 +889,33 @@ Partial Public NotInheritable Class FrmMain
         dBug.Print($"parsing ""{pth}"" took {watch.ElapsedMilliseconds} ms")
         watch.Stop()
         Return menuItems
+    End Function
+
+    Dim pasteTSItem As ToolStripMenuItem = New ToolStripMenuItem("Paste ""Name""", Nothing, AddressOf ClipAction)
+    Dim pasteLinkTSItem As ToolStripMenuItem = New ToolStripMenuItem("Paste .Lnk", Nothing, AddressOf ClipAction)
+
+    Dim multiPasteBitmap As Bitmap = loadMPbitmap()
+    Dim multipasteBitmapOverlay As Bitmap = addOverlay(multiPasteBitmap)
+    Function loadMPbitmap() As Bitmap
+        Dim hIcoA As IntPtr() = {IntPtr.Zero}
+
+        Dim ret As Integer = ExtractIconEx(IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32\imageres.dll"), 245, Nothing, hIcoA, 1)
+        Debug.Print($"ExtractIconEx {ret}")
+
+        Dim ico = Icon.FromHandle(hIcoA(0))
+        Try
+            Return ico.ToBitmap
+        Finally
+            DestroyIcon(ico.Handle)
+        End Try
+    End Function
+
+    Function addOverlay(bm As Bitmap, Optional clone As Boolean = True) As Bitmap
+        Dim bmp As Bitmap = If(clone, bm.Clone, bm)
+        Using g As Graphics = Graphics.FromImage(bmp)
+            g.DrawIcon(My.Resources.shortcut_overlay, New Rectangle(New Point, bmp.Size))
+        End Using
+        Return bmp
     End Function
 
     Dim QLCtxMenuOpenedOn As ToolStripMenuItem
@@ -911,12 +982,8 @@ Partial Public NotInheritable Class FrmMain
                                               SyncLock lockObj
                                                   Dim ico As Bitmap
                                                   Try
-                                                      ico = bm '.Clone() 'we don't clone. we update the icon in the cache in place
+                                                      ico = addOverlay(bm, False) 'we don't clone. we update the icon in the cache in place
 
-                                                      Using g As Graphics = Graphics.FromImage(ico)
-                                                          g.DrawIcon(My.Resources.shortcut_overlay, New Rectangle(New Point, ico.Size))
-                                                      End Using
-                                                      'iconCache.TryUpdate(PathName, ico, bm)
                                                       Me.Invoke(Sub()
                                                                     'it.Image = ico
                                                                     it.Invalidate()
@@ -1230,6 +1297,8 @@ Partial Public NotInheritable Class FrmMain
             Exit Sub
         End If
 
+        clipBoardInfo = GetClipboardFilesAndAction()
+
         'tmrTick.Interval = 1000
         sender.Items.Clear()
 
@@ -1515,6 +1584,11 @@ Partial Public NotInheritable Class FrmMain
 
             Dim path As String = sender.Tag(0)
 
+            Dim cutItem = New MenuItem("Cut", AddressOf ClipAction) With {.Tag = {path, "Cut"}}
+            Dim copyItem = New MenuItem("Copy", AddressOf ClipAction) With {.Tag = {path, "Copy"}}
+            Dim pasteItem = New MenuItem("Paste", AddressOf ClipAction) With {.Tag = {path, "Paste"}}
+            Dim pasteLinkItem = New MenuItem("Paste .Lnk", AddressOf ClipAction) With {.Tag = {path, "PasteLink"}}
+
             QlCtxMenu = New ContextMenu({
                 New MenuItem("Open", AddressOf QlCtxOpen) With {.DefaultItem = True},
                 New MenuItem($"Open All{vbTab}-->", AddressOf QlCtxOpenAll) With {
@@ -1522,7 +1596,9 @@ Partial Public NotInheritable Class FrmMain
                                 sender.DropDownItems.OfType(Of ToolStripMenuItem) _
                                       .Any(Function(it) it.Visible AndAlso it.Tag IsNot Nothing AndAlso QLFilter.Contains(IO.Path.GetExtension(it.Tag(0)))),
                                 .Tag = sender
-                                            },
+                                },
+                New MenuItem("-"),
+                cutItem, copyItem, pasteItem, pasteLinkItem,
                 New MenuItem("-"),
                 New MenuItem("Delete", AddressOf QlCtxDelete),
                 New MenuItem("Rename", AddressOf QlCtxRename),
@@ -1530,6 +1606,72 @@ Partial Public NotInheritable Class FrmMain
                 New MenuItem("Properties", AddressOf QlCtxProps),
                 New MenuItem("-"),
                 QlCtxNewMenu})
+
+            clipBoardInfo = GetClipboardFilesAndAction()
+
+            Dim pastehbm As IntPtr
+            Dim pasteShortcutHbm As IntPtr
+
+            Dim purgeList As New List(Of IntPtr)
+
+            If clipBoardInfo.Files?.Count > 0 Then
+                pasteItem.Enabled = True
+
+                pasteLinkItem.Visible = clipBoardInfo.Action = ClipboardAction.Copy
+
+                If clipBoardInfo.Files.Count = 1 Then
+                    If (IO.File.Exists(clipBoardInfo.Files(0)) OrElse IO.Directory.Exists(clipBoardInfo.Files(0))) Then
+
+                        Dim nm As String = IO.Path.GetFileName(clipBoardInfo.Files(0))
+                        If hideExt.Contains(IO.Path.GetExtension(nm)) Then
+                            nm = IO.Path.GetFileNameWithoutExtension(nm)
+                        End If
+
+                        pasteItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} ""{nm}"""
+                        pasteLinkItem.Text = "Paste .Lnk"
+
+                        'todo: don't pull from cache we may not be watching filechanges. make async tho io peration may be slow
+                        Dim ico As Bitmap = GetIconFromCache(clipBoardInfo.Files(0), False)
+
+                        Dim shortcuttedIcon As Bitmap = addOverlay(ico)
+
+                        pastehbm = ico.GetHbitmap(Color.Black)
+                        pasteShortcutHbm = shortcuttedIcon.GetHbitmap(Color.Black)
+
+                        purgeList.Add(pastehbm)
+                        purgeList.Add(pasteShortcutHbm)
+
+                        Dim cmdpos As Integer = QlCtxMenu.MenuItems.OfType(Of MenuItem).TakeWhile(Function(m) m.Handle <> pasteItem.Handle).Count(Function(it) it.Visible)
+
+                        SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos, MF_BYPOSITION, pastehbm, Nothing)
+
+                        If pasteLinkItem.Visible Then SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos + 1, MF_BYPOSITION, pasteShortcutHbm, Nothing)
+
+                    End If
+                Else 'more than 1 file/dir.
+
+                    pasteItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} Multiple"
+                    pasteLinkItem.Text = "Paste .Lnks"
+
+                    pastehbm = multiPasteBitmap.GetHbitmap(Color.Black)
+                    pasteShortcutHbm = multipasteBitmapOverlay.GetHbitmap(Color.Black)
+
+                    purgeList.Add(pastehbm)
+                    purgeList.Add(pasteShortcutHbm)
+
+                    Dim cmdpos As Integer = QlCtxMenu.MenuItems.OfType(Of MenuItem).TakeWhile(Function(m) m.Handle <> pasteItem.Handle).Count(Function(it) it.Visible)
+
+                    SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos, MF_BYPOSITION, pastehbm, Nothing)
+
+                    If pasteLinkItem.Visible Then SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos + 1, MF_BYPOSITION, pasteShortcutHbm, Nothing)
+
+                    'DestroyIcon(ico.Handle)
+                End If
+
+            Else
+                pasteItem.Enabled = False
+                pasteLinkItem.Visible = False
+            End If
 
             Dim name As String = sender.Text
 
@@ -1568,8 +1710,6 @@ Partial Public NotInheritable Class FrmMain
             SetMenuItemBitmaps(QlCtxNewMenu.Handle, 0, MF_BYPOSITION, folderHbm, Nothing)
             SetMenuItemBitmaps(QlCtxMenu.Handle, QlCtxMenu.MenuItems.OfType(Of MenuItem).Count(Function(it) it.Visible) - 1, MF_BYPOSITION, plusHbm, Nothing)
 
-            Dim purgeList As New List(Of IntPtr)
-
             Dim i = QlCtxNewMenuStaticItemsCount
             For Each item As MenuItem In QlCtxNewMenu.MenuItems.OfType(Of MenuItem).Skip(i).Where(Function(m) m.Tag IsNot Nothing AndAlso TypeOf (m.Tag) IsNot String)
                 Dim althbm As IntPtr = New Bitmap(DirectCast(item.Tag(0), AstoniaProcess).GetIcon?.ToBitmap, New Size(16, 16)).GetHbitmap(Color.Black)
@@ -1596,6 +1736,20 @@ Partial Public NotInheritable Class FrmMain
             Task.Run(Sub() OpenLnk(sender, e))
             'cmsQuickLaunch.Close(ToolStripDropDownCloseReason.ItemClicked)
         End If
+    End Sub
+
+    Private Sub ClipAction(sender As Object, e As EventArgs)
+        Dim tgt As String = sender.tag(0)
+        Dim act As String = sender.tag(1)
+        dBug.Print($"Clip Unprocessed {tgt}")
+
+        If {"Paste", "PasteLink"}.Contains(act) Then
+            tgt = IO.Path.GetDirectoryName(tgt.TrimEnd("\"c))
+        End If
+
+        dBug.Print($"Clipaction {act} ""{tgt}""")
+        InvokeExplorerVerb(tgt, act)
+
     End Sub
 
     Dim restartCM As ContextMenu = New ContextMenu({New MenuItem("Restart w/o Closing", AddressOf restartWoClosing)})
