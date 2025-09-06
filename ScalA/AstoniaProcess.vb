@@ -407,14 +407,10 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                                 Return nm
                             End If
 
-                            Dim ctrldown As Boolean = My.Computer.Keyboard.CtrlKeyDown
                             'double check if clients sysmenu is open
                             If GetGUIThreadInfo(Me.MainThreadId, gti) AndAlso (gti.flags = 20) Then
                                 dBug.Print($"gti.flags {gti.flags}")
-                                'send esc to close client sysmenu
-                                If ctrldown Then SendInput(1, CtrlUpInput, Marshal.SizeOf(GetType(INPUT)))
-                                SendInput(2, EscDownAndUpInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
-                                If ctrldown Then SendInput(1, CtrlDownInput, Marshal.SizeOf(GetType(INPUT)))
+                                PostMessage(Me.MainWindowHandle, WM_CANCELMODE, 0, 0) 'close the SysMenu
                             End If
 
                             'determine cotrol beneath cursor
@@ -437,9 +433,9 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                                     dBug.Print($"pnlmessage skip?: {ctl?.Name} {pt}")
                                 End If
                                 pt = ctl.PointToClient(Control.MousePosition)
-                                dBug.Print($"alt menu override: {ctl?.Name} {pt} {ctrldown}")
+                                dBug.Print($"alt sysmenu override: {ctl?.Name} {pt}")
 
-                                If ctrldown Then
+                                If My.Computer.Keyboard.CtrlKeyDown Then
                                     FrmMain.cmsQuickLaunch.Show(ctl, pt)
                                 Else
                                     FrmMain.cmsAlt.Show(ctl, pt)
