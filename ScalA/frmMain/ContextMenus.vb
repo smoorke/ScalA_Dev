@@ -518,15 +518,12 @@ Partial Public NotInheritable Class FrmMain
 
     Friend Shared ReadOnly iconCache As New ConcurrentDictionary(Of String, Bitmap)
 
-    Private Function GetIconFromCache(ByVal Path As String, transp As Boolean, Optional defFolder As Boolean = False) As Bitmap
+    Private Function GetIconFromCache(ByVal Path As String, transp As Boolean) As Bitmap
 
         If Path Is Nothing Then Return Nothing
 
         Try
-            Return iconCache.GetOrAdd(Path,
-                   Function(PathName As String)
-                       Return GetIconFromFile(PathName, defFolder)
-                   End Function).AsTransparent(If(transp, If(My.Settings.DarkMode, 0.4, 0.5), 1))
+            Return iconCache.GetOrAdd(Path, AddressOf GetIconFromFile).AsTransparent(If(transp, If(My.Settings.DarkMode, 0.4, 0.5), 1))
         Catch
             dBug.Print("GetIcon Exception")
             Return Nothing
@@ -1046,7 +1043,7 @@ Partial Public NotInheritable Class FrmMain
             sender.DropDownItems.Remove(it)
         Next
     End Sub
-    Private foldericon = GetIconFromCache(FileIO.SpecialDirectories.Temp & "\", False, True)
+    Private foldericon = GetIconFromFile(FileIO.SpecialDirectories.Temp & "\", True)
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
         dBug.Print("addshortcut.sendertag:" & sender.Tag)
         sender.DropDownItems.Clear()
@@ -1752,7 +1749,6 @@ Partial Public NotInheritable Class FrmMain
     Private Sub ClipAction(sender As Object, e As EventArgs)
         Dim tgt As String = sender.tag(0)
         Dim act As String = sender.tag(1)
-        dBug.Print($"Clip Unprocessed {tgt}")
 
         If {"Paste", "PasteLink"}.Contains(act) Then
             tgt = IO.Path.GetDirectoryName(tgt.TrimEnd("\"c))
