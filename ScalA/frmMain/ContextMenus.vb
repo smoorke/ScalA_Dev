@@ -881,6 +881,7 @@ Partial Public NotInheritable Class FrmMain
         Dim addShortcutMenu As New ToolStripMenuItem("New", My.Resources.Add) With {.Tag = pth, .Visible = isEmpty OrElse ctrlshift_pressed}
         addShortcutMenu.DropDownItems.Add("(Dummy)").Enabled = False
         AddHandler addShortcutMenu.DropDownOpening, AddressOf AddShortcutMenu_DropDownOpening
+        AddHandler addShortcutMenu.DropDownOpened, AddressOf ddo
         menuItems.Add(addShortcutMenu)
 
         cts?.Dispose()
@@ -895,11 +896,15 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub ddo(sender As ToolStripMenuItem, e As EventArgs)
         Dim handle = sender.DropDown.Handle
-        Dim styleEx = GetWindowLong(handle, GWL_EXSTYLE)
-        Dim newStyleEx = (styleEx And Not WindowStylesEx.WS_EX_APPWINDOW) Or WindowStylesEx.WS_EX_TOOLWINDOW
-        If newStyleEx <> styleEx Then
-            SetWindowLong(handle, GWL_EXSTYLE, newStyleEx)
+
+        Dim owner = GetWindowLong(handle, GWL_HWNDPARENT)
+        Debug.Print($"Dropdown taskbar debug ""{owner}""")
+        If owner = 0 Then
+            'there is an activation issue here, don't know which window needs to be active for this to not occur
+            'everything i've tried is more glitchy than the current bug
+            SetWindowLong(handle, GWL_HWNDPARENT, GetWindowLong(cmsQuickLaunch.Handle, GWL_HWNDPARENT))
         End If
+
     End Sub
 
     Dim pasteTSItem As ToolStripMenuItem = New ToolStripMenuItem("Paste ""Name""", Nothing, AddressOf ClipAction)
