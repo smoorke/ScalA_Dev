@@ -1764,9 +1764,7 @@ Partial Public NotInheritable Class FrmMain
 
                      Dim found As Boolean = False
                      Dim wndProc As EnumWindowsProc = Function(hwnd, lParam)
-                                                          Dim className As New System.Text.StringBuilder(256)
-                                                          GetClassName(hwnd, className, className.Capacity)
-                                                          If className.ToString() = "OperationStatusWindow" Then
+                                                          If GetWindowClass(hwnd) = "OperationStatusWindow" Then
                                                               Dim pid As Integer
                                                               GetWindowThreadProcessId(hwnd, pid)
                                                               If pid = scalaPID Then
