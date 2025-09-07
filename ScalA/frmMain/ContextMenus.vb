@@ -709,10 +709,12 @@ Partial Public NotInheritable Class FrmMain
 
         Dim watch As Stopwatch = Stopwatch.StartNew()
 
+        Dim loopOpts = New ParallelOptions With {.MaxDegreeOfParallelism = 8}
+
         Dim Dirs As New ConcurrentBag(Of ToolStripItem)
         Try
             Dim opts As New ParallelOptions With {.CancellationToken = cantok}
-            Parallel.ForEach(System.IO.Directory.EnumerateDirectories(pth).ToArray(),
+            Parallel.ForEach(System.IO.Directory.EnumerateDirectories(pth).ToArray(), loopOpts,
                              Sub(fulldirs As String)
 
                                  Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fulldirs).Attributes
@@ -752,7 +754,7 @@ Partial Public NotInheritable Class FrmMain
 
         Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell")),
               shortcutSemaphore As New SemaphoreSlim(12)
-            Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).ToArray().Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)),
+            Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).ToArray().Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)), loopOpts,
                          Sub(fullLink As String)
 
                              Dim attr As System.IO.FileAttributes = New System.IO.FileInfo(fullLink).Attributes
@@ -963,9 +965,12 @@ Partial Public NotInheritable Class FrmMain
                          Dim opts As New ParallelOptions With {.CancellationToken = ct}
                          Dim items = Files.Concat(Dirs)
                          Parallel.ForEach(items, opts,
-                                          Sub(it As ToolStripItem)
+                                          Sub(it As ToolStripMenuItem)
                                               Dim ico = GetIconFromCache(it.Tag(0), it.Tag(1))
-                                              Me.Invoke(Sub() it.Image = ico)
+                                              Me.Invoke(Sub()
+                                                            If clipBoardInfo.Files?.Contains(it.Tag?(0).ToString.TrimEnd("\"c)) Then it.Checked = True
+                                                            it.Image = ico
+                                                        End Sub)
                                           End Sub)
 
                          If My.Settings.QLResolveLnk Then
@@ -1753,48 +1758,56 @@ Partial Public NotInheritable Class FrmMain
             tgt = IO.Path.GetDirectoryName(tgt.TrimEnd("\"c))
             CloseOtherDropDowns(cmsQuickLaunch.Items)
             cmsQuickLaunch.Close()
-        End If
+            Task.Run(Sub()
+                         Dim watch As Stopwatch = Stopwatch.StartNew()
+                         Dim hndl As IntPtr = IntPtr.Zero
 
-        Task.Run(Sub()
-
-                     If Not {"Paste", "PasteLink"}.Contains(act) Then Exit Sub
-
-                     Dim watch As Stopwatch = Stopwatch.StartNew()
-                     Dim hndl As IntPtr = IntPtr.Zero
-
-                     Dim found As Boolean = False
-                     Dim wndProc As EnumWindowsProc = Function(hwnd, lParam)
-                                                          If GetWindowClass(hwnd) = "OperationStatusWindow" Then
-                                                              Dim pid As Integer
-                                                              GetWindowThreadProcessId(hwnd, pid)
-                                                              If pid = scalaPID Then
-                                                                  hndl = hwnd
-                                                                  found = True
-                                                                  Return False ' stop enumeration
+                         Dim found As Boolean = False
+                         Dim wndProc As EnumWindowsProc = Function(hwnd, lParam)
+                                                              If GetWindowClass(hwnd) = "OperationStatusWindow" Then
+                                                                  Dim pid As Integer
+                                                                  GetWindowThreadProcessId(hwnd, pid)
+                                                                  If pid = scalaPID Then
+                                                                      hndl = hwnd
+                                                                      found = True
+                                                                      Return False ' stop enumeration
+                                                                  End If
                                                               End If
-                                                          End If
-                                                          Return True ' continue enumeration
-                                                      End Function
+                                                              Return True ' continue enumeration
+                                                          End Function
 
-                     While watch.ElapsedMilliseconds < 5000 AndAlso Not found
-                         EnumWindows(wndProc, IntPtr.Zero)
-                         If found Then Exit While
-                         Threading.Thread.Sleep(50)
-                     End While
-                     dBug.Print($"enumwindow {hndl} ""{GetWindowText(hndl)}""")
+                         While watch.ElapsedMilliseconds < 5000 AndAlso Not found
+                             EnumWindows(wndProc, IntPtr.Zero)
+                             If found Then Exit While
+                             Threading.Thread.Sleep(50)
+                         End While
+                         dBug.Print($"enumwindow {hndl} ""{GetWindowText(hndl)}""")
 
-                     If My.Settings.topmost Then SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
-                     SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
-                     watch.Stop()
-                 End Sub)
+                         If My.Settings.topmost Then SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
+                         SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                         watch.Stop()
+                     End Sub)
+        End If
 
         InvokeExplorerVerb(tgt, act, ScalaHandle)
 
         dBug.Print($"Clipaction {act} ""{tgt}""")
 
+        If Not {"Paste", "PasteLink"}.Contains(act) Then
+            dupeClipBoard()
+        End If
+
     End Sub
 
-
+    Private Sub UpdateMenuChecks(menu As ToolStripItemCollection, itemSet As HashSet(Of String))
+        For Each menuItm As ToolStripMenuItem In menu.OfType(Of ToolStripMenuItem)
+            If menuItm.DropDown.Visible AndAlso menuItm.HasDropDownItems Then
+                UpdateMenuChecks(menuItm.DropDownItems, itemSet)
+            End If
+            menuItm.Checked = itemSet.Contains(menuItm.Tag?(0).ToString.TrimEnd("\"c))
+            menuItm.Invalidate()
+        Next
+    End Sub
 
     Dim restartCM As ContextMenu = New ContextMenu({New MenuItem("Restart w/o Closing", AddressOf restartWoClosing)})
 

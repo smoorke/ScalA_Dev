@@ -1,8 +1,21 @@
 ﻿Imports System.Runtime.InteropServices
+Imports System.Threading
 
 Module ClipBoardHelper
 
     Public clipBoardInfo As ClipboardFileInfo
+
+    Public clipBoardDupingInProgress As Boolean = False 'used to prevent triggering WM_CLIPBOARDUPDATE
+
+    Public Sub dupeClipBoard()
+        Debug.Print("dupeClipBoard")
+        Dim dataObj = Clipboard.GetDataObject()
+        If dataObj IsNot Nothing Then
+            Volatile.Write(clipBoardDupingInProgress, True)
+            Clipboard.SetDataObject(dataObj, True) ' True = keep after app closes
+            Volatile.Write(clipBoardDupingInProgress, False)
+        End If
+    End Sub
 
     Public Enum ClipboardAction
         None = 0
@@ -44,6 +57,14 @@ Module ClipBoardHelper
                 End If
             End If
         End If
+
+#If DEBUG Then
+        dBug.Print($"Clipboard Contains {result.Files?.Count} Files")
+        For Each it As String In result.Files
+            dBug.Print($"""{it}""")
+        Next
+        dBug.Print("---")
+#End If
 
         Return result
 

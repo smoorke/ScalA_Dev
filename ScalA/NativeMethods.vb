@@ -1180,6 +1180,8 @@ Module NativeMethods
 
     Public Const WM_MOUSEHOVER = &H2A1
 
+    Public Const WM_CLIPBOARDUPDATE As Integer = &H31D
+
     Public Const WM_DWMCOLORIZATIONCOLORCHANGED = &H320
 
     Public Const SC_SIZE As Integer = &HF000
@@ -1200,7 +1202,11 @@ Module NativeMethods
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
     Public Function SendMessage(ByVal hWnd As IntPtr, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As StringBuilder) As IntPtr : End Function
 
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function AddClipboardFormatListener(hwnd As IntPtr) As Boolean : End Function
 
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function RemoveClipboardFormatListener(hwnd As IntPtr) As Boolean : End Function
     Public Function GetWindowText(hWnd As IntPtr) As String
         Dim length As Integer = NativeMethods.SendMessage(hWnd, WM_GETTEXTLENGTH, IntPtr.Zero, IntPtr.Zero).ToInt32()
         If length > 0 Then

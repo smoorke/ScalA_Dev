@@ -1,4 +1,5 @@
 ﻿Imports System.Runtime.InteropServices
+Imports System.Threading
 
 Public NotInheritable Class WindowProc
     'dummy class to prevent form generation
@@ -423,7 +424,12 @@ Partial NotInheritable Class FrmMain
                     Me.Invalidate()
 
                 End If
-
+            Case WM_CLIPBOARDUPDATE
+                dBug.Print("WM_CLIPBOARDUPDATE")
+                If Not Volatile.Read(clipBoardDupingInProgress) Then
+                    clipBoardInfo = GetClipboardFilesAndAction()
+                    UpdateMenuChecks(cmsQuickLaunch.Items, New HashSet(Of String)(clipBoardInfo.Files))
+                End If
             Case WM_DISPLAYCHANGE
                 dBug.Print($"WM_DISPLAYCHANGE w {m.WParam} w {m.LParam}")
                 'cboAlt.SelectedIndex = 0

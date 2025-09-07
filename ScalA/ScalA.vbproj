@@ -96,7 +96,7 @@
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="AstoniaProcess.vb" />
     <Compile Include="ClipBoardHelper.vb" />
-    <Compile Include="CustomColorTable.vb" />
+    <Compile Include="CustomToolStripRenderer.vb" />
     <Compile Include="debugger\dBug.vb" />
     <Compile Include="debugger\frmDebug.Designer.vb">
       <DependentUpon>frmDebug.vb</DependentUpon>

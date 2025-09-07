@@ -515,8 +515,9 @@ Partial Public NotInheritable Class FrmMain
 
         If cmbResolution.SelectedIndex = 0 Then DoEqLock(My.Settings.resol)
 
+        cmsQuickLaunch.Renderer = New CustomToolStripRenderer()
+
         cmsAlt.Renderer = New ToolStripProfessionalRenderer(New CustomColorTable)
-        cmsQuickLaunch.Renderer = cmsAlt.Renderer
         cmsQuit.Renderer = cmsAlt.Renderer
         frmOverlay.cmsRestart.Renderer = cmsAlt.Renderer
 
@@ -546,14 +547,17 @@ Partial Public NotInheritable Class FrmMain
 
         If My.Settings.DisableWinKey OrElse My.Settings.OnlyEsc OrElse My.Settings.NoAltTab Then keybHook.Hook()
 
-
-
-
+        AddClipboardFormatListener(Me.Handle)
 
         'spawn IPC waiter thread
         Dim waitThread As New Threading.Thread(AddressOf IPC.SelectSemaThread) With {.IsBackground = True}
         waitThread.Start(Me)
 
+    End Sub
+
+    Protected Overrides Sub OnHandleDestroyed(e As EventArgs)
+        RemoveClipboardFormatListener(Me.Handle)
+        MyBase.OnHandleDestroyed(e)
     End Sub
 
     Public bmShield As Bitmap
