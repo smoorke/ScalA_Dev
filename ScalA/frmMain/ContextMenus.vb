@@ -709,12 +709,10 @@ Partial Public NotInheritable Class FrmMain
 
         Dim watch As Stopwatch = Stopwatch.StartNew()
 
-        Dim loopOpts = New ParallelOptions With {.MaxDegreeOfParallelism = 8}
-
         Dim Dirs As New ConcurrentBag(Of ToolStripItem)
         Try
             Dim opts As New ParallelOptions With {.CancellationToken = cantok}
-            Parallel.ForEach(System.IO.Directory.EnumerateDirectories(pth).ToArray(), loopOpts,
+            Parallel.ForEach(System.IO.Directory.EnumerateDirectories(pth).ToArray(),
                              Sub(fulldirs As String)
 
                                  Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fulldirs).Attributes
@@ -726,7 +724,8 @@ Partial Public NotInheritable Class FrmMain
 
                                  Dim smenu As New ToolStripMenuItem(If(vis, dispname, "*Hidden*"), foldericon) With {.Tag = {fulldirs & "\", hidden, dispname}, .Visible = vis}
 
-                                 smenu.DropDownItems.Add("(Dummy)").Enabled = False
+                                 Me.BeginInvoke(Sub() smenu.DropDownItems.Add("(Dummy)").Enabled = False)
+
                                  smenu.DoubleClickEnabled = True
 
                                  AddHandler smenu.MouseDown, AddressOf QL_MouseDown
@@ -752,80 +751,79 @@ Partial Public NotInheritable Class FrmMain
 
         Dim Files As New ConcurrentBag(Of ToolStripItem)
 
-        Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell")),
-              shortcutSemaphore As New SemaphoreSlim(12)
-            Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).ToArray().Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)), loopOpts,
-                         Sub(fullLink As String)
+        Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell")) ', shortcutSemaphore As New SemaphoreSlim(12)
+            Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).ToArray().Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)),
+                             Sub(fullLink As String)
 
-                             Dim attr As System.IO.FileAttributes = New System.IO.FileInfo(fullLink).Attributes
-                             Dim hidden As Boolean = False
-                             If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then hidden = True
+                                 Dim attr As System.IO.FileAttributes = New System.IO.FileInfo(fullLink).Attributes
+                                 Dim hidden As Boolean = False
+                                 If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then hidden = True
 
-                             'don't add self to list
-                             If System.IO.Path.GetFileName(fullLink) = System.IO.Path.GetFileName(Environment.GetCommandLineArgs(0)) Then Exit Sub 'Continue For
-                             If fullLink = Environment.GetCommandLineArgs(0) Then Exit Sub 'Continue For
+                                 'don't add self to list
+                                 If System.IO.Path.GetFileName(fullLink) = System.IO.Path.GetFileName(Environment.GetCommandLineArgs(0)) Then Exit Sub 'Continue For
+                                 If fullLink = Environment.GetCommandLineArgs(0) Then Exit Sub 'Continue For
 
-                             If My.Settings.QLResolveLnk AndAlso fullLink.ToLower.EndsWith(".lnk") Then
-                                 Dim oLink As Object
-                                 'SyncLock shellLock
-                                 shortcutSemaphore.Wait() 'need semaphore to limit number of parallel acesses
-                                 Try
-                                     oLink = shellLocal.Value.CreateShortcut(fullLink)
-                                 Finally
-                                     shortcutSemaphore.Release()
-                                 End Try
-                                 'End SyncLock
-                                 Dim target As String = oLink.TargetPath
-                                 If IO.Directory.Exists(target) Then
+                                 If My.Settings.QLResolveLnk AndAlso fullLink.ToLower.EndsWith(".lnk") Then
+                                     Dim oLink As Object
+                                     'SyncLock shellLock
+                                     'shortcutSemaphore.Wait() 'need semaphore to limit number of parallel acesses
+                                     Try
+                                         oLink = shellLocal.Value.CreateShortcut(fullLink)
+                                     Finally
+                                         'shortcutSemaphore.Release()
+                                     End Try
+                                     'End SyncLock
+                                     Dim target As String = oLink.TargetPath
+                                     If IO.Directory.Exists(target) Then
 
-                                     Dim hid As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
-                                     Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
+                                         Dim hid As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
+                                         Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
 
-                                     Dim smenu As New ToolStripMenuItem(If(hid, dispname, "*Hidden*"), foldericon) With {.Tag = {fullLink, hidden, dispname, target & "\"}, .Visible = hid}
+                                         Dim smenu As New ToolStripMenuItem(If(hid, dispname, "*Hidden*"), foldericon) With {.Tag = {fullLink, hidden, dispname, target & "\"}, .Visible = hid}
 
-                                     smenu.DropDownItems.Add("(Dummy)").Enabled = False
-                                     smenu.DoubleClickEnabled = True
+                                         smenu.DropDownItems.Add("(Dummy)").Enabled = False
+                                         smenu.DoubleClickEnabled = True
 
-                                     AddHandler smenu.MouseDown, AddressOf QL_MouseDown
-                                     AddHandler smenu.DoubleClick, AddressOf DblClickDir
-                                     AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
-                                     'AddHandler smenu.DropDownOpened, AddressOf ddo
+                                         AddHandler smenu.MouseDown, AddressOf QL_MouseDown
+                                         AddHandler smenu.DoubleClick, AddressOf DblClickDir
+                                         AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
+                                         'AddHandler smenu.DropDownOpened, AddressOf ddo
 
 
-                                     AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
+                                         AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
 
-                                     addLinkWatcher(target)
+                                         addLinkWatcher(target)
 
-                                     Dirs.Add(smenu)
-                                     isEmpty = False
+                                         Dirs.Add(smenu)
+                                         isEmpty = False
 
-                                     Exit Sub 'Continue For
+                                         Exit Sub 'Continue For
+                                     End If
                                  End If
-                             End If
 
-                             Dim linkName As String
-                             If hideExt.Contains(System.IO.Path.GetExtension(fullLink).ToLower) Then
-                                 linkName = System.IO.Path.GetFileNameWithoutExtension(fullLink)
-                             Else
-                                 linkName = System.IO.Path.GetFileName(fullLink)
-                             End If
+                                 Dim linkName As String
+                                 If hideExt.Contains(System.IO.Path.GetExtension(fullLink).ToLower) Then
+                                     linkName = System.IO.Path.GetFileNameWithoutExtension(fullLink)
+                                 Else
+                                     linkName = System.IO.Path.GetFileName(fullLink)
+                                 End If
 
-                             Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
+                                 Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
 
-                             Dim item As New ToolStripMenuItem(If(vis, linkName, "*Hidden*")) With {.Tag = {fullLink, hidden, linkName}, .Visible = vis}
-                             AddHandler item.MouseDown, AddressOf QL_MouseDown
-                             'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
-                             'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
-                             AddHandler item.Paint, AddressOf QLMenuItem_Paint
+                                 Dim item As New ToolStripMenuItem(If(vis, linkName, "*Hidden*")) With {.Tag = {fullLink, hidden, linkName}, .Visible = vis}
+                                 AddHandler item.MouseDown, AddressOf QL_MouseDown
+                                 'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
+                                 'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
+                                 AddHandler item.Paint, AddressOf QLMenuItem_Paint
 
-                             Files.Add(item)
-                             If vis Then
-                                 isEmpty = False
-                             End If
-                             If watch.ElapsedMilliseconds > TOTALTIMEOUT Then
-                                 timedout = True
-                             End If
-                         End Sub)
+                                 Files.Add(item)
+                                 If vis Then
+                                     isEmpty = False
+                                 End If
+                                 If watch.ElapsedMilliseconds > TOTALTIMEOUT Then
+                                     timedout = True
+                                 End If
+                             End Sub)
         End Using
         menuItems = Dirs.OrderBy(Function(d) d.Tag(0), nsSorter).Concat(
                     Files.OrderBy(Function(f) IO.Path.GetFileNameWithoutExtension(f.Tag(0)), nsSorter)).ToList
@@ -868,7 +866,7 @@ Partial Public NotInheritable Class FrmMain
                         pasteLinkTSItem.Image = addOverlay(pasteTSItem.Image)
                     End If
                 Else
-                    pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} Mulitple"
+                    pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} Multiple ({clipBoardInfo.Files?.Count})"
                     pasteTSItem.Image = multiPasteBitmap
 
                     pasteLinkTSItem.Text = "Paste .Lnks"
@@ -1046,6 +1044,7 @@ Partial Public NotInheritable Class FrmMain
         For Each it As ToolStripItem In olditems
             sender.DropDownItems.Remove(it)
         Next
+
     End Sub
     Private foldericon = GetIconFromFile(FileIO.SpecialDirectories.Temp & "\", True)
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
@@ -1662,7 +1661,7 @@ Partial Public NotInheritable Class FrmMain
                     End If
                 Else 'more than 1 file/dir.
 
-                    pasteItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} Multiple"
+                    pasteItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} Multiple ({clipBoardInfo.Files?.Count})"
                     pasteLinkItem.Text = "Paste .Lnks"
 
                     pastehbm = multiPasteBitmap.GetHbitmap(Color.Black)

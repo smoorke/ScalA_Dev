@@ -426,9 +426,11 @@ Partial NotInheritable Class FrmMain
                 End If
             Case WM_CLIPBOARDUPDATE
                 dBug.Print("WM_CLIPBOARDUPDATE")
-                If Not Volatile.Read(clipBoardDupingInProgress) Then
+                If Not clipBoardDupingInProgress Then
                     clipBoardInfo = GetClipboardFilesAndAction()
                     UpdateMenuChecks(cmsQuickLaunch.Items, New HashSet(Of String)(clipBoardInfo.Files))
+                Else
+                    clipBoardDupingInProgress = False
                 End If
             Case WM_DISPLAYCHANGE
                 dBug.Print($"WM_DISPLAYCHANGE w {m.WParam} w {m.LParam}")

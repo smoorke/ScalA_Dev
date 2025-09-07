@@ -11,9 +11,8 @@ Module ClipBoardHelper
         Debug.Print("dupeClipBoard")
         Dim dataObj = Clipboard.GetDataObject()
         If dataObj IsNot Nothing Then
-            Volatile.Write(clipBoardDupingInProgress, True)
+            clipBoardDupingInProgress = True
             Clipboard.SetDataObject(dataObj, True) ' True = keep after app closes
-            Volatile.Write(clipBoardDupingInProgress, False)
         End If
     End Sub
 
@@ -59,7 +58,8 @@ Module ClipBoardHelper
         End If
 
 #If DEBUG Then
-        dBug.Print($"Clipboard Contains {result.Files?.Count} Files")
+        Dim count As Integer = result.Files?.Count
+        dBug.Print($"Clipboard Contains: {count} File{If(count = 1, "", "s")}, Action: {result.Action}")
         For Each it As String In result.Files
             dBug.Print($"""{it}""")
         Next
