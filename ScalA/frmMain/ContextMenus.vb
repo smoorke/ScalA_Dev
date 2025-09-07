@@ -1,6 +1,5 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.ComponentModel
-Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Threading
 Imports Microsoft.Win32
@@ -1756,10 +1755,48 @@ Partial Public NotInheritable Class FrmMain
             cmsQuickLaunch.Close()
         End If
 
+        Task.Run(Sub()
+
+                     If Not {"Paste", "PasteLink"}.Contains(act) Then Exit Sub
+
+                     Dim watch As Stopwatch = Stopwatch.StartNew()
+                     Dim hndl As IntPtr = IntPtr.Zero
+
+                     Dim found As Boolean = False
+                     Dim wndProc As EnumWindowsProc = Function(hwnd, lParam)
+                                                          Dim className As New System.Text.StringBuilder(256)
+                                                          GetClassName(hwnd, className, className.Capacity)
+                                                          If className.ToString() = "OperationStatusWindow" Then
+                                                              Dim pid As Integer
+                                                              GetWindowThreadProcessId(hwnd, pid)
+                                                              If pid = scalaPID Then
+                                                                  hndl = hwnd
+                                                                  found = True
+                                                                  Return False ' don't stop enumeration
+                                                              End If
+                                                          End If
+                                                          Return True ' continue enumeration
+                                                      End Function
+
+                     While watch.ElapsedMilliseconds < 5000 AndAlso Not found
+                         EnumWindows(wndProc, IntPtr.Zero)
+                         If found Then Exit While
+                         Threading.Thread.Sleep(50)
+                     End While
+                     dBug.Print($"enumwindow {hndl} ""{GetWindowText(hndl)}""")
+
+                     If My.Settings.topmost Then SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
+                     SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                     watch.Stop()
+                 End Sub)
+
+        InvokeExplorerVerb(tgt, act, ScalaHandle)
+
         dBug.Print($"Clipaction {act} ""{tgt}""")
-        InvokeExplorerVerb(tgt, act)
 
     End Sub
+
+
 
     Dim restartCM As ContextMenu = New ContextMenu({New MenuItem("Restart w/o Closing", AddressOf restartWoClosing)})
 
