@@ -6,15 +6,55 @@ Public NotInheritable Class CustomToolStripRenderer : Inherits ToolStripProfessi
         MyBase.New(New CustomColorTable())
     End Sub
 
+    Public animTimer As New Timer() With {.Interval = 99}
+
+    Private _menustrip As ContextMenuStrip
+
+    Public Sub InitAnimationTimer(cms As ContextMenuStrip)
+        _menustrip = cms
+        AddHandler animTimer.Tick, AddressOf AnimTimer_Tick
+        animTimer.Start()
+    End Sub
+
+    Private Sub AnimTimer_Tick(sender As Object, e As EventArgs)
+        If _menustrip?.Visible Then InvalidateCheckedItems(_menustrip.Items)
+    End Sub
+
+    Private animSW As Stopwatch = Stopwatch.StartNew()
+
     Protected Overrides Sub OnRenderItemCheck(e As ToolStripItemImageRenderEventArgs)
-        Using dashedPen As New Pen(If(clipBoardInfo.Action = ClipboardAction.Move, If(e.Item.Selected, Color.Red, Color.Pink), If(My.Settings.DarkMode, If(e.Item.Selected, Color.DarkBlue, Color.LightBlue), Color.Black)))
-            dashedPen.DashStyle = Drawing2D.DashStyle.DashDot
+        Using dashedPen As New Pen(If(clipBoardInfo.Action = ClipboardAction.Move, If(e.Item.Selected, Color.Red, Color.Pink), If(My.Settings.DarkMode, If(e.Item.Selected, Color.DarkBlue, Color.LightBlue), Color.Black)), 1)
+            'Dim index As Integer = CInt((animTick.ElapsedMilliseconds \ 200) Mod styleloop.Length)
+            'dashedPen.DashStyle = styleloop(index)
+
+            ' Define a fixed dash pattern (on/off lengths in pixels)
+            dashedPen.DashPattern = {4.0F, 2.0F, 1.0F, 2.0F}
+
+            ' Animate offset: elapsed time mod total cycle
+            Dim cycle As Single = dashedPen.DashPattern.Sum()
+            Dim offset As Single = CSng((animSW.ElapsedMilliseconds \ 200) Mod cycle)
+            dashedPen.DashOffset = offset * If(clipBoardInfo.Action = ClipboardAction.Copy, -1, 1)
+
             e.Graphics.DrawRectangle(dashedPen, New Rectangle(3, 1, 19, 19))
         End Using
     End Sub
 
     Protected Overrides Sub OnRenderItemImage(e As ToolStripItemImageRenderEventArgs)
         e.Graphics.DrawImage(e.Item.Image, e.ImageRectangle)
+    End Sub
+
+    Private Sub InvalidateCheckedItems(items As ToolStripItemCollection)
+        For Each item As ToolStripMenuItem In items.OfType(Of ToolStripMenuItem)
+            ' Only invalidate checked + visible ones
+            If item.Checked AndAlso item.Visible Then
+                item.Invalidate(New Rectangle(3, 1, 20, 20))
+            End If
+
+            ' Recurse visible submenus
+            If item.HasDropDownItems AndAlso item.DropDown?.Visible Then
+                InvalidateCheckedItems(item.DropDownItems)
+            End If
+        Next
     End Sub
 
 End Class
