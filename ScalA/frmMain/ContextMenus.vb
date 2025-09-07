@@ -862,8 +862,12 @@ Partial Public NotInheritable Class FrmMain
                     pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} ""{nm}"""
                     pasteTSItem.Image = GetIconFromFile(clipBoardInfo.Files(0))
 
-                    pasteLinkTSItem.Text = "Paste .Lnk"
-                    pasteLinkTSItem.Image = addOverlay(pasteTSItem.Image)
+                    If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
+                        pasteLinkTSItem.Visible = False
+                    Else
+                        pasteLinkTSItem.Text = "Paste .Lnk"
+                        pasteLinkTSItem.Image = addOverlay(pasteTSItem.Image)
+                    End If
                 Else
                     pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} Mulitple"
                     pasteTSItem.Image = multiPasteBitmap
@@ -1630,8 +1634,8 @@ Partial Public NotInheritable Class FrmMain
                         pasteItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} ""{nm}"""
                         pasteLinkItem.Text = "Paste .Lnk"
 
-                        'todo: don't pull from cache we may not be watching filechanges. make async tho io peration may be slow
-                        Dim ico As Bitmap = GetIconFromCache(clipBoardInfo.Files(0), False)
+                        'don't pull from cache we may not be watching filechanges. make async tho, io peration may be slow
+                        Dim ico As Bitmap = GetIconFromFile(clipBoardInfo.Files(0), False)
 
                         Dim shortcuttedIcon As Bitmap = addOverlay(ico)
 
@@ -1640,6 +1644,8 @@ Partial Public NotInheritable Class FrmMain
 
                         purgeList.Add(pastehbm)
                         purgeList.Add(pasteShortcutHbm)
+
+                        If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then pasteLinkItem.Visible = False
 
                         Dim cmdpos As Integer = QlCtxMenu.MenuItems.OfType(Of MenuItem).TakeWhile(Function(m) m.Handle <> pasteItem.Handle).Count(Function(it) it.Visible)
 
