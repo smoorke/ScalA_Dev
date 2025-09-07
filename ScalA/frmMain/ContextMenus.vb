@@ -863,6 +863,7 @@ Partial Public NotInheritable Class FrmMain
                     pasteTSItem.Image = GetIconFromFile(clipBoardInfo.Files(0))
 
                     If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
+                        pasteTSItem.Image = addOverlay(pasteTSItem.Image)
                         pasteLinkTSItem.Visible = False
                     Else
                         pasteLinkTSItem.Text = "Paste .Lnk"
@@ -1639,13 +1640,17 @@ Partial Public NotInheritable Class FrmMain
 
                         Dim shortcuttedIcon As Bitmap = addOverlay(ico)
 
+                        If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
+                            ico = shortcuttedIcon
+                            pasteLinkItem.Visible = False
+                        End If
+
                         pastehbm = ico.GetHbitmap(Color.Black)
                         pasteShortcutHbm = shortcuttedIcon.GetHbitmap(Color.Black)
 
                         purgeList.Add(pastehbm)
                         purgeList.Add(pasteShortcutHbm)
 
-                        If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then pasteLinkItem.Visible = False
 
                         Dim cmdpos As Integer = QlCtxMenu.MenuItems.OfType(Of MenuItem).TakeWhile(Function(m) m.Handle <> pasteItem.Handle).Count(Function(it) it.Visible)
 
@@ -1751,6 +1756,8 @@ Partial Public NotInheritable Class FrmMain
 
         If {"Paste", "PasteLink"}.Contains(act) Then
             tgt = IO.Path.GetDirectoryName(tgt.TrimEnd("\"c))
+            CloseOtherDropDowns(cmsQuickLaunch.Items)
+            cmsQuickLaunch.Close()
         End If
 
         dBug.Print($"Clipaction {act} ""{tgt}""")
