@@ -5,15 +5,16 @@ Module ClipBoardHelper
 
     Public clipBoardInfo As ClipboardFileInfo
 
-    Public clipBoardDupingInProgress As Boolean = False 'used to prevent triggering WM_CLIPBOARDUPDATE
+    'Public clipBoardDupingInProgress As Boolean = False 'used to prevent triggering WM_CLIPBOARDUPDATE
 
     Public Sub dupeClipBoard()
+        Exit Sub
         Debug.Print("dupeClipBoard is b0rken")
-        'Dim dataObj = Clipboard.GetDataObject() 'this leads to mayor bug only a reboot fixes
-        'If dataObj IsNot Nothing Then
-        '    clipBoardDupingInProgress = True
-        '    Clipboard.SetDataObject(dataObj, True) ' True = keep after app closes
-        'End If
+        Dim dataObj = Clipboard.GetDataObject() 'this leads to mayor bug only a reboot fixes
+        If dataObj IsNot Nothing Then
+            'clipBoardDupingInProgress = True
+            Clipboard.SetDataObject(dataObj, True) ' True = keep after app closes
+        End If
     End Sub
 
     Public Enum ClipboardAction

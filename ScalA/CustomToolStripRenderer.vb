@@ -1,6 +1,4 @@
-﻿Imports System.Drawing.Drawing2D
-
-Public NotInheritable Class CustomToolStripRenderer : Inherits ToolStripProfessionalRenderer
+﻿Public NotInheritable Class CustomToolStripRenderer : Inherits ToolStripProfessionalRenderer
 
     Public Sub New()
         MyBase.New(New CustomColorTable())
@@ -12,8 +10,8 @@ Public NotInheritable Class CustomToolStripRenderer : Inherits ToolStripProfessi
 
     Public Sub InitAnimationTimer(cms As ContextMenuStrip)
         _menustrip = cms
+        AddHandler animTimer.Tick, AddressOf AnimTimer_Tick
         If AnimsEnabled Then
-            AddHandler animTimer.Tick, AddressOf AnimTimer_Tick
             animTimer.Start()
         End If
     End Sub
@@ -27,7 +25,7 @@ Public NotInheritable Class CustomToolStripRenderer : Inherits ToolStripProfessi
     Private totalPat As Single = pattrn.Sum()
 
     Protected Overrides Sub OnRenderItemCheck(e As ToolStripItemImageRenderEventArgs)
-        Using dashedPen As New Pen(If(clipBoardInfo.Action = ClipboardAction.Move, If(e.Item.Selected OrElse Not My.Settings.DarkMode, Color.Red, Color.Pink), If(My.Settings.DarkMode, If(e.Item.Selected, Color.DarkBlue, Color.LightGray), Color.Black)), 1)
+        Using dashedPen As New Pen(If(clipBoardInfo.Action = ClipboardAction.Move, If(e.Item.Selected OrElse Not My.Settings.DarkMode, Color.Red, Color.Pink), If(My.Settings.DarkMode, If(e.Item.Selected, Color.DarkBlue, Color.White), Color.Black)), 1)
 
             ' Define a fixed dash pattern (on/off lengths in pixels)
             dashedPen.DashPattern = pattrn
