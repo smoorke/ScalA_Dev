@@ -506,11 +506,13 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             If Not String.IsNullOrEmpty(_commandLine) Then Return _commandLine
 
             Try
-                Dim QS As New Management.ManagementObjectSearcher($"Select * from Win32_Process WHERE ProcessID={Me.Id}")
-                Dim objCol = QS.Get()
-                _commandLine = objCol.Cast(Of Management.ManagementObject)().FirstOrDefault()?("commandline")?.ToString()
-                If _commandLine Is Nothing Then _commandLine = String.Empty
-            Catch
+                Task.Run(Sub()
+                             Dim QS As New Management.ManagementObjectSearcher($"Select * from Win32_Process WHERE ProcessID={Me.Id}")
+                             Dim objCol = QS.Get()
+                             _commandLine = objCol.Cast(Of Management.ManagementObject)().FirstOrDefault()?("commandline")?.ToString()
+                             If _commandLine Is Nothing Then _commandLine = String.Empty
+                         End Sub).Wait()
+            Catch ex As Exception
                 _commandLine = String.Empty
             End Try
 
