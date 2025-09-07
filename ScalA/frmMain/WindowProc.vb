@@ -394,6 +394,7 @@ Partial NotInheritable Class FrmMain
                 dBug.Print($"sn=""{settingnname}""")
                 If settingnname = "VisualEffects" Then
                     AnimsEnabled = getAnimationsEnabled()
+                    If AnimsEnabled = False Then CType(cmsQuickLaunch.Renderer, CustomToolStripRenderer)?.animTimer?.Stop()
                     dBug.Print($"Animations {AnimsEnabled}")
                     'Attach(AltPP)
                 End If

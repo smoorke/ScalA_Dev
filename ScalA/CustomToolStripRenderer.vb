@@ -12,8 +12,10 @@ Public NotInheritable Class CustomToolStripRenderer : Inherits ToolStripProfessi
 
     Public Sub InitAnimationTimer(cms As ContextMenuStrip)
         _menustrip = cms
-        AddHandler animTimer.Tick, AddressOf AnimTimer_Tick
-        animTimer.Start()
+        If AnimsEnabled Then
+            AddHandler animTimer.Tick, AddressOf AnimTimer_Tick
+            animTimer.Start()
+        End If
     End Sub
 
     Private Sub AnimTimer_Tick(sender As Object, e As EventArgs)
@@ -21,17 +23,17 @@ Public NotInheritable Class CustomToolStripRenderer : Inherits ToolStripProfessi
     End Sub
 
     Private animSW As Stopwatch = Stopwatch.StartNew()
+    Private pattrn As Single() = {4.0F, 2.0F, 1.0F, 2.0F}
+    Private totalPat As Single = pattrn.Sum()
 
     Protected Overrides Sub OnRenderItemCheck(e As ToolStripItemImageRenderEventArgs)
-        Using dashedPen As New Pen(If(clipBoardInfo.Action = ClipboardAction.Move, If(e.Item.Selected, Color.Red, Color.Pink), If(My.Settings.DarkMode, If(e.Item.Selected, Color.DarkBlue, Color.LightBlue), Color.Black)), 1)
-            'Dim index As Integer = CInt((animTick.ElapsedMilliseconds \ 200) Mod styleloop.Length)
-            'dashedPen.DashStyle = styleloop(index)
+        Using dashedPen As New Pen(If(clipBoardInfo.Action = ClipboardAction.Move, If(e.Item.Selected OrElse Not My.Settings.DarkMode, Color.Red, Color.Pink), If(My.Settings.DarkMode, If(e.Item.Selected, Color.DarkBlue, Color.LightGray), Color.Black)), 1)
 
             ' Define a fixed dash pattern (on/off lengths in pixels)
-            dashedPen.DashPattern = {4.0F, 2.0F, 1.0F, 2.0F}
+            dashedPen.DashPattern = pattrn
 
             ' Animate offset: elapsed time mod total cycle
-            Dim cycle As Single = dashedPen.DashPattern.Sum()
+            Dim cycle As Single = totalPat
             Dim offset As Single = CSng((animSW.ElapsedMilliseconds \ 200) Mod cycle)
             dashedPen.DashOffset = offset * If(clipBoardInfo.Action = ClipboardAction.Copy, -1, 1)
 

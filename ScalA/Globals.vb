@@ -9,7 +9,7 @@ Module Globals
 
     Public ReadOnly hideExt As String() = {".lnk", ".url"}
 
-
+    Public AnimsEnabled As Boolean = getAnimationsEnabled()
     Public Sub setPriority(pri As Integer)
         Dim hProcess As IntPtr = GetCurrentProcess()
         Dim result As Boolean = SetPriorityClass(hProcess, pri)

@@ -563,7 +563,7 @@ Partial Public NotInheritable Class FrmMain
 
     Public bmShield As Bitmap
 
-    Dim AnimsEnabled As Boolean = getAnimationsEnabled()
+
     'Public startup As Boolean = True
 
     Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
