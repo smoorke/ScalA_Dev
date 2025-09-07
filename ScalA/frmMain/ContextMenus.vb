@@ -731,7 +731,7 @@ Partial Public NotInheritable Class FrmMain
                                  AddHandler smenu.MouseDown, AddressOf QL_MouseDown
                                  AddHandler smenu.DoubleClick, AddressOf DblClickDir
                                  AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
-                                 AddHandler smenu.DropDownOpened, AddressOf ddo
+                                 AddHandler smenu.DropDownOpened, AddressOf QL_DropDownOpened
                                  'AddHandler smenu.DropDownOpened, AddressOf DeferredIconLoading
                                  AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
 
@@ -788,7 +788,7 @@ Partial Public NotInheritable Class FrmMain
                                          AddHandler smenu.MouseDown, AddressOf QL_MouseDown
                                          AddHandler smenu.DoubleClick, AddressOf DblClickDir
                                          AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
-                                         AddHandler smenu.DropDownOpened, AddressOf ddo
+                                         AddHandler smenu.DropDownOpened, AddressOf QL_DropDownOpened
 
 
                                          AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
@@ -881,7 +881,7 @@ Partial Public NotInheritable Class FrmMain
         Dim addShortcutMenu As New ToolStripMenuItem("New", My.Resources.Add) With {.Tag = pth, .Visible = isEmpty OrElse ctrlshift_pressed}
         addShortcutMenu.DropDownItems.Add("(Dummy)").Enabled = False
         AddHandler addShortcutMenu.DropDownOpening, AddressOf AddShortcutMenu_DropDownOpening
-        AddHandler addShortcutMenu.DropDownOpened, AddressOf ddo
+        AddHandler addShortcutMenu.DropDownOpened, AddressOf QL_DropDownOpened
         menuItems.Add(addShortcutMenu)
 
         cts?.Dispose()
@@ -894,7 +894,7 @@ Partial Public NotInheritable Class FrmMain
         Return menuItems
     End Function
 
-    Private Sub ddo(sender As ToolStripMenuItem, e As EventArgs)
+    Private Sub QL_DropDownOpened(sender As ToolStripMenuItem, e As EventArgs)
         Dim handle = sender.DropDown.Handle
 
         Dim owner = GetWindowLong(handle, GWL_HWNDPARENT)
