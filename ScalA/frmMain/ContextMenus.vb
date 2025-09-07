@@ -1772,7 +1772,7 @@ Partial Public NotInheritable Class FrmMain
                                                               If pid = scalaPID Then
                                                                   hndl = hwnd
                                                                   found = True
-                                                                  Return False ' don't stop enumeration
+                                                                  Return False ' stop enumeration
                                                               End If
                                                           End If
                                                           Return True ' continue enumeration
