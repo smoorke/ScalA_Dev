@@ -731,6 +731,7 @@ Partial Public NotInheritable Class FrmMain
                                  AddHandler smenu.MouseDown, AddressOf QL_MouseDown
                                  AddHandler smenu.DoubleClick, AddressOf DblClickDir
                                  AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
+                                 AddHandler smenu.DropDownOpened, AddressOf ddo
                                  'AddHandler smenu.DropDownOpened, AddressOf DeferredIconLoading
                                  AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
 
@@ -787,7 +788,7 @@ Partial Public NotInheritable Class FrmMain
                                          AddHandler smenu.MouseDown, AddressOf QL_MouseDown
                                          AddHandler smenu.DoubleClick, AddressOf DblClickDir
                                          AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
-                                         'AddHandler smenu.DropDownOpened, AddressOf ddo
+                                         AddHandler smenu.DropDownOpened, AddressOf ddo
 
 
                                          AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
@@ -892,6 +893,15 @@ Partial Public NotInheritable Class FrmMain
         Return menuItems
     End Function
 
+    Private Sub ddo(sender As ToolStripMenuItem, e As EventArgs)
+        Dim handle = sender.DropDown.Handle
+        Dim styleEx = GetWindowLong(handle, GWL_EXSTYLE)
+        Dim newStyleEx = (styleEx And Not WindowStylesEx.WS_EX_APPWINDOW) Or WindowStylesEx.WS_EX_TOOLWINDOW
+        If newStyleEx <> styleEx Then
+            SetWindowLong(handle, GWL_EXSTYLE, newStyleEx)
+        End If
+    End Sub
+
     Dim pasteTSItem As ToolStripMenuItem = New ToolStripMenuItem("Paste ""Name""", Nothing, AddressOf ClipAction)
     Dim pasteLinkTSItem As ToolStripMenuItem = New ToolStripMenuItem("Paste .Lnk", Nothing, AddressOf ClipAction)
 
@@ -990,7 +1000,7 @@ Partial Public NotInheritable Class FrmMain
 
                                                       Me.Invoke(Sub()
                                                                     'it.Image = ico
-                                                                    it.Invalidate()
+                                                                    it.Invalidate(New Rectangle(3, 11, 22, 8)) 'only invalidate the tiny portion that contains the overlay. needs tweaking
                                                                 End Sub)
                                                       doneShortcutOverlayPaths.TryAdd(PathName, 0)
                                                       dBug.Print($"Overlay applied to: {PathName}")
@@ -1800,11 +1810,11 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub UpdateMenuChecks(menu As ToolStripItemCollection, itemSet As HashSet(Of String))
         For Each menuItm As ToolStripMenuItem In menu.OfType(Of ToolStripMenuItem)
-            If menuItm.DropDown.Visible AndAlso menuItm.HasDropDownItems Then
+            menuItm.Checked = itemSet.Contains(menuItm.Tag?(0).ToString.TrimEnd("\"c))
+            menuItm.Invalidate() ')imageRect)
+            If menuItm.DropDown?.Visible AndAlso menuItm.HasDropDownItems Then
                 UpdateMenuChecks(menuItm.DropDownItems, itemSet)
             End If
-            menuItm.Checked = itemSet.Contains(menuItm.Tag?(0).ToString.TrimEnd("\"c))
-            menuItm.Invalidate()
         Next
     End Sub
 
