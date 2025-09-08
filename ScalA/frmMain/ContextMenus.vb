@@ -716,7 +716,7 @@ Partial Public NotInheritable Class FrmMain
         Dim Dirs As New ConcurrentBag(Of ToolStripItem)
         Try
             Dim opts As New ParallelOptions With {.CancellationToken = cantok}
-            Parallel.ForEach(System.IO.Directory.EnumerateDirectories(pth).ToArray(),
+            Parallel.ForEach(System.IO.Directory.EnumerateDirectories(pth),
                              Sub(fulldirs As String)
 
                                  Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fulldirs).Attributes
@@ -749,6 +749,9 @@ Partial Public NotInheritable Class FrmMain
                                      timedout = True
                                  End If
                              End Sub)
+        Catch ex As System.UnauthorizedAccessException
+            menuItems.Add(New ToolStripMenuItem("<Access Denied>") With {.Enabled = False})
+            Return menuItems
         Catch ex As Win32Exception
             menuItems.Add(New ToolStripMenuItem("<Access Denied>") With {.Enabled = False})
             Return menuItems
@@ -757,7 +760,7 @@ Partial Public NotInheritable Class FrmMain
         Dim Files As New ConcurrentBag(Of ToolStripItem)
 
         Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell")) ', shortcutSemaphore As New SemaphoreSlim(12)
-            Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).ToArray().Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)),
+            Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)),
                              Sub(fullLink As String)
 
                                  Dim attr As System.IO.FileAttributes = New System.IO.FileInfo(fullLink).Attributes
@@ -770,14 +773,9 @@ Partial Public NotInheritable Class FrmMain
 
                                  If My.Settings.QLResolveLnk AndAlso fullLink.ToLower.EndsWith(".lnk") Then
                                      Dim oLink As Object
-                                     'SyncLock shellLock
-                                     'shortcutSemaphore.Wait() 'need semaphore to limit number of parallel acesses
-                                     Try
-                                         oLink = shellLocal.Value.CreateShortcut(fullLink)
-                                     Finally
-                                         'shortcutSemaphore.Release()
-                                     End Try
-                                     'End SyncLock
+
+                                     oLink = shellLocal.Value.CreateShortcut(fullLink)
+
                                      Dim target As String = oLink.TargetPath
                                      If IO.Directory.Exists(target) Then
 
@@ -794,7 +792,7 @@ Partial Public NotInheritable Class FrmMain
                                                             AddHandler smenu.DoubleClick, AddressOf DblClickDir
                                                             AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
                                                             AddHandler smenu.DropDownOpened, AddressOf QL_DropDownOpened
-
+                                                            AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
 
                                                             AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
                                                         End Sub)

@@ -252,63 +252,67 @@ Module FsWatcher
             w.Dispose()
         Next
         watchers.Clear()
+        Try
 
-        Dim iniWatcher As New System.IO.FileSystemWatcher(path) With {
-            .NotifyFilter = System.IO.NotifyFilters.LastWrite,
-            .Filter = "desktop.ini",
-            .IncludeSubdirectories = True
-        }
+            Dim iniWatcher As New System.IO.FileSystemWatcher(path) With {
+                .NotifyFilter = System.IO.NotifyFilters.LastWrite,
+                .Filter = "desktop.ini",
+                .IncludeSubdirectories = True
+            }
 
-        AddHandler iniWatcher.Changed, AddressOf OnChanged
-        iniWatcher.EnableRaisingEvents = True
+            AddHandler iniWatcher.Changed, AddressOf OnChanged
+            iniWatcher.EnableRaisingEvents = True
 
-        watchers.Add(iniWatcher)
+            watchers.Add(iniWatcher)
 
 
 
-        Dim lnkWatcher As New System.IO.FileSystemWatcher(path) With {
+            Dim lnkWatcher As New System.IO.FileSystemWatcher(path) With {
             .NotifyFilter = System.IO.NotifyFilters.LastWrite Or
                             System.IO.NotifyFilters.FileName,
             .Filter = "*.lnk",
             .IncludeSubdirectories = True
         }
 
-        AddHandler lnkWatcher.Renamed, AddressOf OnRenamed
-        AddHandler lnkWatcher.Changed, AddressOf OnChanged
-        AddHandler lnkWatcher.Deleted, AddressOf onDeleteFile
-        lnkWatcher.EnableRaisingEvents = True
+            AddHandler lnkWatcher.Renamed, AddressOf OnRenamed
+            AddHandler lnkWatcher.Changed, AddressOf OnChanged
+            AddHandler lnkWatcher.Deleted, AddressOf onDeleteFile
+            lnkWatcher.EnableRaisingEvents = True
 
-        watchers.Add(lnkWatcher)
+            watchers.Add(lnkWatcher)
 
 
 
-        Dim urlWatcher As New System.IO.FileSystemWatcher(path) With {
+            Dim urlWatcher As New System.IO.FileSystemWatcher(path) With {
             .NotifyFilter = System.IO.NotifyFilters.LastWrite Or
                             System.IO.NotifyFilters.FileName,
             .Filter = "*.url",
             .IncludeSubdirectories = True
         }
 
-        AddHandler urlWatcher.Renamed, AddressOf OnRenamed
-        AddHandler urlWatcher.Changed, AddressOf OnChanged
-        AddHandler urlWatcher.Deleted, AddressOf onDeleteFile
-        urlWatcher.EnableRaisingEvents = True
+            AddHandler urlWatcher.Renamed, AddressOf OnRenamed
+            AddHandler urlWatcher.Changed, AddressOf OnChanged
+            AddHandler urlWatcher.Deleted, AddressOf onDeleteFile
+            urlWatcher.EnableRaisingEvents = True
 
-        watchers.Add(urlWatcher)
+            watchers.Add(urlWatcher)
 
 
 
-        Dim dirWatcher As New System.IO.FileSystemWatcher(path) With {
+            Dim dirWatcher As New System.IO.FileSystemWatcher(path) With {
             .NotifyFilter = System.IO.NotifyFilters.DirectoryName,
             .IncludeSubdirectories = True
         }
 
-        AddHandler dirWatcher.Renamed, AddressOf OnRenamedDir
-        AddHandler dirWatcher.Deleted, AddressOf OnDeleteDir
-        dirWatcher.EnableRaisingEvents = True
+            AddHandler dirWatcher.Renamed, AddressOf OnRenamedDir
+            AddHandler dirWatcher.Deleted, AddressOf OnDeleteDir
+            dirWatcher.EnableRaisingEvents = True
 
-        watchers.Add(dirWatcher)
+            watchers.Add(dirWatcher)
 
+        Catch ex As Exception
+            dBug.Print($"iniwatch {ex.Message}")
+        End Try
 
     End Sub
 
