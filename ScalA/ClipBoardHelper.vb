@@ -51,20 +51,19 @@ Module ClipBoardHelper
     Public Sub HybridClipboardPersist()
         Dim pDataObj As IntPtr
         Try
-            ' 1. Get the raw IDataObject pointer from Explorer
-            pDataObj = RetryOleGetClipboard()
+            '' 1. Get the raw IDataObject pointer from Explorer
+            'pDataObj = RetryOleGetClipboard()
 
-            If pDataObj = IntPtr.Zero Then Exit Sub
+            'If pDataObj = IntPtr.Zero Then Exit Sub
 
-            ' 2. Wrap it in a managed IDataObject
-            Dim srcDataObj As IOleDataObject = CType(Marshal.GetObjectForIUnknown(pDataObj), IOleDataObject)
+            '' 2. Wrap it in a managed IDataObject
+            'Dim srcDataObj As IOleDataObject = CType(Marshal.GetObjectForIUnknown(pDataObj), IOleDataObject)
 
             ' 3. Convert into a WinForms DataObject (our own managed copy)
             Dim newData As New DataObject()
 
             Dim shellFormatsToSkip As New HashSet(Of String) From {
     "AsyncFlag",
-    "Shell IDList Array",
     "DataObjectAttributes",
     "DataObjectAttributesRequiringElevation",
     "FileGroupDescriptorW"
