@@ -994,8 +994,9 @@ Partial Public NotInheritable Class FrmMain
                          Parallel.ForEach(items, opts,
                                           Sub(it As ToolStripMenuItem)
                                               Dim ico = GetIconFromCache(it.Tag(0), it.Tag(1))
+                                              Dim check As Boolean = clipBoardInfo.Files?.Contains(it.Tag?(0).ToString.TrimEnd("\"c))
                                               Me.Invoke(Sub()
-                                                            If clipBoardInfo.Files?.Contains(it.Tag?(0).ToString.TrimEnd("\"c)) Then it.Checked = True
+                                                            it.Checked = check
                                                             it.Image = ico
                                                         End Sub)
                                           End Sub)
@@ -1350,18 +1351,6 @@ Partial Public NotInheritable Class FrmMain
         '    sender.Items.Add("Select Folder", My.Resources.gear_wheel, AddressOf ChangeLinksDir)
         'End If
 
-        If AstoniaProcess.EnumSomeone.Any() Then
-            If sender.SourceControl Is Nothing Then 'called from trayicon
-                sender.Items.Insert(0, New ToolStripSeparator())
-                sender.Items.Insert(0, New ToolStripMenuItem("Close All Someone", My.Resources.moreF12, AddressOf CloseAllIdle_Click))
-                'closeAllAtBottom = False
-            Else
-                sender.Items.Add(New ToolStripSeparator())
-                sender.Items.Add("Close All Someone", My.Resources.moreF12, AddressOf CloseAllIdle_Click)
-                'closeAllAtBottom = True
-            End If
-        End If
-
         'If sender.SourceControl Is btnStart AndAlso My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then
         '    sender.Items.Add(New ToolStripSeparator())
         '    sender.Items.Add("UnElevate", btnStart.Image, AddressOf UnelevateSelf).ToolTipText = $"Drop Admin Rights{vbCrLf}Use this If you can't use ctrl, alt and/or shift."
@@ -1376,6 +1365,26 @@ Partial Public NotInheritable Class FrmMain
     'Private closeAllAtBottom As Boolean = True
 
     Private Sub cmsQuickLaunch_Opened(sender As ContextMenuStrip, e As EventArgs) Handles cmsQuickLaunch.Opened
+
+        Task.Run(Sub()
+                     If AstoniaProcess.EnumSomeone.Any() Then
+                         If sender.SourceControl Is Nothing Then 'called from trayicon
+                             Me.Invoke(Sub()
+                                           sender.Items.Insert(0, New ToolStripSeparator())
+                                           sender.Items.Insert(0, New ToolStripMenuItem("Close All Someone", My.Resources.moreF12, AddressOf CloseAllIdle_Click))
+                                       End Sub)
+                             'closeAllAtBottom = False
+                         Else
+                             Me.Invoke(Sub()
+                                           sender.Items.Add(New ToolStripSeparator())
+                                           sender.Items.Add("Close All Someone", My.Resources.moreF12, AddressOf CloseAllIdle_Click)
+                                       End Sub)
+                             'closeAllAtBottom = True
+                         End If
+                     End If
+                 End Sub)
+
+
         '   QL wrong when opened from tray due to change in visiblity hidden items.
 
         If sender.SourceControl Is Nothing Then 'opened from tray
