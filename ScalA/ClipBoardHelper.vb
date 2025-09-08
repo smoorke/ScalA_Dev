@@ -73,7 +73,8 @@ Module ClipBoardHelper
     "FileDrop",
     "FileNameW",
     "FileName",
-    "Preferred DropEffect"
+    "Preferred DropEffect",
+    "Shell IDList Array"
 }
             ' At this point you’d enumerate formats via EnumFormatEtc on IOleDataObject,
             ' then copy into newData. For simplicity we instead grab WinForms view of clipboard:
