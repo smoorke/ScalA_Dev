@@ -726,20 +726,20 @@ Partial Public NotInheritable Class FrmMain
                                  Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
                                  Dim dispname As String = System.IO.Path.GetFileName(fulldirs)
 
-                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname, "*Hidden*"), foldericon) With {.Tag = {fulldirs & "\", hidden, dispname}, .Visible = vis}
+                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname, "*Hidden*"), foldericon) With {.Tag = {fulldirs & "\", hidden, dispname}, .Visible = vis, .DoubleClickEnabled = True}
 
-                                 Me.BeginInvoke(Sub() smenu.DropDownItems.Add("(Dummy)").Enabled = False)
+                                 Me.BeginInvoke(Sub()
+                                                    smenu.DropDownItems.Add("(Dummy)").Enabled = False
 
-                                 smenu.DoubleClickEnabled = True
+                                                    AddHandler smenu.MouseDown, AddressOf QL_MouseDown
+                                                    AddHandler smenu.DoubleClick, AddressOf DblClickDir
+                                                    AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
+                                                    AddHandler smenu.DropDownOpened, AddressOf QL_DropDownOpened
+                                                    'AddHandler smenu.DropDownOpened, AddressOf DeferredIconLoading
+                                                    AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
 
-                                 AddHandler smenu.MouseDown, AddressOf QL_MouseDown
-                                 AddHandler smenu.DoubleClick, AddressOf DblClickDir
-                                 AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
-                                 AddHandler smenu.DropDownOpened, AddressOf QL_DropDownOpened
-                                 'AddHandler smenu.DropDownOpened, AddressOf DeferredIconLoading
-                                 AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
-
-                                 AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
+                                                    AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
+                                                End Sub)
 
                                  Dirs.Add(smenu)
                                  If Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden Then
@@ -784,18 +784,20 @@ Partial Public NotInheritable Class FrmMain
                                          Dim hid As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
                                          Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
 
-                                         Dim smenu As New ToolStripMenuItem(If(hid, dispname, "*Hidden*"), foldericon) With {.Tag = {fullLink, hidden, dispname, target & "\"}, .Visible = hid}
+                                         Dim smenu As New ToolStripMenuItem(If(hid, dispname, "*Hidden*"), foldericon) With {.Tag = {fullLink, hidden, dispname, target & "\"}, .Visible = hid, .DoubleClickEnabled = True}
 
-                                         smenu.DropDownItems.Add("(Dummy)").Enabled = False
-                                         smenu.DoubleClickEnabled = True
+                                         Me.BeginInvoke(Sub()
 
-                                         AddHandler smenu.MouseDown, AddressOf QL_MouseDown
-                                         AddHandler smenu.DoubleClick, AddressOf DblClickDir
-                                         AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
-                                         AddHandler smenu.DropDownOpened, AddressOf QL_DropDownOpened
+                                                            smenu.DropDownItems.Add("(Dummy)").Enabled = False
+
+                                                            AddHandler smenu.MouseDown, AddressOf QL_MouseDown
+                                                            AddHandler smenu.DoubleClick, AddressOf DblClickDir
+                                                            AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
+                                                            AddHandler smenu.DropDownOpened, AddressOf QL_DropDownOpened
 
 
-                                         AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
+                                                            AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
+                                                        End Sub)
 
                                          addLinkWatcher(target, fullLink)
 
@@ -816,10 +818,12 @@ Partial Public NotInheritable Class FrmMain
                                  Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
 
                                  Dim item As New ToolStripMenuItem(If(vis, linkName, "*Hidden*")) With {.Tag = {fullLink, hidden, linkName}, .Visible = vis}
-                                 AddHandler item.MouseDown, AddressOf QL_MouseDown
-                                 'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
-                                 'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
-                                 AddHandler item.Paint, AddressOf QLMenuItem_Paint
+                                 Me.BeginInvoke(Sub()
+                                                    AddHandler item.MouseDown, AddressOf QL_MouseDown
+                                                    'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
+                                                    'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
+                                                    AddHandler item.Paint, AddressOf QLMenuItem_Paint
+                                                End Sub)
 
                                  Files.Add(item)
                                  If vis Then
