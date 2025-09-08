@@ -535,7 +535,7 @@ Partial Public NotInheritable Class FrmMain
 
         Dim bm As Bitmap = Nothing
         Dim fi As New SHFILEINFOW
-        Dim ico As Icon
+        Dim ico As Icon = Nothing
 
         If PathName.EndsWith("\") Then
 
@@ -797,7 +797,7 @@ Partial Public NotInheritable Class FrmMain
 
                                          AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
 
-                                         addLinkWatcher(target)
+                                         addLinkWatcher(target, fullLink)
 
                                          Dirs.Add(smenu)
                                          isEmpty = False
