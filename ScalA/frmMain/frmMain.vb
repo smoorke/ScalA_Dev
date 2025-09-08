@@ -550,7 +550,7 @@ Partial Public NotInheritable Class FrmMain
 
 
         clipBoardInfo = GetClipboardFilesAndAction()
-        AddClipboardFormatListener(Me.Handle)
+        registerClipListener(Me)
 
         'spawn IPC waiter thread
         Dim waitThread As New Threading.Thread(AddressOf IPC.SelectSemaThread) With {.IsBackground = True}
