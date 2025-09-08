@@ -130,14 +130,18 @@ Module FsWatcher
     Public ReadOnly fsWatchers As New List(Of System.IO.FileSystemWatcher)
 
     Public ReadOnly ResolvedLinkWatchers As New Concurrent.ConcurrentDictionary(Of String, List(Of IO.FileSystemWatcher))
+    Public ReadOnly ResolvedLinkLinks As New Concurrent.ConcurrentDictionary(Of String, String)
 
-    Public Sub addLinkWatcher(pth As String)
+    Public Sub addLinkWatcher(pth As String, lnk As String)
         Task.Run(Sub()
                      If Not pth.Contains(My.Settings.links) AndAlso Not ResolvedLinkWatchers.Keys.Any(Function(wl As String) pth.Contains(wl)) Then
                          dBug.Print($"addLinkWatcher {pth}")
                          Dim ws As New List(Of FileSystemWatcher)
                          InitWatchers(pth, ws)
-                         If ResolvedLinkWatchers.TryAdd(pth, ws) Then StartDirectoryPoller()
+                         If ResolvedLinkWatchers.TryAdd(pth, ws) Then
+                             ResolvedLinkLinks.TryAdd(lnk, pth)
+                             StartDirectoryPoller()
+                         End If
                      End If
                  End Sub)
     End Sub
@@ -146,11 +150,21 @@ Module FsWatcher
             ws.EnableRaisingEvents = False
             ws.Dispose()
         Next
+        ResolvedLinkLinks.Clear()
         ResolvedLinkWatchers.Clear()
     End Sub
     Public Sub removeLinkWatcher(pth As String)
+        dBug.Print($"removeLinkWatcher ""{pth}""")
         Dim removed As List(Of IO.FileSystemWatcher) = Nothing
         If ResolvedLinkWatchers.TryRemove(pth, removed) Then
+
+            For Each kvp In ResolvedLinkLinks.ToList
+                If kvp.Value = pth Then
+                    dBug.Print($"ResolvedLinkLinks.TryRemove({kvp.Key})", 1)
+                    ResolvedLinkLinks.TryRemove(kvp.Key, Nothing)
+                End If
+            Next
+
             For Each watcher In removed
                 Try
                     watcher.EnableRaisingEvents = False
@@ -159,7 +173,6 @@ Module FsWatcher
                     dBug.Print($"Error disposing watcher: {ex.Message}")
                 End Try
             Next
-            dBug.Print($"removeLinkWatcher {pth}")
         End If
     End Sub
     Public PollerThread As Thread
@@ -262,6 +275,7 @@ Module FsWatcher
 
         AddHandler lnkWatcher.Renamed, AddressOf OnRenamed
         AddHandler lnkWatcher.Changed, AddressOf OnChanged
+        AddHandler lnkWatcher.Deleted, AddressOf onDeleteFile
         lnkWatcher.EnableRaisingEvents = True
 
         watchers.Add(lnkWatcher)
@@ -277,6 +291,7 @@ Module FsWatcher
 
         AddHandler urlWatcher.Renamed, AddressOf OnRenamed
         AddHandler urlWatcher.Changed, AddressOf OnChanged
+        AddHandler urlWatcher.Deleted, AddressOf onDeleteFile
         urlWatcher.EnableRaisingEvents = True
 
         watchers.Add(urlWatcher)
@@ -314,6 +329,7 @@ Module FsWatcher
                 End If
             Next
         End If
+        'todo update clipboard
     End Sub
     Private Sub OnRenamedDir(sender As System.IO.FileSystemWatcher, e As System.IO.RenamedEventArgs)
         dBug.Print($"Renamed Dir: {sender.NotifyFilter}")
@@ -325,6 +341,32 @@ Module FsWatcher
             If iconCache.TryRemove(key, item) Then iconCache.TryAdd(key.Replace(e.OldFullPath & "\", e.FullPath & "\"), item)
         Next
     End Sub
+    Private Sub onDeleteFile(sender As System.IO.FileSystemWatcher, e As FileSystemEventArgs)
+        dBug.Print($"Delete File: {sender.NotifyFilter}")
+        dBug.Print($"       Type: {e.ChangeType}")
+        dBug.Print($"       Path: {e.FullPath}")
+
+        If e.ChangeType = WatcherChangeTypes.Deleted Then
+            Dim res As Boolean = iconCache.TryRemove(e.FullPath, Nothing)
+            If res Then Debug.Print($"File {e.FullPath} evicted")
+
+            'remove from resolvedlinkwatchers '
+            If e.FullPath.ToLower.EndsWith(".lnk") Then
+                dBug.Print("Islink", 1)
+                'get linkwatchertarget from cache
+                Dim target As String = Nothing
+                If ResolvedLinkLinks.TryGetValue(e.FullPath, target) Then
+                    'if not other links point there remove the linkwatcher
+                    If Not ResolvedLinkLinks.Any(Function(kvp) kvp.Key <> e.FullPath AndAlso kvp.Value = target) Then
+                        dBug.Print($"ResolvedLinkLinks.Any")
+                        removeLinkWatcher(target)
+                    End If
+                End If
+            End If
+        End If
+        'todo update clipboard
+    End Sub
+
     Private Sub OnRenamed(sender As System.IO.FileSystemWatcher, e As System.IO.RenamedEventArgs)
         dBug.Print($"Renamed File: {sender.NotifyFilter}")
         dBug.Print($"         Old: {e.OldFullPath}")
