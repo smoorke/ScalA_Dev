@@ -548,6 +548,8 @@ Partial Public NotInheritable Class FrmMain
 
         If My.Settings.DisableWinKey OrElse My.Settings.OnlyEsc OrElse My.Settings.NoAltTab Then keybHook.Hook()
 
+
+        clipBoardInfo = GetClipboardFilesAndAction()
         AddClipboardFormatListener(Me.Handle)
 
         'spawn IPC waiter thread

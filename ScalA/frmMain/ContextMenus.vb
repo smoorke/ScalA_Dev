@@ -619,13 +619,17 @@ Partial Public NotInheritable Class FrmMain
                 Dim lastError = Runtime.InteropServices.Marshal.GetLastWin32Error()
                 dBug.Print($"ImageList_GetIcon empty: {lastError}")
             End If
-            ico = Icon.FromHandle(hIcon)
-            bm = ico.ToBitmap
-            DestroyIcon(ico.Handle)
+            Try
+                ico = Icon.FromHandle(hIcon)
+                bm = ico.ToBitmap
+
+            Catch ex As Exception
+                bm = Nothing
+            End Try
 
         End If
-        DestroyIcon(ico.Handle)
-        ico.Dispose()
+        DestroyIcon(If(ico?.Handle, IntPtr.Zero))
+        ico?.Dispose()
 
         Return bm
     End Function
@@ -838,7 +842,8 @@ Partial Public NotInheritable Class FrmMain
             clipBoardInfo = GetClipboardFilesAndAction()
             If clipBoardInfo.Files?.Count > 0 Then
 
-                menuItems.Add(New ToolStripSeparator)
+                Dim sep As ToolStripSeparator = New ToolStripSeparator
+                menuItems.Add(sep)
 
                 pasteTSItem = New ToolStripMenuItem("", Nothing, AddressOf ClipAction)
 
@@ -852,19 +857,27 @@ Partial Public NotInheritable Class FrmMain
                 pasteLinkTSItem.Tag = {pth & "Empty", "PasteLink"}
 
                 If clipBoardInfo.Files.Count = 1 Then
-                    Dim nm As String = IO.Path.GetFileName(clipBoardInfo.Files(0))
-                    If hideExt.Contains(IO.Path.GetExtension(nm)) Then
-                        nm = IO.Path.GetFileNameWithoutExtension(nm)
-                    End If
-                    pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} ""{nm}"""
-                    pasteTSItem.Image = GetIconFromFile(clipBoardInfo.Files(0))
-
-                    If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
-                        pasteTSItem.Image = addOverlay(pasteTSItem.Image)
+                    Dim fil As String = clipBoardInfo.Files(0)
+                    If Not (IO.File.Exists(fil) OrElse IO.Directory.Exists(fil)) Then
+                        Debug.Print("file/dir missing")
+                        sep.Visible = False
+                        pasteTSItem.Visible = False
                         pasteLinkTSItem.Visible = False
                     Else
-                        pasteLinkTSItem.Text = "Paste .Lnk"
-                        pasteLinkTSItem.Image = addOverlay(pasteTSItem.Image)
+                        Dim nm As String = IO.Path.GetFileName(fil)
+                        If hideExt.Contains(IO.Path.GetExtension(nm)) Then
+                            nm = IO.Path.GetFileNameWithoutExtension(nm)
+                        End If
+                        pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} ""{nm}"""
+                        pasteTSItem.Image = GetIconFromFile(fil)
+
+                        If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
+                            pasteTSItem.Image = addOverlay(pasteTSItem.Image)
+                            pasteLinkTSItem.Visible = False
+                        Else
+                            pasteLinkTSItem.Text = "Paste .Lnk"
+                            pasteLinkTSItem.Image = addOverlay(pasteTSItem.Image)
+                        End If
                     End If
                 Else
                     pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} Multiple ({clipBoardInfo.Files?.Count})"
@@ -927,6 +940,7 @@ Partial Public NotInheritable Class FrmMain
     End Function
 
     Function addOverlay(bm As Bitmap, Optional clone As Boolean = True) As Bitmap
+        If bm Is Nothing Then Return Nothing
         Dim bmp As Bitmap = If(clone, bm.Clone, bm)
         Using g As Graphics = Graphics.FromImage(bmp)
             g.DrawIcon(My.Resources.shortcut_overlay, New Rectangle(New Point, bmp.Size))
@@ -1316,8 +1330,6 @@ Partial Public NotInheritable Class FrmMain
             e.Cancel = True
             Exit Sub
         End If
-
-        clipBoardInfo = GetClipboardFilesAndAction()
 
         'tmrTick.Interval = 1000
         sender.Items.Clear()

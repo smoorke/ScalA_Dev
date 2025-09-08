@@ -25,7 +25,7 @@
     Private totalPat As Single = pattrn.Sum()
 
     Protected Overrides Sub OnRenderItemCheck(e As ToolStripItemImageRenderEventArgs)
-        Using dashedPen As New Pen(If(clipBoardInfo.Action = ClipboardAction.Move, If(e.Item.Selected OrElse Not My.Settings.DarkMode, Color.Red, Color.Pink), If(My.Settings.DarkMode, If(e.Item.Selected, Color.DarkBlue, Color.White), Color.Black)), 1)
+        Using dashedPen As New Pen(If(clipBoardInfo.Action = ClipboardAction.Move, Color.Red, If(My.Settings.DarkMode, If(e.Item.Selected, Color.DarkBlue, Color.White), Color.Black)), 1)
 
             ' Define a fixed dash pattern (on/off lengths in pixels)
             dashedPen.DashPattern = pattrn

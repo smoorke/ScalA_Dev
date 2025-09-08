@@ -395,7 +395,7 @@ Module NativeMethods
     Public Function GetClassName(ByVal hWnd As System.IntPtr, ByVal lpClassName As System.Text.StringBuilder, ByVal nMaxCount As Integer) As Integer : End Function
     Public Function GetWindowClass(ByVal hwnd As IntPtr) As String
         Static sClassName As New System.Text.StringBuilder("", 256)
-        Call GetClassName(hwnd, sClassName, 256)
+        Call GetClassName(hwnd, sClassName, 256 - 1)
         Return sClassName.ToString
     End Function
 
@@ -1207,6 +1207,11 @@ Module NativeMethods
 
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function RemoveClipboardFormatListener(hwnd As IntPtr) As Boolean : End Function
+
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function GetClipboardOwner() As IntPtr : End Function
+
+
     Public Function GetWindowText(hWnd As IntPtr) As String
         Dim length As Integer = NativeMethods.SendMessage(hWnd, WM_GETTEXTLENGTH, IntPtr.Zero, IntPtr.Zero).ToInt32()
         If length > 0 Then
