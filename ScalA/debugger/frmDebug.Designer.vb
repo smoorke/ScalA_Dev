@@ -50,12 +50,15 @@ Partial Class frmDebug
         Me.chkShowWarning = New System.Windows.Forms.CheckBox()
         Me.btnTest = New System.Windows.Forms.Button()
         Me.btnIpcInfo = New System.Windows.Forms.Button()
+        Me.cmsDebugFuncs = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.DumpWatchersToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         lblMinimum = New System.Windows.Forms.Label()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
         Me.ssDebug.SuspendLayout()
         Me.cmsSSDebug.SuspendLayout()
         CType(Me.tbLogLevel, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.cmsDebugFuncs.SuspendLayout()
         Me.SuspendLayout()
         '
         'lblMinimum
@@ -71,12 +74,12 @@ Partial Class frmDebug
         'ToolStripMenuItem1
         '
         ToolStripMenuItem1.Name = "ToolStripMenuItem1"
-        ToolStripMenuItem1.Size = New System.Drawing.Size(163, 6)
+        ToolStripMenuItem1.Size = New System.Drawing.Size(164, 6)
         '
         'ToolStripMenuItem2
         '
         ToolStripMenuItem2.Name = "ToolStripMenuItem2"
-        ToolStripMenuItem2.Size = New System.Drawing.Size(163, 6)
+        ToolStripMenuItem2.Size = New System.Drawing.Size(164, 6)
         '
         'txtDebugLog
         '
@@ -121,12 +124,12 @@ Partial Class frmDebug
         '
         Me.cmsSSDebug.Items.AddRange(New System.Windows.Forms.ToolStripItem() {ToolStripMenuItem1, Me.ToggleDPIToolStripMenuItem, ToolStripMenuItem2})
         Me.cmsSSDebug.Name = "cmsSSDebug"
-        Me.cmsSSDebug.Size = New System.Drawing.Size(167, 38)
+        Me.cmsSSDebug.Size = New System.Drawing.Size(168, 38)
         '
         'ToggleDPIToolStripMenuItem
         '
         Me.ToggleDPIToolStripMenuItem.Name = "ToggleDPIToolStripMenuItem"
-        Me.ToggleDPIToolStripMenuItem.Size = New System.Drawing.Size(166, 22)
+        Me.ToggleDPIToolStripMenuItem.Size = New System.Drawing.Size(167, 22)
         Me.ToggleDPIToolStripMenuItem.Text = "Toggle DPI Aware"
         '
         'ToolStripStatusLabel0
@@ -253,6 +256,7 @@ Partial Class frmDebug
         '
         'btnTest
         '
+        Me.btnTest.ContextMenuStrip = Me.cmsDebugFuncs
         Me.btnTest.Location = New System.Drawing.Point(441, 402)
         Me.btnTest.Name = "btnTest"
         Me.btnTest.Size = New System.Drawing.Size(75, 23)
@@ -268,6 +272,18 @@ Partial Class frmDebug
         Me.btnIpcInfo.TabIndex = 15
         Me.btnIpcInfo.Text = "IPC Info"
         Me.btnIpcInfo.UseVisualStyleBackColor = True
+        '
+        'cmsDebugFuncs
+        '
+        Me.cmsDebugFuncs.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DumpWatchersToolStripMenuItem})
+        Me.cmsDebugFuncs.Name = "cmsDebugFuncs"
+        Me.cmsDebugFuncs.Size = New System.Drawing.Size(160, 26)
+        '
+        'DumpWatchersToolStripMenuItem
+        '
+        Me.DumpWatchersToolStripMenuItem.Name = "DumpWatchersToolStripMenuItem"
+        Me.DumpWatchersToolStripMenuItem.Size = New System.Drawing.Size(159, 22)
+        Me.DumpWatchersToolStripMenuItem.Text = "Dump Watchers"
         '
         'frmDebug
         '
@@ -300,6 +316,7 @@ Partial Class frmDebug
         Me.ssDebug.PerformLayout()
         Me.cmsSSDebug.ResumeLayout(False)
         CType(Me.tbLogLevel, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.cmsDebugFuncs.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -327,5 +344,7 @@ Partial Class frmDebug
     Friend WithEvents chkShowWarning As CheckBox
     Friend WithEvents btnTest As Button
     Friend WithEvents btnIpcInfo As Button
+    Friend WithEvents cmsDebugFuncs As ContextMenuStrip
+    Friend WithEvents DumpWatchersToolStripMenuItem As ToolStripMenuItem
 End Class
 #End If

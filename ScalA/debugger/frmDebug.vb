@@ -306,6 +306,18 @@ Public Class frmDebug
             dBug.Print($"{ip.AltPPid} {ip.handle.ToString("X8")} {AstoniaProcess.FromHWnd(Process.GetProcessById(ip.AltPPid)?.MainWindowHandle)?.UserName}")
         Next
     End Sub
+
+    Private Sub DumpWatchersToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles DumpWatchersToolStripMenuItem.Click
+        dBug.Print("-Begin DumpWatchers-")
+        For Each watcher In ResolvedLinkWatchers
+            dBug.Print(watcher.Key)
+        Next
+        dBug.Print("---")
+        For Each kvp In ResolvedLinkLinks
+            dBug.Print($"{kvp.Key} {kvp.Value}")
+        Next
+        dBug.Print("-End DumpWatchers-")
+    End Sub
 #End If
 End Class
 #If DEBUG Then
