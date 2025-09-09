@@ -560,7 +560,7 @@ Partial Public NotInheritable Class FrmMain
         waitThread.Start(Me)
 
         'spawn priority setter thread
-        Dim priThread As New Threading.Thread(AddressOf prioritySetter) With {.IsBackground = True}
+        Dim priThread As New Threading.Thread(AddressOf prioritySetter) With {.IsBackground = True, .Priority = Threading.ThreadPriority.Lowest}
         priThread.Start()
 
     End Sub
