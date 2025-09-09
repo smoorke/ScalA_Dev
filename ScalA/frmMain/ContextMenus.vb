@@ -71,6 +71,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub cmsQuit_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuit.Opening
+        sender.Opacity = 0
         If cboAlt.SelectedIndex = 0 Then
             CloseAstoniaToolStripMenuItem.Visible = False
             CloseBothToolStripMenuItem.Visible = False
@@ -2015,6 +2016,8 @@ Partial Public NotInheritable Class FrmMain
 
         ' move menu to correct loc
         SetWindowPos(hwnd, SWP_HWND.TOPMOST, loc.X, loc.Y, -1, -1, SetWindowPosFlags.IgnoreZOrder Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+
+        sender.Opacity = 1
     End Sub
 End Class
 
