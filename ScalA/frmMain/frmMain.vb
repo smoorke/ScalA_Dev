@@ -580,11 +580,11 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Protected Overrides Sub OnHandleDestroyed(e As EventArgs)
-        RemoveClipboardFormatListener(Me.Handle)
+        unregisterClipListener()
         MyBase.OnHandleDestroyed(e)
     End Sub
 
-    Public bmShield As Bitmap
+    'Public bmShield As Bitmap
 
 
     'Public startup As Boolean = True

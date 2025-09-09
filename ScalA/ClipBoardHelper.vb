@@ -4,14 +4,14 @@ Module ClipBoardHelper
 
     Public clipBoardInfo As ClipboardFileInfo
 
-    Private _ListeningForm As Form
+    Private _ListeningFormHand As IntPtr
 
     Public Sub registerClipListener(frm As Form)
-        If AddClipboardFormatListener(frm.Handle) Then _ListeningForm = frm
+        If AddClipboardFormatListener(frm.Handle) Then _ListeningFormHand = frm.Handle
     End Sub
 
     Public Sub unregisterClipListener()
-        If RemoveClipboardFormatListener(_ListeningForm.Handle) Then _ListeningForm = Nothing
+        If RemoveClipboardFormatListener(_ListeningFormHand) Then _ListeningFormHand = Nothing
     End Sub
 
     Public Sub dupeClipBoard()
@@ -50,11 +50,11 @@ Module ClipBoardHelper
                 Next
             End If
 
-            RemoveClipboardFormatListener(_ListeningForm?.Handle)
+            RemoveClipboardFormatListener(_ListeningFormHand)
 
             Clipboard.SetDataObject(newData, True)
 
-            AddClipboardFormatListener(_ListeningForm?.Handle)
+            AddClipboardFormatListener(_ListeningFormHand)
 
         Catch ex As Exception
             Debug.Print("ClipboardCopy error: " & ex.Message)
