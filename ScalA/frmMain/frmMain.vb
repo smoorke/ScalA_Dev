@@ -553,7 +553,7 @@ Partial Public NotInheritable Class FrmMain
 
 
         clipBoardInfo = GetClipboardFilesAndAction()
-        registerClipListener(Me)
+        registerClipListener()
 
         'spawn IPC waiter thread
         Dim waitThread As New Threading.Thread(AddressOf IPC.SelectSemaThread) With {.IsBackground = True}
@@ -580,7 +580,6 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Protected Overrides Sub OnHandleDestroyed(e As EventArgs)
-        unregisterClipListener()
         MyBase.OnHandleDestroyed(e)
     End Sub
 
