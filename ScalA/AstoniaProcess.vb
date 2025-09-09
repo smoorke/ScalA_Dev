@@ -1452,6 +1452,14 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Return Elevated
     End Function
 
+    Friend Sub setPriority(priority As Integer)
+        If Me.proc Is Nothing Then Exit Sub
+        Dim hProcess = OpenProcess(ProcessAccessFlags.SetInformation Or ProcessAccessFlags.QueryInformation, False, CUInt(Me.proc.Id))
+        If hProcess = IntPtr.Zero Then Exit Sub
+        SetPriorityClass(hProcess, priority)
+
+        CloseHandle(hProcess)
+    End Sub
 End Class
 
 NotInheritable Class AstoniaProcessSorter

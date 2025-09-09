@@ -117,6 +117,9 @@ Partial Public NotInheritable Class FrmMain
             Detach(False)
             AstoniaProcess.RestorePos()
             AltPP = sender.SelectedItem
+
+            AltPP.setPriority(My.Settings.Priority)
+
             'IPC.AddOrUpdateInstance(scalaPID, sender.SelectedIndex = 0, AltPP.Id)
             UpdateTitle()
 
@@ -367,7 +370,7 @@ Partial Public NotInheritable Class FrmMain
         End If
 
 
-        setPriority(My.Settings.Priority)
+        setScalAPriority(My.Settings.Priority)
 
         dBug.InitDebug()
 
@@ -556,6 +559,24 @@ Partial Public NotInheritable Class FrmMain
         Dim waitThread As New Threading.Thread(AddressOf IPC.SelectSemaThread) With {.IsBackground = True}
         waitThread.Start(Me)
 
+        'spawn priority setter thread
+        Dim priThread As New Threading.Thread(AddressOf prioritySetter) With {.IsBackground = True}
+        priThread.Start()
+
+    End Sub
+
+    Private Sub prioritySetter()
+        Do
+            Threading.Thread.Sleep(500)
+            If pnlOverview.IsHandleCreated AndAlso Not pnlOverview.IsDisposed AndAlso My.Settings.gameOnOverview AndAlso Me.Invoke(Function() pnlOverview.Visible) Then
+                Threading.Thread.Sleep(25)
+                Dim ablist As List(Of AButton) = Me.Invoke(Function() pnlOverview.Controls.OfType(Of AButton).Where(Function(a) a.Visible AndAlso a.AP IsNot Nothing).ToList)
+                For Each ab As AButton In ablist
+                    Threading.Thread.Sleep(25)
+                    If Not ab?.IsDisposed Then ab.AP?.setPriority(My.Settings.Priority)
+                Next
+            End If
+        Loop
     End Sub
 
     Protected Overrides Sub OnHandleDestroyed(e As EventArgs)

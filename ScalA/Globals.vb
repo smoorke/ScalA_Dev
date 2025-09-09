@@ -10,11 +10,12 @@ Module Globals
     Public ReadOnly hideExt As String() = {".lnk", ".url"}
 
     Public AnimsEnabled As Boolean = getAnimationsEnabled()
-    Public Sub setPriority(pri As Integer)
+    Public Sub setScalAPriority(pri As Integer)
         Dim hProcess As IntPtr = GetCurrentProcess()
         Dim result As Boolean = SetPriorityClass(hProcess, pri)
 
         If result Then
+            FrmMain.AltPP?.setPriority(pri)
             Debug.Print($"Process priority set to {pri}")
         Else
             Debug.Print("Failed to set priority. LastError = " & Marshal.GetLastWin32Error())

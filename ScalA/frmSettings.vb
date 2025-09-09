@@ -664,7 +664,7 @@ Public NotInheritable Class FrmSettings
         QLFilter = getQLFilter(My.Settings.AdditionalExtensions).ToArray()
 
         My.Settings.Priority = mapCmbIndexToPriority(cmbPriority.SelectedIndex)
-        setPriority(My.Settings.Priority)
+        setScalAPriority(My.Settings.Priority)
 
 
         My.Settings.Save()
