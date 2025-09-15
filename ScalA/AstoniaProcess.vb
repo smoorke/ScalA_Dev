@@ -380,86 +380,91 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 proc.Refresh()
                 If proc.MainWindowTitle = "" Then
                     Dim nm As String = TryCast(memCache.Get(proc.Id), String)
-                    If Not String.IsNullOrEmpty(nm) AndAlso Me.IsActive() AndAlso Me.isSDL Then
+                    If Not String.IsNullOrEmpty(nm) Then
+                        Return nm
+#If 0 Then
+                        If Me.IsActive() AndAlso Me.isSDL Then
 
-                        'check if sysmenu is opened from taskbar/tbthumb
+                            'check if sysmenu is opened from taskbar/tbthumb
 
-                        Dim hwnd = GetAncestor(WindowFromPoint(Control.MousePosition), GA_ROOT)
-                        Dim clss = GetWindowClass(hwnd)
-                        If {"Shell_TrayWnd", "Shell_SecondaryTrayWnd", "XamlExplorerHostIslandWindow", "TaskListThumbnailWnd"}.Contains(clss) Then 'list is possibly incomplete  (win 7?? 8??)
-                            DoNotReplaceHwnd = GetWindow(hwnd, GW_ENABLEDPOPUP)
-                        End If
+                            Dim hwnd = GetAncestor(WindowFromPoint(Control.MousePosition), GA_ROOT)
+                            Dim clss = GetWindowClass(hwnd)
+                            If {"Shell_TrayWnd", "Shell_SecondaryTrayWnd", "XamlExplorerHostIslandWindow", "TaskListThumbnailWnd"}.Contains(clss) Then 'list is possibly incomplete  (win 7?? 8??)
+                                DoNotReplaceHwnd = GetWindow(hwnd, GW_ENABLEDPOPUP)
+                            End If
 
-                        If GetWindow(hwnd, GW_ENABLEDPOPUP) = DoNotReplaceHwnd Then  'don't close when flag set
-                            Return nm
-                        Else
-                            DoNotReplaceHwnd = FrmMain.ScalaHandle 'set flag on menu close to scalahandle to denote invalid state (can't use intptr.zero)
-                        End If
+                            If GetWindow(hwnd, GW_ENABLEDPOPUP) = DoNotReplaceHwnd Then  'don't close when flag set
+                                Return nm
+                            Else
+                                DoNotReplaceHwnd = IntPtr.Zero 'set flag on menu close to scalahandle to denote invalid state (can't use intptr.zero)
+                            End If
 
-                        If FrmMain.Bounds.Contains(Control.MousePosition) Then 'SDL client sysmenu open. close it and open our own or correct menu for whatever button is hovered.
+                            If FrmMain.Bounds.Contains(Control.MousePosition) Then 'SDL client sysmenu open. close it and open our own or correct menu for whatever button is hovered.
 
-                            'Check if alt is selected andalso check if alt is on activeoverview
-                            If Me IsNot FrmMain.AltPP AndAlso
+                                'Check if alt is selected andalso check if alt is on activeoverview
+                                If Me IsNot FrmMain.AltPP AndAlso
                                Not (My.Settings.gameOnOverview AndAlso FrmMain.pnlOverview.Controls.OfType(Of AButton).Any(Function(ab As AButton)
                                                                                                                                Dim abScreenrect = ab.RectangleToScreen(ab.ClientRectangle)
                                                                                                                                Return (ab.AP Is Me) AndAlso abScreenrect.Contains(Control.MousePosition)
                                                                                                                            End Function)) Then
-                                Return nm
-                            End If
-
-                            'double check if clients sysmenu is open
-                            If GetGUIThreadInfo(Me.MainThreadId, gti) AndAlso (gti.flags = 20) Then
-                                dBug.Print($"gti.flags {gti.flags}")
-                                PostMessage(Me.MainWindowHandle, WM_CANCELMODE, 0, 0) 'close the SysMenu
-                            End If
-
-                            'determine cotrol beneath cursor
-                            Dim pt As Point = FrmMain.PointToClient(FrmMain.MousePosition)
-                            'Dim pt = Control.MousePosition
-                            Dim ctl As Control = FrmMain.GetChildAtPoint(pt)
-                            dBug.Print($"Rmb: {ctl?.Name} {pt}")
-
-                            If ctl Is FrmMain.pnlSys Then
-                                'pt = FrmMain.pnlSys.PointToClient(FrmMain.MousePosition)
-                                ctl = FrmMain.pnlSys.GetChildAtPoint(pt)
-                                pt = ctl?.PointToClient(Control.MousePosition)
-                            End If
-
-                            'open altmenu or QL when on overview
-                            If ctl Is FrmMain.pnlOverview Then
-                                ctl = FrmMain.pnlOverview.GetChildAtPoint(pt)
-                                If ctl Is FrmMain.pnlMessage Then
-                                    ctl = FrmMain.pnlOverview.Controls.OfType(Of AButton).FirstOrDefault(Function(c) c.Visible)
-                                    dBug.Print($"pnlmessage skip?: {ctl?.Name} {pt}")
+                                    Return nm
                                 End If
-                                pt = ctl.PointToClient(Control.MousePosition)
-                                dBug.Print($"alt sysmenu override: {ctl?.Name} {pt}")
 
-                                If My.Computer.Keyboard.CtrlKeyDown Then
-                                    FrmMain.cmsQuickLaunch.Show(ctl, pt)
-                                Else
-                                    FrmMain.cmsAlt.Show(ctl, pt)
+                                'double check if clients sysmenu is open
+                                If GetGUIThreadInfo(Me.MainThreadId, gti) AndAlso (gti.flags = 20) Then
+                                    dBug.Print($"gti.flags {gti.flags}")
+                                    PostMessage(Me.MainWindowHandle, WM_CANCELMODE, 0, 0) 'close the SysMenu
                                 End If
-                                Return nm
+
+                                'determine cotrol beneath cursor
+                                Dim pt As Point = FrmMain.PointToClient(FrmMain.MousePosition)
+                                'Dim pt = Control.MousePosition
+                                Dim ctl As Control = FrmMain.GetChildAtPoint(pt)
+                                dBug.Print($"Rmb: {ctl?.Name} {pt}")
+
+                                If ctl Is FrmMain.pnlSys Then
+                                    'pt = FrmMain.pnlSys.PointToClient(FrmMain.MousePosition)
+                                    ctl = FrmMain.pnlSys.GetChildAtPoint(pt)
+                                    pt = ctl?.PointToClient(Control.MousePosition)
+                                End If
+
+                                'open altmenu or QL when on overview
+                                If ctl Is FrmMain.pnlOverview Then
+                                    ctl = FrmMain.pnlOverview.GetChildAtPoint(pt)
+                                    If ctl Is FrmMain.pnlMessage Then
+                                        ctl = FrmMain.pnlOverview.Controls.OfType(Of AButton).FirstOrDefault(Function(c) c.Visible)
+                                        dBug.Print($"pnlmessage skip?: {ctl?.Name} {pt}")
+                                    End If
+                                    pt = ctl.PointToClient(Control.MousePosition)
+                                    dBug.Print($"alt sysmenu override: {ctl?.Name} {pt}")
+
+                                    If My.Computer.Keyboard.CtrlKeyDown Then
+                                        FrmMain.cmsQuickLaunch.Show(ctl, pt)
+                                    Else
+                                        FrmMain.cmsAlt.Show(ctl, pt)
+                                    End If
+                                    Return nm
+                                End If
+
+                                'open own sysmenu or open quicklaunch/settings when over specific button
+                                Select Case ctl?.Name
+                                    Case FrmMain.btnStart.Name, FrmMain.cboAlt.Name
+                                        FrmMain.cmsQuickLaunch.Show(ctl, pt)
+                                    Case FrmMain.cmbResolution.Name
+                                        FrmMain.CmbResolution_MouseUp(FrmMain.cmbResolution, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
+                                    Case FrmMain.pnlTitleBar.Name, FrmMain.lblTitle.Name
+                                        FrmMain.ShowSysMenu(FrmMain, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
+                                End Select
+
                             End If
-
-                            'open own sysmenu or open quicklaunch/settings when over specific button
-                            Select Case ctl?.Name
-                                Case FrmMain.btnStart.Name, FrmMain.cboAlt.Name
-                                    FrmMain.cmsQuickLaunch.Show(ctl, pt)
-                                Case FrmMain.cmbResolution.Name
-                                    FrmMain.CmbResolution_MouseUp(FrmMain.cmbResolution, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
-                                Case FrmMain.pnlTitleBar.Name, FrmMain.lblTitle.Name
-                                    FrmMain.ShowSysMenu(FrmMain, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
-                            End Select
-
+                            Return nm
                         End If
-                        Return nm
+#End If
                     End If
                     Return "Someone"
                 End If
-                Dim nam As String = Strings.Left(proc.MainWindowTitle, proc.MainWindowTitle.IndexOf(" - "))
-                memCache.Set(proc.Id, nam, cacheItemPolicy)
+                    Dim nam As String = Strings.Left(proc.MainWindowTitle, proc.MainWindowTitle.IndexOf(" - "))
+                    memCache.Set(proc.Id, nam, cacheItemPolicy)
                 If nam <> "Someone" AndAlso Not String.IsNullOrEmpty(nam) Then
                     loggedIns.TryAdd(Me.Id, Me)
                     loggedInAs = nam

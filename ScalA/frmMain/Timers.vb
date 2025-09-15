@@ -1,4 +1,6 @@
 ﻿
+Imports System.Runtime.InteropServices
+
 Public Class Timers
     'dummy to prevent form generation
 End Class
@@ -18,6 +20,10 @@ Partial NotInheritable Class FrmMain
     Const swpFlags As SetWindowPosFlags = SetWindowPosFlags.IgnoreResize Or
                      SetWindowPosFlags.DoNotActivate Or
                      SetWindowPosFlags.ASyncWindowPosition
+
+    Dim gti As New GUITHREADINFO With {.cbSize = Marshal.SizeOf(GetType(GUITHREADINFO))}
+    Dim doNotReplaceSysM As Boolean = False
+
     Private Sub TmrTick_Tick(sender As Timer, e As EventArgs) Handles tmrTick.Tick
         'dBug.print($"ws {Me.WindowState}")
         If Not AltPP?.IsRunning() Then
@@ -60,6 +66,48 @@ Partial NotInheritable Class FrmMain
                 Exit Sub
             Else 'CycleOnClose
                 Cycle()
+            End If
+        End If
+
+        If AltPP IsNot Nothing AndAlso AltPP.isSDL AndAlso AltPP.IsActive Then
+            If GetGUIThreadInfo(AltPP.MainThreadId, gti) AndAlso (gti.flags = 20) Then
+                If Not doNotReplaceSysM Then
+
+                    'check if sysmenu is opened from taskbar/tbthumb
+                    Dim hwnd = GetAncestor(WindowFromPoint(Control.MousePosition), GA_ROOT)
+                    Dim clss = GetWindowClass(hwnd)
+                    dBug.Print($"clss ""{clss}""")
+                    If {"Shell_TrayWnd", "Shell_SecondaryTrayWnd", "XamlExplorerHostIslandWindow", "TaskListThumbnailWnd"}.Contains(clss) Then
+                        doNotReplaceSysM = True
+                    End If
+                    If Not doNotReplaceSysM Then
+                        dBug.Print($"gti.flags {gti.flags}")
+                        PostMessage(AltPP.MainWindowHandle, WM_CANCELMODE, 0, 0) 'close the SysMenu
+
+                        'determine cotrol beneath cursor
+                        Dim pt As Point = Me.PointToClient(MousePosition)
+                        'Dim pt = Control.MousePosition
+                        Dim ctl As Control = Me.GetChildAtPoint(pt)
+                        dBug.Print($"Rmb: {ctl?.Name} {pt}")
+
+                        If ctl Is pnlSys Then
+                            ctl = pnlSys.GetChildAtPoint(pt)
+                            pt = ctl?.PointToClient(Control.MousePosition)
+                        End If
+
+                        'open own sysmenu or open quicklaunch/settings when over specific button
+                        Select Case ctl?.Name
+                            Case btnStart.Name, cboAlt.Name
+                                cmsQuickLaunch.Show(ctl, pt)
+                            Case cmbResolution.Name
+                                CmbResolution_MouseUp(cmbResolution, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
+                            Case pnlTitleBar.Name, lblTitle.Name
+                                ShowSysMenu(Me, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
+                        End Select
+                    End If
+                End If
+            Else
+                doNotReplaceSysM = False
             End If
         End If
 
@@ -263,6 +311,42 @@ Partial NotInheritable Class FrmMain
                                     If (exStyle And WindowStylesEx.WS_EX_COMPOSITED) <> WindowStylesEx.WS_EX_COMPOSITED Then
                                         SetWindowLong(ap.MainWindowHandle, GWL_EXSTYLE, exStyle Or WindowStylesEx.WS_EX_COMPOSITED)
                                         Debug.Print($"set {ap.Name} as composited")
+                                    End If
+                                ElseIf My.Settings.gameOnOverview AndAlso ap.IsActive Then ' andalso ap.isdl
+                                    If GetGUIThreadInfo(ap.MainThreadId, gti) AndAlso (gti.flags = 20) Then
+                                        If Not doNotReplaceSysM Then
+
+                                            'check if sysmenu is opened from taskbar/tbthumb
+                                            Dim hwnd = GetAncestor(WindowFromPoint(Control.MousePosition), GA_ROOT)
+                                            Dim clss = GetWindowClass(hwnd)
+                                            dBug.Print($"clss ""{clss}""")
+                                            If {"Shell_TrayWnd", "Shell_SecondaryTrayWnd", "XamlExplorerHostIslandWindow", "TaskListThumbnailWnd"}.Contains(clss) Then
+                                                doNotReplaceSysM = True
+                                            End If
+
+                                            If Not doNotReplaceSysM Then
+
+                                                dBug.Print($"gti.flags2 {gti.flags}")
+                                                PostMessage(ap.MainWindowHandle, WM_CANCELMODE, 0, 0) 'close cleint SysMenu
+
+                                                Me.Invoke(Sub()
+                                                              dBug.Print($"rects  cr {but.ClientRectangle}  brts {but.RectangleToScreen(but.ClientRectangle)} mp {MousePosition}")
+                                                              If but.RectangleToScreen(but.ClientRectangle).Contains(MousePosition) Then
+                                                                  Dim pt = but.PointToClient(Control.MousePosition)
+                                                                  dBug.Print($"alt sysmenu override: {pt}")
+
+                                                                  If My.Computer.Keyboard.CtrlKeyDown Then
+                                                                      cmsQuickLaunch.Show(but, pt)
+                                                                  Else
+                                                                      cmsAlt.Show(but, pt)
+                                                                  End If
+                                                              End If
+                                                          End Sub)
+                                            End If
+
+                                        End If
+                                    Else
+                                        doNotReplaceSysM = False
                                     End If
                                 End If
 
