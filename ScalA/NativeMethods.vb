@@ -1211,6 +1211,28 @@ Module NativeMethods
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function GetClipboardOwner() As IntPtr : End Function
 
+    Public Const WM_SHNOTIFY As Integer = &H401
+    Public Const SHCNE_ASSOCCHANGED As Integer = &H8000000
+    Public Const SHCNRF_ShellLevel As Integer = &H2
+
+
+    <StructLayout(LayoutKind.Sequential)>
+    Public Structure SHChangeNotifyEntry
+        Public pIdl As IntPtr
+        <MarshalAs(UnmanagedType.Bool)>
+        Public fRecursive As Boolean
+    End Structure
+
+    <DllImport("shell32.dll", CharSet:=CharSet.Auto)>
+    Public Function SHChangeNotifyRegister(
+        hWnd As IntPtr,
+        fSources As Integer,
+        fEvents As Integer,
+        wMsg As Integer,
+        cEntries As Integer,
+        ByRef pshcne As SHChangeNotifyEntry
+    ) As Integer
+    End Function
 
     Public Function GetWindowText(hWnd As IntPtr) As String
         Dim length As Integer = NativeMethods.SendMessage(hWnd, WM_GETTEXTLENGTH, IntPtr.Zero, IntPtr.Zero).ToInt32()

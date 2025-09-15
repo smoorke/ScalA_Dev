@@ -530,6 +530,11 @@ Partial Public NotInheritable Class FrmMain
         End Try
     End Function
 
+    Public Function EvictIconCacheItem(item As String)
+        If item.ToLower.EndsWith(".url") Then DefURLicons.Clear()
+        Return iconCache.TryRemove(item, Nothing)
+    End Function
+
     Public Function GetIconFromFile(PathName As String, Optional deffolder As Boolean = False) As Bitmap
 
         dBug.Print($"iconCahceMiss: {PathName}")

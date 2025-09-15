@@ -1,4 +1,6 @@
-﻿Public Class frmOverlay
+﻿Imports System.ComponentModel
+
+Public Class frmOverlay
     Private Sub frmOverlay_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.Owner = FrmMain
     End Sub
@@ -95,9 +97,15 @@
             FrmMain.AltPP.hideRestart = True
         End If
     End Sub
-
+    Private Sub pbRestart_MouseDown(sender As Object, e As MouseEventArgs) Handles pbRestart.MouseDown
+        cmsRestart.Opacity = 0
+    End Sub
+    Private Sub cmsRestart_Opening(sender As ContextMenuStrip, e As CancelEventArgs) Handles cmsRestart.Opening
+        sender.Opacity = 0
+    End Sub
     Private Sub cmsRestartHide_Opened(sender As ContextMenuStrip, e As EventArgs) Handles cmsRestart.Opened
         sender.Location = pbRestart.PointToScreen(New Point(0, pbRestart.Height))
+        sender.Opacity = 1
     End Sub
 
     Private Async Sub RestartWoClosingToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles RestartWoClosingToolStripMenuItem.Click
@@ -138,4 +146,6 @@
         FrmMain.Cursor = Cursors.Default
         Me.UseWaitCursor = False
     End Sub
+
+
 End Class

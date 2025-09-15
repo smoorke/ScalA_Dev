@@ -49,9 +49,10 @@ Partial Class frmDebug
         Me.chkForceShowUpdate = New System.Windows.Forms.CheckBox()
         Me.chkShowWarning = New System.Windows.Forms.CheckBox()
         Me.btnTest = New System.Windows.Forms.Button()
-        Me.btnIpcInfo = New System.Windows.Forms.Button()
         Me.cmsDebugFuncs = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.DumpWatchersToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.btnIpcInfo = New System.Windows.Forms.Button()
+        Me.PurgeIconCacheMiscToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         lblMinimum = New System.Windows.Forms.Label()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
@@ -264,6 +265,18 @@ Partial Class frmDebug
         Me.btnTest.Text = "Test"
         Me.btnTest.UseVisualStyleBackColor = True
         '
+        'cmsDebugFuncs
+        '
+        Me.cmsDebugFuncs.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DumpWatchersToolStripMenuItem, Me.PurgeIconCacheMiscToolStripMenuItem})
+        Me.cmsDebugFuncs.Name = "cmsDebugFuncs"
+        Me.cmsDebugFuncs.Size = New System.Drawing.Size(187, 70)
+        '
+        'DumpWatchersToolStripMenuItem
+        '
+        Me.DumpWatchersToolStripMenuItem.Name = "DumpWatchersToolStripMenuItem"
+        Me.DumpWatchersToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
+        Me.DumpWatchersToolStripMenuItem.Text = "Dump Watchers"
+        '
         'btnIpcInfo
         '
         Me.btnIpcInfo.Location = New System.Drawing.Point(316, 402)
@@ -273,17 +286,11 @@ Partial Class frmDebug
         Me.btnIpcInfo.Text = "IPC Info"
         Me.btnIpcInfo.UseVisualStyleBackColor = True
         '
-        'cmsDebugFuncs
+        'PurgeIconCacheMiscToolStripMenuItem
         '
-        Me.cmsDebugFuncs.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DumpWatchersToolStripMenuItem})
-        Me.cmsDebugFuncs.Name = "cmsDebugFuncs"
-        Me.cmsDebugFuncs.Size = New System.Drawing.Size(160, 26)
-        '
-        'DumpWatchersToolStripMenuItem
-        '
-        Me.DumpWatchersToolStripMenuItem.Name = "DumpWatchersToolStripMenuItem"
-        Me.DumpWatchersToolStripMenuItem.Size = New System.Drawing.Size(159, 22)
-        Me.DumpWatchersToolStripMenuItem.Text = "Dump Watchers"
+        Me.PurgeIconCacheMiscToolStripMenuItem.Name = "PurgeIconCacheMiscToolStripMenuItem"
+        Me.PurgeIconCacheMiscToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
+        Me.PurgeIconCacheMiscToolStripMenuItem.Text = "PurgeIconCacheMisc"
         '
         'frmDebug
         '
@@ -346,5 +353,6 @@ Partial Class frmDebug
     Friend WithEvents btnIpcInfo As Button
     Friend WithEvents cmsDebugFuncs As ContextMenuStrip
     Friend WithEvents DumpWatchersToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents PurgeIconCacheMiscToolStripMenuItem As ToolStripMenuItem
 End Class
 #End If

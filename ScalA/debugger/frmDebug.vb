@@ -318,6 +318,23 @@ Public Class frmDebug
         Next
         dBug.Print("-End DumpWatchers-")
     End Sub
+
+    Private Sub PurgeIconCacheMiscToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles PurgeIconCacheMiscToolStripMenuItem.Click
+        Dim counter As Integer = 0
+        Dim hasUrl As Boolean = False
+        For Each key In FrmMain.iconCache.Keys.Where(Function(k)
+                                                         Dim it As String = k.ToLower
+                                                         Return Not (k.EndsWith("\") OrElse k.EndsWith(".lnk") OrElse k.EndsWith(".exe"))
+                                                     End Function)
+            If FrmMain.iconCache.TryRemove(key, Nothing) Then
+                If key.ToLower.EndsWith(".url") Then hasUrl = True
+                counter += 1
+                dBug.Print($"removed {key}")
+            End If
+        Next
+        If hasUrl Then FrmMain.DefURLicons.Clear()
+        dBug.Print($"{counter} items removed, urlcache.size {FrmMain.DefURLicons.count}")
+    End Sub
 #End If
 End Class
 #If DEBUG Then
