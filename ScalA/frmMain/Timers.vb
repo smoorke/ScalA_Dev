@@ -325,23 +325,28 @@ Partial NotInheritable Class FrmMain
                                             End If
 
                                             If Not doNotReplaceSysM Then
+                                                Me.Invoke(Sub() doNotReplaceSysM = Not but.RectangleToScreen(but.ClientRectangle).Contains(MousePosition))
+                                            End If
+
+                                            If Not doNotReplaceSysM Then
 
                                                 dBug.Print($"gti.flags2 {gti.flags}")
-                                                PostMessage(ap.MainWindowHandle, WM_CANCELMODE, 0, 0) 'close cleint SysMenu
 
-                                                Me.Invoke(Sub()
-                                                              dBug.Print($"rects  cr {but.ClientRectangle}  brts {but.RectangleToScreen(but.ClientRectangle)} mp {MousePosition}")
-                                                              If but.RectangleToScreen(but.ClientRectangle).Contains(MousePosition) Then
-                                                                  Dim pt = but.PointToClient(Control.MousePosition)
-                                                                  dBug.Print($"alt sysmenu override: {pt}")
+                                                Me.BeginInvoke(Sub()
+                                                                   dBug.Print($"rects  cr {but.ClientRectangle}  brts {but.RectangleToScreen(but.ClientRectangle)} mp {MousePosition}")
+                                                                  
+                                                                   PostMessage(ap.MainWindowHandle, WM_CANCELMODE, 0, 0) 'close client SysMenu
 
-                                                                  If My.Computer.Keyboard.CtrlKeyDown Then
-                                                                      cmsQuickLaunch.Show(but, pt)
-                                                                  Else
-                                                                      cmsAlt.Show(but, pt)
-                                                                  End If
-                                                              End If
-                                                          End Sub)
+                                                                      Dim pt = but.PointToClient(Control.MousePosition)
+                                                                       dBug.Print($"alt sysmenu override: {pt}")
+
+                                                                       If My.Computer.Keyboard.CtrlKeyDown Then
+                                                                           cmsQuickLaunch.Show(but, pt)
+                                                                       Else
+                                                                           cmsAlt.Show(but, pt)
+                                                                       End If
+
+                                                               End Sub)
                                             End If
 
                                         End If

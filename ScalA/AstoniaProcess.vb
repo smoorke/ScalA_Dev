@@ -463,8 +463,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     End If
                     Return "Someone"
                 End If
-                    Dim nam As String = Strings.Left(proc.MainWindowTitle, proc.MainWindowTitle.IndexOf(" - "))
-                    memCache.Set(proc.Id, nam, cacheItemPolicy)
+                Dim nam As String = Strings.Left(proc.MainWindowTitle, proc.MainWindowTitle.IndexOf(" - "))
+                memCache.Set(proc.Id, nam, cacheItemPolicy)
                 If nam <> "Someone" AndAlso Not String.IsNullOrEmpty(nam) Then
                     loggedIns.TryAdd(Me.Id, Me)
                     loggedInAs = nam
