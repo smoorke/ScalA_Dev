@@ -80,6 +80,9 @@ Partial NotInheritable Class FrmMain
                     If {"Shell_TrayWnd", "Shell_SecondaryTrayWnd", "XamlExplorerHostIslandWindow", "TaskListThumbnailWnd"}.Contains(clss) Then
                         doNotReplaceSysM = True
                     End If
+
+                    If Not (pnlTitleBar.Contains(MousePosition) OrElse pnlSys.Contains(MousePosition)) Then doNotReplaceSysM = True
+
                     If Not doNotReplaceSysM Then
                         dBug.Print($"gti.flags {gti.flags}")
                         PostMessage(AltPP.MainWindowHandle, WM_CANCELMODE, 0, 0) 'close the SysMenu
