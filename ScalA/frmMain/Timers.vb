@@ -328,7 +328,7 @@ Partial NotInheritable Class FrmMain
                                             End If
 
                                             If Not doNotReplaceSysM Then
-                                                Me.Invoke(Sub() doNotReplaceSysM = Not but.RectangleToScreen(but.ClientRectangle).Contains(MousePosition))
+                                                Me.Invoke(Sub() If Not but.RectangleToScreen(but.ClientRectangle).Contains(MousePosition) Then doNotReplaceSysM = True)
                                             End If
 
                                             If Not doNotReplaceSysM Then
