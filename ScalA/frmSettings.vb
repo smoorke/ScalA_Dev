@@ -762,7 +762,8 @@ Public NotInheritable Class FrmSettings
         End If
     End Sub
     Private Sub txtResolutions_KeyUp(sender As Object, e As KeyEventArgs) Handles txtResolutions.KeyUp
-        Dim currentLineIndex As Integer = Math.Min(txtResolutions.GetLineFromCharIndex(txtResolutions.SelectionStart), txtResolutions.Lines.Length - 1)
+        If txtResolutions.Lines.Count = 0 Then Exit Sub
+        Dim currentLineIndex As Integer = Math.Max(0, Math.Min(txtResolutions.GetLineFromCharIndex(txtResolutions.SelectionStart), txtResolutions.Lines.Length - 1))
         Dim currentLine As String = txtResolutions.Lines(currentLineIndex)
 
         If Not String.IsNullOrWhiteSpace(currentLine) Then
@@ -902,10 +903,10 @@ Public NotInheritable Class FrmSettings
     End Sub
 
     Private Sub SortResolutions()
-
+        If txtResolutions.Lines.Count = 0 Then Exit Sub
         Dim firstChar As Integer = txtResolutions.GetFirstCharIndexOfCurrentLine()
         Dim caretPositionInLine As Integer = txtResolutions.SelectionStart - firstChar
-        Dim lineIndex As Integer = Math.Min(txtResolutions.GetLineFromCharIndex(firstChar), txtResolutions.Lines.Length - 1)
+        Dim lineIndex As Integer = Math.Max(0, Math.Min(txtResolutions.GetLineFromCharIndex(firstChar), txtResolutions.Lines.Length - 1))
         Dim currentItem As String = txtResolutions.Lines(lineIndex)
 
         dBug.Print($"currentitem ""{currentItem}""")
@@ -1101,7 +1102,7 @@ Public NotInheritable Class FrmSettings
         Catch ex As Exception
             FrmMain.pnlUpdate.Visible = False
             FrmMain.updateToVersion = "Error"
-            CustomMessageBox.Show(Me, "ScalA is unable to check for updates.", "Error", icon:=MessageBoxIcon.Error)
+            CustomMessageBox.Show(Me, "ScalA is unable to check for updates." & vbCrLf & ex.Message, "Error", icon:=MessageBoxIcon.Error)
         End Try
     End Sub
 
