@@ -1112,6 +1112,8 @@ Module NativeMethods
     Public Const WM_SIZE = &H5
     Public Const WM_ACTIVATE = &H6
 
+    Public Const WM_CLOSE As Integer = &H10
+
     Public Const WM_GETTEXT As Integer = &HD
     Public Const WM_GETTEXTLENGTH As Integer = &HE
     Public Const WM_PAINT = &HF
@@ -1215,6 +1217,7 @@ Module NativeMethods
     Public Const SHCNE_ASSOCCHANGED As Integer = &H8000000
     Public Const SHCNRF_ShellLevel As Integer = &H2
 
+    Public Declare Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Keys) As Short
 
     <StructLayout(LayoutKind.Sequential)>
     Public Structure SHChangeNotifyEntry
