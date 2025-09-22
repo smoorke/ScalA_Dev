@@ -1472,7 +1472,10 @@ Partial Public NotInheritable Class FrmMain
         dBug.Print($"QlCtxOpenAll sender:{sender}")
         Dim subitems As List(Of ToolStripMenuItem) = DirectCast(sender.Tag, ToolStripMenuItem).
                 DropDownItems.OfType(Of ToolStripMenuItem).
-                Where(Function(it) QLFilter.Contains(IO.Path.GetExtension(it.Tag(0))) AndAlso it.Visible).ToList()
+                Where(Function(it)
+                          Return QLFilter.Contains(IO.Path.GetExtension(it.Tag(0))) AndAlso
+                          it.Visible AndAlso (Not My.Settings.QLResolveLnk OrElse it.Tag.length < 4)
+                      End Function).ToList()
 
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
@@ -1485,6 +1488,9 @@ Partial Public NotInheritable Class FrmMain
         End If
         For Each ddi As ToolStripMenuItem In subitems
             dBug.Print($"{ddi.Tag(0)}")
+            'If My.Settings.QLResolveLnk AndAlso ddi.Tag.length >= 4 Then
+            '    Continue For
+            'End If
             OpenLnk(ddi, New MouseEventArgs(MouseButtons.Left, 1, MousePosition.X, MousePosition.Y, 0))
         Next
     End Sub
@@ -1643,7 +1649,8 @@ Partial Public NotInheritable Class FrmMain
                 New MenuItem($"Open All{vbTab}-->", AddressOf QlCtxOpenAll) With {
                                 .Visible = (path.EndsWith("\") OrElse (My.Settings.QLResolveLnk AndAlso path.ToLower.EndsWith(".lnk"))) AndAlso
                                 sender.DropDownItems.OfType(Of ToolStripMenuItem) _
-                                      .Any(Function(it) it.Visible AndAlso it.Tag IsNot Nothing AndAlso QLFilter.Contains(IO.Path.GetExtension(it.Tag(0)))),
+                                      .Any(Function(it) it.Visible AndAlso it.Tag IsNot Nothing AndAlso QLFilter.Contains(IO.Path.GetExtension(it.Tag(0))) AndAlso
+                                          (Not My.Settings.QLResolveLnk OrElse it.Tag.Length < 4)),
                                 .Tag = sender
                                 },
                 New MenuItem("-"),
