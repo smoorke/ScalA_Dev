@@ -169,7 +169,10 @@ Partial NotInheritable Class FrmMain
                             'ap.Activate() doesn't work if not debugging
                             If Not AltPP?.IsActive AndAlso WindowFromPoint(MousePosition) = AltPP?.MainWindowHandle Then
                                 dBug.Print($"Activating {AltPP?.Name}")
-                                SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
+                                If Not AltPP.Activate() Then
+                                    dBug.Print("Activation fallback")
+                                    SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
+                                End If
                             End If
 #If DEBUG Then
                         End If
@@ -470,17 +473,17 @@ Partial NotInheritable Class FrmMain
                                 'Attach(ap)
                                 If My.Settings.HoverActivate Then
                                     Dim id = GetActiveProcessID()
-                                    If id = scalaPID OrElse isAstoniaOrScalA(id) Then
+                                    'Debug.Print($"Hover {id}")
+                                    If id = 0 OrElse id = scalaPID OrElse isAstoniaOrScalA(id) Then
                                         If Not (SysMenu.Visible OrElse cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse
                                                 FrmSettings.Visible OrElse UpdateDialog.Contains(MousePosition) OrElse
                                                 renameOpen OrElse CustomMessageBox.visible) Then
 #If DEBUG Then
                                             If Not chkDebug.ContextMenuStrip.Visible Then
 #End If
-                                                'ap.Activate() doesn't work if not debugging
                                                 If Not ap.IsActive AndAlso WindowFromPoint(MousePosition) = ap.MainWindowHandle Then
                                                     dBug.Print($"Activating {ap.Name}")
-                                                    SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
+                                                    If Not ap.Activate() Then SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
                                                 End If
 #If DEBUG Then
                                             End If

@@ -1606,7 +1606,7 @@ Partial Public NotInheritable Class FrmMain
             FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, FrmSizeBorder.Opacity, 0)
         End If
         If cboAlt.SelectedIndex > 0 Then
-            Attach(AltPP)
+            Attach(AltPP, True)
             AltPP?.CenterBehind(pbZoom)
         End If
         moveBusy = False
@@ -1649,12 +1649,15 @@ Partial Public NotInheritable Class FrmMain
                 End If
             End If
             Dim ret = SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap.MainWindowHandle)
-            Dim ScalAThreadId As Integer = GetWindowThreadProcessId(ScalaHandle, Nothing)
-            Dim AstoniaThreadId As Integer = GetWindowThreadProcessId(ap.MainWindowHandle, Nothing)
-            AttachThreadInput(AstoniaThreadId, ScalAThreadId, False) 'detach input so ctrl, shift and alt still work when there is an elevation mismatch, also fixes sleepy legacy clients lagging ScalA
+            'Dim ScalAThreadId As Integer = GetWindowThreadProcessId(ScalaHandle, Nothing) 'move this to a global since this won't change
+            'Dim AstoniaThreadId As Integer = GetWindowThreadProcessId(ap.MainWindowHandle, Nothing) 'move this to astoniaproc
+            ap.ThreadInput(False) 'detach input so ctrl, shift and alt still work when there is an elevation mismatch, also fixes sleepy legacy clients lagging ScalA
             Return ret
         Finally
-            If activate Then AltPP?.Activate()
+            If activate Then Task.Run(Sub()
+                                          Threading.Thread.Sleep(25) 'needed or we get an activation bug. i cant find exactly where it is tho. maybe it's the attachthread resetting input queues?
+                                          AltPP?.Activate()
+                                      End Sub)
         End Try
     End Function
 #If DEBUG Then
@@ -1825,7 +1828,7 @@ Partial Public NotInheritable Class FrmMain
         Me.Show()
         'Me.BringToFront() 'doesn't work
         If AltPP IsNot Nothing AndAlso AltPP.Id <> 0 AndAlso AltPP.IsRunning Then
-            SetWindowPos(AltPP.MainWindowHandle, SWP_HWND.NOTOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
+            SetWindowPos(AltPP.MainWindowHandle, SWP_HWND.NOTOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
             Attach(AltPP, True)
         Else
             Me.TopMost = True

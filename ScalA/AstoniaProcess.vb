@@ -305,15 +305,13 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End Get
     End Property
 
-    Public Sub Activate()
-        If proc Is Nothing Then Exit Sub
-        Try
-            AllowSetForegroundWindow(ASFW_ANY)
-            AppActivate(proc.Id)
-        Catch ex As Exception
-            dBug.Print("activate exception")
-        End Try
-    End Sub
+    Public Function Activate() As Boolean
+        If proc Is Nothing Then Return True
+
+        AllowSetForegroundWindow(Me.Id)
+        Return SetForegroundWindow(Me.MainWindowHandle)
+
+    End Function
 
     Private _mwhCache As IntPtr = IntPtr.Zero
     Public ReadOnly Property MainWindowHandle() As IntPtr
@@ -346,24 +344,24 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     '    End Get
     'End Property
 
-    Friend ReadOnly EscDownAndUpInput() As INPUT = {
-                   New INPUT With {.type = InputType.INPUT_KEYBOARD,
-                        .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wScan = 1, .wVk = Keys.Escape}}
-                   },
-                   New INPUT With {.type = InputType.INPUT_KEYBOARD,
-                        .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wScan = 1, .wVk = Keys.Escape}}
-                   }
-             }
-    Friend ReadOnly CtrlUpInput() As INPUT = {
-        New INPUT With {.type = InputType.INPUT_KEYBOARD,
-                          .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wVk = Keys.ControlKey}}
-                   }
-        }
-    Friend ReadOnly CtrlDownInput() As INPUT = {
-        New INPUT With {.type = InputType.INPUT_KEYBOARD,
-                          .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wVk = Keys.ControlKey}}
-                   }
-        }
+    'Friend ReadOnly EscDownAndUpInput() As INPUT = {
+    '               New INPUT With {.type = InputType.INPUT_KEYBOARD,
+    '                    .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wScan = 1, .wVk = Keys.Escape}}
+    '               },
+    '               New INPUT With {.type = InputType.INPUT_KEYBOARD,
+    '                    .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wScan = 1, .wVk = Keys.Escape}}
+    '               }
+    '         }
+    'Friend ReadOnly CtrlUpInput() As INPUT = {
+    '    New INPUT With {.type = InputType.INPUT_KEYBOARD,
+    '                      .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyUp, .wVk = Keys.ControlKey}}
+    '               }
+    '    }
+    'Friend ReadOnly CtrlDownInput() As INPUT = {
+    '    New INPUT With {.type = InputType.INPUT_KEYBOARD,
+    '                      .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown, .wVk = Keys.ControlKey}}
+    '               }
+    '    }
 
 
     Private Shared ReadOnly memCache As New System.Runtime.Caching.MemoryCache("nameCache")
