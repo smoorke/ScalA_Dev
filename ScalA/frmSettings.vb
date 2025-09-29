@@ -221,6 +221,11 @@ Public NotInheritable Class FrmSettings
     Private Sub FrmSettings_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         Me.Owner = FrmMain
         startup = False
+
+        AllowSetForegroundWindow(ASFW_ANY)
+        SetForegroundWindow(GetDesktopWindow)
+        SetForegroundWindow(Me.Handle)
+
     End Sub
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
