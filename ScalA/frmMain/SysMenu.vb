@@ -28,9 +28,10 @@
 
     Public Function Show(pos As Point) As Integer
         'Me.Visible = True 'handled in wndproc
-        dBug.print($"SysMenu.Show {pos}")
-
+        dBug.Print($"SysMenu.Show {pos}")
+        FrmMain.Detach(False)
         Dim cmd As Integer = TrackPopupMenuEx(Me.Handle, TPM_RIGHTBUTTON Or TPM_RETURNCMD, pos.X, pos.Y, _form.Handle, Nothing)
+        FrmMain.Attach(FrmMain.AltPP, False)
         'Me.Visible = False 'handled in wndproc
         If cmd > 0 Then
             dBug.print("SendMessage " & cmd)
