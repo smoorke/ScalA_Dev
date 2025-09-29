@@ -225,6 +225,7 @@ Public NotInheritable Class FrmSettings
         AllowSetForegroundWindow(ASFW_ANY)
         SetForegroundWindow(GetDesktopWindow)
         SetForegroundWindow(Me.Handle)
+        SetForegroundWindow(FrmMain.ScalaHandle)
 
     End Sub
     Protected Overrides Sub WndProc(ByRef m As Message)
@@ -233,9 +234,6 @@ Public NotInheritable Class FrmSettings
                 SysMenu.Visible = True
             Case WM_EXITMENULOOP
                 SysMenu.Visible = False
-            Case WM_ACTIVATE
-                dBug.Print("frmsettings Activate")
-                FrmMain.Attach(FrmMain.AltPP)
         End Select
         If Me.Owner Is Nothing Then 'this to address ghost form when closing settings.
             Select Case m.Msg
