@@ -1649,9 +1649,11 @@ Partial Public NotInheritable Class FrmMain
                 End If
             End If
             Dim ret = SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap.MainWindowHandle)
-            'Dim ScalAThreadId As Integer = GetWindowThreadProcessId(ScalaHandle, Nothing) 'move this to a global since this won't change
+            Dim ScalAThreadId As Integer = GetWindowThreadProcessId(ScalaHandle, Nothing) 'move this to a global since this won't change
             'Dim AstoniaThreadId As Integer = GetWindowThreadProcessId(ap.MainWindowHandle, Nothing) 'move this to astoniaproc
-            ap.ThreadInput(False) 'detach input so ctrl, shift and alt still work when there is an elevation mismatch, also fixes sleepy legacy clients lagging ScalA
+            'ap.ThreadInput(False) 
+            AttachThreadInput(ScalAThreadId, ap.MainThreadId, False) 'detach input so ctrl, shift and alt still work when there is an elevation mismatch, also fixes sleepy legacy clients lagging ScalA
+
             Return ret
         Finally
             If activate Then Task.Run(Sub()
