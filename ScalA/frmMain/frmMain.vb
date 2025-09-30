@@ -283,20 +283,19 @@ Partial Public NotInheritable Class FrmMain
                 Dim fgw As IntPtr = GetForegroundWindow()
                 dBug.Print($"FgHwnd: {fgw}")
                 Dim fgt = GetWindowThreadProcessId(fgw, Nothing)
-                Dim met = GetWindowThreadProcessId(ScalaHandle, Nothing)
+
                 Try
-                    AttachThreadInput(fgt, met, True)
+                    AttachThreadInput(fgt, ScalaThreadId, True)
 
                     AllowSetForegroundWindow(ASFW_ANY)
-
-                    SwitchToThisWindow(GetDesktopWindow(), True)
                     SetForegroundWindow(GetDesktopWindow())
+
                     Threading.Thread.Sleep(50)
+
                     AllowSetForegroundWindow(ASFW_ANY)
-                    SwitchToThisWindow(ScalaHandle, True)
                     SetForegroundWindow(ScalaHandle)
                 Finally
-                    AttachThreadInput(fgt, met, False)
+                    AttachThreadInput(fgt, ScalaThreadId, False)
                 End Try
             End If
         End Try
@@ -1649,7 +1648,7 @@ Partial Public NotInheritable Class FrmMain
                 End If
             End If
             Dim ret = SetWindowLong(ScalaHandle, GWL_HWNDPARENT, ap.MainWindowHandle)
-            Dim ScalAThreadId As Integer = GetWindowThreadProcessId(ScalaHandle, Nothing) 'move this to a global since this won't change
+            'Dim ScalAThreadId As Integer = GetWindowThreadProcessId(ScalaHandle, Nothing) 'move this to a global since this won't change
             'Dim AstoniaThreadId As Integer = GetWindowThreadProcessId(ap.MainWindowHandle, Nothing) 'move this to astoniaproc
             'ap.ThreadInput(False) 
             AttachThreadInput(ScalAThreadId, ap.MainThreadId, False) 'detach input so ctrl, shift and alt still work when there is an elevation mismatch, also fixes sleepy legacy clients lagging ScalA

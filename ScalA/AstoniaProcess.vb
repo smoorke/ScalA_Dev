@@ -55,13 +55,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End If
         TIattached = attach
     End Sub
-    Private _ScalAThreadId As Integer?
-    Private ReadOnly Property ScalaThreadId() As String
-        Get
-            If _ScalAThreadId Is Nothing Then _ScalAThreadId = GetWindowThreadProcessId(FrmMain.ScalaHandle, Nothing)
-            Return _ScalAThreadId
-        End Get
-    End Property
+
     Private _MainThreadId As Integer?
     Public ReadOnly Property MainThreadId() As Integer?
         Get
