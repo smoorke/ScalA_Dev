@@ -744,8 +744,6 @@ Partial Public NotInheritable Class FrmMain
                                                     'AddHandler smenu.DropDownOpened, AddressOf DeferredIconLoading
                                                     AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
 
-                                                    AddHandler smenu.MouseEnter, AddressOf menuItem_MouseEnter
-
                                                     AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
                                                 End Sub)
 
@@ -802,8 +800,6 @@ Partial Public NotInheritable Class FrmMain
                                                             AddHandler smenu.DropDownOpened, AddressOf QL_DropDownOpened
                                                             AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
 
-                                                            AddHandler smenu.MouseEnter, AddressOf menuItem_MouseEnter
-
                                                             AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
                                                         End Sub)
 
@@ -829,9 +825,6 @@ Partial Public NotInheritable Class FrmMain
                                  Me.BeginInvoke(Sub()
                                                     AddHandler item.MouseDown, AddressOf QL_MouseDown
                                                     'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
-
-                                                    AddHandler item.MouseEnter, AddressOf menuItem_MouseEnter
-
                                                     'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
                                                     AddHandler item.Paint, AddressOf QLMenuItem_Paint
                                                 End Sub)
@@ -921,10 +914,6 @@ Partial Public NotInheritable Class FrmMain
         watch.Stop()
         Return menuItems
     End Function
-
-    Private Sub menuItem_MouseEnter(sender As Object, e As EventArgs)
-        Detach(False)
-    End Sub
 
     Private Sub QL_DropDownOpened(sender As ToolStripMenuItem, e As EventArgs)
         Dim handle = sender.DropDown.Handle
@@ -1309,7 +1298,7 @@ Partial Public NotInheritable Class FrmMain
         Protected Overrides ReadOnly Property CreateParams As CreateParams
             Get
                 Dim param = MyBase.CreateParams
-                param.ExStyle = param.ExStyle Or WindowStylesEx.WS_EX_TRANSPARENT 'pass through clicks
+                param.ExStyle = param.ExStyle Or WindowStylesEx.WS_EX_TRANSPARENT
                 Return param
             End Get
         End Property
@@ -1423,8 +1412,6 @@ Partial Public NotInheritable Class FrmMain
             SetWindowPos(hwnd, SWP_HWND.TOPMOST, loc.X, loc.Y, -1, -1, SetWindowPosFlags.IgnoreZOrder Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
         End If
 
-        Task.Run(Sub() Detach(False)) 'needs task or we get iconloading lag
-
     End Sub
 
     Dim cts As New Threading.CancellationTokenSource
@@ -1466,10 +1453,10 @@ Partial Public NotInheritable Class FrmMain
                      End If
                  End Sub)
 
-        Dim dummy = Task.Run(Sub()
-                                 Threading.Thread.Sleep(25)
-                                 If Not caption_Mousedown Then Attach(AltPP)
-                             End Sub)
+        'Dim dummy = Task.Run(Sub()
+        '                         Threading.Thread.Sleep(25)
+        'If Not caption_Mousedown Then Attach(AltPP)
+        '                     End Sub)
 
         Dim unused = RestoreClicking()
 

@@ -157,23 +157,12 @@ Partial NotInheritable Class FrmMain
                 ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
             End If
 
-            Dim wp As IntPtr = GetAncestor(WindowFromPoint(MousePosition), GA_ROOT)
-            Dim wc As String = GetWindowClass(wp)
-            ' Dim wt As String = GetWindowText(wp)
-            'Debug.Print($"wc: {wc} {wt}")
-            If wc = "#32768" OrElse wc.Contains("tooltips_class32") OrElse PnlEqLock.Contains(MousePosition) OrElse frmOverlay.pbRestart.Contains(MousePosition) OrElse wp = FrmSettings.Handle OrElse wc = "ComboLBox" OrElse wp = scaleFixForm?.Handle Then
-                Detach(False)
-            End If
-            If (wp = ScalaHandle OrElse wp = AltPP.MainWindowHandle) AndAlso Not PnlEqLock.Contains(MousePosition) AndAlso Not frmOverlay.pbRestart.Contains(MousePosition) Then
-                If Not cmsQuickLaunch.Visible Then Attach(AltPP, False)
-            End If
-
             If My.Settings.HoverActivate Then
                 Dim id = GetActiveProcessID()
                 If id <> 0 AndAlso id = scalaPID OrElse AltPP?.Id <> id Then
                     If Not (SysMenu.Visible OrElse cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse
-                                            FrmSettings.Visible OrElse UpdateDialog.Contains(MousePosition) OrElse
-                                            renameOpen OrElse CustomMessageBox.visible) Then
+                                                FrmSettings.Visible OrElse UpdateDialog.Contains(MousePosition) OrElse
+                                                renameOpen OrElse CustomMessageBox.visible) Then
 #If DEBUG Then
                         If Not chkDebug.ContextMenuStrip.Visible Then
 #End If
@@ -234,8 +223,6 @@ Partial NotInheritable Class FrmMain
                              End Try
                          End Sub)
             End If
-        Else
-            Attach(AltPP, False)
         End If
 
 #If DEBUG Then
@@ -353,17 +340,17 @@ Partial NotInheritable Class FrmMain
 
                                                 Me.BeginInvoke(Sub()
                                                                    dBug.Print($"rects  cr {but.ClientRectangle}  brts {but.RectangleToScreen(but.ClientRectangle)} mp {MousePosition}")
-
+                                                                  
                                                                    PostMessage(ap.MainWindowHandle, WM_CANCELMODE, 0, 0) 'close client SysMenu
 
-                                                                   Dim pt = but.PointToClient(Control.MousePosition)
-                                                                   dBug.Print($"alt sysmenu override: {pt}")
+                                                                      Dim pt = but.PointToClient(Control.MousePosition)
+                                                                       dBug.Print($"alt sysmenu override: {pt}")
 
-                                                                   If My.Computer.Keyboard.CtrlKeyDown Then
-                                                                       cmsQuickLaunch.Show(but, pt)
-                                                                   Else
-                                                                       cmsAlt.Show(but, pt)
-                                                                   End If
+                                                                       If My.Computer.Keyboard.CtrlKeyDown Then
+                                                                           cmsQuickLaunch.Show(but, pt)
+                                                                       Else
+                                                                           cmsAlt.Show(but, pt)
+                                                                       End If
 
                                                                End Sub)
                                             End If
@@ -445,9 +432,9 @@ Partial NotInheritable Class FrmMain
                     GetCursorInfo(pci)
                     If pci.flags <> 0 Then ' cursor is visible
                         If Not wasVisible AndAlso ap.IsActive() Then
-                            dBug.Print("scrollthumb released")
+                            dBug.print("scrollthumb released")
                             If storedY <> pci.ptScreenpos.y OrElse storedX <> pci.ptScreenpos.x Then
-                                dBug.Print("scrollthumb moved")
+                                dBug.print("scrollthumb moved")
                                 Dim Xfactor As Double = but.ThumbRectangle.Width / ap.ClientRect.Width
                                 Dim Yfactor As Double = but.ThumbRectangle.Height / ap.ClientRect.Height
                                 Dim movedX As Integer = storedX + ((pci.ptScreenpos.x - storedX) * Xfactor)
@@ -458,7 +445,7 @@ Partial NotInheritable Class FrmMain
                                 Dim ipt As New Point(movedX.Map(bzB.Left, bzB.Right, 0, rccB.Width),
                                                      movedY.Map(bzB.Top, bzB.Bottom, 0, rccB.Height))
                                 SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, WM_MOUSEMOVE_CreateWParam(), New LParamMap(ipt)) 'update client internal mousepos
-                                dBug.Print($"ipt {ipt}")
+                                dBug.print($"ipt {ipt}")
                             End If
                         End If
                         storedX = pci.ptScreenpos.x
@@ -469,11 +456,11 @@ Partial NotInheritable Class FrmMain
                     If Not AOBusy Then
                         AltPP = ap
                         If ap.IsMinimized Then
-                            dBug.Print($"before {rcwB} {rccB}")
+                            dBug.print($"before {rcwB} {rccB}")
                             ap.Restore()
                             rcwB = ap.WindowRect
                             rccB = ap.ClientRect
-                            dBug.Print($"after {rcwB} {rccB}")
+                            dBug.print($"after {rcwB} {rccB}")
                         End If
 
                         If pci.flags = 0 Then ' cursor is hidden do not move astonia. fixes scrollbar thumb.
@@ -770,7 +757,7 @@ Partial NotInheritable Class FrmMain
 
         If IPC.RequestActivation Then
             IPC.RequestActivation = False
-            dBug.Print("IPC.requestActivation")
+            dBug.print("IPC.requestActivation")
 
             If AltPP?.IsMinimized Then
                 AltPP.Restore()
@@ -799,7 +786,7 @@ Partial NotInheritable Class FrmMain
                 If Not pnlOverview.Visible Then
                     AltPP?.CenterBehind(pbZoom)
                     Attach(AltPP, True)
-                    dBug.Print($"{moveBusy} {swpBusy}")
+                    dBug.print($"{moveBusy} {swpBusy}")
                     moveBusy = False
                 Else
                     AppActivate(scalaPID)
@@ -885,7 +872,7 @@ Partial NotInheritable Class FrmMain
                                         Parallel.ForEach(AstoniaProcess.loggedIns.Values.Where(Function(p) p.Name = "Someone").ToArray,
                                             Sub(it As AstoniaProcess)
                                                 If it.hasLoggedIn Then
-                                                    dBug.Print($"AutoClosing {it.loggedInAs}")
+                                                    dBug.print($"AutoClosing {it.loggedInAs}")
                                                     it.CloseOrKill()
                                                     AstoniaProcess.loggedIns.TryRemove(it.Id, Nothing)
                                                 End If
@@ -958,7 +945,7 @@ Partial NotInheritable Class FrmMain
         End While
 
 
-        dBug.Print($"{If(lowestHwnd, "none")}")
+        dBug.print($"{If(lowestHwnd, "none")}")
 
         Return lowestHwnd
 

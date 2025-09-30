@@ -1916,7 +1916,7 @@ Partial Public NotInheritable Class FrmMain
 
         'Dim isSdlWithSpallIcons
         'todo:: block right clicks when SDL and spellIcons
-        Attach(AltPP, False)
+
 
         If e.Button = MouseButtons.Middle OrElse e.Button = MouseButtons.Right Then
             PnlEqLock.Visible = False
@@ -1979,9 +1979,6 @@ Partial Public NotInheritable Class FrmMain
 
         'dBug.Print("CaptionMouseMove")
         If AltPP Is Nothing Then Exit Sub
-
-        Attach(AltPP, False)
-
         newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - If(AltPP?.ClientOffset.X, 0)
         newY = Me.Location.Y
 
@@ -1994,11 +1991,4 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
-    Private Sub PnlEqLock_MouseEnter(sender As Object, e As EventArgs) Handles PnlEqLock.MouseEnter
-        Detach(False)
-    End Sub
-
-    Private Sub PnlEqLock_MouseLeave(sender As Object, e As EventArgs) Handles PnlEqLock.MouseLeave
-        If Not cmsQuickLaunch.Visible Then Attach(AltPP, False)
-    End Sub
 End Class
