@@ -340,17 +340,17 @@ Partial NotInheritable Class FrmMain
 
                                                 Me.BeginInvoke(Sub()
                                                                    dBug.Print($"rects  cr {but.ClientRectangle}  brts {but.RectangleToScreen(but.ClientRectangle)} mp {MousePosition}")
-                                                                  
+
                                                                    PostMessage(ap.MainWindowHandle, WM_CANCELMODE, 0, 0) 'close client SysMenu
 
-                                                                      Dim pt = but.PointToClient(Control.MousePosition)
-                                                                       dBug.Print($"alt sysmenu override: {pt}")
+                                                                   Dim pt = but.PointToClient(Control.MousePosition)
+                                                                   dBug.Print($"alt sysmenu override: {pt}")
 
-                                                                       If My.Computer.Keyboard.CtrlKeyDown Then
-                                                                           cmsQuickLaunch.Show(but, pt)
-                                                                       Else
-                                                                           cmsAlt.Show(but, pt)
-                                                                       End If
+                                                                   If My.Computer.Keyboard.CtrlKeyDown Then
+                                                                       cmsQuickLaunch.Show(but, pt)
+                                                                   Else
+                                                                       cmsAlt.Show(but, pt)
+                                                                   End If
 
                                                                End Sub)
                                             End If
@@ -631,6 +631,8 @@ Partial NotInheritable Class FrmMain
     Private swAutoClose As Stopwatch = Stopwatch.StartNew
     Private AutoCloseCounter As Integer = 0
     Public PrevMouseAlt As AstoniaProcess
+    Private CheckingActiveProc As Boolean = False
+
     Private Async Sub TmrActive_Tick(sender As Timer, e As EventArgs) Handles tmrActive.Tick
 
         If MouseButtonStale <> MouseButtons AndAlso MouseButtons <> MouseButtons.None Then
@@ -655,11 +657,7 @@ Partial NotInheritable Class FrmMain
 
 
         activeID = GetActiveProcessID() ' this returns 0 when switching tasks
-        Try
-            activeIsAstonia = Process.GetProcessById(activeID).IsAstonia
-        Catch
-            activeIsAstonia = False
-        End Try
+
         If activeID = scalaPID OrElse activeID = AltPP?.Id OrElse
                 (My.Settings.gameOnOverview AndAlso pnlOverview.Visible AndAlso
                 pnlOverview.Controls.OfType(Of AButton).Any(Function(ab) ab.Visible AndAlso ab.AP IsNot Nothing AndAlso ab.AP.Id = activeID)) Then ' is on overview
@@ -702,10 +700,27 @@ Partial NotInheritable Class FrmMain
             End If
         End If
 
-        If activeIsAstonia AndAlso Not My.Computer.Keyboard.CtrlKeyDown Then
-            CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
-            cmsQuickLaunch.Close()
+        If Not CheckingActiveProc Then
+            CheckingActiveProc = True
+#Disable Warning BC42358 ' Because this call is not awaited, execution of the current method continues before the call is completed
+            Task.Run(Sub()
+                         Try
+                             activeIsAstonia = Process.GetProcessById(activeID).IsAstonia
+                             If activeIsAstonia AndAlso Not My.Computer.Keyboard.CtrlKeyDown Then
+                                 Me.Invoke(Sub()
+                                               CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+                                               cmsQuickLaunch.Close()
+                                           End Sub)
+                             End If
+                         Catch
+                             activeIsAstonia = False
+                         Finally
+                             CheckingActiveProc = False
+                         End Try
+                     End Sub)
+#Enable Warning BC42358 ' Because this call is not awaited, execution of the current method continues before the call is completed
         End If
+
 
         If SidebarScalA IsNot Nothing AndAlso SidebarScalA.HasExitedSafe Then
             SidebarScalA = Nothing
