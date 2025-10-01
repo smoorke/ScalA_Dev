@@ -375,11 +375,10 @@ Module NativeMethods
     Public Const SW_PARENTOPENING = 3 'The window's owner window is being restored.
 
     <DllImport("Shell32", CharSet:=CharSet.Auto, SetLastError:=True)>
-    Public Function ShellExecuteEx(ByRef lpExecInfo As SHELLEXECUTEINFO) As Boolean
-    End Function
+    Public Function ShellExecuteEx(ByRef lpExecInfo As SHELLEXECUTEINFO) As Boolean : End Function
 
-    <DllImport("user32.dll", SetLastError:=True)>
-    Public Sub SwitchToThisWindow(hWnd As IntPtr, fAltTab As Boolean) : End Sub
+    '<DllImport("user32.dll", SetLastError:=True)>
+    'Public Sub SwitchToThisWindow(hWnd As IntPtr, fAltTab As Boolean) : End Sub
 
     <DllImport("user32.dll", SetLastError:=False)>
     Public Function GetDesktopWindow() As IntPtr : End Function

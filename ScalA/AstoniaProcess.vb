@@ -33,10 +33,10 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End Get
     End Property
 
+    Public hideRestart As Boolean = False
+
     Private TIattached As Boolean = False
     Private Shared AttachedThreads As New HashSet(Of Integer)()
-
-    Public hideRestart As Boolean = False
 
     Public Sub ThreadInput(attach As Boolean)
         If TIattached = attach Then Exit Sub
