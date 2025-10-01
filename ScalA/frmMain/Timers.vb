@@ -794,6 +794,7 @@ Partial NotInheritable Class FrmMain
             End If
         End If
         'Me.SuspendLayout()
+        'todo: rework this as detachingthread made some of this obso
         If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
             If cboAlt.SelectedIndex <> 0 OrElse My.Settings.gameOnOverview Then
                 If My.Settings.LockEq AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then
