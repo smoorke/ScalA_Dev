@@ -667,7 +667,11 @@ Partial NotInheritable Class FrmMain
             If Not MouseButtons.HasFlag(MouseButtons.Middle) AndAlso Not MouseButtons.HasFlag(MouseButtons.Right) Then AltPP?.ThreadInput(False)
         ElseIf activeID <> 0 Then 'inactive
             setActive(False)
-            AltPP?.ThreadInput(True) 'fix bringtofront bug
+            If GetAncestor(WindowFromPoint(MousePosition), GA_ROOT) <> ScalaHandle Then
+                AltPP?.ThreadInput(True) 'fix bringtofront bug
+            Else
+                AltPP?.ThreadInput(False)
+            End If
         End If
 
         If (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) AndAlso
