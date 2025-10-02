@@ -1626,6 +1626,6 @@ Module ProcessExtensions
                                                           .Select(Function(x) Strings.Trim(x)))
             exeCache = My.Settings.exe
         End If
-        Return classCacheSet.Contains(GetWindowClass(pp.MainWindowHandle)) AndAlso exeCache.Contains(pp.ProcessName)
+        Return classCacheSet.Contains(GetWindowClass(pp.MainWindowHandle)) AndAlso exeCacheSet.Contains(pp.ProcessName)
     End Function
 End Module
