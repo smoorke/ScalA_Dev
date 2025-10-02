@@ -377,8 +377,8 @@ Module NativeMethods
     <DllImport("Shell32", CharSet:=CharSet.Auto, SetLastError:=True)>
     Public Function ShellExecuteEx(ByRef lpExecInfo As SHELLEXECUTEINFO) As Boolean : End Function
 
-    '<DllImport("user32.dll", SetLastError:=True)>
-    'Public Sub SwitchToThisWindow(hWnd As IntPtr, fAltTab As Boolean) : End Sub
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Sub SwitchToThisWindow(hWnd As IntPtr, fAltTab As Boolean) : End Sub
 
     <DllImport("user32.dll", SetLastError:=False)>
     Public Function GetDesktopWindow() As IntPtr : End Function
@@ -405,6 +405,10 @@ Module NativeMethods
     <DllImport("user32.dll", SetLastError:=True, CharSet:=CharSet.Auto)>
     Public Function EnumWindows(lpEnumFunc As EnumWindowsProc, lParam As IntPtr) As Boolean : End Function
     Public Delegate Function EnumWindowsProc(hWnd As IntPtr, lParam As IntPtr) As Boolean
+
+    <DllImport("user32.dll")>
+    Public Function EnumThreadWindows(dwThreadId As UInteger, lpfn As EnumThreadDelegate, lParam As IntPtr) As Boolean : End Function
+    Public Delegate Function EnumThreadDelegate(hWnd As IntPtr, lParam As IntPtr) As Boolean
 
     Public Declare Function RedrawWindow Lib "user32.dll" (
     ByVal hWnd As IntPtr,
@@ -1122,6 +1126,8 @@ Module NativeMethods
 
     Public Const WM_SHOWWINDOW = &H18
     Public Const WM_SETTINGCHANGE = &H1A
+
+    Public Const WM_ACTIVATEAPP = &H1C
 
     Public Const WM_CANCELMODE = &H1F
     Public Const WM_SETCURSOR = &H20
