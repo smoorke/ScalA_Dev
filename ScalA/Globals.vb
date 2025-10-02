@@ -149,7 +149,7 @@ Module Globals
 
     Public Sub UnregisterShellNotify()
         If shNotify <> 0 Then
-            SHChangeNotifyDeregister(hNotify)
+            SHChangeNotifyDeregister(shNotify)
             dBug.Print("Unregistered ShellNotify")
             shNotify = 0
         End If

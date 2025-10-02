@@ -613,11 +613,6 @@ Partial NotInheritable Class FrmMain
 
         MyBase.WndProc(m)  ' allow form to process this message
 
-        If m.Msg = WM_WININICHANGE Then
-            Attach(AltPP)
-        End If
-
-
     End Sub
 
 #If DEBUG Then
