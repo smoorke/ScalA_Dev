@@ -535,6 +535,14 @@ Partial Public NotInheritable Class FrmMain
         Return iconCache.TryRemove(item, Nothing)
     End Function
 
+    Public Sub EvictNonWatchedIcons()
+        For Each pth In iconCache.Keys.ToList
+            If Not {".lnk", ".exe", ".url"}.Contains(IO.Path.GetExtension(pth).ToLower) Then
+                iconCache.TryRemove(pth, Nothing)
+            End If
+        Next
+    End Sub
+
     Public Function GetIconFromFile(PathName As String, Optional deffolder As Boolean = False) As Bitmap
 
         dBug.Print($"iconCahceMiss: {PathName}")
@@ -1365,7 +1373,7 @@ Partial Public NotInheritable Class FrmMain
         'End If
 
         If fsWatchers.Count = 0 Then InitWatchers(My.Settings.links, fsWatchers)
-
+        If shNotify = 0 Then RegisterShellNotify(Me.Handle)
         ' Dim dummy = FrmSettings.Visible 'needed or frmsettings reference in cmsQuickLaunch.Opened event may cause it to close
 
     End Sub

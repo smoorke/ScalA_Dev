@@ -134,4 +134,25 @@ Module Globals
             Return _ScalAThreadId
         End Get
     End Property
+
+    Public shNotify As Integer = 0
+    Public Sub RegisterShellNotify(hWnd As IntPtr)
+        shNotify = SHChangeNotifyRegister(
+            hWnd,
+            SHCNRF_ShellLevel,    ' only shell-level notifications
+            SHCNE_ASSOCCHANGED,   ' only care about assoc changes
+            WM_SHNOTIFY,
+            1,
+            New SHChangeNotifyEntry()
+        )
+    End Sub
+
+    Public Sub UnregisterShellNotify()
+        If shNotify <> 0 Then
+            SHChangeNotifyDeregister(hNotify)
+            dBug.Print("Unregistered ShellNotify")
+            shNotify = 0
+        End If
+    End Sub
+
 End Module

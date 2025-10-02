@@ -386,10 +386,10 @@ Partial NotInheritable Class FrmMain
                     dBug.Print($"  To: {CType(ss.styleNew, WindowStyles)}")
                 End If
                 'Marshal.StructureToPtr(ss, m.LParam, True)
-            Case WM_WININICHANGE '&H1A 
+            Case WM_SETTINGCHANGE '&H1A 
                 If m.WParam = 159 Then Exit Sub 'fix hang on Monitor Scaling change?
-                Detach(False) 'Fix hang on changing taskbar autohide/size
-                dBug.Print($"WM_WININICHANGE {m.LParam} {m.WParam}")
+                'Detach(False) 'Fix hang on changing taskbar autohide/size
+                dBug.Print($"WM_SETTINGCHANGE {m.LParam} {m.WParam}")
                 Dim settingnname = Runtime.InteropServices.Marshal.PtrToStringAuto(m.LParam)
                 dBug.Print($"sn=""{settingnname}""")
                 If settingnname = "VisualEffects" Then
@@ -429,6 +429,10 @@ Partial NotInheritable Class FrmMain
                     Me.Invalidate()
 
                 End If
+                'clear QL iconcache
+                iconCache.Clear()
+                doneShortcutOverlayPaths.Clear()
+
             Case WM_CLIPBOARDUPDATE
                 dBug.Print("WM_CLIPBOARDUPDATE")
                 clipBoardInfo = GetClipboardFilesAndAction()
@@ -445,6 +449,10 @@ Partial NotInheritable Class FrmMain
                 'CheckScreenScalingModes()
                 AstoniaProcess.BiggestWindowHeight = 0
                 AstoniaProcess.BiggestWindowWidth = 0
+            Case WM_SHNOTIFY
+                dBug.Print("Assoc change")
+                'clear non-wathed icons from cache
+                EvictNonWatchedIcons()
             Case WM_ENTERMENULOOP
                 dBug.Print($"WM_ENTERMENULOOP {cmsQuickLaunch.Visible}")
                 SysMenu.Visible = Not cmsQuickLaunch.Visible

@@ -1121,7 +1121,7 @@ Module NativeMethods
     Public Const WM_ERASEBKGND = &H14
 
     Public Const WM_SHOWWINDOW = &H18
-    Public Const WM_WININICHANGE = &H1A
+    Public Const WM_SETTINGCHANGE = &H1A
 
     Public Const WM_CANCELMODE = &H1F
     Public Const WM_SETCURSOR = &H20
@@ -1235,6 +1235,8 @@ Module NativeMethods
         ByRef pshcne As SHChangeNotifyEntry
     ) As Integer
     End Function
+    <DllImport("shell32.dll")>
+    Public Function SHChangeNotifyDeregister(hNotify As Integer) As Boolean : End Function
 
     Public Function GetWindowText(hWnd As IntPtr) As String
         Dim length As Integer = NativeMethods.SendMessage(hWnd, WM_GETTEXTLENGTH, IntPtr.Zero, IntPtr.Zero).ToInt32()

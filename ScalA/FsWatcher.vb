@@ -360,7 +360,7 @@ Module FsWatcher
                 'get linkwatchertarget from cache
                 Dim target As String = Nothing
                 If ResolvedLinkLinks.TryGetValue(e.FullPath, target) Then
-                    'if not other links point there remove the linkwatcher
+                    'if no other links point there remove the linkwatcher
                     If Not ResolvedLinkLinks.Any(Function(kvp) kvp.Key <> e.FullPath AndAlso kvp.Value = target) Then
                         dBug.Print($"ResolvedLinkLinks.Any")
                         removeLinkWatcher(target)
