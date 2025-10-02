@@ -815,26 +815,13 @@ Partial NotInheritable Class FrmMain
             End If
         End If
         'Me.SuspendLayout()
-        'todo: rework this as detachingthread made some of this obso
+
         If Not (MouseButtons.HasFlag(MouseButtons.Right) OrElse MouseButtons.HasFlag(MouseButtons.Middle)) Then
-            If cboAlt.SelectedIndex <> 0 OrElse My.Settings.gameOnOverview Then
+            If (Not cboAlt.DroppedDown AndAlso cboAlt.SelectedIndex <> 0) OrElse My.Settings.gameOnOverview Then
                 If My.Settings.LockEq AndAlso Not My.Computer.Keyboard.AltKeyDown AndAlso Not My.Computer.Keyboard.ShiftKeyDown Then
 
                     PnlEqLock.Visible = AOshowEqLock OrElse (Not pnlOverview.Visible)
 
-                    If PnlEqLock.Visible AndAlso
-                   Not (cmsQuickLaunch.Visible OrElse cmsAlt.Visible) AndAlso
-                   Not (FrmSettings.cmsGenerate.Visible OrElse FrmSettings.cmsQLFolder.Visible) AndAlso
-                   Not FrmSettings.Contains(MousePosition) AndAlso
-                   PnlEqLock.Contains(MousePosition) AndAlso
-                   Not cboAlt.DropDownContains(MousePosition) AndAlso
-                   Not cmbResolution.DropDownContains(MousePosition) AndAlso
-                   Not SysMenu.Contains(MousePosition) AndAlso
-                   Not FrmSettings.SysMenu.Contains(MousePosition) Then
-                        Cursor.Current = Cursors.No
-                    ElseIf SysMenu?.Contains(MousePosition) OrElse FrmSettings.SysMenu?.Contains(MousePosition) Then
-                        Cursor.Current = Cursors.Default
-                    End If
                     ChkEqLock.CheckState = CheckState.Checked
                     ChkEqLock.Text = "🔒"
                 Else
