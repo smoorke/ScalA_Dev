@@ -627,7 +627,7 @@ Partial NotInheritable Class FrmMain
 
 
     Private activeID As Integer = 0
-    Private activeIsAstonia As Boolean = False
+    Private Shared activeIsAstonia As Boolean = False
     Private swAutoClose As Stopwatch = Stopwatch.StartNew
     Private AutoCloseCounter As Integer = 0
     Public PrevMouseAlt As AstoniaProcess

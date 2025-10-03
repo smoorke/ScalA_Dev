@@ -202,10 +202,7 @@ Public NotInheritable Class FrmSettings
         If My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then
             Dim imge = LoadImage(IntPtr.Zero, "#106", 1, 16, 16, 0)
             If imge <> IntPtr.Zero Then
-                Using Ico = Icon.FromHandle(imge)
-                    pbUnElevate.Image = Ico.ToBitmap
-                    DestroyIcon(Ico.Handle)
-                End Using
+                pbUnElevate.Image = Image.FromHbitmap(imge)
             End If
             pnlElevation.Visible = True
         End If
@@ -216,17 +213,24 @@ Public NotInheritable Class FrmSettings
 
         cmbPriority.SelectedIndex = mapPriorityToCmbIndex(My.Settings.Priority)
 
+        Me.TopMost = True ' My.Settings.topmost
     End Sub
 
     Private Sub FrmSettings_Shown(sender As Object, e As EventArgs) Handles Me.Shown
-        Me.Owner = FrmMain
+        'FrmMain.Detach(False)
+        'Me.Owner = FrmMain
+
         startup = False
 
-        AllowSetForegroundWindow(ASFW_ANY)
-        SetForegroundWindow(GetDesktopWindow)
-        SetForegroundWindow(Me.Handle)
-        SetForegroundWindow(FrmMain.ScalaHandle)
+        'AllowSetForegroundWindow(ASFW_ANY)
+        'SetForegroundWindow(GetDesktopWindow)
 
+        'Await Task.Delay(69)
+
+        'SetForegroundWindow(Me.Handle)
+        'SetForegroundWindow(FrmMain.ScalaHandle)
+
+        'FrmMain.Attach(FrmMain.AltPP)
     End Sub
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
@@ -235,72 +239,72 @@ Public NotInheritable Class FrmSettings
             Case WM_EXITMENULOOP
                 SysMenu.Visible = False
         End Select
-        If Me.Owner Is Nothing Then 'this to address ghost form when closing settings.
-            Select Case m.Msg
-                Case WM_ENTERMENULOOP
-                    dBug.Print("GhostSettings EnterMenuLoop")
-                    FrmMain.AltPP?.Activate()
-                    Me.Close()
-                    Exit Sub
-                Case WM_KEYDOWN
-                    dBug.Print($"GhostSettings WM_KEYDOWN {m.WParam} {m.LParam}")
-                    dBug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
-                    If FrmMain.cboAlt.SelectedIndex > 0 Then
-                        FrmMain.AltPP.Activate()
-                        Dim key As Keys = m.WParam
-                        If Not FrmMain.AltPP.isSDL Then
-                            SendMessage(FrmMain.AltPP.MainWindowHandle, WM_KEYDOWN, key, IntPtr.Zero)
-                        Else
-                            Dim scan As Byte = New LParamMap(m.LParam)
-                            If key = Keys.Escape OrElse (key >= Keys.F1 AndAlso key <= Keys.F12) OrElse
-                               key = Keys.Back Then
-                                SendScanKey(scan)
-                            ElseIf key = Keys.Delete OrElse key = Keys.PageUp OrElse key = Keys.PageDown OrElse
-                                   key = Keys.End OrElse key = Keys.Home Then
-                                SendScanKeyEx(scan)
-                            Else
-                                SendKey(key)
-                            End If
-                        End If
-                    End If
-                    'Me.Close()
-                    Exit Sub
-                Case WM_KEYUP
-                    dBug.Print($"GhostSettings WM_KEYUP {m.WParam} {m.LParam}")
-                    dBug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
-                    If FrmMain.cboAlt.SelectedIndex > 0 Then
-                        FrmMain.AltPP.Activate()
-                        Dim scan As Byte = New LParamMap(m.LParam)
-                        If scan = 28 Then
-                            If Not FrmMain.AltPP.isSDL Then
-                                SendKeys.Send("{ENTER}")
-                            Else
-                                SendScanKey(scan)
-                            End If
-                        End If
-                    End If
-                    'Me.Close()
-                    Exit Sub
-                Case WM_CHAR
-                    dBug.Print($"GhostSettings WM_CHAR {m.WParam} {m.LParam}")
-                    dBug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
-                    If FrmMain.cboAlt.SelectedIndex > 0 Then
-                        FrmMain.AltPP.Activate()
-                        If Not FrmMain.AltPP.isSDL Then
-                            SendMessage(FrmMain.AltPP.MainWindowHandle, WM_CHAR, m.WParam, IntPtr.Zero)
-                        End If
-                    End If
-                    'Me.Close()
-                Case WM_SYSKEYDOWN
-                    dBug.Print($"GhostSettings WM_SYSKEY {m.WParam} {m.LParam}")
-                    If FrmMain.cboAlt.SelectedIndex > 0 Then
-                        FrmMain.AltPP.Activate()
-                    End If
-                    'Me.Close()
-                    Exit Sub
-            End Select
-
-        End If
+        'If Me.Owner Is Nothing Then 'this to address ghost form when closing settings.
+        '    Select Case m.Msg
+        '        Case WM_ENTERMENULOOP
+        '            dBug.Print("GhostSettings EnterMenuLoop")
+        '            FrmMain.AltPP?.Activate()
+        '            Me.Close()
+        '            Exit Sub
+        '        Case WM_KEYDOWN
+        '            dBug.Print($"GhostSettings WM_KEYDOWN {m.WParam} {m.LParam}")
+        '            dBug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
+        '            If FrmMain.cboAlt.SelectedIndex > 0 Then
+        '                FrmMain.AltPP.Activate()
+        '                Dim key As Keys = m.WParam
+        '                If Not FrmMain.AltPP.isSDL Then
+        '                    SendMessage(FrmMain.AltPP.MainWindowHandle, WM_KEYDOWN, key, IntPtr.Zero)
+        '                Else
+        '                    Dim scan As Byte = New LParamMap(m.LParam)
+        '                    If key = Keys.Escape OrElse (key >= Keys.F1 AndAlso key <= Keys.F12) OrElse
+        '                       key = Keys.Back Then
+        '                        SendScanKey(scan)
+        '                    ElseIf key = Keys.Delete OrElse key = Keys.PageUp OrElse key = Keys.PageDown OrElse
+        '                           key = Keys.End OrElse key = Keys.Home Then
+        '                        SendScanKeyEx(scan)
+        '                    Else
+        '                        SendKey(key)
+        '                    End If
+        '                End If
+        '            End If
+        '            'Me.Close()
+        '            Exit Sub
+        '        Case WM_KEYUP
+        '            dBug.Print($"GhostSettings WM_KEYUP {m.WParam} {m.LParam}")
+        '            dBug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
+        '            If FrmMain.cboAlt.SelectedIndex > 0 Then
+        '                FrmMain.AltPP.Activate()
+        '                Dim scan As Byte = New LParamMap(m.LParam)
+        '                If scan = 28 Then
+        '                    If Not FrmMain.AltPP.isSDL Then
+        '                        SendKeys.Send("{ENTER}")
+        '                    Else
+        '                        SendScanKey(scan)
+        '                    End If
+        '                End If
+        '            End If
+        '            'Me.Close()
+        '            Exit Sub
+        '        Case WM_CHAR
+        '            dBug.Print($"GhostSettings WM_CHAR {m.WParam} {m.LParam}")
+        '            dBug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
+        '            If FrmMain.cboAlt.SelectedIndex > 0 Then
+        '                FrmMain.AltPP.Activate()
+        '                If Not FrmMain.AltPP.isSDL Then
+        '                    SendMessage(FrmMain.AltPP.MainWindowHandle, WM_CHAR, m.WParam, IntPtr.Zero)
+        '                End If
+        '            End If
+        '            'Me.Close()
+        '        Case WM_SYSKEYDOWN
+        '            dBug.Print($"GhostSettings WM_SYSKEY {m.WParam} {m.LParam}")
+        '            If FrmMain.cboAlt.SelectedIndex > 0 Then
+        '                FrmMain.AltPP.Activate()
+        '            End If
+        '            'Me.Close()
+        '            Exit Sub
+        '    End Select
+        '
+        'End If
         MyBase.WndProc(m)
     End Sub
 

@@ -95,6 +95,7 @@ Partial NotInheritable Class FrmSettings
         Me.btnRefreshICdisplay = New System.Windows.Forms.Button()
         Me.lblICSize = New System.Windows.Forms.Label()
         Me.ChkQLResolveLnk = New System.Windows.Forms.CheckBox()
+        Me.btnResetCache = New System.Windows.Forms.Button()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
@@ -169,8 +170,8 @@ Partial NotInheritable Class FrmSettings
         Me.TabQL = New System.Windows.Forms.TabPage()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
         Me.lblICacheCount = New System.Windows.Forms.Label()
-        Me.btnResetCache = New System.Windows.Forms.Button()
         Me.tabMisc = New System.Windows.Forms.TabPage()
+        Me.ChkAlwaysStartOnOverview = New System.Windows.Forms.CheckBox()
         Me.cmbPriority = New System.Windows.Forms.ComboBox()
         Me.cmbTheme = New System.Windows.Forms.ComboBox()
         Me.Label16 = New System.Windows.Forms.Label()
@@ -179,7 +180,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
         Me.pnlElevation = New System.Windows.Forms.Panel()
-        Me.ChkAlwaysStartOnOverview = New System.Windows.Forms.CheckBox()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
@@ -928,6 +928,16 @@ Partial NotInheritable Class FrmSettings
         Me.ChkQLResolveLnk.Text = "Resolve Lnk to Dirs"
         Me.ttSettings.SetToolTip(Me.ChkQLResolveLnk, "Have .Lnk Shortcuts pointing to Directories be parsed as Folders" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
         Me.ChkQLResolveLnk.UseVisualStyleBackColor = True
+        '
+        'btnResetCache
+        '
+        Me.btnResetCache.Location = New System.Drawing.Point(231, 12)
+        Me.btnResetCache.Name = "btnResetCache"
+        Me.btnResetCache.Size = New System.Drawing.Size(75, 23)
+        Me.btnResetCache.TabIndex = 0
+        Me.btnResetCache.Text = "Reset"
+        Me.ttSettings.SetToolTip(Me.btnResetCache, "Evict All Cached Icons")
+        Me.btnResetCache.UseVisualStyleBackColor = True
         '
         'tbcSettings
         '
@@ -1755,16 +1765,6 @@ Partial NotInheritable Class FrmSettings
         Me.lblICacheCount.TabIndex = 1
         Me.lblICacheCount.Text = "Count: 1"
         '
-        'btnResetCache
-        '
-        Me.btnResetCache.Location = New System.Drawing.Point(231, 12)
-        Me.btnResetCache.Name = "btnResetCache"
-        Me.btnResetCache.Size = New System.Drawing.Size(75, 23)
-        Me.btnResetCache.TabIndex = 0
-        Me.btnResetCache.Text = "Reset"
-        Me.ttSettings.SetToolTip(Me.btnResetCache, "Evict All Cached Icons")
-        Me.btnResetCache.UseVisualStyleBackColor = True
-        '
         'tabMisc
         '
         Me.tabMisc.Controls.Add(Me.chkHoverActivate)
@@ -1789,6 +1789,16 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc.TabIndex = 1
         Me.tabMisc.Text = "Misc"
         Me.tabMisc.UseVisualStyleBackColor = True
+        '
+        'ChkAlwaysStartOnOverview
+        '
+        Me.ChkAlwaysStartOnOverview.AutoSize = True
+        Me.ChkAlwaysStartOnOverview.Location = New System.Drawing.Point(155, 25)
+        Me.ChkAlwaysStartOnOverview.Name = "ChkAlwaysStartOnOverview"
+        Me.ChkAlwaysStartOnOverview.Size = New System.Drawing.Size(149, 17)
+        Me.ChkAlwaysStartOnOverview.TabIndex = 30
+        Me.ChkAlwaysStartOnOverview.Text = "Always Start On Overview"
+        Me.ChkAlwaysStartOnOverview.UseVisualStyleBackColor = True
         '
         'cmbPriority
         '
@@ -1867,16 +1877,6 @@ Partial NotInheritable Class FrmSettings
         Me.pnlElevation.TabIndex = 17
         Me.pnlElevation.Visible = False
         '
-        'ChkAlwaysStartOnOverview
-        '
-        Me.ChkAlwaysStartOnOverview.AutoSize = True
-        Me.ChkAlwaysStartOnOverview.Location = New System.Drawing.Point(155, 25)
-        Me.ChkAlwaysStartOnOverview.Name = "ChkAlwaysStartOnOverview"
-        Me.ChkAlwaysStartOnOverview.Size = New System.Drawing.Size(149, 17)
-        Me.ChkAlwaysStartOnOverview.TabIndex = 30
-        Me.ChkAlwaysStartOnOverview.Text = "Always Start On Overview"
-        Me.ChkAlwaysStartOnOverview.UseVisualStyleBackColor = True
-        '
         'FrmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -1893,7 +1893,6 @@ Partial NotInheritable Class FrmSettings
         Me.Name = "FrmSettings"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "ScalA Settings"
-        Me.TopMost = True
         grpAlterOverviewMinMax.ResumeLayout(False)
         grpAlterOverviewMinMax.PerformLayout()
         CType(Me.NumExtraMax, System.ComponentModel.ISupportInitialize).EndInit()

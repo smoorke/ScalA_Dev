@@ -166,6 +166,7 @@ Partial NotInheritable Class FrmMain
                         dBug.Print("Settings called by sysMenu")
                         FrmSettings.Show()
                         FrmSettings.WindowState = FormWindowState.Normal
+                        FrmSettings.Activate()
                         Exit Sub
                 End Select
             Case WM_QUERYOPEN

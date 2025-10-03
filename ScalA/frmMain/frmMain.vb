@@ -908,6 +908,8 @@ Partial Public NotInheritable Class FrmMain
             If sender.Contains(MousePosition) Then
                 FrmSettings.Tag = FrmSettings.tabResolutions
                 FrmSettings.Show()
+                FrmSettings.WindowState = FormWindowState.Normal
+                FrmSettings.Activate()
             End If
         End If
     End Sub
