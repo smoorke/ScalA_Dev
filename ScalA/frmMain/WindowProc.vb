@@ -219,7 +219,7 @@ Partial NotInheritable Class FrmMain
                     If Me.WindowState = FormWindowState.Maximized Then
                         FrmSizeBorder.Hide()
                     Else
-                        If Not FrmSizeBorder.Visible AndAlso My.Settings.SizingBorder Then FrmSizeBorder.Show(Me)
+                        If Not FrmSizeBorder.Visible AndAlso My.Settings.SizingBorder Then FrmSizeBorder.Show(If(FrmSizeBorder.Owner Is Nothing, Me, Nothing))
                     End If
                 End If
                 AltPP?.ResetCache()

@@ -60,13 +60,13 @@ Public NotInheritable Class FrmSettings
         chkCycleAlts.Checked = My.Settings.CycleAlt
 
         chkStoAlt.Checked = My.Settings.StoAlt = Hotkey.KeyModifier.Alt
-        dBug.print($"My.Settings.StoAlt {My.Settings.StoAlt}")
+        dBug.Print($"My.Settings.StoAlt {My.Settings.StoAlt}")
         chkStoCtrl.Checked = My.Settings.StoCtrl = Hotkey.KeyModifier.Control
-        dBug.print($"My.Settings.StoCtrl {My.Settings.StoCtrl}")
+        dBug.Print($"My.Settings.StoCtrl {My.Settings.StoCtrl}")
         chkStoShift.Checked = My.Settings.StoShift = Hotkey.KeyModifier.Shift
-        dBug.print($"My.Settings.StoShift {My.Settings.StoShift}")
+        dBug.Print($"My.Settings.StoShift {My.Settings.StoShift}")
         chkStoWin.Checked = My.Settings.StoWin = Hotkey.KeyModifier.Winkey
-        dBug.print($"My.Settings.StoWin {My.Settings.StoWin}")
+        dBug.Print($"My.Settings.StoWin {My.Settings.StoWin}")
 
         chkCycleDownAlt.Checked = My.Settings.CycleAltKeyFwd = Hotkey.KeyModifier.Alt
         chkCycleDownCtrl.Checked = My.Settings.CycleCtrlKeyFwd = Hotkey.KeyModifier.Control
@@ -610,6 +610,7 @@ Public NotInheritable Class FrmSettings
         If FrmMain.WindowState <> FormWindowState.Maximized Then
             FrmSizeBorder.Opacity = If(FrmMain.chkDebug.Checked, 1, 0.01)
             FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, FrmSizeBorder.Opacity, 0)
+            If My.Settings.SizingBorder Then FrmSizeBorder.Show(If(FrmSizeBorder.Owner Is Nothing, FrmMain, Nothing))
         End If
 
         My.Settings.MinMin = ChkMinMin.Checked
