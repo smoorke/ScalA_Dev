@@ -166,7 +166,6 @@ Partial NotInheritable Class FrmMain
 #If DEBUG Then
                         If Not chkDebug.ContextMenuStrip.Visible Then
 #End If
-                            'ap.Activate() doesn't work if not debugging
                             If Not AltPP?.IsActive AndAlso WindowFromPoint(MousePosition) = AltPP?.MainWindowHandle Then
                                 dBug.Print($"Activating {AltPP?.Name}")
                                 If Not AltPP.Activate() Then
