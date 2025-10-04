@@ -537,7 +537,7 @@ Partial Public NotInheritable Class FrmMain
 
     Public Sub EvictNonWatchedIcons()
         For Each pth In iconCache.Keys.ToList
-            If Not {".lnk", ".exe", ".url"}.Contains(IO.Path.GetExtension(pth).ToLower) Then
+            If Not {".lnk", ".exe", ".url"}.Contains(IO.Path.GetExtension(pth).ToLower) AndAlso Not pth.EndsWith("\") Then
                 iconCache.TryRemove(pth, Nothing)
             End If
         Next
