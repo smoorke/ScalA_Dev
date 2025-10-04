@@ -1030,12 +1030,11 @@ Partial Public NotInheritable Class FrmMain
                                               If bm Is Nothing Then Exit Sub
                                               Dim lockObj = iconLocks.GetOrAdd(PathName, Function(__) New Object())
                                               SyncLock lockObj
-                                                  Dim ico As Bitmap
+                                                  'Dim ico As Bitmap
                                                   Try
-                                                      ico = addOverlay(bm, False) 'we don't clone. we update the icon in the cache in place
+                                                      addOverlay(bm, False) 'we don't clone. we update the icon in the cache in place
 
                                                       Me.Invoke(Sub()
-                                                                    'it.Image = ico
                                                                     it.Invalidate(New Rectangle(3, 11, 8, 8)) 'only invalidate the tiny portion that contains the overlay. needs tweaking
                                                                 End Sub)
                                                       doneShortcutOverlayPaths.TryAdd(PathName, 0)
