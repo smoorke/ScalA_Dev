@@ -606,11 +606,11 @@ Public NotInheritable Class FrmSettings
         My.Settings.StartMaximized = chkStartupMax.Checked
 
         My.Settings.SizingBorder = ChkSizeBorder.Checked
+        If My.Settings.SizingBorder AndAlso Not FrmSizeBorder.Visible Then FrmSizeBorder.Show(If(FrmSizeBorder.Owner Is Nothing, FrmMain, Nothing))
 
         If FrmMain.WindowState <> FormWindowState.Maximized Then
             FrmSizeBorder.Opacity = If(FrmMain.chkDebug.Checked, 1, 0.01)
             FrmSizeBorder.Opacity = If(My.Settings.SizingBorder, FrmSizeBorder.Opacity, 0)
-            If My.Settings.SizingBorder Then FrmSizeBorder.Show(If(FrmSizeBorder.Owner Is Nothing, FrmMain, Nothing))
         End If
 
         My.Settings.MinMin = ChkMinMin.Checked

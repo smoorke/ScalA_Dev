@@ -511,7 +511,7 @@ Partial Public NotInheritable Class FrmMain
 
         FrmBehind.Show()
         frmOverlay.Show(Me)
-        FrmSizeBorder.Show(frmOverlay)
+        FrmSizeBorder.Show(Me)
         ScalaHandle = Me.Handle
         suppressWM_MOVEcwp = True
 

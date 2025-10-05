@@ -793,8 +793,8 @@ Partial NotInheritable Class FrmMain
             'ShowWindow(ScalaHandle, SW_SHOW)
             Me.Show()
             If My.Settings.SizingBorder AndAlso Not FrmSizeBorder.Visible Then
-                frmOverlay.Show(Me)
-                FrmSizeBorder.Show(frmOverlay)
+                frmOverlay.Show(If(frmOverlay.Owner Is Nothing, Me, Nothing))
+                FrmSizeBorder.Show(If(FrmSizeBorder.Owner Is Nothing, Me, Nothing))
             End If
 
             Me.TopMost = True

@@ -308,14 +308,14 @@ Partial NotInheritable Class FrmMain
                 End If
                 If m.WParam = SW_NORMAL AndAlso m.LParam = SW_PARENTOPENING Then 'restore
                     dBug.Print($"wasMaximized {wasMaximized}")
-                    If Not FrmSizeBorder.Visible AndAlso My.Settings.SizingBorder Then FrmSizeBorder.Show()
+                    If Not FrmSizeBorder.Visible AndAlso My.Settings.SizingBorder Then FrmSizeBorder.Show(If(FrmSizeBorder.Owner Is Nothing, Me, Nothing))
                     If wasMaximized Then
                         SetWindowPos(ScalaHandle, SWP_HWND.TOP, Bounds.X, Bounds.Y, MaximizedBounds.Width, MaximizedBounds.Height, SetWindowPosFlags.ShowWindow)
                         'Me.WindowState = FormWindowState.Maximized
                     End If
                     AltPP?.CenterBehind(pbZoom, 0, True, True) 'fix thumb breaking
                     FrmBehind.Show()
-                    If Not frmOverlay.Visible Then frmOverlay.Show(Me)
+                    If Not frmOverlay.Visible Then frmOverlay.Show(If(frmOverlay.Owner Is Nothing, Me, Nothing))
                 End If
             Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
                 'If posChangeBusy Then
