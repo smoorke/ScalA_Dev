@@ -1727,9 +1727,11 @@ Partial Public NotInheritable Class FrmMain
     Private Sub CloseErrorDialog()
         Try
             Dim errorHwnd = FindWindow("#32770", "error")
+            If errorHwnd = IntPtr.Zero Then errorHwnd = FindWindow("#32770", "Application Crashed")
             If errorHwnd <> IntPtr.Zero Then
                 If FindWindowEx(errorHwnd, Nothing, "Static", "Copy new->moac failed: 32") <> IntPtr.Zero OrElse
-                   FindWindowEx(errorHwnd, Nothing, "Static", "Copy new->moac failed: 5") <> IntPtr.Zero Then
+                   FindWindowEx(errorHwnd, Nothing, "Static", "Copy new->moac failed: 5") <> IntPtr.Zero OrElse
+                   FindWindowEx(errorHwnd, Nothing, "Static", "Details written to moac.log") <> IntPtr.Zero Then
                     Dim butHandle = FindWindowEx(errorHwnd, Nothing, "Button", "OK")
                     If butHandle <> IntPtr.Zero Then
                         SendMessage(butHandle, BM_CLICK, IntPtr.Zero, IntPtr.Zero)
