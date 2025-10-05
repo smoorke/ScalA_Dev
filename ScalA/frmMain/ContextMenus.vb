@@ -718,6 +718,16 @@ Partial Public NotInheritable Class FrmMain
 
     Private Shared ReadOnly nsSorter As IComparer(Of String) = New NaturalStringSorter
 
+    Private Structure QLInfo
+        Public path As String
+        Public hidden As Boolean
+        Public name As String
+        Public target As String
+        Public invalidTarget As Boolean
+
+    End Structure
+
+
     Private Function ParseDir(pth As String) As List(Of ToolStripItem)
         Dim menuItems As New List(Of ToolStripItem)
         Dim isEmpty As Boolean = True
@@ -740,7 +750,8 @@ Partial Public NotInheritable Class FrmMain
                                  Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
                                  Dim dispname As String = System.IO.Path.GetFileName(fulldirs)
 
-                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname, "*Hidden*"), foldericon) With {.Tag = {fulldirs & "\", hidden, dispname}, .Visible = vis, .DoubleClickEnabled = True}
+                                 Dim qli As New QLInfo With {.path = fulldirs & "\", .hidden = hidden, .name = dispname}
+                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname, "*Hidden*"), foldericon) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
 
                                  Me.BeginInvoke(Sub()
                                                     smenu.DropDownItems.Add("(Dummy)").Enabled = False
@@ -784,19 +795,28 @@ Partial Public NotInheritable Class FrmMain
                                  'don't add self to list
                                  If System.IO.Path.GetFileName(fullLink) = System.IO.Path.GetFileName(Environment.GetCommandLineArgs(0)) Then Exit Sub 'Continue For
                                  If fullLink = Environment.GetCommandLineArgs(0) Then Exit Sub 'Continue For
+                                 Dim target As String = String.Empty
 
-                                 If My.Settings.QLResolveLnk AndAlso fullLink.ToLower.EndsWith(".lnk") Then
+                                 Dim qli As New QLInfo With {.path = fullLink, .hidden = hidden, .target = target & "\"}
+
+                                 If fullLink.ToLower.EndsWith(".lnk") Then
                                      Dim oLink As Object
 
                                      oLink = shellLocal.Value.CreateShortcut(fullLink)
 
-                                     Dim target As String = oLink.TargetPath
-                                     If IO.Directory.Exists(target) Then
+                                     target = oLink.TargetPath
+
+                                     qli.invalidTarget = Not IO.File.Exists(target)
+
+                                     If My.Settings.QLResolveLnk AndAlso IO.Directory.Exists(target) Then
+
+                                         qli.invalidTarget = False
+                                         qli.target = target & "\"
 
                                          Dim hid As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
                                          Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
-
-                                         Dim smenu As New ToolStripMenuItem(If(hid, dispname, "*Hidden*"), foldericon) With {.Tag = {fullLink, hidden, dispname, target & "\"}, .Visible = hid, .DoubleClickEnabled = True}
+                                         qli.name = dispname
+                                         Dim smenu As New ToolStripMenuItem(If(hid, dispname, "*Hidden*"), foldericon) With {.Tag = qli, .Visible = hid, .DoubleClickEnabled = True}
 
                                          Me.BeginInvoke(Sub()
 
@@ -827,9 +847,11 @@ Partial Public NotInheritable Class FrmMain
                                      linkName = System.IO.Path.GetFileName(fullLink)
                                  End If
 
+                                 qli.name = linkName
+
                                  Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
 
-                                 Dim item As New ToolStripMenuItem(If(vis, linkName, "*Hidden*")) With {.Tag = {fullLink, hidden, linkName}, .Visible = vis}
+                                 Dim item As New ToolStripMenuItem(If(vis, linkName, "*Hidden*")) With {.Tag = qli, .Visible = vis}
                                  Me.BeginInvoke(Sub()
                                                     AddHandler item.MouseDown, AddressOf QL_MouseDown
                                                     'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
@@ -846,8 +868,8 @@ Partial Public NotInheritable Class FrmMain
                                  End If
                              End Sub)
         End Using
-        menuItems = Dirs.OrderBy(Function(d) d.Tag(0), nsSorter).Concat(
-                    Files.OrderBy(Function(f) IO.Path.GetFileNameWithoutExtension(f.Tag(0)), nsSorter)).ToList
+        menuItems = Dirs.OrderBy(Function(d) CType(d.Tag, QLInfo).path, nsSorter).Concat(
+                    Files.OrderBy(Function(f) IO.Path.GetFileNameWithoutExtension(CType(f.Tag, QLInfo).path), nsSorter)).ToList
 
         If timedout Then
             menuItems.Add(New ToolStripMenuItem("<TimedOut>") With {.Enabled = False})
@@ -888,11 +910,11 @@ Partial Public NotInheritable Class FrmMain
                         pasteTSItem.Image = GetIconFromFile(fil)
 
                         If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
-                            pasteTSItem.Image = addOverlay(pasteTSItem.Image)
+                            pasteTSItem.Image = pasteTSItem.Image.addOverlay(shortcutOverlay)
                             pasteLinkTSItem.Visible = False
                         Else
                             pasteLinkTSItem.Text = "Paste .Lnk"
-                            pasteLinkTSItem.Image = addOverlay(pasteTSItem.Image)
+                            pasteLinkTSItem.Image = pasteTSItem.Image.addOverlay(shortcutOverlay)
                         End If
                     End If
                 Else
@@ -900,7 +922,7 @@ Partial Public NotInheritable Class FrmMain
                     pasteTSItem.Image = multiPasteBitmap
 
                     pasteLinkTSItem.Text = "Paste .Lnks"
-                    pasteLinkTSItem.Image = addOverlay(pasteTSItem.Image)
+                    pasteLinkTSItem.Image = pasteTSItem.Image.addOverlay(shortcutOverlay)
                 End If
 
             End If
@@ -939,12 +961,16 @@ Partial Public NotInheritable Class FrmMain
     Dim pasteTSItem As ToolStripMenuItem = New ToolStripMenuItem("Paste ""Name""", Nothing, AddressOf ClipAction)
     Dim pasteLinkTSItem As ToolStripMenuItem = New ToolStripMenuItem("Paste .Lnk", Nothing, AddressOf ClipAction)
 
-    Dim multiPasteBitmap As Bitmap = loadMPbitmap()
-    Dim multipasteBitmapOverlay As Bitmap = addOverlay(multiPasteBitmap)
-    Function loadMPbitmap() As Bitmap
+    Dim multiPasteBitmap As Bitmap = loadImageResBitmap(245)
+    Dim shortcutOverlay As Bitmap = loadImageResBitmap(154)
+    Dim warningOverlay As Bitmap = loadImageResBitmap(219)
+
+    Dim multipasteBitmapOverlay As Bitmap = multiPasteBitmap.addOverlay(shortcutOverlay)
+    Function loadImageResBitmap(idx As Integer) As Bitmap
+
         Dim hIcoA As IntPtr() = {IntPtr.Zero}
 
-        Dim ret As Integer = ExtractIconEx(IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32\imageres.dll"), 245, Nothing, hIcoA, 1)
+        Dim ret As Integer = ExtractIconEx(IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32\imageres.dll"), idx, Nothing, hIcoA, 1)
         Debug.Print($"ExtractIconEx {ret}")
 
         Dim ico = Icon.FromHandle(hIcoA(0))
@@ -953,15 +979,6 @@ Partial Public NotInheritable Class FrmMain
         Finally
             DestroyIcon(ico.Handle)
         End Try
-    End Function
-
-    Function addOverlay(bm As Bitmap, Optional clone As Boolean = True) As Bitmap
-        If bm Is Nothing Then Return Nothing
-        Dim bmp As Bitmap = If(clone, bm.Clone, bm)
-        Using g As Graphics = Graphics.FromImage(bmp)
-            g.DrawIcon(My.Resources.shortcut_overlay, New Rectangle(New Point, bmp.Size))
-        End Using
-        Return bmp
     End Function
 
     Dim QLCtxMenuOpenedOn As ToolStripMenuItem
@@ -984,7 +1001,7 @@ Partial Public NotInheritable Class FrmMain
         Task.Run(Sub() Parallel.ForEach(col.Cast(Of ToolStripItem),
             Sub(it)
                 Me.BeginInvoke(Sub()
-                                   If it.Text = "*Hidden*" Then it.Text = it.Tag(2)
+                                   If it.Text = "*Hidden*" Then it.Text = CType(it.Tag, QLInfo).name
                                    it.Visible = it.Text <> "(Empty)"
                                End Sub)
                 If TypeOf it Is ToolStripMenuItem AndAlso DirectCast(it, ToolStripMenuItem).HasDropDownItems Then
@@ -993,7 +1010,17 @@ Partial Public NotInheritable Class FrmMain
             End Sub))
     End Sub
 
-    Private Sub CmsQuickLaunch_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs) Handles cmsQuickLaunch.Closing
+    Private Sub CmsQuickLaunch_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs) Handles cmsQuickLaunch.Closing ', item.DropDownClosing
+
+        For Each it As ToolStripMenuItem In CType(sender.items, ToolStripItemCollection).Cast(Of ToolStripItem).Where(Function(mi) TypeOf mi.Tag Is QLInfo)
+            Dim qli As QLInfo = it.Tag
+            If qli.invalidTarget Then
+                EvictIconCacheItem(qli.path)
+                doneShortcutOverlayPaths.TryRemove(qli.path, Nothing)
+            End If
+        Next
+
+
         If My.Computer.Keyboard.CtrlKeyDown AndAlso
                 (e.CloseReason = ToolStripDropDownCloseReason.ItemClicked OrElse e.CloseReason = ToolStripDropDownCloseReason.AppFocusChange) Then
             e.Cancel = True
@@ -1009,33 +1036,35 @@ Partial Public NotInheritable Class FrmMain
                          Dim items = Files.Concat(Dirs)
                          Parallel.ForEach(items, opts,
                                           Sub(it As ToolStripMenuItem)
-                                              Dim ico = GetIconFromCache(it.Tag(0), it.Tag(1))
-                                              Dim check As Boolean = clipBoardInfo.Files?.Contains(it.Tag?(0).ToString.TrimEnd("\"c))
+                                              Dim qli As QLInfo = it.Tag
+                                              Dim ico = GetIconFromCache(qli.path, qli.hidden)
+                                              Dim check As Boolean = clipBoardInfo.Files?.Contains(qli.path.TrimEnd("\"c))
                                               Me.Invoke(Sub()
                                                             it.Checked = check
-                                                            it.Image = ico
+                                                            it.Image = ico.addOverlay(If(qli.invalidTarget, warningOverlay, Nothing))
                                                         End Sub)
                                           End Sub)
 
                          If My.Settings.QLResolveLnk Then
                              Dim iconLocks As New ConcurrentDictionary(Of String, Object)
                              'Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell"))
-                             Parallel.ForEach(Dirs.Where(Function(i) CStr(i.Tag(0)).ToLower().EndsWith(".lnk")), opts,
+                             Parallel.ForEach(Dirs.Where(Function(i) CType(i.Tag, QLInfo).path.ToLower().EndsWith(".lnk")), opts,
                                           Sub(it As ToolStripItem)
-                                              Dim PathName As String = it.Tag(0)
+                                              Dim qli As QLInfo = it.Tag
+                                              Dim PathName As String = qli.path
 
                                               If doneShortcutOverlayPaths.TryGetValue(PathName, Nothing) Then Exit Sub
 
-                                              Dim bm As Bitmap = GetIconFromCache(it.Tag(0), it.Tag(1)) '?.Clone()
+                                              Dim bm As Bitmap = GetIconFromCache(PathName, qli.hidden) '?.Clone()
                                               If bm Is Nothing Then Exit Sub
                                               Dim lockObj = iconLocks.GetOrAdd(PathName, Function(__) New Object())
                                               SyncLock lockObj
                                                   'Dim ico As Bitmap
                                                   Try
-                                                      addOverlay(bm, False) 'we don't clone. we update the icon in the cache in place
+                                                      bm.addOverlay(shortcutOverlay, False) 'we don't clone. we update the icon in the cache in place
 
                                                       Me.Invoke(Sub()
-                                                                    it.Invalidate(New Rectangle(3, 11, 8, 8)) 'only invalidate the tiny portion that contains the overlay. needs tweaking
+                                                                    it.Invalidate(New Rectangle(3, 11, 16, 8)) 'only invalidate the tiny portion that contains the overlay. needs tweaking
                                                                 End Sub)
                                                       doneShortcutOverlayPaths.TryAdd(PathName, 0)
                                                       dBug.Print($"Overlay applied to: {PathName}")
@@ -1047,6 +1076,10 @@ Partial Public NotInheritable Class FrmMain
                                           End Sub)
                              'End Using
                          End If
+
+
+
+
                      Catch ex As System.OperationCanceledException
                          dBug.Print("deferrediconloading operationCanceled")
                      Catch
@@ -1080,8 +1113,9 @@ Partial Public NotInheritable Class FrmMain
         End While
 
         CloseOtherDropDowns(cmsQuickLaunch.Items, keep)
-
-        Dim target = If(sender.Tag.length >= 4, sender.Tag(3), sender.Tag(0))
+        Dim qli As QLInfo = sender.Tag
+        'Dim target = If(sender.Tag.length >= 4, sender.Tag(3), sender.Tag(0))
+        Dim target = If(String.IsNullOrEmpty(qli.target), qli.path, qli.target)
 
         'sender.DropDownItems.Clear()
         Dim olditems = sender.DropDownItems.Cast(Of ToolStripItem).ToArray()
@@ -1480,9 +1514,11 @@ Partial Public NotInheritable Class FrmMain
         Dim subitems As List(Of ToolStripMenuItem) = DirectCast(sender.Tag, ToolStripMenuItem).
                 DropDownItems.OfType(Of ToolStripMenuItem).
                 Where(Function(it)
-                          Return QLFilter.Contains(IO.Path.GetExtension(it.Tag(0))) AndAlso
-                          it.Visible AndAlso (Not My.Settings.QLResolveLnk OrElse it.Tag.length < 4)
+                          Return it.Visible AndAlso TypeOf it.Tag Is QLInfo AndAlso
+                                                      QLFilter.Contains(IO.Path.GetExtension(CType(it.Tag, QLInfo).path)) AndAlso
+                                                      (Not My.Settings.QLResolveLnk OrElse Not String.IsNullOrEmpty(CType(it.Tag, QLInfo).target))
                       End Function).ToList()
+
 
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
@@ -1494,16 +1530,12 @@ Partial Public NotInheritable Class FrmMain
             End If
         End If
         For Each ddi As ToolStripMenuItem In subitems
-            dBug.Print($"{ddi.Tag(0)}")
-            'If My.Settings.QLResolveLnk AndAlso ddi.Tag.length >= 4 Then
-            '    Continue For
-            'End If
             OpenLnk(ddi, New MouseEventArgs(MouseButtons.Left, 1, MousePosition.X, MousePosition.Y, 0))
         Next
     End Sub
 
     Private Sub QlCtxRename(sender As MenuItem, e As EventArgs)
-        Dim Path As String = sender.Parent.Tag.Tag(0)
+        Dim Path As String = CType(sender.Parent.Tag.Tag, QLInfo).path
         Dim Name As String = sender.Parent.Tag.text
 
         dBug.Print($"QlCtxRename {Path} {Name}")
@@ -1562,7 +1594,7 @@ Partial Public NotInheritable Class FrmMain
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
 
-        Dim Path As String = sender.Parent.Tag.tag(0)
+        Dim Path As String = CType(sender.Parent.Tag.Tag, QLInfo).path
         Dim name As String = sender.Parent.Tag.Text
 
         dBug.Print($"Delete {Path}")
@@ -1644,7 +1676,7 @@ Partial Public NotInheritable Class FrmMain
                                              newFolderItem,
                                              New MenuItem("-")})
 
-            Dim path As String = sender.Tag(0)
+            Dim path As String = CType(sender.Tag, QLInfo).path
 
             Dim cutItem = New MenuItem("Cut", AddressOf ClipAction) With {.Tag = {path, "Cut"}}
             Dim copyItem = New MenuItem("Copy", AddressOf ClipAction) With {.Tag = {path, "Copy"}}
@@ -1656,8 +1688,11 @@ Partial Public NotInheritable Class FrmMain
                 New MenuItem($"Open All{vbTab}-->", AddressOf QlCtxOpenAll) With {
                                 .Visible = (path.EndsWith("\") OrElse (My.Settings.QLResolveLnk AndAlso path.ToLower.EndsWith(".lnk"))) AndAlso
                                 sender.DropDownItems.OfType(Of ToolStripMenuItem) _
-                                      .Any(Function(it) it.Visible AndAlso it.Tag IsNot Nothing AndAlso QLFilter.Contains(IO.Path.GetExtension(it.Tag(0))) AndAlso
-                                          (Not My.Settings.QLResolveLnk OrElse it.Tag.Length < 4)),
+                                      .Any(Function(it)
+                                               Return it.Visible AndAlso TypeOf it.Tag Is QLInfo AndAlso
+                                                      QLFilter.Contains(IO.Path.GetExtension(CType(it.Tag, QLInfo).path)) AndAlso
+                                                      (Not My.Settings.QLResolveLnk OrElse Not String.IsNullOrEmpty(CType(it.Tag, QLInfo).target))
+                                           End Function),
                                 .Tag = sender
                                 },
                 New MenuItem("-"),
@@ -1696,7 +1731,7 @@ Partial Public NotInheritable Class FrmMain
                         'don't pull from cache we may not be watching filechanges. make async tho, io peration may be slow
                         Dim ico As Bitmap = GetIconFromFile(clipBoardInfo.Files(0), False)
 
-                        Dim shortcuttedIcon As Bitmap = addOverlay(ico)
+                        Dim shortcuttedIcon As Bitmap = ico.addOverlay(shortcutOverlay)
 
                         If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
                             ico = shortcuttedIcon
@@ -1800,7 +1835,7 @@ Partial Public NotInheritable Class FrmMain
             Next
 
 
-        ElseIf Not sender.Tag(0).EndsWith("\") AndAlso Not (My.Settings.QLResolveLnk AndAlso sender.Tag.length >= 4) Then 'do not process click on dirs as they are handled by doubleclick
+        ElseIf Not CType(sender.Tag, qlinfo).path.EndsWith("\") AndAlso Not (My.Settings.QLResolveLnk AndAlso String.IsNullOrEmpty(CType(sender.Tag, qlinfo).target)) Then 'do not process click on dirs as they are handled by doubleclick
             dBug.Print("clicked Not a dir")
             Task.Run(Sub() OpenLnk(sender, e))
             'cmsQuickLaunch.Close(ToolStripDropDownCloseReason.ItemClicked)
@@ -1857,8 +1892,8 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub UpdateMenuChecks(menu As ToolStripItemCollection, itemSet As HashSet(Of String))
-        For Each menuItm As ToolStripMenuItem In menu.OfType(Of ToolStripMenuItem)
-            menuItm.Checked = itemSet.Contains(menuItm.Tag?(0).ToString.TrimEnd("\"c))
+        For Each menuItm As ToolStripMenuItem In menu.OfType(Of ToolStripMenuItem).Where(Function(mi) TypeOf mi.Tag Is QLInfo)
+            menuItm.Checked = itemSet.Contains(menuItm.Tag?.path.TrimEnd("\"c))
             menuItm.Invalidate() ')imageRect)
             If menuItm.DropDown?.Visible AndAlso menuItm.HasDropDownItems Then
                 UpdateMenuChecks(menuItm.DropDownItems, itemSet)
@@ -1908,9 +1943,9 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub OpenProps(ByVal sender As ToolStripMenuItem, ByVal e As MouseEventArgs) 'Handles smenu.MouseUp, item.MouseUp
-        dBug.Print($"OpenProps {sender.Tag(0)} {sender.GetType}")
-        Dim pth As String = sender.Tag(0).ToString.TrimEnd("\")
+        dBug.Print($"OpenProps {sender.Tag} {sender.GetType}")
         If e.Button = MouseButtons.Right Then
+            Dim pth As String = CType(sender.Tag, QLInfo).path.TrimEnd("\")
             Dim sei As New SHELLEXECUTEINFO With {
                .cbSize = System.Runtime.InteropServices.Marshal.SizeOf(GetType(SHELLEXECUTEINFO)),
                .lpVerb = "properties",
@@ -1943,7 +1978,7 @@ Partial Public NotInheritable Class FrmMain
     Private Sub DblClickDir(ByVal sender As ToolStripMenuItem, ByVal e As EventArgs) 'Handles smenu.DoubleClick
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
-        Dim pp As New Process With {.StartInfo = New ProcessStartInfo With {.FileName = sender.Tag(0)}}
+        Dim pp As New Process With {.StartInfo = New ProcessStartInfo With {.FileName = CType(sender.Tag, QLInfo).path}}
 
         Try
             pp.Start()
@@ -1953,7 +1988,9 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub OpenLnk(ByVal sender As ToolStripItem, ByVal e As System.Windows.Forms.MouseEventArgs) 'handles item.MouseDown
-        dBug.Print("openLnk: " & sender.Tag(0))
+
+        Dim pth As String = CType(sender.Tag, QLInfo).path
+        dBug.Print("openLnk: " & pth)
         If e Is Nothing Then Exit Sub
         If e.Button = MouseButtons.Right Then
             'OpenProps(sender, e)
@@ -1972,8 +2009,8 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         Dim pp As Process = New Process With {.StartInfo = New ProcessStartInfo With {.FileName = tmpDir & bat,
-                                                                       .Arguments = """" & sender.Tag(0) & """",
-                                                                       .WorkingDirectory = System.IO.Path.GetDirectoryName(sender.Tag(0)),
+                                                                       .Arguments = """" & pth & """",
+                                                                       .WorkingDirectory = System.IO.Path.GetDirectoryName(pth),
                                                                        .WindowStyle = ProcessWindowStyle.Hidden,
                                                                        .CreateNoWindow = True}}
 
