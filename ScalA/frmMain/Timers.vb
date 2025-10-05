@@ -630,7 +630,6 @@ Partial NotInheritable Class FrmMain
     Private swAutoClose As Stopwatch = Stopwatch.StartNew
     Private AutoCloseCounter As Integer = 0
     Public PrevMouseAlt As AstoniaProcess
-    Private CheckingActiveProc As Boolean = False
 
     Private Async Sub TmrActive_Tick(sender As Timer, e As EventArgs) Handles tmrActive.Tick
 
@@ -699,27 +698,15 @@ Partial NotInheritable Class FrmMain
             End If
         End If
 
-        If Not CheckingActiveProc Then
-            CheckingActiveProc = True
-#Disable Warning BC42358 ' Because this call is not awaited, execution of the current method continues before the call is completed
-            Task.Run(Sub()
-                         Try
-                             activeIsAstonia = Process.GetProcessById(activeID).IsAstonia
-                             If activeIsAstonia AndAlso Not My.Computer.Keyboard.CtrlKeyDown Then
-                                 Me.Invoke(Sub()
-                                               CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
-                                               cmsQuickLaunch.Close()
-                                           End Sub)
-                             End If
-                         Catch
-                             activeIsAstonia = False
-                         Finally
-                             CheckingActiveProc = False
-                         End Try
-                     End Sub)
-#Enable Warning BC42358 ' Because this call is not awaited, execution of the current method continues before the call is completed
-        End If
-
+        Try
+            activeIsAstonia = Process.GetProcessById(activeID).IsAstonia
+            If activeIsAstonia AndAlso Not My.Computer.Keyboard.CtrlKeyDown Then
+                CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+                cmsQuickLaunch.Close()
+            End If
+        Catch
+            activeIsAstonia = False
+        End Try
 
         If SidebarScalA IsNot Nothing AndAlso SidebarScalA.HasExitedSafe Then
             SidebarScalA = Nothing
