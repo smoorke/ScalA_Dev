@@ -1750,7 +1750,9 @@ Partial Public NotInheritable Class FrmMain
                         SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos, MF_BYPOSITION, pastehbm, Nothing)
 
                         If pasteLinkItem.Visible Then SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos + 1, MF_BYPOSITION, pasteShortcutHbm, Nothing)
-
+                    Else
+                        pasteItem.Enabled = False
+                        pasteLinkItem.Visible = False
                     End If
                 Else 'more than 1 file/dir.
 
@@ -1987,6 +1989,8 @@ Partial Public NotInheritable Class FrmMain
         End Try
     End Sub
 
+
+    Private waitCursorTimer As Stopwatch
     Private Sub OpenLnk(ByVal sender As ToolStripItem, ByVal e As System.Windows.Forms.MouseEventArgs) 'handles item.MouseDown
 
         Dim pth As String = CType(sender.Tag, QLInfo).path
@@ -1997,7 +2001,11 @@ Partial Public NotInheritable Class FrmMain
             Exit Sub
         End If
 
-        Me.Invoke(Sub() Cursor = Cursors.WaitCursor)
+        waitCursorTimer = Stopwatch.StartNew
+        Me.Invoke(Sub()
+                      Me.Cursor = Cursors.WaitCursor
+                      setCursor(cmsQuickLaunch, Cursors.WaitCursor)
+                  End Sub)
 
         Dim bat As String = "\AsInvoker.bat"
         Dim tmpDir As String = IO.Path.Combine(FileIO.SpecialDirectories.Temp, "ScalA")
@@ -2021,13 +2029,28 @@ Partial Public NotInheritable Class FrmMain
         Finally
             pp.Dispose()
             Task.Run(Sub()
-                         Threading.Thread.Sleep(50)
-                         Me.BeginInvoke(Sub() Cursor = Cursors.Arrow)
+                         Dim timout As Integer = 123
+                         Threading.Thread.Sleep(timout)
+                         If waitCursorTimer.ElapsedMilliseconds >= timout Then
+                             Me.BeginInvoke(Sub()
+                                                Cursor = Cursors.Arrow
+                                                setCursor(cmsQuickLaunch, Cursors.Arrow)
+                                            End Sub)
+                         End If
                      End Sub)
         End Try
 
         'btnStart.PerformClick()
 
+    End Sub
+
+    Private Sub setCursor(menu As ToolStripDropDownMenu, Curs As Cursor)
+        menu.Cursor = Curs
+        For Each it As ToolStripMenuItem In menu.Items.OfType(Of ToolStripMenuItem)
+            If it.HasDropDown AndAlso it.DropDown.Visible Then
+                setCursor(it.DropDown, Curs)
+            End If
+        Next
     End Sub
 
     Private Sub ChangeLinksDir()
