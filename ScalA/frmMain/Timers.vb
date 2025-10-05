@@ -885,8 +885,6 @@ Partial NotInheritable Class FrmMain
             swAutoClose.Restart()
         End If
 
-        Dim dummy = Task.Run(Sub() CloseErrorDialog())
-
         Dim behindHandle = FrmBehind.Handle
 
         Dim setbehind As IntPtr? = AltPP?.MainWindowHandle
@@ -902,7 +900,7 @@ Partial NotInheritable Class FrmMain
 
     End Sub
 
-    Private behindTaskDone As Boolean = True
+
     Private altSelectedOrOverview As List(Of AstoniaProcess)
 
 

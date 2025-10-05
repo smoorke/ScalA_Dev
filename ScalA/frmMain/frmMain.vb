@@ -562,6 +562,8 @@ Partial Public NotInheritable Class FrmMain
         Dim priThread As New Threading.Thread(AddressOf prioritySetter) With {.IsBackground = True, .Priority = Threading.ThreadPriority.Lowest}
         priThread.Start()
 
+        StartCloseErrorDialogThread()
+
     End Sub
 
     Private Sub prioritySetter()
@@ -1723,6 +1725,19 @@ Partial Public NotInheritable Class FrmMain
         Next
         cboAlt.ForeColor = fcol
         cmbResolution.ForeColor = fcol
+    End Sub
+
+    Private Sub StartCloseErrorDialogThread()
+        Dim t As New Threading.Thread(AddressOf CloseErrorDialogLoop)
+        t.IsBackground = True
+        t.Priority = Threading.ThreadPriority.Lowest
+        t.Start()
+    End Sub
+    Private Sub CloseErrorDialogLoop()
+        While True
+            Threading.Thread.Sleep(42)
+            CloseErrorDialog()
+        End While
     End Sub
     Private Sub CloseErrorDialog()
         Try
