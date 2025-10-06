@@ -1,5 +1,6 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.ComponentModel
+Imports System.Runtime.CompilerServices
 Imports System.Runtime.InteropServices
 Imports System.Threading
 Imports Microsoft.Win32
@@ -518,14 +519,14 @@ Partial Public NotInheritable Class FrmMain
 
     Friend Shared ReadOnly iconCache As New ConcurrentDictionary(Of String, Bitmap)
 
-    Private Function GetIconFromCache(ByVal Path As String, transp As Boolean) As Bitmap
-
-        If Path Is Nothing Then Return Nothing
-
+    Private Function GetIconFromCache(qli As QLInfo) As Bitmap
         Try
-            Return iconCache.GetOrAdd(Path, AddressOf GetIconFromFile).AsTransparent(If(transp, If(My.Settings.DarkMode, 0.4, 0.5), 1))
-        Catch
-            dBug.Print("GetIcon Exception")
+            Return iconCache.GetOrAdd(qli.path, AddressOf GetIconFromFile) _
+                            .addOverlay(If(My.Settings.QLResolveLnk AndAlso qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target.EndsWith("\"c), shortcutOverlay, Nothing), False) _
+                            .addOverlay(If(qli.invalidTarget, warningOverlay, Nothing), False) _
+                            .AsTransparent(If(qli.hidden, If(My.Settings.DarkMode, 0.4, 0.5), 1))
+        Catch ex As Exception
+            dBug.Print($"GetIcon Exception {ex.Message}")
             Return Nothing
         End Try
     End Function
@@ -718,16 +719,6 @@ Partial Public NotInheritable Class FrmMain
 
     Private Shared ReadOnly nsSorter As IComparer(Of String) = New NaturalStringSorter
 
-    Private Structure QLInfo
-        Public path As String
-        Public hidden As Boolean
-        Public name As String
-        Public target As String
-        Public invalidTarget As Boolean
-
-    End Structure
-
-
     Private Function ParseDir(pth As String) As List(Of ToolStripItem)
         Dim menuItems As New List(Of ToolStripItem)
         Dim isEmpty As Boolean = True
@@ -750,7 +741,7 @@ Partial Public NotInheritable Class FrmMain
                                  Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
                                  Dim dispname As String = System.IO.Path.GetFileName(fulldirs)
 
-                                 Dim qli As New QLInfo With {.path = fulldirs & "\", .hidden = hidden, .name = dispname}
+                                 Dim qli As New QLInfo With {.Path = fulldirs & "\", .hidden = hidden, .Name = dispname}
                                  Dim smenu As New ToolStripMenuItem(If(vis, dispname, "*Hidden*"), foldericon) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
 
                                  Me.BeginInvoke(Sub()
@@ -797,7 +788,7 @@ Partial Public NotInheritable Class FrmMain
                                  If fullLink = Environment.GetCommandLineArgs(0) Then Exit Sub 'Continue For
                                  Dim target As String = String.Empty
 
-                                 Dim qli As New QLInfo With {.path = fullLink, .hidden = hidden, .target = target & "\"}
+                                 Dim qli As New QLInfo With {.path = fullLink, .hidden = hidden}
 
                                  If fullLink.ToLower.EndsWith(".lnk") Then
                                      Dim oLink As Object
@@ -806,12 +797,12 @@ Partial Public NotInheritable Class FrmMain
 
                                      target = oLink.TargetPath
 
-                                     qli.invalidTarget = Not IO.File.Exists(target)
+                                     qli.target = target
+                                     qli.invalidTarget = Not IO.File.Exists(target) AndAlso Not IO.Directory.Exists(target)
 
                                      If My.Settings.QLResolveLnk AndAlso IO.Directory.Exists(target) Then
 
-                                         qli.invalidTarget = False
-                                         qli.target = target & "\"
+                                         qli.target &= "\"
 
                                          Dim hid As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
                                          Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
@@ -1001,8 +992,10 @@ Partial Public NotInheritable Class FrmMain
         Task.Run(Sub() Parallel.ForEach(col.Cast(Of ToolStripItem),
             Sub(it)
                 Me.BeginInvoke(Sub()
-                                   If it.Text = "*Hidden*" Then it.Text = CType(it.Tag, QLInfo).name
-                                   it.Visible = it.Text <> "(Empty)"
+                                   If it.Text = "*Hidden*" AndAlso TypeOf it.Tag Is QLInfo Then it.Text = CType(it.Tag, QLInfo).name
+                                   If it.Text <> "(Emtpy)" Then
+                                       it.Visible = True
+                                   End If
                                End Sub)
                 If TypeOf it Is ToolStripMenuItem AndAlso DirectCast(it, ToolStripMenuItem).HasDropDownItems Then
                     SetVisRecurse(DirectCast(it, ToolStripMenuItem).DropDownItems)
@@ -1037,45 +1030,45 @@ Partial Public NotInheritable Class FrmMain
                          Parallel.ForEach(items, opts,
                                           Sub(it As ToolStripMenuItem)
                                               Dim qli As QLInfo = it.Tag
-                                              Dim ico = GetIconFromCache(qli.path, qli.hidden)
+                                              Dim ico = GetIconFromCache(qli)
                                               Dim check As Boolean = clipBoardInfo.Files?.Contains(qli.path.TrimEnd("\"c))
                                               Me.Invoke(Sub()
                                                             it.Checked = check
-                                                            it.Image = ico.addOverlay(If(qli.invalidTarget, warningOverlay, Nothing))
+                                                            it.Image = ico
                                                         End Sub)
                                           End Sub)
 
-                         If My.Settings.QLResolveLnk Then
-                             Dim iconLocks As New ConcurrentDictionary(Of String, Object)
-                             'Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell"))
-                             Parallel.ForEach(Dirs.Where(Function(i) CType(i.Tag, QLInfo).path.ToLower().EndsWith(".lnk")), opts,
-                                          Sub(it As ToolStripItem)
-                                              Dim qli As QLInfo = it.Tag
-                                              Dim PathName As String = qli.path
+                         'If My.Settings.QLResolveLnk Then
+                         '    
+                         '    'Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell"))
+                         '    Parallel.ForEach(Dirs.Where(Function(i) CType(i.Tag, QLInfo).path.ToLower().EndsWith(".lnk")), opts,
+                         '                 Sub(it As ToolStripItem)
+                         '                     Dim qli As QLInfo = it.Tag
+                         '                     Dim PathName As String = qli.path
 
-                                              If doneShortcutOverlayPaths.TryGetValue(PathName, Nothing) Then Exit Sub
+                         '                     
 
-                                              Dim bm As Bitmap = GetIconFromCache(PathName, qli.hidden) '?.Clone()
-                                              If bm Is Nothing Then Exit Sub
-                                              Dim lockObj = iconLocks.GetOrAdd(PathName, Function(__) New Object())
-                                              SyncLock lockObj
-                                                  'Dim ico As Bitmap
-                                                  Try
-                                                      bm.addOverlay(shortcutOverlay, False) 'we don't clone. we update the icon in the cache in place
+                         '                     Dim bm As Bitmap = GetIconFromCache(PathName, qli.hidden) '?.Clone()
+                         '                     If bm Is Nothing Then Exit Sub
+                         '                     Dim lockObj = iconLocks.GetOrAdd(PathName, Function(__) New Object())
+                         '                     SyncLock lockObj
+                         '                         'Dim ico As Bitmap
+                         '                         Try
+                         '                             bm.addOverlay(shortcutOverlay, False) 'we don't clone. we update the icon in the cache in place
 
-                                                      Me.Invoke(Sub()
-                                                                    it.Invalidate(New Rectangle(3, 11, 16, 8)) 'only invalidate the tiny portion that contains the overlay. needs tweaking
-                                                                End Sub)
-                                                      doneShortcutOverlayPaths.TryAdd(PathName, 0)
-                                                      dBug.Print($"Overlay applied to: {PathName}")
-                                                  Catch
-                                                      dBug.Print("Exception on drawing icon shotcut overlay")
-                                                  End Try
-                                              End SyncLock
-                                              'End If
-                                          End Sub)
-                             'End Using
-                         End If
+                         '                             Me.Invoke(Sub()
+                         '                                           it.Invalidate(New Rectangle(3, 11, 16, 8)) 'only invalidate the tiny portion that contains the overlay. needs tweaking
+                         '                                       End Sub)
+                         '                             doneShortcutOverlayPaths.TryAdd(PathName, 0)
+                         '                             dBug.Print($"Overlay applied to: {PathName}")
+                         '                         Catch
+                         '                             dBug.Print("Exception on drawing icon shotcut overlay")
+                         '                         End Try
+                         '                     End SyncLock
+                         '                     'End If
+                         '                 End Sub)
+                         '    'End Using
+                         'End If
 
 
 
@@ -1837,8 +1830,8 @@ Partial Public NotInheritable Class FrmMain
             Next
 
 
-        ElseIf Not CType(sender.Tag, qlinfo).path.EndsWith("\") AndAlso Not (My.Settings.QLResolveLnk AndAlso String.IsNullOrEmpty(CType(sender.Tag, qlinfo).target)) Then 'do not process click on dirs as they are handled by doubleclick
-            dBug.Print("clicked Not a dir")
+        ElseIf Not CType(sender.Tag, qlinfo).path.EndsWith("\") AndAlso Not (My.Settings.QLResolveLnk AndAlso CType(sender.Tag, QLInfo).target.EndsWith("\"c)) Then 'do not process click on dirs as they are handled by doubleclick
+            dBug.Print($"clicked Not a dir {My.Settings.QLResolveLnk} {CType(sender.Tag, QLInfo).target}")
             Task.Run(Sub() OpenLnk(sender, e))
             'cmsQuickLaunch.Close(ToolStripDropDownCloseReason.ItemClicked)
         End If
@@ -2100,7 +2093,14 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 End Class
 
+Public Structure QLInfo
+    Public path As String
+    Public hidden As Boolean
+    Public name As String
+    Public target As String
+    Public invalidTarget As Boolean
 
+End Structure
 
 
 Module ImageExtension
@@ -2126,5 +2126,23 @@ Module ImageExtension
             dBug.print($"Exception in AsTransparent {ex.Message}")
             Return Nothing
         End Try
+    End Function
+
+    Private iconLocks As New ConcurrentDictionary(Of Image, Object)
+    Private IconLock As New Object
+    <Extension>
+    Function addOverlay(bm As Image, over As Bitmap, Optional clone As Boolean = True) As Image
+        If bm Is Nothing Then Return Nothing
+        If over Is Nothing Then Return bm
+
+        Dim bmp As Bitmap = If(clone, bm.Clone, bm)
+        'Dim lockObj = iconLocks.GetOrAdd(bmp, Function(__) New Object())
+        'SyncLock lockObj
+        SyncLock IconLock
+            Using g As Graphics = Graphics.FromImage(bmp)
+                g.DrawImage(over, New Rectangle(New Point, bmp.Size))
+            End Using
+        End SyncLock
+        Return bmp
     End Function
 End Module

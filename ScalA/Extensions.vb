@@ -180,16 +180,4 @@ Module Extensions
         flags = flags Or value
     End Sub
 
-    <Extension>
-    Function addOverlay(bm As Image, over As Bitmap, Optional clone As Boolean = True) As Image
-        If bm Is Nothing Then Return Nothing
-        If over Is Nothing Then Return bm
-        Dim bmp As Bitmap = If(clone, bm.Clone, bm)
-        Using g As Graphics = Graphics.FromImage(bmp)
-            g.DrawImage(over, New Rectangle(New Point, bmp.Size))
-        End Using
-        Return bmp
-    End Function
-
-
 End Module
