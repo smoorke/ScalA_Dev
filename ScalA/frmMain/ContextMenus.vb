@@ -1008,7 +1008,13 @@ Partial Public NotInheritable Class FrmMain
                             End Sub)
                      If hasHidden Then
                          Dim ei As ToolStripMenuItem = col.Cast(Of ToolStripItem).FirstOrDefault(Function(it) it.Text = "(Empty)")
-                         If ei IsNot Nothing Then Me.Invoke(Sub() ei.Visible = False)
+                         If ei IsNot Nothing Then
+                             Me.Invoke(Sub() ei.Visible = False)
+                             For Each itm As ToolStripItem In col.Cast(Of ToolStripItem).SkipWhile(Function(it) TypeOf it IsNot ToolStripSeparator).Skip(1) 'hide items between 2 separators, last separator included
+                                 Me.Invoke(Sub() itm.Visible = False)
+                                 If TypeOf itm Is ToolStripSeparator Then Exit For
+                             Next
+                         End If
                      End If
                  End Sub)
     End Sub
