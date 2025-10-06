@@ -869,7 +869,7 @@ Partial Public NotInheritable Class FrmMain
         If isEmpty Then
             menuItems.Add(New ToolStripMenuItem("(Empty)") With {.Enabled = False})
             clipBoardInfo = GetClipboardFilesAndAction()
-            If clipBoardInfo.Files?.Count > 0 Then
+            If clipBoardInfo.Files?.Count > 0 AndAlso clipBoardInfo.Files.Any(Function(f) IO.File.Exists(f) OrElse IO.Directory.Exists(f)) Then
 
                 Dim sep As ToolStripSeparator = New ToolStripSeparator
                 menuItems.Add(sep)
