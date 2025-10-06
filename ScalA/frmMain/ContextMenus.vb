@@ -989,18 +989,28 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Sub SetVisRecurse(col As ToolStripItemCollection)
-        Task.Run(Sub() Parallel.ForEach(col.Cast(Of ToolStripItem),
-            Sub(it)
-                Me.BeginInvoke(Sub()
-                                   If it.Text = "*Hidden*" AndAlso TypeOf it.Tag Is QLInfo Then it.Text = CType(it.Tag, QLInfo).name
-                                   If it.Text <> "(Emtpy)" Then
-                                       it.Visible = True
-                                   End If
-                               End Sub)
-                If TypeOf it Is ToolStripMenuItem AndAlso DirectCast(it, ToolStripMenuItem).HasDropDownItems Then
-                    SetVisRecurse(DirectCast(it, ToolStripMenuItem).DropDownItems)
-                End If
-            End Sub))
+        Task.Run(Sub()
+                     Dim hasHidden As Boolean = False
+                     Parallel.ForEach(col.Cast(Of ToolStripItem),
+                            Sub(it)
+                                Me.Invoke(Sub()
+                                              If it.Text = "*Hidden*" AndAlso TypeOf it.Tag Is QLInfo Then
+                                                  it.Text = CType(it.Tag, QLInfo).name
+                                                  hasHidden = True
+                                              End If
+                                              If it.Text <> "(Emtpy)" Then
+                                                  it.Visible = True
+                                              End If
+                                          End Sub)
+                                If TypeOf it Is ToolStripMenuItem AndAlso DirectCast(it, ToolStripMenuItem).HasDropDownItems AndAlso DirectCast(it, ToolStripMenuItem).DropDown.Visible Then
+                                    SetVisRecurse(DirectCast(it, ToolStripMenuItem).DropDownItems)
+                                End If
+                            End Sub)
+                     If hasHidden Then
+                         Dim ei As ToolStripMenuItem = col.Cast(Of ToolStripItem).FirstOrDefault(Function(it) it.Text = "(Empty)")
+                         If ei IsNot Nothing Then Me.Invoke(Sub() ei.Visible = False)
+                     End If
+                 End Sub)
     End Sub
 
     Private Sub CmsQuickLaunch_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs) Handles cmsQuickLaunch.Closing ', item.DropDownClosing
