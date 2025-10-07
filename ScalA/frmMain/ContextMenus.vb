@@ -825,7 +825,7 @@ Partial Public NotInheritable Class FrmMain
                                          addLinkWatcher(target, fullLink)
 
                                          Dirs.Add(smenu)
-                                         isEmpty = False
+                                         If hid Then isEmpty = False
 
                                          Exit Sub 'Continue For
                                      End If
@@ -992,7 +992,7 @@ Partial Public NotInheritable Class FrmMain
         Task.Run(Sub()
                      Dim hasHidden As Boolean = False
                      Dim menu As List(Of ToolStripItem) = col.Cast(Of ToolStripItem).ToList
-                     Parallel.ForEach(menu.OfType(Of ToolStripMenuItem),
+                     Parallel.ForEach(menu,
                             Sub(it)
                                 Me.Invoke(Sub()
                                               If it.Text = "*Hidden*" AndAlso TypeOf it.Tag Is QLInfo Then
@@ -1003,17 +1003,26 @@ Partial Public NotInheritable Class FrmMain
                                                   it.Visible = True
                                               End If
                                           End Sub)
-                                If it.DropDown.Visible Then
-                                    SetVisRecurse(it.DropDownItems)
+                                If TypeOf it Is ToolStripMenuItem Then
+                                    Dim item As ToolStripMenuItem = it
+                                    If item.DropDown.Visible Then
+                                        SetVisRecurse(item.DropDownItems)
+                                    End If
                                 End If
                             End Sub)
                      If hasHidden Then
-                         Dim ei As ToolStripMenuItem = col.Cast(Of ToolStripItem).FirstOrDefault(Function(it) it.Text = "(Empty)")
-                         If ei IsNot Nothing Then
+                         Dim ei As ToolStripMenuItem = menu.FirstOrDefault(Function(it) it.Text = "(Empty)")
+                         If ei IsNot Nothing AndAlso ei.Visible Then
                              Me.Invoke(Sub() ei.Visible = False)
-                             For Each itm As ToolStripItem In col.Cast(Of ToolStripItem).SkipWhile(Function(it) TypeOf it IsNot ToolStripSeparator).Skip(1) 'hide items between 2 separators, last separator included
-                                 Me.Invoke(Sub() itm.Visible = False)
-                                 If TypeOf itm Is ToolStripSeparator Then Exit For
+                             Dim itemstohide As New List(Of ToolStripItem)
+                             For Each itm As ToolStripItem In menu.SkipWhile(Function(it) TypeOf it IsNot ToolStripSeparator).Skip(1) 'hide items below 1st separator
+                                 itemstohide.Add(itm)
+                                 If TypeOf itm Is ToolStripSeparator AndAlso itemstohide.Count > 1 Then
+                                     For Each it As ToolStripItem In itemstohide
+                                         Me.Invoke(Sub() it.Visible = False)
+                                     Next
+                                     Exit For
+                                 End If
                              Next
                          End If
                      End If
