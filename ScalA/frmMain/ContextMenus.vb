@@ -1434,23 +1434,23 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub cmsQuickLaunch_Opened(sender As ContextMenuStrip, e As EventArgs) Handles cmsQuickLaunch.Opened
 
-        Task.Run(Sub()
-                     If AstoniaProcess.EnumSomeone.Any() Then
-                         If sender.SourceControl Is Nothing Then 'called from trayicon
-                             Me.Invoke(Sub()
-                                           sender.Items.Insert(0, New ToolStripSeparator())
-                                           sender.Items.Insert(0, New ToolStripMenuItem("Close All Someone", My.Resources.moreF12, AddressOf CloseAllIdle_Click))
-                                       End Sub)
-                             'closeAllAtBottom = False
-                         Else
-                             Me.Invoke(Sub()
-                                           sender.Items.Add(New ToolStripSeparator())
-                                           sender.Items.Add("Close All Someone", My.Resources.moreF12, AddressOf CloseAllIdle_Click)
-                                       End Sub)
-                             'closeAllAtBottom = True
-                         End If
-                     End If
-                 End Sub)
+        'Task.Run(Sub()
+        '             If AstoniaProcess.EnumSomeone.Any() Then
+        '                 If sender.SourceControl Is Nothing Then 'called from trayicon
+        '                     Me.Invoke(Sub()
+        '                                   sender.Items.Insert(0, New ToolStripSeparator())
+        '                                   sender.Items.Insert(0, New ToolStripMenuItem("Close All Someone", My.Resources.moreF12, AddressOf CloseAllIdle_Click))
+        '                               End Sub)
+        '                     'closeAllAtBottom = False
+        '                 Else
+        '                     Me.Invoke(Sub()
+        '                                   sender.Items.Add(New ToolStripSeparator())
+        '                                   sender.Items.Add("Close All Someone", My.Resources.moreF12, AddressOf CloseAllIdle_Click)
+        '                               End Sub)
+        '                     'closeAllAtBottom = True
+        '                 End If
+        '             End If
+        '         End Sub)
 
 
         '   QL wrong when opened from tray due to change in visiblity hidden items.
