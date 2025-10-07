@@ -991,7 +991,8 @@ Partial Public NotInheritable Class FrmMain
     Sub SetVisRecurse(col As ToolStripItemCollection)
         Task.Run(Sub()
                      Dim hasHidden As Boolean = False
-                     Parallel.ForEach(col.Cast(Of ToolStripItem),
+                     Dim menu As List(Of ToolStripItem) = col.Cast(Of ToolStripItem).ToList
+                     Parallel.ForEach(menu.OfType(Of ToolStripMenuItem),
                             Sub(it)
                                 Me.Invoke(Sub()
                                               If it.Text = "*Hidden*" AndAlso TypeOf it.Tag Is QLInfo Then
@@ -1002,8 +1003,8 @@ Partial Public NotInheritable Class FrmMain
                                                   it.Visible = True
                                               End If
                                           End Sub)
-                                If TypeOf it Is ToolStripMenuItem AndAlso DirectCast(it, ToolStripMenuItem).HasDropDownItems AndAlso DirectCast(it, ToolStripMenuItem).DropDown.Visible Then
-                                    SetVisRecurse(DirectCast(it, ToolStripMenuItem).DropDownItems)
+                                If it.DropDown.Visible Then
+                                    SetVisRecurse(it.DropDownItems)
                                 End If
                             End Sub)
                      If hasHidden Then
