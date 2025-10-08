@@ -1,7 +1,6 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.ComponentModel
 Imports System.Runtime.InteropServices
-Imports System.Threading
 Imports Microsoft.Win32
 
 Public NotInheritable Class ContextMenus
@@ -521,7 +520,7 @@ Partial Public NotInheritable Class FrmMain
     Private Function GetIconFromCache(qli As QLInfo) As Bitmap
         Try
             Return iconCache.GetOrAdd(qli.path, AddressOf GetIconFromFile) _
-                            .addOverlay(If(My.Settings.QLResolveLnk AndAlso qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target.EndsWith("\"c), My.Resources.shortcutOverlay, Nothing), False) _
+                            .addOverlay(If(My.Settings.QLResolveLnk AndAlso ((qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target.EndsWith("\"c)) OrElse qli.wasdir), My.Resources.shortcutOverlay, Nothing), False) _
                             .addOverlay(If(qli.invalidTarget, My.Resources.WarningOverlay, Nothing), False) _
                             .AsTransparent(If(qli.hidden, If(My.Settings.DarkMode, 0.4, 0.5), 1))
         Catch ex As Exception
@@ -774,8 +773,8 @@ Partial Public NotInheritable Class FrmMain
 
         Dim Files As New ConcurrentBag(Of ToolStripItem)
 
-        Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell")) ', shortcutSemaphore As New SemaphoreSlim(12)
-            Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)),
+        'Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell")) ', shortcutSemaphore As New SemaphoreSlim(12)
+        Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)),
                              Sub(fullLink As String)
 
                                  Dim attr As System.IO.FileAttributes = New System.IO.FileInfo(fullLink).Attributes
@@ -790,14 +789,19 @@ Partial Public NotInheritable Class FrmMain
                                  Dim qli As New QLInfo With {.path = fullLink, .hidden = hidden}
 
                                  If fullLink.ToLower.EndsWith(".lnk") Then
-                                     Dim oLink As Object
+                                     'Dim oLink As Object
 
-                                     oLink = shellLocal.Value.CreateShortcut(fullLink)
+                                     'oLink = shellLocal.Value.CreateShortcut(fullLink)
 
-                                     target = oLink.TargetPath
+                                     'target = oLink.TargetPath
+
+                                     Dim lin As New ShellLinkInfo(fullLink)
+
+                                     target = lin.TargetPath
 
                                      qli.target = target
-                                     qli.invalidTarget = Not IO.File.Exists(target) AndAlso Not IO.Directory.Exists(target)
+                                     qli.invalidTarget = Not lin.TargetExists
+                                     qli.wasdir = lin.PointsToDir
 
                                      If My.Settings.QLResolveLnk AndAlso IO.Directory.Exists(target) Then
 
@@ -857,7 +861,7 @@ Partial Public NotInheritable Class FrmMain
                                      timedout = True
                                  End If
                              End Sub)
-        End Using
+        'End Using
         menuItems = Dirs.OrderBy(Function(d) CType(d.Tag, QLInfo).path, nsSorter).Concat(
                     Files.OrderBy(Function(f) IO.Path.GetFileNameWithoutExtension(CType(f.Tag, QLInfo).path), nsSorter)).ToList
 
@@ -2112,7 +2116,7 @@ Public Structure QLInfo
     Public name As String
     Public target As String
     Public invalidTarget As Boolean
-
+    Public wasdir As Boolean
 End Structure
 
 
