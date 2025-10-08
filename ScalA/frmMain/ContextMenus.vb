@@ -1,6 +1,5 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.ComponentModel
-Imports System.Runtime.CompilerServices
 Imports System.Runtime.InteropServices
 Imports System.Threading
 Imports Microsoft.Win32
@@ -802,7 +801,7 @@ Partial Public NotInheritable Class FrmMain
 
                                      If My.Settings.QLResolveLnk AndAlso IO.Directory.Exists(target) Then
 
-                                         qli.target &= "\"
+                                         If Not qli.target.EndsWith("\"c) Then qli.target &= "\"
 
                                          Dim hid As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
                                          Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
@@ -894,6 +893,7 @@ Partial Public NotInheritable Class FrmMain
                         pasteLinkTSItem.Visible = False
                     Else
                         Dim nm As String = IO.Path.GetFileName(fil)
+                        If String.IsNullOrEmpty(nm) Then nm = fil
                         If hideExt.Contains(IO.Path.GetExtension(nm)) Then
                             nm = IO.Path.GetFileNameWithoutExtension(nm)
                         End If
@@ -1005,7 +1005,7 @@ Partial Public NotInheritable Class FrmMain
                                           End Sub)
                                 If TypeOf it Is ToolStripMenuItem Then
                                     Dim item As ToolStripMenuItem = it
-                                    If item.DropDown.Visible Then
+                                    If item.HasDropDown AndAlso item.DropDown.Visible Then
                                         SetVisRecurse(item.DropDownItems)
                                     End If
                                 End If
@@ -1392,7 +1392,7 @@ Partial Public NotInheritable Class FrmMain
         ttMain.Hide(btnStart)
         pbZoom.Visible = False
         AButton.ActiveOverview = False
-        If My.Computer.Keyboard.ShiftKeyDown AndAlso Not My.Computer.Keyboard.CtrlKeyDown Then
+        If My.Computer.Keyboard.ShiftKeyDown AndAlso Not My.Computer.Keyboard.CtrlKeyDown AndAlso sender.SourceControl Is Nothing Then
             dBug.Print($"ShowSysMenu {sender}")
             Dim pt As Point = sender.PointToClient(MousePosition)
             Me.ShowSysMenu(sender, New MouseEventArgs(MouseButtons.Right, 1, pt.X, pt.Y, 0))
@@ -1740,6 +1740,7 @@ Partial Public NotInheritable Class FrmMain
                     If (IO.File.Exists(clipBoardInfo.Files(0)) OrElse IO.Directory.Exists(clipBoardInfo.Files(0))) Then
 
                         Dim nm As String = IO.Path.GetFileName(clipBoardInfo.Files(0))
+                        If String.IsNullOrEmpty(nm) Then nm = clipBoardInfo.Files(0)
                         If hideExt.Contains(IO.Path.GetExtension(nm)) Then
                             nm = IO.Path.GetFileNameWithoutExtension(nm)
                         End If
@@ -2154,9 +2155,8 @@ Module ImageExtension
         End Try
     End Function
 
-    Private iconLocks As New ConcurrentDictionary(Of Image, Object)
     Private IconLock As New Object
-    <Extension>
+    <Runtime.CompilerServices.Extension>
     Function addOverlay(bm As Image, over As Bitmap, Optional clone As Boolean = True) As Image
         If bm Is Nothing Then Return Nothing
         If over Is Nothing Then Return bm
@@ -2164,11 +2164,17 @@ Module ImageExtension
         Dim bmp As Bitmap = If(clone, bm.Clone, bm)
         'Dim lockObj = iconLocks.GetOrAdd(bmp, Function(__) New Object())
         'SyncLock lockObj
-        SyncLock IconLock
+        Try
             Using g As Graphics = Graphics.FromImage(bmp)
                 g.DrawImage(over, New Rectangle(New Point, bmp.Size))
             End Using
-        End SyncLock
+        Catch ex As Exception
+            SyncLock IconLock
+                Using g As Graphics = Graphics.FromImage(bmp)
+                    g.DrawImage(over, New Rectangle(New Point, bmp.Size))
+                End Using
+            End SyncLock
+        End Try
         Return bmp
     End Function
 End Module
