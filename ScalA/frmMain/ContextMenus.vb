@@ -1035,7 +1035,6 @@ Partial Public NotInheritable Class FrmMain
             Dim qli As QLInfo = it.Tag
             If qli.invalidTarget Then
                 EvictIconCacheItem(qli.path)
-                doneShortcutOverlayPaths.TryRemove(qli.path, Nothing)
             End If
         Next
 
@@ -1047,7 +1046,7 @@ Partial Public NotInheritable Class FrmMain
         End If
         cts?.Cancel()
     End Sub
-    Friend Shared doneShortcutOverlayPaths As New ConcurrentDictionary(Of String, Byte)
+
     Private Sub DeferredIconLoading(Dirs As IEnumerable(Of ToolStripItem), Files As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
         Task.Run(Sub()
                      Try

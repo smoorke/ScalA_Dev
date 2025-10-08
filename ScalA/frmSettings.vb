@@ -447,7 +447,7 @@ Public NotInheritable Class FrmSettings
                 Exit Sub
             End If
             FrmMain.iconCache.Clear()
-            FrmMain.doneShortcutOverlayPaths.Clear()
+
             ResolvedLinkwatchers_Clear()
             My.Settings.links = txtQuickLaunchPath.Text
             UpdateWatchers(My.Settings.links)
@@ -626,12 +626,10 @@ Public NotInheritable Class FrmSettings
                              Dim target As String = oLink.TargetPath
                              If IO.Directory.Exists(target) Then
                                  If FrmMain.iconCache.TryRemove(it, Nothing) Then
-                                     FrmMain.doneShortcutOverlayPaths.TryRemove(it, Nothing)
                                      count += 1
                                  End If
                                  For Each t As String In FrmMain.iconCache.Keys.Where(Function(l) l.StartsWith(target))
                                      If FrmMain.iconCache.TryRemove(t, Nothing) Then
-                                         FrmMain.doneShortcutOverlayPaths.TryRemove(t, Nothing)
                                          count += 1
                                      End If
                                  Next
@@ -1128,7 +1126,6 @@ Public NotInheritable Class FrmSettings
 
     Private Sub ResetIconCacheToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ResetIconCacheToolStripMenuItem.Click
         FrmMain.iconCache.Clear()
-        FrmMain.doneShortcutOverlayPaths.Clear()
         FrmMain.DefURLicons.Clear()
         ResolvedLinkwatchers_Clear()
         btnRefreshICdisplay.PerformClick()
