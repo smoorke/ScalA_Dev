@@ -521,8 +521,8 @@ Partial Public NotInheritable Class FrmMain
     Private Function GetIconFromCache(qli As QLInfo) As Bitmap
         Try
             Return iconCache.GetOrAdd(qli.path, AddressOf GetIconFromFile) _
-                            .addOverlay(If(My.Settings.QLResolveLnk AndAlso qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target.EndsWith("\"c), shortcutOverlay, Nothing), False) _
-                            .addOverlay(If(qli.invalidTarget, warningOverlay, Nothing), False) _
+                            .addOverlay(If(My.Settings.QLResolveLnk AndAlso qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target.EndsWith("\"c), My.Resources.shortcutOverlay, Nothing), False) _
+                            .addOverlay(If(qli.invalidTarget, My.Resources.WarningOverlay, Nothing), False) _
                             .AsTransparent(If(qli.hidden, If(My.Settings.DarkMode, 0.4, 0.5), 1))
         Catch ex As Exception
             dBug.Print($"GetIcon Exception {ex.Message}")
@@ -901,19 +901,19 @@ Partial Public NotInheritable Class FrmMain
                         pasteTSItem.Image = GetIconFromFile(fil)
 
                         If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
-                            pasteTSItem.Image = pasteTSItem.Image.addOverlay(shortcutOverlay)
+                            pasteTSItem.Image = pasteTSItem.Image.addOverlay(My.Resources.shortcutOverlay)
                             pasteLinkTSItem.Visible = False
                         Else
                             pasteLinkTSItem.Text = "Paste .Lnk"
-                            pasteLinkTSItem.Image = pasteTSItem.Image.addOverlay(shortcutOverlay)
+                            pasteLinkTSItem.Image = pasteTSItem.Image.addOverlay(My.Resources.shortcutOverlay)
                         End If
                     End If
                 Else
                     pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} Multiple ({clipBoardInfo.Files?.Count})"
-                    pasteTSItem.Image = multiPasteBitmap
+                    pasteTSItem.Image = My.Resources.multiPaste
 
                     pasteLinkTSItem.Text = "Paste .Lnks"
-                    pasteLinkTSItem.Image = pasteTSItem.Image.addOverlay(shortcutOverlay)
+                    pasteLinkTSItem.Image = pasteTSItem.Image.addOverlay(My.Resources.shortcutOverlay)
                 End If
 
             End If
@@ -953,25 +953,11 @@ Partial Public NotInheritable Class FrmMain
     Dim pasteLinkTSItem As ToolStripMenuItem = New ToolStripMenuItem("Paste .Lnk", Nothing, AddressOf ClipAction)
 
     'cannot rely on these, diff win version have diff icons for these
-    Public multiPasteBitmap As Bitmap = loadImageResBitmap(245)
-    Public shortcutOverlay As Bitmap = loadImageResBitmap(154)
-    Public warningOverlay As Bitmap = loadImageResBitmap(219) 'note this is incorrect in windows10
+    'Public multiPasteBitmap As Bitmap = loadImageResBitmap(245)
+    'Public shortcutOverlay As Bitmap = loadImageResBitmap(154)
+    'Public warningOverlay As Bitmap = loadImageResBitmap(219) 'note this is incorrect in windows10
 
-    Dim multipasteBitmapOverlay As Bitmap = multiPasteBitmap.addOverlay(shortcutOverlay)
-    Function loadImageResBitmap(idx As Integer) As Bitmap
-
-        Dim hIcoA As IntPtr() = {IntPtr.Zero}
-
-        Dim ret As Integer = ExtractIconEx(IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32\imageres.dll"), idx, Nothing, hIcoA, 1)
-        Debug.Print($"ExtractIconEx {ret}")
-
-        Dim ico = Icon.FromHandle(hIcoA(0))
-        Try
-            Return ico.ToBitmap
-        Finally
-            DestroyIcon(ico.Handle)
-        End Try
-    End Function
+    Dim multipasteBitmapOverlay As Bitmap = My.Resources.multiPaste.addOverlay(My.Resources.shortcutOverlay)
 
     Dim QLCtxMenuOpenedOn As ToolStripMenuItem
 
@@ -1751,7 +1737,7 @@ Partial Public NotInheritable Class FrmMain
                         'don't pull from cache we may not be watching filechanges. make async tho, io peration may be slow
                         Dim ico As Bitmap = GetIconFromFile(clipBoardInfo.Files(0), False)
 
-                        Dim shortcuttedIcon As Bitmap = ico.addOverlay(shortcutOverlay)
+                        Dim shortcuttedIcon As Bitmap = ico.addOverlay(My.Resources.shortcutOverlay)
 
                         If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
                             ico = shortcuttedIcon
@@ -1779,7 +1765,7 @@ Partial Public NotInheritable Class FrmMain
                     pasteItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} Multiple ({clipBoardInfo.Files?.Count})"
                     pasteLinkItem.Text = "Paste .Lnks"
 
-                    pastehbm = multiPasteBitmap.GetHbitmap(Color.Black)
+                    pastehbm = My.Resources.multiPaste.GetHbitmap(Color.Black)
                     pasteShortcutHbm = multipasteBitmapOverlay.GetHbitmap(Color.Black)
 
                     purgeList.Add(pastehbm)

@@ -243,6 +243,16 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
+        Friend ReadOnly Property multiPaste() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("multiPaste", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
         Friend ReadOnly Property Refresh() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("Refresh", resourceCulture)
@@ -293,6 +303,16 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
+        Friend ReadOnly Property shortcutOverlay() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("shortcutOverlay", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
         Friend ReadOnly Property Sync() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("Sync", resourceCulture)
@@ -306,6 +326,16 @@ Namespace My.Resources
         Friend ReadOnly Property Warning() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("Warning", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property WarningOverlay() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("WarningOverlay", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property
