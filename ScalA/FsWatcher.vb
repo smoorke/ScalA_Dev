@@ -378,7 +378,6 @@ Module FsWatcher
 
         Dim item As Bitmap = Nothing
         If iconCache.TryRemove(e.OldFullPath, item) Then iconCache.TryAdd(e.FullPath, item)
-        If FrmMain.doneShortcutOverlayPaths.TryRemove(e.OldFullPath, Nothing) Then FrmMain.doneShortcutOverlayPaths.TryAdd(e.FullPath, 0)
 
     End Sub
 
@@ -391,7 +390,6 @@ Module FsWatcher
             End If
             If hideExt.Contains(System.IO.Path.GetExtension(e.FullPath).ToLower) Then
                 iconCache.TryRemove(e.FullPath, Nothing)
-                FrmMain.doneShortcutOverlayPaths.TryRemove(e.FullPath, Nothing)
             End If
         End If
     End Sub
