@@ -17,6 +17,17 @@ Public Class frmDebug
 
         Me.Owner = FrmMain
 
+        cmsDebugFuncs.Items.Add(New ToolStripMenuItem("Dump Warn Overlay", FrmMain.warningOverlay, Sub()
+                                                                                                       FrmMain.warningOverlay.Save("D:\WarningOverlay.png", Imaging.ImageFormat.Png)
+                                                                                                   End Sub))
+        cmsDebugFuncs.Items.Add(New ToolStripMenuItem("Dump shortcut Overlay", FrmMain.shortcutOverlay, Sub()
+                                                                                                            FrmMain.shortcutOverlay.Save("D:\shortcutOverlay.png", Imaging.ImageFormat.Png)
+                                                                                                        End Sub))
+        cmsDebugFuncs.Items.Add(New ToolStripMenuItem("Dump multipaste icon", FrmMain.multiPasteBitmap, Sub()
+                                                                                                            FrmMain.multiPasteBitmap.Save("D:\multiPaste.png", Imaging.ImageFormat.Png)
+                                                                                                        End Sub))
+
+
         dBug.Print("FrmDebug Load", 1)
     End Sub
 

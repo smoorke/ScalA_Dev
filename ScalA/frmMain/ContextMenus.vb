@@ -952,9 +952,10 @@ Partial Public NotInheritable Class FrmMain
     Dim pasteTSItem As ToolStripMenuItem = New ToolStripMenuItem("Paste ""Name""", Nothing, AddressOf ClipAction)
     Dim pasteLinkTSItem As ToolStripMenuItem = New ToolStripMenuItem("Paste .Lnk", Nothing, AddressOf ClipAction)
 
-    Dim multiPasteBitmap As Bitmap = loadImageResBitmap(245)
-    Dim shortcutOverlay As Bitmap = loadImageResBitmap(154)
-    Dim warningOverlay As Bitmap = loadImageResBitmap(219)
+    'cannot rely on these, diff win version have diff icons for these
+    Public multiPasteBitmap As Bitmap = loadImageResBitmap(245)
+    Public shortcutOverlay As Bitmap = loadImageResBitmap(154)
+    Public warningOverlay As Bitmap = loadImageResBitmap(219) 'note this is incorrect in windows10
 
     Dim multipasteBitmapOverlay As Bitmap = multiPasteBitmap.addOverlay(shortcutOverlay)
     Function loadImageResBitmap(idx As Integer) As Bitmap
