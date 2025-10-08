@@ -51,6 +51,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             For Each tid In AttachedThreads
                 AttachThreadInput(ScalaThreadId, tid, False)
             Next
+            AttachThreadInput(ScalaThreadId, Me.MainThreadId, False) 'loop fails when alt or scala is minimized so we explicilty detach main thread
             AttachedThreads.Clear()
         End If
         TIattached = attach
