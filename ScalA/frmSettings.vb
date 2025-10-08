@@ -627,7 +627,7 @@ Public NotInheritable Class FrmSettings
                          For Each it As String In FrmMain.iconCache.Keys.Where(Function(i) i.EndsWith(".lnk"))
                              'Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(it) 'this is very slow. hence it is run in a task
                              'Dim target As String = oLink.TargetPath
-                             Dim target As String = New ShellLinkInfo(it).TargetPath
+                             Dim target As String = New ShellLinkInfo(it).TargetPath 'this is faster. still opting to using task tho
                              If IO.Directory.Exists(target) Then
                                  If FrmMain.iconCache.TryRemove(it, Nothing) Then
                                      count += 1

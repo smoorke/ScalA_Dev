@@ -92,19 +92,20 @@ Public Class ShellLinkInfo
             Dim wfd As New WIN32_FIND_DATAW
             shellLink.GetPath(sb, sb.Capacity, wfd, 0)
 
-            TargetPath = sb.ToString()
+            Me.TargetPath = sb.ToString().Trim
 
             ' determine if it pointed to a directory
-            PointsToDir = (wfd.dwFileAttributes And FILE_ATTRIBUTE_DIRECTORY) <> 0
+            Me.PointsToDir = (wfd.dwFileAttributes And FILE_ATTRIBUTE_DIRECTORY) <> 0
 
             ' check if the target currently exists
-            TargetExists = IO.File.Exists(TargetPath) OrElse IO.Directory.Exists(TargetPath)
+            Me.TargetExists = IO.File.Exists(TargetPath) OrElse IO.Directory.Exists(TargetPath)
 
         Catch ex As Exception
             Debug.Print("ShellLinkInfo.LoadLink error: " & ex.Message)
-            TargetPath = ""
-            PointsToDir = False
-            [Error] = True
+            Me.TargetPath = ""
+            Me.PointsToDir = False
+            Me.TargetExists = False
+            Me.Error = True
         Finally
             If shellLink IsNot Nothing Then Marshal.ReleaseComObject(shellLink)
         End Try
