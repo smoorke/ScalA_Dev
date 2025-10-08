@@ -202,7 +202,10 @@ Public NotInheritable Class FrmSettings
         If My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then
             Dim imge = LoadImage(IntPtr.Zero, "#106", 1, 16, 16, 0)
             If imge <> IntPtr.Zero Then
-                pbUnElevate.Image = Image.FromHbitmap(imge)
+                Using Ico = Icon.FromHandle(imge)
+                    pbUnElevate.Image = Ico.ToBitmap
+                    DestroyIcon(Ico.Handle)
+                End Using
             End If
             pnlElevation.Visible = True
         End If
