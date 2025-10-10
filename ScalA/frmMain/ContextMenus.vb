@@ -520,9 +520,9 @@ Partial Public NotInheritable Class FrmMain
     Private Function GetIconFromCache(qli As QLInfo) As Bitmap
         Try
             Return iconCache.GetOrAdd(qli.path, AddressOf GetIconFromFile) _
-                            .addOverlay(If(My.Settings.QLResolveLnk AndAlso ((qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target.EndsWith("\"c)) OrElse qli.pointsToDir), My.Resources.shortcutOverlay, Nothing), False) _
-                            .addOverlay(If(qli.invalidTarget, My.Resources.WarningOverlay, Nothing), False) _
-                            .asTransparent(If(qli.hidden, If(My.Settings.DarkMode, 0.4, 0.5), 1))
+                            .AsTransparent(If(qli.hidden, If(My.Settings.DarkMode, 0.4, 0.5), 1)) _
+                            .addOverlay(If(My.Settings.QLResolveLnk AndAlso ((qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target.EndsWith("\"c)) OrElse qli.pointsToDir), My.Resources.shortcutOverlay, Nothing), True) _
+                            .addOverlay(If(qli.invalidTarget, My.Resources.WarningOverlay, Nothing), True)
         Catch ex As Exception
             dBug.Print($"GetIcon Exception {ex.Message}")
             Return Nothing
@@ -1019,12 +1019,12 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub CmsQuickLaunch_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs) Handles cmsQuickLaunch.Closing ', item.DropDownClosing
 
-        For Each it As ToolStripMenuItem In CType(sender.items, ToolStripItemCollection).Cast(Of ToolStripItem).Where(Function(mi) TypeOf mi.Tag Is QLInfo)
-            Dim qli As QLInfo = it.Tag
-            If qli.invalidTarget Then
-                EvictIconCacheItem(qli.path)
-            End If
-        Next
+        'For Each it As ToolStripMenuItem In CType(sender.items, ToolStripItemCollection).Cast(Of ToolStripItem).Where(Function(mi) TypeOf mi.Tag Is QLInfo)
+        '    Dim qli As QLInfo = it.Tag
+        '    If qli.invalidTarget Then
+        '        EvictIconCacheItem(qli.path)
+        '    End If
+        'Next
 
 
         If My.Computer.Keyboard.CtrlKeyDown AndAlso
@@ -1050,41 +1050,6 @@ Partial Public NotInheritable Class FrmMain
                                                             it.Image = ico
                                                         End Sub)
                                           End Sub)
-
-                         'If My.Settings.QLResolveLnk Then
-                         '    
-                         '    'Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell"))
-                         '    Parallel.ForEach(Dirs.Where(Function(i) CType(i.Tag, QLInfo).path.ToLower().EndsWith(".lnk")), opts,
-                         '                 Sub(it As ToolStripItem)
-                         '                     Dim qli As QLInfo = it.Tag
-                         '                     Dim PathName As String = qli.path
-
-                         '                     
-
-                         '                     Dim bm As Bitmap = GetIconFromCache(PathName, qli.hidden) '?.Clone()
-                         '                     If bm Is Nothing Then Exit Sub
-                         '                     Dim lockObj = iconLocks.GetOrAdd(PathName, Function(__) New Object())
-                         '                     SyncLock lockObj
-                         '                         'Dim ico As Bitmap
-                         '                         Try
-                         '                             bm.addOverlay(shortcutOverlay, False) 'we don't clone. we update the icon in the cache in place
-
-                         '                             Me.Invoke(Sub()
-                         '                                           it.Invalidate(New Rectangle(3, 11, 16, 8)) 'only invalidate the tiny portion that contains the overlay. needs tweaking
-                         '                                       End Sub)
-                         '                             doneShortcutOverlayPaths.TryAdd(PathName, 0)
-                         '                             dBug.Print($"Overlay applied to: {PathName}")
-                         '                         Catch
-                         '                             dBug.Print("Exception on drawing icon shotcut overlay")
-                         '                         End Try
-                         '                     End SyncLock
-                         '                     'End If
-                         '                 End Sub)
-                         '    'End Using
-                         'End If
-
-
-
 
                      Catch ex As System.OperationCanceledException
                          dBug.Print("deferrediconloading operationCanceled")
