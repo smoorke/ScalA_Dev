@@ -1,3 +1,25 @@
+**ScalA 1.7.6**
+- Fixed Close All but <Name> on Overview Alt ContextMenu is visible when it shouldn't be.
+- Sped up parsing of QL Folders quite a bit irregardless of `Resolve Lnk`setting.
+- Fixed Restarting Idled selected alts may select wrong alt.
+- Fixed Changing a lnk files icon fails to draw it's shortcut overlay.
+- Fixed Active Overview has EQlock not function correctly.
+- Added `Open All` to resolved lnk files.
+- Removed the ability to right click items in the QL ContextMenu.
+- Fixed ScalA replaces SDL Client SysMenu with it's own when not appropriate.
+- Added Copy/Paste functionality to QL.
+- Fixed QL dropdowns appearing in taskbar after Ctrl-Clicking to keep QL open.
+- Changed Setting ScalA priority also sets Alts Priority (Resolves lag issue at Priority 13 High)
+- Fixed SysMenu replacement when running Multiple ScalAs.
+- Improved speed of SysMenuReplacer.
+- Fixed Exception in Settings when reslist is empty.
+- Fixed some activation bugs.
+- Fixed SDL client cursor flicker when hovering certain items.
+- Fixed an issue where SizeBorder would temporarily stop working and/or cause an Exception.
+- Added a warning icon overlay to broken lnk files in QL.
+- Removed Close All Someone from QL. 
+  Alternative Close All Someone items are accessible from QuitButton and Alted Overview Buttons R-Click Menus.
+
 **ScalA 1.7.5**
 Added `Restart w/o Closing` contextmenu to Overview Alt menu Restart Item / option to Restartbutton ContextMenu.
  Note this item is only visible when the alt has idled (or is named `Someone`)
