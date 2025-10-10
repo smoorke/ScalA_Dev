@@ -1,8 +1,7 @@
 ﻿Imports System.Runtime.InteropServices
 Imports System.Text
 
-
-Public Class ShellLinkInfo
+Public NotInheritable Class ShellLinkInfo
 
     ' COM interface declarations
     <ComImport(), Guid("000214F9-0000-0000-C000-000000000046"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)>
@@ -53,7 +52,7 @@ Public Class ShellLinkInfo
 
     <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Unicode)>
     Private Structure WIN32_FIND_DATAW
-        Public dwFileAttributes As UInteger
+        Public dwFileAttributes As IO.FileAttributes
         Public ftCreationTime As Long
         Public ftLastAccessTime As Long
         Public ftLastWriteTime As Long
@@ -65,50 +64,120 @@ Public Class ShellLinkInfo
         Public cFileName As String
         <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=14)>
         Public cAlternateFileName As String
+
         Public dwFileType As UInteger ' Obsolete. Do Not use.
         Public dwCreatorType As UInteger ' Obsolete. Do Not use
         Public wFinderFlags As UInteger ' Obsolete. Do Not use
     End Structure
 
-
-    Private Const FILE_ATTRIBUTE_DIRECTORY As UInteger = &H10
-
     Public Property TargetPath As String = ""
+    Public Property WorkingDirectory As String = ""
+    Public Property Description As String = ""
+    Public Property Arguments As String = ""
+    Public Property IconPath As String = ""
+    Public Property IconIndex As Integer = 0
+
+    Public Property ShowCmd As Integer = 1  ' 1 = normal window
+    Public Property Hotkey As Short = 0
+
     Public Property PointsToDir As Boolean = False
     Public Property TargetExists As Boolean = False
-    Public Property [Error] As Boolean = False
 
-    Public Sub New(ByVal lnkFile As String)
-        LoadLink(lnkFile)
+    Public Sub New()
+
     End Sub
 
-    Private Sub LoadLink(ByVal lnkFile As String)
+    Public Sub New(ByVal lnkFile As String)
+        Load(lnkFile)
+    End Sub
+
+    Public Function Load(ByVal lnkFile As String) As Boolean
         Dim shellLink As IShellLinkW = Nothing
         Try
+
             shellLink = CType(New CShellLink(), IShellLinkW)
             CType(shellLink, IPersistFile).Load(lnkFile, 0)
 
             Dim sb As New StringBuilder(260)
             Dim wfd As New WIN32_FIND_DATAW
             shellLink.GetPath(sb, sb.Capacity, wfd, 0)
+            Me.TargetPath = sb.ToString().Trim()
 
-            Me.TargetPath = sb.ToString().Trim
+            sb.Clear() : sb.EnsureCapacity(260)
+            shellLink.GetDescription(sb, sb.Capacity)
+            Me.Description = sb.ToString().Trim()
+
+            sb.Clear() : sb.EnsureCapacity(260)
+            shellLink.GetWorkingDirectory(sb, sb.Capacity)
+            Me.WorkingDirectory = sb.ToString().Trim()
+
+            sb.Clear() : sb.EnsureCapacity(260)
+            shellLink.GetArguments(sb, sb.Capacity)
+            Me.Arguments = sb.ToString().Trim()
+
+            sb.Clear() : sb.EnsureCapacity(260)
+            Dim iconIndex As Integer
+            shellLink.GetIconLocation(sb, sb.Capacity, iconIndex)
+            IconPath = sb.ToString().Trim()
+            Me.IconIndex = iconIndex
+
+            Dim show As Integer
+            shellLink.GetShowCmd(show)
+            Me.ShowCmd = show
+
+            Dim hotkey As Short
+            shellLink.GetHotkey(hotkey)
+            Me.Hotkey = hotkey
 
             ' determine if it pointed to a directory
-            Me.PointsToDir = (wfd.dwFileAttributes And FILE_ATTRIBUTE_DIRECTORY) <> 0
+            Me.PointsToDir = wfd.dwFileAttributes.HasFlag(IO.FileAttributes.Directory)
 
             ' check if the target currently exists
             Me.TargetExists = IO.File.Exists(TargetPath) OrElse IO.Directory.Exists(TargetPath)
+
+            Return True
 
         Catch ex As Exception
             Debug.Print("ShellLinkInfo.LoadLink error: " & ex.Message)
             Me.TargetPath = ""
             Me.PointsToDir = False
             Me.TargetExists = False
-            Me.Error = True
+
+            Return False
         Finally
             If shellLink IsNot Nothing Then Marshal.ReleaseComObject(shellLink)
         End Try
-    End Sub
+    End Function
+
+    Public Function Save(path As String) As Boolean
+        Dim shellLink As IShellLinkW = Nothing
+        Dim persistFile As IPersistFile = Nothing
+        Try
+            shellLink = CType(New CShellLink(), IShellLinkW)
+            persistFile = CType(shellLink, IPersistFile)
+
+            shellLink.SetPath(Me.TargetPath)
+            shellLink.SetWorkingDirectory(Me.WorkingDirectory)
+            shellLink.SetDescription(Me.Description)
+            shellLink.SetArguments(Me.Arguments)
+            shellLink.SetIconLocation(Me.IconPath, Me.IconIndex)
+
+            shellLink.SetShowCmd(Me.ShowCmd)
+            shellLink.SetHotkey(Me.Hotkey)
+
+            persistFile.Save(path, True)
+            persistFile.SaveCompleted(path)
+            Return True
+
+        Catch ex As Exception
+            Debug.Print("ShellLinkInfo.SaveLink error: " & ex.Message)
+
+            Return False
+        Finally
+            If persistFile IsNot Nothing Then Marshal.ReleaseComObject(persistFile)
+            If shellLink IsNot Nothing Then Marshal.ReleaseComObject(shellLink)
+        End Try
+
+    End Function
 
 End Class
