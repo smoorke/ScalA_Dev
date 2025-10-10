@@ -520,9 +520,9 @@ Partial Public NotInheritable Class FrmMain
     Private Function GetIconFromCache(qli As QLInfo) As Bitmap
         Try
             Return iconCache.GetOrAdd(qli.path, AddressOf GetIconFromFile) _
-                            .addOverlay(If(My.Settings.QLResolveLnk AndAlso ((qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target.EndsWith("\"c)) OrElse qli.wasdir), My.Resources.shortcutOverlay, Nothing), False) _
+                            .addOverlay(If(My.Settings.QLResolveLnk AndAlso ((qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target.EndsWith("\"c)) OrElse qli.pointsToDir), My.Resources.shortcutOverlay, Nothing), False) _
                             .addOverlay(If(qli.invalidTarget, My.Resources.WarningOverlay, Nothing), False) _
-                            .AsTransparent(If(qli.hidden, If(My.Settings.DarkMode, 0.4, 0.5), 1))
+                            .asTransparent(If(qli.hidden, If(My.Settings.DarkMode, 0.4, 0.5), 1))
         Catch ex As Exception
             dBug.Print($"GetIcon Exception {ex.Message}")
             Return Nothing
@@ -739,7 +739,7 @@ Partial Public NotInheritable Class FrmMain
                                  Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
                                  Dim dispname As String = System.IO.Path.GetFileName(fulldirs)
 
-                                 Dim qli As New QLInfo With {.Path = fulldirs & "\", .hidden = hidden, .Name = dispname}
+                                 Dim qli As New QLInfo With {.path = fulldirs & "\", .hidden = hidden, .name = dispname}
                                  Dim smenu As New ToolStripMenuItem(If(vis, dispname, "*Hidden*"), foldericon) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
 
                                  Me.BeginInvoke(Sub()
@@ -756,7 +756,7 @@ Partial Public NotInheritable Class FrmMain
                                                 End Sub)
 
                                  Dirs.Add(smenu)
-                                 If Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden Then
+                                 If vis Then
                                      isEmpty = False
                                  End If
                                  If watch.ElapsedMilliseconds > TOTALTIMEOUT Then
@@ -773,7 +773,6 @@ Partial Public NotInheritable Class FrmMain
 
         Dim Files As New ConcurrentBag(Of ToolStripItem)
 
-        'Using shellLocal As New ThreadLocal(Of Object)(Function() CreateObject("WScript.Shell")) ', shortcutSemaphore As New SemaphoreSlim(12)
         Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)),
                              Sub(fullLink As String)
 
@@ -786,14 +785,11 @@ Partial Public NotInheritable Class FrmMain
                                  If fullLink = Environment.GetCommandLineArgs(0) Then Exit Sub 'Continue For
                                  Dim target As String = String.Empty
 
+                                 Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
+
                                  Dim qli As New QLInfo With {.path = fullLink, .hidden = hidden}
 
                                  If fullLink.ToLower.EndsWith(".lnk") Then
-                                     'Dim oLink As Object
-
-                                     'oLink = shellLocal.Value.CreateShortcut(fullLink)
-
-                                     'target = oLink.TargetPath
 
                                      Dim lin As New ShellLinkInfo(fullLink)
 
@@ -801,39 +797,42 @@ Partial Public NotInheritable Class FrmMain
 
                                      qli.target = target
                                      qli.invalidTarget = Not lin.TargetExists
-                                     qli.wasdir = lin.PointsToDir
 
-                                     If My.Settings.QLResolveLnk AndAlso IO.Directory.Exists(target) Then
+                                     If My.Settings.QLResolveLnk Then
 
-                                         If Not qli.target.EndsWith("\"c) Then qli.target &= "\"
+                                         qli.pointsToDir = lin.PointsToDir
 
-                                         Dim hid As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
-                                         Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
-                                         qli.name = dispname
-                                         Dim smenu As New ToolStripMenuItem(If(hid, dispname, "*Hidden*"), foldericon) With {.Tag = qli, .Visible = hid, .DoubleClickEnabled = True}
+                                         If IO.Directory.Exists(target) Then
 
-                                         Me.BeginInvoke(Sub()
+                                             If Not qli.target.EndsWith("\"c) Then qli.target &= "\"
 
-                                                            smenu.DropDownItems.Add("(Dummy)").Enabled = False
+                                             'Dim hid As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
+                                             Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
+                                             qli.name = dispname
+                                             Dim smenu As New ToolStripMenuItem(If(vis, dispname, "*Hidden*"), folderIconWithOverlay) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
 
-                                                            AddHandler smenu.MouseDown, AddressOf QL_MouseDown
-                                                            AddHandler smenu.DoubleClick, AddressOf DblClickDir
-                                                            AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
-                                                            AddHandler smenu.DropDownOpened, AddressOf QL_DropDownOpened
-                                                            AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
+                                             Me.BeginInvoke(Sub()
 
-                                                            AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
-                                                        End Sub)
+                                                                smenu.DropDownItems.Add("(Dummy)").Enabled = False
 
-                                         addLinkWatcher(target, fullLink)
+                                                                AddHandler smenu.MouseDown, AddressOf QL_MouseDown
+                                                                AddHandler smenu.DoubleClick, AddressOf DblClickDir
+                                                                AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
+                                                                AddHandler smenu.DropDownOpened, AddressOf QL_DropDownOpened
+                                                                AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
 
-                                         Dirs.Add(smenu)
-                                         If hid Then isEmpty = False
+                                                                AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
+                                                            End Sub)
 
-                                         Exit Sub 'Continue For
+                                             addLinkWatcher(target, fullLink)
+
+                                             Dirs.Add(smenu)
+                                             If vis Then isEmpty = False
+
+                                             Exit Sub 'Continue For
+                                         End If
                                      End If
                                  End If
-
                                  Dim linkName As String
                                  If hideExt.Contains(System.IO.Path.GetExtension(fullLink).ToLower) Then
                                      linkName = System.IO.Path.GetFileNameWithoutExtension(fullLink)
@@ -842,8 +841,6 @@ Partial Public NotInheritable Class FrmMain
                                  End If
 
                                  qli.name = linkName
-
-                                 Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
 
                                  Dim item As New ToolStripMenuItem(If(vis, linkName, "*Hidden*")) With {.Tag = qli, .Visible = vis}
                                  Me.BeginInvoke(Sub()
@@ -861,7 +858,7 @@ Partial Public NotInheritable Class FrmMain
                                      timedout = True
                                  End If
                              End Sub)
-        'End Using
+
         menuItems = Dirs.OrderBy(Function(d) CType(d.Tag, QLInfo).path, nsSorter).Concat(
                     Files.OrderBy(Function(f) IO.Path.GetFileNameWithoutExtension(CType(f.Tag, QLInfo).path), nsSorter)).ToList
 
@@ -877,7 +874,7 @@ Partial Public NotInheritable Class FrmMain
                 Dim sep As ToolStripSeparator = New ToolStripSeparator
                 menuItems.Add(sep)
 
-                pasteTSItem = New ToolStripMenuItem("", Nothing, AddressOf ClipAction)
+                pasteTSItem = New ToolStripMenuItem("Paste ", Nothing, AddressOf ClipAction)
 
                 menuItems.Add(pasteTSItem)
                 If clipBoardInfo.Action = ClipboardAction.Copy Then
@@ -1134,7 +1131,8 @@ Partial Public NotInheritable Class FrmMain
         Next
 
     End Sub
-    Private foldericon = GetIconFromFile(FileIO.SpecialDirectories.Temp & "\", True)
+    Private folderIcon As Bitmap = GetIconFromFile(FileIO.SpecialDirectories.Temp & "\", True)
+    Private folderIconWithOverlay = folderIcon.addOverlay(My.Resources.shortcutOverlay, True)
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
         dBug.Print("addshortcut.sendertag:" & sender.Tag)
         sender.DropDownItems.Clear()
@@ -1847,7 +1845,7 @@ Partial Public NotInheritable Class FrmMain
             Next
 
 
-        ElseIf Not CType(sender.Tag, qlinfo).path.EndsWith("\") AndAlso Not (My.Settings.QLResolveLnk AndAlso CType(sender.Tag, QLInfo).target.EndsWith("\"c)) Then 'do not process click on dirs as they are handled by doubleclick
+        ElseIf Not CType(sender.Tag, QLInfo).path.EndsWith("\") AndAlso Not (My.Settings.QLResolveLnk AndAlso CType(sender.Tag, QLInfo).target.EndsWith("\"c)) Then 'do not process click on dirs as they are handled by doubleclick
             dBug.Print($"clicked Not a dir {My.Settings.QLResolveLnk} {CType(sender.Tag, QLInfo).target}")
             Task.Run(Sub() OpenLnk(sender, e))
             'cmsQuickLaunch.Close(ToolStripDropDownCloseReason.ItemClicked)
@@ -2116,7 +2114,7 @@ Public Structure QLInfo
     Public name As String
     Public target As String
     Public invalidTarget As Boolean
-    Public wasdir As Boolean
+    Public pointsToDir As Boolean
 End Structure
 
 
@@ -2140,7 +2138,7 @@ Module ImageExtension
             End Using
             Return bmp
         Catch ex As Exception
-            dBug.print($"Exception in AsTransparent {ex.Message}")
+            dBug.Print($"Exception in AsTransparent {ex.Message}")
             Return Nothing
         End Try
     End Function
