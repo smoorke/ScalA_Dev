@@ -1320,12 +1320,12 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             dBug.print("exepath exept")
         End Try
         'Dim workdir As String = exepath.Substring(0, exepath.LastIndexOf("\")) 'todo: replace with function found at https://stackoverflow.com/a/23842609/7433250
-        Dim workdir = proc.GetCurrentDirectory()
+        Dim workdir = proc.GetCurrentDirectory().ToLower
 
         dBug.print($"wd {workdir}")
 
         If workdir.EndsWith("bin") Then
-            workdir = workdir.Substring(0, workdir.LastIndexOf("\"))
+            workdir = workdir.Substring(0, workdir.LastIndexOf("\bin"))
         End If
 
 
