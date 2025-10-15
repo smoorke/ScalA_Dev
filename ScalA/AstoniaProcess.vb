@@ -1157,19 +1157,19 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Private alreadylaunched As Boolean = False
     Private disposedValue As Boolean
 
-    Friend Sub restart(Optional close As Boolean = True)
+    Friend Function restart(Optional close As Boolean = True) As String
         ' Ensure process is restarted only once
         If alreadylaunched Then
-            Exit Sub
+            Return ""
         End If
+        Dim shortcutlink As String = ""
         Try
 
             ' Log process details
             dBug.Print($"Restarting process: {proc.ProcessName} {proc.Id}")
 
-            Dim shortcutlink As String = FileIO.SpecialDirectories.Temp & "\ScalA\restart.lnk"
             Dim mos As Management.ManagementObject = New Management.ManagementObjectSearcher($"Select * from Win32_Process WHERE ProcessID={proc.Id}").Get()(0)
-            If mos Is Nothing Then Exit Sub
+            If mos Is Nothing Then Return ""
             ' Get the current command-line arguments and executable path
             Dim arguments As String = mos("commandline")
             Dim exepath As String = mos("ExecutablePath")
@@ -1179,7 +1179,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
             If arguments = "" Then
                 dBug.Print("Access denied! Restart process with elevated permissions.")
-                Exit Sub
+                Return ""
             End If
 
             ' Get the working directory
@@ -1191,8 +1191,15 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             End If
 
             If arguments.Contains(exepath) Then arguments = arguments.Replace(exepath, "")
-            If arguments.Contains("""""") Then arguments = arguments.Replace("""""", "")
+            If arguments.Contains("""""") Then arguments = arguments.Replace("""""", "").Trim
 
+            shortcutlink = IO.Path.Combine(FileIO.SpecialDirectories.Temp, $"ScalA\Restart\{Me.UserName}.lnk")
+
+            If Not IO.Directory.Exists(IO.Path.Combine(FileIO.SpecialDirectories.Temp, $"ScalA\Restart\")) Then
+                IO.Directory.CreateDirectory(IO.Path.Combine(FileIO.SpecialDirectories.Temp, $"ScalA\Restart\"))
+            End If
+
+            dBug.Print($"scl: {shortcutlink}")
             ' Create a shortcut to relaunch the process
             Dim oLink As Object
             Try
@@ -1204,7 +1211,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 oLink.Save()
             Catch ex As Exception
                 dBug.Print($"Failed to create shortcut: {ex.Message}")
-                Exit Sub
+                Return shortcutlink
             End Try
 
             ' Close or kill the current process
@@ -1232,20 +1239,24 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 pp.Start()
             Catch ex As Exception
                 dBug.Print($"Failed to restart process: {ex.Message}")
+                Try
+                    FileIO.FileSystem.DeleteFile(shortcutlink)
+                Catch x As Exception
+
+                End Try
             Finally
                 pp.Dispose()
                 Try
                     'todo delete link when proc succesfully launched
-                    'FileIO.FileSystem.DeleteFile(shortcutlink) 'this deletes too soon
                 Catch ex As Exception
 
                 End Try
             End Try
-        Catch ex As Exception
+            Return shortcutlink
         Finally
             alreadylaunched = False
         End Try
-    End Sub
+    End Function
 
     Friend Async Function ReOpenAsWindowed() As Task
 
