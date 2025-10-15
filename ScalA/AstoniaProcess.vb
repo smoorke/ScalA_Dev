@@ -303,7 +303,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public Function Activate() As Boolean
         If proc Is Nothing Then Return True
 
-        AllowSetForegroundWindow(Me.Id)
+        AllowSetForegroundWindow(ASFW_ANY)
         Return SetForegroundWindow(Me.MainWindowHandle)
 
     End Function
