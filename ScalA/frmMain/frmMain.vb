@@ -1655,7 +1655,7 @@ Partial Public NotInheritable Class FrmMain
             'Dim ScalAThreadId As Integer = GetWindowThreadProcessId(ScalaHandle, Nothing) 'move this to a global since this won't change
             'Dim AstoniaThreadId As Integer = GetWindowThreadProcessId(ap.MainWindowHandle, Nothing) 'move this to astoniaproc
             'ap.ThreadInput(False) 
-            AttachThreadInput(ScalAThreadId, ap.MainThreadId, False) 'detach input so ctrl, shift and alt still work when there is an elevation mismatch, also fixes sleepy legacy clients lagging ScalA
+            AttachThreadInput(ScalaThreadId, ap.MainThreadId, False) 'detach input so ctrl, shift and alt still work when there is an elevation mismatch, also fixes sleepy legacy clients lagging ScalA
 
             Return ret
         Finally

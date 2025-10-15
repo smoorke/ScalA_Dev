@@ -786,14 +786,14 @@ Partial NotInheritable Class FrmMain
 
             Me.TopMost = True
             Me.BringToFront()
-            Await Task.Delay(100)
+            Await Task.Delay(25)
             Me.TopMost = My.Settings.topmost
 
             If Not FrmSettings.Visible Then
                 If Not pnlOverview.Visible Then
                     AltPP?.CenterBehind(pbZoom)
                     Attach(AltPP, True)
-                    dBug.print($"{moveBusy} {swpBusy}")
+                    dBug.Print($"{moveBusy} {swpBusy}")
                     moveBusy = False
                 Else
                     AppActivate(scalaPID)
