@@ -974,7 +974,10 @@ Module NativeMethods
     <DllImport("user32.dll")>
     Public Function GetSystemMenu(ByVal hwnd As IntPtr, ByVal bRevert As Boolean) As Integer : End Function
     <DllImport("user32.dll")>
-    Public Function ModifyMenuA(hMenu As Integer, uItem As Integer, fByPos As Integer, newID As Integer, lpNewIem As String) As Boolean : End Function
+    Public Function ModifyMenuA(hMenu As Integer, uItem As Integer, fByPos As Integer, newID As UIntPtr, lpNewIem As String) As Boolean : End Function
+    <DllImport("user32.dll", CharSet:=CharSet.Unicode, SetLastError:=True)>
+    Public Function ModifyMenuW(hMenu As IntPtr, uItem As UInteger, fByPos As UInteger, newID As UIntPtr, lpNewItem As String) As Boolean : End Function
+
     '<DllImport("user32.dll")>
     'Public Function SetMenuItemBitmaps(hMenu As Integer, uitem As Integer, fByPos As Integer, hBitmapUnchecked As Integer, hBitmapChecked As Integer) As Boolean : End Function
     <DllImport("gdi32.dll")>
