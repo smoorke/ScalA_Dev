@@ -1,3 +1,11 @@
+**ScalA 1.7.7**
+- Fixed activation issues (Taskbar Flashing) when clicking pinned ScalA taskbar icon, double clicking TrayIcon or restarting an idled Alt.
+- Fixed contextmenu of QL item with unicode text default item displaying `??` instead of actual glyphs.
+- Fixed QL not opening non lnk files.
+- Added MRU list located at `%TEMP%\ScalA\MRU.txt` for faster restarting of idled alts.
+  And afterwards have its taskbar button display correct name when r-clicked.
+- Added Cleanup of temp lnk files on startup.
+
 **ScalA 1.7.6**
 - Fixed Close All but <Name> on Overview Alt ContextMenu is visible when it shouldn't be.
 - Sped up parsing of QL Folders quite a bit irregardless of `Resolve Lnk`setting.

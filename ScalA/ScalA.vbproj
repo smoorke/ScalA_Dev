@@ -101,9 +101,7 @@
     <Compile Include="debugger\frmDebug.Designer.vb">
       <DependentUpon>frmDebug.vb</DependentUpon>
     </Compile>
-    <Compile Include="debugger\frmDebug.vb">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="debugger\frmDebug.vb" />
     <Compile Include="frmMain\frmOverlay.Designer.vb">
       <DependentUpon>frmOverlay.vb</DependentUpon>
     </Compile>
