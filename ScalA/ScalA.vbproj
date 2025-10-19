@@ -112,6 +112,7 @@
     </Compile>
     <Compile Include="FsWatcher.vb" />
     <Compile Include="KeyboardHook.vb" />
+    <Compile Include="MRU.vb" />
     <Compile Include="NaturalStringSorter.vb" />
     <Compile Include="DWMThumb.vb" />
     <Compile Include="Extensions.vb" />

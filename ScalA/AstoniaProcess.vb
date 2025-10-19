@@ -1186,33 +1186,39 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             Dim workdir As String = proc.GetCurrentDirectory()
             dBug.Print($"Working Directory: {workdir}")
 
-            If workdir.EndsWith("bin") Then
+            If Me.isSDL AndAlso workdir.EndsWith("bin") Then
                 workdir = workdir.Substring(0, workdir.LastIndexOf("\"))
             End If
 
             If arguments.Contains(exepath) Then arguments = arguments.Replace(exepath, "")
             If arguments.Contains("""""") Then arguments = arguments.Replace("""""", "").Trim
 
-            shortcutlink = IO.Path.Combine(FileIO.SpecialDirectories.Temp, $"ScalA\Restart\{Me.UserName}.lnk")
+            shortcutlink = MRU.FindFirstMatchingShortcut(exepath, arguments, workdir)
 
-            If Not IO.Directory.Exists(IO.Path.Combine(FileIO.SpecialDirectories.Temp, $"ScalA\Restart\")) Then
-                IO.Directory.CreateDirectory(IO.Path.Combine(FileIO.SpecialDirectories.Temp, $"ScalA\Restart\"))
+            If String.IsNullOrEmpty(shortcutlink) Then
+
+                shortcutlink = IO.Path.Combine(FileIO.SpecialDirectories.Temp, $"ScalA\Restart\{Me.UserName}.lnk")
+
+                If Not IO.Directory.Exists(IO.Path.Combine(FileIO.SpecialDirectories.Temp, $"ScalA\Restart\")) Then
+                    IO.Directory.CreateDirectory(IO.Path.Combine(FileIO.SpecialDirectories.Temp, $"ScalA\Restart\"))
+                End If
+
+                dBug.Print($"scl: {shortcutlink}")
+                ' Create a shortcut to relaunch the process
+                Dim oLink As Object
+                Try
+                    oLink = CreateObject("WScript.Shell").CreateShortcut(shortcutlink)
+                    oLink.TargetPath = exepath
+                    oLink.Arguments = arguments
+                    oLink.WorkingDirectory = workdir
+                    oLink.WindowStyle = 1
+                    oLink.Save()
+                Catch ex As Exception
+                    dBug.Print($"Failed to create shortcut: {ex.Message}")
+                    Return shortcutlink
+                End Try
+
             End If
-
-            dBug.Print($"scl: {shortcutlink}")
-            ' Create a shortcut to relaunch the process
-            Dim oLink As Object
-            Try
-                oLink = CreateObject("WScript.Shell").CreateShortcut(shortcutlink)
-                oLink.TargetPath = exepath
-                oLink.Arguments = arguments
-                oLink.WorkingDirectory = workdir
-                oLink.WindowStyle = 1
-                oLink.Save()
-            Catch ex As Exception
-                dBug.Print($"Failed to create shortcut: {ex.Message}")
-                Return shortcutlink
-            End Try
 
             ' Close or kill the current process
             If close Then Me.CloseOrKill()
@@ -1230,13 +1236,14 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 .Arguments = """" & shortcutlink & """",
                 .WindowStyle = ProcessWindowStyle.Hidden,
                 .CreateNoWindow = True
+                }
             }
-        }
 
             ' Start the new process
             Try
                 alreadylaunched = True
                 pp.Start()
+                MRU.Bump(shortcutlink)
             Catch ex As Exception
                 dBug.Print($"Failed to restart process: {ex.Message}")
                 Try

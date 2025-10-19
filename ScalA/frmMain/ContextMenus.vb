@@ -1998,6 +1998,7 @@ Partial Public NotInheritable Class FrmMain
 
         Try
             pp.Start()
+            MRU.Add(pth)
         Catch ex As Exception
             dBug.Print($"pp.start {ex.Message}")
         Finally
@@ -2013,6 +2014,7 @@ Partial Public NotInheritable Class FrmMain
                          End If
                      End Sub)
         End Try
+
 
         'btnStart.PerformClick()
 
