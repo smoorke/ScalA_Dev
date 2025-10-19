@@ -1779,7 +1779,7 @@ Partial Public NotInheritable Class FrmMain
                 SetMenuItemBitmaps(QlCtxNewMenu.Handle, aplist.Count + 3, MF_BYPOSITION, plusHbm, Nothing)
             End If
 
-            ModifyMenuA(QlCtxMenu.Handle, 0, MF_BYPOSITION, GetMenuItemID(QlCtxMenu.Handle, 0), $"{name}")
+            ModifyMenuW(QlCtxMenu.Handle, 0, MF_BYPOSITION, GetMenuItemID(QlCtxMenu.Handle, 0), $"{name}")
             Dim hbm = IntPtr.Zero
             If sender.Image IsNot Nothing Then
                 hbm = DirectCast(sender.Image, Bitmap).GetHbitmap(Color.Black)
