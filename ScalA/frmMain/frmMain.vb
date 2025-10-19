@@ -363,6 +363,35 @@ Partial Public NotInheritable Class FrmMain
     Private Sub FrmMain_Load(sender As Form, e As EventArgs) Handles MyBase.Load
         CheckForIllegalCrossThreadCalls = True
 
+        'cleanup of old temp files
+        Try
+            If IO.Directory.Exists(IO.Path.Combine(FileIO.SpecialDirectories.Temp, "ScalA\")) Then
+                IO.File.Delete(IO.Path.Combine(FileIO.SpecialDirectories.Temp, "ScalA\restart.lnk"))
+            End If
+        Catch ex As Exception
+            'fail silently
+        End Try
+        Try
+            If IO.Directory.Exists(IO.Path.Combine(FileIO.SpecialDirectories.Temp, "ScalA\")) Then
+                IO.File.Delete(IO.Path.Combine(FileIO.SpecialDirectories.Temp, "\ScalA\tmp.lnk"))
+            End If
+        Catch ex As Exception
+            'fail silently
+        End Try
+        Try
+            If IO.Directory.Exists(IO.Path.Combine(FileIO.SpecialDirectories.Temp, "ScalA\Restart\")) Then
+                For Each lnk In IO.Directory.EnumerateFiles(IO.Path.Combine(FileIO.SpecialDirectories.Temp, "ScalA\Restart\"))
+                    Try
+                        IO.File.Delete(lnk)
+                    Catch ex As Exception
+                        'fail silently
+                    End Try
+                Next
+            End If
+        Catch ex As Exception
+            'fail silently
+        End Try
+
         If Environment.OSVersion.Version.Major < 6 AndAlso Environment.OSVersion.Version.Minor < 1 Then
             MessageBox.Show("ScalA requires Windows 7 Or later", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             End
