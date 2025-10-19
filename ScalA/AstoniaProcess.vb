@@ -1193,9 +1193,12 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             If arguments.Contains(exepath) Then arguments = arguments.Replace(exepath, "")
             If arguments.Contains("""""") Then arguments = arguments.Replace("""""", "").Trim
 
+            Dim mruNotfound As Boolean = False
             shortcutlink = MRU.FindFirstMatchingShortcut(exepath, arguments, workdir)
 
             If String.IsNullOrEmpty(shortcutlink) Then
+
+                mruNotfound = True
 
                 shortcutlink = IO.Path.Combine(FileIO.SpecialDirectories.Temp, $"ScalA\Restart\{Me.UserName}.lnk")
 
@@ -1254,7 +1257,13 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             Finally
                 pp.Dispose()
                 Try
-                    'todo delete link when proc succesfully launched
+                    If mruNotfound AndAlso System.IO.File.Exists(shortcutlink) Then
+                        dBug.Print("Deleting shortcut")
+                        Task.Run(Sub()
+                                     Threading.Thread.Sleep(1000)
+                                     System.IO.File.Delete(shortcutlink)
+                                 End Sub)
+                    End If
                 Catch ex As Exception
 
                 End Try
