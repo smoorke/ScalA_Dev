@@ -1634,6 +1634,7 @@ Partial Public NotInheritable Class FrmMain
     Dim QlCtxNewMenu As New MenuItem
     Dim QlCtxMenu As New ContextMenu
     Private Sub QL_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs) 'Handles cmsQuickLaunch.mousedown
+        Dim qli As QLInfo = CType(sender.Tag, QLInfo)
         If e.Button = MouseButtons.Right Then
 
             dBug.Print("QL_MouseDown")
@@ -1648,7 +1649,7 @@ Partial Public NotInheritable Class FrmMain
                                              newFolderItem,
                                              New MenuItem("-")})
 
-            Dim path As String = CType(sender.Tag, QLInfo).path
+            Dim path As String = qli.path
 
             Dim cutItem = New MenuItem("Cut", AddressOf ClipAction) With {.Tag = {path, "Cut"}}
             Dim copyItem = New MenuItem("Copy", AddressOf ClipAction) With {.Tag = {path, "Copy"}}
@@ -1810,7 +1811,7 @@ Partial Public NotInheritable Class FrmMain
             Next
 
 
-        ElseIf Not CType(sender.Tag, QLInfo).path.EndsWith("\") AndAlso Not (My.Settings.QLResolveLnk AndAlso CType(sender.Tag, QLInfo).target.EndsWith("\"c)) Then 'do not process click on dirs as they are handled by doubleclick
+        ElseIf Not qli.path.EndsWith("\") AndAlso Not (My.Settings.QLResolveLnk AndAlso qli.path.tolower.EndsWith(".lnk") AndAlso qli.target.EndsWith("\"c)) Then 'do not process click on dirs as they are handled by doubleclick
             dBug.Print($"clicked Not a dir {My.Settings.QLResolveLnk} {CType(sender.Tag, QLInfo).target}")
             Task.Run(Sub() OpenLnk(sender, e))
             'cmsQuickLaunch.Close(ToolStripDropDownCloseReason.ItemClicked)
