@@ -2087,7 +2087,7 @@ Partial Public NotInheritable Class FrmMain
 
                                              Dim parentpid As Integer = ownId
                                              Dim rootPid As Integer = 0
-                                             While parentpid <> -1 OrElse parentpid = 0
+                                             While parentpid <> -1 OrElse parentpid = 0 OrElse sw.ElapsedMilliseconds >= 5000
                                                  parentpid = GetParentPid(parentpid)
                                                  If parentpid <> -1 Then rootPid = parentpid
                                                  If rootPid = scalaPID Then Exit While
@@ -2111,7 +2111,7 @@ Partial Public NotInheritable Class FrmMain
                              End If
                          Next
 
-                     Loop While sw.ElapsedMilliseconds < 5000
+                     Loop While sw.ElapsedMilliseconds <= 5000
                  End Sub)
         'btnStart.PerformClick()
 
