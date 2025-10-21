@@ -740,7 +740,7 @@ Partial Public NotInheritable Class FrmMain
                                  Dim dispname As String = System.IO.Path.GetFileName(fulldirs)
 
                                  Dim qli As New QLInfo With {.path = fulldirs & "\", .hidden = hidden, .name = dispname}
-                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname, "*Hidden*"), foldericon) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
+                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname, "*Hidden*"), folderIcon) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
 
                                  Me.BeginInvoke(Sub()
                                                     smenu.DropDownItems.Add("(Dummy)").Enabled = False
@@ -871,14 +871,16 @@ Partial Public NotInheritable Class FrmMain
             clipBoardInfo = GetClipboardFilesAndAction()
             If clipBoardInfo.Files?.Count > 0 AndAlso clipBoardInfo.Files.Any(Function(f) IO.File.Exists(f) OrElse IO.Directory.Exists(f)) Then
 
-                Dim sep As ToolStripSeparator = New ToolStripSeparator
-                menuItems.Add(sep)
+
+                PasteSep = New ToolStripSeparator
+
+                menuItems.Add(PasteSep)
 
                 pasteTSItem = New ToolStripMenuItem("Paste ", Nothing, AddressOf ClipAction)
 
                 menuItems.Add(pasteTSItem)
                 If clipBoardInfo.Action = ClipboardAction.Copy Then
-                    pasteLinkTSItem = New ToolStripMenuItem("Paste .Lnk", Nothing, AddressOf ClipAction)
+                    pasteLinkTSItem = New ToolStripMenuItem("Paste Shortcut", Nothing, AddressOf ClipAction)
                     menuItems.Add(pasteLinkTSItem)
                 End If
 
@@ -889,7 +891,7 @@ Partial Public NotInheritable Class FrmMain
                     Dim fil As String = clipBoardInfo.Files(0)
                     If Not (IO.File.Exists(fil) OrElse IO.Directory.Exists(fil)) Then
                         Debug.Print("file/dir missing")
-                        sep.Visible = False
+                        PasteSep.Visible = False
                         pasteTSItem.Visible = False
                         pasteLinkTSItem.Visible = False
                     Else
@@ -899,21 +901,30 @@ Partial Public NotInheritable Class FrmMain
                             nm = IO.Path.GetFileNameWithoutExtension(nm)
                         End If
                         pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} ""{nm}"""
-                        pasteTSItem.Image = GetIconFromFile(fil)
 
                         If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
-                            pasteTSItem.Image = pasteTSItem.Image.addOverlay(My.Resources.shortcutOverlay)
                             pasteLinkTSItem.Visible = False
                         Else
-                            pasteLinkTSItem.Text = "Paste .Lnk"
-                            pasteLinkTSItem.Image = pasteTSItem.Image.addOverlay(My.Resources.shortcutOverlay)
+                            pasteLinkTSItem.Text = "Paste Shortcut"
                         End If
+
+                        Task.Run(Sub()
+                                     Dim img = GetIconFromFile(fil)
+                                     Me.Invoke(Sub()
+                                                   pasteTSItem.Image = img
+                                                   If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
+                                                       pasteTSItem.Image = img.addOverlay(My.Resources.shortcutOverlay)
+                                                   Else
+                                                       pasteLinkTSItem.Image = img.addOverlay(My.Resources.shortcutOverlay)
+                                                   End If
+                                               End Sub)
+                                 End Sub)
                     End If
                 Else
                     pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} Multiple ({clipBoardInfo.Files?.Count})"
                     pasteTSItem.Image = My.Resources.multiPaste
 
-                    pasteLinkTSItem.Text = "Paste .Lnks"
+                    pasteLinkTSItem.Text = "Paste Shortcuts"
                     pasteLinkTSItem.Image = pasteTSItem.Image.addOverlay(My.Resources.shortcutOverlay)
                 End If
 
@@ -950,8 +961,9 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
+    Dim PasteSep As ToolStripSeparator = New ToolStripSeparator
     Dim pasteTSItem As ToolStripMenuItem = New ToolStripMenuItem("Paste ""Name""", Nothing, AddressOf ClipAction)
-    Dim pasteLinkTSItem As ToolStripMenuItem = New ToolStripMenuItem("Paste .Lnk", Nothing, AddressOf ClipAction)
+    Dim pasteLinkTSItem As ToolStripMenuItem = New ToolStripMenuItem("Paste Shortcut", Nothing, AddressOf ClipAction)
 
     'cannot rely on these, diff win version have diff icons for these
     'Public multiPasteBitmap As Bitmap = loadImageResBitmap(245)
@@ -988,7 +1000,9 @@ Partial Public NotInheritable Class FrmMain
                                                   hasHidden = True
                                               End If
                                               If it.Text <> "(Emtpy)" Then
-                                                  it.Visible = True
+                                                  If Not (it Is pasteLinkTSItem AndAlso clipBoardInfo.Files.Count = 1 AndAlso clipBoardInfo.Files(0).ToLower.EndsWith(".lnk")) Then
+                                                      it.Visible = True
+                                                  End If
                                               End If
                                           End Sub)
                                 If TypeOf it Is ToolStripMenuItem Then
@@ -1009,9 +1023,9 @@ Partial Public NotInheritable Class FrmMain
                                      For Each it As ToolStripItem In itemstohide
                                          Me.Invoke(Sub() it.Visible = False)
                                      Next
-                                     Exit For
+                                     Exit For 'itm
                                  End If
-                             Next
+                             Next 'itm
                          End If
                      End If
                  End Sub)
@@ -1019,12 +1033,12 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub CmsQuickLaunch_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs) Handles cmsQuickLaunch.Closing ', item.DropDownClosing
 
-        'For Each it As ToolStripMenuItem In CType(sender.items, ToolStripItemCollection).Cast(Of ToolStripItem).Where(Function(mi) TypeOf mi.Tag Is QLInfo)
-        '    Dim qli As QLInfo = it.Tag
-        '    If qli.invalidTarget Then
-        '        EvictIconCacheItem(qli.path)
-        '    End If
-        'Next
+        For Each it As ToolStripMenuItem In CType(sender.items, ToolStripItemCollection).Cast(Of ToolStripItem).Where(Function(mi) TypeOf mi.Tag Is QLInfo)
+            Dim qli As QLInfo = it.Tag
+            If qli.invalidTarget AndAlso qli.target.ToLower.EndsWith(".exe") Then
+                EvictIconCacheItem(qli.path)
+            End If
+        Next
 
 
         If My.Computer.Keyboard.CtrlKeyDown AndAlso
@@ -1102,7 +1116,7 @@ Partial Public NotInheritable Class FrmMain
         dBug.Print("addshortcut.sendertag:" & sender.Tag)
         sender.DropDownItems.Clear()
 
-        sender.DropDownItems.Add(New ToolStripMenuItem("Folder", foldericon, AddressOf Ql_NewFolder) With {.Tag = sender.Tag})
+        sender.DropDownItems.Add(New ToolStripMenuItem("Folder", folderIcon, AddressOf Ql_NewFolder) With {.Tag = sender.Tag})
         sender.DropDownItems.Add(New ToolStripSeparator())
 
         For Each alt As AstoniaProcess In AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.UserName)
@@ -1627,7 +1641,7 @@ Partial Public NotInheritable Class FrmMain
         End Try
     End Sub
 
-    Private ReadOnly folderHbm As IntPtr = foldericon.GetHbitmap(Color.Black)
+    Private ReadOnly folderHbm As IntPtr = folderIcon.GetHbitmap(Color.Black)
     Private ReadOnly plusHbm As IntPtr = New Bitmap(My.Resources.Add, New Size(16, 16)).GetHbitmap(Color.Black)
 
     'Dim QlCtxIsOpen As Boolean = False 'to handle glitch in contextmenu when moving astonia window
@@ -1700,30 +1714,33 @@ Partial Public NotInheritable Class FrmMain
                         End If
 
                         pasteItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} ""{nm}"""
-                        pasteLinkItem.Text = "Paste .Lnk"
+                        pasteLinkItem.Text = "Paste Shortcut"
 
-                        'don't pull from cache we may not be watching filechanges. make async tho, io peration may be slow
-                        Dim ico As Bitmap = GetIconFromFile(clipBoardInfo.Files(0), False)
+                        'Dim ico As Bitmap = GetIconFromCache(New QLInfo With {.path = clipBoardInfo.Files(0)})
+                        Task.Run(Sub() 'async since pulling icon from file may be slow
+                                     'don't pollute cache we may not be watching filechanges.
+                                     Dim ico As Bitmap = GetIconFromFile(clipBoardInfo.Files(0), False)
 
-                        Dim shortcuttedIcon As Bitmap = ico.addOverlay(My.Resources.shortcutOverlay)
+                                     Dim shortcuttedIcon As Bitmap = ico.addOverlay(My.Resources.shortcutOverlay)
 
-                        If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
-                            ico = shortcuttedIcon
-                            pasteLinkItem.Visible = False
-                        End If
+                                     If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
+                                         ico = shortcuttedIcon
+                                         pasteLinkItem.Visible = False
+                                     End If
 
-                        pastehbm = ico.GetHbitmap(Color.Black)
-                        pasteShortcutHbm = shortcuttedIcon.GetHbitmap(Color.Black)
+                                     pastehbm = ico.GetHbitmap(Color.Black)
+                                     pasteShortcutHbm = shortcuttedIcon.GetHbitmap(Color.Black)
 
-                        purgeList.Add(pastehbm)
-                        purgeList.Add(pasteShortcutHbm)
+                                     purgeList.Add(pastehbm)
+                                     purgeList.Add(pasteShortcutHbm)
 
 
-                        Dim cmdpos As Integer = QlCtxMenu.MenuItems.OfType(Of MenuItem).TakeWhile(Function(m) m.Handle <> pasteItem.Handle).Count(Function(it) it.Visible)
+                                     Dim cmdpos As Integer = QlCtxMenu.MenuItems.OfType(Of MenuItem).TakeWhile(Function(m) m.Handle <> pasteItem.Handle).Count(Function(it) it.Visible)
 
-                        SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos, MF_BYPOSITION, pastehbm, Nothing)
+                                     SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos, MF_BYPOSITION, pastehbm, Nothing)
 
-                        If pasteLinkItem.Visible Then SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos + 1, MF_BYPOSITION, pasteShortcutHbm, Nothing)
+                                     If pasteLinkItem.Visible Then SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos + 1, MF_BYPOSITION, pasteShortcutHbm, Nothing)
+                                 End Sub)
                     Else
                         pasteItem.Enabled = False
                         pasteLinkItem.Visible = False
@@ -1731,7 +1748,7 @@ Partial Public NotInheritable Class FrmMain
                 Else 'more than 1 file/dir.
 
                     pasteItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} Multiple ({clipBoardInfo.Files?.Count})"
-                    pasteLinkItem.Text = "Paste .Lnks"
+                    pasteLinkItem.Text = "Paste Shortcuts"
 
                     pastehbm = My.Resources.multiPaste.GetHbitmap(Color.Black)
                     pasteShortcutHbm = multipasteBitmapOverlay.GetHbitmap(Color.Black)
@@ -1811,7 +1828,7 @@ Partial Public NotInheritable Class FrmMain
             Next
 
 
-        ElseIf Not qli.path.EndsWith("\") AndAlso Not (My.Settings.QLResolveLnk AndAlso qli.path.tolower.EndsWith(".lnk") AndAlso qli.target.EndsWith("\"c)) Then 'do not process click on dirs as they are handled by doubleclick
+        ElseIf Not qli.path.EndsWith("\") AndAlso Not (My.Settings.QLResolveLnk AndAlso qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target.EndsWith("\"c)) Then 'do not process click on dirs as they are handled by doubleclick
             dBug.Print($"clicked Not a dir {My.Settings.QLResolveLnk} {CType(sender.Tag, QLInfo).target}")
             Task.Run(Sub() OpenLnk(sender, e))
             'cmsQuickLaunch.Close(ToolStripDropDownCloseReason.ItemClicked)
@@ -1863,8 +1880,42 @@ Partial Public NotInheritable Class FrmMain
 
         If Not {"Paste", "PasteLink"}.Contains(act) Then
             dupeClipBoard()
-        End If
 
+            pasteTSItem.Tag = {IO.Path.Combine(tgt, "Empty"), "Paste"}
+            pasteLinkTSItem.Tag = {IO.Path.Combine(tgt, "Empty"), "PasteLink"}
+
+            If Not (IO.File.Exists(tgt) OrElse IO.Directory.Exists(tgt)) Then
+                Debug.Print("file/dir missing")
+                PasteSep.Visible = False
+                pasteTSItem.Visible = False
+                pasteLinkTSItem.Visible = False
+            Else
+                Dim nm As String = IO.Path.GetFileName(tgt)
+                If String.IsNullOrEmpty(nm) Then nm = tgt
+                If hideExt.Contains(IO.Path.GetExtension(nm)) Then
+                    nm = IO.Path.GetFileNameWithoutExtension(nm)
+                End If
+                pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} ""{nm}"""
+
+                If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
+                    pasteLinkTSItem.Visible = False
+                Else
+                    pasteLinkTSItem.Text = "Paste Shortcut"
+                End If
+
+                Task.Run(Sub()
+                             Dim img = GetIconFromFile(tgt)
+                             Me.Invoke(Sub()
+                                           pasteTSItem.Image = img
+                                           If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
+                                               pasteTSItem.Image = img.addOverlay(My.Resources.shortcutOverlay)
+                                           Else
+                                               pasteLinkTSItem.Image = img.addOverlay(My.Resources.shortcutOverlay)
+                                           End If
+                                       End Sub)
+                         End Sub)
+            End If
+        End If
     End Sub
 
     Private Sub UpdateMenuChecks(menu As ToolStripItemCollection, itemSet As HashSet(Of String))
