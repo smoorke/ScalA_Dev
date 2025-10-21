@@ -1035,7 +1035,7 @@ Partial Public NotInheritable Class FrmMain
 
         For Each it As ToolStripMenuItem In CType(sender.items, ToolStripItemCollection).Cast(Of ToolStripItem).Where(Function(mi) TypeOf mi.Tag Is QLInfo)
             Dim qli As QLInfo = it.Tag
-            If qli.invalidTarget AndAlso qli.target.ToLower.EndsWith(".exe") Then
+            If qli.invalidTarget Then
                 EvictIconCacheItem(qli.path)
             End If
         Next
@@ -2018,7 +2018,8 @@ Partial Public NotInheritable Class FrmMain
     Private waitCursorTimer As Stopwatch
     Private Sub OpenLnk(ByVal sender As ToolStripItem, ByVal e As System.Windows.Forms.MouseEventArgs) 'handles item.MouseDown
 
-        Dim pth As String = CType(sender.Tag, QLInfo).path
+        Dim qli = sender.Tag
+        Dim pth As String = qli.path
         dBug.Print("openLnk: " & pth)
         If e Is Nothing Then Exit Sub
         If e.Button = MouseButtons.Right Then
@@ -2067,9 +2068,70 @@ Partial Public NotInheritable Class FrmMain
         End Try
 
 
+        'hoist error dialogs to front/owned
+        Task.Run(Sub()
+                     Dim sw As Stopwatch = Stopwatch.StartNew()
+                     Dim targetCmdPath As String = Environment.ExpandEnvironmentVariables("%windir%\system32\cmd.exe").Trim().ToLowerInvariant()
+                     Do
+                         Threading.Thread.Sleep(200)
+                         Dim hwndList As New List(Of IntPtr)
+                         EnumWindows(Function(hwnd As IntPtr, lParam As IntPtr)
+                                         If Not IsWindowVisible(hwnd) Then Return True
+                                         If GetWindowClass(hwnd) = "#32770" Then
+
+                                             Dim owner As IntPtr = GetWindowLong(hwnd, GWL_HWNDPARENT)
+                                             If owner = IntPtr.Zero OrElse owner = ScalaHandle Then Return True
+
+                                             Dim ownId As UInteger
+                                             GetWindowThreadProcessId(owner, ownId)
+
+                                             Dim parentpid As Integer = ownId
+                                             Dim rootPid As Integer = 0
+                                             While parentpid <> -1 OrElse parentpid = 0
+                                                 parentpid = GetParentPid(parentpid)
+                                                 If parentpid <> -1 Then rootPid = parentpid
+                                                 If rootPid = scalaPID Then Exit While
+                                             End While
+
+                                             If rootPid = scalaPID Then
+                                                 Using ownPP As Process = Process.GetProcessById(ownId)
+                                                     If ownPP.Path.ToLowerInvariant() = targetCmdPath Then
+                                                         hwndList.Add(hwnd)
+                                                     End If
+                                                 End Using
+                                             End If
+                                         End If
+                                         Return True
+                                     End Function, IntPtr.Zero)
+
+                         For Each hwn In hwndList
+                             SetWindowLong(hwn, GWL_HWNDPARENT, ScalaHandle)
+                             If My.Settings.topmost Then
+                                 SetWindowPos(hwn, SWP_HWND.TOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
+                             End If
+                         Next
+
+                     Loop While sw.ElapsedMilliseconds < 5000
+                 End Sub)
         'btnStart.PerformClick()
 
     End Sub
+
+    Public Function GetParentPid(pid As Integer) As Integer
+        Try
+            Using proc As Process = Process.GetProcessById(pid)
+                Dim pbi As New PROCESS_BASIC_INFORMATION()
+                Dim retLen As Integer = 0
+                Dim status As Integer = NtQueryInformationProcess(proc.Handle, 0, pbi, Marshal.SizeOf(pbi), retLen)
+                If status = 0 Then
+                    Return pbi.InheritedFromUniqueProcessId.ToInt32()
+                End If
+            End Using
+        Catch ex As Exception
+            Debug.Print($"NtQueryInformationProcess failed for {pid}: {ex.Message}")
+        End Try
+        Return -1
+    End Function
 
     Private Sub setCursor(menu As ToolStripDropDownMenu, Curs As Cursor)
         menu.Cursor = Curs
