@@ -859,8 +859,8 @@ Partial Public NotInheritable Class FrmMain
                                  End If
                              End Sub)
 
-        menuItems = Dirs.OrderBy(Function(d) CType(d.Tag, QLInfo).path, nsSorter).Concat(
-                    Files.OrderBy(Function(f) IO.Path.GetFileNameWithoutExtension(CType(f.Tag, QLInfo).path), nsSorter)).ToList
+        menuItems = Dirs.OrderBy(Function(d) CType(d.Tag, QLInfo).name, nsSorter).Concat(
+                    Files.OrderBy(Function(f) CType(f.Tag, QLInfo).path, nsSorter)).ToList
 
         If timedout Then
             menuItems.Add(New ToolStripMenuItem("<TimedOut>") With {.Enabled = False})
