@@ -663,9 +663,11 @@ Partial NotInheritable Class FrmMain
             If Not MouseButtons.HasFlag(MouseButtons.Middle) AndAlso Not MouseButtons.HasFlag(MouseButtons.Right) Then AltPP?.ThreadInput(False)
         ElseIf activeID <> 0 Then 'inactive
             setActive(False)
+            Dim wip = GetAncestor(WindowFromPoint(MousePosition), GA_ROOT)
             Dim pid As Integer
-            GetWindowThreadProcessId(GetAncestor(WindowFromPoint(MousePosition), GA_ROOT), pid)
-            If pid <> scalaPID Then
+            GetWindowThreadProcessId(wip, pid)
+            Dim owner = GetWindowLong(wip, GWL_HWNDPARENT)
+            If pid <> scalaPID AndAlso owner <> ScalaHandle Then
                 AltPP?.ThreadInput(True) 'fix bringtofront bug
             Else
                 AltPP?.ThreadInput(False)
