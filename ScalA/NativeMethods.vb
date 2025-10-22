@@ -1008,10 +1008,10 @@ Module NativeMethods
 
     <StructLayout(LayoutKind.Sequential)>
     Public Structure PROCESS_BASIC_INFORMATION
-        Public Reserved1 As IntPtr
+        Public ExitStatus As IntPtr
         Public PebBaseAddress As IntPtr
-        Public Reserved2_0 As IntPtr
-        Public Reserved2_1 As IntPtr
+        Public AffinityMask As IntPtr
+        Public BasePriority As IntPtr
         Public UniqueProcessId As IntPtr
         Public InheritedFromUniqueProcessId As IntPtr
     End Structure

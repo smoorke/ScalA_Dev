@@ -1978,7 +1978,8 @@ Partial Public NotInheritable Class FrmMain
                .lpVerb = "properties",
                .lpFile = pth,
                .nShow = SW_SHOW,
-               .fMask = SEE_MASK_INVOKEIDLIST
+               .fMask = SEE_MASK_INVOKEIDLIST,
+               .hwnd = ScalaHandle
             }
             CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
             cmsQuickLaunch.Close()
@@ -1991,12 +1992,14 @@ Partial Public NotInheritable Class FrmMain
                          Dim hndl As IntPtr
                          While watch.ElapsedMilliseconds < 10000
                              Threading.Thread.Sleep(50)
+                             'todo replace with enumwnd so we can be locale agnostic
                              hndl = FindWindow("#32770", WindowName)
                              dBug.Print($"findwindow {hndl}")
                              If hndl <> IntPtr.Zero Then Exit While
                          End While
-                         If My.Settings.topmost Then SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
-                         SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                         SetWindowPos(hndl, SWP_HWND.TOP, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                         SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
+                         If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
                          watch.Stop()
                      End Sub)
         End If
@@ -2076,31 +2079,30 @@ Partial Public NotInheritable Class FrmMain
                          Threading.Thread.Sleep(200)
                          Dim hwndList As New List(Of IntPtr)
                          EnumWindows(Function(hwnd As IntPtr, lParam As IntPtr)
+
                                          If Not IsWindowVisible(hwnd) Then Return True
-                                         If GetWindowClass(hwnd) = "#32770" Then
+                                         If GetWindowClass(hwnd) <> "#32770" Then Return True
 
-                                             Dim owner As IntPtr = GetWindowLong(hwnd, GWL_HWNDPARENT)
-                                             If owner = IntPtr.Zero OrElse owner = ScalaHandle Then Return True
+                                         Dim owner As IntPtr = GetWindowLong(hwnd, GWL_HWNDPARENT)
+                                         If owner = IntPtr.Zero OrElse owner = ScalaHandle Then Return True
 
-                                             Dim ownId As UInteger
-                                             GetWindowThreadProcessId(owner, ownId)
+                                         Dim ownId As UInteger
+                                         GetWindowThreadProcessId(owner, ownId)
 
-                                             Dim parentpid As Integer = ownId
-                                             Dim rootPid As Integer = 0
-                                             While parentpid <> -1 OrElse parentpid = 0 OrElse sw.ElapsedMilliseconds >= 5000
-                                                 parentpid = GetParentPid(parentpid)
-                                                 If parentpid <> -1 Then rootPid = parentpid
-                                                 If rootPid = scalaPID Then Exit While
-                                             End While
+                                         Dim parentpid As Integer = ownId
+                                         Dim rootPid As Integer = ownId
+                                         While parentpid <> -1 OrElse parentpid = 0 OrElse sw.ElapsedMilliseconds >= 5000
+                                             parentpid = GetParentPid(parentpid)
+                                             If parentpid <> -1 Then rootPid = parentpid
+                                             If rootPid = scalaPID Then Exit While
+                                         End While
 
-                                             If rootPid = scalaPID Then
-                                                 Using ownPP As Process = Process.GetProcessById(ownId)
-                                                     If ownPP.Path.ToLowerInvariant() = targetCmdPath Then
-                                                         hwndList.Add(hwnd)
-                                                     End If
-                                                 End Using
+                                         If rootPid = scalaPID Then
+                                             If ProcessPath(ownId).ToLowerInvariant() = targetCmdPath Then
+                                                 hwndList.Add(hwnd)
                                              End If
                                          End If
+
                                          Return True
                                      End Function, IntPtr.Zero)
 
@@ -2113,8 +2115,6 @@ Partial Public NotInheritable Class FrmMain
 
                      Loop While sw.ElapsedMilliseconds <= 5000
                  End Sub)
-        'btnStart.PerformClick()
-
     End Sub
 
     Public Function GetParentPid(pid As Integer) As Integer

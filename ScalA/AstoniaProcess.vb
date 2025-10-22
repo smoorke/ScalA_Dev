@@ -1588,6 +1588,24 @@ Module ProcessExtensions
         Return processPath
     End Function
 
+    Public Function ProcessPath(ByVal pid As Integer) As String
+        ProcessPath = ""
+
+        Dim processHandle As IntPtr = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, False, pid)
+        Try
+            If Not processHandle = IntPtr.Zero Then
+                Dim buffer As New System.Text.StringBuilder(1024)
+                If QueryFullProcessImageName(processHandle, 0, buffer, buffer.Capacity) Then
+                    processPath = buffer.ToString()
+                End If
+            End If
+        Finally
+            CloseHandle(processHandle)
+        End Try
+
+        Return processPath
+    End Function
+
     ''' <summary>
     ''' Returns the executable path of a process by using GetFinalPathNameByHandle.
     ''' </summary>
