@@ -2091,7 +2091,7 @@ Partial Public NotInheritable Class FrmMain
 
                                          Dim parentpid As Integer = ownId
                                          Dim rootPid As Integer = ownId
-                                         While parentpid <> -1 OrElse parentpid = 0 OrElse sw.ElapsedMilliseconds >= 5000
+                                         While parentpid <> -1 OrElse parentpid <> 0 OrElse sw.ElapsedMilliseconds >= 5000
                                              parentpid = GetParentPid(parentpid)
                                              If parentpid <> -1 Then rootPid = parentpid
                                              If rootPid = scalaPID Then Exit While
