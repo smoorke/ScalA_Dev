@@ -542,9 +542,10 @@ Partial Public NotInheritable Class FrmMain
         Next
     End Sub
 
-    Public Function GetIconFromFile(PathName As String, Optional deffolder As Boolean = False) As Bitmap
-
-        dBug.Print($"iconCahceMiss: {PathName}")
+    Public Function GetIconFromFile(PathName As String, Optional deffolder As Boolean = False, Optional supressCacheMiss As Boolean = False) As Bitmap
+#If DEBUG Then
+        If Not supressCacheMiss Then dBug.Print($"iconCahceMiss: {PathName}")
+#End If
 
         Dim bm As Bitmap = Nothing
         Dim fi As New SHFILEINFOW
@@ -796,7 +797,7 @@ Partial Public NotInheritable Class FrmMain
                                      target = lin.TargetPath
 
                                      qli.target = target
-                                     qli.invalidTarget = Not lin.TargetExists
+                                     qli.invalidTarget = Not lin.TargetExists AndAlso Not lin.IsVirtual
 
                                      If My.Settings.QLResolveLnk Then
 
@@ -910,7 +911,7 @@ Partial Public NotInheritable Class FrmMain
                         End If
 
                         Task.Run(Sub()
-                                     Dim img = GetIconFromFile(fil)
+                                     Dim img = GetIconFromFile(fil, supressCacheMiss:=True)
                                      Me.Invoke(Sub()
                                                    pasteTSItem.Image = img
                                                    If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
@@ -1124,7 +1125,7 @@ Partial Public NotInheritable Class FrmMain
         Next
 
     End Sub
-    Private folderIcon As Bitmap = GetIconFromFile(FileIO.SpecialDirectories.Temp & "\", True)
+    Private folderIcon As Bitmap = GetIconFromFile(FileIO.SpecialDirectories.Temp & "\", True, True)
     Private folderIconWithOverlay = folderIcon.addOverlay(My.Resources.shortcutOverlay, True)
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
         dBug.Print("addshortcut.sendertag:" & sender.Tag)
@@ -1877,7 +1878,7 @@ Partial Public NotInheritable Class FrmMain
                                                 text = CType(it.Tag, MenuTag).tooltip
                                             End If
 
-                                            ' Find highlight rect (as before)
+                                            ' Find highlight rect
                                             Dim hMenu = QlCtxMenu.Handle
                                             Dim rc As RECT
                                             For i = 0 To GetMenuItemCount(hMenu) - 1
@@ -1989,7 +1990,7 @@ Partial Public NotInheritable Class FrmMain
                 End If
 
                 Task.Run(Sub()
-                             Dim img = GetIconFromFile(tgt)
+                             Dim img = GetIconFromFile(tgt, False, True)
                              Me.Invoke(Sub()
                                            pasteTSItem.Image = img
                                            If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
