@@ -7,6 +7,7 @@ Imports System.Text
 Public NotInheritable Class FrmSettings
     Public SysMenu As New SysMenu(Me)
     Dim startup As Boolean = True
+    Private Shared ExplorerIcon As Bitmap = FrmMain.GetIconFromFile(IO.Path.Combine(Environment.ExpandEnvironmentVariables("%windir%"), "explorer.exe"), supressCacheMiss:=True)
     Private Sub FrmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         'storeZoom = My.Settings.zoom
 
@@ -209,6 +210,8 @@ Public NotInheritable Class FrmSettings
             End If
             pnlElevation.Visible = True
         End If
+
+        OpenInExplorerToolStripMenuItem.Image = ExplorerIcon
 
         'btnRefreshICdisplay.PerformClick() 'this doesn't work when tab isn't in view
 
@@ -1393,6 +1396,5 @@ Public NotInheritable Class FrmSettings
             FrmMain.cmsQuickLaunch.Close()
         End If
     End Sub
-
 
 End Class
