@@ -82,6 +82,7 @@ Public NotInheritable Class ShellLinkInfo
 
     Public Property PointsToDir As Boolean = False
     Public Property TargetExists As Boolean = False
+    Public Property IsVirtual As Boolean = False
 
     Public Sub New()
 
@@ -102,6 +103,8 @@ Public NotInheritable Class ShellLinkInfo
             Dim wfd As New WIN32_FIND_DATAW
             shellLink.GetPath(sb, sb.Capacity, wfd, 0)
             Me.TargetPath = sb.ToString().Trim()
+
+            If String.IsNullOrEmpty(Me.TargetPath) Then Me.IsVirtual = True
 
             sb.Clear() : sb.EnsureCapacity(260)
             shellLink.GetDescription(sb, sb.Capacity)
