@@ -1,8 +1,6 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.ComponentModel
 Imports System.Runtime.InteropServices
-Imports System.Threading
-Imports System.Windows.Forms.VisualStyles.VisualStyleElement
 Imports Microsoft.Win32
 
 Public NotInheritable Class ContextMenus
