@@ -51,8 +51,9 @@ Partial Class frmDebug
         Me.btnTest = New System.Windows.Forms.Button()
         Me.cmsDebugFuncs = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.DumpWatchersToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.btnIpcInfo = New System.Windows.Forms.Button()
         Me.PurgeIconCacheMiscToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.btnIpcInfo = New System.Windows.Forms.Button()
+        Me.TootltiptestToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         lblMinimum = New System.Windows.Forms.Label()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
@@ -267,15 +268,21 @@ Partial Class frmDebug
         '
         'cmsDebugFuncs
         '
-        Me.cmsDebugFuncs.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DumpWatchersToolStripMenuItem, Me.PurgeIconCacheMiscToolStripMenuItem})
+        Me.cmsDebugFuncs.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DumpWatchersToolStripMenuItem, Me.PurgeIconCacheMiscToolStripMenuItem, Me.TootltiptestToolStripMenuItem})
         Me.cmsDebugFuncs.Name = "cmsDebugFuncs"
-        Me.cmsDebugFuncs.Size = New System.Drawing.Size(187, 70)
+        Me.cmsDebugFuncs.Size = New System.Drawing.Size(187, 92)
         '
         'DumpWatchersToolStripMenuItem
         '
         Me.DumpWatchersToolStripMenuItem.Name = "DumpWatchersToolStripMenuItem"
         Me.DumpWatchersToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
         Me.DumpWatchersToolStripMenuItem.Text = "Dump Watchers"
+        '
+        'PurgeIconCacheMiscToolStripMenuItem
+        '
+        Me.PurgeIconCacheMiscToolStripMenuItem.Name = "PurgeIconCacheMiscToolStripMenuItem"
+        Me.PurgeIconCacheMiscToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
+        Me.PurgeIconCacheMiscToolStripMenuItem.Text = "PurgeIconCacheMisc"
         '
         'btnIpcInfo
         '
@@ -286,11 +293,11 @@ Partial Class frmDebug
         Me.btnIpcInfo.Text = "IPC Info"
         Me.btnIpcInfo.UseVisualStyleBackColor = True
         '
-        'PurgeIconCacheMiscToolStripMenuItem
+        'TootltiptestToolStripMenuItem
         '
-        Me.PurgeIconCacheMiscToolStripMenuItem.Name = "PurgeIconCacheMiscToolStripMenuItem"
-        Me.PurgeIconCacheMiscToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
-        Me.PurgeIconCacheMiscToolStripMenuItem.Text = "PurgeIconCacheMisc"
+        Me.TootltiptestToolStripMenuItem.Name = "TootltiptestToolStripMenuItem"
+        Me.TootltiptestToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
+        Me.TootltiptestToolStripMenuItem.Text = "Tootltiptest"
         '
         'frmDebug
         '
@@ -354,5 +361,6 @@ Partial Class frmDebug
     Friend WithEvents cmsDebugFuncs As ContextMenuStrip
     Friend WithEvents DumpWatchersToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents PurgeIconCacheMiscToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents TootltiptestToolStripMenuItem As ToolStripMenuItem
 End Class
 #End If

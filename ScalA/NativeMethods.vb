@@ -968,8 +968,6 @@ Module NativeMethods
     Public Function ShowCursor(bShow As Boolean) As Integer : End Function
 
     <DllImport("user32.dll")>
-    Public Function GetMenuItemCount(hMenu As IntPtr) As Integer : End Function
-    <DllImport("user32.dll")>
     Public Function SetMenuItemBitmaps(hMenu As IntPtr, uPosition As UInteger, uFlags As UInteger, hBitmapUnchecked As IntPtr, hBitmapChecked As IntPtr) As Integer : End Function
     <DllImport("user32.dll")>
     Public Function GetSystemMenu(ByVal hwnd As IntPtr, ByVal bRevert As Boolean) As Integer : End Function
@@ -998,6 +996,24 @@ Module NativeMethods
     Public Function GetMenuItemInfo(hMenu As IntPtr, uItem As UInt32, fByPosition As Boolean, ByRef lpmii As MENUITEMINFO) As Boolean : End Function
     <DllImport("user32.dll")>
     Public Function SetMenuItemInfo(hMenu As IntPtr, uItem As UInt32, fByPosition As Boolean, ByRef lpmii As MENUITEMINFO) As Boolean : End Function
+
+
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function GetMenu(hwnd As IntPtr) As IntPtr : End Function
+
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function GetSubMenu(hMenu As IntPtr, nPos As Integer) As IntPtr : End Function
+
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function GetMenuItemRect(hWnd As IntPtr, hMenu As IntPtr, uItem As UInteger, ByRef lprcItem As RECT) As Boolean : End Function
+
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function GetMenuItemCount(hMenu As IntPtr) As Integer : End Function
+
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function GetMenuState(hMenu As IntPtr, uId As Integer, uFlags As Integer) As Integer : End Function
+
+    ' For GetMenuState()
 
 
     <DllImport("user32.dll")>
@@ -1109,6 +1125,7 @@ Module NativeMethods
     'Const MF_REMOVE = &H1000&
 
     Public Const MF_BYCOMMAND = &H0
+    Public Const MF_HILITE As Integer = &H80
     Public Const MF_BYPOSITION = &H400
     Public Const MF_SEPARATOR = &H800
     Public Const MF_GRAYED As UInteger = &H1

@@ -1,6 +1,8 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.ComponentModel
 Imports System.Runtime.InteropServices
+Imports System.Threading
+Imports System.Windows.Forms.VisualStyles.VisualStyleElement
 Imports Microsoft.Win32
 
 Public NotInheritable Class ContextMenus
@@ -884,8 +886,8 @@ Partial Public NotInheritable Class FrmMain
                     menuItems.Add(pasteLinkTSItem)
                 End If
 
-                pasteTSItem.Tag = {pth & "Empty", "Paste"}
-                pasteLinkTSItem.Tag = {pth & "Empty", "PasteLink"}
+                pasteTSItem.Tag = New MenuTag With {.path = pth & "Empty", .action = "Paste"}
+                pasteLinkTSItem.Tag = New MenuTag With {.path = pth & "Empty", .action = "PasteLink"}
 
                 If clipBoardInfo.Files.Count = 1 Then
                     Dim fil As String = clipBoardInfo.Files(0)
@@ -900,7 +902,8 @@ Partial Public NotInheritable Class FrmMain
                         If hideExt.Contains(IO.Path.GetExtension(nm)) Then
                             nm = IO.Path.GetFileNameWithoutExtension(nm)
                         End If
-                        pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} ""{nm}"""
+                        pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} ""{nm.CapWithEllipsis(16)}"""
+                        pasteTSItem.ToolTipText = If(nm.Length > 16, nm, "")
 
                         If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
                             pasteLinkTSItem.Visible = False
@@ -922,6 +925,19 @@ Partial Public NotInheritable Class FrmMain
                     End If
                 Else
                     pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} Multiple ({clipBoardInfo.Files?.Count})"
+
+                    Dim idx = 0
+                    Dim sb As New Text.StringBuilder
+                    For Each clippath As String In clipBoardInfo.Files
+                        sb.AppendLine(IO.Path.GetFileName(clippath) & If(IO.Directory.Exists(clippath), "\", ""))
+                        idx += 1
+                        If idx >= 5 Then
+                            sb.AppendLine($"<and {clipBoardInfo.Files.Count - idx} more>")
+                            Exit For
+                        End If
+                    Next
+                    pasteTSItem.ToolTipText = sb.ToString
+
                     pasteTSItem.Image = My.Resources.multiPaste
 
                     pasteLinkTSItem.Text = "Paste Shortcuts"
@@ -1647,6 +1663,7 @@ Partial Public NotInheritable Class FrmMain
     'Dim QlCtxIsOpen As Boolean = False 'to handle glitch in contextmenu when moving astonia window
     Dim QlCtxNewMenu As New MenuItem
     Dim QlCtxMenu As New ContextMenu
+
     Private Sub QL_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs) 'Handles cmsQuickLaunch.mousedown
         Dim qli As QLInfo = CType(sender.Tag, QLInfo)
         If e.Button = MouseButtons.Right Then
@@ -1665,10 +1682,10 @@ Partial Public NotInheritable Class FrmMain
 
             Dim path As String = qli.path
 
-            Dim cutItem = New MenuItem("Cut", AddressOf ClipAction) With {.Tag = {path, "Cut"}}
-            Dim copyItem = New MenuItem("Copy", AddressOf ClipAction) With {.Tag = {path, "Copy"}}
-            Dim pasteItem = New MenuItem("Paste", AddressOf ClipAction) With {.Tag = {path, "Paste"}}
-            Dim pasteLinkItem = New MenuItem("Paste .Lnk", AddressOf ClipAction) With {.Tag = {path, "PasteLink"}}
+            Dim cutItem = New MenuItem("Cut", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .Action = "Cut"}}
+            Dim copyItem = New MenuItem("Copy", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .Action = "Copy"}}
+            Dim pasteItem = New MenuItem("Paste", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .Action = "Paste"}}
+            Dim pasteLinkItem = New MenuItem("Paste Shortcut", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .Action = "PasteLink"}}
 
             QlCtxMenu = New ContextMenu({
                 New MenuItem("Open", AddressOf QlCtxOpen) With {.DefaultItem = True},
@@ -1713,8 +1730,14 @@ Partial Public NotInheritable Class FrmMain
                             nm = IO.Path.GetFileNameWithoutExtension(nm)
                         End If
 
-                        pasteItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} ""{nm}"""
+                        pasteItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} ""{nm.CapWithEllipsis(16)}"""
                         pasteLinkItem.Text = "Paste Shortcut"
+
+                        If nm.Length > 16 Then
+                            Dim tag As MenuTag = CType(pasteItem.Tag, MenuTag)
+                            tag.tooltip = nm
+                            pasteItem.Tag = tag
+                        End If
 
                         'Dim ico As Bitmap = GetIconFromCache(New QLInfo With {.path = clipBoardInfo.Files(0)})
                         Task.Run(Sub() 'async since pulling icon from file may be slow
@@ -1748,6 +1771,21 @@ Partial Public NotInheritable Class FrmMain
                 Else 'more than 1 file/dir.
 
                     pasteItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} Multiple ({clipBoardInfo.Files?.Count})"
+
+                    Dim tag As MenuTag = pasteItem.Tag
+                    Dim idx = 0
+                    Dim sb As New Text.StringBuilder
+                    For Each clippath As String In clipBoardInfo.Files
+                        sb.AppendLine(IO.Path.GetFileName(clippath) & If(IO.Directory.Exists(clippath), "\", ""))
+                        idx += 1
+                        If idx >= 5 Then
+                            sb.AppendLine($"<and {clipBoardInfo.Files.Count - idx} more>")
+                            Exit For
+                        End If
+                    Next
+                    tag.tooltip = sb.ToString
+                    pasteItem.Tag = tag
+
                     pasteLinkItem.Text = "Paste Shortcuts"
 
                     pastehbm = My.Resources.multiPaste.GetHbitmap(Color.Black)
@@ -1816,7 +1854,51 @@ Partial Public NotInheritable Class FrmMain
             Next
             dBug.Print($"purgeList.Count {purgeList.Count}")
 
+            'MenuToolTip.InitializeTooltip(sender.Owner.Handle)
+            MenuToolTip.InitializeTooltip()
+
+            For Each item As MenuItem In QlCtxMenu.MenuItems
+                ' Skip separators
+                If item.Text = "-" Then Continue For
+
+                ' Show tooltip when item is selected
+                AddHandler item.Select, Sub(it As MenuItem, ev As EventArgs)
+
+                                            Debug.Print("select menuitem")
+                                            MenuToolTip.HideTooltip()
+
+                                            ' Find the popup menu window
+                                            Dim hwndMenu = FindWindow("#32768", Nothing) 'todo replace with enumwnd and a check for owner as scalahandle?
+                                            If hwndMenu = IntPtr.Zero Then
+                                                Debug.Print("Menu window not found.")
+                                                Exit Sub
+                                            End If
+
+                                            Dim text As String = "" 'tooltips with empty text are not shown
+                                            If TypeOf it.Tag Is MenuTag Then
+                                                text = CType(it.Tag, MenuTag).tooltip
+                                            End If
+
+                                            ' Find highlight rect (as before)
+                                            Dim hMenu = QlCtxMenu.Handle
+                                            Dim rc As RECT
+                                            For i = 0 To GetMenuItemCount(hMenu) - 1
+                                                Dim state = GetMenuState(hMenu, i, MF_BYPOSITION)
+                                                If (state And MF_HILITE) <> 0 Then
+                                                    GetMenuItemRect(IntPtr.Zero, hMenu, i, rc)
+                                                    Exit For
+                                                End If
+                                            Next
+
+                                            MenuToolTip.ShowTooltipWithDelay(text, hwndMenu, rc)
+
+                                        End Sub
+
+            Next
+
             TrackPopupMenuEx(QlCtxMenu.Handle, TPM_RECURSE, MousePosition.X, MousePosition.Y, ScalaHandle, Nothing)
+
+            MenuToolTip.HideTooltip()
 
             'sender.BackColor = Color.Transparent
             QLCtxMenuOpenedOn = Nothing
@@ -1836,8 +1918,8 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub ClipAction(sender As Object, e As EventArgs)
-        Dim tgt As String = sender.tag(0)
-        Dim act As String = sender.tag(1)
+        Dim tgt As String = sender.tag.path
+        Dim act As String = sender.tag.action
 
         If {"Paste", "PasteLink"}.Contains(act) Then
             tgt = IO.Path.GetDirectoryName(tgt.TrimEnd("\"c))
@@ -1881,8 +1963,8 @@ Partial Public NotInheritable Class FrmMain
         If Not {"Paste", "PasteLink"}.Contains(act) Then
             dupeClipBoard()
 
-            pasteTSItem.Tag = {IO.Path.Combine(tgt, "Empty"), "Paste"}
-            pasteLinkTSItem.Tag = {IO.Path.Combine(tgt, "Empty"), "PasteLink"}
+            pasteTSItem.Tag = New MenuTag With {.path = IO.Path.Combine(tgt, "Empty"), .action = "Paste"}
+            pasteLinkTSItem.Tag = New MenuTag With {.path = IO.Path.Combine(tgt, "Empty"), .action = "PasteLink"}
 
             If Not (IO.File.Exists(tgt) OrElse IO.Directory.Exists(tgt)) Then
                 Debug.Print("file/dir missing")
@@ -1890,12 +1972,17 @@ Partial Public NotInheritable Class FrmMain
                 pasteTSItem.Visible = False
                 pasteLinkTSItem.Visible = False
             Else
-                Dim nm As String = IO.Path.GetFileName(tgt)
+                Dim nm As String = IO.Path.GetFileName(tgt.TrimEnd("\"c))
                 If String.IsNullOrEmpty(nm) Then nm = tgt
                 If hideExt.Contains(IO.Path.GetExtension(nm)) Then
                     nm = IO.Path.GetFileNameWithoutExtension(nm)
                 End If
-                pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} ""{nm}"""
+                pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} ""{nm.CapWithEllipsis(16)}"""
+                If nm.Length > 16 Then
+                    pasteTSItem.ToolTipText = nm
+                Else
+                    pasteTSItem.ToolTipText = String.Empty
+                End If
 
                 If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
                     pasteLinkTSItem.Visible = False
@@ -2197,7 +2284,11 @@ Public Structure QLInfo
     Public invalidTarget As Boolean
     Public pointsToDir As Boolean
 End Structure
-
+Public Structure MenuTag
+    Public path As String
+    Public action As String
+    Public tooltip As String
+End Structure
 
 Module ImageExtension
     ''' <summary>

@@ -335,6 +335,11 @@ Public Class frmDebug
         If hasUrl Then FrmMain.DefURLicons.Clear()
         dBug.Print($"{counter} items removed, urlcache.size {FrmMain.DefURLicons.count}")
     End Sub
+
+    Private Sub TootltiptestToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles TootltiptestToolStripMenuItem.Click
+        'MenuToolTip.InitializeTooltip(Me.Handle)
+        'MenuToolTip.ShowTooltipWithDelay("Test123", 0, 0)
+    End Sub
 #End If
 End Class
 #If DEBUG Then

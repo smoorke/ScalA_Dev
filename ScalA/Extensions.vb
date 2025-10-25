@@ -47,7 +47,19 @@ Module Extensions
     ''' <returns></returns>
     <Extension>
     Public Function Cap(str As String, length As Integer) As String
+        If String.IsNullOrEmpty(str) Then Return String.Empty
         Return Strings.Left(str, Math.Min(length, str.Length))
+    End Function
+    ''' <summary>
+    ''' Caps a string at a given length and adds an ellipsis when appropriate.
+    ''' </summary>
+    ''' <param name="str"></param>
+    ''' <param name="length"></param>
+    ''' <returns></returns>
+    <Extension>
+    Public Function CapWithEllipsis(str As String, length As Integer) As String
+        If String.IsNullOrEmpty(str) Then Return String.Empty
+        Return Strings.Left(str, Math.Min(length, str.Length)) & If(length < str.Length, "…", "")
     End Function
 
     ''' <summary>
