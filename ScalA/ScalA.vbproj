@@ -68,6 +68,8 @@
     <Reference Include="System.Deployment" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Management" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Security" />
@@ -225,6 +227,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\ScalA_Updater_Zip.zip" />
     <None Include="Resources\WarningOverlay.png" />
     <None Include="Resources\shortcutOverlay.png" />
     <None Include="Resources\multiPaste.png" />
@@ -234,7 +237,6 @@
     <None Include="Resources\Warning.png" />
     <None Include="Resources\Sync.png" />
     <None Include="Resources\moreF12.png" />
-    <None Include="Resources\ScalA_Updater.exe" />
     <None Include="Resources\scrollbar_arrow_small_hot.png" />
     <None Include="Resources\cornerNE.png" />
     <None Include="Resources\cornerNW.png" />

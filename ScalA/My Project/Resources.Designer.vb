@@ -273,9 +273,9 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized resource of type System.Byte[].
         '''</summary>
-        Friend ReadOnly Property ScalA_Updater() As Byte()
+        Friend ReadOnly Property ScalA_Updater_Zip() As Byte()
             Get
-                Dim obj As Object = ResourceManager.GetObject("ScalA_Updater", resourceCulture)
+                Dim obj As Object = ResourceManager.GetObject("ScalA_Updater_Zip", resourceCulture)
                 Return CType(obj,Byte())
             End Get
         End Property

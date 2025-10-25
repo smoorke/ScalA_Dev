@@ -1,4 +1,5 @@
-﻿Imports System.Net.Http
+﻿Imports System.IO.Compression
+Imports System.Net.Http
 
 Partial Public NotInheritable Class FrmMain
 
@@ -737,7 +738,34 @@ Partial Public NotInheritable Class FrmMain
             If Not FileIO.FileSystem.DirectoryExists(FileIO.SpecialDirectories.Temp & "\ScalA\") Then
                 FileIO.FileSystem.CreateDirectory(FileIO.SpecialDirectories.Temp & "\ScalA\")
             End If
-            FileIO.FileSystem.WriteAllBytes(FileIO.SpecialDirectories.Temp & "\ScalA\ScalA_Updater.exe", My.Resources.ScalA_Updater, False)
+            'FileIO.FileSystem.WriteAllBytes(FileIO.SpecialDirectories.Temp & "\ScalA\ScalA_Updater.exe", My.Resources.ScalA_Updater, False)
+
+            Using zipStream As New IO.MemoryStream(My.Resources.ScalA_Updater_Zip)
+                Using archive As New ZipArchive(zipStream, ZipArchiveMode.Read)
+                    For Each entry As ZipArchiveEntry In archive.Entries
+                        Dim fullPath As String = IO.Path.Combine(FileIO.SpecialDirectories.Temp & "\ScalA\", entry.FullName)
+
+                        ' Ensure directory structure exists
+                        Dim dir As String = IO.Path.GetDirectoryName(fullPath)
+                        If Not IO.Directory.Exists(dir) Then
+                            IO.Directory.CreateDirectory(dir)
+                        End If
+
+                        ' Skip directories
+                        If entry.FullName.EndsWith("/") OrElse entry.FullName.EndsWith("\") Then
+                            Continue For
+                        End If
+
+                        ' Extract entry to disk (overwrite = True)
+                        Using entryStream As IO.Stream = entry.Open()
+                            Using outFile As IO.FileStream = IO.File.Create(fullPath)
+                                entryStream.CopyTo(outFile)
+                            End Using
+                        End Using
+                    Next
+                End Using
+            End Using
+
             Dim si As New ProcessStartInfo With {
                                        .FileName = FileIO.SpecialDirectories.Temp & "\ScalA\ScalA_Updater.exe",
                                        .Arguments = $"""{MePath}"""
