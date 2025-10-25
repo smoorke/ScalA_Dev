@@ -1681,13 +1681,15 @@ Partial Public NotInheritable Class FrmMain
 
             Dim path As String = qli.path
 
+            Dim OpenItem = New MenuItem("Open", AddressOf QlCtxOpen) With {.DefaultItem = True}
+
             Dim cutItem = New MenuItem("Cut", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .Action = "Cut"}}
             Dim copyItem = New MenuItem("Copy", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .Action = "Copy"}}
             Dim pasteItem = New MenuItem("Paste", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .Action = "Paste"}}
             Dim pasteLinkItem = New MenuItem("Paste Shortcut", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .Action = "PasteLink"}}
 
             QlCtxMenu = New ContextMenu({
-                New MenuItem("Open", AddressOf QlCtxOpen) With {.DefaultItem = True},
+                OpenItem,
                 New MenuItem($"Open All{vbTab}-->", AddressOf QlCtxOpenAll) With {
                                 .Visible = (path.EndsWith("\") OrElse (My.Settings.QLResolveLnk AndAlso path.ToLower.EndsWith(".lnk"))) AndAlso
                                 sender.DropDownItems.OfType(Of ToolStripMenuItem) _
@@ -1739,30 +1741,30 @@ Partial Public NotInheritable Class FrmMain
                         End If
 
                         'Dim ico As Bitmap = GetIconFromCache(New QLInfo With {.path = clipBoardInfo.Files(0)})
-                        Task.Run(Sub() 'async since pulling icon from file may be slow
-                                     'don't pollute cache we may not be watching filechanges.
-                                     Dim ico As Bitmap = GetIconFromFile(clipBoardInfo.Files(0), False)
 
-                                     Dim shortcuttedIcon As Bitmap = ico.addOverlay(My.Resources.shortcutOverlay)
+                        Dim ico As Bitmap = GetIconFromFile(clipBoardInfo.Files(0), False, True) 'cannot go async here. updating bitmaps after menu has been show is all kinds of wonky
 
-                                     If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
-                                         ico = shortcuttedIcon
-                                         pasteLinkItem.Visible = False
-                                     End If
+                        Dim shortcuttedIcon As Bitmap = ico.addOverlay(My.Resources.shortcutOverlay)
 
-                                     pastehbm = ico.GetHbitmap(Color.Black)
-                                     pasteShortcutHbm = shortcuttedIcon.GetHbitmap(Color.Black)
+                        If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
+                            ico = shortcuttedIcon
+                            pasteLinkItem.Visible = False
+                        End If
 
-                                     purgeList.Add(pastehbm)
-                                     purgeList.Add(pasteShortcutHbm)
+                        pastehbm = ico.GetHbitmap(Color.Black)
+                        pasteShortcutHbm = shortcuttedIcon.GetHbitmap(Color.Black)
 
+                        purgeList.Add(pastehbm)
+                        purgeList.Add(pasteShortcutHbm)
 
-                                     Dim cmdpos As Integer = QlCtxMenu.MenuItems.OfType(Of MenuItem).TakeWhile(Function(m) m.Handle <> pasteItem.Handle).Count(Function(it) it.Visible)
+                        Dim cmdpos As Integer = QlCtxMenu.MenuItems.OfType(Of MenuItem) _
+                                                                   .TakeWhile(Function(m) m.Handle <> pasteItem.Handle) _
+                                                                   .Count(Function(it) it.Visible)
 
-                                     SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos, MF_BYPOSITION, pastehbm, Nothing)
+                        SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos, MF_BYPOSITION, pastehbm, Nothing)
 
-                                     If pasteLinkItem.Visible Then SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos + 1, MF_BYPOSITION, pasteShortcutHbm, Nothing)
-                                 End Sub)
+                        If pasteLinkItem.Visible Then SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos + 1, MF_BYPOSITION, pasteShortcutHbm, Nothing)
+
                     Else
                         pasteItem.Enabled = False
                         pasteLinkItem.Visible = False
@@ -1834,7 +1836,13 @@ Partial Public NotInheritable Class FrmMain
                 SetMenuItemBitmaps(QlCtxNewMenu.Handle, aplist.Count + 3, MF_BYPOSITION, plusHbm, Nothing)
             End If
 
-            ModifyMenuW(QlCtxMenu.Handle, 0, MF_BYPOSITION, GetMenuItemID(QlCtxMenu.Handle, 0), $"{name}")
+            'ModifyMenuW(QlCtxMenu.Handle, 0, MF_BYPOSITION, GetMenuItemID(QlCtxMenu.Handle, 0), $"{name.CapWithEllipsis(25)}")
+            OpenItem.text = name.CapWithEllipsis(25)
+
+            If name.Length > 25 Then
+                OpenItem.tag = New MenuTag With {.tooltip = name}
+            End If
+
             Dim hbm = IntPtr.Zero
             If sender.Image IsNot Nothing Then
                 hbm = DirectCast(sender.Image, Bitmap).GetHbitmap(Color.Black)
@@ -1864,12 +1872,20 @@ Partial Public NotInheritable Class FrmMain
                 AddHandler item.Select, Sub(it As MenuItem, ev As EventArgs)
 
                                             Debug.Print("select menuitem")
-                                            MenuToolTip.HideTooltip()
 
                                             ' Find the popup menu window
-                                            Dim hwndMenu = FindWindow("#32768", Nothing) 'todo replace with enumwnd and a check for owner as scalahandle?
+                                            'Dim hwndMenu = FindWindow("#32768", Nothing) 'todo replace with enumwnd and a check for owner as scalahandle/scalaPid?
+                                            Dim hwndMenu As IntPtr = IntPtr.Zero
+                                            EnumThreadWindows(ScalaThreadId, Function(hWnd, lParam)
+                                                                                 If Not IsWindowVisible(hWnd) Then Return True
+                                                                                 If GetWindowClass(hWnd) = "#32768" Then
+                                                                                     hwndMenu = hWnd
+                                                                                     Return False ' stop enumeration
+                                                                                 End If
+                                                                                 Return True
+                                                                             End Function, IntPtr.Zero)
                                             If hwndMenu = IntPtr.Zero Then
-                                                Debug.Print("Menu window not found.")
+                                                dBug.Print("Menu window not found.")
                                                 Exit Sub
                                             End If
 
