@@ -20,7 +20,6 @@ Namespace MenuToolTip
         Public Const TTM_TRACKPOSITION As Integer = &H412
         Public Const TTM_GETDELAYTIME As Integer = &H421
 
-
         Public Const TTDT_RESHOW As Integer = 1
         Public Const TTDT_AUTOPOP As Integer = 2
         Public Const TTDT_INITIAL As Integer = 3
@@ -108,10 +107,12 @@ Namespace MenuToolTip
             If delayTimer IsNot Nothing Then
                 RemoveHandler delayTimer.Tick, AddressOf DelayTimer_Tick
                 delayTimer.Dispose()
+                delayTimer = Nothing
             End If
             If hideTimer IsNot Nothing Then
                 RemoveHandler hideTimer.Tick, AddressOf HideTimer_Tick
                 hideTimer.Dispose()
+                hideTimer = Nothing
             End If
 
             ' Query tooltip control’s delay times
@@ -129,13 +130,34 @@ Namespace MenuToolTip
         Private Sub DelayTimer_Tick(sender As Object, e As EventArgs)
             delayTimer.Stop()
             RemoveHandler delayTimer.Tick, AddressOf DelayTimer_Tick
-
             Dim args = DirectCast(delayTimer.Tag, Object())
+
+            delayTimer.Dispose()
+            delayTimer = Nothing
+
             Dim text As String = CStr(args(0))
             Dim hwndMenu As IntPtr = CType(args(1), IntPtr)
             Dim rcMenuItem As RECT = CType(args(2), RECT)
 
             If Not PtInRect(rcMenuItem, Control.MousePosition) Then Exit Sub
+
+            If String.IsNullOrEmpty(text) Then
+                HideTooltip()
+                Exit Sub
+            Else
+                Task.Run(Sub()
+                             While PtInRect(rcMenuItem, Control.MousePosition)
+                                 Threading.Thread.Sleep(66)
+                             End While
+                             If hideTimer IsNot Nothing Then
+                                 hideTimer.Stop()
+                                 RemoveHandler hideTimer.Tick, AddressOf HideTimer_Tick
+                                 hideTimer.Dispose()
+                                 hideTimer = Nothing
+                             End If
+                             HideTooltip()
+                         End Sub)
+            End If
 
             Dim autoPopDelay = SendMessage(hWndTooltip, TTM_GETDELAYTIME, New IntPtr(TTDT_AUTOPOP), IntPtr.Zero).ToInt32()
             If autoPopDelay <= 0 Then autoPopDelay = 5000
@@ -156,13 +178,10 @@ Namespace MenuToolTip
             AddHandler hideTimer.Tick, AddressOf HideTimer_Tick
             hideTimer.Start()
 
-            Debug.Print($"Tooltip shown '{text}' (initial={delayTimer.Interval}ms, show={autoPopDelay}ms)")
         End Sub
 
         Private Sub HideTimer_Tick(sender As Object, e As EventArgs)
             HideTooltip()
-            hideTimer.Stop()
-            RemoveHandler hideTimer.Tick, AddressOf HideTimer_Tick
         End Sub
 
         ' ===== Hide Tooltip =====
@@ -170,6 +189,12 @@ Namespace MenuToolTip
             If hWndTooltip <> IntPtr.Zero Then
                 SendMessage(hWndTooltip, TTM_TRACKACTIVATE, IntPtr.Zero, tipInfo)
                 SendMessage(hWndTooltip, TTM_DELTOOL, IntPtr.Zero, tipInfo)
+            End If
+            If hideTimer IsNot Nothing Then
+                hideTimer.Stop()
+                RemoveHandler hideTimer.Tick, AddressOf HideTimer_Tick
+                hideTimer.Dispose()
+                hideTimer = Nothing
             End If
         End Sub
 
