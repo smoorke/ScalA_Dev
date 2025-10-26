@@ -97,7 +97,12 @@ Public Class KeyboardHook : Implements IDisposable
                         GetWindowThreadProcessId(fgw, pid)
                         If pid = FrmMain.scalaPID AndAlso My.Computer.Keyboard.CtrlKeyDown Then
                             If GetWindowText(fgw).StartsWith("Rename ") Then
-                                Return -1
+                                Dim edit = FindWindowEx(fgw, IntPtr.Zero, Nothing, Nothing)
+                                Debug.Print($"{GetWindowClass(edit)}")
+                                If GetWindowClass(edit).Contains("EDIT") Then
+                                    EditBoxHelper.DeletePreviousWord(edit)
+                                    Return -1
+                                End If
                             End If
                         End If
                 End Select
