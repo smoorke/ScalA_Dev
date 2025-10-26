@@ -22,9 +22,6 @@ Namespace EditBoxHelper
         <DllImport("user32.dll", CharSet:=CharSet.Auto)>
         Public Function SendMessage(ByVal hWnd As IntPtr, ByVal msg As Integer, ByVal wParam As IntPtr, ByVal lParam As StringBuilder) As IntPtr
         End Function
-        <DllImport("user32.dll", CharSet:=CharSet.Auto)>
-        Public Function SendMessage(ByVal hWnd As IntPtr, ByVal msg As Integer, ByVal wParam As IntPtr, ByVal lParam As Integer) As IntPtr
-        End Function
 
         Public Function GetEditText(hEdit As IntPtr) As String
             Dim len As Integer = SendMessage(hEdit, WM_GETTEXTLENGTH, IntPtr.Zero, IntPtr.Zero).ToInt32()
