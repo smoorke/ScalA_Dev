@@ -1689,10 +1689,10 @@ Partial Public NotInheritable Class FrmMain
 
             Dim OpenItem = New MenuItem("Open", AddressOf QlCtxOpen) With {.DefaultItem = True}
 
-            Dim cutItem = New MenuItem("Cut", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .Action = "Cut"}}
-            Dim copyItem = New MenuItem("Copy", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .Action = "Copy"}}
-            Dim pasteItem = New MenuItem("Paste", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .Action = "Paste"}}
-            Dim pasteLinkItem = New MenuItem("Paste Shortcut", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .Action = "PasteLink"}}
+            Dim cutItem = New MenuItem("Cut", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "Cut"}}
+            Dim copyItem = New MenuItem("Copy", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "Copy"}}
+            Dim pasteItem = New MenuItem("Paste", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "Paste"}}
+            Dim pasteLinkItem = New MenuItem("Paste Shortcut", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "PasteLink"}}
 
             QlCtxMenu = New ContextMenu({
                 OpenItem,
@@ -1843,10 +1843,10 @@ Partial Public NotInheritable Class FrmMain
             End If
 
             'ModifyMenuW(QlCtxMenu.Handle, 0, MF_BYPOSITION, GetMenuItemID(QlCtxMenu.Handle, 0), $"{name.CapWithEllipsis(25)}")
-            OpenItem.text = name.CapWithEllipsis(25)
+            OpenItem.Text = name.CapWithEllipsis(25)
 
             If name.Length > 25 Then
-                OpenItem.tag = New MenuTag With {.tooltip = name}
+                OpenItem.Tag = New MenuTag With {.tooltip = name}
             End If
 
             Dim hbm = IntPtr.Zero
@@ -2141,7 +2141,7 @@ Partial Public NotInheritable Class FrmMain
         waitCursorTimer = Stopwatch.StartNew
         Me.Invoke(Sub()
                       Me.Cursor = Cursors.WaitCursor
-                      setCursor(cmsQuickLaunch, Cursors.WaitCursor)
+                      setMenuCursor(cmsQuickLaunch, Cursors.WaitCursor)
                   End Sub)
 
         Dim bat As String = "\AsInvoker.bat"
@@ -2172,7 +2172,7 @@ Partial Public NotInheritable Class FrmMain
                          If waitCursorTimer.ElapsedMilliseconds >= timout Then
                              Me.BeginInvoke(Sub()
                                                 Cursor = Cursors.Arrow
-                                                setCursor(cmsQuickLaunch, Cursors.Arrow)
+                                                setMenuCursor(cmsQuickLaunch, Cursors.Arrow)
                                             End Sub)
                          End If
                      End Sub)
@@ -2241,11 +2241,11 @@ Partial Public NotInheritable Class FrmMain
         Return -1
     End Function
 
-    Private Sub setCursor(menu As ToolStripDropDownMenu, Curs As Cursor)
+    Private Sub setMenuCursor(menu As ToolStripDropDownMenu, Curs As Cursor)
         menu.Cursor = Curs
         For Each it As ToolStripMenuItem In menu.Items.OfType(Of ToolStripMenuItem)
             If it.HasDropDown AndAlso it.DropDown.Visible Then
-                setCursor(it.DropDown, Curs)
+                setMenuCursor(it.DropDown, Curs)
             End If
         Next
     End Sub
