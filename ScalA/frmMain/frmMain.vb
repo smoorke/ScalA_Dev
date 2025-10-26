@@ -1444,7 +1444,7 @@ Partial Public NotInheritable Class FrmMain
             Detach(True)
             MinAllActiveOverview()
         ElseIf My.Settings.MinMin AndAlso cboAlt.SelectedIndex <> 0 AndAlso AltPP?.isSDL Then
-            AltPP.CenterBehind(pbZoom, Nothing)
+            AltPP.CenterBehind(pbZoom, SetWindowPosFlags.DoNotActivate)
             AltPP.Hide()
         Else
             dBug.Print("swl parent")
