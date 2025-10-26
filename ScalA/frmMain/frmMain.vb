@@ -646,7 +646,6 @@ Partial Public NotInheritable Class FrmMain
         IPC.AddOrUpdateInstance(scalaPID, cboAlt.SelectedIndex = 0, If(cboAlt.SelectedIndex = 0, Nothing, cboAlt.SelectedItem?.id), showingSomeone)
 
         'CheckScreenScalingMode()
-        ScalaHandle = Me.Handle
 
         Dim sb As Rectangle = Me.RectangleToScreen(pbZoom.Bounds)
         frmOverlay.Bounds = sb 'New Rectangle(sb.X, sb.Y + 21, sb.Width, sb.Height - 21)
