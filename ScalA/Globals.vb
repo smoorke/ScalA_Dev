@@ -127,10 +127,31 @@ Module Globals
         SendInput(1, MouseInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
     End Sub
 
-    Private _ScalAThreadId As Integer?
-    Public ReadOnly Property ScalaThreadId() As String
+    Public ReadOnly scalaPID As Integer = Process.GetCurrentProcess().Id
+
+    Private _ScalAHandle As IntPtr
+    Public Property ScalaHandle() As IntPtr
         Get
-            If _ScalAThreadId Is Nothing Then _ScalAThreadId = GetWindowThreadProcessId(FrmMain.ScalaHandle, Nothing)
+            If _ScalAHandle = IntPtr.Zero Then _ScalAHandle = FrmMain.Handle
+            Return _ScalAHandle
+        End Get
+        Set(value As IntPtr)
+            _ScalAHandle = value
+        End Set
+    End Property
+
+    Private _ScalAClass As String
+    Public ReadOnly Property ScalaClass() As String
+        Get
+            If String.IsNullOrEmpty(_ScalAClass) Then _ScalAClass = GetWindowClass(ScalaHandle)
+            Return _ScalAClass
+        End Get
+    End Property
+
+    Private _ScalAThreadId As Integer?
+    Public ReadOnly Property ScalaThreadId() As Integer
+        Get
+            If _ScalAThreadId Is Nothing Then _ScalAThreadId = GetWindowThreadProcessId(ScalaHandle, Nothing)
             Return _ScalAThreadId
         End Get
     End Property

@@ -12,7 +12,7 @@ Partial NotInheritable Class FrmMain
     Dim rcC As Rectangle ' clientrect
     Public newX As Integer
     Public newY As Integer
-    Public Shared ScalaHandle As IntPtr
+
     Private storedX As Integer = 0
     Private storedY As Integer = 0
     Private wasVisible As Boolean = True

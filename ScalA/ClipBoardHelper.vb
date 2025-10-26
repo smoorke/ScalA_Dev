@@ -7,7 +7,7 @@ Module ClipBoardHelper
     Private _ListeningFormHand As IntPtr
 
     Public Sub registerClipListener()
-        If AddClipboardFormatListener(FrmMain.ScalaHandle) Then _ListeningFormHand = FrmMain.ScalaHandle
+        If AddClipboardFormatListener(ScalaHandle) Then _ListeningFormHand = ScalaHandle
     End Sub
 
     Public Sub unregisterClipListener()
@@ -18,8 +18,8 @@ Module ClipBoardHelper
         Dim hw As IntPtr = GetClipboardOwner()
         Dim pid As Integer
         GetWindowThreadProcessId(hw, pid)
-        dBug.Print($"dupeClipBoard {pid = FrmMain.scalaPID}")
-        If pid = FrmMain.scalaPID Then
+        dBug.Print($"dupeClipBoard {pid = scalaPID}")
+        If pid = scalaPID Then
             ClipboardCopy()
         End If
     End Sub
@@ -50,11 +50,11 @@ Module ClipBoardHelper
                 Next
             End If
 
-            RemoveClipboardFormatListener(FrmMain.ScalaHandle)
+            RemoveClipboardFormatListener(ScalaHandle)
 
             Clipboard.SetDataObject(newData, True)
 
-            AddClipboardFormatListener(FrmMain.ScalaHandle)
+            AddClipboardFormatListener(ScalaHandle)
 
         Catch ex As Exception
             Debug.Print("ClipboardCopy error: " & ex.Message)

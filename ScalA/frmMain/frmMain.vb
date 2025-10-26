@@ -457,7 +457,6 @@ Partial Public NotInheritable Class FrmMain
 
         dBug.Print("mangleSysMenu")
         InitSysMenu()
-        ScalaHandle = Me.Handle
 
         dBug.Print("topmost " & My.Settings.topmost)
         Me.TopMost = My.Settings.topmost
@@ -542,7 +541,7 @@ Partial Public NotInheritable Class FrmMain
         FrmBehind.Show()
         frmOverlay.Show(Me)
         FrmSizeBorder.Show(Me)
-        ScalaHandle = Me.Handle
+
         suppressWM_MOVEcwp = True
 
         If cmbResolution.SelectedIndex = 0 Then DoEqLock(My.Settings.resol)
@@ -647,6 +646,7 @@ Partial Public NotInheritable Class FrmMain
         IPC.AddOrUpdateInstance(scalaPID, cboAlt.SelectedIndex = 0, If(cboAlt.SelectedIndex = 0, Nothing, cboAlt.SelectedItem?.id), showingSomeone)
 
         'CheckScreenScalingMode()
+        ScalaHandle = Me.Handle
 
         Dim sb As Rectangle = Me.RectangleToScreen(pbZoom.Bounds)
         frmOverlay.Bounds = sb 'New Rectangle(sb.X, sb.Y + 21, sb.Width, sb.Height - 21)
@@ -1686,7 +1686,6 @@ Partial Public NotInheritable Class FrmMain
         End If
     End Sub
 
-    Public Shared ReadOnly scalaPID As Integer = Process.GetCurrentProcess().Id
     Public Shared topSortList As List(Of String) = My.Settings.topSort.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries).ToList
     Public Shared botSortList As List(Of String) = My.Settings.botSort.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries).ToList
     Public Shared blackList As List(Of String) = topSortList.Intersect(botSortList).ToList

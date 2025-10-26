@@ -80,7 +80,7 @@ Module dBug
                                                                        FrmMain.AltPP IsNot Nothing AndAlso FrmMain.AltPP.Id <> 0 AndAlso FrmMain.cboAlt.SelectedIndex <> 0
 
                                      FrmMain.UntrapMouse(MouseButtons.Right)
-                                     AppActivate(FrmMain.scalaPID)
+                                     AppActivate(ScalaPID)
                                  End Sub
         AddHandler FrmMain.chkDebug.MouseUp, Sub(sen, ev) FrmMain.UntrapMouse(ev.Button)
 #End If
@@ -379,16 +379,16 @@ Module dBug
     End Sub
 
     Friend Sub NudgeTaskbar(sender As Object, e As EventArgs)
-        SetWindowLong(FrmMain.ScalaHandle, GWL_HWNDPARENT, 0)
-        'Debug.print("1:" & FlashWindow(FrmMain.ScalaHandle, True))
-        'Debug.print("2:" & FlashWindow(FrmMain.ScalaHandle, False))
-        'AppActivate(FrmMain.scalaPID)
+        SetWindowLong(ScalaHandle, GWL_HWNDPARENT, 0)
+        'Debug.print("1:" & FlashWindow(ScalaHandle, True))
+        'Debug.print("2:" & FlashWindow(ScalaHandle, False))
+        'AppActivate(ScalaPID)
         FrmMain.Activate()
     End Sub
 
     Friend Sub thumbStuff(sender As Object, e As EventArgs)
         Dim tb As Integer
-        DwmRegisterThumbnail(FrmMain.ScalaHandle, FrmMain.AltPP.MainWindowHandle, tb)
+        DwmRegisterThumbnail(ScalaHandle, FrmMain.AltPP.MainWindowHandle, tb)
 
         Dim tp As New DWM_THUMBNAIL_PROPERTIES With {.fSourceClientAreaOnly = True, .dwFlags = DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY}
 

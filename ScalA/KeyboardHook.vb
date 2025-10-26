@@ -92,11 +92,14 @@ Public Class KeyboardHook : Implements IDisposable
                             End Using
                         End If
                     Case Keys.Back
-                        Dim fgw = GetForegroundWindow()
-                        Dim pid As Integer
-                        GetWindowThreadProcessId(fgw, pid)
-                        If pid = FrmMain.scalaPID AndAlso My.Computer.Keyboard.CtrlKeyDown Then
-                            If GetWindowText(fgw).StartsWith("Rename ") Then
+                        If My.Computer.Keyboard.CtrlKeyDown Then
+                            Dim fgw = GetForegroundWindow()
+                            Dim pid As Integer
+                            GetWindowThreadProcessId(fgw, pid)
+                            If pid = scalaPID AndAlso
+                               GetWindowLong(fgw, GWL_HWNDPARENT) = ScalaHandle AndAlso
+                               GetWindowText(fgw).StartsWith("Rename ") AndAlso
+                               GetWindowClass(fgw) = ScalaClass Then ' GetWindowClass(ScalaHandle) Then
                                 Dim edit = FindWindowEx(fgw, IntPtr.Zero, Nothing, Nothing)
                                 Debug.Print($"{GetWindowClass(edit)}")
                                 If GetWindowClass(edit).Contains("EDIT") Then

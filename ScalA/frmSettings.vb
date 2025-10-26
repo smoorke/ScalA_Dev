@@ -234,7 +234,7 @@ Public NotInheritable Class FrmSettings
         'Await Task.Delay(69)
 
         'SetForegroundWindow(Me.Handle)
-        'SetForegroundWindow(FrmMain.ScalaHandle)
+        'SetForegroundWindow(ScalaHandle)
 
         'FrmMain.Attach(FrmMain.AltPP)
     End Sub
@@ -377,7 +377,7 @@ Public NotInheritable Class FrmSettings
 
     '        Dim ptz As Point = FrmMain.pbZoom.PointToScreen(New Point)
     '        'FrmMain.AltPP.CenterBehind(FrmMain.pbZoom)
-    '        SetWindowPos(FrmMain.AltPP.MainWindowHandle, FrmMain.ScalaHandle,
+    '        SetWindowPos(FrmMain.AltPP.MainWindowHandle, ScalaHandle,
     '                            ptz.X - FrmMain.AltPP.ClientOffset.X,
     '                            ptz.Y - FrmMain.AltPP.ClientOffset.Y,
     '                            -1, -1,
@@ -962,7 +962,7 @@ Public NotInheritable Class FrmSettings
 
         My.Settings.Whitelist = chkWhitelist.Checked
 
-        IPC.AddOrUpdateInstance(FrmMain.scalaPID, FrmMain.cboAlt.SelectedIndex = 0, If(FrmMain.cboAlt.SelectedIndex = 0, Nothing, FrmMain.cboAlt.SelectedItem.id), FrmMain.showingSomeone)
+        IPC.AddOrUpdateInstance(scalaPID, FrmMain.cboAlt.SelectedIndex = 0, If(FrmMain.cboAlt.SelectedIndex = 0, Nothing, FrmMain.cboAlt.SelectedItem.id), FrmMain.showingSomeone)
 
 #If DEBUG Then
         dBug.Print("Top:")

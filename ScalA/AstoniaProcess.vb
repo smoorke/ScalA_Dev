@@ -127,7 +127,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             behind = IPC.SidebarSenderhWnd
         Else
             IPC.SidebarSender = Nothing
-            behind = FrmMain.ScalaHandle
+            behind = ScalaHandle
         End If
         Parallel.ForEach(_restoreDic.Values,
                          Sub(ap As AstoniaProcess)
@@ -148,7 +148,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         If Me._restoreLoc IsNot Nothing AndAlso Not Me.HasExited() Then
             dBug.Print($"restoresingle {behind}")
             If behind = 0 Then
-                SetWindowPos(Me.MainWindowHandle, If(Me._wasTopmost, SWP_HWND.TOPMOST, FrmMain.ScalaHandle),
+                SetWindowPos(Me.MainWindowHandle, If(Me._wasTopmost, SWP_HWND.TOPMOST, ScalaHandle),
                              Me._restoreLoc?.X, Me._restoreLoc?.Y, -1, -1,
                              SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder)
             Else
@@ -272,7 +272,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             y = y - ClientRect.Height / 2 - ClientOffset.Y ' - My.Settings.offset.Y
             If fixThumb Then
                 Dim rc As RECT
-                GetWindowRect(FrmMain.ScalaHandle, rc)
+                GetWindowRect(ScalaHandle, rc)
                 If y <= rc.top Then y = rc.top + 1
             End If
             Return SetWindowPos(Me.MainWindowHandle, hWndInsertAfter,

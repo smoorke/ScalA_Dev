@@ -7,7 +7,7 @@
         '        AppActivate(FrmMain.AltPP.Id)
         '    Else
         '        FrmMain.BringToFront()
-        '        AppActivate(FrmMain.scalaPID)
+        '        AppActivate(ScalaPID)
         '    End If
         'Catch ex As Exception
 
@@ -34,7 +34,7 @@
         '        AppActivate(FrmMain.AltPP.Id)
         '    Else
         '        FrmMain.BringToFront()
-        '        AppActivate(FrmMain.scalaPID)
+        '        AppActivate(ScalaPID)
         '    End If
         'Catch ex As Exception
         '    FrmMain.BringToFront()

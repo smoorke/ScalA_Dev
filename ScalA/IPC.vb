@@ -37,7 +37,7 @@ Module IPC
     End Property
 
 
-    Dim _mmfIPCov As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{FrmMain.scalaPID}", Marshal.SizeOf(Of Integer) * 4)
+    Dim _mmfIPCov As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{scalaPID}", Marshal.SizeOf(Of Integer) * 4)
     Dim _mmvaIPCov As MemoryMappedViewAccessor = _mmfIPCov.CreateViewAccessor()
 
     Enum MMIPC
@@ -49,7 +49,7 @@ Module IPC
 
 
     Public Sub AddToWhitelistOrRemoveFromBL(spId As Integer, apId As Integer)
-        If spId = FrmMain.scalaPID Then
+        If spId = scalaPID Then
             _mmvaIPCov.Write(MMIPC.WhiteList, apId)
         Else
             Using _mmfIPC As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{spId}", Marshal.SizeOf(Of Integer) * 4),
@@ -60,8 +60,8 @@ Module IPC
     End Sub
 
     Public Function AddToWhitelistOrRemoveFromBL(Optional spId As Integer = 0) As Integer
-        If spId = 0 Then spId = FrmMain.scalaPID
-        If spId = FrmMain.scalaPID Then
+        If spId = 0 Then spId = scalaPID
+        If spId = scalaPID Then
             Return _mmvaIPCov.ReadInt32(MMIPC.WhiteList)
         Else
             Using _mmfIPC As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{spId}", Marshal.SizeOf(Of Integer) * 4),
@@ -72,17 +72,17 @@ Module IPC
     End Function
 
     Public Sub SelectAlt(spID As Integer, apID As Integer)
-        If spID = FrmMain.scalaPID Then
-            _mmvaIPCov.Write(MMIPC.SelectALT, apID)
-            _mmvaIPCov.Write(MMIPC.ScalaHandle, FrmMain.ScalaHandle)
-            _mmvaIPCov.Write(MMIPC.ScalaPId, FrmMain.scalaPID)
+        If spID = scalaPID Then
+            _mmvaIPCov.Write(MMIPC.SelectAlt, apID)
+            _mmvaIPCov.Write(MMIPC.ScalaHandle, ScalaHandle)
+            _mmvaIPCov.Write(MMIPC.ScalaPId, scalaPID)
             SelectSema.Release()
         Else
             Using _mmfIPC As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{spID}", Marshal.SizeOf(Of Integer) * 4),
                   _mmvaIPC As MemoryMappedViewAccessor = _mmfIPC.CreateViewAccessor()
                 _mmvaIPC.Write(MMIPC.SelectAlt, apID)
-                _mmvaIPC.Write(MMIPC.ScalaHandle, FrmMain.ScalaHandle)
-                _mmvaIPC.Write(MMIPC.ScalaPId, FrmMain.scalaPID)
+                _mmvaIPC.Write(MMIPC.ScalaHandle, ScalaHandle)
+                _mmvaIPC.Write(MMIPC.ScalaPId, scalaPID)
                 Using sem As Semaphore = New Semaphore(0, 1, $"ScalA_IPC_Sema_{spID}")
                     sem.Release()
                 End Using
@@ -104,8 +104,8 @@ Module IPC
     ''' <param name="spId"></param>
     ''' <returns>AltID to select,sending ScalA handle and sending scala pID</returns>
     Public Function ReadSelectAlt(Optional spId As Integer = 0) As Tuple(Of Integer, Integer, Integer)
-        If spId = 0 Then spId = FrmMain.scalaPID
-        If spId = FrmMain.scalaPID Then
+        If spId = 0 Then spId = scalaPID
+        If spId = scalaPID Then
 
             Return Tuple.Create(_mmvaIPCov.ReadInt32(MMIPC.SelectAlt), _mmvaIPCov.ReadInt32(MMIPC.ScalaHandle), _mmvaIPCov.ReadInt32(MMIPC.ScalaPId))
         Else
@@ -116,8 +116,8 @@ Module IPC
         End If
     End Function
 
-    Private SelectSema As New Semaphore(0, 1, $"ScalA_IPC_Sema_{FrmMain.scalaPID}")
-    Private SelectDoneSema As New Semaphore(0, 1, $"ScalA_IPC_SemaDone_{FrmMain.scalaPID}")
+    Private SelectSema As New Semaphore(0, 1, $"ScalA_IPC_Sema_{scalaPID}")
+    Private SelectDoneSema As New Semaphore(0, 1, $"ScalA_IPC_SemaDone_{scalaPID}")
 
     Public SidebarSender As Process = Nothing
     Public SidebarSenderhWnd As IntPtr = IntPtr.Zero
@@ -235,7 +235,7 @@ Module IPC
         Public Sub New(pid As Integer, overview? As Boolean, APid? As Integer, showingSome? As Boolean)
             Me.pid = pid
             If overview IsNot Nothing Then Me.isOnOverview = overview
-            Me.handle = FrmMain.ScalaHandle
+            Me.handle = ScalaHandle
             If APid IsNot Nothing Then Me.AltPPid = APid
             If showingSome IsNot Nothing Then Me.showingSomeones = showingSome
         End Sub
