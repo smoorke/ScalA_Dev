@@ -757,11 +757,8 @@ Partial Public NotInheritable Class FrmMain
                         End If
 
                         ' Extract entry to disk (overwrite = True)
-                        Using entryStream As IO.Stream = entry.Open()
-                            Using outFile As IO.FileStream = IO.File.Create(fullPath)
-                                entryStream.CopyTo(outFile)
-                            End Using
-                        End Using
+                        entry.ExtractToFile(fullPath, True)
+
                     Next
                 End Using
             End Using
@@ -1447,6 +1444,7 @@ Partial Public NotInheritable Class FrmMain
             Detach(True)
             MinAllActiveOverview()
         ElseIf My.Settings.MinMin AndAlso cboAlt.SelectedIndex <> 0 AndAlso AltPP?.isSDL Then
+            AltPP.CenterBehind(pbZoom, Nothing)
             AltPP.Hide()
         Else
             dBug.Print("swl parent")
