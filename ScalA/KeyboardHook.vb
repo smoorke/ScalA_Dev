@@ -91,6 +91,15 @@ Public Class KeyboardHook : Implements IDisposable
                                 End If
                             End Using
                         End If
+                    Case Keys.Back
+                        Dim fgw = GetForegroundWindow()
+                        Dim pid As Integer
+                        GetWindowThreadProcessId(fgw, pid)
+                        If pid = FrmMain.scalaPID AndAlso My.Computer.Keyboard.CtrlKeyDown Then
+                            If GetWindowText(fgw).StartsWith("Rename ") Then
+                                Return -1
+                            End If
+                        End If
                 End Select
             Case WM_KEYUP
                 If My.Settings.OnlyEsc AndAlso My.Computer.Keyboard.CtrlKeyDown AndAlso Marshal.PtrToStructure(Of UInteger)(lParam) = Keys.Escape Then

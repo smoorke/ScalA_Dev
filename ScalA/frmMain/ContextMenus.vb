@@ -1570,9 +1570,15 @@ Partial Public NotInheritable Class FrmMain
         Dim screenWA = Screen.FromPoint(MousePosition).WorkingArea
         Dim dialogLeft = Math.Min(Math.Max(screenWA.Left, MousePosition.X - 177), screenWA.Right - 370)
         Dim dialogTop = Math.Min(Math.Max(screenWA.Top, MousePosition.Y - 76), screenWA.Bottom - 152)
-        scaleFixForm.Close()
+        scaleFixForm?.Close()
         scaleFixForm = Nothing
+
+        keybHook.Hook()
+
         Dim toName As String = InputBox("Enter New Name", title, currentName, dialogLeft, dialogTop).TrimEnd
+
+        If Not (My.Settings.DisableWinKey OrElse My.Settings.OnlyEsc OrElse My.Settings.NoAltTab) Then keybHook.Unhook()
+
         renameOpen = False
         dBug.Print($"Rename to {toName}")
         If toName <> "" AndAlso currentName <> toName Then
