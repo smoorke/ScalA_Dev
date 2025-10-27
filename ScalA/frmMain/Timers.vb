@@ -557,13 +557,18 @@ Partial NotInheritable Class FrmMain
                 'Dim activePP = alts.FirstOrDefault(Function(ap) ap.MainWindowHandle = active)
                 Dim activePP = alts.Find(Function(ap) ap.MainWindowHandle = active)
 
-                If activePP IsNot Nothing AndAlso Not activePP.IsBelow(ScalaHandle) Then
-                    AllowSetForegroundWindow(ASFW_ANY)
-                    Attach(activePP)
-                    SetWindowPos(active, ScalaHandle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
-                    SetWindowPos(FrmBehind.Handle, active, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
-
-                    'Detach(False)
+                If activePP IsNot Nothing Then
+                    If Not activePP.IsBelow(ScalaHandle) Then
+                        AllowSetForegroundWindow(ASFW_ANY)
+                        Attach(activePP)
+                        SetWindowPos(active, ScalaHandle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+                        SetWindowPos(FrmBehind.Handle, active, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+                    End If
+                    AstoniaProcess.DetachThreadInput(alts)
+                Else
+                    For Each ap In alts
+                        ap.ThreadInput(True)
+                    Next
                 End If
             End If
         Catch ex As Exception

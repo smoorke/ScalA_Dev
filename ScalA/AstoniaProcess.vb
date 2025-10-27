@@ -38,6 +38,17 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Private TIattached As Boolean = False
     Private Shared AttachedThreads As New HashSet(Of Integer)()
 
+    Public Shared Sub DetachThreadInput(aps As List(Of AstoniaProcess))
+        dBug.Print(If(AttachedThreads.Count > 0, $"DetachThreadInput {AttachedThreads.Count}", ""))
+        For Each tid In AttachedThreads
+            AttachThreadInput(ScalaThreadId, tid, False)
+        Next
+        For Each ap In aps
+            ap.TIattached = False
+        Next
+        AttachedThreads.Clear()
+    End Sub
+
     Public Sub ThreadInput(attach As Boolean)
         If TIattached = attach Then Exit Sub
 

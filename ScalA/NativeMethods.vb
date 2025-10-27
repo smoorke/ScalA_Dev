@@ -393,9 +393,13 @@ Module NativeMethods
     <System.Runtime.InteropServices.DllImport("user32.dll", CharSet:=System.Runtime.InteropServices.CharSet.Auto)>
     Public Function GetClassName(ByVal hWnd As System.IntPtr, ByVal lpClassName As System.Text.StringBuilder, ByVal nMaxCount As Integer) As Integer : End Function
     Public Function GetWindowClass(ByVal hwnd As IntPtr) As String
-        Static sClassName As New System.Text.StringBuilder("", 256)
-        Call GetClassName(hwnd, sClassName, 256 - 1)
-        Return sClassName.ToString
+        Try
+            Static sClassName As New System.Text.StringBuilder("", 256)
+            Call GetClassName(hwnd, sClassName, 256 - 1)
+            Return sClassName.ToString
+        Catch
+            Return ""
+        End Try
     End Function
 
     Public Const GWL_HWNDPARENT As Integer = -8
