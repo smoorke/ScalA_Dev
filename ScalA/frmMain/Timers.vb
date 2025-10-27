@@ -532,8 +532,9 @@ Partial NotInheritable Class FrmMain
                                                           If prevWMMMpt <> MousePosition Then
                                                               SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
                                                           End If
-                                                          SetWindowPos(but.AP.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
+                                                          AllowSetForegroundWindow(ASFW_ANY)
                                                           Attach(but.AP)
+                                                          SetWindowPos(but.AP.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
                                                           If prevWMMMpt <> MousePosition Then
                                                               SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
                                                           End If
@@ -557,6 +558,7 @@ Partial NotInheritable Class FrmMain
                 Dim activePP = alts.Find(Function(ap) ap.MainWindowHandle = active)
 
                 If activePP IsNot Nothing AndAlso Not activePP.IsBelow(ScalaHandle) Then
+                    AllowSetForegroundWindow(ASFW_ANY)
                     Attach(activePP)
                     SetWindowPos(active, ScalaHandle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
                     SetWindowPos(FrmBehind.Handle, active, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
