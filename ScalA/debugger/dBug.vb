@@ -9,6 +9,7 @@ Module dBug
 #End If
     <Conditional("DEBUG")>
     Friend Sub Print(Message As String, Optional Level As Integer = 0)
+        If String.IsNullOrWhiteSpace(Message) Then Exit Sub
         Debug.Print(Message)
         'lastlog = Message
 #If DEBUG Then
