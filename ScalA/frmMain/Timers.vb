@@ -559,16 +559,13 @@ Partial NotInheritable Class FrmMain
 
                 If activePP IsNot Nothing Then
                     If Not activePP.IsBelow(ScalaHandle) Then
-                        AllowSetForegroundWindow(ASFW_ANY)
+                        'AllowSetForegroundWindow(ASFW_ANY)
+                        activePP.ThreadInput(True) 'fix bringtofront issue
                         Attach(activePP)
                         SetWindowPos(active, ScalaHandle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
                         SetWindowPos(FrmBehind.Handle, active, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+                        activePP.ThreadInput(False)
                     End If
-                    AstoniaProcess.DetachThreadInput(alts)
-                Else
-                    For Each ap In alts
-                        ap.ThreadInput(True)
-                    Next
                 End If
             End If
         Catch ex As Exception
