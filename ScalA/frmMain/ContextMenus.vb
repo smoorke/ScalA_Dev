@@ -1516,8 +1516,8 @@ Partial Public NotInheritable Class FrmMain
                 DropDownItems.OfType(Of ToolStripMenuItem).
                 Where(Function(it)
                           Return it.Visible AndAlso TypeOf it.Tag Is QLInfo AndAlso
-                                                      QLFilter.Contains(IO.Path.GetExtension(CType(it.Tag, QLInfo).path)) AndAlso
-                                                      (Not My.Settings.QLResolveLnk OrElse Not String.IsNullOrEmpty(CType(it.Tag, QLInfo).target))
+                                                      (QLFilter.Contains(IO.Path.GetExtension(CType(it.Tag, QLInfo).path)) OrElse
+                                                      (Not My.Settings.QLResolveLnk OrElse Not String.IsNullOrEmpty(CType(it.Tag, QLInfo).target)))
                       End Function).ToList()
 
 
@@ -1701,8 +1701,8 @@ Partial Public NotInheritable Class FrmMain
                                 sender.DropDownItems.OfType(Of ToolStripMenuItem) _
                                       .Any(Function(it)
                                                Return it.Visible AndAlso TypeOf it.Tag Is QLInfo AndAlso
-                                                      QLFilter.Contains(IO.Path.GetExtension(CType(it.Tag, QLInfo).path)) AndAlso
-                                                      (Not My.Settings.QLResolveLnk OrElse Not String.IsNullOrEmpty(CType(it.Tag, QLInfo).target))
+                                                      (QLFilter.Contains(IO.Path.GetExtension(CType(it.Tag, QLInfo).path)) OrElse
+                                                      (Not My.Settings.QLResolveLnk OrElse Not String.IsNullOrEmpty(CType(it.Tag, QLInfo).target)))
                                            End Function),
                                 .Tag = sender
                                 },
