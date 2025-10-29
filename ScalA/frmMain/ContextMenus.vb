@@ -2105,7 +2105,10 @@ Partial Public NotInheritable Class FrmMain
                              dBug.Print($"findwindow {hndl}")
                              If hndl <> IntPtr.Zero Then Exit While
                          End While
+                         AllowSetForegroundWindow(ASFW_ANY)
                          SetWindowPos(hndl, SWP_HWND.TOP, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                         Dim tid = GetWindowThreadProcessId(hndl, Nothing)
+                         AttachThreadInput(tid, ScalaThreadId, True)
                          SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
                          If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
                          watch.Stop()
