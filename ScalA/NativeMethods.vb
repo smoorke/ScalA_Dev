@@ -208,12 +208,17 @@ Module NativeMethods
         Public lppos As WINDOWPOS
     End Structure
 
+    Public Const LSFW_LOCK As UInteger = 1
+    Public Const LSFW_UNLOCK As UInteger = 2
+
     <DllImport("shell32.dll", EntryPoint:="SHGetFileInfoW", SetLastError:=True)>
     Public Function SHGetFileInfoW(<InAttribute(), MarshalAs(UnmanagedType.LPTStr)> ByVal pszPath As String, ByVal dwFileAttributes As Integer, ByRef psfi As SHFILEINFOW, ByVal cbFileInfo As Integer, ByVal uFlags As Integer) As IntPtr
     End Function
     Public ASFW_ANY As UInteger = &HFFFFFFFFUI
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function AllowSetForegroundWindow(dwProcessId As UInt32) As Integer : End Function
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function LockSetForegroundWindow(uLockCode As UInteger) As Boolean : End Function
 
     Public Declare Function ExtractIcon Lib "shell32.dll" Alias "ExtractIconA" (ByVal hInst As IntPtr, ByVal lpszExeFileName As String, ByVal nIconIndex As Integer) As IntPtr
     <DllImport("shell32.dll", CharSet:=CharSet.Auto)>
@@ -276,7 +281,8 @@ Module NativeMethods
 
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function IsWindowVisible(ByVal hWnd As IntPtr) As Boolean : End Function
-
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function IsWindowEnabled(hWnd As IntPtr) As Boolean : End Function
 
     <DllImport("user32.dll")>
     Public Function RedrawWindow(hWnd As IntPtr, lprcUpdate As IntPtr, hrgnUpdate As IntPtr, flags As RedrawWindowFlags) As Boolean : End Function
@@ -408,6 +414,9 @@ Module NativeMethods
 
     <DllImport("user32.dll", SetLastError:=True, CharSet:=CharSet.Auto)>
     Public Function EnumWindows(lpEnumFunc As EnumWindowsProc, lParam As IntPtr) As Boolean : End Function
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function EnumChildWindows(hWndParent As IntPtr, lpEnumFunc As EnumWindowsProc, lParam As IntPtr) As Boolean : End Function
+
     Public Delegate Function EnumWindowsProc(hWnd As IntPtr, lParam As IntPtr) As Boolean
 
     <DllImport("user32.dll")>

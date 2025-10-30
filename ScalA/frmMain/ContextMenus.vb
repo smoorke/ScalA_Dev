@@ -2095,19 +2095,65 @@ Partial Public NotInheritable Class FrmMain
                          ShellExecuteEx(sei) 'open properties
                          'set properties to topmost
                          Dim watch As Stopwatch = Stopwatch.StartNew()
-                         Dim WindowName As String = pth.ToLower.Substring(pth.LastIndexOf("\") + 1).Replace(".url", "").Replace(".lnk", "") & " Properties"
+                         'Dim WindowName As String = pth.ToLower.Substring(pth.LastIndexOf("\") + 1).Replace(".url", "").Replace(".lnk", "") ' & " Properties"
+                         Dim itemName As String = IO.Path.GetFileName(pth)
+                         If {".url", ".lnk"}.Contains(IO.Path.GetExtension(itemName.ToLower)) Then itemName = IO.Path.GetFileNameWithoutExtension(itemName)
+
+                         Dim wn1 As String = itemName & " "
+                         Dim wn2 As String = " " & itemName
+
+                         Debug.Print($"wn: {itemName} {pth}")
                          'findwindow ignores case
-                         Dim hndl As IntPtr
-                         While watch.ElapsedMilliseconds < 10000
+                         Dim hndl As IntPtr = IntPtr.Zero
+                         While watch.ElapsedMilliseconds < 10000 AndAlso hndl = IntPtr.Zero
                              Threading.Thread.Sleep(50)
-                             'todo replace with enumwnd so we can be locale agnostic
-                             hndl = FindWindow("#32770", WindowName)
-                             dBug.Print($"findwindow {hndl}")
-                             If hndl <> IntPtr.Zero Then Exit While
+                             '    'todo replace with enumwnd so we can be locale agnostic
+                             '    hndl = FindWindow("#32770", WindowName)
+                             '    dBug.Print($"findwindow {hndl}")
+                             '    If hndl <> IntPtr.Zero Then Exit While
+
+                             EnumWindows(Function(hw As IntPtr, lparam As IntPtr)
+
+                                             If Not IsWindowVisible(hw) Then Return True
+                                             If Not IsWindowEnabled(hw) Then Return True
+
+                                             If GetWindowLong(hw, GWL_HWNDPARENT) = ScalaHandle Then Return True
+
+                                             Dim pid As Integer
+                                             GetWindowThreadProcessId(hw, pid)
+                                             If pid <> scalaPID Then Return True
+
+                                             If GetWindowClass(hw) <> "#32770" Then Return True
+
+                                             dBug.Print($"fwT: {GetWindowClass(hw)} ""{GetWindowText(hw)}""")
+
+                                             Dim title = GetWindowText(hw)
+                                             If Not (title.StartsWith(wn1) OrElse title.EndsWith(wn2)) Then Return True
+
+                                             Dim child = FindWindowEx(hw, IntPtr.Zero, "#32770", Nothing)
+                                             Dim foundNoWn As Boolean = True
+                                             EnumChildWindows(child, Function(c As IntPtr, l As IntPtr)
+                                                                         Debug.Print($"c ""{GetWindowText(c)}"" {GetWindowClass(c)}")
+                                                                         If GetWindowClass(c) = "Edit" Then
+                                                                             Dim tex = GetWindowText(c)
+                                                                             If tex = itemName Then
+                                                                                 foundNoWn = False
+                                                                                 Return False
+                                                                             End If
+                                                                         End If
+                                                                         Return True
+                                                                     End Function, IntPtr.Zero)
+                                             If Not foundNoWn Then hndl = hw
+                                             Return hndl = IntPtr.Zero
+
+                                         End Function, IntPtr.Zero)
+
                          End While
-                         SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+
+                         SetWindowPos(hndl, If(My.Settings.topmost, SWP_HWND.TOPMOST, SWP_HWND.TOP), 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                         SetWindowPos(ScalaHandle, hndl, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
                          SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
-                         If Not My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.NOTOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                         If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
                          watch.Stop()
                      End Sub)
         End If
