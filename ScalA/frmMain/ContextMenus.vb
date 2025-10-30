@@ -1973,9 +1973,9 @@ Partial Public NotInheritable Class FrmMain
                              Threading.Thread.Sleep(50)
                          End While
                          dBug.Print($"enumwindow {hndl} ""{GetWindowText(hndl)}""")
-
-                         If My.Settings.topmost Then SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
-                         SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                         SetWindowPos(hndl, If(My.Settings.topmost, SWP_HWND.TOPMOST, SWP_HWND.TOP), 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                         SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
+                         If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
                          watch.Stop()
                      End Sub)
         End If
