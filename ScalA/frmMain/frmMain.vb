@@ -405,6 +405,7 @@ Partial Public NotInheritable Class FrmMain
 
         If My.Settings.SingleInstance AndAlso IPC.AlreadyOpen Then
             IPC.RequestActivation = True
+            AllowSetForegroundWindow(ASFW_ANY)
             End
         End If
         IPC.AlreadyOpen = True
