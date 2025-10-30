@@ -1,7 +1,6 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.ComponentModel
 Imports System.Runtime.InteropServices
-Imports Microsoft.Win32
 
 Public NotInheritable Class ContextMenus
     'dummy class to prevent form being generated
@@ -662,7 +661,7 @@ Partial Public NotInheritable Class FrmMain
                                Dim progId As String = Nothing
 
                                ' 1. Try UserChoice (per-user)
-                               Using key = Registry.CurrentUser.OpenSubKey(GetUserChoiceKeyPath(proto))
+                               Using key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(GetUserChoiceKeyPath(proto))
                                    If key IsNot Nothing Then
                                        progId = TryCast(key.GetValue("ProgId"), String)
                                    End If
@@ -683,7 +682,7 @@ Partial Public NotInheritable Class FrmMain
                                RegistryWatcher.Init(proto)
 
                                ' 3. Get DefaultIcon for the ProgId
-                               Using iconKey = Registry.ClassesRoot.OpenSubKey(progId & "\DefaultIcon")
+                               Using iconKey = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey(progId & "\DefaultIcon")
                                    If iconKey IsNot Nothing Then
                                        Dim iconValue = TryCast(iconKey.GetValue(Nothing), String)
                                        If Not String.IsNullOrEmpty(iconValue) Then
@@ -1547,18 +1546,18 @@ Partial Public NotInheritable Class FrmMain
     Private renameOpen As Boolean
     Private Sub RenameMethod(Path As String, currentName As String)
         Dim title As String = $"Rename {currentName}"
-        Dim scalaClass = GetWindowClass(ScalaHandle)
         Task.Run(Sub()
                      Dim watch As Stopwatch = Stopwatch.StartNew()
 
                      Dim hndl As IntPtr
                      While watch.ElapsedMilliseconds < 2000
                          Threading.Thread.Sleep(20)
-                         hndl = FindWindow(scalaClass, title)
+                         hndl = FindWindow(ScalaClass, title)
                          dBug.Print($"findwindow {hndl}")
                          If hndl <> IntPtr.Zero Then Exit While
                      End While
-                     SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                     SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
+                     If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
                      Threading.Thread.Sleep(50)
                      Try
                          AppActivate(scalaPID)
@@ -1566,20 +1565,21 @@ Partial Public NotInheritable Class FrmMain
                      End Try
                      watch.Stop()
                  End Sub)
-        renameOpen = True
+
         Dim screenWA = Screen.FromPoint(MousePosition).WorkingArea
         Dim dialogLeft = Math.Min(Math.Max(screenWA.Left, MousePosition.X - 177), screenWA.Right - 370)
         Dim dialogTop = Math.Min(Math.Max(screenWA.Top, MousePosition.Y - 76), screenWA.Bottom - 152)
         scaleFixForm?.Close()
         scaleFixForm = Nothing
 
+        renameOpen = True
         keybHook.Hook()
 
         Dim toName As String = InputBox("Enter New Name", title, currentName, dialogLeft, dialogTop).TrimEnd
 
         If Not (My.Settings.DisableWinKey OrElse My.Settings.OnlyEsc OrElse My.Settings.NoAltTab) Then keybHook.Unhook()
-
         renameOpen = False
+
         dBug.Print($"Rename to {toName}")
         If toName <> "" AndAlso currentName <> toName Then
             dBug.Print($"oldpath: {Path}")
