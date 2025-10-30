@@ -1185,6 +1185,11 @@ Module NativeMethods
 
     Public Const WM_DISPLAYCHANGE = &H7E
 
+    Public Const WM_GETICON As Integer = &H7F
+    Public Const WM_SETICON As UInteger = &H80
+    Public Const ICON_SMALL As Integer = 0
+    Public Const ICON_BIG As Integer = 1
+
     Public Const WM_NCHITTEST As Integer = &H84
     Public Const WM_NCACTIVATE As Integer = &H86
 

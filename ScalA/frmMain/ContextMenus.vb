@@ -1558,6 +1558,9 @@ Partial Public NotInheritable Class FrmMain
                      End While
                      SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
                      If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+
+                     SendMessage(hndl, WM_SETICON, ICON_BIG, My.Resources.moa3.Handle)
+
                      Threading.Thread.Sleep(50)
                      Try
                          AppActivate(scalaPID)
