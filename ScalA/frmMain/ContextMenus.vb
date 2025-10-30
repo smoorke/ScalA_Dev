@@ -1747,6 +1747,8 @@ Partial Public NotInheritable Class FrmMain
                 New MenuItem("-"),
                 QlCtxNewMenu})
 
+            Dim MenuItems As IEnumerable(Of MenuItem) = QlCtxMenu.MenuItems.Cast(Of MenuItem).ToList
+
             clipBoardInfo = GetClipboardFilesAndAction()
 
             Dim pastehbm As IntPtr
@@ -1779,7 +1781,7 @@ Partial Public NotInheritable Class FrmMain
 
                         'Dim ico As Bitmap = GetIconFromCache(New QLInfo With {.path = clipBoardInfo.Files(0)})
 
-                        Dim ico As Bitmap = GetIconFromFile(clipBoardInfo.Files(0), False, True) 'cannot go async here. updating bitmaps after menu has been show is all kinds of wonky
+                        Dim ico As Bitmap = GetIconFromFile(clipBoardInfo.Files(0), False, True) 'cannot go async here. updating bitmaps after menu has been show is all kinds of wonky. todo preload icon on clipchange
 
                         Dim shortcuttedIcon As Bitmap = ico.addOverlay(My.Resources.shortcutOverlay)
 
@@ -1794,9 +1796,7 @@ Partial Public NotInheritable Class FrmMain
                         purgeList.Add(pastehbm)
                         purgeList.Add(pasteShortcutHbm)
 
-                        Dim cmdpos As Integer = QlCtxMenu.MenuItems.OfType(Of MenuItem) _
-                                                                   .TakeWhile(Function(m) m.Handle <> pasteItem.Handle) _
-                                                                   .Count(Function(it) it.Visible)
+                        Dim cmdpos As Integer = MenuItems.TakeWhile(Function(m) m.Handle <> pasteItem.Handle).Count(Function(it) it.Visible)
 
                         SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos, MF_BYPOSITION, pastehbm, Nothing)
 
@@ -1832,7 +1832,7 @@ Partial Public NotInheritable Class FrmMain
                     purgeList.Add(pastehbm)
                     purgeList.Add(pasteShortcutHbm)
 
-                    Dim cmdpos As Integer = QlCtxMenu.MenuItems.OfType(Of MenuItem).TakeWhile(Function(m) m.Handle <> pasteItem.Handle).Count(Function(it) it.Visible)
+                    Dim cmdpos As Integer = MenuItems.TakeWhile(Function(m) m.Handle <> pasteItem.Handle).Count(Function(it) it.Visible)
 
                     SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos, MF_BYPOSITION, pastehbm, Nothing)
 
@@ -1887,7 +1887,7 @@ Partial Public NotInheritable Class FrmMain
             End If
 
             SetMenuItemBitmaps(QlCtxNewMenu.Handle, 0, MF_BYPOSITION, folderHbm, Nothing)
-            SetMenuItemBitmaps(QlCtxMenu.Handle, QlCtxMenu.MenuItems.OfType(Of MenuItem).Count(Function(it) it.Visible) - 1, MF_BYPOSITION, plusHbm, Nothing)
+            SetMenuItemBitmaps(QlCtxMenu.Handle, MenuItems.Count(Function(it) it.Visible) - 1, MF_BYPOSITION, plusHbm, Nothing)
 
             Dim i = QlCtxNewMenuStaticItemsCount
             For Each item As MenuItem In QlCtxNewMenu.MenuItems.OfType(Of MenuItem).Skip(i).Where(Function(m) m.Tag IsNot Nothing AndAlso TypeOf (m.Tag) IsNot String)
@@ -2036,7 +2036,7 @@ Partial Public NotInheritable Class FrmMain
                     pasteTSItem.ToolTipText = String.Empty
                 End If
 
-                If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
+                If clipBoardInfo.Files.FirstOrDefault?.ToLower.EndsWith(".lnk") Then
                     pasteLinkTSItem.Visible = False
                 Else
                     pasteLinkTSItem.Text = "Paste Shortcut"
