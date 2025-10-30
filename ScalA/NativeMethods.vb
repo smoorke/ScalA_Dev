@@ -395,6 +395,17 @@ Module NativeMethods
     Public Function SetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer, ByVal dwNewLong As UInteger) As Long : End Function
     <DllImport("user32.dll")>
     Public Function GetWindowLong(ByVal hwnd As IntPtr, ByVal nIndex As Integer) As UInteger : End Function
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function SetWindowLongPtr(hWnd As IntPtr, nIndex As Integer, dwNewLong As IntPtr) As IntPtr : End Function
+
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function GetWindowLongPtr(hWnd As IntPtr, nIndex As Integer) As IntPtr : End Function
+
+    <DllImport("user32.dll")>
+    Public Function CallWindowProc(lpPrevWndFunc As IntPtr, hWnd As IntPtr, Msg As UInteger, wParam As IntPtr, lParam As IntPtr) As IntPtr : End Function
+
+    <DllImport("user32.dll")>
+    Public Function PtInRect(ByRef lprc As RECT, pt As Point) As Boolean : End Function
 
     <System.Runtime.InteropServices.DllImport("user32.dll", CharSet:=System.Runtime.InteropServices.CharSet.Auto)>
     Public Function GetClassName(ByVal hWnd As System.IntPtr, ByVal lpClassName As System.Text.StringBuilder, ByVal nMaxCount As Integer) As Integer : End Function
@@ -408,6 +419,7 @@ Module NativeMethods
         End Try
     End Function
 
+    Public Const GWL_WNDPROC As Integer = -4
     Public Const GWL_HWNDPARENT As Integer = -8
     Public Const GWL_STYLE As Integer = -16
     Public Const GWL_EXSTYLE As Integer = -20

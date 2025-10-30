@@ -1,7 +1,7 @@
 ﻿Imports System.Runtime.InteropServices
 
-Namespace MenuToolTip
-    Module MenuTooltip
+Namespace CustomToolTip
+    Module CustomTooltip
         ' ----- Constants -----
         Public Const TTS_ALWAYSTIP As Integer = &H1
         Public Const TTS_NOPREFIX As Integer = &H2
@@ -36,8 +36,8 @@ Namespace MenuToolTip
             Public uId As IntPtr
             Public rect As RECT
             Public hinst As IntPtr
-            <MarshalAs(UnmanagedType.LPTStr)>
-            Public lpszText As String
+            '<MarshalAs(UnmanagedType.LPTStr)>
+            Public lpszText As IntPtr
             Public lParam As IntPtr
         End Structure
 
@@ -54,10 +54,6 @@ Namespace MenuToolTip
         Public Function SendMessage(hWnd As IntPtr, msg As Integer, wParam As IntPtr, ByRef lParam As TOOLINFO) As IntPtr : End Function
         <DllImport("user32.dll", SetLastError:=True)>
         Public Function SendMessage(hWnd As IntPtr, msg As Integer, wParam As IntPtr, ByVal lParam As IntPtr) As IntPtr : End Function
-
-        <DllImport("user32.dll")>
-        Public Function PtInRect(ByRef lprc As RECT, pt As Point) As Boolean : End Function
-
         <DllImport("user32.dll", SetLastError:=True)>
         Public Function DestroyWindow(hWnd As IntPtr) As Boolean : End Function
 
@@ -68,10 +64,11 @@ Namespace MenuToolTip
         Public Sub InitializeTooltip()
             If hWndTooltip <> IntPtr.Zero Then DestroyWindow(hWndTooltip)
 
-            hWndTooltip = CreateWindowEx(WindowStylesEx.WS_EX_TOPMOST, "tooltips_class32", Nothing,
-                                     WS_POPUP Or TTS_NOPREFIX Or TTS_ALWAYSTIP,
-                                     CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-                                     IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero)
+            hWndTooltip = CreateWindowEx(WindowStylesEx.WS_EX_TOPMOST Or WindowStylesEx.WS_EX_NOACTIVATE Or WindowStylesEx.WS_EX_TRANSPARENT,
+                                         "tooltips_class32", Nothing,
+                                         WS_POPUP Or TTS_NOPREFIX Or TTS_ALWAYSTIP,
+                                         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+                                         IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero)
 
             tipInfo = New TOOLINFO()
             tipInfo.cbSize = Marshal.SizeOf(tipInfo)
@@ -86,21 +83,22 @@ Namespace MenuToolTip
 
             tipInfo.hwnd = hwndMenu
             tipInfo.uId = hwndMenu
-            tipInfo.lpszText = text
+            tipInfo.lpszText = Marshal.StringToHGlobalUni(text)
 
             ' Add and activate
             SendMessage(hWndTooltip, TTM_ADDTOOL, IntPtr.Zero, tipInfo)
             SendMessage(hWndTooltip, TTM_UPDATETIPTEXT, IntPtr.Zero, tipInfo)
 
+
             ' Position & activate
             SendMessage(hWndTooltip, TTM_TRACKPOSITION, IntPtr.Zero, New IntPtr((y + 40 << 16) Or (x And &HFFFF)))
             SendMessage(hWndTooltip, TTM_TRACKACTIVATE, New IntPtr(1), tipInfo)
-        End Sub
 
+        End Sub
 
         Private delayTimer As Timer
         Private hideTimer As Timer
-        Public Sub ShowTooltipWithDelay(text As String, hwndmenu As IntPtr, rcMenuItem As RECT)
+        Public Sub ShowTooltipWithDelay(text As String, hwndmenu As IntPtr, rcMenuItem As RECT, Optional autopop As Integer? = Nothing)
             If hWndTooltip = IntPtr.Zero Then InitializeTooltip()
 
             ' Clean up timers
@@ -122,7 +120,7 @@ Namespace MenuToolTip
             If initialDelay <= 0 Then initialDelay = 400
 
 
-            delayTimer = New Timer() With {.Interval = initialDelay, .Tag = {text, hwndmenu, rcMenuItem}}
+            delayTimer = New Timer() With {.Interval = initialDelay, .Tag = {text, hwndmenu, rcMenuItem, autopop}}
             AddHandler delayTimer.Tick, AddressOf DelayTimer_Tick
             delayTimer.Start()
         End Sub
@@ -130,14 +128,15 @@ Namespace MenuToolTip
         Private Sub DelayTimer_Tick(sender As Object, e As EventArgs)
             delayTimer.Stop()
             RemoveHandler delayTimer.Tick, AddressOf DelayTimer_Tick
-            Dim args = DirectCast(delayTimer.Tag, Object())
+
+
+            Dim text As String = delayTimer.Tag(0)
+            Dim hwndMenu As IntPtr = delayTimer.Tag(1)
+            Dim rcMenuItem As RECT = delayTimer.Tag(2)
+            Dim autopop As Integer? = delayTimer.Tag(3)
 
             delayTimer.Dispose()
             delayTimer = Nothing
-
-            Dim text As String = CStr(args(0))
-            Dim hwndMenu As IntPtr = CType(args(1), IntPtr)
-            Dim rcMenuItem As RECT = CType(args(2), RECT)
 
             If Not PtInRect(rcMenuItem, Control.MousePosition) Then Exit Sub
 
@@ -159,15 +158,17 @@ Namespace MenuToolTip
                          End Sub)
             End If
 
-            Dim autoPopDelay = SendMessage(hWndTooltip, TTM_GETDELAYTIME, New IntPtr(TTDT_AUTOPOP), IntPtr.Zero).ToInt32()
+            Dim autoPopDelay = If(autopop, SendMessage(hWndTooltip, TTM_GETDELAYTIME, New IntPtr(TTDT_AUTOPOP), IntPtr.Zero).ToInt32())
             If autoPopDelay <= 0 Then autoPopDelay = 5000
 
             ' Setup TOOLINFO
             tipInfo.hwnd = hwndMenu
             tipInfo.uId = hwndMenu
-            tipInfo.lpszText = text
+
+            tipInfo.lpszText = Marshal.StringToHGlobalUni(text)
 
             ' Register tool and show
+            SendMessage(hWndTooltip, TTM_DELTOOL, IntPtr.Zero, tipInfo)
             SendMessage(hWndTooltip, TTM_ADDTOOL, IntPtr.Zero, tipInfo)
             SendMessage(hWndTooltip, TTM_UPDATETIPTEXT, IntPtr.Zero, tipInfo)
             SendMessage(hWndTooltip, TTM_TRACKPOSITION, IntPtr.Zero, New IntPtr((Control.MousePosition.Y + 35 << 16) Or (Control.MousePosition.X And &HFFFF)))
@@ -186,9 +187,19 @@ Namespace MenuToolTip
 
         ' ===== Hide Tooltip =====
         Public Sub HideTooltip()
+            If tipInfo.lpszText <> IntPtr.Zero Then
+                Marshal.FreeHGlobal(tipInfo.lpszText)
+                tipInfo.lpszText = IntPtr.Zero
+            End If
             If hWndTooltip <> IntPtr.Zero Then
                 SendMessage(hWndTooltip, TTM_TRACKACTIVATE, IntPtr.Zero, tipInfo)
                 SendMessage(hWndTooltip, TTM_DELTOOL, IntPtr.Zero, tipInfo)
+            End If
+            If delayTimer IsNot Nothing Then
+                delayTimer.Stop()
+                RemoveHandler delayTimer.Tick, AddressOf DelayTimer_Tick
+                delayTimer.Dispose()
+                delayTimer = Nothing
             End If
             If hideTimer IsNot Nothing Then
                 hideTimer.Stop()

@@ -1922,7 +1922,7 @@ Partial Public NotInheritable Class FrmMain
 
             TrackPopupMenuEx(QlCtxMenu.Handle, TPM_RECURSE, MousePosition.X, MousePosition.Y, ScalaHandle, Nothing)
 
-            MenuToolTip.HideTooltip()
+            CustomToolTip.HideTooltip()
 
             'sender.BackColor = Color.Transparent
             QLCtxMenuOpenedOn = Nothing
@@ -2343,6 +2343,12 @@ Partial Public NotInheritable Class FrmMain
         SetWindowPos(hwnd, SWP_HWND.TOPMOST, loc.X, loc.Y, -1, -1, SetWindowPosFlags.IgnoreZOrder Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
 
         sender.Opacity = 1
+    End Sub
+
+    Private Sub SidebarModeToolStripMenuItem_MouseEnter(sender As ToolStripMenuItem, e As EventArgs) Handles SidebarModeToolStripMenuItem.MouseEnter
+        Dim rc = New RECT(sender.Owner.RectangleToScreen(sender.Bounds))
+        Debug.Print($"sidebarmh {rc}")
+        CustomToolTip.ShowTooltipWithDelay(sender.ToolTipText, cmsAlt.Handle, rc, (sender.ToolTipText.Count(Function(c) c = vbLf) + 5) * 1000)
     End Sub
 End Class
 

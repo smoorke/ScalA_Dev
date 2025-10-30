@@ -115,7 +115,7 @@
     </Compile>
     <Compile Include="FsWatcher.vb" />
     <Compile Include="KeyboardHook.vb" />
-    <Compile Include="MenuTooltip.vb" />
+    <Compile Include="CustomTooltip.vb" />
     <Compile Include="MRU.vb" />
     <Compile Include="NaturalStringSorter.vb" />
     <Compile Include="DWMThumb.vb" />
@@ -232,7 +232,6 @@
     <None Include="Resources\WarningOverlay.png" />
     <None Include="Resources\shortcutOverlay.png" />
     <None Include="Resources\multiPaste.png" />
-    <None Include="Resources\shortcut_overlay.ico" />
     <None Include="Resources\Refresh.png" />
     <None Include="Resources\RefreshB.png" />
     <None Include="Resources\Warning.png" />
