@@ -107,7 +107,9 @@ Public Class frmOverlay
         sender.Location = pbRestart.PointToScreen(New Point(0, pbRestart.Height))
         sender.Opacity = 1
     End Sub
-
+    Private Sub RestartAndCloseToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles RestartAndCloseToolStripMenuItem.Click
+        pbRestart_Click(pbRestart, New MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0))
+    End Sub
     Private Async Sub RestartWoClosingToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles RestartWoClosingToolStripMenuItem.Click
         FrmMain.Cursor = Cursors.WaitCursor
         Me.UseWaitCursor = True
