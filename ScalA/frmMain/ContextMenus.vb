@@ -408,10 +408,38 @@ Partial Public NotInheritable Class FrmMain
         AButton.ActiveOverview = My.Settings.gameOnOverview
         Me.TopMost = My.Settings.topmost
     End Sub
+    Private TTinit As Boolean = False
 
-    Private Sub CmsAlt_Opened(sender As Object, e As EventArgs) Handles cmsAlt.Opened
+    Private Sub CmsAlt_Opened(sender As ContextMenuStrip, e As EventArgs) Handles cmsAlt.Opened
         AButton.ActiveOverview = False
         Task.Run(Sub() Me.BeginInvoke(Sub() CloseAllButNameToolStripMenuItem.Visible = AstoniaProcess.ListProcesses(blackList, True).Any(Function(ap As AstoniaProcess) ap.Id <> sender.Tag.Id)))
+
+#If DEBUG Then
+        If TTinit Then
+            TTinit = False
+            'find tooltip window
+            EnumWindows(Function(w As IntPtr, l As IntPtr)
+                            Dim pid As Integer
+                            Dim thread = GetWindowThreadProcessId(w, pid)
+                            If pid <> scalaPID Then Return True
+                            If Not GetWindowClass(w).ToLower.Contains("tooltips_class32") Then Return True
+                            Debug.Print($"Found tooltip {thread} ""{GetWindowText(w)}"" sender.handle {sender.Handle}")
+                            Debug.Print($"ga root {GetAncestor(w, GA_ROOT)} {GetAncestor(sender.Handle, GA_ROOT)}")
+                            Debug.Print($"ga parent {GetAncestor(w, GA_PARENT)} {GetAncestor(sender.Handle, GA_PARENT)}")
+                            Debug.Print($"ga rootowner {GetAncestor(w, GA_ROOTOWNER)} {GetAncestor(sender.Handle, GA_ROOTOWNER)}")
+
+                            If GetAncestor(w, GA_PARENT) <> GetAncestor(sender.Handle, GA_PARENT) Then Return True
+
+                            'trying to fix tooltip phasing in/out when it gets bumped due to not fitting working area
+
+                            'fixed by using own tooltip
+
+                            Return False
+                        End Function, IntPtr.Zero)
+        End If
+#End If
+
+
     End Sub
     Private Sub SortSubToolStripMenuItem_MouseEnter(sender As ToolStripMenuItem, e As EventArgs) Handles SortSubToolStripMenuItem.MouseEnter
         If MouseButtons And MouseButtons.Right = MouseButtons.Right Then
@@ -1871,7 +1899,7 @@ Partial Public NotInheritable Class FrmMain
             dBug.Print($"purgeList.Count {purgeList.Count}")
 
             'MenuToolTip.InitializeTooltip(sender.Owner.Handle)
-            MenuToolTip.InitializeTooltip()
+            CustomToolTip.InitializeTooltip()
 
             For Each item As MenuItem In QlCtxMenu.MenuItems
                 ' Skip separators
@@ -1914,7 +1942,7 @@ Partial Public NotInheritable Class FrmMain
                                                 End If
                                             Next
 
-                                            MenuToolTip.ShowTooltipWithDelay(text, hwndMenu, rc)
+                                            CustomToolTip.ShowTooltipWithDelay(text, hwndMenu, rc)
 
                                         End Sub
 
