@@ -1556,7 +1556,7 @@ Partial Public NotInheritable Class FrmMain
                          dBug.Print($"findwindow {hndl}")
                          If hndl <> IntPtr.Zero Then Exit While
                      End While
-                     SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
+
                      If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
 
                      SendMessage(hndl, WM_SETICON, ICON_BIG, My.Resources.moa3.Handle)
