@@ -70,9 +70,10 @@ Namespace CustomToolTip
                                          CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
                                          IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero)
 
-            tipInfo = New TOOLINFO()
-            tipInfo.cbSize = Marshal.SizeOf(tipInfo)
-            tipInfo.uFlags = TTF_ABSOLUTE Or TTF_TRACK Or TTF_TRANSPARENT Or TTF_IDISHWND
+            tipInfo = New TOOLINFO() With {
+                .cbSize = Marshal.SizeOf(tipInfo),
+                .uFlags = TTF_ABSOLUTE Or TTF_TRACK Or TTF_TRANSPARENT Or TTF_IDISHWND
+            }
 
             SendMessage(hWndTooltip, TTM_SETMAXTIPWIDTH, IntPtr.Zero, New IntPtr(400))
         End Sub
@@ -98,7 +99,8 @@ Namespace CustomToolTip
 
         Private delayTimer As Timer
         Private hideTimer As Timer
-        Public Sub ShowTooltipWithDelay(text As String, hwndmenu As IntPtr, rcMenuItem As RECT, Optional autopop As Integer? = Nothing)
+
+        Public Sub ShowTooltipWithDelay(text As String, hwndParent As IntPtr, rcTrack As RECT, Optional autopop As Integer? = Nothing, Optional positionCallback As Func(Of Point) = Nothing)
             If hWndTooltip = IntPtr.Zero Then InitializeTooltip()
 
             ' Clean up timers
@@ -113,14 +115,9 @@ Namespace CustomToolTip
                 hideTimer = Nothing
             End If
 
-            ' Query tooltip control’s delay times
-            Dim initialDelay = SendMessage(hWndTooltip, TTM_GETDELAYTIME, New IntPtr(TTDT_INITIAL), IntPtr.Zero).ToInt32()
-            ' Dim autoPopDelay = SendMessage(hWndTooltip, TTM_GETDELAYTIME, New IntPtr(TTDT_AUTOPOP), IntPtr.Zero).ToInt32()
+            Dim initialDelay = If(IsWindowVisible(hWndTooltip), 100, 400)
 
-            If initialDelay <= 0 Then initialDelay = 400
-
-
-            delayTimer = New Timer() With {.Interval = initialDelay, .Tag = {text, hwndmenu, rcMenuItem, autopop}}
+            delayTimer = New Timer() With {.Interval = initialDelay, .Tag = {text, hwndParent, rcTrack, autopop, positionCallback}}
             AddHandler delayTimer.Tick, AddressOf DelayTimer_Tick
             delayTimer.Start()
         End Sub
@@ -131,21 +128,22 @@ Namespace CustomToolTip
 
 
             Dim text As String = delayTimer.Tag(0)
-            Dim hwndMenu As IntPtr = delayTimer.Tag(1)
-            Dim rcMenuItem As RECT = delayTimer.Tag(2)
+            Dim hwndParent As IntPtr = delayTimer.Tag(1)
+            Dim rcTrack As RECT = delayTimer.Tag(2)
             Dim autopop As Integer? = delayTimer.Tag(3)
+            Dim positionCallback As Func(Of Point) = delayTimer.Tag(4)
 
             delayTimer.Dispose()
             delayTimer = Nothing
 
-            If Not PtInRect(rcMenuItem, Control.MousePosition) Then Exit Sub
+            If Not PtInRect(rcTrack, Control.MousePosition) Then Exit Sub
 
             If String.IsNullOrEmpty(text) Then
                 HideTooltip()
                 Exit Sub
             Else
                 Task.Run(Sub()
-                             While PtInRect(rcMenuItem, Control.MousePosition)
+                             While PtInRect(rcTrack, Control.MousePosition)
                                  Threading.Thread.Sleep(66)
                              End While
                              If hideTimer IsNot Nothing Then
@@ -158,20 +156,25 @@ Namespace CustomToolTip
                          End Sub)
             End If
 
-            Dim autoPopDelay = If(autopop, SendMessage(hWndTooltip, TTM_GETDELAYTIME, New IntPtr(TTDT_AUTOPOP), IntPtr.Zero).ToInt32())
-            If autoPopDelay <= 0 Then autoPopDelay = 5000
+            Dim autoPopDelay = If(autopop, 5000)
 
-            ' Setup TOOLINFO
-            tipInfo.hwnd = hwndMenu
-            tipInfo.uId = hwndMenu
+            tipInfo.hwnd = hwndParent
+            tipInfo.uId = hwndParent
 
             tipInfo.lpszText = Marshal.StringToHGlobalUni(text)
 
-            ' Register tool and show
             SendMessage(hWndTooltip, TTM_DELTOOL, IntPtr.Zero, tipInfo)
             SendMessage(hWndTooltip, TTM_ADDTOOL, IntPtr.Zero, tipInfo)
             SendMessage(hWndTooltip, TTM_UPDATETIPTEXT, IntPtr.Zero, tipInfo)
-            SendMessage(hWndTooltip, TTM_TRACKPOSITION, IntPtr.Zero, New IntPtr((Control.MousePosition.Y + 35 << 16) Or (Control.MousePosition.X And &HFFFF)))
+
+            Dim pos As Point
+            If positionCallback IsNot Nothing Then
+                pos = positionCallback()
+            Else
+                pos = New Point(Control.MousePosition.X, Control.MousePosition.Y + 35)
+            End If
+
+            SendMessage(hWndTooltip, TTM_TRACKPOSITION, IntPtr.Zero, New IntPtr((pos.Y << 16) Or (pos.X And &HFFFF)))
             SendMessage(hWndTooltip, TTM_TRACKACTIVATE, New IntPtr(1), tipInfo)
 
             ' Auto-hide timer

@@ -1941,8 +1941,11 @@ Partial Public NotInheritable Class FrmMain
                                                     Exit For
                                                 End If
                                             Next
-
-                                            CustomToolTip.ShowTooltipWithDelay(text, hwndMenu, rc)
+                                            If it Is pasteItem Then
+                                                CustomToolTip.ShowTooltipWithDelay(text, hwndMenu, rc, positionCallback:=Function() New Point(rc.left + 65, rc.top + If(clipBoardInfo.Files.Count = 1, 1, 35)))
+                                            Else
+                                                CustomToolTip.ShowTooltipWithDelay(text, hwndMenu, rc)
+                                            End If
 
                                         End Sub
 
