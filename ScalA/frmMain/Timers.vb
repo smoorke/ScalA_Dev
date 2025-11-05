@@ -508,9 +508,12 @@ Partial NotInheritable Class FrmMain
                             PnlEqLock.Size = New Size((524 - excludGearLock).Map(0, 800, 0, but.ThumbRECT.Width - but.ThumbRECT.Left),
                                   lockHeight.Map(0, rccB.Height, 0, but.ThumbRECT.Height - but.ThumbRECT.Top))
 
-                            Dim pttB As New Point
-                            ClientToScreen(ap?.MainWindowHandle, pttB)
-                            Dim AstClientOffsetB = New Size(pttB.X - rcwB.Left, pttB.Y - rcwB.Top)
+                            Dim Wrect As RECT
+                            Dim Crect As RECT
+                            GetWindowRect(ap?.MainWindowHandle, Wrect)
+                            GetClientRect(ap?.MainWindowHandle, Crect)
+                            Dim bSize = (wrect.Right - wrect.Left - crect.Right) \ 2
+                            Dim AstClientOffsetB = New Size(bSize, Wrect.Bottom - Wrect.Top - Crect.Bottom - bSize)
 
                             Dim ptZB = Me.PointToScreen(but.ThumbRECT.Location)
                             Dim newXB = MousePosition.X.Map(ptZB.X, ptZB.X + but.ThumbRectangle.Width, ptZB.X, ptZB.X + but.ThumbRECT.Width - but.ThumbRECT.X - rccB.Width) - AstClientOffsetB.Width '- My.Settings.offset.X

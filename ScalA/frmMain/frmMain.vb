@@ -323,7 +323,7 @@ Partial Public NotInheritable Class FrmMain
         GetWindowRect(hWnd, rcWind)
         Dim rcClient As RECT
         GetClientRect(hWnd, rcClient)
-        Dim hasBorder As Boolean = rcWind.top <> rcClient.top
+        Dim hasBorder As Boolean = rcWind.bottom - rcWind.top <> rcClient.bottom
         Return Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25 + If(hasBorder, 0, 25)
     End Function
 
