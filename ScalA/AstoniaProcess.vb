@@ -900,25 +900,17 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Private Shared Function GetClientRect(ByVal hWnd As IntPtr, ByRef lpRect As Rectangle) As Boolean : End Function
     <System.Runtime.InteropServices.DllImport("user32.dll")>
     Private Shared Function GetClientRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As Boolean : End Function
-    <DllImport("gdi32.dll")>
-    Private Shared Function GetClipBox(hdc As IntPtr, ByRef lprc As Rectangle) As Integer : End Function
+
     Public Function GetClientBitmap() As Bitmap
         If proc Is Nothing Then Return Nothing
         Try
+            Dim rcc As Rectangle
+            If Not GetClientRect(Me.MainWindowHandle, rcc) Then Return Nothing 'GetClientRect fails if astonia is running fullscreen and is tabbed out
 
-            Dim wHDc As IntPtr = GetDC(Me.MainWindowHandle)
-            Dim rc As Rectangle
-            GetClipBox(wHDc, rc)
-            ReleaseDC(Me.MainWindowHandle, wHDc)
+            If rcc.Width = 0 OrElse rcc.Height = 0 Then Return Nothing
 
-            If rc.Width = 0 OrElse rc.Height = 0 Then Return Nothing
-            Dim bmp As New Bitmap(rc.Width, rc.Height)
-
-            'Dim rcc As Rectangle
-            'If Not GetClientRect(Me.MainWindowHandle, rcc) Then Return Nothing 'GetClientRect fails if astonia is running fullscreen and is tabbed out
-            'If rcc.Width = 0 OrElse rcc.Height = 0 Then Return Nothing
-            'Dim fact As Double = Me.WindowsScaling / 100
-            'Dim bmp As New Bitmap(CInt(rcc.Width * fact), CInt(rcc.Height * fact))
+            Dim fact As Double = Me.WindowsScaling / 100
+            Dim bmp As New Bitmap(CInt(rcc.Width * fact), CInt(rcc.Height * fact))
 
             Using gBM As Graphics = Graphics.FromImage(bmp)
                 Dim hdcBm As IntPtr
