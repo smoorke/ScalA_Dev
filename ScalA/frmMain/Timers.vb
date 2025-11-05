@@ -852,7 +852,7 @@ Partial NotInheritable Class FrmMain
                 'ERROR: this is not thread safe
                 'AstoniaProcess.loggedIns = New Concurrent.ConcurrentDictionary(Of Integer, AstoniaProcess)(AstoniaProcess.Enumerate({}, True).Where(Function(ap) ap.Name <> "Someone").Select(Function(ap) New KeyValuePair(Of Integer, AstoniaProcess)(ap.Id, ap)))
 
-                Dim dum = AstoniaProcess.Enumerate({}, True).Where(Function(p) p.Name <> "Someone") 'p.name populates loggedins
+                'Dim dum = AstoniaProcess.Enumerate({}, True).Where(Function(p) p.Name <> "Someone") 'p.name populates loggedins
 
                 'Dim dum As AstoniaProcess 'to ensure optimizer doesn't remove the following for each
                 'For Each ap In AstoniaProcess.Enumerate({}, True).Where(Function(p) p.Name <> "Someone") ' this is handled in p.name: AstoniaProcess.loggedIns.TryAdd(ap.Id, ap)
@@ -860,20 +860,18 @@ Partial NotInheritable Class FrmMain
                 'Next
             End If
 
-            Dim listingsomeone = IPC.getInstances.Any(Function(si) si.showingSomeones)
-
             '  ls  ns | c
             '  0   0  | 1
             '  0   1  | 1
             '  1   0  | 1
             '  1   1  | 0
 
-            If Not (listingsomeone AndAlso My.Settings.OnlyAutoCloseOnNoSomeone) Then
+            If Not (My.Settings.OnlyAutoCloseOnNoSomeone AndAlso IPC.getInstances.Any(Function(si) si.showingSomeones)) Then
                 Dim dumm = Task.Run(Sub()
                                         Parallel.ForEach(AstoniaProcess.loggedIns.Values.Where(Function(p) p.Name = "Someone").ToArray,
                                             Sub(it As AstoniaProcess)
                                                 If it.hasLoggedIn Then
-                                                    dBug.print($"AutoClosing {it.loggedInAs}")
+                                                    dBug.Print($"AutoClosing {it.loggedInAs}")
                                                     it.CloseOrKill()
                                                     AstoniaProcess.loggedIns.TryRemove(it.Id, Nothing)
                                                 End If

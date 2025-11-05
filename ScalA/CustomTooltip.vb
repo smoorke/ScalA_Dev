@@ -143,9 +143,9 @@ Namespace CustomToolTip
                 Exit Sub
             Else
                 Task.Run(Sub()
-                             While PtInRect(rcTrack, Control.MousePosition)
+                             Do
                                  Threading.Thread.Sleep(66)
-                             End While
+                             Loop While PtInRect(rcTrack, Control.MousePosition)
                              If hideTimer IsNot Nothing Then
                                  hideTimer.Stop()
                                  RemoveHandler hideTimer.Tick, AddressOf HideTimer_Tick
