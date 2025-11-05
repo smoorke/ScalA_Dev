@@ -909,7 +909,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
             If rcc.Width = 0 OrElse rcc.Height = 0 Then Return Nothing
 
-            Dim bmp As New Bitmap(rcc.Width, rcc.Height)
+            Dim fact As Double = Me.WindowsScaling / 100
+            Dim bmp As New Bitmap(CInt(rcc.Width * fact), CInt(rcc.Height * fact))
 
             Using gBM As Graphics = Graphics.FromImage(bmp)
                 Dim hdcBm As IntPtr
@@ -927,7 +928,6 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             Return Nothing
         End Try
     End Function
-    Private Shared ReadOnly validColors As Integer() = {&HFFFF0000, &HFFFF0400, &HFFFF7B29, &HFFFF7D29, &HFF297BFF, &HFF297DFF, &HFF000000, &HFF000400, &HFFFFFFFF} 'red, orange, lightblue, black, white (troy,base)
     Private _isSDL? As Boolean = Nothing
     Public ReadOnly Property isSDL() As Boolean
         Get
@@ -1071,6 +1071,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
 
     Dim paneOpen As Boolean = False
+    Private Shared ReadOnly validColors As Integer() = {&HFFFF0000, &HFFFF0400, &HFFFF7B29, &HFFFF7D29, &HFF297BFF, &HFF297DFF, &HFF000000, &HFF000400, &HFFFFFFFF} 'red, orange, lightblue, black, white (troy,base)
 
     Public Function GetHealthbar(Optional width As Integer = 75, Optional height As Integer = 15) As Bitmap
         Dim bmp As New Bitmap(width, height)
@@ -1129,12 +1130,12 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     End If
 
                     If Not validColors.Contains(currentCol) Then
-                        'Debug.Print($"badcolor row{dy} &H{grab.GetPixel(barX + dx, 205 + dy).ToArgb.ToString("X8")}")
+                        'If dy = 0 Then Debug.Print($"badcolor row{dy} &H{grab.GetPixel((barX + dx), (205 + dy)).ToArgb.ToString("X8")}")
                         BadColorCount += 1
                     End If
                     If dy = 0 Then
                         If BadColorCount > 1 OrElse blackCount = 25 Then
-                            'Debug.Print("Pane open?")
+                            'Debug.Print($"Pane open? {BadColorCount} {blackCount}")
                             paneOpen = True
                             blackCount = 0
                             barX += 110
