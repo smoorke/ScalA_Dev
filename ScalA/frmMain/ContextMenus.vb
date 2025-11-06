@@ -907,7 +907,7 @@ Partial Public NotInheritable Class FrmMain
                 pasteTSItem = New ToolStripMenuItem("Paste ", Nothing, AddressOf ClipAction)
 
                 menuItems.Add(pasteTSItem)
-                If clipBoardInfo.Action = ClipboardAction.Copy Then
+                If clipBoardInfo.Action.HasFlag(DragDropEffects.Link) Then
                     pasteLinkTSItem = New ToolStripMenuItem("Paste Shortcut", Nothing, AddressOf ClipAction)
                     menuItems.Add(pasteLinkTSItem)
                 End If
@@ -928,7 +928,7 @@ Partial Public NotInheritable Class FrmMain
                         If hideExt.Contains(IO.Path.GetExtension(nm)) Then
                             nm = IO.Path.GetFileNameWithoutExtension(nm)
                         End If
-                        pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} ""{nm.CapWithEllipsis(16)}"""
+                        pasteTSItem.Text = $"{If(clipBoardInfo.Action.HasFlag(DragDropEffects.Move), "Move", "Paste")} ""{nm.CapWithEllipsis(16)}"""
                         pasteTSItem.ToolTipText = If(nm.Length > 16, nm, "")
 
                         If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
@@ -950,7 +950,7 @@ Partial Public NotInheritable Class FrmMain
                                  End Sub)
                     End If
                 Else
-                    pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} Multiple ({clipBoardInfo.Files?.Count})"
+                    pasteTSItem.Text = $"{If(clipBoardInfo.Action.HasFlag(DragDropEffects.Move), "Move", "Paste")} Multiple ({clipBoardInfo.Files?.Count})"
 
                     Dim idx = 0
                     Dim sb As New Text.StringBuilder
@@ -1759,7 +1759,7 @@ Partial Public NotInheritable Class FrmMain
             If clipBoardInfo.Files?.Count > 0 Then
                 pasteItem.Enabled = True
 
-                pasteLinkItem.Visible = clipBoardInfo.Action = ClipboardAction.Copy
+                pasteLinkItem.Visible = clipBoardInfo.Action.HasFlag(DragDropEffects.Link)
 
                 If clipBoardInfo.Files.Count = 1 Then
                     If (IO.File.Exists(clipBoardInfo.Files(0)) OrElse IO.Directory.Exists(clipBoardInfo.Files(0))) Then
@@ -1770,7 +1770,7 @@ Partial Public NotInheritable Class FrmMain
                             nm = IO.Path.GetFileNameWithoutExtension(nm)
                         End If
 
-                        pasteItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} ""{nm.CapWithEllipsis(16)}"""
+                        pasteItem.Text = $"{If(clipBoardInfo.Action.HasFlag(DragDropEffects.Move), "Move", "Paste")} ""{nm.CapWithEllipsis(16)}"""
                         pasteLinkItem.Text = "Paste Shortcut"
 
                         If nm.Length > 16 Then
@@ -1808,7 +1808,7 @@ Partial Public NotInheritable Class FrmMain
                     End If
                 Else 'more than 1 file/dir.
 
-                    pasteItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} Multiple ({clipBoardInfo.Files?.Count})"
+                    pasteItem.Text = $"{If(clipBoardInfo.Action.HasFlag(DragDropEffects.Move), "Move", "Paste")} Multiple ({clipBoardInfo.Files?.Count})"
 
                     Dim tag As MenuTag = pasteItem.Tag
                     Dim idx = 0

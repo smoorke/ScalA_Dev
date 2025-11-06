@@ -24,9 +24,20 @@ Module ClipBoardHelper
 
             data.SetFileDropList(files)
 
-            data.SetData("Preferred DropEffect", New IO.MemoryStream(BitConverter.GetBytes(If(isCut, 2, 1))))
+            If Not isCut Then
+                unregisterClipListener()
+                InvokeExplorerVerb(file, "Copy", ScalaHandle)
+
+                data.SetData("Shell IDList Array", Clipboard.GetDataObject().GetData("Shell IDList Array", True))
+
+                registerClipListener()
+            End If
+
+
+            data.SetData("Preferred DropEffect", New IO.MemoryStream(BitConverter.GetBytes(If(isCut, DragDropEffects.Move, DragDropEffects.Copy Or DragDropEffects.Link))))
 
             Clipboard.SetDataObject(data, True)
+
             dBug.Print("Clipboard set: " & If(isCut, "Cut", "Copy"))
         Catch ex As Exception
             dBug.Print("Clipboard error: " & ex.Message)
@@ -34,22 +45,15 @@ Module ClipBoardHelper
 
     End Sub
 
-    Public Enum ClipboardAction
-        None = 0
-        Move = 2
-        Cut = 2
-        Copy = 5
-    End Enum
-
     Public Structure ClipboardFileInfo
         Public Files As List(Of String)
-        Public Action As ClipboardAction
+        Public Action As DragDropEffects
     End Structure
 
     Public Function GetClipboardFilesAndAction() As ClipboardFileInfo
         Dim result As New ClipboardFileInfo With {
             .Files = New List(Of String),
-            .Action = ClipboardAction.None
+            .Action = DragDropEffects.None
         }
 
         result.Files = Clipboard.GetFileDropList().Cast(Of String)().ToList
@@ -65,12 +69,7 @@ Module ClipBoardHelper
                     Dim bytes(3) As Byte
                     mes.Position = 0
                     mes.Read(bytes, 0, 4)
-                    Dim effect = BitConverter.ToInt32(bytes, 0)
-                    If effect = 2 Then
-                        result.Action = ClipboardAction.Move
-                    ElseIf effect = 5 Then
-                        result.Action = ClipboardAction.Copy
-                    End If
+                    result.Action = BitConverter.ToInt32(bytes, 0)
                 End If
             End If
         End If
