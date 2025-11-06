@@ -14,6 +14,29 @@ Module ClipBoardHelper
         If RemoveClipboardFormatListener(_ListeningFormHand) Then _ListeningFormHand = Nothing
     End Sub
 
+
+
+    Public Sub SetFileDropListWithEffect(ByVal file As String, ByVal isCut As Boolean)
+        Try
+
+            Dim data As New DataObject()
+            Dim files As New Specialized.StringCollection From {file}
+
+            data.SetFileDropList(files)
+
+            data.SetData("Preferred DropEffect", New IO.MemoryStream(BitConverter.GetBytes(If(isCut, 2, 1))))
+
+            Clipboard.Clear()
+            Clipboard.SetDataObject(data, True)
+            dBug.Print("Clipboard set: " & If(isCut, "Cut", "Copy"))
+        Catch ex As Exception
+            dBug.Print("Clipboard error: " & ex.Message)
+        End Try
+
+    End Sub
+
+
+
     Public Sub dupeClipBoard()
         Dim hw As IntPtr = GetClipboardOwner()
         Dim pid As Integer

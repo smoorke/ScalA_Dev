@@ -2011,12 +2011,14 @@ Partial Public NotInheritable Class FrmMain
                      End Sub)
         End If
 
-        InvokeExplorerVerb(tgt, act, ScalaHandle)
-
         dBug.Print($"Clipaction {act} ""{tgt}""")
+        If act.StartsWith("Paste") Then
+            InvokeExplorerVerb(tgt, act, ScalaHandle)
+        Else
 
-        If Not {"Paste", "PasteLink"}.Contains(act) Then
-            dupeClipBoard()
+            SetFileDropListWithEffect(tgt.TrimEnd("\"c), act = "Cut")
+
+            'dupeClipBoard()
 
             pasteTSItem.Tag = New MenuTag With {.path = IO.Path.Combine(tgt, "Empty"), .action = "Paste"}
             pasteLinkTSItem.Tag = New MenuTag With {.path = IO.Path.Combine(tgt, "Empty"), .action = "PasteLink"}
@@ -2049,7 +2051,7 @@ Partial Public NotInheritable Class FrmMain
                              Dim img = GetIconFromFile(tgt, False, True)
                              Me.Invoke(Sub()
                                            pasteTSItem.Image = img
-                                           If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
+                                           If clipBoardInfo.Files.FirstOrDefault?.ToLower.EndsWith(".lnk") Then
                                                pasteTSItem.Image = img.addOverlay(My.Resources.shortcutOverlay)
                                            Else
                                                pasteLinkTSItem.Image = img.addOverlay(My.Resources.shortcutOverlay)
