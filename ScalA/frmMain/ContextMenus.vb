@@ -2018,8 +2018,6 @@ Partial Public NotInheritable Class FrmMain
 
             SetFileDropListWithEffect(tgt.TrimEnd("\"c), act = "Cut")
 
-            'dupeClipBoard()
-
             pasteTSItem.Tag = New MenuTag With {.path = IO.Path.Combine(tgt, "Empty"), .action = "Paste"}
             pasteLinkTSItem.Tag = New MenuTag With {.path = IO.Path.Combine(tgt, "Empty"), .action = "PasteLink"}
 

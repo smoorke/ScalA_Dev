@@ -26,62 +26,12 @@ Module ClipBoardHelper
 
             data.SetData("Preferred DropEffect", New IO.MemoryStream(BitConverter.GetBytes(If(isCut, 2, 1))))
 
-            Clipboard.Clear()
             Clipboard.SetDataObject(data, True)
             dBug.Print("Clipboard set: " & If(isCut, "Cut", "Copy"))
         Catch ex As Exception
             dBug.Print("Clipboard error: " & ex.Message)
         End Try
 
-    End Sub
-
-
-
-    Public Sub dupeClipBoard()
-        Dim hw As IntPtr = GetClipboardOwner()
-        Dim pid As Integer
-        GetWindowThreadProcessId(hw, pid)
-        dBug.Print($"dupeClipBoard {pid = scalaPID}")
-        If pid = scalaPID Then
-            ClipboardCopy()
-        End If
-    End Sub
-
-    Dim formatsToCopy As New HashSet(Of String) From {
-        "FileDrop", "FileNameW", "FileName",
-        "Preferred DropEffect", "Shell IDList Array"
-    }
-
-    Public Sub ClipboardCopy()
-        Try
-            Dim newData As New DataObject()
-
-            Dim managedCopy As Windows.Forms.IDataObject = Clipboard.GetDataObject()
-            If managedCopy IsNot Nothing Then
-                For Each fmt As String In managedCopy.GetFormats(True)
-                    Try
-                        Dim data = managedCopy.GetData(fmt, True)
-                        dBug.Print($"Duping {fmt} {data?.GetType}")
-                        If data IsNot Nothing Then
-                            If formatsToCopy.Contains(fmt) Then
-                                newData.SetData(fmt, data)
-                            End If
-                        End If
-                    Catch ex As Exception
-                        Debug.Print($"Could not copy format {fmt}: {ex.Message}")
-                    End Try
-                Next
-            End If
-
-            RemoveClipboardFormatListener(ScalaHandle)
-
-            Clipboard.SetDataObject(newData, True)
-
-            AddClipboardFormatListener(ScalaHandle)
-
-        Catch ex As Exception
-            Debug.Print("ClipboardCopy error: " & ex.Message)
-        End Try
     End Sub
 
     Public Enum ClipboardAction
