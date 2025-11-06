@@ -1,3 +1,25 @@
+**ScalA 1.7.8**
+- Resolved some instances of error dialog disappearing behind topmost ScalA.
+- Fixed some more Cursor Flicker issues.
+- Fixed QL Sorting not being exactly same as Windows Sorting.
+- Fixed QL PasteItem visibility Issue.
+- Added truncation with an ellipsis on long names for paste MenuItems. (made full name available in a Tooltip)
+- Added a Tooltip with a short list of names on PasteItems when multiple files are on the ClipBoard.
+- Added truncation and Tooltip to QL ContextMenu Default item with a long name.
+- Fixed QL marks special links as invalid (Recycle Bin, Control Panel, etc...)
+- Added an icon to Settings `Open in File Explorer` QLPath Icon ContextMenuItem.
+- Fixed Rename Dialog EditBox Ctrl-Backspace not deleting previous word.
+- Fixed a BringToFront Issue on Active Overview.
+- Fixed `Open All` not working for a QL folder with no .Lnk files.
+- Made BringToFront of Properties Dialog locale agnostic.
+-# Note: There are most likely a bunch of other instances where language messes things up.
+- Fixed Tooltip on RestartButton.
+- Fixed Tooltip on SidebarMode MenuItem may glitch when opened too close to TaskBar.
+- Fixed Overview Big Healthbar for legacy clients running in DPI aware mode.
+-# Note: Dpi Testing/Debugging is a nightmare. Running ScalA itself in DPI aware is not supported.
+- Fixed Cursor Jitter on Active Overview on a scaled monitor.
+- Fixed Cut/Copy can lead to a silent crash.
+
 **ScalA 1.7.7**
 - Fixed activation issues (Taskbar Flashing) when clicking pinned ScalA taskbar icon, double clicking TrayIcon or restarting an idled Alt.
 - Fixed contextmenu of QL item with unicode text default item displaying `??` instead of actual glyphs.
