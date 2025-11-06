@@ -2034,14 +2034,14 @@ Partial Public NotInheritable Class FrmMain
                 If hideExt.Contains(IO.Path.GetExtension(nm)) Then
                     nm = IO.Path.GetFileNameWithoutExtension(nm)
                 End If
-                pasteTSItem.Text = $"{If(clipBoardInfo.Action = ClipboardAction.Move, "Move", "Paste")} ""{nm.CapWithEllipsis(16)}"""
+                pasteTSItem.Text = $"{If(act = "Cut", "Move", "Paste")} ""{nm.CapWithEllipsis(16)}"""
                 If nm.Length > 16 Then
                     pasteTSItem.ToolTipText = nm
                 Else
                     pasteTSItem.ToolTipText = String.Empty
                 End If
 
-                If clipBoardInfo.Files.FirstOrDefault?.ToLower.EndsWith(".lnk") Then
+                If tgt.ToLower.EndsWith(".lnk") Then
                     pasteLinkTSItem.Visible = False
                 Else
                     pasteLinkTSItem.Text = "Paste Shortcut"
@@ -2051,7 +2051,7 @@ Partial Public NotInheritable Class FrmMain
                              Dim img = GetIconFromFile(tgt, False, True)
                              Me.Invoke(Sub()
                                            pasteTSItem.Image = img
-                                           If clipBoardInfo.Files.FirstOrDefault?.ToLower.EndsWith(".lnk") Then
+                                           If tgt.ToLower.EndsWith(".lnk") Then
                                                pasteTSItem.Image = img.addOverlay(My.Resources.shortcutOverlay)
                                            Else
                                                pasteLinkTSItem.Image = img.addOverlay(My.Resources.shortcutOverlay)
