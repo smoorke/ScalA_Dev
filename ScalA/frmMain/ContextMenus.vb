@@ -1170,22 +1170,6 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
-    Private Function CallAsTaskWithTimeout(Of T, R)(fun As Func(Of T, R), arg As T, timeout As Integer, Optional FailVal As R = Nothing) As R
-        Dim tsk As Task(Of R) = Task.Run(Function()
-                                             Try
-                                                 Return fun(arg)
-                                             Catch ex As Exception
-                                                 Return FailVal
-                                             End Try
-                                         End Function)
-        If tsk.Wait(timeout) Then
-            Return tsk.Result
-        Else
-            Return FailVal
-        End If
-    End Function
-
-
     Private folderIcon As Bitmap = GetIconFromFile(FileIO.SpecialDirectories.Temp & "\", True, True)
     Private folderIconWithOverlay = folderIcon.addOverlay(My.Resources.shortcutOverlay, True)
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening

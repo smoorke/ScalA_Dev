@@ -22,8 +22,20 @@ Module Globals
         End If
     End Sub
 
-
-
+    Public Function CallAsTaskWithTimeout(Of T, R)(fun As Func(Of T, R), arg As T, timeout As Integer, Optional FailVal As R = Nothing) As R
+        Dim tsk As Task(Of R) = Task.Run(Function()
+                                             Try
+                                                 Return fun(arg)
+                                             Catch ex As Exception
+                                                 Return FailVal
+                                             End Try
+                                         End Function)
+        If tsk.Wait(timeout) Then
+            Return tsk.Result
+        Else
+            Return FailVal
+        End If
+    End Function
 
     Public QLFilter As String() = getQLFilter(My.Settings.AdditionalExtensions).ToArray()
     Public Function getQLFilter(addFts) As IEnumerable(Of String)
