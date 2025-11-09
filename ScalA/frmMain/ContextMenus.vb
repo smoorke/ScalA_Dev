@@ -1109,9 +1109,10 @@ Partial Public NotInheritable Class FrmMain
                          Parallel.ForEach(items, opts,
                                           Sub(it As ToolStripMenuItem)
                                               Dim qli As QLInfo = it.Tag
-                                              If qli.path.EndsWith(".lnk") AndAlso Not String.IsNullOrEmpty(qli.target) AndAlso Not (IO.File.Exists(qli.target) OrElse IO.Directory.Exists(qli.target)) Then
+                                              If qli.path.EndsWith(".lnk") AndAlso Not String.IsNullOrEmpty(qli.target) AndAlso
+                                                Not CallAsTaskWithTimeout(Function(p) IO.File.Exists(p) OrElse IO.Directory.Exists(p), qli.target, 500) Then
                                                   'qli.invalidTarget = True
-                                                  it.Tag = qli
+                                                  'it.Tag = qli
                                                   Dim ico = it.Image.addOverlay(My.Resources.WarningOverlay, True)
                                                   Me.Invoke(Sub()
                                                                 it.Image = ico
@@ -1159,7 +1160,7 @@ Partial Public NotInheritable Class FrmMain
 
         'sender.DropDownItems.Clear()
         Dim olditems = sender.DropDownItems.Cast(Of ToolStripItem).ToArray()
-        If IO.Directory.Exists(target) Then
+        If CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, target, 400) Then
             sender.DropDownItems.AddRange(ParseDir(target).ToArray)
         Else
             sender.DropDownItems.Add(New ToolStripMenuItem("<Error>", My.Resources.Warning) With {.Enabled = False, .ToolTipText = "Target Directory Missing"})
@@ -1169,6 +1170,23 @@ Partial Public NotInheritable Class FrmMain
         Next
 
     End Sub
+
+    Private Function CallAsTaskWithTimeout(Of T, R)(fun As Func(Of T, R), arg As T, timeout As Integer, Optional FailVal As R = Nothing) As R
+        Dim tsk As Task(Of R) = Task.Run(Function()
+                                             Try
+                                                 Return fun(arg)
+                                             Catch ex As Exception
+                                                 Return FailVal
+                                             End Try
+                                         End Function)
+        If tsk.Wait(timeout) Then
+            Return tsk.Result
+        Else
+            Return FailVal
+        End If
+    End Function
+
+
     Private folderIcon As Bitmap = GetIconFromFile(FileIO.SpecialDirectories.Temp & "\", True, True)
     Private folderIconWithOverlay = folderIcon.addOverlay(My.Resources.shortcutOverlay, True)
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
