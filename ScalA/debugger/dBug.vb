@@ -227,7 +227,10 @@ Module dBug
         Debug.Print(qli.name)
         Dim sli As New ShellLinkInfo(qli.path)
 
-        CType(sender.Parent.Tag, ToolStripMenuItem).Image.Save("F:\icon.png", ImageFormat.Png)
+
+        Debug.Print(New System.IO.FileInfo(qli.target).Attributes.HasFlag(IO.FileAttributes.Directory))
+
+        'CType(sender.Parent.Tag, ToolStripMenuItem).Image.Save("F:\icon.png", ImageFormat.Png)
         Debug.Print("------------")
     End Sub
 
