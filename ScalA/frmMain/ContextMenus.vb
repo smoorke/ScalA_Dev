@@ -1650,7 +1650,7 @@ Partial Public NotInheritable Class FrmMain
         renameOpen = True
         keybHook.Hook()
 
-        Dim toName As String = InputBox("Enter New Name", title, currentName, dialogLeft, dialogTop).TrimEnd
+        Dim toName As String = InputBox("Enter New Name", title, currentName, dialogLeft, dialogTop)
 
         If Not (My.Settings.DisableWinKey OrElse My.Settings.OnlyEsc OrElse My.Settings.NoAltTab) Then keybHook.Unhook()
         renameOpen = False
