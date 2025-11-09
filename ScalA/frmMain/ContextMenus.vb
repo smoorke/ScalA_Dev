@@ -837,9 +837,9 @@ Partial Public NotInheritable Class FrmMain
 
                                      If My.Settings.QLResolveLnk Then
 
-                                         qli.pointsToDir = lin.PointsToDir
+                                         qli.pointsToDir = lin.PointsToDir 'pointstodir can be false negative when access is denied
 
-                                         If lin.PointsToDir Then
+                                         If lin.PointsToDir OrElse (Not String.IsNullOrEmpty(target) AndAlso CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, target, 400)) Then
 
                                              If Not qli.target.EndsWith("\"c) Then qli.target &= "\"
 
