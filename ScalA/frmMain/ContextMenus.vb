@@ -797,7 +797,7 @@ Partial Public NotInheritable Class FrmMain
                                      timedout = True
                                  End If
                              End Sub)
-        Catch ex As system.OperationCanceledException
+        Catch ex As System.OperationCanceledException
             menuItems.Add(New ToolStripMenuItem("<Operation Canceled>", My.Resources.denied) With {.Enabled = False})
         Catch ex As Exception
             Dim path As String = IO.Path.GetDirectoryName(pth.TrimEnd("\"c))
@@ -1001,9 +1001,9 @@ Partial Public NotInheritable Class FrmMain
         AddHandler addShortcutMenu.DropDownOpened, AddressOf QL_DropDownOpened
         menuItems.Add(addShortcutMenu)
 
-        cts?.Dispose()
-        cts = New Threading.CancellationTokenSource
-        cantok = cts.Token
+        'cts?.Dispose()
+        'cts = New Threading.CancellationTokenSource
+        'cantok = cts.Token
         DeferredIconLoading(Dirs, Files, cantok)
 
         dBug.Print($"parsing ""{pth}"" took {watch.ElapsedMilliseconds} ms")
@@ -1201,21 +1201,39 @@ Partial Public NotInheritable Class FrmMain
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
         dBug.Print("addshortcut.sendertag:" & sender.Tag)
         sender.DropDownItems.Clear()
-
-        sender.DropDownItems.Add(New ToolStripMenuItem("Folder", folderIcon, AddressOf Ql_NewFolder) With {.Tag = sender.Tag})
+        Dim folderitem = New ToolStripMenuItem("Folder", folderIcon) With {.Tag = sender.Tag}
+        AddHandler folderitem.MouseDown, AddressOf Ql_NewFolder
+        sender.DropDownItems.Add(folderitem)
         sender.DropDownItems.Add(New ToolStripSeparator())
 
         For Each alt As AstoniaProcess In AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.UserName)
-            sender.DropDownItems.Add(New ToolStripMenuItem(alt.UserName, alt.GetIcon?.ToBitmap, AddressOf CreateShortCut) With {
-                                               .Tag = {alt, sender.Tag}}) ' sender.tag is parent menu location
+            Dim item As ToolStripMenuItem = New ToolStripMenuItem(alt.UserName, alt.GetIcon?.ToBitmap) With {
+                                               .Tag = {alt, sender.Tag}}
+            AddHandler item.MouseDown, AddressOf CreateShortCut
+            sender.DropDownItems.Add(item) ' sender.tag is parent menu location
         Next
         If sender.DropDownItems.Count = 2 Then
             sender.DropDownItems.Add("(None)").Enabled = False
         ElseIf sender.DropDownItems.Count > 3 Then
             sender.DropDownItems.Add(New ToolStripSeparator())
-            sender.DropDownItems.Add(New ToolStripMenuItem("Add All", My.Resources.Add, AddressOf AddAllShortcuts) With {.Tag = sender.Tag})
+            Dim addallItem As ToolStripMenuItem = New ToolStripMenuItem("Add All", My.Resources.Add) With {.Tag = sender.Tag}
+            AddHandler addallItem.MouseDown, AddressOf AddAllShortcuts
+            sender.DropDownItems.Add(addallItem)
         End If
-
+        AddHandler sender.DropDown.Closing, Sub(sen As ToolStripDropDown, ev As ToolStripDropDownClosingEventArgs)
+                                                If MouseButtons <> MouseButtons.Left AndAlso ev.CloseReason <> ToolStripDropDownCloseReason.CloseCalled Then
+                                                    Debug.Print("cancel dropDownClose")
+                                                    ev.Cancel = True
+                                                End If
+                                            End Sub
+        Dim parentItem As ToolStripMenuItem = TryCast(sender.OwnerItem, ToolStripMenuItem)
+        If parentItem IsNot Nothing Then
+            AddHandler parentItem.DropDown.Closing, Sub(sen As ToolStripDropDown, ev As ToolStripDropDownClosingEventArgs)
+                                                        ' Close this dropdown when the parent closes
+                                                        sender.DropDown.Close(ToolStripDropDownCloseReason.CloseCalled)
+                                                        Debug.Print("Closed child dropdown because parent closed.")
+                                                    End Sub
+        End If
     End Sub
 
     Private Sub CreateNewFolder(newpath As String)
@@ -1250,9 +1268,13 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
-    Private Sub Ql_NewFolder(sender As ToolStripMenuItem, e As EventArgs)
+    Private Sub Ql_NewFolder(sender As ToolStripMenuItem, e As MouseEventArgs)
         dBug.Print($"QlCtxNewFolder sender:{sender}")
         dBug.Print($"tag:    {sender?.Tag}")
+
+        If e.Button <> MouseButtons.Left Then
+            Exit Sub
+        End If
 
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
@@ -1261,10 +1283,14 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
     Private Shared ReadOnly pipe As Char() = {"|"c}
-    Private Sub CreateShortCut(sender As ToolStripMenuItem, e As EventArgs)
+    Private Sub CreateShortCut(sender As ToolStripMenuItem, e As MouseEventArgs)
 
         dBug.Print($"CreateShortCut")
         dBug.Print($"sender.text {sender.Text}")
+
+        If e.Button <> MouseButtons.Left Then
+            Exit Sub
+        End If
 
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
@@ -1358,9 +1384,13 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
-    Private Sub AddAllShortcuts(sender As Object, e As EventArgs)
+    Private Sub AddAllShortcuts(sender As Object, e As MouseEventArgs)
         dBug.Print($"Add All ShortCuts")
         dBug.Print($"sender.tag {sender.tag}")
+
+        If e.Button <> MouseButtons.Left Then
+            Exit Sub
+        End If
 
         Dim list As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.UserName).ToList
 
