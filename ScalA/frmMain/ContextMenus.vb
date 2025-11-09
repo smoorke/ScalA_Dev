@@ -1245,7 +1245,7 @@ Partial Public NotInheritable Class FrmMain
         cmsQuickLaunch.Close()
 
         If IO.Directory.Exists(newfolderPath) Then
-            RenameMethod(newfolderPath, newfolderPath.Substring(newfolderPath.TrimEnd("\").LastIndexOf("\") + 1).TrimEnd("\"))
+            RenameMethod(newfolderPath, newfolderPath.Substring(newfolderPath.TrimEnd("\").LastIndexOf("\") + 1).TrimEnd("\"), deleteOnBlank:=True)
         End If
 
     End Sub
@@ -1616,7 +1616,7 @@ Partial Public NotInheritable Class FrmMain
         RenameMethod(Path, Name)
     End Sub
     Private renameOpen As Boolean
-    Private Sub RenameMethod(Path As String, currentName As String)
+    Private Sub RenameMethod(Path As String, currentName As String, Optional deleteOnBlank As Boolean = False)
         Dim title As String = $"Rename {currentName}"
         Task.Run(Sub()
                      Dim watch As Stopwatch = Stopwatch.StartNew()
@@ -1670,6 +1670,8 @@ Partial Public NotInheritable Class FrmMain
             Else
                 dBug.Print($"renamed to ""{toName}""")
             End If
+        ElseIf toName = "" AndAlso deleteOnBlank Then
+            IO.Directory.Delete(Path)
         End If
     End Sub
     Private Sub QlCtxDelete(sender As MenuItem, e As EventArgs)
