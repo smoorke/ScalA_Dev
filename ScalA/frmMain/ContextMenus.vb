@@ -755,9 +755,12 @@ Partial Public NotInheritable Class FrmMain
         Dim watch As Stopwatch = Stopwatch.StartNew()
 
         Dim Dirs As New ConcurrentBag(Of ToolStripItem)
+        cts = New Threading.CancellationTokenSource
+        cantok = cts.Token
+        Dim opts As New ParallelOptions With {.CancellationToken = cantok, .MaxDegreeOfParallelism = 3}
+        Dim hiddencount As Integer = 0
         Try
-            Dim opts As New ParallelOptions With {.CancellationToken = cantok}
-            Parallel.ForEach(System.IO.Directory.EnumerateDirectories(pth),
+            Parallel.ForEach(System.IO.Directory.EnumerateDirectories(pth), opts,
                              Sub(fulldirs As String)
 
                                  Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fulldirs).Attributes
@@ -794,6 +797,8 @@ Partial Public NotInheritable Class FrmMain
                                      timedout = True
                                  End If
                              End Sub)
+        Catch ex As system.OperationCanceledException
+            menuItems.Add(New ToolStripMenuItem("<Operation Canceled>", My.Resources.denied) With {.Enabled = False})
         Catch ex As Exception
             Dim path As String = IO.Path.GetDirectoryName(pth.TrimEnd("\"c))
             If Not path.EndsWith("\"c) Then path &= "\"c
@@ -814,7 +819,7 @@ Partial Public NotInheritable Class FrmMain
 
         Dim Files As New ConcurrentBag(Of ToolStripItem)
 
-        Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)),
+        Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)), opts,
                              Sub(fullLink As String)
 
                                  Dim attr As System.IO.FileAttributes = New System.IO.FileInfo(fullLink).Attributes
@@ -1110,7 +1115,7 @@ Partial Public NotInheritable Class FrmMain
     Private Sub DeferredIconLoading(Dirs As IEnumerable(Of ToolStripItem), Files As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
         Task.Run(Sub()
                      Try
-                         Dim opts As New ParallelOptions With {.CancellationToken = ct}
+                         Dim opts As New ParallelOptions With {.CancellationToken = ct, .MaxDegreeOfParallelism = 3}
                          Dim items = Files.Concat(Dirs)
                          Parallel.ForEach(items, opts,
                                           Sub(it As ToolStripMenuItem)
