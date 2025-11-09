@@ -794,7 +794,18 @@ Partial Public NotInheritable Class FrmMain
         Catch ex As Exception
             Dim path As String = IO.Path.GetDirectoryName(pth.TrimEnd("\"c))
             If Not path.EndsWith("\"c) Then path &= "\"c
-            menuItems.Add(New ToolStripMenuItem("<Access Denied>", My.Resources.denied) With {.Enabled = False, .ToolTipText = ex.Message.Replace(path, "")})
+            Dim msgparts As String() = ex.Message.Replace(path, "").Split("'"c)
+            Dim message As String
+            If msgparts.Length = 3 Then
+                message = "'"c & msgparts(1) & "'"c & vbCrLf & msgparts(0) & msgparts(2).Trim()
+            ElseIf msgparts.Length >= 3 Then
+                Dim pathstart As Integer = ex.Message.IndexOf("'"c)
+                Dim pathend As Integer = ex.Message.LastIndexOf("'"c)
+                message = ex.Message.Substring(pathstart, pathend - pathstart + 1).Replace(path, "") & vbCrLf & ex.Message.Substring(0, pathstart) & ex.Message.Substring(pathend + 1).Trim
+            Else
+                message = ex.Message
+            End If
+            menuItems.Add(New ToolStripMenuItem("<Access Denied>", My.Resources.denied) With {.Enabled = False, .ToolTipText = message})
             Return menuItems
         End Try
 
@@ -1162,7 +1173,10 @@ Partial Public NotInheritable Class FrmMain
         If CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, target, 400) Then
             sender.DropDownItems.AddRange(ParseDir(target).ToArray)
         Else
-            sender.DropDownItems.Add(New ToolStripMenuItem("<Error>", My.Resources.Warning) With {.Enabled = False, .ToolTipText = "Target Directory Missing"})
+            Dim dirname As String = IO.Path.GetDirectoryName(target.TrimEnd("\"c))
+            Debug.Print($"dir missing {dirname}")
+            Dim name = "'"c & target.Replace(dirname, "").Trim("\"c) & "'"
+            sender.DropDownItems.Add(New ToolStripMenuItem("<Error>", My.Resources.Warning) With {.Enabled = False, .ToolTipText = name & vbCrLf & "Target Directory Missing"})
         End If
         For Each it As ToolStripItem In olditems
             sender.DropDownItems.Remove(it)
