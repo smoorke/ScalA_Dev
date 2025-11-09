@@ -783,15 +783,19 @@ Partial NotInheritable Class FrmMain
                 Attach(AltPP)
                 SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
                 SendMessage(FrmBehind.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
+                SendMessage(frmOverlay.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
                 Me.WindowState = If(wasMaximized, FormWindowState.Maximized, FormWindowState.Normal)
             End If
 
             'ShowWindow(ScalaHandle, SW_SHOW)
             Me.Show()
             If My.Settings.SizingBorder AndAlso Not FrmSizeBorder.Visible Then
-                frmOverlay.Show(If(frmOverlay.Owner Is Nothing, Me, Nothing))
                 FrmSizeBorder.Show(If(FrmSizeBorder.Owner Is Nothing, Me, Nothing))
             End If
+            If frmOverlay.Visible Then
+                frmOverlay.Close()
+            End If
+            frmOverlay.Show(If(frmOverlay.Owner Is Nothing, Me, Nothing))
 
             Me.TopMost = True
             Me.BringToFront()
