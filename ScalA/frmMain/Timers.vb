@@ -794,8 +794,9 @@ Partial NotInheritable Class FrmMain
             End If
             If frmOverlay.Visible Then
                 frmOverlay.Close()
+                frmOverlay.Show(If(frmOverlay.Owner Is Nothing, Me, Nothing))
+                frmOverlay.cmsRestart.Renderer = Me.cmsQuickLaunch.Renderer
             End If
-            frmOverlay.Show(If(frmOverlay.Owner Is Nothing, Me, Nothing))
 
             Me.TopMost = True
             Me.BringToFront()
