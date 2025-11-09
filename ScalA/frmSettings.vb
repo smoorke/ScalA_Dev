@@ -703,7 +703,7 @@ Public NotInheritable Class FrmSettings
     Private Async Sub FrmSettings_Closed(sender As Form, e As FormClosedEventArgs) Handles Me.Closed
         dBug.Print($"frmSettings.Closed {e.CloseReason} ""{sender.Owner}""")
         Await Task.Delay(100) 'hardcoded delay only partially effective. failsafe in wndproc
-        FrmMain.Attach(FrmMain.AltPP, True)
+        If FrmMain.WindowState <> FormWindowState.Minimized Then FrmMain.Attach(FrmMain.AltPP, True)
     End Sub
     'Dim rcAstOffsetBase As Rectangle
     'Public ScalaMoved As Point
