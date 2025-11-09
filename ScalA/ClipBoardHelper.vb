@@ -15,7 +15,12 @@ Module ClipBoardHelper
     End Sub
 
 
-
+#If DEBUG Then
+    ''' <summary>
+    ''' do not use, can lead to silent crash
+    ''' </summary>
+    ''' <param name="file"></param>
+    ''' <param name="isCut"></param>
     Public Sub SetFileDropListWithEffect(ByVal file As String, ByVal isCut As Boolean)
         Try
 
@@ -44,7 +49,7 @@ Module ClipBoardHelper
         End Try
 
     End Sub
-
+#End If
     Public Structure ClipboardFileInfo
         Public Files As List(Of String)
         Public Action As DragDropEffects

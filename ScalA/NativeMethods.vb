@@ -216,6 +216,8 @@ Module NativeMethods
     End Function
     Public ASFW_ANY As UInteger = &HFFFFFFFFUI
     <DllImport("user32.dll", SetLastError:=True)>
+    Public Function SetActiveWindow(ByVal hWnd As IntPtr) As IntPtr : End Function
+    <DllImport("user32.dll", SetLastError:=True)>
     Public Function AllowSetForegroundWindow(dwProcessId As UInt32) As Integer : End Function
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function LockSetForegroundWindow(uLockCode As UInteger) As Boolean : End Function

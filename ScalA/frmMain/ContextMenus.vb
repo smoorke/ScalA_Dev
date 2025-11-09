@@ -548,8 +548,8 @@ Partial Public NotInheritable Class FrmMain
         Try
             Return iconCache.GetOrAdd(qli.path, AddressOf GetIconFromFile) _
                             .AsTransparent(If(qli.hidden, If(My.Settings.DarkMode, 0.4, 0.5), 1)) _
-                            .addOverlay(If(My.Settings.QLResolveLnk AndAlso ((qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target.EndsWith("\"c)) OrElse qli.pointsToDir), My.Resources.shortcutOverlay, Nothing), True) _
-                            .addOverlay(If(qli.invalidTarget, My.Resources.WarningOverlay, Nothing), True)
+                            .addOverlay(If(My.Settings.QLResolveLnk AndAlso ((qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target?.EndsWith("\"c)) OrElse qli.pointsToDir), My.Resources.shortcutOverlay, Nothing), True)
+            '.addOverlay(If(Not String.IsNullOrEmpty(qli.target) AndAlso Not (IO.File.Exists(qli.target) OrElse IO.Directory.Exists(qli.target)), My.Resources.WarningOverlay, Nothing), True)
         Catch ex As Exception
             dBug.Print($"GetIcon Exception {ex.Message}")
             Return Nothing
@@ -824,13 +824,12 @@ Partial Public NotInheritable Class FrmMain
                                      target = lin.TargetPath
 
                                      qli.target = target
-                                     qli.invalidTarget = Not lin.TargetExists AndAlso Not lin.IsVirtual
 
                                      If My.Settings.QLResolveLnk Then
 
                                          qli.pointsToDir = lin.PointsToDir
 
-                                         If IO.Directory.Exists(target) Then
+                                         If lin.PointsToDir Then
 
                                              If Not qli.target.EndsWith("\"c) Then qli.target &= "\"
 
@@ -1075,12 +1074,12 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub CmsQuickLaunch_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs) Handles cmsQuickLaunch.Closing ', item.DropDownClosing
 
-        For Each it As ToolStripMenuItem In CType(sender.items, ToolStripItemCollection).Cast(Of ToolStripItem).Where(Function(mi) TypeOf mi.Tag Is QLInfo)
-            Dim qli As QLInfo = it.Tag
-            If qli.invalidTarget Then
-                EvictIconCacheItem(qli.path)
-            End If
-        Next
+        'For Each it As ToolStripMenuItem In CType(sender.items, ToolStripItemCollection).Cast(Of ToolStripItem).Where(Function(mi) TypeOf mi.Tag Is QLInfo)
+        '    Dim qli As QLInfo = it.Tag
+        '    If qli.invalidTarget Then
+        '        'EvictIconCacheItem(qli.path)
+        '    End If
+        'Next
 
 
         If My.Computer.Keyboard.CtrlKeyDown AndAlso
@@ -1102,9 +1101,23 @@ Partial Public NotInheritable Class FrmMain
                                               Dim ico = GetIconFromCache(qli)
                                               Dim check As Boolean = clipBoardInfo.Files?.Contains(qli.path.TrimEnd("\"c))
                                               Me.Invoke(Sub()
-                                                            it.Checked = check
                                                             it.Image = ico
+                                                            it.Checked = check
                                                         End Sub)
+                                          End Sub)
+
+                         Parallel.ForEach(items, opts,
+                                          Sub(it As ToolStripMenuItem)
+                                              Dim qli As QLInfo = it.Tag
+                                              If qli.path.EndsWith(".lnk") AndAlso Not String.IsNullOrEmpty(qli.target) AndAlso Not (IO.File.Exists(qli.target) OrElse IO.Directory.Exists(qli.target)) Then
+                                                  'qli.invalidTarget = True
+                                                  it.Tag = qli
+                                                  Dim ico = it.Image.addOverlay(My.Resources.WarningOverlay, True)
+                                                  Me.Invoke(Sub()
+                                                                it.Image = ico
+                                                                'it.Invalidate()
+                                                            End Sub)
+                                              End If
                                           End Sub)
 
                      Catch ex As System.OperationCanceledException
@@ -1146,7 +1159,11 @@ Partial Public NotInheritable Class FrmMain
 
         'sender.DropDownItems.Clear()
         Dim olditems = sender.DropDownItems.Cast(Of ToolStripItem).ToArray()
-        sender.DropDownItems.AddRange(ParseDir(target).ToArray)
+        If IO.Directory.Exists(target) Then
+            sender.DropDownItems.AddRange(ParseDir(target).ToArray)
+        Else
+            sender.DropDownItems.Add(New ToolStripMenuItem("<Error>", My.Resources.Warning) With {.Enabled = False, .ToolTipText = "Target Directory Missing"})
+        End If
         For Each it As ToolStripItem In olditems
             sender.DropDownItems.Remove(it)
         Next
@@ -1724,28 +1741,53 @@ Partial Public NotInheritable Class FrmMain
             Dim copyItem = New MenuItem("Copy", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "Copy"}}
             Dim pasteItem = New MenuItem("Paste", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "Paste"}}
             Dim pasteLinkItem = New MenuItem("Paste Shortcut", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "PasteLink"}}
-
+#If Not DEBUG Then
             QlCtxMenu = New ContextMenu({
-                OpenItem,
+            OpenItem,
                 New MenuItem($"Open All{vbTab}-->", AddressOf QlCtxOpenAll) With {
-                                .Visible = (path.EndsWith("\") OrElse (My.Settings.QLResolveLnk AndAlso path.ToLower.EndsWith(".lnk"))) AndAlso
-                                sender.DropDownItems.OfType(Of ToolStripMenuItem) _
-                                      .Any(Function(it)
-                                               Return it.Visible AndAlso TypeOf it.Tag Is QLInfo AndAlso
-                                                      (QLFilter.Contains(IO.Path.GetExtension(CType(it.Tag, QLInfo).path)) OrElse
-                                                      (Not My.Settings.QLResolveLnk OrElse Not String.IsNullOrEmpty(CType(it.Tag, QLInfo).target)))
-                                           End Function),
-                                .Tag = sender
+            .Visible = (path.EndsWith("\") OrElse (My.Settings.QLResolveLnk AndAlso path.ToLower.EndsWith(".lnk"))) AndAlso
+            sender.DropDownItems.OfType(Of ToolStripMenuItem) _
+            .Any(Function(it)
+            Return it.Visible AndAlso TypeOf it.Tag Is QLInfo AndAlso
+                                             (QLFilter.Contains(IO.Path.GetExtension(CType(it.Tag, QLInfo).path)) OrElse
+                                             (Not My.Settings.QLResolveLnk OrElse Not String.IsNullOrEmpty(CType(it.Tag, QLInfo).target)))
+            End Function),
+            .Tag = sender
                                 },
                 New MenuItem("-"),
-                cutItem, copyItem, pasteItem, pasteLinkItem,
+            cutItem, copyItem, pasteItem, pasteLinkItem,
                 New MenuItem("-"),
                 New MenuItem("Delete", AddressOf QlCtxDelete),
                 New MenuItem("Rename", AddressOf QlCtxRename),
                 New MenuItem("-"),
                 New MenuItem("Properties", AddressOf QlCtxProps),
                 New MenuItem("-"),
-                QlCtxNewMenu})
+            QlCtxNewMenu})
+#Else
+            QlCtxMenu = New ContextMenu({
+            OpenItem,
+                New MenuItem($"Open All{vbTab}-->", AddressOf QlCtxOpenAll) With {
+                            .Visible = (path.EndsWith("\") OrElse (My.Settings.QLResolveLnk AndAlso path.ToLower.EndsWith(".lnk"))) AndAlso
+                                        sender.DropDownItems.OfType(Of ToolStripMenuItem) _
+                                                            .Any(Function(it)
+                                                                     Return it.Visible AndAlso TypeOf it.Tag Is QLInfo AndAlso
+                                                                            (QLFilter.Contains(IO.Path.GetExtension(CType(it.Tag, QLInfo).path)) OrElse
+                                                                            (Not My.Settings.QLResolveLnk OrElse Not String.IsNullOrEmpty(CType(it.Tag, QLInfo).target)))
+                                                                 End Function),
+                                            .Tag = sender
+                                },
+                New MenuItem("-"),
+            cutItem, copyItem, pasteItem, pasteLinkItem,
+                New MenuItem("-"),
+                New MenuItem("Delete", AddressOf QlCtxDelete),
+                New MenuItem("Rename", AddressOf QlCtxRename),
+                New MenuItem("-"),
+                New MenuItem("Properties", AddressOf QlCtxProps),
+                New MenuItem("-"),
+                New MenuItem("Dump Info", AddressOf dBug.dumpItemInfo),
+                New MenuItem("-"),
+            QlCtxNewMenu})
+#End If
 
             Dim MenuItems As IEnumerable(Of MenuItem) = QlCtxMenu.MenuItems.Cast(Of MenuItem).ToList
 
@@ -2012,11 +2054,11 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         dBug.Print($"Clipaction {act} ""{tgt}""")
+        InvokeExplorerVerb(tgt, act, ScalaHandle)
         If act.StartsWith("Paste") Then
-            InvokeExplorerVerb(tgt, act, ScalaHandle)
         Else
 
-            SetFileDropListWithEffect(tgt.TrimEnd("\"c), act = "Cut")
+            'SetFileDropListWithEffect(tgt.TrimEnd("\"c), act = "Cut") 'this is brokne. leads to silent crash
 
             pasteTSItem.Tag = New MenuTag With {.path = IO.Path.Combine(tgt, "Empty"), .action = "Paste"}
             pasteLinkTSItem.Tag = New MenuTag With {.path = IO.Path.Combine(tgt, "Empty"), .action = "PasteLink"}
@@ -2196,16 +2238,24 @@ Partial Public NotInheritable Class FrmMain
     Private Sub DblClickDir(ByVal sender As ToolStripMenuItem, ByVal e As EventArgs) 'Handles smenu.DoubleClick
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
+
+        Dim qli As QLInfo = sender.Tag
+        If qli.path.ToLower.EndsWith(".lnk") Then
+            OpenLnk(sender, New MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0))
+            Exit Sub
+        End If
+
         Dim pp As New Process With {.StartInfo = New ProcessStartInfo With {.FileName = CType(sender.Tag, QLInfo).path}}
 
         Try
             pp.Start()
-        Catch
-
+        Catch ex As Exception
+            Debug.Print(ex.Message)
+            'Debugger.Break()
         End Try
     End Sub
 
-
+    Dim explorerPath As String = Environment.ExpandEnvironmentVariables("%windir%\explorer.exe").Trim.ToLowerInvariant()
     Private waitCursorTimer As Stopwatch
     Private Sub OpenLnk(ByVal sender As ToolStripItem, ByVal e As System.Windows.Forms.MouseEventArgs) 'handles item.MouseDown
 
@@ -2216,6 +2266,55 @@ Partial Public NotInheritable Class FrmMain
         If e.Button = MouseButtons.Right Then
             'OpenProps(sender, e)
             Exit Sub
+        End If
+
+        'Dim sli = New ShellLinkInfo(qli.path)
+        'Dim result = sli.Resolve(1000UI << 16 And &H4UI) 'this doesn't yield desired results
+        'dBug.Print($"resolvelink result {result}") 'result is 0 even for broken links
+        'If Not String.IsNullOrEmpty(sli.TargetPath) AndAlso Not (IO.File.Exists(sli.LinkFile) AndAlso (IO.File.Exists(sli.TargetPath) OrElse IO.Directory.Exists(sli.TargetPath))) Then
+        '    dBug.Print($"error lnk not found ""{sli.TargetPath}""")
+        '    Exit Sub
+        'End If
+        Dim sli As New ShellLinkInfo(pth)
+        'find broken explorer dialog and press ok
+        If sli.PointsToDir AndAlso Not String.IsNullOrEmpty(sli.TargetPath) AndAlso Not IO.Directory.Exists(sli.TargetPath) Then
+            EnumWindows(Function(hwnd As IntPtr, lParam As IntPtr)
+                            If Not IsWindowVisible(hwnd) Then Return True
+                            If GetWindowClass(hwnd) <> "#32770" Then Return True
+
+                            Dim owner = GetWindowLong(hwnd, GWL_HWNDPARENT)
+                            If owner = IntPtr.Zero Then Return True
+
+                            Dim ownId As Integer
+                            GetWindowThreadProcessId(owner, ownId)
+
+                            If Not IsWindowEnabled(owner) AndAlso ProcessPath(ownId).ToLowerInvariant() = explorerPath AndAlso GetWindowClass(owner) = "CabinetWClass" Then
+                                'find Ok button and press it
+                                Debug.Print("childwinds")
+                                Dim numbut As Integer = 0
+                                Dim lastbut As IntPtr = IntPtr.Zero
+                                EnumChildWindows(hwnd, Function(h As IntPtr, l As IntPtr)
+                                                           Debug.Print($"{h} ""{GetWindowClass(h)}"" ""{GetWindowText(h)}""")
+                                                           If GetWindowClass(h) = "Button" Then 'todo check windowtext for locale string IDOK
+                                                               numbut += 1
+                                                               lastbut = h
+                                                           End If
+                                                           Return True
+                                                       End Function, IntPtr.Zero)
+                                Debug.Print($"-- {numbut} --")
+                                If numbut = 1 AndAlso lastbut <> IntPtr.Zero Then
+                                    Dim tid = GetWindowThreadProcessId(hwnd, Nothing)
+                                    AttachThreadInput(tid, GetCurrentThread(), True)
+                                    SetForegroundWindow(hwnd)
+                                    SetActiveWindow(hwnd)
+                                    Threading.Thread.Sleep(50)
+                                    SendMessage(lastbut, BM_CLICK, IntPtr.Zero, IntPtr.Zero)
+                                    Threading.Thread.Sleep(50)
+                                End If
+                            End If
+
+                            Return True
+                        End Function, IntPtr.Zero)
         End If
 
         waitCursorTimer = Stopwatch.StartNew
@@ -2258,53 +2357,85 @@ Partial Public NotInheritable Class FrmMain
                      End Sub)
         End Try
 
+        'Exit Sub
+        'hoist error dialogs to front/owned. not needed since we resolve and double check ourselves, code kept as example
+        If swErrorHoist?.ElapsedMilliseconds < 9000 Then
+            swErrorHoist = Stopwatch.StartNew
+        Else
+            Task.Run(Sub()
+                         swErrorHoist = Stopwatch.StartNew()
+                         Dim targetCmdPath As String = Environment.ExpandEnvironmentVariables("%windir%\system32\cmd.exe").Trim().ToLowerInvariant()
 
-        'hoist error dialogs to front/owned
-        Task.Run(Sub()
-                     Dim sw As Stopwatch = Stopwatch.StartNew()
-                     Dim targetCmdPath As String = Environment.ExpandEnvironmentVariables("%windir%\system32\cmd.exe").Trim().ToLowerInvariant()
-                     Do
-                         Threading.Thread.Sleep(200)
-                         Dim hwndList As New List(Of IntPtr)
-                         EnumWindows(Function(hwnd As IntPtr, lParam As IntPtr)
+                         Do
+                             Threading.Thread.Sleep(200)
+                             Dim hwndList As New List(Of IntPtr)
+                             Dim HideList As New List(Of IntPtr)
+                             Dim centList As New List(Of IntPtr)
+                             EnumWindows(Function(hwnd As IntPtr, lParam As IntPtr)
 
-                                         If Not IsWindowVisible(hwnd) Then Return True
-                                         If GetWindowClass(hwnd) <> "#32770" Then Return True
+                                             If Not IsWindowVisible(hwnd) Then Return True
+                                             If GetWindowClass(hwnd) <> "#32770" Then Return True
 
-                                         Dim owner As IntPtr = GetWindowLong(hwnd, GWL_HWNDPARENT)
-                                         If owner = IntPtr.Zero OrElse owner = ScalaHandle Then Return True
+                                             Dim owner As IntPtr = GetWindowLong(hwnd, GWL_HWNDPARENT)
+                                             If owner = IntPtr.Zero OrElse owner = ScalaHandle OrElse IsWindowEnabled(owner) Then Return True
 
-                                         Dim ownId As UInteger
-                                         GetWindowThreadProcessId(owner, ownId)
+                                             Dim ownId As UInteger
+                                             GetWindowThreadProcessId(owner, ownId)
 
-                                         Dim parentpid As Integer = ownId
-                                         Dim rootPid As Integer = ownId
-                                         While parentpid <> -1 OrElse parentpid <> 0 OrElse sw.ElapsedMilliseconds >= 5000
-                                             parentpid = GetParentPid(parentpid)
-                                             If parentpid <> -1 Then rootPid = parentpid
-                                             If rootPid = scalaPID Then Exit While
-                                         End While
-
-                                         If rootPid = scalaPID Then
-                                             If ProcessPath(ownId).ToLowerInvariant() = targetCmdPath Then
-                                                 hwndList.Add(hwnd)
+                                             If ProcessPath(ownId).ToLowerInvariant() = explorerPath AndAlso GetWindowClass(owner) = "CabinetWClass" Then
+                                                 If GetWindowClass(FindWindowEx(owner, IntPtr.Zero, Nothing, Nothing)) = "ShellTabWindowClass" Then
+                                                     Debug.Print($"Hidelist add: {GetWindowText(owner)}")
+                                                     HideList.Add(owner)
+                                                     hwndList.Add(hwnd)
+                                                     centList.Add(hwnd)
+                                                 End If
+                                                 Return True
                                              End If
-                                         End If
 
-                                         Return True
-                                     End Function, IntPtr.Zero)
+                                             Dim parentpid As Integer = ownId
+                                             Dim rootPid As Integer = ownId
+                                             While parentpid <> -1 AndAlso parentpid <> 0 AndAlso swErrorHoist.ElapsedMilliseconds <= 10000
+                                                 parentpid = GetParentPid(parentpid)
+                                                 If parentpid <> -1 Then rootPid = parentpid
+                                                 If rootPid = scalaPID Then Exit While
+                                             End While
 
-                         For Each hwn In hwndList
-                             SetWindowLong(hwn, GWL_HWNDPARENT, ScalaHandle)
-                             If My.Settings.topmost Then
-                                 SetWindowPos(hwn, SWP_HWND.TOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
-                             End If
-                         Next
+                                             If rootPid = scalaPID Then
+                                                 If ProcessPath(ownId).ToLowerInvariant() = targetCmdPath Then
+                                                     hwndList.Add(hwnd)
+                                                 End If
+                                             End If
 
-                     Loop While sw.ElapsedMilliseconds <= 5000
-                 End Sub)
+                                             Return True
+                                         End Function, IntPtr.Zero)
+
+                             For Each hwn In hwndList
+                                 SetWindowLong(hwn, GWL_HWNDPARENT, ScalaHandle)
+                                 If My.Settings.topmost Then
+                                     SetWindowPos(hwn, SWP_HWND.TOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
+                                 End If
+                                 AllowSetForegroundWindow(ASFW_ANY)
+                                 SetForegroundWindow(ScalaHandle)
+                             Next
+                             For Each hwn In HideList
+                                 SetWindowLong(hwn, GWL_EXSTYLE, GetWindowLong(hwn, GWL_EXSTYLE) Or WindowStylesEx.WS_EX_TOOLWINDOW Or WindowStylesEx.WS_EX_LAYERED)
+                                 SetLayeredWindowAttributes(hwn, 0, 0, LWA_ALPHA)
+                             Next
+                             For Each hwn In centList
+                                 Dim rcW As New RECT
+                                 GetClientRect(hwn, rcW)
+                                 Dim rcSw As New RECT
+                                 GetWindowRect(ScalaHandle, rcSw)
+                                 Dim rcSc As New RECT
+                                 GetClientRect(ScalaHandle, rcSc)
+                                 SetWindowPos(hwn, SWP_HWND.TOP, rcSw.left + (rcSc.right - rcW.right) / 2, rcSw.top + (rcSc.bottom - rcW.bottom) / 2, 0, 0, SetWindowPosFlags.IgnoreResize)
+                             Next
+
+                         Loop While swErrorHoist.ElapsedMilliseconds <= 10000
+                     End Sub)
+        End If
     End Sub
-
+    Dim swErrorHoist As Stopwatch
     Public Function GetParentPid(pid As Integer) As Integer
         Try
             Using proc As Process = Process.GetProcessById(pid)
@@ -2388,8 +2519,11 @@ Public Structure QLInfo
     Public hidden As Boolean
     Public name As String
     Public target As String
-    Public invalidTarget As Boolean
+    'Public invalidTarget As Boolean
     Public pointsToDir As Boolean
+#If DEBUG Then
+    Public test As String
+#End If
 End Structure
 Public Structure MenuTag
     Public path As String
@@ -2428,15 +2562,17 @@ Module ImageExtension
         If bm Is Nothing Then Return Nothing
         If over Is Nothing Then Return bm
 
-        Dim bmp As Bitmap = If(clone, bm.Clone, bm)
         'Dim lockObj = iconLocks.GetOrAdd(bmp, Function(__) New Object())
         'SyncLock lockObj
+        Dim bmp As Bitmap
         Try
+            bmp = If(clone, bm.Clone, bm)
             Using g As Graphics = Graphics.FromImage(bmp)
                 g.DrawImage(over, New Rectangle(New Point, bmp.Size))
             End Using
         Catch ex As Exception
             SyncLock IconLock
+                bmp = If(clone, bm.Clone, bm)
                 Using g As Graphics = Graphics.FromImage(bmp)
                     g.DrawImage(over, New Rectangle(New Point, bmp.Size))
                 End Using

@@ -214,6 +214,21 @@ Module dBug
         End If
     End Sub
 
+
+
+    Friend Sub dumpItemInfo(sender As MenuItem, e As EventArgs)
+        Debug.Print($"dumpItemInfo {sender.Parent.Tag}")
+        Debug.Print($"{sender.Parent.Tag.tag.GetType}")
+        Dim qli As QLInfo = sender.Parent.Tag.Tag
+        Debug.Print(qli.path)
+        Debug.Print(qli.target)
+        Debug.Print(qli.pointsToDir)
+        Debug.Print(qli.name)
+        Dim sli As New ShellLinkInfo(qli.path)
+
+        Debug.Print("------------")
+    End Sub
+
 #If 0 Then
     Friend Sub ParseInfo(sender As Object, e As EventArgs)
         If FrmMain.AltPP Is Nothing Then Exit Sub

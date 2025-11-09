@@ -2,7 +2,6 @@
 Imports System.Text
 
 Public NotInheritable Class ShellLinkInfo
-
     ' COM interface declarations
     <ComImport(), Guid("000214F9-0000-0000-C000-000000000046"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)>
     Private Interface IShellLinkW
@@ -69,7 +68,7 @@ Public NotInheritable Class ShellLinkInfo
         Public dwCreatorType As UInteger ' Obsolete. Do Not use
         Public wFinderFlags As UInteger ' Obsolete. Do Not use
     End Structure
-
+    Public Property LinkFile As String = ""
     Public Property TargetPath As String = ""
     Public Property WorkingDirectory As String = ""
     Public Property Description As String = ""
@@ -81,8 +80,6 @@ Public NotInheritable Class ShellLinkInfo
     Public Property Hotkey As Short = 0
 
     Public Property PointsToDir As Boolean = False
-    Public Property TargetExists As Boolean = False
-    Public Property IsVirtual As Boolean = False
 
     Public Sub New()
 
@@ -93,6 +90,7 @@ Public NotInheritable Class ShellLinkInfo
     End Sub
 
     Public Function Load(ByVal lnkFile As String) As Boolean
+        Me.LinkFile = lnkFile
         Dim shellLink As IShellLinkW = Nothing
         Try
 
@@ -103,8 +101,6 @@ Public NotInheritable Class ShellLinkInfo
             Dim wfd As New WIN32_FIND_DATAW
             shellLink.GetPath(sb, sb.Capacity, wfd, 0)
             Me.TargetPath = sb.ToString().Trim()
-
-            If String.IsNullOrEmpty(Me.TargetPath) Then Me.IsVirtual = True
 
             sb.Clear() : sb.EnsureCapacity(260)
             shellLink.GetDescription(sb, sb.Capacity)
@@ -136,7 +132,9 @@ Public NotInheritable Class ShellLinkInfo
             Me.PointsToDir = wfd.dwFileAttributes.HasFlag(IO.FileAttributes.Directory)
 
             ' check if the target currently exists
-            Me.TargetExists = IO.File.Exists(TargetPath) OrElse IO.Directory.Exists(TargetPath)
+            ' this stalls on networked paths that aren't live
+            ' done: move existence check into deferrediconloading task
+            'Me.TargetExists = IO.File.Exists(TargetPath) OrElse IO.Directory.Exists(TargetPath) 
 
             Return True
 
@@ -144,11 +142,23 @@ Public NotInheritable Class ShellLinkInfo
             Debug.Print("ShellLinkInfo.LoadLink error: " & ex.Message)
             Me.TargetPath = ""
             Me.PointsToDir = False
-            Me.TargetExists = False
 
             Return False
         Finally
             If shellLink IsNot Nothing Then Marshal.ReleaseComObject(shellLink)
+        End Try
+    End Function
+
+    Public Function Resolve(flags As UInteger) As Integer
+        Dim shellLink As IShellLinkW
+        shellLink = CType(New CShellLink(), IShellLinkW)
+        CType(shellLink, IPersistFile).Load(Me.LinkFile, 0)
+        Try
+            Return shellLink.Resolve(ScalaHandle, flags)
+        Finally
+            If (flags And &H4UI) <> 0 AndAlso IO.File.Exists(Me.LinkFile) Then
+                CType(shellLink, IPersistFile).Save(Me.LinkFile, True)
+            End If
         End Try
     End Function
 
