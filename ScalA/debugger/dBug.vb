@@ -1,4 +1,5 @@
-﻿Imports System.IO.MemoryMappedFiles
+﻿Imports System.Drawing.Imaging
+Imports System.IO.MemoryMappedFiles
 Imports System.Runtime.InteropServices
 
 Module dBug
@@ -28,7 +29,7 @@ Module dBug
 
     <Conditional("DEBUG")>
     Friend Sub InitDebug()
-#If debug Then
+#If DEBUG Then
 
         FrmMain.chkDebug.Visible = True
 
@@ -81,12 +82,12 @@ Module dBug
                                                                        FrmMain.AltPP IsNot Nothing AndAlso FrmMain.AltPP.Id <> 0 AndAlso FrmMain.cboAlt.SelectedIndex <> 0
 
                                      FrmMain.UntrapMouse(MouseButtons.Right)
-                                     AppActivate(ScalaPID)
+                                     AppActivate(scalaPID)
                                  End Sub
         AddHandler FrmMain.chkDebug.MouseUp, Sub(sen, ev) FrmMain.UntrapMouse(ev.Button)
 #End If
     End Sub
-#If debug Then
+#If DEBUG Then
     Private Sub OpenDebugWindow(sender As Object, e As EventArgs)
         If Not frmDebug.Visible Then frmDebug.Show()
     End Sub
@@ -226,6 +227,7 @@ Module dBug
         Debug.Print(qli.name)
         Dim sli As New ShellLinkInfo(qli.path)
 
+        CType(sender.Parent.Tag, ToolStripMenuItem).Image.Save("F:\icon.png", ImageFormat.Png)
         Debug.Print("------------")
     End Sub
 
