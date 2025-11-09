@@ -762,7 +762,10 @@ Partial Public NotInheritable Class FrmMain
 
                                  Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fulldirs).Attributes
                                  Dim hidden As Boolean = False
-                                 If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then hidden = True
+                                 If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then
+                                     Threading.Interlocked.Increment(hiddencount)
+                                     hidden = True
+                                 End If
 
                                  Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
                                  Dim dispname As String = System.IO.Path.GetFileName(fulldirs)
@@ -816,7 +819,11 @@ Partial Public NotInheritable Class FrmMain
 
                                  Dim attr As System.IO.FileAttributes = New System.IO.FileInfo(fullLink).Attributes
                                  Dim hidden As Boolean = False
-                                 If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then hidden = True
+                                 If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then
+                                     Threading.Interlocked.Increment(hiddencount)
+                                     hidden = True
+                                 End If
+
 
                                  'don't add self to list
                                  If System.IO.Path.GetFileName(fullLink) = System.IO.Path.GetFileName(Environment.GetCommandLineArgs(0)) Then Exit Sub 'Continue For
@@ -904,7 +911,7 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         If isEmpty Then
-            menuItems.Add(New ToolStripMenuItem("(Empty)") With {.Enabled = False, .ToolTipText = $"Folder may still contain hidden items.{vbCrLf}Go to Settings/QL and adjust Filter if you are missing files."})
+            menuItems.Add(New ToolStripMenuItem("(Empty)") With {.Enabled = False, .ToolTipText = $"{If(hiddencount, $"Press Ctrl-Shift to reveal {hiddencount} Files/Dirs.{vbCrLf}", "")}Folder may still contain unwatched items.{vbCrLf}Go to Settings/QL and adjust Filter if you are missing files."})
             clipBoardInfo = GetClipboardFilesAndAction()
             If clipBoardInfo.Files?.Count > 0 AndAlso clipBoardInfo.Files.Any(Function(f) IO.File.Exists(f) OrElse IO.Directory.Exists(f)) Then
 
