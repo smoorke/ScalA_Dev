@@ -1,5 +1,6 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.ComponentModel
+Imports System.Net.Sockets
 Imports System.Runtime.InteropServices
 
 Public NotInheritable Class ContextMenus
@@ -1109,14 +1110,13 @@ Partial Public NotInheritable Class FrmMain
                          Parallel.ForEach(items, opts,
                                           Sub(it As ToolStripMenuItem)
                                               Dim qli As QLInfo = it.Tag
-                                              If qli.path.EndsWith(".lnk") AndAlso Not String.IsNullOrEmpty(qli.target) AndAlso Not (IO.File.Exists(qli.target) OrElse IO.Directory.Exists(qli.target)) Then
-                                                  'qli.invalidTarget = True
+                                              If qli.path.EndsWith(".lnk") AndAlso Not String.IsNullOrEmpty(qli.target) AndAlso
+                                                    (qli.target.StartsWith("\\") AndAlso Not IsSmbHostReachable(qli.target) OrElse
+                                                     Not (IO.File.Exists(qli.target) OrElse IO.Directory.Exists(qli.target))) Then
+
                                                   it.Tag = qli
                                                   Dim ico = it.Image.addOverlay(My.Resources.WarningOverlay, True)
-                                                  Me.Invoke(Sub()
-                                                                it.Image = ico
-                                                                'it.Invalidate()
-                                                            End Sub)
+                                                  Me.Invoke(Sub() it.Image = ico)
                                               End If
                                           End Sub)
 
@@ -1159,7 +1159,7 @@ Partial Public NotInheritable Class FrmMain
 
         'sender.DropDownItems.Clear()
         Dim olditems = sender.DropDownItems.Cast(Of ToolStripItem).ToArray()
-        If IO.Directory.Exists(target) Then
+        If ExistsFast(target, AddressOf IO.Directory.Exists) Then
             sender.DropDownItems.AddRange(ParseDir(target).ToArray)
         Else
             sender.DropDownItems.Add(New ToolStripMenuItem("<Error>", My.Resources.Warning) With {.Enabled = False, .ToolTipText = "Target Directory Missing"})
@@ -1169,6 +1169,62 @@ Partial Public NotInheritable Class FrmMain
         Next
 
     End Sub
+
+    Public Function ExistsFast(target As String, callback As Func(Of String, Boolean)) As Boolean
+        Try
+            ' Local paths are safe and fast
+            If Not target.StartsWith("\\") Then
+                Return callback(target)
+            End If
+
+            ' If we can’t resolve or connect quickly, skip
+            If Not IsSmbHostReachable(target) Then
+                Debug.Print("Unreachable SMB host: " & target)
+                Return False
+            End If
+
+            ' Now do the actual check (safe and fast since we know the host is live)
+            Return callback(target)
+
+        Catch ex As Exception
+            Debug.Print("Error: " & ex.Message)
+            Return False
+        End Try
+    End Function
+
+    Private Function IsSmbHostReachable(target As String) As Boolean
+        ' Extract hostname from UNC
+        If String.IsNullOrEmpty(target) Then Return False
+        Dim host As String = Nothing
+        Try
+            Dim uri As New Uri(target)
+            host = uri.Host
+        Catch
+            Dim parts = target.TrimStart("\"c).Split("\"c)
+            If parts.Length > 0 Then host = parts(0)
+        End Try
+
+        Dim ports() As Integer = {445, 139} ' SMB ports
+        For Each port In ports
+            Try
+                Using client As New TcpClient()
+                    Dim result = client.BeginConnect(host, port, Nothing, Nothing)
+                    Dim success = result.AsyncWaitHandle.WaitOne(100)
+                    If success AndAlso client.Connected Then
+                        client.EndConnect(result)
+                        Return True
+                    End If
+                End Using
+            Catch ex As SocketException
+                ' Ignore
+            Catch
+                ' Ignore
+            End Try
+        Next
+        Return False
+    End Function
+
+
     Private folderIcon As Bitmap = GetIconFromFile(FileIO.SpecialDirectories.Temp & "\", True, True)
     Private folderIconWithOverlay = folderIcon.addOverlay(My.Resources.shortcutOverlay, True)
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
