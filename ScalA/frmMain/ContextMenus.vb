@@ -2358,7 +2358,7 @@ Partial Public NotInheritable Class FrmMain
         End Try
 
         'Exit Sub
-        'hoist error dialogs to front/owned. not needed since we resolve and double check ourselves, code kept as example
+        'hoist error dialogs to front/owned.
         If swErrorHoist?.ElapsedMilliseconds < 9000 Then
             swErrorHoist = Stopwatch.StartNew
         Else
