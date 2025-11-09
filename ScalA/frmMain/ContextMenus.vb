@@ -791,11 +791,10 @@ Partial Public NotInheritable Class FrmMain
                                      timedout = True
                                  End If
                              End Sub)
-        Catch ex As System.UnauthorizedAccessException
-            menuItems.Add(New ToolStripMenuItem("<Access Denied>") With {.Enabled = False})
-            Return menuItems
-        Catch ex As Win32Exception
-            menuItems.Add(New ToolStripMenuItem("<Access Denied>") With {.Enabled = False})
+        Catch ex As Exception
+            Dim path As String = IO.Path.GetDirectoryName(pth.TrimEnd("\"c))
+            If Not path.EndsWith("\"c) Then path &= "\"c
+            menuItems.Add(New ToolStripMenuItem("<Access Denied>", My.Resources.denied) With {.Enabled = False, .ToolTipText = ex.Message.Replace(path, "")})
             Return menuItems
         End Try
 
