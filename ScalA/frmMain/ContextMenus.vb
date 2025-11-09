@@ -904,7 +904,7 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         If isEmpty Then
-            menuItems.Add(New ToolStripMenuItem("(Empty)") With {.Enabled = False})
+            menuItems.Add(New ToolStripMenuItem("(Empty)") With {.Enabled = False, .ToolTipText = $"Folder may still contain hidden items.{vbCrLf}Go to Settings/QL and adjust Filter if you are missing files."})
             clipBoardInfo = GetClipboardFilesAndAction()
             If clipBoardInfo.Files?.Count > 0 AndAlso clipBoardInfo.Files.Any(Function(f) IO.File.Exists(f) OrElse IO.Directory.Exists(f)) Then
 
