@@ -142,6 +142,19 @@ Module Globals
     Public ReadOnly scalaProc As Process = Process.GetCurrentProcess()
     Public ReadOnly scalaPID As Integer = scalaProc.Id
 
+    Public ReadOnly Property usableCores() As Integer
+        Get
+            Dim mask As ULong = scalaProc.ProcessorAffinity.ToInt64()
+            Dim uCores As Integer = 0
+            While mask <> 0
+                uCores += mask And 1UL
+                mask >>= 1
+            End While
+            Return uCores
+        End Get
+    End Property
+
+
     Private _ScalAHandle As IntPtr
     Public Property ScalaHandle() As IntPtr
         Get

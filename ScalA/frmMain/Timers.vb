@@ -288,7 +288,7 @@ Partial NotInheritable Class FrmMain
 
         Await Task.Run(
             Sub()
-                Parallel.ForEach(visibleButtons, New ParallelOptions With {.MaxDegreeOfParallelism = -1},
+                Parallel.ForEach(visibleButtons, New ParallelOptions With {.MaxDegreeOfParallelism = Math.Max(1, usableCores \ 2)},
                     Sub(but As AButton, ls As ParallelLoopState, butCounter As Integer)
                         Try
                             Dim apCounter = butCounter
@@ -375,10 +375,8 @@ Partial NotInheritable Class FrmMain
 
                                 Dim sw = swDict.GetOrAdd(ap.Id, Stopwatch.StartNew)
                                 If but.Image Is Nothing OrElse sw.ElapsedMilliseconds > 66 Then
-                                    Task.Run(Sub()
-                                                 Dim img As Image = ap.GetHealthbar
-                                                 Me.BeginInvoke(Sub() but.Image = img)
-                                             End Sub)
+                                    Dim img As Image = ap.GetHealthbar
+                                    Me.BeginInvoke(Sub() but.Image = img)
                                     sw.Restart()
                                 End If
 

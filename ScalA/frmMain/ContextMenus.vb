@@ -757,10 +757,11 @@ Partial Public NotInheritable Class FrmMain
         Dim Dirs As New ConcurrentBag(Of ToolStripItem)
         cts = New Threading.CancellationTokenSource
         cantok = cts.Token
-        Dim opts As New ParallelOptions With {.CancellationToken = cantok, .MaxDegreeOfParallelism = 3}
+
+        Dim opts As New ParallelOptions With {.CancellationToken = cantok, .MaxDegreeOfParallelism = Math.Max(1, usableCores - 2)}
         Dim hiddencount As Integer = 0
         Try
-            Parallel.ForEach(System.IO.Directory.EnumerateDirectories(pth), opts,
+            Parallel.ForEach(System.IO.Directory.EnumerateDirectories(pth).AsThrottled(usableCores), opts,
                              Sub(fulldirs As String)
 
                                  Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fulldirs).Attributes
@@ -819,7 +820,7 @@ Partial Public NotInheritable Class FrmMain
 
         Dim Files As New ConcurrentBag(Of ToolStripItem)
 
-        Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)), opts,
+        Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).AsThrottled(usableCores).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)), opts,
                              Sub(fullLink As String)
 
                                  Dim attr As System.IO.FileAttributes = New System.IO.FileInfo(fullLink).Attributes
@@ -1115,7 +1116,7 @@ Partial Public NotInheritable Class FrmMain
     Private Sub DeferredIconLoading(Dirs As IEnumerable(Of ToolStripItem), Files As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
         Task.Run(Sub()
                      Try
-                         Dim opts As New ParallelOptions With {.CancellationToken = ct, .MaxDegreeOfParallelism = 3}
+                         Dim opts As New ParallelOptions With {.CancellationToken = ct, .MaxDegreeOfParallelism = Math.Max(1, usableCores - 2)}
                          Dim items = Files.Concat(Dirs)
                          Parallel.ForEach(items, opts,
                                           Sub(it As ToolStripMenuItem)
