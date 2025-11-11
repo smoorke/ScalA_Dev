@@ -1461,7 +1461,7 @@ Partial Public NotInheritable Class FrmMain
                 e.Cancel = True
                 Exit Sub
             Else
-                scaleFixForm.Bounds = If(sender.SourceControl Is Nothing, Screen.PrimaryScreen, Screen.FromControl(Me)).WorkingArea
+                scaleFixForm.Bounds = If(sender.SourceControl Is Nothing, Screen.PrimaryScreen, Screen.FromPoint(MousePosition)).WorkingArea
             End If
         End If
 
