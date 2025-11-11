@@ -375,9 +375,16 @@ Partial NotInheritable Class FrmMain
 
                                 Dim sw = swDict.GetOrAdd(ap.Id, Stopwatch.StartNew)
                                 If but.Image Is Nothing OrElse sw.ElapsedMilliseconds > 66 Then
-                                    Dim img As Image = ap.GetHealthbar
-                                    Me.BeginInvoke(Sub() but.Image = img)
                                     sw.Restart()
+                                    Task.Run(Sub()
+                                                 Threading.Thread.Sleep(Rnd() * 33)
+                                                 Dim img As Image = ap.GetHealthbar
+                                                 Me.BeginInvoke(Sub()
+                                                                    but.Image?.Dispose()
+                                                                    but.Image = img
+                                                                    sw.Restart()
+                                                                End Sub)
+                                             End Sub)
                                 End If
 
                                 but.ContextMenuStrip = cmsAlt
