@@ -150,7 +150,7 @@ Module IPC
     End Sub
 
 
-    Private ReadOnly OrigScalAfname As String = Process.GetCurrentProcess.MainModule.FileVersionInfo.OriginalFilename
+    Private ReadOnly OrigScalAfname As String = scalaProc.MainModule.FileVersionInfo.OriginalFilename
 
     ''' <summary>
     ''' Is process ScalA?
@@ -329,7 +329,7 @@ Module IPC
         End Try
     End Function
     Public Function getOtherInstances() As IEnumerable(Of ScalAInfo)
-        Return getInstances.Where(Function(si) si.pid <> Process.GetCurrentProcess.Id)
+        Return getInstances.Where(Function(si) si.pid <> scalaProc.Id)
     End Function
 
     Public Function EnumOtherScalAs() As IEnumerable(Of Process)

@@ -78,11 +78,7 @@ Public Class FolderPicker
         End If
 
         If owner = IntPtr.Zero Then
-            owner = Process.GetCurrentProcess().MainWindowHandle
-
-            If owner = IntPtr.Zero Then
-                owner = GetDesktopWindow()
-            End If
+            owner = ScalaHandle
         End If
 
         Dim hr = dialog.Show(owner)

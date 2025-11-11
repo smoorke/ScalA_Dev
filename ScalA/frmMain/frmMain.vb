@@ -199,7 +199,7 @@ Partial Public NotInheritable Class FrmMain
                 tmrTick.Enabled = True
 
                 dBug.Print("AltPPTopMost " & AltPP.TopMost.ToString)
-                dBug.Print("SelfTopMost " & Process.GetCurrentProcess.IsTopMost.ToString)
+                dBug.Print("SelfTopMost " & scalaProc.IsTopMost.ToString)
 
                 Dim item As AstoniaProcess = DirectCast(sender.SelectedItem, AstoniaProcess)
                 If startThumbsDict.ContainsKey(item.Id) Then

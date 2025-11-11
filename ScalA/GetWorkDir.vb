@@ -1,6 +1,6 @@
-﻿Imports System.Runtime.InteropServices
+﻿Imports System.ComponentModel
 Imports System.Runtime.CompilerServices
-Imports System.ComponentModel
+Imports System.Runtime.InteropServices
 
 Public Enum PROCESSINFOCLASS As Integer
     ProcessBasicInformation = 0
@@ -34,15 +34,14 @@ Public Class Is64BitChecker
     Public Shared Function InternalCheckIsWow64() As Boolean
         If (Environment.OSVersion.Version.Major = 5 AndAlso Environment.OSVersion.Version.Minor >= 1) OrElse Environment.OSVersion.Version.Major >= 6 Then
 
-            Using p As Process = Process.GetCurrentProcess()
-                Dim retVal As Boolean
+            Dim retVal As Boolean
 
-                If Not IsWow64Process(p.Handle, retVal) Then
-                    Return False
-                End If
+            If Not IsWow64Process(scalaProc.Handle, retVal) Then
+                Return False
+            End If
 
-                Return retVal
-            End Using
+            Return retVal
+
         Else
             Return False
         End If

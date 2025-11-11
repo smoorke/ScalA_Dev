@@ -139,7 +139,8 @@ Module Globals
         SendInput(1, MouseInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
     End Sub
 
-    Public ReadOnly scalaPID As Integer = Process.GetCurrentProcess().Id
+    Public ReadOnly scalaProc As Process = Process.GetCurrentProcess()
+    Public ReadOnly scalaPID As Integer = scalaProc.Id
 
     Private _ScalAHandle As IntPtr
     Public Property ScalaHandle() As IntPtr

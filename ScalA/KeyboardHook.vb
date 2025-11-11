@@ -176,7 +176,7 @@ Public Class KeyboardHook : Implements IDisposable
     Public Sub Hook()
         If HookHandle <> IntPtr.Zero Then Exit Sub
         HookHandle = SetWindowsHookEx(WH_KEYBOARD_LL, mhCallBack,
-            GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName), 0)
+            GetModuleHandle(scalaProc.MainModule.ModuleName), 0)
         If HookHandle = IntPtr.Zero Then Throw New System.Exception("KeyboardHook failed")
     End Sub
 
