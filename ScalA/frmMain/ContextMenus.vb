@@ -852,7 +852,7 @@ Partial Public NotInheritable Class FrmMain
 
                                          qli.pointsToDir = lin.PointsToDir 'pointstodir can be false negative when access is denied
 
-                                         If lin.PointsToDir OrElse (Not String.IsNullOrEmpty(target) AndAlso CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, target, 400)) Then
+                                         If lin.PointsToDir OrElse (Not String.IsNullOrEmpty(target) AndAlso CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, target, 200)) Then
 
                                              If Not qli.target.EndsWith("\"c) Then qli.target &= "\"
 
@@ -2639,5 +2639,30 @@ Module ImageExtension
             End SyncLock
         End Try
         Return bmp
+    End Function
+End Module
+Module EnumerationHelpers
+
+    ''' <summary>
+    ''' Wraps any IEnumerable(Of String) in a throttled producer-consumer queue.
+    ''' Producer is throttled by maxConcurrent; consumers can pull at full speed.
+    ''' </summary>
+    <Runtime.CompilerServices.Extension>
+    Public Function AsThrottled(Of T)(source As IEnumerable(Of T), bufferSize As Integer) As IEnumerable(Of T)
+
+        Dim bc As New BlockingCollection(Of T)(bufferSize)
+
+        ' Start producer task
+        Task.Run(Sub()
+                     Try
+                         For Each item In source
+                             bc.Add(item)
+                         Next
+                     Finally
+                         bc.CompleteAdding()
+                     End Try
+                 End Sub)
+
+        Return bc.GetConsumingEnumerable()
     End Function
 End Module
