@@ -343,7 +343,7 @@ Public NotInheritable Class ThemedStartButton
     Private Sub SetButtonState(ByVal buttonState As DarkControlState)
         If _buttonState <> buttonState Then
             _buttonState = buttonState
-            Invalidate()
+            'Invalidate()
         End If
     End Sub
 
@@ -364,12 +364,14 @@ Public NotInheritable Class ThemedStartButton
     End Sub
 
     Protected Overrides Sub OnMouseDown(ByVal e As MouseEventArgs)
+        If e.Button <> MouseButtons.Left Then Return
         MyBase.OnMouseDown(e)
         If Not ClientRectangle.Contains(e.Location) Then Return
         SetButtonState(DarkControlState.Pressed)
     End Sub
 
     Protected Overrides Sub OnMouseUp(ByVal e As MouseEventArgs)
+        If e.Button <> MouseButtons.Left Then Return
         MyBase.OnMouseUp(e)
         If _spacePressed Then Return
         SetButtonState(DarkControlState.Normal)
@@ -419,7 +421,7 @@ Public NotInheritable Class ThemedStartButton
 
         If e.KeyCode = Keys.Space Then
             _spacePressed = False
-            Dim location = Cursor.Position
+            Dim location = Me.PointToClient(Cursor.Position)
 
             If Not ClientRectangle.Contains(location) Then
                 SetButtonState(DarkControlState.Normal)
