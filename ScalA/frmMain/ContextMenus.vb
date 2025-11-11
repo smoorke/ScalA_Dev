@@ -1183,7 +1183,7 @@ Partial Public NotInheritable Class FrmMain
 
         'sender.DropDownItems.Clear()
         Dim olditems = sender.DropDownItems.Cast(Of ToolStripItem).ToArray()
-        If CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, target, 400) Then
+        If CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, target, 500) Then
             sender.DropDownItems.AddRange(ParseDir(target).ToArray)
         Else
             Dim dirname As String = IO.Path.GetDirectoryName(target.TrimEnd("\"c))
@@ -1436,7 +1436,7 @@ Partial Public NotInheritable Class FrmMain
             Me.TopMost = True
             Me.ShowInTaskbar = False
             Me.StartPosition = FormStartPosition.Manual
-            Me.Bounds = scrn.Bounds
+            Me.Bounds = scrn.WorkingArea
         End Sub
 
         Protected Overrides ReadOnly Property CreateParams As CreateParams
@@ -1461,7 +1461,7 @@ Partial Public NotInheritable Class FrmMain
                 e.Cancel = True
                 Exit Sub
             Else
-                scaleFixForm.Bounds = If(sender.SourceControl Is Nothing, Screen.PrimaryScreen, Screen.FromControl(Me)).Bounds
+                scaleFixForm.Bounds = If(sender.SourceControl Is Nothing, Screen.PrimaryScreen, Screen.FromControl(Me)).WorkingArea
             End If
         End If
 
