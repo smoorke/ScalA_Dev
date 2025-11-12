@@ -144,8 +144,9 @@ Namespace CustomToolTip
             Else
                 Task.Run(Sub()
                              Do
-                                 Threading.Thread.Sleep(66)
-                             Loop While PtInRect(rcTrack, Control.MousePosition)
+                                 Threading.Thread.Sleep(33)
+                             Loop While PtInRect(rcTrack, Control.MousePosition) AndAlso Not (Control.MouseButtons.hasflag(MouseButtons.right) OrElse Control.mousebuttons.hasflag(MouseButtons.middle) OrElse Control.mousebuttons.hasflag(MouseButtons.left))
+
                              If hideTimer IsNot Nothing Then
                                  hideTimer.Stop()
                                  RemoveHandler hideTimer.Tick, AddressOf HideTimer_Tick
