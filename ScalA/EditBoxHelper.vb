@@ -156,9 +156,8 @@ Namespace EditBoxHelper
 
                         If handle = IntPtr.Zero Then
                             Debug.Print("showing tt")
-                            tt.Show($"A file name can't contain any of the following characters:{vbCrLf}          \ / : * ? "" < > |", owner, pos.X, pos.Y, 10000)
+                            tt.Show($"A file name can't contain any of the following characters:{vbCrLf}{vbTab} \ / : * ? "" < > |", owner, pos.X, pos.Y, 10000)
                         End If
-
 
                     End If
                 End If
