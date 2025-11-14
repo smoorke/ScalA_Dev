@@ -1745,7 +1745,7 @@ Partial Public NotInheritable Class FrmMain
             Else
                 dBug.Print($"renamed to ""{toName}""")
             End If
-        ElseIf toName = "" AndAlso deleteOnBlank Then
+        ElseIf toName = "" AndAlso deleteOnBlank AndAlso IO.Directory.Exists(path) Then
             IO.Directory.Delete(Path)
         End If
     End Sub
