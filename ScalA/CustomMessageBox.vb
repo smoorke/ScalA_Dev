@@ -26,6 +26,7 @@
                              Dim hStatic As IntPtr = FindWindowEx(hW, IntPtr.Zero, "Static", message)
                              If hStatic <> IntPtr.Zero Then
                                  hWnd = hW
+                                 SendMessage(hWnd, WM_SETICON, ICON_BIG, My.Resources.moa3.Handle)
                                  Exit Do
                              End If
                          End If
