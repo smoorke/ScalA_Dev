@@ -1690,6 +1690,11 @@ Partial Public NotInheritable Class FrmMain
         cmsQuickLaunch.Close()
         RenameMethod(Path, Name)
     End Sub
+
+    Private ReservedNames() As String = {"CON", "PRN", "AUX", "NUL",
+        "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+        "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"}
+
     Public renameOpen As Boolean
     Private Sub RenameMethod(Path As String, currentName As String, Optional deleteOnBlank As Boolean = False)
         Dim title As String = $"Rename {currentName}"
@@ -1730,6 +1735,11 @@ Partial Public NotInheritable Class FrmMain
         If Not (My.Settings.DisableWinKey OrElse My.Settings.OnlyEsc OrElse My.Settings.NoAltTab) Then keybHook.Unhook()
         renameOpen = False
 
+        If ReservedNames.Contains(IO.Path.GetFileNameWithoutExtension(toName).ToUpper) Then
+            CustomMessageBox.Show(Me, $"Error renaming ""{currentName}"" to ""{toName}""{vbCrLf}The specified device name is invalid.", "Rename", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Exit Sub
+        End If
+
         dBug.Print($"Rename to {toName}")
         If toName <> "" AndAlso currentName <> toName Then
             dBug.Print($"oldpath: {Path}")
@@ -1741,7 +1751,7 @@ Partial Public NotInheritable Class FrmMain
                 Dim sb As New System.Text.StringBuilder(1024)
                 FormatMessage(Format_Message.FORMAT_MESSAGE_FROM_SYSTEM Or Format_Message.FORMAT_MESSAGE_IGNORE_INSERTS, 0,
                               Err.LastDllError, 0, sb, sb.Capacity, Nothing)
-                CustomMessageBox.Show(Me, $"Error renaming ""{currentName}"" to ""{toName}""{vbCrLf}{sb}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                CustomMessageBox.Show(Me, $"Error renaming ""{currentName}"" to ""{toName}""{vbCrLf}{sb}", "Rename", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Else
                 dBug.Print($"renamed to ""{toName}""")
             End If
