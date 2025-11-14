@@ -1690,7 +1690,7 @@ Partial Public NotInheritable Class FrmMain
         cmsQuickLaunch.Close()
         RenameMethod(Path, Name)
     End Sub
-    Private renameOpen As Boolean
+    Public renameOpen As Boolean
     Private Sub RenameMethod(Path As String, currentName As String, Optional deleteOnBlank As Boolean = False)
         Dim title As String = $"Rename {currentName}"
         Task.Run(Sub()

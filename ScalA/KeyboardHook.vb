@@ -69,17 +69,19 @@ Public Class KeyboardHook : Implements IDisposable
                                 End If
                             End Using
                         End If
-                        Dim fgw = GetForegroundWindow()
-                        Dim pid As Integer
-                        GetWindowThreadProcessId(fgw, pid)
-                        If pid = scalaPID AndAlso
-                        GetWindowLong(fgw, GWL_HWNDPARENT) = ScalaHandle AndAlso
-                        GetWindowText(fgw).StartsWith("Rename ") AndAlso
-                        GetWindowClass(fgw) = ScalaClass Then ' GetWindowClass(ScalaHandle) Then
-                            Dim edit = FindWindowEx(fgw, IntPtr.Zero, Nothing, Nothing)
-                            Debug.Print($"{GetWindowClass(edit)}")
-                            If GetWindowClass(edit).Contains("EDIT") Then
-                                EditBoxHelper.StoreEditState(edit)
+                        If FrmMain.renameOpen Then
+                            Dim fgw = GetForegroundWindow()
+                            Dim pid As Integer
+                            GetWindowThreadProcessId(fgw, pid)
+                            If pid = scalaPID AndAlso
+                                  GetWindowLong(fgw, GWL_HWNDPARENT) = ScalaHandle AndAlso
+                                  GetWindowText(fgw).StartsWith("Rename ") AndAlso
+                                  GetWindowClass(fgw) = ScalaClass Then ' GetWindowClass(ScalaHandle) Then
+                                Dim edit = FindWindowEx(fgw, IntPtr.Zero, Nothing, Nothing)
+                                Debug.Print($"{GetWindowClass(edit)}")
+                                If GetWindowClass(edit).Contains("EDIT") Then
+                                    EditBoxHelper.StoreEditState(edit)
+                                End If
                             End If
                         End If
                     Case Keys.Escape
@@ -123,17 +125,19 @@ Public Class KeyboardHook : Implements IDisposable
                             End If
                         End If
                     Case Else
-                        Dim fgw = GetForegroundWindow()
-                        Dim pid As Integer
-                        GetWindowThreadProcessId(fgw, pid)
-                        If pid = scalaPID AndAlso
-                        GetWindowLong(fgw, GWL_HWNDPARENT) = ScalaHandle AndAlso
-                        GetWindowText(fgw).StartsWith("Rename ") AndAlso
-                        GetWindowClass(fgw) = ScalaClass Then ' GetWindowClass(ScalaHandle) Then
-                            Dim edit = FindWindowEx(fgw, IntPtr.Zero, Nothing, Nothing)
-                            Debug.Print($"{GetWindowClass(edit)}")
-                            If GetWindowClass(edit).Contains("EDIT") Then
-                                EditBoxHelper.StoreEditState(edit)
+                        If FrmMain.renameOpen Then
+                            Dim fgw = GetForegroundWindow()
+                            Dim pid As Integer
+                            GetWindowThreadProcessId(fgw, pid)
+                            If pid = scalaPID AndAlso
+                            GetWindowLong(fgw, GWL_HWNDPARENT) = ScalaHandle AndAlso
+                            GetWindowText(fgw).StartsWith("Rename ") AndAlso
+                            GetWindowClass(fgw) = ScalaClass Then ' GetWindowClass(ScalaHandle) Then
+                                Dim edit = FindWindowEx(fgw, IntPtr.Zero, Nothing, Nothing)
+                                Debug.Print($"{GetWindowClass(edit)}")
+                                If GetWindowClass(edit).Contains("EDIT") Then
+                                    EditBoxHelper.StoreEditState(edit)
+                                End If
                             End If
                         End If
                 End Select
@@ -146,7 +150,7 @@ Public Class KeyboardHook : Implements IDisposable
                         End If
                     End Using
                 End If
-                EditBoxHelper.CleanInputBox()
+                If FrmMain.renameOpen Then EditBoxHelper.CleanInputBox()
             Case WM_SYSKEYDOWN
                 Dim key As Keys = Marshal.PtrToStructure(Of UInteger)(lParam)
                 If My.Settings.OnlyEsc AndAlso key = Keys.Escape Then
@@ -165,22 +169,24 @@ Public Class KeyboardHook : Implements IDisposable
                         End If
                     End Using
                 End If
-                Dim fgw = GetForegroundWindow()
-                Dim pid As Integer
-                GetWindowThreadProcessId(fgw, pid)
-                If pid = scalaPID AndAlso
+                If FrmMain.renameOpen Then
+                    Dim fgw = GetForegroundWindow()
+                    Dim pid As Integer
+                    GetWindowThreadProcessId(fgw, pid)
+                    If pid = scalaPID AndAlso
                         GetWindowLong(fgw, GWL_HWNDPARENT) = ScalaHandle AndAlso
                         GetWindowText(fgw).StartsWith("Rename ") AndAlso
                         GetWindowClass(fgw) = ScalaClass Then ' GetWindowClass(ScalaHandle) Then
-                    Dim edit = FindWindowEx(fgw, IntPtr.Zero, Nothing, Nothing)
-                    Debug.Print($"{GetWindowClass(edit)}")
-                    If GetWindowClass(edit).Contains("EDIT") Then
-                        EditBoxHelper.StoreEditState(edit)
-                        'EditBoxHelper.CleanInputBox()
+                        Dim edit = FindWindowEx(fgw, IntPtr.Zero, Nothing, Nothing)
+                        Debug.Print($"{GetWindowClass(edit)}")
+                        If GetWindowClass(edit).Contains("EDIT") Then
+                            EditBoxHelper.StoreEditState(edit)
+                            'EditBoxHelper.CleanInputBox()
+                        End If
                     End If
                 End If
             Case WM_SYSKEYUP
-                EditBoxHelper.CleanInputBox()
+                If FrmMain.renameOpen Then EditBoxHelper.CleanInputBox()
         End Select
 
         Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
