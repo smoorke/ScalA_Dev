@@ -1,6 +1,7 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.ComponentModel
 Imports System.Runtime.InteropServices
+Imports System.Threading
 
 Public NotInheritable Class ContextMenus
     'dummy class to prevent form being generated
@@ -755,16 +756,38 @@ Partial Public NotInheritable Class FrmMain
         Dim watch As Stopwatch = Stopwatch.StartNew()
 
         Dim Dirs As New ConcurrentBag(Of ToolStripItem)
+        Dim Files As New ConcurrentBag(Of ToolStripItem)
         cts = New Threading.CancellationTokenSource
         cantok = cts.Token
 
         Dim opts As New ParallelOptions With {.CancellationToken = cantok, .MaxDegreeOfParallelism = Math.Max(1, usableCores - 2)}
         Dim hiddencount As Integer = 0
         Try
-            Parallel.ForEach(System.IO.Directory.EnumerateDirectories(pth).AsThrottled(usableCores), opts,
-                             Sub(fulldirs As String)
+            IO.Directory.EnumerateFileSystemEntries(pth).GetEnumerator()?.Dispose()
+        Catch ex As Exception
+            Dim path As String = IO.Path.GetDirectoryName(pth.TrimEnd("\"c))
+            If Not path.EndsWith("\"c) Then path &= "\"c
+            Dim msgparts As String() = ex.Message.Replace(path, "").Split("'"c)
+            Dim message As String
+            If msgparts.Length = 3 Then
+                message = "'"c & msgparts(1) & "'"c & vbCrLf & msgparts(0) & msgparts(2).Trim()
+            ElseIf msgparts.Length >= 3 Then
+                Dim pathstart As Integer = ex.Message.IndexOf("'"c)
+                Dim pathend As Integer = ex.Message.LastIndexOf("'"c)
+                message = ex.Message.Substring(pathstart, pathend - pathstart + 1).Replace(path, "") & vbCrLf & ex.Message.Substring(0, pathstart) & ex.Message.Substring(pathend + 1).Trim
+            Else
+                message = ex.Message
+            End If
+            menuItems.Add(New ToolStripMenuItem("<Access Denied>", My.Resources.denied) With {.Enabled = False, .ToolTipText = message})
+            Return menuItems
+        End Try
+        Try
+            Parallel.ForEach(EnumerateData(pth, True, cantok).AsThrottled(usableCores), opts,
+                             Sub(data As WIN32_FIND_DATAW)
 
-                                 Dim attr As System.IO.FileAttributes = New System.IO.DirectoryInfo(fulldirs).Attributes
+                                 Dim fulldirs As String = IO.Path.Combine(pth, data.cFileName)
+
+                                 Dim attr As System.IO.FileAttributes = data.dwFileAttributes
                                  Dim hidden As Boolean = False
                                  If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then
                                      Threading.Interlocked.Increment(hiddencount)
@@ -798,32 +821,15 @@ Partial Public NotInheritable Class FrmMain
                                      timedout = True
                                  End If
                              End Sub)
-        Catch ex As System.OperationCanceledException
-            menuItems.Add(New ToolStripMenuItem("<Operation Canceled>", My.Resources.denied) With {.Enabled = False})
-        Catch ex As Exception
-            Dim path As String = IO.Path.GetDirectoryName(pth.TrimEnd("\"c))
-            If Not path.EndsWith("\"c) Then path &= "\"c
-            Dim msgparts As String() = ex.Message.Replace(path, "").Split("'"c)
-            Dim message As String
-            If msgparts.Length = 3 Then
-                message = "'"c & msgparts(1) & "'"c & vbCrLf & msgparts(0) & msgparts(2).Trim()
-            ElseIf msgparts.Length >= 3 Then
-                Dim pathstart As Integer = ex.Message.IndexOf("'"c)
-                Dim pathend As Integer = ex.Message.LastIndexOf("'"c)
-                message = ex.Message.Substring(pathstart, pathend - pathstart + 1).Replace(path, "") & vbCrLf & ex.Message.Substring(0, pathstart) & ex.Message.Substring(pathend + 1).Trim
-            Else
-                message = ex.Message
-            End If
-            menuItems.Add(New ToolStripMenuItem("<Access Denied>", My.Resources.denied) With {.Enabled = False, .ToolTipText = message})
-            Return menuItems
-        End Try
 
-        Dim Files As New ConcurrentBag(Of ToolStripItem)
+            ' can't get enumeratedata to propagate exceptions so still using the old way here
+            'Parallel.ForEach(IO.Directory.EnumerateFiles(pth).AsThrottled(usableCores).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)), opts,
+            'Sub(fullLink As String)
+            Parallel.ForEach(EnumerateData(pth, False, cantok).AsThrottled(usableCores).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p.cFileName).ToLower)), opts,
+                             Sub(data As WIN32_FIND_DATAW)
+                                 Dim fullLink As String = IO.Path.Combine(pth, data.cFileName)
 
-        Parallel.ForEach(System.IO.Directory.EnumerateFiles(pth).AsThrottled(usableCores).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)), opts,
-                             Sub(fullLink As String)
-
-                                 Dim attr As System.IO.FileAttributes = New System.IO.FileInfo(fullLink).Attributes
+                                 Dim attr As System.IO.FileAttributes = data.dwFileAttributes 'New System.IO.FileInfo(fullLink).Attributes
                                  Dim hidden As Boolean = False
                                  If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then
                                      Threading.Interlocked.Increment(hiddencount)
@@ -908,6 +914,9 @@ Partial Public NotInheritable Class FrmMain
                                      timedout = True
                                  End If
                              End Sub)
+        Catch ex As System.OperationCanceledException
+            menuItems.Add(New ToolStripMenuItem("<Operation Canceled>", My.Resources.denied) With {.Enabled = False})
+        End Try
 
         menuItems = Dirs.OrderBy(Function(d) CType(d.Tag, QLInfo).name, nsSorter).Concat(
                     Files.OrderBy(Function(f) CType(f.Tag, QLInfo).path, nsSorter)).ToList
@@ -1011,6 +1020,41 @@ Partial Public NotInheritable Class FrmMain
         watch.Stop()
         Return menuItems
     End Function
+
+
+    Private Iterator Function EnumerateData(pth As String, dirs As Boolean, ct As CancellationToken) As IEnumerable(Of WIN32_FIND_DATAW)
+
+        If ct.IsCancellationRequested Then Exit Function
+
+        Dim findData As New WIN32_FIND_DATAW()
+        Dim searchOp As Integer = If(dirs, 1, 0)
+
+        Dim hFind As IntPtr = FindFirstFileExW(IO.Path.Combine(pth, "*.*"), FINDEX_INFO_LEVELS.FindExInfoBasic, findData, searchOp, IntPtr.Zero, 0)
+        If hFind = New IntPtr(-1) Then
+            Return
+        End If
+        Try
+            Do
+                If ct.IsCancellationRequested Then Exit Function
+
+                Dim fname As String = findData.cFileName
+                If fname <> "." AndAlso fname <> ".." Then
+
+                    Dim isDir As Boolean = (findData.dwFileAttributes And FILE_ATTRIBUTE_DIRECTORY) <> 0
+                    If dirs = isDir Then
+                        'Debug.Print($"finddata ""{findData.cFileName}""")
+                        Yield findData
+                    End If
+
+                End If
+
+            Loop While FindNextFileW(hFind, findData)
+        Finally
+            FindClose(hFind)
+        End Try
+
+    End Function
+
 
     Private Sub QL_DropDownOpened(sender As ToolStripMenuItem, e As EventArgs)
         Dim handle = sender.DropDown.Handle
