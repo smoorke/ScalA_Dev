@@ -1308,7 +1308,7 @@ Partial Public NotInheritable Class FrmMain
         cmsQuickLaunch.Close()
 
         If IO.Directory.Exists(newfolderPath) Then
-            RenameMethod(newfolderPath, newfolderPath.Substring(newfolderPath.TrimEnd("\").LastIndexOf("\") + 1).TrimEnd("\"), deleteOnBlank:=True)
+            RenameMethod(newfolderPath, newfolderPath.Substring(newfolderPath.TrimEnd("\").LastIndexOf("\") + 1).TrimEnd("\"), isCreateFolder:=True)
         End If
 
     End Sub
@@ -1696,8 +1696,8 @@ Partial Public NotInheritable Class FrmMain
         "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"}
 
     Public renameOpen As Boolean
-    Private Sub RenameMethod(Path As String, currentName As String, Optional deleteOnBlank As Boolean = False)
-        Dim title As String = $"Rename {currentName}"
+    Private Sub RenameMethod(Path As String, currentName As String, Optional isCreateFolder As Boolean = False)
+        Dim title As String = If(isCreateFolder, "Create New folder", $"Rename {currentName}")
         Task.Run(Sub()
                      Dim watch As Stopwatch = Stopwatch.StartNew()
 
@@ -1736,7 +1736,7 @@ Partial Public NotInheritable Class FrmMain
         renameOpen = False
 
         If ReservedNames.Contains(IO.Path.GetFileNameWithoutExtension(toName).ToUpper) Then
-            CustomMessageBox.Show(Me, $"Error renaming ""{currentName}"" to ""{toName}""{vbCrLf}The specified device name is invalid.", "Rename", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            CustomMessageBox.Show(Me, $"Error renaming ""{currentName}"" to ""{toName}""{vbCrLf}The specified device name is invalid.", If(isCreateFolder, "Create New folder", "Rename"), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Exit Sub
         End If
 
@@ -1751,11 +1751,11 @@ Partial Public NotInheritable Class FrmMain
                 Dim sb As New System.Text.StringBuilder(1024)
                 FormatMessage(Format_Message.FORMAT_MESSAGE_FROM_SYSTEM Or Format_Message.FORMAT_MESSAGE_IGNORE_INSERTS, 0,
                               Err.LastDllError, 0, sb, sb.Capacity, Nothing)
-                CustomMessageBox.Show(Me, $"Error renaming ""{currentName}"" to ""{toName}""{vbCrLf}{sb}", "Rename", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                CustomMessageBox.Show(Me, $"Error renaming ""{currentName}"" to ""{toName}""{vbCrLf}{sb}", If(isCreateFolder, "Create New folder", "Rename"), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Else
                 dBug.Print($"renamed to ""{toName}""")
             End If
-        ElseIf toName = "" AndAlso deleteOnBlank AndAlso IO.Directory.Exists(path) Then
+        ElseIf toName = "" AndAlso isCreateFolder AndAlso IO.Directory.Exists(Path) Then
             IO.Directory.Delete(Path)
         End If
     End Sub
