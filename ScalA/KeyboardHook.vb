@@ -104,7 +104,7 @@ Public Class KeyboardHook : Implements IDisposable
                                 Debug.Print($"{GetWindowClass(edit)}")
                                 If GetWindowClass(edit).Contains("EDIT") Then
                                     EditBoxHelper.DeletePreviousWord(edit)
-                                    Return -1
+                                    Return 1
                                 End If
                             End If
                         End If
