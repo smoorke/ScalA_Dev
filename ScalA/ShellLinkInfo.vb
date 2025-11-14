@@ -49,25 +49,6 @@ Public NotInheritable Class ShellLinkInfo
     Private Class CShellLink
     End Class
 
-    <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Unicode)>
-    Private Structure WIN32_FIND_DATAW
-        Public dwFileAttributes As IO.FileAttributes
-        Public ftCreationTime As Long
-        Public ftLastAccessTime As Long
-        Public ftLastWriteTime As Long
-        Public nFileSizeHigh As UInteger
-        Public nFileSizeLow As UInteger
-        Public dwReserved0 As UInteger
-        Public dwReserved1 As UInteger
-        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=260)>
-        Public cFileName As String
-        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=14)>
-        Public cAlternateFileName As String
-
-        Public dwFileType As UInteger ' Obsolete. Do Not use.
-        Public dwCreatorType As UInteger ' Obsolete. Do Not use
-        Public wFinderFlags As UInteger ' Obsolete. Do Not use
-    End Structure
     Public Property LinkFile As String = ""
     Public Property TargetPath As String = ""
     Public Property WorkingDirectory As String = ""
@@ -92,10 +73,12 @@ Public NotInheritable Class ShellLinkInfo
     Public Function Load(ByVal lnkFile As String) As Boolean
         Me.LinkFile = lnkFile
         Dim shellLink As IShellLinkW = Nothing
+        Dim persFile As IPersistFile = Nothing
         Try
 
             shellLink = CType(New CShellLink(), IShellLinkW)
-            CType(shellLink, IPersistFile).Load(lnkFile, 0)
+            persFile = CType(shellLink, IPersistFile)
+            persFile.Load(lnkFile, 0)
 
             Dim sb As New StringBuilder(260)
             Dim wfd As New WIN32_FIND_DATAW
@@ -145,6 +128,7 @@ Public NotInheritable Class ShellLinkInfo
 
             Return False
         Finally
+            If persFile IsNot Nothing Then Marshal.ReleaseComObject(persFile)
             If shellLink IsNot Nothing Then Marshal.ReleaseComObject(shellLink)
         End Try
     End Function

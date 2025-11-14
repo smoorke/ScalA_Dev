@@ -1267,6 +1267,62 @@ Module NativeMethods
     Public Const TPM_RIGHTBUTTON = &H2
     Public Const TPM_RETURNCMD = &H100
 
+    <StructLayout(LayoutKind.Sequential)>
+    Public Structure FILETIME
+        Public dwLowDateTime As UInteger
+        Public dwHighDateTime As UInteger
+    End Structure
+    <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Unicode)>
+    Public Structure WIN32_FIND_DATAW
+        Public dwFileAttributes As IO.FileAttributes
+        Public ftCreationTime As FILETIME
+        Public ftLastAccessTime As FILETIME
+        Public ftLastWriteTime As FILETIME
+        Public nFileSizeHigh As UInteger
+        Public nFileSizeLow As UInteger
+        Public dwReserved0 As UInteger
+        Public dwReserved1 As UInteger
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=260)>
+        Public cFileName As String
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=14)>
+        Public cAlternateFileName As String
+
+        Public dwFileType As UInteger ' Obsolete. Do Not use.
+        Public dwCreatorType As UInteger ' Obsolete. Do Not use
+        Public wFinderFlags As UInteger ' Obsolete. Do Not use
+    End Structure
+    Public Enum FINDEX_INFO_LEVELS
+        FindExInfoStandard = 0
+        FindExInfoBasic = 1
+    End Enum
+
+    Public Enum FINDEX_SEARCH_OPS
+        FindExSearchNameMatch = 0
+        FindExSearchLimitToDirectories = 1
+        FindExSearchLimitToDevices = 2
+    End Enum
+
+    <DllImport("kernel32.dll", CharSet:=CharSet.Unicode, SetLastError:=True)>
+    Public Function FindFirstFileExW(lpFileName As String,
+                                     fInfoLevelId As FINDEX_INFO_LEVELS,
+                                     ByRef lpFindFileData As WIN32_FIND_DATAW,
+                                     fSearchOp As FINDEX_SEARCH_OPS,
+                                     lpSearchFilter As IntPtr,
+                                     dwAdditionalFlags As UInteger) As IntPtr
+    End Function
+    <DllImport("kernel32.dll", CharSet:=CharSet.Unicode, SetLastError:=True)>
+    Public Function FindFirstFileW(lpFileName As String, ByRef lpFindFileData As WIN32_FIND_DATAW) As IntPtr
+    End Function
+
+    <DllImport("kernel32.dll", CharSet:=CharSet.Unicode, SetLastError:=True)>
+    Public Function FindNextFileW(hFindFile As IntPtr, ByRef lpFindFileData As WIN32_FIND_DATAW) As Boolean
+    End Function
+
+    <DllImport("kernel32.dll", SetLastError:=True)>
+    Public Function FindClose(hFindFile As IntPtr) As Boolean
+    End Function
+
+
     <DllImport("User32.Dll")>
     Public Function TrackPopupMenuEx(ByVal hmenu As IntPtr, ByVal fuFlags As UInteger, ByVal x As Integer, ByVal y As Integer, ByVal hwnd As IntPtr, ByVal lptpm As Integer) As Integer : End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>
@@ -1288,6 +1344,24 @@ Module NativeMethods
     Public Const SHCNRF_ShellLevel As Integer = &H2
 
     Public Declare Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Keys) As Short
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function GetKeyboardState(ByVal lpKeyState As Byte()) As Boolean : End Function
+    <DllImport("user32.dll")>
+    Public Function MapVirtualKeyW(ByVal uCode As UInteger, ByVal uMapType As UInteger) As UInteger
+    End Function
+
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function ToUnicode(
+              ByVal wVirtKey As UInteger,
+              ByVal wScanCode As UInteger,
+              ByVal lpKeyState As Byte(),
+        <Out> ByVal pwszBuff As Char(),
+              ByVal cchBuff As Integer,
+              ByVal wFlags As UInteger
+        ) As Integer
+    End Function
+
+    Public Const MAPVK_VK_TO_CHAR As UInteger = 2
 
     <StructLayout(LayoutKind.Sequential)>
     Public Structure SHChangeNotifyEntry
