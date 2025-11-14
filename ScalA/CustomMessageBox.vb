@@ -24,7 +24,7 @@
                          Dim hW As IntPtr = FindWindow("#32770", caption)
                          If hW <> IntPtr.Zero Then
                              Dim hStatic As IntPtr = FindWindowEx(hW, IntPtr.Zero, "Static", message)
-                             If hStatic <> IntPtr.Zero Then
+                             If hStatic <> IntPtr.Zero AndAlso GetWindowText(hStatic) = message Then
                                  hWnd = hW
                                  SendMessage(hWnd, WM_SETICON, ICON_BIG, My.Resources.moa3.Handle)
                                  Exit Do
