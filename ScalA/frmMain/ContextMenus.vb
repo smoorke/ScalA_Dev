@@ -2688,15 +2688,13 @@ End Module
 Module EnumerationHelpers
 
     ''' <summary>
-    ''' Wraps any IEnumerable(Of String) in a throttled producer-consumer queue.
-    ''' Producer is throttled by maxConcurrent; consumers can pull at full speed.
+    ''' Wraps an IEnumerable in a throttled producer-consumer queue.
     ''' </summary>
     <Runtime.CompilerServices.Extension>
     Public Function AsThrottled(Of T)(source As IEnumerable(Of T), bufferSize As Integer) As IEnumerable(Of T)
 
         Dim bc As New BlockingCollection(Of T)(bufferSize)
 
-        ' Start producer task
         Task.Run(Sub()
                      Try
                          For Each item In source
