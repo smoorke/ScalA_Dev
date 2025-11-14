@@ -157,6 +157,15 @@ Namespace EditBoxHelper
                         If handle = IntPtr.Zero Then
                             Debug.Print("showing tt")
                             tt.Show($"A file name can't contain any of the following characters:{vbCrLf}{vbTab} \ / : * ? "" < > |", owner, pos.X, pos.Y, 10000)
+                            Task.Run(Sub()
+                                         Dim buttondown As Boolean = False
+                                         Do
+                                             Threading.Thread.Sleep(33)
+                                         Loop While (GetAsyncKeyState(&H1) And &H8000) = 0
+                                         owner?.Invoke(Sub()
+                                                           tt.Hide(owner)
+                                                       End Sub)
+                                     End Sub)
                         End If
 
                     End If
