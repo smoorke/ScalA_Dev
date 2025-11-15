@@ -809,6 +809,7 @@ Partial Public NotInheritable Class FrmMain
                                                     AddHandler smenu.DropDownOpened, AddressOf QL_DropDownOpened
                                                     'AddHandler smenu.DropDownOpened, AddressOf DeferredIconLoading
                                                     AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
+                                                    AddHandler smenu.DropDown.Closed, AddressOf QL_DropDownClosed
 
                                                     AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
                                                 End Sub)
@@ -876,6 +877,7 @@ Partial Public NotInheritable Class FrmMain
                                                                 AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
                                                                 AddHandler smenu.DropDownOpened, AddressOf QL_DropDownOpened
                                                                 AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
+                                                                AddHandler smenu.DropDown.Closed, AddressOf QL_DropDownClosed
 
                                                                 AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
                                                             End Sub)
@@ -1021,6 +1023,15 @@ Partial Public NotInheritable Class FrmMain
         Return menuItems
     End Function
 
+    Private Sub QL_DropDownClosed(sender As ToolStripDropDown, e As ToolStripDropDownClosedEventArgs)
+        For Each it As ToolStripItem In sender.Items.Cast(Of ToolStripItem).ToArray
+            If TypeOf it.Tag Is QLInfo Then
+                it.Dispose()
+            Else
+                it.Visible = True
+            End If
+        Next
+    End Sub
 
     Private Iterator Function EnumerateData(pth As String, dirs As Boolean, ct As CancellationToken) As IEnumerable(Of WIN32_FIND_DATAW)
 
@@ -1237,6 +1248,7 @@ Partial Public NotInheritable Class FrmMain
         End If
         For Each it As ToolStripItem In olditems
             sender.DropDownItems.Remove(it)
+            it.Dispose()
         Next
 
     End Sub
