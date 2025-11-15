@@ -1844,9 +1844,9 @@ Partial Public NotInheritable Class FrmMain
                                                    If (GetAsyncKeyState(&H5) And &H8000) <> 0 Then Exit Do
                                                    If (GetAsyncKeyState(&H6) And &H8000) <> 0 Then Exit Do
                                                End If
-                                           Loop While ttCloseSw.ElapsedMilliseconds < 10000
+                                           Loop While ttCloseSw.ElapsedMilliseconds <= 10000
                                            Me.Invoke(Sub()
-                                                         tt.Hide(eBox)
+                                                         If Not eBox?.IsDisposed Then tt.Hide(eBox)
                                                      End Sub)
                                            ttCloseTask = Nothing
                                            swAutoClose.Reset()
