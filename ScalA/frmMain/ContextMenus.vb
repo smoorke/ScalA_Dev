@@ -1698,6 +1698,7 @@ Partial Public NotInheritable Class FrmMain
     Public renameOpen As Boolean
     Private Sub RenameMethod(Path As String, currentName As String, Optional isCreateFolder As Boolean = False)
         Dim title As String = If(isCreateFolder, "Create New folder", $"Rename {currentName}")
+        Dim EditBox As Control = Nothing
         Task.Run(Sub()
                      Dim watch As Stopwatch = Stopwatch.StartNew()
 
@@ -1709,9 +1710,29 @@ Partial Public NotInheritable Class FrmMain
                          If hndl <> IntPtr.Zero Then Exit While
                      End While
 
+                     If hndl = IntPtr.Zero Then Exit Sub
+
                      If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
 
                      SendMessage(hndl, WM_SETICON, ICON_BIG, My.Resources.moa3.Handle)
+
+                     Dim hEditBox As IntPtr
+
+                     EnumChildWindows(hndl, Function(h, l)
+                                                If GetWindowClass(h).Contains("EDIT") Then
+                                                    hEditBox = h
+                                                    Return False
+                                                End If
+                                                Return True
+                                            End Function, IntPtr.Zero)
+
+                     Debug.Print($"{GetWindowClass(hEditBox)}")
+
+                     If GetWindowClass(hEditBox).Contains("EDIT") Then
+                         EditBox = Control.FromHandle(hEditBox)
+                         AddHandler EditBox.KeyDown, AddressOf EditBox_KeyDown
+                         AddHandler EditBox.KeyPress, AddressOf EditBox_KeyPress
+                     End If
 
                      Threading.Thread.Sleep(50)
                      Try
@@ -1728,11 +1749,12 @@ Partial Public NotInheritable Class FrmMain
         scaleFixForm = Nothing
 
         renameOpen = True
-        keybHook.Hook()
 
         Dim toName As String = InputBox("Enter New Name", title, currentName, dialogLeft, dialogTop).TrimStart().TrimEnd(" .")
 
-        If Not (My.Settings.DisableWinKey OrElse My.Settings.OnlyEsc OrElse My.Settings.NoAltTab) Then keybHook.Unhook()
+        RemoveHandler EditBox.KeyPress, AddressOf EditBox_KeyPress
+        RemoveHandler EditBox.KeyDown, AddressOf EditBox_KeyDown
+
         renameOpen = False
 
         If ReservedNames.Contains(IO.Path.GetFileNameWithoutExtension(toName).ToUpper) Then
@@ -1759,6 +1781,82 @@ Partial Public NotInheritable Class FrmMain
             IO.Directory.Delete(Path)
         End If
     End Sub
+
+    Dim tt As ToolTip = Nothing
+
+    Private Sub EditBox_KeyDown(sender As Object, e As KeyEventArgs)
+        Dim eBox As TextBox = CType(sender, TextBox)
+
+        If e.Control AndAlso e.KeyCode = Keys.Back Then
+            EditBoxHelper.DeletePreviousWord(eBox.Handle)
+            e.Handled = True
+            e.SuppressKeyPress = True
+        End If
+    End Sub
+
+    Dim ttCloseTask As Task = Nothing
+    Dim ttCloseSw As Stopwatch = Nothing
+    Private Sub EditBox_KeyPress(sender As Object, e As KeyPressEventArgs)
+        Dim eBox As TextBox = CType(sender, TextBox)
+
+        Debug.Print($"Edibox keydown {sender.GetType}")
+
+        If tt Is Nothing Then tt = New Windows.Forms.ToolTip() With {
+                                                    .IsBalloon = True,
+                                                    .InitialDelay = 0,
+                                                    .ShowAlways = True,
+                                                    .ReshowDelay = 0}
+
+        Dim htt As IntPtr = IntPtr.Zero
+        EnumThreadWindows(ScalaThreadId, Function(hWnd, lParam)
+                                             If Not IsWindowVisible(hWnd) Then Return True
+                                             If GetWindowClass(hWnd).Contains("tooltips_class32") Then
+                                                 htt = hWnd
+                                                 Return False
+                                             End If
+                                             Return True
+                                         End Function, IntPtr.Zero)
+
+
+        If IO.Path.GetInvalidFileNameChars.Contains(e.KeyChar) AndAlso Not Char.IsControl(e.KeyChar) Then
+
+            e.Handled = True
+
+            Beep()
+
+            ttCloseSw = Stopwatch.StartNew()
+
+            If htt = IntPtr.Zero Then ' tt not visible
+                Debug.Print("showing tt")
+                tt.Show($"A file name can't contain any of the following characters:{vbCrLf}{vbTab} \ / : * ? "" < > |", eBox, 5, -64)
+            End If
+            Dim eboxHandle = eBox.Handle
+            If ttCloseTask Is Nothing Then
+                ttCloseTask = Task.Run(Sub()
+                                           Dim buttondown As Boolean = False
+                                           Do
+                                               Threading.Thread.Sleep(33)
+                                               Debug.Print($"{GetAsyncKeyState(&H1)}")
+                                               If WindowFromPoint(MousePosition) <> eboxHandle Then
+                                                   If (GetAsyncKeyState(&H1) And &H8000) <> 0 Then Exit Do
+                                                   If (GetAsyncKeyState(&H2) And &H8000) <> 0 Then Exit Do
+                                                   If (GetAsyncKeyState(&H4) And &H8000) <> 0 Then Exit Do
+                                                   If (GetAsyncKeyState(&H5) And &H8000) <> 0 Then Exit Do
+                                                   If (GetAsyncKeyState(&H6) And &H8000) <> 0 Then Exit Do
+                                               End If
+                                           Loop While ttCloseSw.ElapsedMilliseconds < 10000
+                                           Me.Invoke(Sub()
+                                                         tt.Hide(eBox)
+                                                     End Sub)
+                                           ttCloseTask = Nothing
+                                           swAutoClose.Reset()
+                                       End Sub)
+            End If
+        Else
+            If htt <> IntPtr.Zero Then tt.Hide(eBox)
+        End If
+    End Sub
+
     Private Sub QlCtxDelete(sender As MenuItem, e As EventArgs)
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
