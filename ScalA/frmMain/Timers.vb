@@ -853,6 +853,7 @@ Partial NotInheritable Class FrmMain
             frmOverlay.pbRestart.Show()
         Else
             frmOverlay.pbRestart.Hide()
+            frmOverlay.ttOverlay.Hide(frmOverlay.pbRestart)
         End If
 
         'this does not belong in this hot path
