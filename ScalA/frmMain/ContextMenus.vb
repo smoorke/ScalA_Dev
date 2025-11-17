@@ -204,6 +204,8 @@ Partial Public NotInheritable Class FrmMain
 
         MoveToolStripMenuItem.Tag = pp
 
+        ActiveOverviewToolStripMenuItem.Checked = My.Settings.gameOnOverview
+
         SidebarModeToolStripMenuItem.Checked = SidebarScalA IsNot Nothing
 
         If sender.Items.Contains(closeAllIdleTSMI) Then
@@ -2730,7 +2732,19 @@ Partial Public NotInheritable Class FrmMain
         sender.Opacity = 1
     End Sub
 
-    Private Sub SidebarModeToolStripMenuItem_MouseEnter(sender As ToolStripMenuItem, e As EventArgs) Handles SidebarModeToolStripMenuItem.MouseEnter
+    Private Sub ActiveOverviewToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles ActiveOverviewToolStripMenuItem.Click
+        dBug.Print($"active overview alt {sender.Checked}")
+        My.Settings.gameOnOverview = sender.Checked
+        AButton.ActiveOverview = sender.Checked
+
+        If Not sender.Checked Then
+            AstoniaProcess.RestorePos(True)
+            AltPP = Nothing
+            Detach(True)
+        End If
+    End Sub
+
+    Private Sub SidebarModeToolStripMenuItem_MouseEnter(sender As ToolStripMenuItem, e As EventArgs) Handles SidebarModeToolStripMenuItem.MouseEnter, ActiveOverviewToolStripMenuItem.MouseEnter
         Dim rc = New RECT(sender.Owner.RectangleToScreen(sender.Bounds))
         Debug.Print($"sidebarmh {rc}")
         CustomToolTip.ShowTooltipWithDelay(sender.ToolTipText, cmsAlt.Handle, rc, (sender.ToolTipText.Count(Function(c) c = vbLf) + 5) * 1000)
