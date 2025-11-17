@@ -810,7 +810,7 @@ Partial Public NotInheritable Class FrmMain
                                                     AddHandler smenu.DropDownOpened, AddressOf QL_DropDownOpened
                                                     'AddHandler smenu.DropDownOpened, AddressOf DeferredIconLoading
                                                     AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
-                                                    AddHandler smenu.DropDown.Closed, AddressOf QL_DropDownClosed
+                                                    'AddHandler smenu.DropDown.Closed, AddressOf QL_DropDownClosed
 
                                                     AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
                                                 End Sub)
@@ -878,7 +878,7 @@ Partial Public NotInheritable Class FrmMain
                                                                 AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
                                                                 AddHandler smenu.DropDownOpened, AddressOf QL_DropDownOpened
                                                                 AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
-                                                                AddHandler smenu.DropDown.Closed, AddressOf QL_DropDownClosed
+                                                                'AddHandler smenu.DropDown.Closed, AddressOf QL_DropDownClosed
 
                                                                 AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
                                                             End Sub)
@@ -1023,16 +1023,17 @@ Partial Public NotInheritable Class FrmMain
         watch.Stop()
         Return menuItems
     End Function
-
+#If DEBUG Then
     Private Sub QL_DropDownClosed(sender As ToolStripDropDown, e As ToolStripDropDownClosedEventArgs)
         For Each it As ToolStripItem In sender.Items.Cast(Of ToolStripItem).ToArray
             If TypeOf it.Tag Is QLInfo Then
-                it.Dispose()
+                'it.Dispose() 'this causes a disposed eception somewhere
             Else
-                it.Visible = True
+                'it.Visible = True
             End If
         Next
     End Sub
+#End If
 
     Private Iterator Function EnumerateData(pth As String, dirs As Boolean, ct As CancellationToken) As IEnumerable(Of WIN32_FIND_DATAW)
 
@@ -2515,18 +2516,18 @@ Partial Public NotInheritable Class FrmMain
 
                             If Not IsWindowEnabled(owner) AndAlso ProcessPath(ownId).ToLowerInvariant() = explorerPath AndAlso GetWindowClass(owner) = "CabinetWClass" Then
                                 'find Ok button and press it
-                                Debug.Print("childwinds")
+                                dBug.Print("childwinds")
                                 Dim numbut As Integer = 0
                                 Dim lastbut As IntPtr = IntPtr.Zero
                                 EnumChildWindows(hwnd, Function(h As IntPtr, l As IntPtr)
-                                                           Debug.Print($"{h} ""{GetWindowClass(h)}"" ""{GetWindowText(h)}""")
+                                                           dBug.Print($"{h} ""{GetWindowClass(h)}"" ""{GetWindowText(h)}""")
                                                            If GetWindowClass(h) = "Button" Then 'todo check windowtext for locale string IDOK
                                                                numbut += 1
                                                                lastbut = h
                                                            End If
                                                            Return True
                                                        End Function, IntPtr.Zero)
-                                Debug.Print($"-- {numbut} --")
+                                dBug.Print($"-- {numbut} --")
                                 If numbut = 1 AndAlso lastbut <> IntPtr.Zero Then
                                     Dim tid = GetWindowThreadProcessId(hwnd, Nothing)
                                     AttachThreadInput(tid, GetCurrentThread(), True)
@@ -2562,6 +2563,7 @@ Partial Public NotInheritable Class FrmMain
                                                                        .WorkingDirectory = System.IO.Path.GetDirectoryName(pth),
                                                                        .WindowStyle = ProcessWindowStyle.Hidden,
                                                                        .CreateNoWindow = True}}
+
 
         Try
             pp.Start()
@@ -2679,8 +2681,8 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub setMenuCursor(menu As ToolStripDropDownMenu, Curs As Cursor)
         menu.Cursor = Curs
-        For Each it As ToolStripMenuItem In menu.Items.OfType(Of ToolStripMenuItem)
-            If it.HasDropDown AndAlso it.DropDown.Visible Then
+        For Each it As ToolStripMenuItem In menu.Items.OfType(Of ToolStripMenuItem).Where(Function(i) Not i.IsDisposed)
+            If it.HasDropDown AndAlso it.DropDown.Visible AndAlso Not it.IsDisposed Then
                 setMenuCursor(it.DropDown, Curs)
             End If
         Next

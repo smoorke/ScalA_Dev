@@ -66,6 +66,9 @@ Module dBug
         test.Items.Add(New ToolStripMenuItem("Open Debug Window", Nothing, AddressOf dBug.OpenDebugWindow))
         test.Items.Add(New ToolStripSeparator)
         test.Items.Add(New ToolStripMenuItem("Restart Client", My.Resources.Refresh, AddressOf dBug.RestartClient))
+        test.Items.Add(New ToolStripMenuItem("Throw Exception", Nothing, Sub()
+                                                                             Throw New Exception()
+                                                                         End Sub))
 
 
         test.RenderMode = ToolStripRenderMode.Professional
