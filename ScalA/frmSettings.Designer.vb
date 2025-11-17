@@ -828,8 +828,8 @@ Partial NotInheritable Class FrmSettings
         Me.chkNoAltTab.TabIndex = 26
         Me.chkNoAltTab.TabStop = False
         Me.chkNoAltTab.Text = "Disable Alt-Tab when Astonia Is Active"
-        Me.ttSettings.SetToolTip(Me.chkNoAltTab, "Note you can still use Ctrl-Alt-Tab to bring up the task switcher" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "and then press" &
-        " Space to switch applications.")
+        Me.ttSettings.SetToolTip(Me.chkNoAltTab, "Note you can still use Ctrl-Alt-Tab to bring up the task switcher" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "and then Click" &
+        " or press Tab and Space to switch applications.")
         Me.chkNoAltTab.UseVisualStyleBackColor = True
         '
         'pb100PWarning
