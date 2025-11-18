@@ -1253,7 +1253,7 @@ Partial Public NotInheritable Class FrmMain
         'Dim olditems = New ToolStripItemCollection(sender.Owner, sender.DropDownItems.Cast(Of ToolStripItem).ToArray)
         DisposeMenuRecurse(sender.DropDownItems)
 
-        If CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, target, 500) Then
+        If CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, target, 750) Then
             sender.DropDownItems.AddRange(ParseDir(target).ToArray)
         Else
             Dim dirname As String = IO.Path.GetDirectoryName(target.TrimEnd("\"c))
