@@ -1559,7 +1559,7 @@ Partial Public NotInheritable Class FrmMain
 
         If Not FileIO.FileSystem.DirectoryExists(My.Settings.links) Then
             System.IO.Directory.CreateDirectory(My.Settings.links)
-            System.IO.Directory.CreateDirectory(My.Settings.links & "\Example Folder")
+            System.IO.Directory.CreateDirectory(IO.Path.Combine(My.Settings.links, "Example Folder"))
         End If
 
         If My.Computer.Keyboard.CtrlKeyDown AndAlso My.Computer.Keyboard.ShiftKeyDown Then ctrlshift_pressed = True
