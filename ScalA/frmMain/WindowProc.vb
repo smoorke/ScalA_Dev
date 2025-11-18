@@ -1,5 +1,4 @@
 ﻿Imports System.Runtime.InteropServices
-Imports System.Threading
 
 Public NotInheritable Class WindowProc
     'dummy class to prevent form generation
