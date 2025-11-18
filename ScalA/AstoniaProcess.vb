@@ -264,7 +264,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     End Function
 
     Public Function WindowsScaling() As Integer
-        Const DWMWA_EXTENDED_FRAME_BOUNDS As Integer = 9
+
         Dim rcFrame As RECT
         DwmGetWindowAttribute(Me.MainWindowHandle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
         Dim rcWind As RECT

@@ -773,8 +773,22 @@ Module NativeMethods
     <DllImport("user32.dll")>
     Public Function GetWindowThreadProcessId(ByVal hWnd As IntPtr, <Out()> ByRef lpdwProcessId As UInteger) As UInteger : End Function
 
+
+    Public Const DWMWA_FORCE_ICONIC_REPRESENTATION As Integer = 7
+    Public Const DWMWA_EXTENDED_FRAME_BOUNDS As Integer = 9
+    Public Const DWMWA_HAS_ICONIC_BITMAP As Integer = 10
+
     <DllImport("dwmapi.dll")>
     Public Function DwmGetWindowAttribute(hwnd As IntPtr, dwAttribute As Integer, ByRef pvAttribute As RECT, cbAttribute As Integer) As Integer : End Function
+
+    <DllImport("dwmapi.dll")>
+    Public Function DwmSetWindowAttribute(hwnd As IntPtr, dwAttribute As Integer, ByRef pvAttribute As Integer, cbAttribute As Integer) As Integer : End Function
+
+    <DllImport("dwmapi.dll")>
+    Public Function DwmSetIconicThumbnail(hwnd As IntPtr, hbitmap As IntPtr, flags As UInteger) As Integer : End Function
+
+    <DllImport("dwmapi.dll")>
+    Public Function DwmSetIconicLivePreviewBitmap(hwnd As IntPtr, hbitmap As IntPtr, ptClient As IntPtr, flags As UInteger) As Integer : End Function
     <DllImport("user32.dll")>
     Public Function SetParent(hWndChild As IntPtr, hWndNewParent As IntPtr) As IntPtr : End Function
     'Public Declare Function DwmGetWindowAttribute Lib "dwmapi" (ByVal hwnd As IntPtr, ByVal dwAttribute As Integer, ByRef pvAttribute As RECT, ByVal cbAttribute As Integer) As Integer
@@ -1255,6 +1269,8 @@ Module NativeMethods
     Public Const WM_CLIPBOARDUPDATE As Integer = &H31D
 
     Public Const WM_DWMCOLORIZATIONCOLORCHANGED = &H320
+    Public Const WM_DWMSENDICONICTHUMBNAIL As Integer = &H323
+    Public Const WM_DWMSENDICONICLIVEPREVIEWBITMAP As Integer = &H326
 
     Public Const SC_SIZE As Integer = &HF000
     Public Const SC_MOVE As Integer = &HF010
