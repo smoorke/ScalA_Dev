@@ -2243,7 +2243,7 @@ Partial Public NotInheritable Class FrmMain
             Next
 
 
-        ElseIf Not qli.path.EndsWith("\") AndAlso Not (My.Settings.QLResolveLnk AndAlso qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target.EndsWith("\"c)) Then 'do not process click on dirs as they are handled by doubleclick
+        ElseIf e.Button = MouseButtons.Left AndAlso Not qli.path.EndsWith("\") AndAlso Not (My.Settings.QLResolveLnk AndAlso qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target.EndsWith("\"c)) Then 'do not process click on dirs as they are handled by doubleclick
             dBug.Print($"clicked Not a dir {My.Settings.QLResolveLnk} {CType(sender.Tag, QLInfo).target}")
             Task.Run(Sub() OpenLnk(sender, e))
             'cmsQuickLaunch.Close(ToolStripDropDownCloseReason.ItemClicked)
