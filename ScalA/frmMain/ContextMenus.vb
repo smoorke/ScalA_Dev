@@ -1034,6 +1034,17 @@ Partial Public NotInheritable Class FrmMain
         Next
     End Sub
 #End If
+    Public Sub DisposeMenuRecurse(items As ToolStripItemCollection)
+        For Each item As ToolStripItem In items.Cast(Of ToolStripItem).ToArray
+            If TypeOf item Is ToolStripMenuItem Then
+                Dim tsmi As ToolStripMenuItem = item
+                If tsmi.HasDropDownItems Then
+                    DisposeMenuRecurse(tsmi.DropDown.Items)
+                End If
+            End If
+            item.Dispose()
+        Next
+    End Sub
 
     Private Iterator Function EnumerateData(pth As String, dirs As Boolean, ct As CancellationToken) As IEnumerable(Of WIN32_FIND_DATAW)
 
@@ -1239,7 +1250,9 @@ Partial Public NotInheritable Class FrmMain
         Dim target = If(String.IsNullOrEmpty(qli.target), qli.path, qli.target)
 
         'sender.DropDownItems.Clear()
-        Dim olditems = sender.DropDownItems.Cast(Of ToolStripItem).ToArray()
+        'Dim olditems = New ToolStripItemCollection(sender.Owner, sender.DropDownItems.Cast(Of ToolStripItem).ToArray)
+        DisposeMenuRecurse(sender.DropDownItems)
+
         If CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, target, 500) Then
             sender.DropDownItems.AddRange(ParseDir(target).ToArray)
         Else
@@ -1248,10 +1261,6 @@ Partial Public NotInheritable Class FrmMain
             Dim name = "'"c & target.Replace(dirname, "").Trim("\"c) & "'"
             sender.DropDownItems.Add(New ToolStripMenuItem("<Error>", My.Resources.Warning) With {.Enabled = False, .ToolTipText = name & vbCrLf & "Target Directory Missing"})
         End If
-        For Each it As ToolStripItem In olditems
-            sender.DropDownItems.Remove(it)
-            it.Dispose()
-        Next
 
     End Sub
 
@@ -1543,7 +1552,8 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         'tmrTick.Interval = 1000
-        sender.Items.Clear()
+        'sender.Items.Clear()
+        DisposeMenuRecurse(sender.Items)
 
         If Not FileIO.FileSystem.DirectoryExists(My.Settings.links) Then My.Settings.links = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) & "\ScalA"
 
