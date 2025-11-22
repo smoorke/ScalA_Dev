@@ -255,7 +255,7 @@ Partial NotInheritable Class FrmMain
     Friend Shared apSorter As AstoniaProcessSorter
     Private ovBusy As Boolean = False
     Private Shared lockObject As New Object()
-    Private Async Sub TimerOverview_Tick(sender As Timer, e As EventArgs) Handles tmrOverview.Tick
+    Private Sub TimerOverview_Tick(sender As Timer, e As EventArgs) Handles tmrOverview.Tick
 
         If Me.WindowState = FormWindowState.Minimized Then
             altSelectedOrOverview = Nothing
@@ -286,141 +286,139 @@ Partial NotInheritable Class FrmMain
         'Dim butCounter = 0
         Dim eqLockShown = True
 
-        Await Task.Run(
-            Sub()
-                Parallel.ForEach(visibleButtons, New ParallelOptions With {.MaxDegreeOfParallelism = Math.Max(1, usableCores \ 2)},
-                    Sub(but As AButton, ls As ParallelLoopState, butCounter As Integer)
-                        Try
-                            Dim apCounter = butCounter
-                            If apCounter >= topCount Then apCounter = butCounter - skipCount + topCount
-                            'dBug.print($"pfe tick{TickCounter} but{butCounter} ap{apCounter} bot{botCount} top{topCount} skip{skipCount}")
-                            If apCounter < alts.Count AndAlso
-                                    (butCounter < topCount OrElse butCounter >= skipCount) AndAlso
-                                    Not alts(apCounter).HasExited Then
-                                'buttons with alts
+        Parallel.ForEach(visibleButtons, New ParallelOptions With {.MaxDegreeOfParallelism = Math.Max(1, usableCores \ 2)},
+            Sub(but As AButton, ls As ParallelLoopState, butCounter As Integer)
+                Try
+                    Dim apCounter = butCounter
+                    If apCounter >= topCount Then apCounter = butCounter - skipCount + topCount
+                    'dBug.print($"pfe tick{TickCounter} but{butCounter} ap{apCounter} bot{botCount} top{topCount} skip{skipCount}")
+                    If apCounter < alts.Count AndAlso
+                      (butCounter < topCount OrElse butCounter >= skipCount) AndAlso
+                      Not alts(apCounter).HasExited Then
+                        'buttons with alts
 
-                                Dim ap As AstoniaProcess = alts(apCounter)
-                                Dim apID = ap.Id
-                                but.AP = ap
-                                but.BeginInvoke(Sub() but.Text = ap.DisplayName)
+                        Dim ap As AstoniaProcess = alts(apCounter)
+                        Dim apID = ap.Id
+                        but.AP = ap
+                        but.BeginInvoke(Sub() but.Text = ap.DisplayName)
 
-                                If ap.IsActive() Then
-                                    but.Font = AButton.BoldFont
-                                    but.BeginInvoke(Sub() but.Select())
-                                Else
-                                    but.Font = AButton.NormalFont
-                                End If
+                        If ap.IsActive() Then
+                            but.Font = AButton.BoldFont
+                            but.BeginInvoke(Sub() but.Select())
+                        Else
+                            but.Font = AButton.NormalFont
+                        End If
 
-                                If Not ap.isSDL Then
-                                    Dim exStyle As UInteger = GetWindowLong(ap.MainWindowHandle, GWL_EXSTYLE)
-                                    If (exStyle And WindowStylesEx.WS_EX_COMPOSITED) <> WindowStylesEx.WS_EX_COMPOSITED Then
-                                        SetWindowLong(ap.MainWindowHandle, GWL_EXSTYLE, exStyle Or WindowStylesEx.WS_EX_COMPOSITED)
-                                        Debug.Print($"set {ap.Name} as composited")
-                                    End If
-                                ElseIf My.Settings.gameOnOverview AndAlso ap.IsActive Then ' andalso ap.isdl
-                                    If GetGUIThreadInfo(ap.MainThreadId, gti) AndAlso (gti.flags = 20) Then
-                                        If Not doNotReplaceSysM Then
-
-                                            'check if sysmenu is opened from taskbar/tbthumb
-                                            Dim hwnd = GetAncestor(WindowFromPoint(Control.MousePosition), GA_ROOT)
-                                            Dim clss = GetWindowClass(hwnd)
-                                            dBug.Print($"clss ""{clss}""")
-                                            If {"Shell_TrayWnd", "Shell_SecondaryTrayWnd", "XamlExplorerHostIslandWindow", "TaskListThumbnailWnd"}.Contains(clss) Then
-                                                doNotReplaceSysM = True
-                                            End If
-
-                                            If Not doNotReplaceSysM Then
-                                                Me.Invoke(Sub() If Not but.RectangleToScreen(but.ClientRectangle).Contains(MousePosition) Then doNotReplaceSysM = True)
-                                            End If
-
-                                            If Not doNotReplaceSysM Then
-
-                                                dBug.Print($"gti.flags2 {gti.flags}")
-
-                                                Me.BeginInvoke(Sub()
-                                                                   dBug.Print($"rects  cr {but.ClientRectangle}  brts {but.RectangleToScreen(but.ClientRectangle)} mp {MousePosition}")
-
-                                                                   PostMessage(ap.MainWindowHandle, WM_CANCELMODE, 0, 0) 'close client SysMenu
-
-                                                                   Dim pt = but.PointToClient(Control.MousePosition)
-                                                                   dBug.Print($"alt sysmenu override: {pt}")
-
-                                                                   If My.Computer.Keyboard.CtrlKeyDown Then
-                                                                       cmsQuickLaunch.Show(but, pt)
-                                                                   Else
-                                                                       cmsAlt.Show(but, pt)
-                                                                   End If
-
-                                                               End Sub)
-                                            End If
-
-                                        End If
-                                    Else
-                                        doNotReplaceSysM = False
-                                    End If
-                                End If
-
-                                If but.pidCache <> ap.Id Then but.BackgroundImage = Nothing
-                                If but.BackgroundImage Is Nothing Then
-                                    Using ico As Bitmap = ap.GetIcon?.ToBitmap
-                                        Dim img As Image = Nothing
-                                        If ico IsNot Nothing Then
-                                            img = New Bitmap(ico, New Size(16, 16))
-                                            dBug.Print($"{ap.Name} icon updated")
-                                        End If
-                                        Me.BeginInvoke(Sub() but.BackgroundImage = img)
-                                    End Using
-                                End If
-                                but.pidCache = ap.Id
-
-                                Dim sw = swDict.GetOrAdd(ap.Id, Stopwatch.StartNew)
-                                If but.Image Is Nothing OrElse sw.ElapsedMilliseconds > 66 Then
-                                    sw.Reset()
-                                    Task.Run(Sub()
-                                                 Threading.Thread.Sleep(Rnd() * 33)
-                                                 Dim img As Image = ap.GetHealthbar
-                                                 Me.BeginInvoke(Sub()
-                                                                    but.Image?.Dispose()
-                                                                    but.Image = img
-                                                                    sw.Start()
-                                                                End Sub)
-                                             End Sub)
-                                End If
-
-                                but.ContextMenuStrip = cmsAlt
-                                'Me.Invoke(Function() cboAlt.SelectedIndex = 0) 'do not use index as it changes when hovering dropdown items
-                                If pnlOverview.Visible Then
-                                    If Not startThumbsDict.ContainsKey(apID) Then
-
-                                        Dim thumbid As IntPtr = IntPtr.Zero
-                                        DwmRegisterThumbnail(ScalaHandle, ap.MainWindowHandle, thumbid)
-                                        startThumbsDict(apID) = thumbid
-                                        dBug.Print($"registered thumb {startThumbsDict(apID)} {ap.Name} {apID}")
-                                    End If
-
-                                    rectDic(apID) = but.ThumbRECT
-                                    Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
-                                       .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY,
-                                       .opacity = opaDict.GetValueOrDefault(apID, If(chkDebug.Checked, 128, 255)),
-                                       .fVisible = True,
-                                       .rcDestination = rectDic(apID),
-                                       .fSourceClientAreaOnly = True}
-
-
-                                    DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
-                                End If
-                            Else 'buttons w/o alts
-                                but.BeginInvoke(Sub() but.Text = "")
-                                but.AP = Nothing
-                                but.ContextMenuStrip = cmsQuickLaunch
-                                but.BackgroundImage = Nothing
-                                but.Image = Nothing
-                                but.pidCache = 0
+                        If Not ap.isSDL Then
+                            Dim exStyle As UInteger = GetWindowLong(ap.MainWindowHandle, GWL_EXSTYLE)
+                            If (exStyle And WindowStylesEx.WS_EX_COMPOSITED) <> WindowStylesEx.WS_EX_COMPOSITED Then
+                                SetWindowLong(ap.MainWindowHandle, GWL_EXSTYLE, exStyle Or WindowStylesEx.WS_EX_COMPOSITED)
+                                Debug.Print($"set {ap.Name} as composited")
                             End If
-                        Catch
-                        End Try
-                    End Sub)
+                        ElseIf My.Settings.gameOnOverview AndAlso ap.IsActive Then ' andalso ap.isdl
+                            If GetGUIThreadInfo(ap.MainThreadId, gti) AndAlso (gti.flags = 20) Then
+                                If Not doNotReplaceSysM Then
+
+                                    'check if sysmenu is opened from taskbar/tbthumb
+                                    Dim hwnd = GetAncestor(WindowFromPoint(Control.MousePosition), GA_ROOT)
+                                    Dim clss = GetWindowClass(hwnd)
+                                    dBug.Print($"clss ""{clss}""")
+                                    If {"Shell_TrayWnd", "Shell_SecondaryTrayWnd", "XamlExplorerHostIslandWindow", "TaskListThumbnailWnd"}.Contains(clss) Then
+                                        doNotReplaceSysM = True
+                                    End If
+
+                                    If Not doNotReplaceSysM Then
+                                        Me.Invoke(Sub() If Not but.RectangleToScreen(but.ClientRectangle).Contains(MousePosition) Then doNotReplaceSysM = True)
+                                    End If
+
+                                    If Not doNotReplaceSysM Then
+
+                                        dBug.Print($"gti.flags2 {gti.flags}")
+
+                                        Me.BeginInvoke(Sub()
+                                                           dBug.Print($"rects  cr {but.ClientRectangle}  brts {but.RectangleToScreen(but.ClientRectangle)} mp {MousePosition}")
+
+                                                           PostMessage(ap.MainWindowHandle, WM_CANCELMODE, 0, 0) 'close client SysMenu
+
+                                                           Dim pt = but.PointToClient(Control.MousePosition)
+                                                           dBug.Print($"alt sysmenu override: {pt}")
+
+                                                           If My.Computer.Keyboard.CtrlKeyDown Then
+                                                               cmsQuickLaunch.Show(but, pt)
+                                                           Else
+                                                               cmsAlt.Show(but, pt)
+                                                           End If
+
+                                                       End Sub)
+                                    End If
+
+                                End If
+                            Else
+                                doNotReplaceSysM = False
+                            End If
+                        End If
+
+                        If but.pidCache <> ap.Id Then but.BackgroundImage = Nothing
+                        If but.BackgroundImage Is Nothing Then
+                            Using ico As Bitmap = ap.GetIcon?.ToBitmap
+                                Dim img As Image = Nothing
+                                If ico IsNot Nothing Then
+                                    img = New Bitmap(ico, New Size(16, 16))
+                                    dBug.Print($"{ap.Name} icon updated")
+                                End If
+                                Me.BeginInvoke(Sub() but.BackgroundImage = img)
+                            End Using
+                        End If
+                        but.pidCache = ap.Id
+
+                        Dim sw = swDict.GetOrAdd(ap.Id, Stopwatch.StartNew)
+                        If but.Image Is Nothing OrElse sw.ElapsedMilliseconds > 66 Then
+                            sw.Reset()
+                            Task.Run(Sub()
+                                         Threading.Thread.Sleep(Rnd() * 33)
+                                         Dim img As Image = ap.GetHealthbar
+                                         Me.BeginInvoke(Sub()
+                                                            but.Image?.Dispose()
+                                                            but.Image = img
+                                                            sw.Start()
+                                                        End Sub)
+                                     End Sub)
+                        End If
+
+                        but.ContextMenuStrip = cmsAlt
+                        'Me.Invoke(Function() cboAlt.SelectedIndex = 0) 'do not use index as it changes when hovering dropdown items
+                        If pnlOverview.Visible Then
+                            If Not startThumbsDict.ContainsKey(apID) Then
+
+                                Dim thumbid As IntPtr = IntPtr.Zero
+                                DwmRegisterThumbnail(ScalaHandle, ap.MainWindowHandle, thumbid)
+                                startThumbsDict(apID) = thumbid
+                                dBug.Print($"registered thumb {startThumbsDict(apID)} {ap.Name} {apID}")
+                            End If
+
+                            rectDic(apID) = but.ThumbRECT
+                            Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
+                         .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY,
+                         .opacity = opaDict.GetValueOrDefault(apID, If(chkDebug.Checked, 128, 255)),
+                         .fVisible = True,
+                         .rcDestination = rectDic(apID),
+                         .fSourceClientAreaOnly = True}
+
+
+                            DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
+                        End If
+                    Else 'buttons w/o alts
+                        but.BeginInvoke(Sub() but.Text = "")
+                        but.AP = Nothing
+                        but.ContextMenuStrip = cmsQuickLaunch
+                        but.BackgroundImage = Nothing
+                        but.Image = Nothing
+                        but.pidCache = 0
+                    End If
+                Catch
+                End Try
             End Sub)
+
 
         Dim thumbContainedMouse As Boolean = False
 
@@ -436,9 +434,9 @@ Partial NotInheritable Class FrmMain
                     GetCursorInfo(pci)
                     If pci.flags <> 0 Then ' cursor is visible
                         If Not wasVisible AndAlso ap.IsActive() Then
-                            dBug.print("scrollthumb released")
+                            dBug.Print("scrollthumb released")
                             If storedY <> pci.ptScreenpos.y OrElse storedX <> pci.ptScreenpos.x Then
-                                dBug.print("scrollthumb moved")
+                                dBug.Print("scrollthumb moved")
                                 Dim Xfactor As Double = but.ThumbRectangle.Width / ap.ClientRect.Width
                                 Dim Yfactor As Double = but.ThumbRectangle.Height / ap.ClientRect.Height
                                 Dim movedX As Integer = storedX + ((pci.ptScreenpos.x - storedX) * Xfactor)
@@ -449,7 +447,7 @@ Partial NotInheritable Class FrmMain
                                 Dim ipt As New Point(movedX.Map(bzB.Left, bzB.Right, 0, rccB.Width),
                                                      movedY.Map(bzB.Top, bzB.Bottom, 0, rccB.Height))
                                 SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, WM_MOUSEMOVE_CreateWParam(), New LParamMap(ipt)) 'update client internal mousepos
-                                dBug.print($"ipt {ipt}")
+                                dBug.Print($"ipt {ipt}")
                             End If
                         End If
                         storedX = pci.ptScreenpos.x
@@ -460,11 +458,11 @@ Partial NotInheritable Class FrmMain
                     If Not AOBusy Then
                         AltPP = ap
                         If ap.IsMinimized Then
-                            dBug.print($"before {rcwB} {rccB}")
+                            dBug.Print($"before {rcwB} {rccB}")
                             ap.Restore()
                             rcwB = ap.WindowRect
                             rccB = ap.ClientRect
-                            dBug.print($"after {rcwB} {rccB}")
+                            dBug.Print($"after {rcwB} {rccB}")
                         End If
 
                         If pci.flags = 0 Then ' cursor is hidden do not move astonia. fixes scrollbar thumb.
@@ -517,8 +515,8 @@ Partial NotInheritable Class FrmMain
                             Dim Crect As RECT
                             GetWindowRect(ap?.MainWindowHandle, Wrect)
                             GetClientRect(ap?.MainWindowHandle, Crect)
-                            Dim bSize = (wrect.Right - wrect.Left - crect.Right) \ 2
-                            Dim AstClientOffsetB = New Size(bSize, Wrect.Bottom - Wrect.Top - Crect.Bottom - bSize)
+                            Dim bSize = (Wrect.right - Wrect.left - Crect.right) \ 2
+                            Dim AstClientOffsetB = New Size(bSize, Wrect.bottom - Wrect.top - Crect.bottom - bSize)
 
                             Dim ptZB = Me.PointToScreen(but.ThumbRECT.Location)
                             Dim newXB = MousePosition.X.Map(ptZB.X, ptZB.X + but.ThumbRectangle.Width, ptZB.X, ptZB.X + but.ThumbRECT.Width - but.ThumbRECT.X - rccB.Width) - AstClientOffsetB.Width '- My.Settings.offset.X
