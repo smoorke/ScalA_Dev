@@ -168,10 +168,10 @@ Partial NotInheritable Class FrmMain
 #End If
                             If Not AltPP?.IsActive AndAlso WindowFromPoint(MousePosition) = AltPP?.MainWindowHandle Then
                                 dBug.Print($"Activating {AltPP?.Name}")
-                                If Not AltPP.Activate() Then
-                                    dBug.Print("Activation fallback")
-                                    SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
-                                End If
+                                SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
+                                'If Not AltPP.Activate() Then
+                                '    dBug.Print("Activation fallback")
+                                'End If
                             End If
 #If DEBUG Then
                         End If
@@ -485,7 +485,8 @@ Partial NotInheritable Class FrmMain
 #End If
                                                 If Not ap.IsActive AndAlso WindowFromPoint(MousePosition) = ap.MainWindowHandle Then
                                                     dBug.Print($"Activating {ap.Name}")
-                                                    If Not ap.Activate() Then SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
+                                                    'If Not ap.Activate() Then NOP
+                                                    SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
                                                 End If
 #If DEBUG Then
                                             End If
