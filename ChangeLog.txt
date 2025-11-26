@@ -1,3 +1,32 @@
+**ScalA 1.7.9**
+
+__Bugfixes__
+- Really fixed silent crash on Cut/Copy.
+-# Had to resort to disabling Clipboard persistence tho.
+- Fixed closing settings when ScalA is minimized and a legacy alt is selected makes ScalA dissapear from taskbar.
+- Fixed Taskbar temporarily loses topmost status when QL is open.
+- Fixed Rename dialog allows renaming to reserved names. (CON, AUX, NUL, etc..)
+- Fixed Minimizing ScalA with`Min on Min` on and an SDL Alt selected and then restoring ScalA by running it again makes restartbutton go invisible.
+- Fixed an issue with broken links that could hang an explorer window.
+- Fixed a thread starvation issue on Overview.
+- Reduced a handle leak in QL.
+- Reverted the Activate on Hover back to using xmb only.
+
+__New/Changed__
+- Added Icons and Tooltips when there is an error in opening a QL folder.
+- Added a Tooltip to the `(Empty)` item denoting if there are hidden files and some additional info.
+- Pressing Esc or clicking Cancel when creating a new folder will remove the `New Folder` it had created.
+- Reduced parallelization on parsing QL items, it was set too high causing reduced performance due to disk trashing/thread contention.
+- Reduced FileIO access calls when parsing QL folders by ~50%.
+- Deferred Link validation so QL doesn't stall when displaying a Link with target pointing to an offline network path.
+- Added a 750ms timeout to directory existence check for QL folders.
+- Changed title of rename dialog for creating a new folder.
+- Moved Ctrl-Backspace handling for InputBox out of keyboardhook.
+-# The hook will now only run if you have turned on `Disable Win Key`, `Disable Alt-Tab` and/or `Only Send Esc`.
+- Added logic to Rename dialog to disallow entering invalid characters.
+- Added Item to overview Alt ContextMenu to turn on Active Overview.
+-# Been asked too many times by new users if this existed/how to turn it on.
+
 **ScalA 1.7.8**
 - Resolved some instances of error dialog disappearing behind topmost ScalA.
 - Fixed some more Cursor Flicker issues.
