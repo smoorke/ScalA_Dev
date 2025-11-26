@@ -5,7 +5,7 @@
         Me.Capture = False
         If FrmMain.AltPP IsNot Nothing Then
             SetWindowPos(Me.Handle, FrmMain.AltPP.MainWindowHandle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
-            SetForegroundWindow(FrmMain.AltPP.MainWindowHandle)
+            FrmMain.AltPP.Activate()
         End If
 
     End Sub
