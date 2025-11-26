@@ -1,29 +1,12 @@
 ﻿Public NotInheritable Class FrmBehind
 
     Private Sub FrmBehind_MouseDown(sender As Object, e As MouseEventArgs) Handles Me.MouseDown
-        dBug.print($"behind down {e.Button}")
-        'Try
-        '    If FrmMain.AltPP IsNot Nothing Then
-        '        AppActivate(FrmMain.AltPP.Id)
-        '    Else
-        '        FrmMain.BringToFront()
-        '        AppActivate(ScalaPID)
-        '    End If
-        'Catch ex As Exception
-
-        'End Try
-
-        'Dim msg As Integer = WM_XBUTTONDOWN
-        'Select Case e.Button
-        '    Case MouseButtons.Left
-        '        msg = WM_LBUTTONDOWN
-        '    Case MouseButtons.Right
-        '        msg = WM_RBUTTONDOWN
-        '    Case MouseButtons.Middle
-        '        msg = WM_MBUTTONDOWN
-        'End Select
-
-        'If FrmMain.AltPP IsNot Nothing Then SendMessage(FrmMain.AltPP.MainWindowHandle, msg, 0, IntPtr.Zero)
+        dBug.Print($"behind down {e.Button}")
+        Me.Capture = False
+        If FrmMain.AltPP IsNot Nothing Then
+            SetWindowPos(Me.Handle, FrmMain.AltPP.MainWindowHandle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
+            SetForegroundWindow(FrmMain.AltPP.MainWindowHandle)
+        End If
 
     End Sub
 
