@@ -1416,9 +1416,16 @@ Module NativeMethods
 
     Public Function WM_MOUSEMOVE_CreateWParam() As IntPtr
         Dim wp As Integer
-        wp = wp Or ((Control.MouseButtons >> 20) And &H3)   ' 00000011 (Extract left and right buttons)
-        wp = wp Or ((Control.ModifierKeys >> 14) And &H300) ' 00001100 (Extract Shift and Ctrl keys)
-        wp = wp Or ((Control.MouseButtons >> 18) And &H70)  ' 01110000 (Extract middle and X buttons)
+        wp = wp Or ((Control.MouseButtons >> 20) And &H3)   ' 00000011 (Extract Right and Left buttons)
+        wp = wp Or ((Control.ModifierKeys >> 14) And &HC)   ' 00001100 (Extract Ctrl and Shift Keys) 'todo: double check this. was &H300 which is wrong.
+        wp = wp Or ((Control.MouseButtons >> 18) And &H70)  ' 01110000 (Extract X and M buttons)
+        ' MouseButtons.Left            '1048576
+        ' MouseButtons.Right           '2097152 
+        ' ModifierKeys.Shift        ' 65536
+        ' ModifierKeys.Control      '131072
+        ' MouseButtons.Middle   ' 4194304
+        ' MouseButtons.XButton1 ' 8388608
+        ' MouseButtons.XButton2 '16777216
         Return New IntPtr(wp)
     End Function
     Public Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (
