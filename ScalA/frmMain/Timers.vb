@@ -194,33 +194,33 @@ Partial NotInheritable Class FrmMain
 
             If Not swpBusy AndAlso Not moveBusy AndAlso Not Resizing Then
                 swpBusy = True
-                Task.Run(Sub()
-                             Try
-                                 If AltPP Is Nothing OrElse Not AltPP.IsRunning Then Exit Sub
-                                 Dim ci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
-                                 GetCursorInfo(ci)
-                                 If ci.flags = 0 Then Exit Sub
-                                 swpBusy = True
-                                 Dim flags = swpFlags
-                                 If Not AltPP?.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
-                                 If AltPP?.IsBelow(ScalaHandle) Then flags.SetFlag(SetWindowPosFlags.IgnoreZOrder)
-                                 Dim pt As Point = MousePosition - New Point(newX + If(AltPP?.ClientOffset.X, 0), newY + If(AltPP?.ClientOffset.Y, 0))
-                                 Dim wparam = WM_MOUSEMOVE_CreateWParam()
-                                 Dim lparam = New LParamMap(pt)
-                                 If prevWMMMpt <> MousePosition Then
-                                     SendMessage(If(AltPP?.MainWindowHandle, IntPtr.Zero), WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
-                                 End If
-                                 SetWindowPos(If(AltPP?.MainWindowHandle, IntPtr.Zero), ScalaHandle, newX, newY, -1, -1, flags)
-                                 If prevWMMMpt <> MousePosition Then
-                                     SendMessage(If(AltPP?.MainWindowHandle, IntPtr.Zero), WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
-                                 End If
-                                 prevWMMMpt = MousePosition
-                             Catch ex As Exception
-                                 dBug.Print(ex.Message)
-                             Finally
-                                 swpBusy = False
-                             End Try
-                         End Sub)
+                EnqueueLatestJob(Sub()
+                                     Try
+                                         If AltPP Is Nothing OrElse Not AltPP.IsRunning Then Exit Sub
+                                         Dim ci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
+                                         GetCursorInfo(ci)
+                                         If ci.flags = 0 Then Exit Sub
+                                         swpBusy = True
+                                         Dim flags = swpFlags
+                                         If Not AltPP?.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
+                                         If AltPP?.IsBelow(ScalaHandle) Then flags.SetFlag(SetWindowPosFlags.IgnoreZOrder)
+                                         Dim pt As Point = MousePosition - New Point(newX + If(AltPP?.ClientOffset.X, 0), newY + If(AltPP?.ClientOffset.Y, 0))
+                                         Dim wparam = WM_MOUSEMOVE_CreateWParam()
+                                         Dim lparam = New LParamMap(pt)
+                                         If prevWMMMpt <> MousePosition Then
+                                             SendMessage(If(AltPP?.MainWindowHandle, IntPtr.Zero), WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
+                                         End If
+                                         SetWindowPos(If(AltPP?.MainWindowHandle, IntPtr.Zero), ScalaHandle, newX, newY, -1, -1, flags)
+                                         If prevWMMMpt <> MousePosition Then
+                                             SendMessage(If(AltPP?.MainWindowHandle, IntPtr.Zero), WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
+                                         End If
+                                         prevWMMMpt = MousePosition
+                                     Catch ex As Exception
+                                         dBug.Print(ex.Message)
+                                     Finally
+                                         swpBusy = False
+                                     End Try
+                                 End Sub)
             End If
         End If
 
