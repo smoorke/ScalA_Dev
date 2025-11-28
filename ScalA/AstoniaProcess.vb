@@ -1686,4 +1686,24 @@ Module ProcessExtensions
         End If
         Return classCacheSet.Contains(GetWindowClass(pp.MainWindowHandle)) AndAlso exeCacheSet.Contains(pp.ProcessName)
     End Function
+
+    Public Function isAstonia(h As IntPtr) As Boolean
+        If classCache <> My.Settings.className Then
+            classCacheSet.Clear()
+            classCacheSet = New HashSet(Of String)(My.Settings.className.Split(pipe, StringSplitOptions.RemoveEmptyEntries) _
+                                                          .Select(Function(wc) Strings.Trim(wc)))
+            classCache = My.Settings.className
+        End If
+        If exeCache <> My.Settings.exe Then
+            exeCacheSet.Clear()
+            exeCacheSet = New HashSet(Of String)(My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries) _
+                                                          .Select(Function(x) Strings.Trim(x)))
+            exeCache = My.Settings.exe
+        End If
+        Dim pid As Integer
+        GetWindowThreadProcessId(h, pid)
+        Dim procname As String = IO.Path.GetFileNameWithoutExtension(ProcessPath(pid))
+        Return classCacheSet.Contains(GetWindowClass(h)) AndAlso exeCacheSet.Contains(procname)
+    End Function
+
 End Module

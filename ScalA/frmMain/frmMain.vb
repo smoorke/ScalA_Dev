@@ -592,6 +592,9 @@ Partial Public NotInheritable Class FrmMain
         Dim priThread As New Threading.Thread(AddressOf prioritySetter) With {.IsBackground = True, .Priority = Threading.ThreadPriority.Lowest}
         priThread.Start()
 
+        WorkerThread = New Threading.Thread(AddressOf WorkerLoop) With {.IsBackground = True, .Priority = Threading.ThreadPriority.Highest}
+        WorkerThread.Start()
+
         StartCloseErrorDialogThread()
 
     End Sub
