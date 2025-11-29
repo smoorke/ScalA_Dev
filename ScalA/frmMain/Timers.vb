@@ -375,7 +375,7 @@ Partial NotInheritable Class FrmMain
                         but.pidCache = ap.Id
 
                         Dim sw = swDict.GetOrAdd(ap.Id, Stopwatch.StartNew)
-                        If but.Image Is Nothing OrElse sw.ElapsedMilliseconds > 66 Then
+                        If but.Image Is Nothing OrElse sw.ElapsedMilliseconds > 200 Then
                             sw.Reset()
                             Task.Run(Sub()
                                          Threading.Thread.Sleep(Rnd() * 33)
