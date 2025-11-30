@@ -1682,14 +1682,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
     Private Sub QlCtxOpenAll(sender As MenuItem, e As EventArgs)
         dBug.Print($"QlCtxOpenAll sender:{sender}")
-        Dim subitems As List(Of ToolStripMenuItem) = DirectCast(sender.Tag, ToolStripMenuItem).
-                DropDownItems.OfType(Of ToolStripMenuItem).
-                Where(Function(it)
-                          Return it.Visible AndAlso TypeOf it.Tag Is QLInfo AndAlso
-                                                      (QLFilter.Contains(IO.Path.GetExtension(CType(it.Tag, QLInfo).path)) OrElse
-                                                      (Not My.Settings.QLResolveLnk OrElse Not String.IsNullOrEmpty(CType(it.Tag, QLInfo).target)))
-                      End Function).ToList()
-
+        Dim subitems As List(Of ToolStripMenuItem) = executableItems(DirectCast(sender.Parent.Tag, ToolStripMenuItem).DropDownItems.OfType(Of ToolStripMenuItem)).ToList
 
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
@@ -1953,6 +1946,27 @@ Partial Public NotInheritable Class FrmMain
     Dim QlCtxNewMenu As New MenuItem
     Dim QlCtxMenu As New ContextMenu
 
+    Private Function executableItems(col As IEnumerable(Of ToolStripMenuItem)) As List(Of ToolStripMenuItem)
+        Dim items As New List(Of ToolStripMenuItem)
+        For Each it As ToolStripItem In col.Where(Function(itm) itm.Visible AndAlso TypeOf itm.Tag Is QLInfo)
+            Dim qli As QLInfo = CType(it.Tag, QLInfo)
+            If QLFilter.Contains(IO.Path.GetExtension(qli.path)) Then
+                If My.Settings.QLResolveLnk AndAlso qli.path.ToLower.EndsWith(".lnk") AndAlso qli.pointsToDir Then
+
+                Else
+                    items.Add(it)
+                End If
+            End If
+        Next
+#If DEBUG Then
+        For Each it In items
+            Dim qli = CType(it.Tag, QLInfo)
+            Debug.Print($"{it.Text} {qli.pointsToDir} ""{qli.target}""")
+        Next
+#End If
+        Return items
+    End Function
+
     Private Sub QL_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs) 'Handles cmsQuickLaunch.mousedown
         Dim qli As QLInfo = CType(sender.Tag, QLInfo)
         If e.Button = MouseButtons.Right Then
@@ -1977,19 +1991,19 @@ Partial Public NotInheritable Class FrmMain
             Dim copyItem = New MenuItem("Copy", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "Copy"}}
             Dim pasteItem = New MenuItem("Paste", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "Paste"}}
             Dim pasteLinkItem = New MenuItem("Paste Shortcut", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "PasteLink"}}
+
+            Dim executableSubItems = executableItems(sender.DropDownItems.OfType(Of ToolStripMenuItem))
+            Dim openallTag As New MenuTag
+            openallTag.tooltip = String.Join(vbCrLf, executableSubItems.Take(10).Select(Of String)(Function(it) CType(it.Tag, QLInfo).name))
+            If executableSubItems.Count > 10 Then openallTag.tooltip &= $"{vbCrLf}<And {executableSubItems.Count - 10} More>"
+
 #If Not DEBUG Then
             QlCtxMenu = New ContextMenu({
             OpenItem,
-                New MenuItem($"Open All{vbTab}-->", AddressOf QlCtxOpenAll) With {
-            .Visible = (path.EndsWith("\") OrElse (My.Settings.QLResolveLnk AndAlso path.ToLower.EndsWith(".lnk"))) AndAlso
-            sender.DropDownItems.OfType(Of ToolStripMenuItem) _
-            .Any(Function(it)
-            Return it.Visible AndAlso TypeOf it.Tag Is QLInfo AndAlso
-                                             (QLFilter.Contains(IO.Path.GetExtension(CType(it.Tag, QLInfo).path)) OrElse
-                                             (Not My.Settings.QLResolveLnk OrElse Not String.IsNullOrEmpty(CType(it.Tag, QLInfo).target)))
-            End Function),
-            .Tag = sender
-                                },
+                New MenuItem($"Open All ({executableSubItems.Count}){vbTab}-->", AddressOf QlCtxOpenAll) With {
+                            .Visible = (path.EndsWith("\") OrElse (My.Settings.QLResolveLnk AndAlso path.ToLower.EndsWith(".lnk"))) AndAlso
+                                        executableSubItems.Count > 0,
+                            .Tag = openallTag},
                 New MenuItem("-"),
             cutItem, copyItem, pasteItem, pasteLinkItem,
                 New MenuItem("-"),
@@ -2002,16 +2016,10 @@ Partial Public NotInheritable Class FrmMain
 #Else
             QlCtxMenu = New ContextMenu({
             OpenItem,
-                New MenuItem($"Open All{vbTab}-->", AddressOf QlCtxOpenAll) With {
+                New MenuItem($"Open All ({executableSubItems.Count}){vbTab}-->", AddressOf QlCtxOpenAll) With {
                             .Visible = (path.EndsWith("\") OrElse (My.Settings.QLResolveLnk AndAlso path.ToLower.EndsWith(".lnk"))) AndAlso
-                                        sender.DropDownItems.OfType(Of ToolStripMenuItem) _
-                                                            .Any(Function(it)
-                                                                     Return it.Visible AndAlso TypeOf it.Tag Is QLInfo AndAlso
-                                                                            (QLFilter.Contains(IO.Path.GetExtension(CType(it.Tag, QLInfo).path)) OrElse
-                                                                            (Not My.Settings.QLResolveLnk OrElse Not String.IsNullOrEmpty(CType(it.Tag, QLInfo).target)))
-                                                                 End Function),
-                                            .Tag = sender
-                                },
+                                        executableSubItems.Count > 0,
+                            .Tag = openallTag},
                 New MenuItem("-"),
             cutItem, copyItem, pasteItem, pasteLinkItem,
                 New MenuItem("-"),
