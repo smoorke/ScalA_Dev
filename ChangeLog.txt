@@ -1,3 +1,9 @@
+**ScalA 1.8.0**
+- Fixed a thread starvation issue causing ScalA to become unresponsive.
+- Added Count and Tooltip to `Open All` QL ContextMenuItem.
+- Improved Cursor Responsiveness.
+
+
 **ScalA 1.7.9**
 
 __Bugfixes__
