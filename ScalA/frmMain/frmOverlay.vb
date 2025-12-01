@@ -42,6 +42,13 @@ Public Class frmOverlay
         MyBase.WndProc(m)
     End Sub
 
+    Protected Overrides ReadOnly Property CreateParams As CreateParams
+        Get
+            Dim p = MyBase.CreateParams
+            p.ExStyle = p.ExStyle Or WindowStylesEx.WS_EX_NOACTIVATE
+            Return p
+        End Get
+    End Property
 
     Private Async Sub pbRestart_Click(sender As PictureBox, e As MouseEventArgs) Handles pbRestart.MouseClick
         If e.Button <> MouseButtons.Left Then
