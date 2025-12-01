@@ -799,7 +799,7 @@ Partial Public NotInheritable Class FrmMain
                                  Dim dispname As String = System.IO.Path.GetFileName(fulldirs)
 
                                  Dim qli As New QLInfo With {.path = fulldirs & "\", .hidden = hidden, .name = dispname}
-                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname, "*Hidden*"), folderIcon) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
+                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), folderIcon) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
 
                                  Me.BeginInvoke(Sub()
                                                     smenu.DropDownItems.Add("(Dummy)").Enabled = False
@@ -867,7 +867,7 @@ Partial Public NotInheritable Class FrmMain
                                              'Dim hid As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
                                              Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
                                              qli.name = dispname
-                                             Dim smenu As New ToolStripMenuItem(If(vis, dispname, "*Hidden*"), folderIconWithOverlay) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
+                                             Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), folderIconWithOverlay) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
 
                                              Me.BeginInvoke(Sub()
 
@@ -901,7 +901,7 @@ Partial Public NotInheritable Class FrmMain
 
                                  qli.name = linkName
 
-                                 Dim item As New ToolStripMenuItem(If(vis, linkName, "*Hidden*")) With {.Tag = qli, .Visible = vis}
+                                 Dim item As New ToolStripMenuItem(If(vis, linkName.Replace("&", "&&"), "*Hidden*")) With {.Tag = qli, .Visible = vis}
                                  Me.BeginInvoke(Sub()
                                                     AddHandler item.MouseDown, AddressOf QL_MouseDown
                                                     'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
@@ -1128,7 +1128,7 @@ Partial Public NotInheritable Class FrmMain
                             Sub(it)
                                 Me.Invoke(Sub()
                                               If it.Text = "*Hidden*" AndAlso TypeOf it.Tag Is QLInfo Then
-                                                  it.Text = CType(it.Tag, QLInfo).name
+                                                  it.Text = CType(it.Tag, QLInfo).name.Replace("&", "&&")
                                                   hasHidden = True
                                               End If
                                               If it.Text <> "(Emtpy)" Then
@@ -1699,8 +1699,9 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub QlCtxRename(sender As MenuItem, e As EventArgs)
-        Dim Path As String = CType(sender.Parent.Tag.Tag, QLInfo).path
-        Dim Name As String = sender.Parent.Tag.text
+        Dim qli = CType(sender.Parent.Tag.Tag, QLInfo)
+        Dim Path As String = qli.path
+        Dim Name As String = qli.name
 
         dBug.Print($"QlCtxRename {Path} {Name}")
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
@@ -1850,7 +1851,6 @@ Partial Public NotInheritable Class FrmMain
             Dim eboxHandle = eBox.Handle
             If ttCloseTask Is Nothing Then
                 ttCloseTask = Task.Run(Sub()
-                                           Dim buttondown As Boolean = False
                                            Do
                                                Threading.Thread.Sleep(33)
                                                Debug.Print($"{GetAsyncKeyState(&H1)}")
@@ -1866,7 +1866,7 @@ Partial Public NotInheritable Class FrmMain
                                                          If Not eBox?.IsDisposed Then tt.Hide(eBox)
                                                      End Sub)
                                            ttCloseTask = Nothing
-                                           swAutoClose.Reset()
+                                           ttCloseSw.Reset()
                                        End Sub)
             End If
         Else
@@ -2132,7 +2132,7 @@ Partial Public NotInheritable Class FrmMain
                 pasteLinkItem.Visible = False
             End If
 
-            Dim name As String = sender.Text
+            Dim name As String = qli.name
 
             QlCtxMenu.Tag = sender
 
@@ -2160,7 +2160,7 @@ Partial Public NotInheritable Class FrmMain
             End If
 
             'ModifyMenuW(QlCtxMenu.Handle, 0, MF_BYPOSITION, GetMenuItemID(QlCtxMenu.Handle, 0), $"{name.CapWithEllipsis(25)}")
-            OpenItem.Text = name.CapWithEllipsis(25)
+            OpenItem.Text = name.Replace("&", "&&").CapWithEllipsis(25)
 
             If name.Length > 25 Then
                 OpenItem.Tag = New MenuTag With {.tooltip = name}
@@ -2417,7 +2417,7 @@ Partial Public NotInheritable Class FrmMain
                          Dim watch As Stopwatch = Stopwatch.StartNew()
                          'Dim WindowName As String = pth.ToLower.Substring(pth.LastIndexOf("\") + 1).Replace(".url", "").Replace(".lnk", "") ' & " Properties"
                          Dim itemName As String = IO.Path.GetFileName(pth)
-                         If {".url", ".lnk"}.Contains(IO.Path.GetExtension(itemName.ToLower)) Then itemName = IO.Path.GetFileNameWithoutExtension(itemName)
+                         If hideExt.Contains(IO.Path.GetExtension(itemName).ToLower) Then itemName = IO.Path.GetFileNameWithoutExtension(itemName)
 
                          Dim wn1 As String = itemName & " "
                          Dim wn2 As String = " " & itemName
