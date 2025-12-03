@@ -1,11 +1,14 @@
+**ScalA 1.8.1**
+- QL now correctly handles items with `&` in their name
+- Fixed an issue where adding shortcuts to a client woud fail.
+- Fixed `Open All` could report an incorrect number of openable links.
+
 **ScalA 1.8.0**
 - Fixed a thread starvation issue causing ScalA to become unresponsive.
 - Added Count and Tooltip to `Open All` QL ContextMenuItem.
 - Improved Cursor Responsiveness.
 
-
 **ScalA 1.7.9**
-
 __Bugfixes__
 - Really fixed silent crash on Cut/Copy.
 -# Had to resort to disabling Clipboard persistence tho.
@@ -17,7 +20,6 @@ __Bugfixes__
 - Fixed a thread starvation issue on Overview.
 - Reduced a handle leak in QL.
 - Reverted the Activate on Hover back to using xmb only.
-
 __New/Changed__
 - Added Icons and Tooltips when there is an error in opening a QL folder.
 - Added a Tooltip to the `(Empty)` item denoting if there are hidden files and some additional info.
