@@ -1952,15 +1952,18 @@ Partial Public NotInheritable Class FrmMain
 
     Private Function executableItems(col As IEnumerable(Of ToolStripMenuItem)) As List(Of ToolStripMenuItem)
         Dim items As New List(Of ToolStripMenuItem)
-        For Each it As ToolStripItem In col.Where(Function(itm) itm.Visible AndAlso TypeOf itm.Tag Is QLInfo)
+        For Each it As ToolStripMenuItem In col.Where(Function(itm) itm.Visible AndAlso TypeOf itm.Tag Is QLInfo)
             Dim qli As QLInfo = CType(it.Tag, QLInfo)
-            If QLFilter.Contains(IO.Path.GetExtension(qli.path)) Then
-                If My.Settings.QLResolveLnk AndAlso qli.path.ToLower.EndsWith(".lnk") AndAlso qli.pointsToDir Then
-
-                Else
-                    items.Add(it)
-                End If
+            If it.Visible AndAlso Not it.HasDropDown Then
+                items.Add(it)
             End If
+            'If QLFilter.Contains(IO.Path.GetExtension(qli.path)) Then
+            '    If My.Settings.QLResolveLnk AndAlso qli.path.ToLower.EndsWith(".lnk") AndAlso qli.pointsToDir Then
+
+            '    Else
+            '        items.Add(it)
+            '    End If
+            'End If
         Next
 #If DEBUG Then
         For Each it In items
