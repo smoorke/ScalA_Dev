@@ -1064,7 +1064,7 @@ Partial Public NotInheritable Class FrmMain
                 Dim fname As String = findData.cFileName
                 If fname <> "." AndAlso fname <> ".." Then
 
-                    Dim isDir As Boolean = (findData.dwFileAttributes And FILE_ATTRIBUTE_DIRECTORY) <> 0
+                    Dim isDir As Boolean = findData.dwFileAttributes.HasFlag(IO.FileAttributes.Directory) ' (findData.dwFileAttributes And FILE_ATTRIBUTE_DIRECTORY) <> 0
                     If dirs = isDir Then
                         'Debug.Print($"finddata ""{findData.cFileName}""")
                         Yield findData
@@ -1356,7 +1356,7 @@ Partial Public NotInheritable Class FrmMain
         dBug.Print($"CreateShortCut")
         dBug.Print($"sender.text {sender.Text}")
 
-        If e.Button <> MouseButtons.Left Then
+        If e IsNot Nothing AndAlso e.Button <> MouseButtons.Left Then
             Exit Sub
         End If
 
@@ -1452,11 +1452,15 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
+    Private Sub QlCtxAddAll(sender As Object, e As EventArgs)
+        AddAllShortcuts(sender, Nothing)
+    End Sub
+
     Private Sub AddAllShortcuts(sender As Object, e As MouseEventArgs)
         dBug.Print($"Add All ShortCuts")
         dBug.Print($"sender.tag {sender.tag}")
 
-        If e.Button <> MouseButtons.Left Then
+        If e IsNot Nothing AndAlso e.Button <> MouseButtons.Left Then
             Exit Sub
         End If
 
@@ -2154,7 +2158,7 @@ Partial Public NotInheritable Class FrmMain
                 QlCtxNewMenu.MenuItems.Add(New MenuItem("(None)") With {.Enabled = False})
             ElseIf aplist.Count >= 2 Then
                 QlCtxNewMenu.MenuItems.Add(New MenuItem("-"))
-                Dim AddAllItem = New MenuItem("Add All", AddressOf AddAllShortcuts) With {.Tag = path}
+                Dim AddAllItem = New MenuItem("Add All", AddressOf QlCtxAddAll) With {.Tag = path}
                 QlCtxNewMenu.MenuItems.Add(AddAllItem)
                 SetMenuItemBitmaps(QlCtxNewMenu.Handle, aplist.Count + 3, MF_BYPOSITION, plusHbm, Nothing)
             End If
