@@ -1240,8 +1240,8 @@ Partial Public NotInheritable Class FrmMain
         Else
             Dim dirname As String = IO.Path.GetDirectoryName(target.TrimEnd("\"c))
             Debug.Print($"dir missing {dirname}")
-            Dim name = "'"c & target.Replace(dirname, "").Trim("\"c) & "'"
-            sender.DropDownItems.Add(New ToolStripMenuItem("<Error>", My.Resources.Warning) With {.Enabled = False, .ToolTipText = name & vbCrLf & "Target Directory Missing"})
+            Dim name = target.Replace(dirname, "").Trim("\"c)
+            sender.DropDownItems.Add(New ToolStripMenuItem("<Error>", My.Resources.Warning) With {.Enabled = False, .ToolTipText = $"'{name}'{vbCrLf}Target Directory Missing"})
         End If
 
     End Sub
