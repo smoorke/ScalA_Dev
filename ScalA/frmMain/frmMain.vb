@@ -1792,7 +1792,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
     Private Sub CloseErrorDialogLoop()
         While True
-            Threading.Thread.Sleep(42)
+            Threading.Thread.Sleep(420)
             CloseErrorDialog()
         End While
     End Sub
