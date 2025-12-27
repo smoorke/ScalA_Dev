@@ -1,5 +1,5 @@
 **ScalA 1.8.1**
-- QL now correctly handles items with `&` in their name
+- QL now correctly handles items with `&` in their name.
 - Fixed an issue where adding shortcuts to a client woud fail.
 - Fixed `Open All` could report an incorrect number of openable links.
 
