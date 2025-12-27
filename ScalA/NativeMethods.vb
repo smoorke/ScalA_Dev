@@ -772,6 +772,12 @@ Module NativeMethods
     Public Function GetForegroundWindow() As IntPtr : End Function
     <DllImport("user32.dll")>
     Public Function GetWindowThreadProcessId(ByVal hWnd As IntPtr, <Out()> ByRef lpdwProcessId As UInteger) As UInteger : End Function
+    <DllImport("kernel32.dll", SetLastError:=True)>
+    Public Function GetProcessIdOfThread(hThread As IntPtr) As UInteger : End Function
+    <DllImport("kernel32.dll", SetLastError:=True)>
+    Public Function OpenThread(dwDesiredAccess As UInteger, bInheritHandle As Boolean, dwThreadId As UInteger) As IntPtr : End Function
+
+    Public Const THREAD_QUERY_LIMITED_INFORMATION As UInteger = &H800UI
 
 
     Public Const DWMWA_FORCE_ICONIC_REPRESENTATION As Integer = 7
@@ -1337,10 +1343,14 @@ Module NativeMethods
     <DllImport("kernel32.dll", SetLastError:=True)>
     Public Function FindClose(hFindFile As IntPtr) As Boolean
     End Function
-
+    <StructLayout(LayoutKind.Sequential)>
+    Public Structure TPMPARAMS
+        Public cbSize As Integer
+        Public rcExclude As RECT
+    End Structure
 
     <DllImport("User32.Dll")>
-    Public Function TrackPopupMenuEx(ByVal hmenu As IntPtr, ByVal fuFlags As UInteger, ByVal x As Integer, ByVal y As Integer, ByVal hwnd As IntPtr, ByVal lptpm As Integer) As Integer : End Function
+    Public Function TrackPopupMenuEx(ByVal hmenu As IntPtr, ByVal fuFlags As UInteger, ByVal x As Integer, ByVal y As Integer, ByVal hwnd As IntPtr, ByRef lptpm As TPMPARAMS) As Integer : End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>
     Public Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByVal lParam As IntPtr) As IntPtr : End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
@@ -1376,6 +1386,52 @@ Module NativeMethods
               ByVal wFlags As UInteger
         ) As Integer
     End Function
+
+    <DllImport("kernel32.dll", CharSet:=CharSet.Unicode, SetLastError:=True)>
+    Public Function CreateFile(
+    lpFileName As String,
+    dwDesiredAccess As UInteger,
+    dwShareMode As UInteger,
+    lpSecurityAttributes As IntPtr,
+    dwCreationDisposition As UInteger,
+    dwFlagsAndAttributes As UInteger,
+    hTemplateFile As IntPtr) As IntPtr
+    End Function
+
+    <DllImport("kernel32.dll", SetLastError:=True)>
+    Public Function DeviceIoControl(
+    hDevice As IntPtr,
+    dwIoControlCode As UInteger,
+    lpInBuffer As IntPtr,
+    nInBufferSize As Integer,
+    lpOutBuffer As IntPtr,
+    nOutBufferSize As Integer,
+    ByRef lpBytesReturned As UInteger,
+    lpOverlapped As IntPtr) As Boolean
+    End Function
+
+    Public Const IOCTL_STORAGE_QUERY_PROPERTY As UInteger = &H2D1400
+    Public Const FILE_SHARE_READ As UInteger = &H1
+    Public Const FILE_SHARE_WRITE As UInteger = &H2
+    Public Const OPEN_EXISTING As UInteger = 3
+
+    Public Const GENERIC_READ As UInteger = &H80000000UI
+
+    <StructLayout(LayoutKind.Sequential)>
+    Public Structure STORAGE_PROPERTY_QUERY
+        Public PropertyId As Integer
+        Public QueryType As Integer
+        <MarshalAs(UnmanagedType.ByValArray, SizeConst:=1)>
+        Public AdditionalParameters As Byte()
+    End Structure
+
+    <StructLayout(LayoutKind.Sequential)>
+    Public Structure DEVICE_SEEK_PENALTY_DESCRIPTOR
+        Public Version As UInteger
+        Public Size As UInteger
+        <MarshalAs(UnmanagedType.Bool)>
+        Public IncursSeekPenalty As Boolean
+    End Structure
 
     Public Const MAPVK_VK_TO_CHAR As UInteger = 2
 

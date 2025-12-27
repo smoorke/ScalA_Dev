@@ -538,6 +538,33 @@ Partial NotInheritable Class FrmMain
                 dBug.Print("WM_NCACTIVATE")
                 setActive(True)
                 Me.Refresh()
+            Case WM_ACTIVATEAPP
+                Debug.Print($"WM_ACTIVATEAPP {m.WParam} {m.LParam} satid:{ScalaThreadId}")
+                Dim tid = m.LParam
+                Dim hThread As IntPtr = OpenThread(THREAD_QUERY_LIMITED_INFORMATION, False, tid)
+                Try
+
+                    Dim pid As Integer = GetProcessIdOfThread(hThread)
+
+                    If pid = scalaPID Then
+                        Debug.Print($"pid is ScalA")
+                        EnumWindows(Function(h, l)
+                                        'If Not IsWindowVisible(h) Then Return True
+                                        If tid = GetWindowThreadProcessId(h, Nothing) Then
+                                            Debug.Print($"window found: ""{GetWindowClass(h)}"" ""{GetWindowText(h)}""")
+                                            Return False
+                                        End If
+                                        Return True
+                                    End Function, IntPtr.Zero)
+                    End If
+
+                    Dim proc As Process = Process.GetProcessById(pid)
+                    Debug.Print($"proc.ProcessName {pid} {proc.ProcessName}")
+                Catch ex As Exception
+                    Debug.Print($"WM_ACTIVATEAPP {ex.Message}")
+                Finally
+                    CloseHandle(hThread)
+                End Try
 #If DEBUG Then
 
             'Case &H6 ' WM_ACTIVATE
@@ -551,7 +578,7 @@ Partial NotInheritable Class FrmMain
 
 
 
-            'Case &H1C ' WM_ACTIVATEAPP 
+
 
             Case &H20 '	WM_SETCURSOR
             'Case &H21 ' WM_MOUSEACTIVATE

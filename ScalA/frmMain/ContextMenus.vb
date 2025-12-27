@@ -1163,24 +1163,6 @@ Partial Public NotInheritable Class FrmMain
                  End Sub)
     End Sub
 
-    Private Sub CmsQuickLaunch_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs) Handles cmsQuickLaunch.Closing ', item.DropDownClosing
-
-        'For Each it As ToolStripMenuItem In CType(sender.items, ToolStripItemCollection).Cast(Of ToolStripItem).Where(Function(mi) TypeOf mi.Tag Is QLInfo)
-        '    Dim qli As QLInfo = it.Tag
-        '    If qli.invalidTarget Then
-        '        'EvictIconCacheItem(qli.path)
-        '    End If
-        'Next
-
-
-        If My.Computer.Keyboard.CtrlKeyDown AndAlso
-                (e.CloseReason = ToolStripDropDownCloseReason.ItemClicked OrElse e.CloseReason = ToolStripDropDownCloseReason.AppFocusChange) Then
-            e.Cancel = True
-            Return
-        End If
-        cts?.Cancel()
-    End Sub
-
     Private Sub DeferredIconLoading(Dirs As IEnumerable(Of ToolStripItem), Files As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
         Task.Run(Sub()
                      Try
@@ -1641,6 +1623,9 @@ Partial Public NotInheritable Class FrmMain
         ctrlshift_pressed = False
         'sender.Items.Clear() 'this couses menu to stutter opening
         dBug.Print($"QL closed reason: {e.CloseReason} {caption_Mousedown}")
+#If DEBUG Then
+        'If dBug.pasting Then Debugger.Break()
+#End If
 
         'If cboAlt.SelectedIndex > 0 Then
         '    If (AltPP?.IsActive OrElse GetActiveProcessID() = scalaPID) AndAlso e.CloseReason <> ToolStripDropDownCloseReason.AppClicked Then
@@ -2262,6 +2247,16 @@ Partial Public NotInheritable Class FrmMain
             dBug.Print($"clicked Not a dir {My.Settings.QLResolveLnk} {CType(sender.Tag, QLInfo).target}")
             Task.Run(Sub() OpenLnk(sender, e))
             'cmsQuickLaunch.Close(ToolStripDropDownCloseReason.ItemClicked)
+#If DEBUG Then
+            If Not Debugger.IsAttached AndAlso chkDebug.Checked Then
+                dBug.Print("Exception Thrown")
+                Throw New Exception 'todo find out why this exception autocloses/gets hidden? when debugger not attached.
+            End If
+
+            ' not in OpenLnk
+            ' not closerrordialog
+            ' not WM_CANCELMODE
+#End If
         End If
     End Sub
 
@@ -2307,6 +2302,7 @@ Partial Public NotInheritable Class FrmMain
         dBug.Print($"Clipaction {act} ""{tgt}""")
         InvokeExplorerVerb(tgt, act, ScalaHandle)
         If act.StartsWith("Paste") Then
+
         Else
 
             'SetFileDropListWithEffect(tgt.TrimEnd("\"c), act = "Cut") 'this is brokne. leads to silent crash
@@ -2636,7 +2632,7 @@ Partial Public NotInheritable Class FrmMain
 
                                              If ProcessPath(ownId).ToLowerInvariant() = explorerPath AndAlso GetWindowClass(owner) = "CabinetWClass" Then
                                                  If GetWindowClass(FindWindowEx(owner, IntPtr.Zero, Nothing, Nothing)) = "ShellTabWindowClass" Then
-                                                     Debug.Print($"Hidelist add: {GetWindowText(owner)}")
+                                                     dBug.Print($"Hidelist add: ""{GetWindowText(owner)}""")
                                                      HideList.Add(owner)
                                                      hwndList.Add(hwnd)
                                                      centList.Add(hwnd)

@@ -22,6 +22,49 @@ Module Globals
         End If
     End Sub
 
+
+    Public Function DriveIncursSeekPenalty(driveLetter As Char) As Boolean
+        Dim handle As IntPtr = CreateFile(
+        "\\.\" & driveLetter & ":",
+        GENERIC_READ,
+        FILE_SHARE_READ Or FILE_SHARE_WRITE,
+        IntPtr.Zero,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        IntPtr.Zero)
+
+        If handle = IntPtr.Zero Then Return False
+
+        Dim query As New STORAGE_PROPERTY_QUERY With {
+        .PropertyId = 7, ' StorageDeviceSeekPenaltyProperty
+        .QueryType = 0,
+        .AdditionalParameters = New Byte(0) {}
+    }
+
+        Dim outDesc As New DEVICE_SEEK_PENALTY_DESCRIPTOR()
+        Dim bytesReturned As UInteger
+        Dim size As Integer = Marshal.SizeOf(outDesc)
+        Dim pQuery As IntPtr = Marshal.AllocHGlobal(Marshal.SizeOf(query))
+        Marshal.StructureToPtr(query, pQuery, False)
+        Dim pOut As IntPtr = Marshal.AllocHGlobal(size)
+
+        Dim ok As Boolean = DeviceIoControl(handle, IOCTL_STORAGE_QUERY_PROPERTY, pQuery,
+        Marshal.SizeOf(query), pOut, size, bytesReturned, IntPtr.Zero)
+
+        If Not ok Then
+            CloseHandle(handle)
+            Marshal.FreeHGlobal(pQuery)
+            Marshal.FreeHGlobal(pOut)
+            Return False
+        End If
+
+        outDesc = CType(Marshal.PtrToStructure(pOut, GetType(DEVICE_SEEK_PENALTY_DESCRIPTOR)), DEVICE_SEEK_PENALTY_DESCRIPTOR)
+        CloseHandle(handle)
+        Marshal.FreeHGlobal(pQuery)
+        Marshal.FreeHGlobal(pOut)
+        Return outDesc.IncursSeekPenalty
+    End Function
+
     Public Function CallAsTaskWithTimeout(Of T, R)(fun As Func(Of T, R), arg As T, timeout As Integer, Optional FailVal As R = Nothing) As R
         Dim tsk As Task(Of R) = Task.Run(Function()
                                              Try

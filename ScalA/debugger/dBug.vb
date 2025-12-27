@@ -212,6 +212,8 @@ Module dBug
     End Sub
 
     Private lastlog As String = ""
+    Friend pasting As Boolean
+
     Friend Sub log(msg As String, Optional loglevel As Integer = 0)
         If lastlog <> msg Then
             dBug.Print(msg, loglevel)
@@ -221,20 +223,21 @@ Module dBug
 
 
     Friend Sub dumpItemInfo(sender As MenuItem, e As EventArgs)
-        Debug.Print($"dumpItemInfo {sender.Parent.Tag}")
-        Debug.Print($"{sender.Parent.Tag.tag.GetType}")
+        dBug.Print($"dumpItemInfo {sender.Parent.Tag}")
+        dBug.Print($"{sender.Parent.Tag.tag.GetType}")
         Dim qli As QLInfo = sender.Parent.Tag.Tag
-        Debug.Print(qli.path)
-        Debug.Print(qli.target)
-        Debug.Print(qli.pointsToDir)
-        Debug.Print(qli.name)
+        dBug.Print(qli.path)
+        dBug.Print(qli.target)
+        dBug.Print(qli.pointsToDir)
+        dBug.Print(qli.name)
         Dim sli As New ShellLinkInfo(qli.path)
+        dBug.Print(sli.IconPath)
+        dBug.Print(sli.TargetPath)
 
-
-        Debug.Print(New System.IO.FileInfo(qli.target).Attributes.HasFlag(IO.FileAttributes.Directory))
+        'Debug.Print(New System.IO.FileInfo(qli.target).Attributes.HasFlag(IO.FileAttributes.Directory))
 
         'CType(sender.Parent.Tag, ToolStripMenuItem).Image.Save("F:\icon.png", ImageFormat.Png)
-        Debug.Print("------------")
+        dBug.Print("------------")
     End Sub
 
 #If 0 Then

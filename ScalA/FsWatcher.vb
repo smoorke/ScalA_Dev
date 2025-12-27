@@ -391,6 +391,9 @@ Module FsWatcher
             If hideExt.Contains(System.IO.Path.GetExtension(e.FullPath).ToLower) Then
                 iconCache.TryRemove(e.FullPath, Nothing)
             End If
+#If DEBUG Then
+            dBug.pasting = False
+#End If
         End If
     End Sub
 
