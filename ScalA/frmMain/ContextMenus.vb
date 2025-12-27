@@ -1614,6 +1614,58 @@ Partial Public NotInheritable Class FrmMain
 
     Dim cts As New Threading.CancellationTokenSource
     Dim cantok As Threading.CancellationToken = cts.Token
+
+
+    Private Sub CmsQuickLaunch_Closing(sender As Object, e As ToolStripDropDownClosingEventArgs) Handles cmsQuickLaunch.Closing ', item.DropDownClosing
+
+        'For Each it As ToolStripMenuItem In CType(sender.items, ToolStripItemCollection).Cast(Of ToolStripItem).Where(Function(mi) TypeOf mi.Tag Is QLInfo)
+        '    Dim qli As QLInfo = it.Tag
+        '    If qli.invalidTarget Then
+        '        'EvictIconCacheItem(qli.path)
+        '    End If
+        'Next
+#If DEBUG Then
+        If dBug.pasting AndAlso e.CloseReason = ToolStripDropDownCloseReason.AppFocusChange Then
+            Try
+
+                Dim fgw = GetForegroundWindow()
+                Dim id As Integer
+                GetWindowThreadProcessId(fgw, id)
+                Dim name As String = Process.GetProcessById(id).ProcessName
+                dBug.Print($"pasting closes menu due to activation of {name} {GetWindowClass(fgw)} {GetWindowText(fgw)}")
+                If id = scalaPID AndAlso "OperationStatusWindow" = GetWindowClass(fgw) AndAlso "Progress" = GetWindowText(fgw) Then
+                    e.Cancel = True
+                    Task.Run(Sub()
+                                 Threading.Thread.Sleep(25)
+                                 'SetForegroundWindow(ScalaHandle)
+                             End Sub)
+                    'Task.Run(Sub()
+                    '             Me.Invoke(Sub()
+                    '                           sender.close()
+                    '                           dBug.Print("bleep")
+                    '                           'Threading.Thread.Sleep(100)
+                    '                           ParseSubDir(sender.owneritem, EventArgs.Empty)
+                    '                           sender.Show()
+                    '                       End Sub)
+                    '         End Sub)
+                    Return
+                End If
+            Catch ex As Exception
+
+            End Try
+        End If
+#End If
+
+        If My.Computer.Keyboard.CtrlKeyDown AndAlso
+                (e.CloseReason = ToolStripDropDownCloseReason.ItemClicked OrElse e.CloseReason = ToolStripDropDownCloseReason.AppFocusChange) Then
+            e.Cancel = True
+            Return
+        End If
+        cts?.Cancel()
+    End Sub
+
+
+
     Private Sub CmsQuickLaunch_Closed(sender As ContextMenuStrip, e As ToolStripDropDownClosedEventArgs) Handles cmsQuickLaunch.Closed
 
 
