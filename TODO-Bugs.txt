@@ -20,7 +20,7 @@
 - [x] Add confirmation dialog on pasting folders
 - [x] Handle QL dropdown overflow for large folders (implemented - scroll arrows)
 - [x] Determine drive type of QL folders and set maxdegree appropriately
-- [ ] Add installer wizard for sdl2-compat
+- [x] Add installer wizard for sdl2-compat (implemented - Settings > Misc tab)
 - [x] Fix QL not closing on paste (fixed - added force close flag)
 - [x] Rename dialog: select to last dot only (exclude folders/lnk/url)
 - [x] Show confirmation on renaming extension
