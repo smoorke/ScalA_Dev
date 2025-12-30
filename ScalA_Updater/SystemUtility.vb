@@ -2,7 +2,7 @@
 ''' <summary>
 ''' Utility for accessing window IShell* interfaces in order to use them to launch a process unelevated
 ''' </summary>
-Public Module SystemUtitlity
+Public Module SystemUtility
     ''' <summary>
     ''' We are elevated And should launch the process unelevated. We can't create the
     ''' process directly without it becoming elevated. So to workaround this, we have

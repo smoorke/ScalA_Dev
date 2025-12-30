@@ -176,11 +176,17 @@
     <Compile Include="ScreenManager.vb" />
     <Compile Include="Settings.vb" />
     <Compile Include="ShellLinkInfo.vb" />
-    <Compile Include="SystemUtitlity.vb" />
+    <Compile Include="SystemUtility.vb" />
     <Compile Include="UpdateDialog.Designer.vb">
       <DependentUpon>UpdateDialog.vb</DependentUpon>
     </Compile>
     <Compile Include="UpdateDialog.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SDL2CompatInstaller.Designer.vb">
+      <DependentUpon>SDL2CompatInstaller.vb</DependentUpon>
+    </Compile>
+    <Compile Include="SDL2CompatInstaller.vb">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>

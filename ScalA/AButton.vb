@@ -25,14 +25,14 @@ Public NotInheritable Class AButton
         Me.TextAlign = ContentAlignment.TopCenter
         Me.Font = NormalFont
         Me.Visible = False
-        Me.BackColor = If(My.Settings.DarkMode, Color.DarkGray, Color.FromArgb(&HFFE1E1E1))
+        Me.BackColor = If(My.Settings.DarkMode, Color.DarkGray, COLOR_LIGHT_GRAY)
     End Sub
 
     Public Shared NormalFont As Font = New Font("Microsoft Sans Serif", 12, GraphicsUnit.Pixel)
     Public Shared BoldFont As Font = New Font("Microsoft Sans Serif", 13, FontStyle.Bold, GraphicsUnit.Pixel)
 
-    Public pidCache As Integer
-    Public AP As AstoniaProcess
+    Public Property PidCache As Integer
+    Public Property AP As AstoniaProcess
 
     Private _passthrough As Rectangle
     Public ReadOnly Property ThumbRectangle() As Rectangle
@@ -69,7 +69,7 @@ Public NotInheritable Class AButton
         If My.Settings.DarkMode Then
             Me.BackColor = If(Me.ContextMenuStrip?.Visible AndAlso Me.ContextMenuStrip Is FrmMain.cmsAlt, Color.FromArgb(&HFFA2A2A2), Color.DarkGray)
         Else
-            Me.BackColor = If(Me.ContextMenuStrip?.Visible AndAlso Me.ContextMenuStrip Is FrmMain.cmsAlt, Color.FromArgb(&HFFE5F1FB), Color.FromArgb(&HFFE1E1E1))
+            Me.BackColor = If(Me.ContextMenuStrip?.Visible AndAlso Me.ContextMenuStrip Is FrmMain.cmsAlt, COLOR_HIGHLIGHT_BLUE, COLOR_LIGHT_GRAY)
         End If
     End Sub
 

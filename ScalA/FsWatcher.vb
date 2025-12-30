@@ -175,8 +175,8 @@ Module FsWatcher
             Next
         End If
     End Sub
-    Public PollerThread As Thread
-    Public PollerRunning As Boolean = False
+    Public Property PollerThread As Thread
+    Public Property PollerRunning As Boolean = False
     Private ReadOnly PollerLock As New Object()
     Public Sub StartDirectoryPoller()
         SyncLock PollerLock
@@ -261,6 +261,7 @@ Module FsWatcher
             }
 
             AddHandler iniWatcher.Changed, AddressOf OnChanged
+            AddHandler iniWatcher.Error, AddressOf OnWatcherError
             iniWatcher.EnableRaisingEvents = True
 
             watchers.Add(iniWatcher)
@@ -277,6 +278,7 @@ Module FsWatcher
             AddHandler lnkWatcher.Renamed, AddressOf OnRenamed
             AddHandler lnkWatcher.Changed, AddressOf OnChanged
             AddHandler lnkWatcher.Deleted, AddressOf onDeleteFile
+            AddHandler lnkWatcher.Error, AddressOf OnWatcherError
             lnkWatcher.EnableRaisingEvents = True
 
             watchers.Add(lnkWatcher)
@@ -293,6 +295,7 @@ Module FsWatcher
             AddHandler urlWatcher.Renamed, AddressOf OnRenamed
             AddHandler urlWatcher.Changed, AddressOf OnChanged
             AddHandler urlWatcher.Deleted, AddressOf onDeleteFile
+            AddHandler urlWatcher.Error, AddressOf OnWatcherError
             urlWatcher.EnableRaisingEvents = True
 
             watchers.Add(urlWatcher)
@@ -306,6 +309,7 @@ Module FsWatcher
 
             AddHandler dirWatcher.Renamed, AddressOf OnRenamedDir
             AddHandler dirWatcher.Deleted, AddressOf OnDeleteDir
+            AddHandler dirWatcher.Error, AddressOf OnWatcherError
             dirWatcher.EnableRaisingEvents = True
 
             watchers.Add(dirWatcher)
@@ -379,6 +383,14 @@ Module FsWatcher
         Dim item As Bitmap = Nothing
         If iconCache.TryRemove(e.OldFullPath, item) Then iconCache.TryAdd(e.FullPath, item)
 
+    End Sub
+
+    Private Sub OnWatcherError(sender As Object, e As System.IO.ErrorEventArgs)
+        Dim ex As Exception = e.GetException()
+        dBug.Print($"FileSystemWatcher error: {ex.Message}")
+        If TypeOf ex Is InternalBufferOverflowException Then
+            dBug.Print("FileSystemWatcher buffer overflow - some events may have been lost")
+        End If
     End Sub
 
     Private Sub OnChanged(sender As System.IO.FileSystemWatcher, e As System.IO.FileSystemEventArgs)

@@ -109,7 +109,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Catch ex As System.ComponentModel.Win32Exception
             Try
                 proc.Kill()
-            Catch
+            Catch killEx As Exception
+                dBug.Print($"CloseOrKill Kill failed: {killEx.Message}")
             End Try
         End Try
     End Sub
@@ -150,7 +151,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                                                   SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder)
                                      If Not keep Then ap._restoreLoc = Nothing
                                  End If
-                             Catch
+                             Catch ex As Exception
+                                 dBug.Print($"RestorePos: {ex.Message}")
                              End Try
                          End Sub)
         If Not keep Then _restoreDic.Clear()
@@ -610,7 +612,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
             Try
                 Return (GetWindowLong(Me.MainWindowHandle, GWL_EXSTYLE) And WindowStylesEx.WS_EX_TOPMOST) = WindowStylesEx.WS_EX_TOPMOST
-            Catch
+            Catch ex As Exception
+                dBug.Print($"TopMost Get: {ex.Message}")
                 Return False
             End Try
         End Get
@@ -619,7 +622,8 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 SetWindowPos(Me.MainWindowHandle, If(value, SWP_HWND.TOPMOST, SWP_HWND.NOTOPMOST),
                                                   -1, -1, -1, -1,
                                                   SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
-            Catch
+            Catch ex As Exception
+                dBug.Print($"TopMost Set: {ex.Message}")
             End Try
         End Set
     End Property
@@ -869,6 +873,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             Try
                 Return GetFromCache(pid)
             Catch ex As Exception
+                dBug.Print($"GetFromHandle GetFromCache failed for pid {pid}: {ex.Message}")
             End Try
         End If
         Return Nothing
@@ -971,14 +976,14 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             Return _va
         End Get
     End Property
-    Public DpiAware As Boolean? = Nothing
+    Public Property DpiAware As Boolean? = Nothing
     Friend Property RegHighDpiAware As Boolean 'proc.MainModule.FileName has wrong path for junctioned/hardlinked/.... will GetFinalPathNameByHandle do the trick?
         Get
             If Me.DpiAware IsNot Nothing Then Return Me.DpiAware
             dBug.Print($"FinalPath ""{Me.FinalPath}""")
             Dim key As Microsoft.Win32.RegistryKey = Nothing
             Try
-                key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers")
+                key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(REGISTRY_COMPAT_LAYERS)
                 Dim value = key?.GetValue(Me.FinalPath)
                 If Me.isSDL Then
                     If value IsNot Nothing AndAlso value.contains("HIGHDPIAWARE") Then
@@ -1004,15 +1009,13 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             Return False
         End Get
         Set(value As Boolean)
-            Dim keyPath As String = "SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers"
-
             ' Open the key with write access. Create if necessary.
             Dim key As Microsoft.Win32.RegistryKey = Nothing
             Try
-                key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(keyPath, writable:=True)
+                key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(REGISTRY_COMPAT_LAYERS, writable:=True)
                 If key Is Nothing Then
                     ' The key doesn't exist, so create it
-                    key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(keyPath)
+                    key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(REGISTRY_COMPAT_LAYERS)
                 End If
 
                 ' Get the current value for this process path
@@ -1024,10 +1027,10 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                     If Not currentValue.Contains("HIGHDPIAWARE") Then
                         ' If currentValue is empty, set it to "~ HIGHDPIAWARE"
                         If String.IsNullOrEmpty(currentValue) Then
-                            currentValue = "~ HIGHDPIAWARE"
+                            currentValue = DPI_AWARE_REMOVE
                         Else
                             ' If currentValue contains other flags, append "HIGHDPIAWARE"
-                            currentValue &= " HIGHDPIAWARE"
+                            currentValue &= DPI_AWARE_FLAG
                         End If
                     End If
                 Else
@@ -1277,7 +1280,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                                  End Sub)
                     End If
                 Catch ex As Exception
-
+                    dBug.Print($"Shortcut deletion failed: {ex.Message}")
                 End Try
             End Try
             Return shortcutlink

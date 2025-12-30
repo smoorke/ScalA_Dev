@@ -35,7 +35,7 @@ Public Class KeyboardHook : Implements IDisposable
         LLKHF_UP = &H80
     End Enum
 
-    Public HookHandle As IntPtr = IntPtr.Zero
+    Public Property HookHandle As IntPtr = IntPtr.Zero
 
     Private Const WH_KEYBOARD_LL As Integer = 13
     Private Const HC_ACTION As Integer = 0

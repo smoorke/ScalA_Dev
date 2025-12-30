@@ -119,8 +119,8 @@ Module IPC
     Private SelectSema As New Semaphore(0, 1, $"ScalA_IPC_Sema_{scalaPID}")
     Private SelectDoneSema As New Semaphore(0, 1, $"ScalA_IPC_SemaDone_{scalaPID}")
 
-    Public SidebarSender As Process = Nothing
-    Public SidebarSenderhWnd As IntPtr = IntPtr.Zero
+    Public Property SidebarSender As Process = Nothing
+    Public Property SidebarSenderhWnd As IntPtr = IntPtr.Zero
 
     Public Sub SelectSemaThread(frm As FrmMain)
         While True
@@ -201,7 +201,13 @@ Module IPC
             _mmvaInstances.ReadArray(Of ScalAInfo)(4, _Instances, 0, sharednum)
 
             If p.IsScalA Then
-                Return _Instances.FirstOrDefault(Function(si) si.pid = p.Id).handle
+                Dim match = _Instances.FirstOrDefault(Function(si) si.pid = p.Id)
+                If match.pid = p.Id Then
+                    Return match.handle
+                Else
+                    dBug.Print($"GetWindowHandle: No matching ScalA instance found for pid {p.Id}")
+                    Return IntPtr.Zero
+                End If
             Else
                 Return p.MainWindowHandle
             End If
@@ -274,6 +280,9 @@ Module IPC
                 _Instances(sharednum) = New ScalAInfo(id, overview, apID, showsome)
 
                 If sharednum <> localnum Then
+                    ' Dispose old instances before reassigning to prevent memory leak
+                    _mmvaInstances?.Dispose()
+                    _mmfInstances?.Dispose()
                     _mmfInstances = MemoryMappedFile.CreateOrOpen($"ScalA_IPCInstances", 4 + Marshal.SizeOf(GetType(ScalAInfo)) * (sharednum + 1))
                     _mmvaInstances = _mmfInstances.CreateViewAccessor()
                     localnum = sharednum
@@ -301,6 +310,9 @@ Module IPC
             Dim sharednum = _mmvaInstances.ReadInt32(0)
 
             If sharednum <> localnum Then
+                ' Dispose old instances before reassigning to prevent memory leak
+                _mmvaInstances?.Dispose()
+                _mmfInstances?.Dispose()
                 _mmfInstances = MemoryMappedFile.CreateOrOpen($"ScalA_IPCInstances", 4 + Marshal.SizeOf(GetType(ScalAInfo)) * sharednum)
                 _mmvaInstances = _mmfInstances.CreateViewAccessor()
                 localnum = sharednum
@@ -354,4 +366,24 @@ Module IPC
                                             End Try
                                         End Function).Where(Function(p) p IsNot Nothing)
     End Function
+
+    ''' <summary>
+    ''' Cleans up all IPC resources. Call this on application shutdown.
+    ''' </summary>
+    Public Sub Cleanup()
+        Try
+            _mutex?.WaitOne()
+            _mmvaSI?.Dispose()
+            _mmfSI?.Dispose()
+            _mmvaIPCov?.Dispose()
+            _mmfIPCov?.Dispose()
+            _mmvaInstances?.Dispose()
+            _mmfInstances?.Dispose()
+            SelectSema?.Dispose()
+            SelectDoneSema?.Dispose()
+        Finally
+            _mutex?.ReleaseMutex()
+            _mutex?.Dispose()
+        End Try
+    End Sub
 End Module

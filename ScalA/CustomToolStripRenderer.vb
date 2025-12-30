@@ -1,4 +1,6 @@
-﻿Public NotInheritable Class CustomToolStripRenderer : Inherits ToolStripProfessionalRenderer
+﻿Public NotInheritable Class CustomToolStripRenderer
+    Inherits ToolStripProfessionalRenderer
+    Implements IDisposable
 
     Public Sub New()
         MyBase.New(New CustomColorTable())
@@ -7,12 +9,22 @@
     Public animTimer As New Timer() With {.Interval = 99}
 
     Private _menustrip As ContextMenuStrip
+    Private _disposed As Boolean = False
 
     Public Sub InitAnimationTimer(cms As ContextMenuStrip)
         _menustrip = cms
         AddHandler animTimer.Tick, AddressOf AnimTimer_Tick
         If AnimsEnabled Then
             animTimer.Start()
+        End If
+    End Sub
+
+    Public Sub Dispose() Implements IDisposable.Dispose
+        If Not _disposed Then
+            animTimer?.Stop()
+            RemoveHandler animTimer.Tick, AddressOf AnimTimer_Tick
+            animTimer?.Dispose()
+            _disposed = True
         End If
     End Sub
 

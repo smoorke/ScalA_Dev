@@ -123,13 +123,15 @@ Partial Public NotInheritable Class FrmMain
 
             'IPC.AddOrUpdateInstance(scalaPID, sender.SelectedIndex = 0, AltPP.Id)
             UpdateTitle()
+            UpdateDpiWarning()
 
             If sender.SelectedIndex = 0 Then
                 If Not My.Settings.gameOnOverview Then
                     Try
                         AllowSetForegroundWindow(ASFW_ANY)
                         AppActivate(scalaPID)
-                    Catch
+                    Catch ex As Exception
+                        dBug.Print($"Failed to activate ScalA on overview: {ex.Message}")
                     End Try
                 End If
                 'pnlOverview.SuspendLayout()
@@ -327,7 +329,7 @@ Partial Public NotInheritable Class FrmMain
         Return Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25 + If(hasBorder, 0, 25)
     End Function
 
-    Public Resizing As Boolean
+    Public Property Resizing As Boolean
 
     Private Function UpdateTitle() As Boolean
         Dim titleSuff As String = String.Empty
@@ -358,6 +360,48 @@ Partial Public NotInheritable Class FrmMain
         End With
         Return True
     End Function
+
+    ''' <summary>
+    ''' Updates DPI warning icon visibility based on client's DPI Override status.
+    ''' Shows warning when WindowsScaling != 100% and DPI Override is not enabled.
+    ''' </summary>
+    Private Sub UpdateDpiWarning()
+        If AltPP Is Nothing OrElse AltPP.Id = 0 Then
+            pbDpiWarning.Visible = False
+            Return
+        End If
+
+        ' Show warning if client is on non-100% scaled display without DPI Override
+        Dim needsWarning As Boolean = AltPP.WindowsScaling <> 100 AndAlso Not AltPP.RegHighDpiAware
+        pbDpiWarning.Visible = needsWarning
+
+        ' Position the icon right after the title text
+        If needsWarning Then
+            pbDpiWarning.Left = lblTitle.Right + 4
+        End If
+    End Sub
+
+    Private Sub PbDpiWarning_Click(sender As Object, e As MouseEventArgs) Handles pbDpiWarning.MouseUp
+        If e.Button <> MouseButtons.Left Then Exit Sub
+
+        ' Enable DPI Override for the current client
+        If AltPP IsNot Nothing AndAlso AltPP.Id <> 0 Then
+            Try
+                AltPP.RegHighDpiAware = True
+                dBug.Print($"Enabled DPI Override for {AltPP.FinalPath}")
+                UpdateDpiWarning()
+
+                ' Notify user that restart is required
+                CustomMessageBox.Show(Me, "DPI Override has been enabled." & vbCrLf & vbCrLf &
+                    "The client must be restarted for this change to take effect.",
+                    "DPI Override Enabled", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Catch ex As Exception
+                dBug.Print($"Failed to enable DPI Override: {ex.Message}")
+                CustomMessageBox.Show(Me, "Failed to enable DPI Override: " & ex.Message,
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+        End If
+    End Sub
 
     Public Shared zooms() As Size = GetResolutions()
 
@@ -423,7 +467,7 @@ Partial Public NotInheritable Class FrmMain
                 End If
             End If
         Catch ex As Exception
-
+            dBug.Print($"Failed to check .NET Framework version: {ex.Message}")
         End Try
 
         sysTrayIcon.Visible = True
@@ -776,7 +820,8 @@ Partial Public NotInheritable Class FrmMain
             Process.Start(si)
             sysTrayIcon.Visible = False
             End
-        Catch
+        Catch ex As Exception
+            dBug.Print($"Failed to start updater: {ex.Message}")
         End Try
         If cboAlt.SelectedIndex = 0 Then
             tmrOverview.Start()
@@ -789,11 +834,11 @@ Partial Public NotInheritable Class FrmMain
         My.Settings.DarkMode = darkmode
         If darkmode Then
             pnlOverview.BackColor = Color.Gray
-            pnlButtons.BackColor = Color.FromArgb(60, 63, 65)
-            pnlSys.BackColor = Color.FromArgb(60, 63, 65)
-            Me.BackColor = Color.FromArgb(60, 63, 65)
-            btnStart.BackColor = Color.FromArgb(60, 63, 65)
-            pnlTitleBar.BackColor = Color.FromArgb(60, 63, 65)
+            pnlButtons.BackColor = Colors.GreyBackground
+            pnlSys.BackColor = Colors.GreyBackground
+            Me.BackColor = Colors.GreyBackground
+            btnStart.BackColor = Colors.GreyBackground
+            pnlTitleBar.BackColor = Colors.GreyBackground
             lblTitle.ForeColor = Colors.LightText
             ChkEqLock.ForeColor = Color.Gray
 #If DEBUG Then
@@ -813,11 +858,11 @@ Partial Public NotInheritable Class FrmMain
 #End If
         End If
 
-        Dim bBc As Color = If(darkmode, Color.DarkGray, Color.FromArgb(&HFFE1E1E1))
+        Dim bBc As Color = If(darkmode, Color.DarkGray, COLOR_LIGHT_GRAY)
         Task.Run(Sub() Parallel.ForEach(pnlOverview.Controls.OfType(Of AButton), Sub(but) but.BackColor = bBc))
         PnlEqLock.BackColor = bBc
 
-        Dim bFaBc As Color = If(darkmode, Color.FromArgb(60, 63, 65), Color.FromKnownColor(KnownColor.Control))
+        Dim bFaBc As Color = If(darkmode, Colors.GreyBackground, Color.FromKnownColor(KnownColor.Control))
         For Each but As Button In pnlButtons.Controls.OfType(Of Button)
             but.FlatAppearance.BorderColor = bFaBc
         Next
@@ -1218,7 +1263,7 @@ Partial Public NotInheritable Class FrmMain
                 AppActivate(scalaPID)
             End If
         Catch ex As Exception
-
+            dBug.Print($"Failed to activate window after resize: {ex.Message}")
         End Try
     End Sub
 
@@ -1412,8 +1457,8 @@ Partial Public NotInheritable Class FrmMain
         sender.BackColor = Color.Transparent
     End Sub
     Private Sub BtnQuit_MouseDown(sender As Button, e As MouseEventArgs) Handles btnQuit.MouseDown
-        cornerNE.BackColor = Color.FromArgb(255, 102, 102)
-        sender.BackColor = Color.FromArgb(255, 102, 102)
+        cornerNE.BackColor = COLOR_CLOSE_PRESSED
+        sender.BackColor = COLOR_CLOSE_PRESSED
     End Sub
 
     Private Sub BtnQuit_Click(sender As Button, e As EventArgs) Handles btnQuit.Click
@@ -2045,7 +2090,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
     Private prevMPX As Integer
     Private Sub Caption_MouseMove(sender As Object, e As MouseEventArgs) Handles btnStart.MouseMove, cboAlt.MouseMove, cmbResolution.MouseMove,
-                                                                                 pnlTitleBar.MouseMove, lblTitle.MouseMove,
+                                                                                 pnlTitleBar.MouseMove, lblTitle.MouseMove, pbDpiWarning.MouseMove,
                                                                                  pnlUpdate.MouseMove, pbUpdateAvailable.MouseMove, ChkEqLock.MouseMove,
                                                                                  pnlSys.MouseMove, btnMin.MouseMove, btnMax.MouseMove, btnQuit.MouseMove
         If cboAlt.SelectedIndex = 0 Then Exit Sub

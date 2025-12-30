@@ -5,7 +5,7 @@ Imports System.Runtime.Serialization.Formatters.Binary
 Imports System.Text
 
 Public NotInheritable Class FrmSettings
-    Public SysMenu As New SysMenu(Me)
+    Public Property SysMenu As New SysMenu(Me)
     Dim startup As Boolean = True
     Private Shared ExplorerIcon As Bitmap = FrmMain.GetIconFromFile(IO.Path.Combine(Environment.ExpandEnvironmentVariables("%windir%"), "explorer.exe"), supressCacheMiss:=True)
     Private Sub FrmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -830,8 +830,8 @@ Public NotInheritable Class FrmSettings
 
         Try
             pp.Start()
-        Catch
-
+        Catch ex As Exception
+            dBug.Print($"Failed to open in explorer: {ex.Message}")
         End Try
     End Sub
 
@@ -1123,7 +1123,8 @@ Public NotInheritable Class FrmSettings
         Await FrmMain.LogDownload(Me)
         Try
             Process.Start(New ProcessStartInfo(FileIO.SpecialDirectories.Temp & "\ScalA\ChangeLog.txt"))
-        Catch
+        Catch ex As Exception
+            dBug.Print($"Failed to open changelog: {ex.Message}")
         End Try
     End Sub
 
@@ -1395,6 +1396,12 @@ Public NotInheritable Class FrmSettings
             FrmMain.CloseOtherDropDowns(FrmMain.cmsQuickLaunch.Items, Nothing)
             FrmMain.cmsQuickLaunch.Close()
         End If
+    End Sub
+
+    Private Sub btnSDL2Compat_Click(sender As Object, e As EventArgs) Handles btnSDL2Compat.Click
+        Using installer As New SDL2CompatInstaller()
+            installer.ShowDialog(Me)
+        End Using
     End Sub
 
 End Class

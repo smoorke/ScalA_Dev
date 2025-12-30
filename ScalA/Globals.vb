@@ -1,15 +1,29 @@
 ﻿Imports System.Runtime.InteropServices
 Module Globals
 
-    Public startup As Boolean = True
+    ' Application constants
+    Public Const APP_NAME As String = "ScalA"
+    Public Const REGISTRY_COMPAT_LAYERS As String = "SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers"
+    Public Const DPI_AWARE_FLAG As String = " HIGHDPIAWARE"
+    Public Const DPI_AWARE_REMOVE As String = "~ HIGHDPIAWARE"
 
-    Public keybHook As New KeyboardHook
+    ' Theme color constants (ARGB hex values)
+    Public ReadOnly COLOR_LIGHT_GRAY As Color = Color.FromArgb(&HFFE1E1E1)      ' Light gray background
+    Public ReadOnly COLOR_MEDIUM_GRAY As Color = Color.FromArgb(&HFFA2A2A2)     ' Medium gray
+    Public ReadOnly COLOR_BORDER_GRAY As Color = Color.FromArgb(&HFFADADAD)     ' Border gray
+    Public ReadOnly COLOR_HIGHLIGHT_BLUE As Color = Color.FromArgb(&HFFE5F1FB)  ' Light blue highlight
+    Public ReadOnly COLOR_WINDOWS_BLUE As Color = Color.FromArgb(&HFF0078D7)    ' Windows accent blue
+    Public ReadOnly COLOR_CLOSE_PRESSED As Color = Color.FromArgb(255, 102, 102) ' Close button pressed
 
-    Public MouseButtonStale As MouseButtons
+    Public Property Startup As Boolean = True
+
+    Public Property KeybHook As New KeyboardHook
+
+    Public Property MouseButtonStale As MouseButtons
 
     Public ReadOnly hideExt As String() = {".lnk", ".url"}
 
-    Public AnimsEnabled As Boolean = getAnimationsEnabled()
+    Public Property AnimsEnabled As Boolean = getAnimationsEnabled()
     Public Sub setScalAPriority(pri As Integer)
         Dim hProcess As IntPtr = GetCurrentProcess()
         Dim result As Boolean = SetPriorityClass(hProcess, pri)
@@ -44,25 +58,26 @@ Module Globals
         Dim outDesc As New DEVICE_SEEK_PENALTY_DESCRIPTOR()
         Dim bytesReturned As UInteger
         Dim size As Integer = Marshal.SizeOf(outDesc)
-        Dim pQuery As IntPtr = Marshal.AllocHGlobal(Marshal.SizeOf(query))
-        Marshal.StructureToPtr(query, pQuery, False)
-        Dim pOut As IntPtr = Marshal.AllocHGlobal(size)
+        Dim pQuery As IntPtr = IntPtr.Zero
+        Dim pOut As IntPtr = IntPtr.Zero
 
-        Dim ok As Boolean = DeviceIoControl(handle, IOCTL_STORAGE_QUERY_PROPERTY, pQuery,
-        Marshal.SizeOf(query), pOut, size, bytesReturned, IntPtr.Zero)
+        Try
+            pQuery = Marshal.AllocHGlobal(Marshal.SizeOf(query))
+            Marshal.StructureToPtr(query, pQuery, False)
+            pOut = Marshal.AllocHGlobal(size)
 
-        If Not ok Then
+            Dim ok As Boolean = DeviceIoControl(handle, IOCTL_STORAGE_QUERY_PROPERTY, pQuery,
+            Marshal.SizeOf(query), pOut, size, bytesReturned, IntPtr.Zero)
+
+            If Not ok Then Return False
+
+            outDesc = CType(Marshal.PtrToStructure(pOut, GetType(DEVICE_SEEK_PENALTY_DESCRIPTOR)), DEVICE_SEEK_PENALTY_DESCRIPTOR)
+            Return outDesc.IncursSeekPenalty
+        Finally
+            If pQuery <> IntPtr.Zero Then Marshal.FreeHGlobal(pQuery)
+            If pOut <> IntPtr.Zero Then Marshal.FreeHGlobal(pOut)
             CloseHandle(handle)
-            Marshal.FreeHGlobal(pQuery)
-            Marshal.FreeHGlobal(pOut)
-            Return False
-        End If
-
-        outDesc = CType(Marshal.PtrToStructure(pOut, GetType(DEVICE_SEEK_PENALTY_DESCRIPTOR)), DEVICE_SEEK_PENALTY_DESCRIPTOR)
-        CloseHandle(handle)
-        Marshal.FreeHGlobal(pQuery)
-        Marshal.FreeHGlobal(pOut)
-        Return outDesc.IncursSeekPenalty
+        End Try
     End Function
 
     Public Function CallAsTaskWithTimeout(Of T, R)(fun As Func(Of T, R), arg As T, timeout As Integer, Optional FailVal As R = Nothing) As R
@@ -80,7 +95,7 @@ Module Globals
         End If
     End Function
 
-    Public QLFilter As String() = getQLFilter(My.Settings.AdditionalExtensions).ToArray()
+    Public Property QLFilter As String() = getQLFilter(My.Settings.AdditionalExtensions).ToArray()
     Public Function getQLFilter(addFts) As IEnumerable(Of String)
         Dim ft = CType(("exe | lnk | url |" & addFts).Split({"|"c}, StringSplitOptions.RemoveEmptyEntries), IEnumerable(Of String)).Select(Function(f As String)
                                                                                                                                                f = f.Trim().ToLowerInvariant()

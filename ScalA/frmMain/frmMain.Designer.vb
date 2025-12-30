@@ -36,6 +36,7 @@ Partial NotInheritable Class FrmMain
         Me.chkDebug = New System.Windows.Forms.CheckBox()
         Me.pnlUpdate = New System.Windows.Forms.Panel()
         Me.pbUpdateAvailable = New System.Windows.Forms.PictureBox()
+        Me.pbDpiWarning = New System.Windows.Forms.PictureBox()
         Me.ChkEqLock = New System.Windows.Forms.CheckBox()
         Me.lblTitle = New System.Windows.Forms.Label()
         Me.pnlButtons = New System.Windows.Forms.Panel()
@@ -99,6 +100,7 @@ Partial NotInheritable Class FrmMain
         Me.pnlTitleBar.SuspendLayout()
         Me.pnlUpdate.SuspendLayout()
         CType(Me.pbUpdateAvailable, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.pbDpiWarning, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.pnlButtons.SuspendLayout()
         Me.cmsQuit.SuspendLayout()
         Me.cmsAlt.SuspendLayout()
@@ -164,6 +166,7 @@ Partial NotInheritable Class FrmMain
         '
         Me.pnlTitleBar.BackColor = System.Drawing.SystemColors.Control
         Me.pnlTitleBar.Controls.Add(Me.chkDebug)
+        Me.pnlTitleBar.Controls.Add(Me.pbDpiWarning)
         Me.pnlTitleBar.Controls.Add(Me.pnlUpdate)
         Me.pnlTitleBar.Controls.Add(Me.ChkEqLock)
         Me.pnlTitleBar.Controls.Add(Me.lblTitle)
@@ -207,6 +210,20 @@ Partial NotInheritable Class FrmMain
         Me.pbUpdateAvailable.TabIndex = 14
         Me.pbUpdateAvailable.TabStop = False
         Me.ttMain.SetToolTip(Me.pbUpdateAvailable, "An Update is Available")
+        '
+        'pbDpiWarning
+        '
+        Me.pbDpiWarning.BackgroundImage = Global.ScalA.My.Resources.Resources.Warning
+        Me.pbDpiWarning.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
+        Me.pbDpiWarning.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.pbDpiWarning.Location = New System.Drawing.Point(100, 4)
+        Me.pbDpiWarning.Margin = New System.Windows.Forms.Padding(0)
+        Me.pbDpiWarning.Name = "pbDpiWarning"
+        Me.pbDpiWarning.Size = New System.Drawing.Size(18, 18)
+        Me.pbDpiWarning.TabIndex = 15
+        Me.pbDpiWarning.TabStop = False
+        Me.pbDpiWarning.Visible = False
+        Me.ttMain.SetToolTip(Me.pbDpiWarning, "DPI Override not enabled" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Click to enable DPI Override for this client")
         '
         'ChkEqLock
         '
@@ -694,6 +711,7 @@ Partial NotInheritable Class FrmMain
         Me.pnlTitleBar.PerformLayout()
         Me.pnlUpdate.ResumeLayout(False)
         CType(Me.pbUpdateAvailable, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.pbDpiWarning, System.ComponentModel.ISupportInitialize).EndInit()
         Me.pnlButtons.ResumeLayout(False)
         Me.cmsQuit.ResumeLayout(False)
         Me.cmsAlt.ResumeLayout(False)
@@ -751,6 +769,7 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents btnStart As ThemedStartButton
     Friend WithEvents pnlUpdate As Panel
     Friend WithEvents pbUpdateAvailable As PictureBox
+    Friend WithEvents pbDpiWarning As PictureBox
     Friend WithEvents cmsQuit As ContextMenuStrip
     Friend WithEvents CloseScalAToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents CloseAstoniaToolStripMenuItem As ToolStripMenuItem

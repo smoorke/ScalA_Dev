@@ -900,6 +900,18 @@ Module NativeMethods
         ''' <summary>Undocumented</summary>
         ''' <remarks>SWP_STATECHANGED</remarks>
         StateChanged = &H8000
+
+        ' Common flag combinations to reduce code duplication
+        ''' <summary>Move only, no resize, no activate, no z-order change</summary>
+        SWP_MoveOnly = IgnoreResize Or DoNotActivate Or IgnoreZOrder
+        ''' <summary>Resize only, no move, no activate</summary>
+        SWP_ResizeOnly = IgnoreMove Or DoNotActivate Or IgnoreZOrder
+        ''' <summary>No move, no resize, no activate (z-order change only)</summary>
+        SWP_ZOrderOnly = IgnoreMove Or IgnoreResize Or DoNotActivate
+        ''' <summary>No move, no resize, no activate, no owner z-order change</summary>
+        SWP_NoMoveNoResizeNoActivate = IgnoreMove Or IgnoreResize Or DoNotActivate Or DoNotChangeOwnerZOrder
+        ''' <summary>No move, no resize, async</summary>
+        SWP_AsyncNoMoveNoResize = IgnoreMove Or IgnoreResize Or ASyncWindowPosition
     End Enum
 
     <DllImport("user32.dll", SetLastError:=True)>
