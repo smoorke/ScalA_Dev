@@ -1988,27 +1988,7 @@ Partial Public NotInheritable Class FrmMain
     Dim QlCtxMenu As New ContextMenu
 
     Private Function executableItems(col As IEnumerable(Of ToolStripMenuItem)) As List(Of ToolStripMenuItem)
-        Dim items As New List(Of ToolStripMenuItem)
-        For Each it As ToolStripMenuItem In col.Where(Function(itm) itm.Visible AndAlso TypeOf itm.Tag Is QLInfo)
-            Dim qli As QLInfo = CType(it.Tag, QLInfo)
-            If it.Visible AndAlso Not it.HasDropDown Then
-                items.Add(it)
-            End If
-            'If QLFilter.Contains(IO.Path.GetExtension(qli.path)) Then
-            '    If My.Settings.QLResolveLnk AndAlso qli.path.ToLower.EndsWith(".lnk") AndAlso qli.pointsToDir Then
-
-            '    Else
-            '        items.Add(it)
-            '    End If
-            'End If
-        Next
-#If DEBUG Then
-        For Each it In items
-            Dim qli = CType(it.Tag, QLInfo)
-            Debug.Print($"{it.Text} {qli.pointsToDir} ""{qli.target}""")
-        Next
-#End If
-        Return items
+        Return col.Where(Function(itm) itm.Visible AndAlso TypeOf itm.Tag Is QLInfo AndAlso Not itm.HasDropDownItems).ToList
     End Function
 
     Private Sub QL_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs) 'Handles cmsQuickLaunch.mousedown
