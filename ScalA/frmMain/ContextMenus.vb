@@ -2002,8 +2002,18 @@ Partial Public NotInheritable Class FrmMain
             DestroyMenu(QlCtxNewMenu.Handle)
             QlCtxNewMenu.Dispose()
 
+            Dim rcDrop As RECT
+            Dim rcCurr As RECT
+            Dim DropIsLeft As Boolean
+            If sender.HasDropDown Then
+                Dim paren = If(TryCast(sender.GetCurrentParent(), ToolStripDropDown)?.Handle, IntPtr.Zero)
+                GetWindowRect(paren, rcCurr)
+                GetWindowRect(sender.DropDown.Handle, rcDrop)
+                DropIsLeft = rcDrop.left < rcCurr.left
+            End If
+
             Dim newFolderItem As New MenuItem("Folder", AddressOf QlCtxNewFolder)
-            QlCtxNewMenu = New MenuItem($"←New", {
+            QlCtxNewMenu = New MenuItem($"New", {
                                              newFolderItem,
                                              New MenuItem("-")})
 
@@ -2016,6 +2026,7 @@ Partial Public NotInheritable Class FrmMain
             Dim pasteItem = New MenuItem("Paste", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "Paste"}}
             Dim pasteLinkItem = New MenuItem("Paste Shortcut", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "PasteLink"}}
 
+            Application.DoEvents() ' allow submenu to fully render
             Dim executableSubItems = executableItems(sender.DropDownItems.OfType(Of ToolStripMenuItem))
             Dim openallTag As New MenuTag
             openallTag.tooltip = String.Join(vbCrLf, executableSubItems.Take(10).Select(Of String)(Function(it) CType(it.Tag, QLInfo).name))
@@ -2040,7 +2051,7 @@ Partial Public NotInheritable Class FrmMain
 #Else
             QlCtxMenu = New ContextMenu({
             OpenItem,
-                New MenuItem($"Open All ({executableSubItems.Count}){vbTab}-->", AddressOf QlCtxOpenAll) With {
+                New MenuItem(If(DropIsLeft, $"<--    Open All ({executableSubItems.Count})", $"Open All ({executableSubItems.Count}){vbTab}-->"), AddressOf QlCtxOpenAll) With {
                             .Visible = (path.EndsWith("\") OrElse (My.Settings.QLResolveLnk AndAlso path.ToLower.EndsWith(".lnk"))) AndAlso
                                         executableSubItems.Count > 0,
                             .Tag = openallTag},
@@ -2261,7 +2272,20 @@ Partial Public NotInheritable Class FrmMain
 
             Next
 
-            TrackPopupMenuEx(QlCtxMenu.Handle, TPM_RECURSE, MousePosition.X, MousePosition.Y, ScalaHandle, Nothing)
+
+            If sender.HasDropDown Then
+
+                tpmParam.rcExclude = rcDrop
+                If Not DropIsLeft Then
+                    tpmParam.rcExclude.right = Integer.MaxValue
+                Else
+                    tpmParam.rcExclude.left = -Integer.MaxValue
+                End If
+            Else
+                tpmParam.rcExclude = New RECT
+            End If
+
+            TrackPopupMenuEx(QlCtxMenu.Handle, TPM_RECURSE, MousePosition.X, MousePosition.Y, ScalaHandle, tpmParam)
 
             CustomToolTip.HideTooltip()
 
@@ -2291,7 +2315,7 @@ Partial Public NotInheritable Class FrmMain
 #End If
         End If
     End Sub
-
+    Dim tpmParam As New TPMPARAMS With {.cbSize = Marshal.SizeOf(Of TPMPARAMS)}
     Private Sub ClipAction(sender As Object, e As EventArgs)
         Dim tgt As String = sender.tag.path
         Dim act As String = sender.tag.action
@@ -2409,7 +2433,7 @@ Partial Public NotInheritable Class FrmMain
 
             If Not restartBitmapInstalled Then
 
-                Using bmp As Bitmap = New Bitmap(My.Resources.Refresh, New Size(16, 16))
+                Using bmp As Bitmap = New Bitmap(My.Resources.Sync, New Size(16, 16))
                     Dim restartHbm As IntPtr = bmp.GetHbitmap(Color.Black)
                     SetMenuItemBitmaps(restartCM.Handle, 0, MF_BYPOSITION, restartHbm, Nothing)
                     ' The HBITMAP handle is created once and used for the lifetime of the app.
@@ -2424,7 +2448,7 @@ Partial Public NotInheritable Class FrmMain
             sender.Select()
             sender.BackColor = Color.FromArgb(&HFFB5D7F3) 'this to fix a glitch where sender gets unselected
             restartCM.Tag = sender.Tag
-            TrackPopupMenuEx(restartCM.Handle, TPM_RECURSE Or TPM_RIGHTBUTTON, MousePosition.X, MousePosition.Y, ScalaHandle, Nothing)
+            TrackPopupMenuEx(restartCM.Handle, TPM_RECURSE, MousePosition.X, MousePosition.Y, ScalaHandle, IntPtr.Zero)
             sender.BackColor = Color.Transparent
 
             cmsAlt.Close()
