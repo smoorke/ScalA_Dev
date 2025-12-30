@@ -3,6 +3,13 @@ Imports System.Text
 
 Module NativeMethods
 
+    ' High-resolution timer functions
+    <DllImport("winmm.dll")>
+    Public Function timeBeginPeriod(uPeriod As UInteger) As UInteger : End Function
+
+    <DllImport("winmm.dll")>
+    Public Function timeEndPeriod(uPeriod As UInteger) As UInteger : End Function
+
     <DllImport("mpr.dll", CharSet:=CharSet.Unicode, SetLastError:=True)>
     Public Function WNetGetConnection(<MarshalAs(UnmanagedType.LPTStr)> localName As String,
         <MarshalAs(UnmanagedType.LPTStr)> remoteName As Text.StringBuilder, ByRef length As Integer) As Integer : End Function
@@ -285,6 +292,8 @@ Module NativeMethods
     Public Function IsWindowVisible(ByVal hWnd As IntPtr) As Boolean : End Function
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function IsWindowEnabled(hWnd As IntPtr) As Boolean : End Function
+    <DllImport("user32.dll")>
+    Public Function IsWindow(hWnd As IntPtr) As Boolean : End Function
 
     <DllImport("user32.dll")>
     Public Function RedrawWindow(hWnd As IntPtr, lprcUpdate As IntPtr, hrgnUpdate As IntPtr, flags As RedrawWindowFlags) As Boolean : End Function

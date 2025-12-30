@@ -31,8 +31,8 @@ Public NotInheritable Class AButton
     Public Shared NormalFont As Font = New Font("Microsoft Sans Serif", 12, GraphicsUnit.Pixel)
     Public Shared BoldFont As Font = New Font("Microsoft Sans Serif", 13, FontStyle.Bold, GraphicsUnit.Pixel)
 
-    Public Property PidCache As Integer
-    Public Property AP As AstoniaProcess
+    Public pidCache As Integer
+    Public AP As AstoniaProcess
 
     Private _passthrough As Rectangle
     Public ReadOnly Property ThumbRectangle() As Rectangle

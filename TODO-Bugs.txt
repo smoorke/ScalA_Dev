@@ -17,11 +17,12 @@
 - [ ] Investigate SDL_HINT_VIDEO_EGL_ALLOW_TRANSPARENCY for SDL offscreen rendering
 - [x] Add warning icon when client isn't running in DPI Override + manual/auto setting (implemented)
 - [ ] BigHealthBars on selected legacy clients (emulate SDL)
+- [ ] Low-level mouse hook for smoother cursor tracking (tested - needs different approach, async worker causes position lag/jumping)
 - [x] Add confirmation dialog on pasting folders
-- [x] Handle QL dropdown overflow for large folders (implemented - scroll arrows)
+- [x] Handle QL dropdown overflow for large folders (implemented - shows first 50 items, then "<x more...>" that loads 50 more on click)
 - [x] Determine drive type of QL folders and set maxdegree appropriately
 - [x] Add installer wizard for sdl2-compat (implemented - Settings > Misc tab)
-- [x] Fix QL not closing on paste (fixed - added force close flag)
+- [x] Keep QL open after paste and update to reflect changes (implemented - cancels close from OperationStatusWindow, refreshes after paste completes)
 - [x] Rename dialog: select to last dot only (exclude folders/lnk/url)
 - [x] Show confirmation on renaming extension
 - [x] Investigate drag and drop to sort QL items (implemented)

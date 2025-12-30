@@ -947,7 +947,17 @@ Partial Public NotInheritable Class FrmMain
         Dim sortOrder As List(Of String) = ReadSortOrder(pth)
         Dim sortedDirs = ApplySortOrder(Dirs.ToList(), sortOrder, Function(d) CType(d.Tag, QLInfo).name, nsSorter)
         Dim sortedFiles = ApplySortOrder(Files.ToList(), sortOrder, Function(f) IO.Path.GetFileName(CType(f.Tag, QLInfo).path), nsSorter)
-        menuItems = sortedDirs.Concat(sortedFiles).ToList()
+        Dim allItems = sortedDirs.Concat(sortedFiles).ToList()
+
+        ' Handle overflow for large folders
+        If allItems.Count > QL_INITIAL_ITEMS Then
+            menuItems = allItems.Take(QL_INITIAL_ITEMS).ToList()
+            Dim remainingItems = allItems.Skip(QL_INITIAL_ITEMS).ToList()
+            Dim moreItem = CreateLoadMoreItem(remainingItems)
+            menuItems.Add(moreItem)
+        Else
+            menuItems = allItems
+        End If
 
         If timedout Then
             menuItems.Add(New ToolStripMenuItem("<TimedOut>") With {.Enabled = False})
@@ -1048,6 +1058,67 @@ Partial Public NotInheritable Class FrmMain
         watch.Stop()
         Return menuItems
     End Function
+
+    ''' <summary>
+    ''' Creates a "Load More" menu item that displays remaining items when clicked.
+    ''' </summary>
+    Private Function CreateLoadMoreItem(remainingItems As List(Of ToolStripItem)) As ToolStripMenuItem
+        Dim moreItem As New ToolStripMenuItem($"<{remainingItems.Count} more...>") With {
+            .Tag = remainingItems,
+            .ForeColor = COLOR_WINDOWS_BLUE
+        }
+        AddHandler moreItem.Click, AddressOf LoadMoreItems_Click
+        Return moreItem
+    End Function
+
+    ''' <summary>
+    ''' Handles click on "Load More" item - inserts remaining items into the menu.
+    ''' </summary>
+    Private Sub LoadMoreItems_Click(sender As Object, e As EventArgs)
+        Dim moreItem As ToolStripMenuItem = CType(sender, ToolStripMenuItem)
+        Dim remainingItems As List(Of ToolStripItem) = CType(moreItem.Tag, List(Of ToolStripItem))
+        Dim owner As ToolStripDropDown = moreItem.Owner
+
+        If owner Is Nothing OrElse remainingItems Is Nothing Then Exit Sub
+
+        ' Find position of the "more" item
+        Dim insertIndex As Integer = owner.Items.IndexOf(moreItem)
+        If insertIndex < 0 Then Exit Sub
+
+        ' Remove the "more" item
+        owner.Items.Remove(moreItem)
+
+        ' Determine how many items to load this batch
+        Dim itemsToAdd As List(Of ToolStripItem)
+        Dim newRemainingItems As List(Of ToolStripItem) = Nothing
+
+        If remainingItems.Count > QL_LOAD_MORE_BATCH Then
+            itemsToAdd = remainingItems.Take(QL_LOAD_MORE_BATCH).ToList()
+            newRemainingItems = remainingItems.Skip(QL_LOAD_MORE_BATCH).ToList()
+        Else
+            itemsToAdd = remainingItems
+        End If
+
+        ' Insert the new items at the position of the old "more" item
+        For i As Integer = 0 To itemsToAdd.Count - 1
+            owner.Items.Insert(insertIndex + i, itemsToAdd(i))
+        Next
+
+        ' If there are still more items, add a new "more" item
+        If newRemainingItems IsNot Nothing AndAlso newRemainingItems.Count > 0 Then
+            Dim newMoreItem = CreateLoadMoreItem(newRemainingItems)
+            owner.Items.Insert(insertIndex + itemsToAdd.Count, newMoreItem)
+        End If
+
+        ' Start deferred icon loading for the newly added items
+        Dim dirs As New ConcurrentBag(Of ToolStripItem)(itemsToAdd.Where(Function(it) TypeOf it.Tag Is QLInfo AndAlso CType(it.Tag, QLInfo).path.EndsWith("\")))
+        Dim files As New ConcurrentBag(Of ToolStripItem)(itemsToAdd.Where(Function(it) TypeOf it.Tag Is QLInfo AndAlso Not CType(it.Tag, QLInfo).path.EndsWith("\")))
+        DeferredIconLoading(dirs, files, cantok)
+
+        moreItem.Dispose()
+        dBug.Print($"Loaded {itemsToAdd.Count} more items, {If(newRemainingItems?.Count, 0)} remaining")
+    End Sub
+
 #If DEBUG Then
     Private Sub QL_DropDownClosed(sender As ToolStripDropDown, e As ToolStripDropDownClosedEventArgs)
         For Each it As ToolStripItem In sender.Items.Cast(Of ToolStripItem).ToArray
@@ -1164,6 +1235,15 @@ Partial Public NotInheritable Class FrmMain
 
     ' Flag to force QL close (bypasses Ctrl-held check)
     Private qlForceClose As Boolean = False
+
+    ' Paste operation tracking
+    Private qlPasting As Boolean = False
+    Private qlPasteTargetPath As String = Nothing
+    Private qlPasteOwnerItem As ToolStripMenuItem = Nothing
+
+    ' Overflow handling for large folders
+    Private Const QL_INITIAL_ITEMS As Integer = 50
+    Private Const QL_LOAD_MORE_BATCH As Integer = 50
 
     Private Sub QLMenuItem_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs)
         If e.Button = MouseButtons.Right AndAlso TypeOf sender.Tag Is QLInfo Then
@@ -1802,37 +1882,23 @@ Partial Public NotInheritable Class FrmMain
         '        'EvictIconCacheItem(qli.path)
         '    End If
         'Next
-#If DEBUG Then
-        If dBug.pasting AndAlso e.CloseReason = ToolStripDropDownCloseReason.AppFocusChange Then
-            Try
 
+        ' Keep menu open during paste operations when progress dialog steals focus
+        If qlPasting AndAlso e.CloseReason = ToolStripDropDownCloseReason.AppFocusChange Then
+            Try
                 Dim fgw = GetForegroundWindow()
-                Dim id As Integer
-                GetWindowThreadProcessId(fgw, id)
-                Dim name As String = Process.GetProcessById(id).ProcessName
-                dBug.Print($"pasting closes menu due to activation of {name} {GetWindowClass(fgw)} {GetWindowText(fgw)}")
-                If id = scalaPID AndAlso "OperationStatusWindow" = GetWindowClass(fgw) AndAlso "Progress" = GetWindowText(fgw) Then
+                Dim pid As Integer
+                GetWindowThreadProcessId(fgw, pid)
+                dBug.Print($"pasting: menu close due to {GetWindowClass(fgw)} ""{GetWindowText(fgw)}"" pid={pid}")
+                ' Cancel close if it's the explorer progress dialog (OperationStatusWindow)
+                If pid = scalaPID AndAlso GetWindowClass(fgw) = "OperationStatusWindow" Then
                     e.Cancel = True
-                    Task.Run(Sub()
-                                 Threading.Thread.Sleep(25)
-                                 'SetForegroundWindow(ScalaHandle)
-                             End Sub)
-                    'Task.Run(Sub()
-                    '             Me.Invoke(Sub()
-                    '                           sender.close()
-                    '                           dBug.Print("bleep")
-                    '                           'Threading.Thread.Sleep(100)
-                    '                           ParseSubDir(sender.owneritem, EventArgs.Empty)
-                    '                           sender.Show()
-                    '                       End Sub)
-                    '         End Sub)
                     Return
                 End If
             Catch ex As Exception
                 dBug.Print($"Failed to check foreground window on menu close: {ex.Message}")
             End Try
         End If
-#End If
 
         ' Allow close when force close flag is set (e.g., paste action)
         If qlForceClose Then
@@ -1858,11 +1924,12 @@ Partial Public NotInheritable Class FrmMain
         cts.Cancel() 'cancel deferred icon loading and setvis
         ctrlshift_pressed = False
         qlForceClose = False ' Reset force close flag
+        ' Reset paste state when menu actually closes
+        qlPasting = False
+        qlPasteTargetPath = Nothing
+        qlPasteOwnerItem = Nothing
         'sender.Items.Clear() 'this couses menu to stutter opening
         dBug.Print($"QL closed reason: {e.CloseReason} {caption_Mousedown}")
-#If DEBUG Then
-        'If dBug.pasting Then Debugger.Break()
-#End If
 
         'If cboAlt.SelectedIndex > 0 Then
         '    If (AltPP?.IsActive OrElse GetActiveProcessID() = scalaPID) AndAlso e.CloseReason <> ToolStripDropDownCloseReason.AppClicked Then
@@ -2545,9 +2612,17 @@ Partial Public NotInheritable Class FrmMain
                 End If
             End If
             tgt = IO.Path.GetDirectoryName(tgt.TrimEnd("\"c))
-            qlForceClose = True
-            CloseOtherDropDowns(cmsQuickLaunch.Items)
-            cmsQuickLaunch.Close()
+
+            ' Set paste tracking state instead of closing menu
+            qlPasting = True
+            qlPasteTargetPath = tgt
+
+            ' Find the owner menu item (folder) for later refresh
+            If TypeOf sender Is ToolStripMenuItem Then
+                Dim menuItem = CType(sender, ToolStripMenuItem)
+                qlPasteOwnerItem = TryCast(menuItem.OwnerItem, ToolStripMenuItem)
+            End If
+
             Task.Run(Sub()
                          Dim watch As Stopwatch = Stopwatch.StartNew()
                          Dim hndl As IntPtr = IntPtr.Zero
@@ -2566,15 +2641,46 @@ Partial Public NotInheritable Class FrmMain
                                                               Return True ' continue enumeration
                                                           End Function
 
+                         ' Wait for progress dialog to appear (up to 5 seconds)
                          While watch.ElapsedMilliseconds < 5000 AndAlso Not found
                              EnumWindows(wndProc, IntPtr.Zero)
                              If found Then Exit While
                              Threading.Thread.Sleep(50)
                          End While
-                         dBug.Print($"enumwindow {hndl} ""{GetWindowText(hndl)}""")
-                         SetWindowPos(hndl, If(My.Settings.topmost, SWP_HWND.TOPMOST, SWP_HWND.TOP), 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
-                         SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
-                         If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+
+                         If found Then
+                             dBug.Print($"enumwindow {hndl} ""{GetWindowText(hndl)}""")
+                             SetWindowPos(hndl, If(My.Settings.topmost, SWP_HWND.TOPMOST, SWP_HWND.TOP), 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                             SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
+                             If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+
+                             ' Wait for progress dialog to close (paste complete)
+                             While IsWindow(hndl)
+                                 Threading.Thread.Sleep(100)
+                             End While
+                             dBug.Print("Paste progress dialog closed")
+                         Else
+                             ' No progress dialog appeared (fast paste), wait a bit for filesystem
+                             Threading.Thread.Sleep(200)
+                         End If
+
+                         ' Refresh the menu after paste completes
+                         If Not Me.Disposing AndAlso Not Me.IsDisposed Then
+                             Try
+                                 Me.Invoke(Sub()
+                                               dBug.Print($"Refreshing QL after paste, owner={qlPasteOwnerItem?.Text}")
+                                               If qlPasteOwnerItem IsNot Nothing AndAlso cmsQuickLaunch.Visible Then
+                                                   ' Refresh the folder's dropdown contents
+                                                   ParseSubDir(qlPasteOwnerItem, EventArgs.Empty)
+                                               End If
+                                               qlPasting = False
+                                               qlPasteTargetPath = Nothing
+                                               qlPasteOwnerItem = Nothing
+                                           End Sub)
+                             Catch ex As Exception
+                                 dBug.Print($"Failed to refresh QL after paste: {ex.Message}")
+                             End Try
+                         End If
                          watch.Stop()
                      End Sub)
         End If

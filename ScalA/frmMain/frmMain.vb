@@ -329,7 +329,7 @@ Partial Public NotInheritable Class FrmMain
         Return Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25 + If(hasBorder, 0, 25)
     End Function
 
-    Public Property Resizing As Boolean
+    Public Resizing As Boolean
 
     Private Function UpdateTitle() As Boolean
         Dim titleSuff As String = String.Empty
@@ -623,7 +623,6 @@ Partial Public NotInheritable Class FrmMain
         AddHandler Application.Idle, AddressOf Application_Idle
 
         If My.Settings.DisableWinKey OrElse My.Settings.OnlyEsc OrElse My.Settings.NoAltTab Then keybHook.Hook()
-
 
         clipBoardInfo = GetClipboardFilesAndAction()
         registerClipListener()

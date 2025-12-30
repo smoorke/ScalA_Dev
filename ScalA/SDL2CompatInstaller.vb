@@ -3,7 +3,7 @@ Imports System.Net.Http
 
 Public Class SDL2CompatInstaller
 
-    Private Const SDL2_COMPAT_RELEASE_URL As String = "https://github.com/libsdl-org/sdl2-compat/releases/latest/download/sdl2-compat-win32-x86.zip"
+    Private Const SDL2_COMPAT_RELEASE_URL As String = "https://github.com/libsdl-org/sdl2-compat/releases/latest/download/sdl2-compat-win32-x64.zip"
     Private Const SDL2_COMPAT_GITHUB_URL As String = "https://github.com/libsdl-org/sdl2-compat"
 
     Private _targetPath As String = String.Empty
@@ -78,30 +78,38 @@ Public Class SDL2CompatInstaller
         End If
 
         Dim sdl2DllPath As String = IO.Path.Combine(targetDir, "SDL2.dll")
+        Dim sdl3DllPath As String = IO.Path.Combine(targetDir, "SDL3.dll")
 
-        ' Check if SDL2.dll already exists
-        If File.Exists(sdl2DllPath) Then
+        ' Check if SDL2.dll or SDL3.dll already exist
+        Dim existingFiles As New List(Of String)
+        If File.Exists(sdl2DllPath) Then existingFiles.Add("SDL2.dll")
+        If File.Exists(sdl3DllPath) Then existingFiles.Add("SDL3.dll")
+
+        If existingFiles.Count > 0 Then
             If chkBackup.Checked Then
-                ' Create backup
-                Dim backupPath As String = sdl2DllPath & ".backup"
-                Dim backupNum As Integer = 1
-                While File.Exists(backupPath)
-                    backupPath = sdl2DllPath & $".backup{backupNum}"
-                    backupNum += 1
-                End While
+                ' Create backups
+                For Each dllName In existingFiles
+                    Dim dllPath = IO.Path.Combine(targetDir, dllName)
+                    Dim backupPath As String = dllPath & ".backup"
+                    Dim backupNum As Integer = 1
+                    While File.Exists(backupPath)
+                        backupPath = dllPath & $".backup{backupNum}"
+                        backupNum += 1
+                    End While
 
-                Try
-                    File.Copy(sdl2DllPath, backupPath, False)
-                    dBug.Print($"SDL2CompatInstaller: Backed up existing SDL2.dll to {backupPath}")
-                Catch ex As Exception
-                    Dim result = CustomMessageBox.Show(Me,
-                        $"Failed to create backup of existing SDL2.dll:{vbCrLf}{ex.Message}{vbCrLf}{vbCrLf}Continue anyway?",
-                        "Backup Failed", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-                    If result <> DialogResult.Yes Then Return
-                End Try
+                    Try
+                        File.Copy(dllPath, backupPath, False)
+                        dBug.Print($"SDL2CompatInstaller: Backed up existing {dllName} to {backupPath}")
+                    Catch ex As Exception
+                        Dim result = CustomMessageBox.Show(Me,
+                            $"Failed to create backup of existing {dllName}:{vbCrLf}{ex.Message}{vbCrLf}{vbCrLf}Continue anyway?",
+                            "Backup Failed", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+                        If result <> DialogResult.Yes Then Return
+                    End Try
+                Next
             Else
                 Dim result = CustomMessageBox.Show(Me,
-                    "SDL2.dll already exists in this directory. Overwrite?",
+                    $"{String.Join(" and ", existingFiles)} already exist in this directory. Overwrite?",
                     "Confirm Overwrite", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
                 If result <> DialogResult.Yes Then Return
             End If
@@ -142,17 +150,22 @@ Public Class SDL2CompatInstaller
             ' Extract the zip
             System.IO.Compression.ZipFile.ExtractToDirectory(tempZipPath, tempExtractPath)
 
-            ' Find SDL2.dll in the extracted files
-            Dim extractedDll As String = Directory.GetFiles(tempExtractPath, "SDL2.dll", SearchOption.AllDirectories).FirstOrDefault()
+            ' Find SDL2.dll and SDL3.dll in the extracted files
+            Dim extractedSdl2 As String = Directory.GetFiles(tempExtractPath, "SDL2.dll", SearchOption.AllDirectories).FirstOrDefault()
+            Dim extractedSdl3 As String = Directory.GetFiles(tempExtractPath, "SDL3.dll", SearchOption.AllDirectories).FirstOrDefault()
 
-            If String.IsNullOrEmpty(extractedDll) Then
+            If String.IsNullOrEmpty(extractedSdl2) Then
                 Throw New FileNotFoundException("SDL2.dll not found in the downloaded archive.")
+            End If
+            If String.IsNullOrEmpty(extractedSdl3) Then
+                Throw New FileNotFoundException("SDL3.dll not found in the downloaded archive.")
             End If
 
             lblStatus.Text = "Installing..."
 
-            ' Copy SDL2.dll to target directory
-            File.Copy(extractedDll, sdl2DllPath, True)
+            ' Copy SDL2.dll and SDL3.dll to target directory
+            File.Copy(extractedSdl2, sdl2DllPath, True)
+            File.Copy(extractedSdl3, sdl3DllPath, True)
 
             ' Clean up temp files
             Try
@@ -167,7 +180,7 @@ Public Class SDL2CompatInstaller
 
             CustomMessageBox.Show(Me,
                 $"SDL2-compat has been installed successfully!{vbCrLf}{vbCrLf}" &
-                $"Installed to:{vbCrLf}{sdl2DllPath}{vbCrLf}{vbCrLf}" &
+                $"Installed to:{vbCrLf}{sdl2DllPath}{vbCrLf}{sdl3DllPath}{vbCrLf}{vbCrLf}" &
                 "Please restart the game client for changes to take effect.",
                 "Installation Complete", MessageBoxButtons.OK, MessageBoxIcon.Information)
 

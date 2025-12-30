@@ -10,8 +10,8 @@ Partial NotInheritable Class FrmMain
 
     'Dim rcW As Rectangle ' windowrect
     Dim rcC As Rectangle ' clientrect
-    Public Property NewX As Integer
-    Public Property NewY As Integer
+    Public NewX As Integer
+    Public NewY As Integer
 
     Private storedX As Integer = 0
     Private storedY As Integer = 0
@@ -416,7 +416,7 @@ Partial NotInheritable Class FrmMain
                         but.ContextMenuStrip = cmsQuickLaunch
                         but.BackgroundImage = Nothing
                         but.Image = Nothing
-                        but.PidCache = 0
+                        but.pidCache = 0
                     End If
                 Catch ex As Exception
                     dBug.Print($"Button cleanup failed: {ex.Message}")
@@ -657,10 +657,10 @@ Partial NotInheritable Class FrmMain
         Return False
     End Function
 
-    Public Property LatestJob As Action        ' replaced every time
-    Public Property WorkerThread As Threading.Thread
-    Public Property WorkerEvent As New Threading.AutoResetEvent(False)
-    Public Property WorkerLock As New Object()
+    Public LatestJob As Action        ' replaced every time
+    Public WorkerThread As Threading.Thread
+    Public WorkerEvent As New Threading.AutoResetEvent(False)
+    Public WorkerLock As New Object()
     Public Sub EnqueueLatestJob(job As Action)
         SyncLock WorkerLock
             LatestJob = job     ' overwrite any previous job
@@ -691,7 +691,7 @@ Partial NotInheritable Class FrmMain
     Private Shared activeIsAstonia As Boolean = False
     Private swAutoClose As Stopwatch = Stopwatch.StartNew
     Private AutoCloseCounter As Integer = 0
-    Public Property PrevMouseAlt As AstoniaProcess
+    Public PrevMouseAlt As AstoniaProcess
 
     Private Async Sub TmrActive_Tick(sender As Timer, e As EventArgs) Handles tmrActive.Tick
 
