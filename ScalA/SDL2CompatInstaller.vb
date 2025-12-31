@@ -1,5 +1,6 @@
 Imports System.IO
 Imports System.Net.Http
+Imports System.Runtime.CompilerServices
 
 Public Class SDL2CompatInstaller
 
@@ -27,11 +28,9 @@ Public Class SDL2CompatInstaller
                 Dim clientPath As String = FrmMain.AltPP.FinalPath
                 If Not String.IsNullOrEmpty(clientPath) Then
                     Dim dir As String = IO.Path.GetDirectoryName(clientPath)
-                    ' For SDL clients, the bin folder contains the exe, but SDL2.dll goes in parent
-                    If dir.EndsWith("bin", StringComparison.OrdinalIgnoreCase) Then
-                        dir = IO.Path.GetDirectoryName(dir)
-                    End If
+
                     txtPath.Text = dir
+
                 End If
             Catch ex As Exception
                 dBug.Print($"SDL2CompatInstaller: Failed to detect client path: {ex.Message}")
@@ -43,30 +42,54 @@ Public Class SDL2CompatInstaller
             txtPath.Text = _targetPath
         End If
 
-        UpdateInstallButtonState()
+        UpdateLabelAndButtonState()
     End Sub
 
     Private Sub btnBrowse_Click(sender As Object, e As EventArgs) Handles btnBrowse.Click
-        Using fbd As New FolderBrowserDialog()
-            fbd.Description = "Select the game directory where SDL2.dll should be installed"
-            fbd.ShowNewFolderButton = False
+        Dim fpd As New FolderPicker With {
+                .Title = "Select the game directory where SDL3.dll should be installed",
+                .Multiselect = False
+        }
 
-            If Not String.IsNullOrEmpty(txtPath.Text) AndAlso Directory.Exists(txtPath.Text) Then
-                fbd.SelectedPath = txtPath.Text
-            End If
+        If Not String.IsNullOrEmpty(txtPath.Text) AndAlso Directory.Exists(txtPath.Text) Then
+            fpd.InputPath = txtPath.Text
+        ElseIf Directory.Exists("C:\Program Files (x86)\Astonia Resurgence\client\bin") Then
+            fpd.InputPath = "C:\Program Files (x86)\Astonia Resurgence\client\bin"
+            'elseif directory.exists steaminstallpath then
+            ' fpd.inputpath = steaminstallpath
 
-            If fbd.ShowDialog() = DialogResult.OK Then
-                txtPath.Text = fbd.SelectedPath
-            End If
-        End Using
+        End If
+
+        If fpd.ShowDialog(Me) = True Then
+            txtPath.Text = fpd.ResultPath
+        End If
     End Sub
 
     Private Sub txtPath_TextChanged(sender As Object, e As EventArgs) Handles txtPath.TextChanged
-        UpdateInstallButtonState()
+        UpdateLabelAndButtonState()
     End Sub
 
-    Private Sub UpdateInstallButtonState()
-        btnInstall.Enabled = Not String.IsNullOrEmpty(txtPath.Text) AndAlso Directory.Exists(txtPath.Text)
+    Private Sub UpdateLabelAndButtonState()
+        lblStatus.Text = ""
+        btnInstall.Enabled = False
+        If String.IsNullOrEmpty(txtPath.Text) Then Exit Sub
+        If Not Directory.Exists(txtPath.Text) Then
+            lblStatus.Text = "Invalid Path"
+        Else
+            If Not File.Exists(IO.Path.Combine(txtPath.Text, "moac.exe")) Then
+                lblStatus.Text = "Not an Astonia game directory"
+            Else
+                If Not File.Exists(IO.Path.Combine(txtPath.Text, "SDL2.dll")) Then
+                    lblStatus.Text = "Not an Astonia SDL game client"
+                Else
+                    If Not File.Exists(IO.Path.Combine(txtPath.Text, "SDL3.dll")) Then
+                        btnInstall.Enabled = True
+                    Else
+                        lblStatus.Text = "SDL3 already installed"
+                    End If
+                End If
+            End If
+        End If
     End Sub
 
     Private Async Sub btnInstall_Click(sender As Object, e As EventArgs) Handles btnInstall.Click
@@ -86,40 +109,37 @@ Public Class SDL2CompatInstaller
         If File.Exists(sdl3DllPath) Then existingFiles.Add("SDL3.dll")
 
         If existingFiles.Count > 0 Then
-            If chkBackup.Checked Then
-                ' Create backups
-                For Each dllName In existingFiles
-                    Dim dllPath = IO.Path.Combine(targetDir, dllName)
-                    Dim backupPath As String = dllPath & ".backup"
-                    Dim backupNum As Integer = 1
-                    While File.Exists(backupPath)
-                        backupPath = dllPath & $".backup{backupNum}"
-                        backupNum += 1
-                    End While
+            ' Create backups
+            For Each dllName In existingFiles
+                Dim dllPath = IO.Path.Combine(targetDir, dllName)
+                Dim backupPath As String = dllPath & ".backup"
+                Dim backupNum As Integer = 1
+                While File.Exists(backupPath)
+                    backupPath = dllPath & $".backup{backupNum}"
+                    backupNum += 1
+                End While
 
-                    Try
-                        File.Copy(dllPath, backupPath, False)
-                        dBug.Print($"SDL2CompatInstaller: Backed up existing {dllName} to {backupPath}")
-                    Catch ex As Exception
-                        Dim result = CustomMessageBox.Show(Me,
+                Try
+                    File.Copy(dllPath, backupPath, False)
+                    dBug.Print($"SDL2CompatInstaller: Backed up existing {dllName} to {backupPath}")
+                Catch ex As Exception
+                    Dim result = CustomMessageBox.Show(Me,
                             $"Failed to create backup of existing {dllName}:{vbCrLf}{ex.Message}{vbCrLf}{vbCrLf}Continue anyway?",
                             "Backup Failed", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-                        If result <> DialogResult.Yes Then Return
-                    End Try
-                Next
-            Else
-                Dim result = CustomMessageBox.Show(Me,
+                    If result <> DialogResult.Yes Then Return
+                End Try
+            Next
+        Else
+            Dim result = CustomMessageBox.Show(Me,
                     $"{String.Join(" and ", existingFiles)} already exist in this directory. Overwrite?",
                     "Confirm Overwrite", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
-                If result <> DialogResult.Yes Then Return
-            End If
+            If result <> DialogResult.Yes Then Return
         End If
 
         ' Disable controls during download
         btnInstall.Enabled = False
         btnBrowse.Enabled = False
         txtPath.Enabled = False
-        chkBackup.Enabled = False
         progressBar.Visible = True
         progressBar.Style = ProgressBarStyle.Marquee
         lblStatus.Text = "Downloading SDL2-compat..."
@@ -196,13 +216,12 @@ Public Class SDL2CompatInstaller
                 "Installation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error)
 
         Finally
-            ' Re-enable controls
-            btnInstall.Enabled = True
+            btnInstall.Enabled = False
             btnBrowse.Enabled = True
             txtPath.Enabled = True
-            chkBackup.Enabled = True
-            UpdateInstallButtonState()
         End Try
+        Await Task.Delay(500)
+        UpdateLabelAndButtonState()
     End Sub
 
     Private Sub btnClose_Click(sender As Object, e As EventArgs) Handles btnClose.Click

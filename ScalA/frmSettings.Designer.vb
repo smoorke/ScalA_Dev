@@ -760,12 +760,12 @@ Partial NotInheritable Class FrmSettings
         '
         'btnSDL2Compat
         '
-        Me.btnSDL2Compat.Location = New System.Drawing.Point(155, 155)
+        Me.btnSDL2Compat.Location = New System.Drawing.Point(197, 107)
         Me.btnSDL2Compat.Name = "btnSDL2Compat"
         Me.btnSDL2Compat.Size = New System.Drawing.Size(120, 23)
         Me.btnSDL2Compat.TabIndex = 31
         Me.btnSDL2Compat.Text = "Install SDL2-compat"
-        Me.ttSettings.SetToolTip(Me.btnSDL2Compat, "Install SDL2-compat for improved SDL1 game compatibility")
+        Me.ttSettings.SetToolTip(Me.btnSDL2Compat, "Install SDL2-compat to enable offscreen rendering." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
         Me.btnSDL2Compat.UseVisualStyleBackColor = True
         '
         'chkAlterOverview

@@ -22,6 +22,7 @@ Partial Class SDL2CompatInstaller
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(SDL2CompatInstaller))
         Me.lblInfo = New System.Windows.Forms.Label()
         Me.lblPath = New System.Windows.Forms.Label()
         Me.txtPath = New System.Windows.Forms.TextBox()
@@ -31,7 +32,6 @@ Partial Class SDL2CompatInstaller
         Me.progressBar = New System.Windows.Forms.ProgressBar()
         Me.lblStatus = New System.Windows.Forms.Label()
         Me.linkGitHub = New System.Windows.Forms.LinkLabel()
-        Me.chkBackup = New System.Windows.Forms.CheckBox()
         Me.SuspendLayout()
         '
         'lblInfo
@@ -40,14 +40,14 @@ Partial Class SDL2CompatInstaller
         Me.lblInfo.Name = "lblInfo"
         Me.lblInfo.Size = New System.Drawing.Size(410, 55)
         Me.lblInfo.TabIndex = 0
-        Me.lblInfo.Text = "SDL2-compat is a compatibility layer that allows SDL1 games to run using SDL2." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "This can improve performance and fix issues on modern systems." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Select the game directory where SDL2.dll should be installed:"
+        Me.lblInfo.Text = resources.GetString("lblInfo.Text")
         '
         'lblPath
         '
         Me.lblPath.AutoSize = True
         Me.lblPath.Location = New System.Drawing.Point(12, 73)
         Me.lblPath.Name = "lblPath"
-        Me.lblPath.Size = New System.Drawing.Size(84, 13)
+        Me.lblPath.Size = New System.Drawing.Size(86, 13)
         Me.lblPath.TabIndex = 1
         Me.lblPath.Text = "Target Directory:"
         '
@@ -99,8 +99,9 @@ Partial Class SDL2CompatInstaller
         Me.lblStatus.AutoSize = True
         Me.lblStatus.Location = New System.Drawing.Point(12, 120)
         Me.lblStatus.Name = "lblStatus"
-        Me.lblStatus.Size = New System.Drawing.Size(0, 13)
+        Me.lblStatus.Size = New System.Drawing.Size(47, 13)
         Me.lblStatus.TabIndex = 7
+        Me.lblStatus.Text = "lblStatus"
         '
         'linkGitHub
         '
@@ -112,18 +113,6 @@ Partial Class SDL2CompatInstaller
         Me.linkGitHub.TabStop = True
         Me.linkGitHub.Text = "SDL2-compat GitHub"
         '
-        'chkBackup
-        '
-        Me.chkBackup.AutoSize = True
-        Me.chkBackup.Checked = True
-        Me.chkBackup.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.chkBackup.Location = New System.Drawing.Point(268, 115)
-        Me.chkBackup.Name = "chkBackup"
-        Me.chkBackup.Size = New System.Drawing.Size(154, 17)
-        Me.chkBackup.TabIndex = 9
-        Me.chkBackup.Text = "Backup existing SDL2.dll"
-        Me.chkBackup.UseVisualStyleBackColor = True
-        '
         'SDL2CompatInstaller
         '
         Me.AcceptButton = Me.btnInstall
@@ -131,7 +120,6 @@ Partial Class SDL2CompatInstaller
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.btnClose
         Me.ClientSize = New System.Drawing.Size(434, 196)
-        Me.Controls.Add(Me.chkBackup)
         Me.Controls.Add(Me.linkGitHub)
         Me.Controls.Add(Me.lblStatus)
         Me.Controls.Add(Me.progressBar)
@@ -162,5 +150,4 @@ Partial Class SDL2CompatInstaller
     Friend WithEvents progressBar As System.Windows.Forms.ProgressBar
     Friend WithEvents lblStatus As System.Windows.Forms.Label
     Friend WithEvents linkGitHub As System.Windows.Forms.LinkLabel
-    Friend WithEvents chkBackup As System.Windows.Forms.CheckBox
 End Class
