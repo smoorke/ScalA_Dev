@@ -819,10 +819,10 @@ Partial Public NotInheritable Class FrmMain
                                                     AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
 
                                                     ' Drag & Drop sorting handlers
-                                                    AddHandler smenu.MouseDown, AddressOf QLMenuItem_MouseDown
-                                                    AddHandler smenu.MouseMove, AddressOf QLMenuItem_MouseMove
-                                                    AddHandler smenu.MouseEnter, AddressOf QLMenuItem_MouseEnter
-                                                    AddHandler smenu.MouseUp, AddressOf QLMenuItem_MouseUp
+                                                    'AddHandler smenu.MouseDown, AddressOf QLMenuItem_MouseDown
+                                                    'AddHandler smenu.MouseMove, AddressOf QLMenuItem_MouseMove
+                                                    'AddHandler smenu.MouseEnter, AddressOf QLMenuItem_MouseEnter
+                                                    'AddHandler smenu.MouseUp, AddressOf QLMenuItem_MouseUp
                                                 End Sub)
 
                                  Dirs.Add(smenu)
@@ -893,10 +893,10 @@ Partial Public NotInheritable Class FrmMain
                                                                 AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
 
                                                                 ' Drag & Drop sorting handlers
-                                                                AddHandler smenu.MouseDown, AddressOf QLMenuItem_MouseDown
-                                                                AddHandler smenu.MouseMove, AddressOf QLMenuItem_MouseMove
-                                                                AddHandler smenu.MouseEnter, AddressOf QLMenuItem_MouseEnter
-                                                                AddHandler smenu.MouseUp, AddressOf QLMenuItem_MouseUp
+                                                                'AddHandler smenu.MouseDown, AddressOf QLMenuItem_MouseDown
+                                                                'AddHandler smenu.MouseMove, AddressOf QLMenuItem_MouseMove
+                                                                'AddHandler smenu.MouseEnter, AddressOf QLMenuItem_MouseEnter
+                                                                'AddHandler smenu.MouseUp, AddressOf QLMenuItem_MouseUp
                                                             End Sub)
 
                                              addLinkWatcher(target, fullLink)
@@ -925,10 +925,10 @@ Partial Public NotInheritable Class FrmMain
                                                     AddHandler item.Paint, AddressOf QLMenuItem_Paint
 
                                                     ' Drag & Drop sorting handlers
-                                                    AddHandler item.MouseDown, AddressOf QLMenuItem_MouseDown
-                                                    AddHandler item.MouseMove, AddressOf QLMenuItem_MouseMove
-                                                    AddHandler item.MouseEnter, AddressOf QLMenuItem_MouseEnter
-                                                    AddHandler item.MouseUp, AddressOf QLMenuItem_MouseUp
+                                                    'AddHandler item.MouseDown, AddressOf QLMenuItem_MouseDown
+                                                    'AddHandler item.MouseMove, AddressOf QLMenuItem_MouseMove
+                                                    'AddHandler item.MouseEnter, AddressOf QLMenuItem_MouseEnter
+                                                    'AddHandler item.MouseUp, AddressOf QLMenuItem_MouseUp
                                                 End Sub)
 
                                  Files.Add(item)
@@ -1255,17 +1255,24 @@ Partial Public NotInheritable Class FrmMain
         End If
     End Sub
 
+    Dim DragSep As New ToolStripSeparator
+
     Private Sub QLMenuItem_MouseMove(sender As ToolStripMenuItem, e As MouseEventArgs)
         If qlDragItem IsNot Nothing AndAlso e.Button = MouseButtons.Right Then
             ' Check if we've moved enough to start dragging
-            If Not qlDragActive Then
-                Dim dx As Integer = Math.Abs(e.X - qlDragStartPoint.X)
-                Dim dy As Integer = Math.Abs(e.Y - qlDragStartPoint.Y)
-                If dx > QL_DRAG_THRESHOLD OrElse dy > QL_DRAG_THRESHOLD Then
-                    qlDragActive = True
-                    dBug.Print($"QL Drag started: {qlDragItem.Text}")
-                End If
+            'If Not qlDragActive Then
+            '    Dim dx As Integer = Math.Abs(e.X - qlDragStartPoint.X)
+            '    Dim dy As Integer = Math.Abs(e.Y - qlDragStartPoint.Y)
+            '    If dx > QL_DRAG_THRESHOLD OrElse dy > QL_DRAG_THRESHOLD Then
+            '        qlDragActive = True
+            '        dBug.Print($"QL Drag started: {qlDragItem.Text}")
+            '    End If
+            'End If
+
+            If sender IsNot qlDragItem Then
+
             End If
+
         End If
     End Sub
 
@@ -1287,7 +1294,7 @@ Partial Public NotInheritable Class FrmMain
     Private Sub QLMenuItem_MouseUp(sender As ToolStripMenuItem, e As MouseEventArgs)
         If qlDragActive AndAlso qlDragItem IsNot Nothing AndAlso qlDropTarget IsNot Nothing Then
             ' Perform the reorder
-            PerformQLReorder(qlDragItem, qlDropTarget)
+            ' PerformQLReorder(qlDragItem, qlDropTarget) 'this doesn't work
         End If
         ' Clean up drag state
         If qlDropTarget IsNot Nothing Then
@@ -1812,6 +1819,9 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub cmsQuickLaunch_Opened(sender As ContextMenuStrip, e As EventArgs) Handles cmsQuickLaunch.Opened
 
+
+        sender.AllowDrop = True
+
         'Task.Run(Sub()
         '             If AstoniaProcess.EnumSomeone.Any() Then
         '                 If sender.SourceControl Is Nothing Then 'called from trayicon
@@ -2270,8 +2280,92 @@ Partial Public NotInheritable Class FrmMain
         Return col.Where(Function(itm) itm.Visible AndAlso TypeOf itm.Tag Is QLInfo AndAlso Not itm.HasDropDownItems).ToList
     End Function
 
+    Public DragCursor As Cursor
+
+    Private Sub QL_DragEnter(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragEnter
+        Debug.Print("QL dragenter")
+        'e.Effect = DragDropEffects.Move
+        Cursor.Current = DragCursor
+    End Sub
+    Private Sub QL_DragOver(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragOver
+        Debug.Print($"QL dragOver {sender}")
+        'e.Effect = DragDropEffects.Move
+    End Sub
+    Private Sub QL_Givefeedback(sender As Object, e As GiveFeedbackEventArgs)
+        Debug.Print($"QL_givefeedback")
+        e.UseDefaultCursors = False
+    End Sub
+    Public Function CreateAlphaCursor(bmp As Bitmap, xHotSpot As Integer, yHotSpot As Integer) As Cursor
+        Dim ptr As IntPtr = bmp.GetHicon
+        Dim tmp As ICONINFO = New ICONINFO()
+        GetIconInfo(ptr, tmp)
+        tmp.xHotspot = xHotSpot
+        tmp.yHotspot = yHotSpot
+        tmp.fIcon = False
+        ptr = CreateIconIndirect(tmp)
+        Return New Cursor(ptr)
+    End Function
     Private Sub QL_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs) 'Handles cmsQuickLaunch.mousedown
         Dim qli As QLInfo = CType(sender.Tag, QLInfo)
+        If e.Button = MouseButtons.Middle Then
+
+            ' Ensure the dropdown is open to get proper bounds
+            Dim ts As ToolStripDropDown = sender.Owner
+
+            ' Create a bitmap of the whole dropdown
+            Dim fullBmp As New Bitmap(ts.Width, ts.Height)
+            ts.DrawToBitmap(fullBmp, New Rectangle(Point.Empty, ts.Size))
+
+            ' Crop the item to remove border and arrow
+            Dim iBounds = sender.Bounds
+            Dim itemRect As Rectangle = New Rectangle(iBounds.X + 3, iBounds.Y + 1, iBounds.Width - 18, iBounds.Height - 2)
+            Dim itemBmp As New Bitmap(itemRect.Width, itemRect.Height)
+            Using g As Graphics = Graphics.FromImage(itemBmp)
+                g.DrawImage(fullBmp, 0, 0, itemRect, GraphicsUnit.Pixel)
+            End Using
+
+            ' Make a larger target bitmap (14 px wider)
+            Dim extraWidth As Integer = 13
+            Dim targetBmp As New Bitmap(itemBmp.Width + extraWidth, itemBmp.Height)
+            Using g As Graphics = Graphics.FromImage(targetBmp)
+                ' Fill with transparency
+                g.Clear(itemBmp.GetPixel(itemBmp.Width - 1, 0))
+                ' Draw original itemBmp onto the larger bitmap, offset to center if desired
+                g.DrawImageUnscaled(itemBmp, New Point(0, 0))
+            End Using
+
+            ' Apply transparency for drag cursor
+            Dim cursorBmp As Bitmap = New Bitmap(targetBmp.AsTransparent(0.75), targetBmp.Size)
+
+            'redraw icon fully opaque
+            If sender.Image IsNot Nothing Then
+                Using g As Graphics = Graphics.FromImage(cursorBmp)
+                    ' Draw icon at its normal location
+                    g.DrawImage(sender.Image, New Point(2, 2))
+                End Using
+            End If
+
+            ' Create cursor
+            DragCursor = CreateAlphaCursor(cursorBmp, e.X - 3, e.Y - 1)
+
+            ' Start drag
+            AddHandler sender.GiveFeedback, AddressOf QL_Givefeedback
+            Cursor.Current = DragCursor
+            sender.Checked = False
+            Application.DoEvents()
+            sender.DoDragDrop(sender, DragDropEffects.Scroll Or DragDropEffects.Move)
+
+            RemoveHandler sender.GiveFeedback, AddressOf QL_Givefeedback
+
+
+
+            'DragCursor = CreateAlphaCursor(New Bitmap(sender.Image.AsTransparent(0.8), sender.Image.Size), sender.Image.Height \ 2, sender.Image.Height \ 2)
+
+            'AddHandler sender.GiveFeedback, AddressOf QL_Givefeedback
+            'Cursor.Current = DragCursor
+            'sender.DoDragDrop(sender, DragDropEffects.Scroll Or DragDropEffects.Move)
+            'RemoveHandler sender.GiveFeedback, AddressOf QL_Givefeedback
+        End If
         If e.Button = MouseButtons.Right Then
 
             dBug.Print("QL_MouseDown")
@@ -2654,9 +2748,9 @@ Partial Public NotInheritable Class FrmMain
 
                          If found Then
                              dBug.Print($"enumwindow {hndl} ""{GetWindowText(hndl)}""")
-                             SetWindowPos(hndl, If(My.Settings.topmost, SWP_HWND.TOPMOST, SWP_HWND.TOP), 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                             SetWindowPos(hndl, If(My.Settings.topmost, SWP_HWND.TOPMOST, SWP_HWND.TOP), 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
                              SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
-                             If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                             If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
 
                              ' Wait for progress dialog to close (paste complete)
                              While IsWindow(hndl)
