@@ -1034,6 +1034,19 @@ Module NativeMethods
     Public Function GetCursorInfo(ByRef pci As CURSORINFO) As Boolean : End Function
     <DllImport("user32.dll")>
     Public Function ShowCursor(bShow As Boolean) As Integer : End Function
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function GetIconInfo(hIcon As IntPtr, ByRef pIconInfo As ICONINFO) As <MarshalAs(UnmanagedType.Bool)> Boolean : End Function
+    Public Structure ICONINFO
+        Public fIcon As Boolean
+        Public xHotspot As Integer
+        Public yHotspot As Integer
+        Public hbmMask As IntPtr
+        Public hbmColor As IntPtr
+    End Structure
+
+    <DllImport("user32.dll")>
+    Public Function CreateIconIndirect(ByRef icon As ICONINFO) As IntPtr
+    End Function
 
     <DllImport("user32.dll")>
     Public Function SetMenuItemBitmaps(hMenu As IntPtr, uPosition As UInteger, uFlags As UInteger, hBitmapUnchecked As IntPtr, hBitmapChecked As IntPtr) As Integer : End Function
