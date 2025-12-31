@@ -173,6 +173,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="NativeMethods.vb" />
+    <Compile Include="frmMain\QuickLaunch\QuickLaunch.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ScreenManager.vb" />
     <Compile Include="Settings.vb" />
     <Compile Include="ShellLinkInfo.vb" />
@@ -215,6 +218,9 @@
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SDL2CompatInstaller.resx">
+      <DependentUpon>SDL2CompatInstaller.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UpdateDialog.resx">
       <DependentUpon>UpdateDialog.vb</DependentUpon>
