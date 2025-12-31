@@ -212,7 +212,6 @@ Module dBug
     End Sub
 
     Private lastlog As String = ""
-    Friend pasting As Boolean
 
     Friend Sub log(msg As String, Optional loglevel As Integer = 0)
         If lastlog <> msg Then

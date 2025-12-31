@@ -6,7 +6,7 @@ Namespace MRU
         ' ===========================================================
         ' Configuration
         ' ===========================================================
-        Public MRUFilePath As String = IO.Path.Combine(FileIO.SpecialDirectories.Temp, "ScalA\MRU.txt")
+        Public Property MRUFilePath As String = IO.Path.Combine(FileIO.SpecialDirectories.Temp, "ScalA\MRU.txt")
         Public Const MaxMRUItems As Integer = 250
         Public Const MRUStabilityTimeoutMs As Integer = 1000
         Public Const MRUStabilityCheckIntervalMs As Integer = 100
@@ -16,10 +16,10 @@ Namespace MRU
         ' ===========================================================
         ' Public state
         ' ===========================================================
-        Public MRUList As New List(Of String)
-        Public MRULock As New Object()
-        Public MRUWatcher As IO.FileSystemWatcher
-        Public InitDone As Boolean = False
+        Public Property MRUList As New List(Of String)
+        Public Property MRULock As New Object()
+        Public Property MRUWatcher As IO.FileSystemWatcher
+        Public Property InitDone As Boolean = False
         Private MRULastSaveTime As DateTime
         Private MRUDebounceTimer As System.Threading.Timer
 

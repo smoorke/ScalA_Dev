@@ -79,6 +79,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkCloseAll = New System.Windows.Forms.CheckBox()
         Me.chkHoverActivate = New System.Windows.Forms.CheckBox()
         Me.chkShowEnd = New System.Windows.Forms.CheckBox()
+        Me.btnSDL2Compat = New System.Windows.Forms.Button()
         Me.chkAlterOverview = New System.Windows.Forms.CheckBox()
         Me.txtAlterOverviewStarKey = New System.Windows.Forms.TextBox()
         Me.txtAlterOverviewMinKey = New System.Windows.Forms.TextBox()
@@ -756,6 +757,16 @@ Partial NotInheritable Class FrmSettings
         Me.chkShowEnd.Text = "Always Show End"
         Me.ttSettings.SetToolTip(Me.chkShowEnd, "Always show Endurance on Overview Big HealthBars")
         Me.chkShowEnd.UseVisualStyleBackColor = True
+        '
+        'btnSDL2Compat
+        '
+        Me.btnSDL2Compat.Location = New System.Drawing.Point(155, 155)
+        Me.btnSDL2Compat.Name = "btnSDL2Compat"
+        Me.btnSDL2Compat.Size = New System.Drawing.Size(120, 23)
+        Me.btnSDL2Compat.TabIndex = 31
+        Me.btnSDL2Compat.Text = "Install SDL2-compat"
+        Me.ttSettings.SetToolTip(Me.btnSDL2Compat, "Install SDL2-compat for improved SDL1 game compatibility")
+        Me.btnSDL2Compat.UseVisualStyleBackColor = True
         '
         'chkAlterOverview
         '
@@ -1767,6 +1778,7 @@ Partial NotInheritable Class FrmSettings
         '
         'tabMisc
         '
+        Me.tabMisc.Controls.Add(Me.btnSDL2Compat)
         Me.tabMisc.Controls.Add(Me.chkHoverActivate)
         Me.tabMisc.Controls.Add(Me.ChkAlwaysStartOnOverview)
         Me.tabMisc.Controls.Add(Me.cmbPriority)
@@ -2018,6 +2030,7 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents OpenChangelogToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents chkHoverActivate As CheckBox
     Friend WithEvents chkShowEnd As CheckBox
+    Friend WithEvents btnSDL2Compat As Button
     Friend WithEvents chkToggleTopMost As CheckBox
     Friend WithEvents grpToggleTopMost As GroupBox
     Friend WithEvents chkTogTopShift As CheckBox

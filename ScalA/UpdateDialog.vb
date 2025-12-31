@@ -13,7 +13,8 @@
     Private Sub LinkLabel1_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles LinkLabel1.LinkClicked
         Try
             Process.Start(New ProcessStartInfo(FileIO.SpecialDirectories.Temp & "\ScalA\ChangeLog.txt"))
-        Catch
+        Catch ex As Exception
+            dBug.Print($"Failed to open changelog link: {ex.Message}")
         End Try
     End Sub
 

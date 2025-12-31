@@ -24,7 +24,7 @@
     'End Operator
 
 
-    Public Visible As Boolean
+    Public Property Visible As Boolean
 
     Public Function Show(pos As Point) As Integer
         'Me.Visible = True 'handled in wndproc

@@ -280,7 +280,7 @@ Partial Public NotInheritable Class FrmMain
             tsmi.Image = DrawArrow(menuitPos, targetPos)
         Next
     End Sub
-    Public SidebarScalA As Process = Nothing
+    Public Property SidebarScalA As Process = Nothing
     Private Sub SidebarModeToolStripMenuItem_MouseUp(sender As ToolStripMenuItem, e As MouseEventArgs) Handles SidebarModeToolStripMenuItem.MouseUp
         If sender.Checked AndAlso e.Button = MouseButtons.Right Then
             sender.Checked = False
@@ -761,7 +761,11 @@ Partial Public NotInheritable Class FrmMain
         cts = New Threading.CancellationTokenSource
         cantok = cts.Token
 
-        Dim opts As New ParallelOptions With {.CancellationToken = cantok, .MaxDegreeOfParallelism = Math.Max(1, usableCores - 2)}
+        ' Reduce parallelism for HDDs (drives with seek penalty)
+        Dim driveLetter As Char = If(pth.Length >= 1, pth(0), "C"c)
+        Dim isHDD As Boolean = DriveIncursSeekPenalty(driveLetter)
+        Dim maxDegree As Integer = If(isHDD, Math.Max(1, usableCores \ 4), Math.Max(1, usableCores - 2))
+        Dim opts As New ParallelOptions With {.CancellationToken = cantok, .MaxDegreeOfParallelism = maxDegree}
         Dim hiddencount As Integer = 0
         Try
             IO.Directory.EnumerateFileSystemEntries(pth).GetEnumerator()?.Dispose()
@@ -813,6 +817,12 @@ Partial Public NotInheritable Class FrmMain
                                                     'AddHandler smenu.DropDown.Closed, AddressOf QL_DropDownClosed
 
                                                     AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
+
+                                                    ' Drag & Drop sorting handlers
+                                                    AddHandler smenu.MouseDown, AddressOf QLMenuItem_MouseDown
+                                                    AddHandler smenu.MouseMove, AddressOf QLMenuItem_MouseMove
+                                                    AddHandler smenu.MouseEnter, AddressOf QLMenuItem_MouseEnter
+                                                    AddHandler smenu.MouseUp, AddressOf QLMenuItem_MouseUp
                                                 End Sub)
 
                                  Dirs.Add(smenu)
@@ -881,6 +891,12 @@ Partial Public NotInheritable Class FrmMain
                                                                 'AddHandler smenu.DropDown.Closed, AddressOf QL_DropDownClosed
 
                                                                 AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
+
+                                                                ' Drag & Drop sorting handlers
+                                                                AddHandler smenu.MouseDown, AddressOf QLMenuItem_MouseDown
+                                                                AddHandler smenu.MouseMove, AddressOf QLMenuItem_MouseMove
+                                                                AddHandler smenu.MouseEnter, AddressOf QLMenuItem_MouseEnter
+                                                                AddHandler smenu.MouseUp, AddressOf QLMenuItem_MouseUp
                                                             End Sub)
 
                                              addLinkWatcher(target, fullLink)
@@ -907,6 +923,12 @@ Partial Public NotInheritable Class FrmMain
                                                     'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
                                                     'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
                                                     AddHandler item.Paint, AddressOf QLMenuItem_Paint
+
+                                                    ' Drag & Drop sorting handlers
+                                                    AddHandler item.MouseDown, AddressOf QLMenuItem_MouseDown
+                                                    AddHandler item.MouseMove, AddressOf QLMenuItem_MouseMove
+                                                    AddHandler item.MouseEnter, AddressOf QLMenuItem_MouseEnter
+                                                    AddHandler item.MouseUp, AddressOf QLMenuItem_MouseUp
                                                 End Sub)
 
                                  Files.Add(item)
@@ -921,8 +943,21 @@ Partial Public NotInheritable Class FrmMain
             menuItems.Add(New ToolStripMenuItem("<Operation Canceled>", My.Resources.denied) With {.Enabled = False})
         End Try
 
-        menuItems = Dirs.OrderBy(Function(d) CType(d.Tag, QLInfo).name, nsSorter).Concat(
-                    Files.OrderBy(Function(f) CType(f.Tag, QLInfo).path, nsSorter)).ToList
+        ' Apply custom sort order if available
+        Dim sortOrder As List(Of String) = ReadSortOrder(pth)
+        Dim sortedDirs = ApplySortOrder(Dirs.ToList(), sortOrder, Function(d) CType(d.Tag, QLInfo).name, nsSorter)
+        Dim sortedFiles = ApplySortOrder(Files.ToList(), sortOrder, Function(f) IO.Path.GetFileName(CType(f.Tag, QLInfo).path), nsSorter)
+        Dim allItems = sortedDirs.Concat(sortedFiles).ToList()
+
+        ' Handle overflow for large folders
+        If allItems.Count > QL_INITIAL_ITEMS Then
+            menuItems = allItems.Take(QL_INITIAL_ITEMS).ToList()
+            Dim remainingItems = allItems.Skip(QL_INITIAL_ITEMS).ToList()
+            Dim moreItem = CreateLoadMoreItem(remainingItems)
+            menuItems.Add(moreItem)
+        Else
+            menuItems = allItems
+        End If
 
         If timedout Then
             menuItems.Add(New ToolStripMenuItem("<TimedOut>") With {.Enabled = False})
@@ -1023,6 +1058,67 @@ Partial Public NotInheritable Class FrmMain
         watch.Stop()
         Return menuItems
     End Function
+
+    ''' <summary>
+    ''' Creates a "Load More" menu item that displays remaining items when clicked.
+    ''' </summary>
+    Private Function CreateLoadMoreItem(remainingItems As List(Of ToolStripItem)) As ToolStripMenuItem
+        Dim moreItem As New ToolStripMenuItem($"<{remainingItems.Count} more...>") With {
+            .Tag = remainingItems,
+            .ForeColor = COLOR_WINDOWS_BLUE
+        }
+        AddHandler moreItem.Click, AddressOf LoadMoreItems_Click
+        Return moreItem
+    End Function
+
+    ''' <summary>
+    ''' Handles click on "Load More" item - inserts remaining items into the menu.
+    ''' </summary>
+    Private Sub LoadMoreItems_Click(sender As Object, e As EventArgs)
+        Dim moreItem As ToolStripMenuItem = CType(sender, ToolStripMenuItem)
+        Dim remainingItems As List(Of ToolStripItem) = CType(moreItem.Tag, List(Of ToolStripItem))
+        Dim owner As ToolStripDropDown = moreItem.Owner
+
+        If owner Is Nothing OrElse remainingItems Is Nothing Then Exit Sub
+
+        ' Find position of the "more" item
+        Dim insertIndex As Integer = owner.Items.IndexOf(moreItem)
+        If insertIndex < 0 Then Exit Sub
+
+        ' Remove the "more" item
+        owner.Items.Remove(moreItem)
+
+        ' Determine how many items to load this batch
+        Dim itemsToAdd As List(Of ToolStripItem)
+        Dim newRemainingItems As List(Of ToolStripItem) = Nothing
+
+        If remainingItems.Count > QL_LOAD_MORE_BATCH Then
+            itemsToAdd = remainingItems.Take(QL_LOAD_MORE_BATCH).ToList()
+            newRemainingItems = remainingItems.Skip(QL_LOAD_MORE_BATCH).ToList()
+        Else
+            itemsToAdd = remainingItems
+        End If
+
+        ' Insert the new items at the position of the old "more" item
+        For i As Integer = 0 To itemsToAdd.Count - 1
+            owner.Items.Insert(insertIndex + i, itemsToAdd(i))
+        Next
+
+        ' If there are still more items, add a new "more" item
+        If newRemainingItems IsNot Nothing AndAlso newRemainingItems.Count > 0 Then
+            Dim newMoreItem = CreateLoadMoreItem(newRemainingItems)
+            owner.Items.Insert(insertIndex + itemsToAdd.Count, newMoreItem)
+        End If
+
+        ' Start deferred icon loading for the newly added items
+        Dim dirs As New ConcurrentBag(Of ToolStripItem)(itemsToAdd.Where(Function(it) TypeOf it.Tag Is QLInfo AndAlso CType(it.Tag, QLInfo).path.EndsWith("\")))
+        Dim files As New ConcurrentBag(Of ToolStripItem)(itemsToAdd.Where(Function(it) TypeOf it.Tag Is QLInfo AndAlso Not CType(it.Tag, QLInfo).path.EndsWith("\")))
+        DeferredIconLoading(dirs, files, cantok)
+
+        moreItem.Dispose()
+        dBug.Print($"Loaded {itemsToAdd.Count} more items, {If(newRemainingItems?.Count, 0)} remaining")
+    End Sub
+
 #If DEBUG Then
     Private Sub QL_DropDownClosed(sender As ToolStripDropDown, e As ToolStripDropDownClosedEventArgs)
         For Each it As ToolStripItem In sender.Items.Cast(Of ToolStripItem).ToArray
@@ -1091,6 +1187,29 @@ Partial Public NotInheritable Class FrmMain
             SetWindowLong(handle, GWL_HWNDPARENT, GetWindowLong(cmsQuickLaunch.Handle, GWL_HWNDPARENT))
         End If
 
+        ' Handle overflow for large folders - constrain dropdown to screen bounds
+        Dim dropDown = sender.DropDown
+        Dim dropDownScreen = Screen.FromPoint(dropDown.Bounds.Location)
+        Dim workingArea = dropDownScreen.WorkingArea
+
+        ' Calculate maximum height based on screen working area with some padding
+        Dim maxHeight As Integer = workingArea.Height - 20
+
+        ' Set MaximumSize to enable scroll arrows when content exceeds screen height
+        If dropDown.MaximumSize.Height <> maxHeight Then
+            dropDown.MaximumSize = New Size(0, maxHeight)
+        End If
+
+        ' Ensure dropdown doesn't go off-screen vertically
+        Dim dropDownBounds = dropDown.Bounds
+        If dropDownBounds.Bottom > workingArea.Bottom Then
+            Dim newY As Integer = Math.Max(workingArea.Top, workingArea.Bottom - dropDown.Height)
+            dropDown.Top = newY
+        End If
+        If dropDownBounds.Top < workingArea.Top Then
+            dropDown.Top = workingArea.Top
+        End If
+
     End Sub
 
     Dim PasteSep As ToolStripSeparator = New ToolStripSeparator
@@ -1105,6 +1224,126 @@ Partial Public NotInheritable Class FrmMain
     Dim multipasteBitmapOverlay As Bitmap = My.Resources.multiPaste.addOverlay(My.Resources.shortcutOverlay)
 
     Dim QLCtxMenuOpenedOn As ToolStripMenuItem
+
+    ' Drag & Drop sorting state
+    Private qlDragItem As ToolStripMenuItem = Nothing
+    Private qlDragStartPoint As Point
+    Private qlDragActive As Boolean = False
+    Private qlDropTarget As ToolStripMenuItem = Nothing
+    Private qlDragFolderPath As String = Nothing
+    Private Const QL_DRAG_THRESHOLD As Integer = 5
+
+    ' Flag to force QL close (bypasses Ctrl-held check)
+    Private qlForceClose As Boolean = False
+
+    ' Paste operation tracking
+    Private qlPasting As Boolean = False
+    Private qlPasteTargetPath As String = Nothing
+    Private qlPasteOwnerItem As ToolStripMenuItem = Nothing
+
+    ' Overflow handling for large folders
+    Private Const QL_INITIAL_ITEMS As Integer = 50
+    Private Const QL_LOAD_MORE_BATCH As Integer = 50
+
+    Private Sub QLMenuItem_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs)
+        If e.Button = MouseButtons.Right AndAlso TypeOf sender.Tag Is QLInfo Then
+            qlDragItem = sender
+            qlDragStartPoint = e.Location
+            qlDragActive = False
+            Dim qli As QLInfo = sender.Tag
+            qlDragFolderPath = IO.Path.GetDirectoryName(qli.path.TrimEnd("\"c))
+        End If
+    End Sub
+
+    Private Sub QLMenuItem_MouseMove(sender As ToolStripMenuItem, e As MouseEventArgs)
+        If qlDragItem IsNot Nothing AndAlso e.Button = MouseButtons.Right Then
+            ' Check if we've moved enough to start dragging
+            If Not qlDragActive Then
+                Dim dx As Integer = Math.Abs(e.X - qlDragStartPoint.X)
+                Dim dy As Integer = Math.Abs(e.Y - qlDragStartPoint.Y)
+                If dx > QL_DRAG_THRESHOLD OrElse dy > QL_DRAG_THRESHOLD Then
+                    qlDragActive = True
+                    dBug.Print($"QL Drag started: {qlDragItem.Text}")
+                End If
+            End If
+        End If
+    End Sub
+
+    Private Sub QLMenuItem_MouseEnter(sender As ToolStripMenuItem, e As EventArgs)
+        If qlDragActive AndAlso qlDragItem IsNot Nothing AndAlso sender IsNot qlDragItem Then
+            If TypeOf sender.Tag Is QLInfo Then
+                ' Clear previous highlight
+                If qlDropTarget IsNot Nothing AndAlso qlDropTarget IsNot sender Then
+                    qlDropTarget.BackColor = Color.Empty
+                End If
+                ' Highlight new drop target
+                qlDropTarget = sender
+                sender.BackColor = Color.FromArgb(100, COLOR_HIGHLIGHT_BLUE)
+                dBug.Print($"QL Drop target: {sender.Text}")
+            End If
+        End If
+    End Sub
+
+    Private Sub QLMenuItem_MouseUp(sender As ToolStripMenuItem, e As MouseEventArgs)
+        If qlDragActive AndAlso qlDragItem IsNot Nothing AndAlso qlDropTarget IsNot Nothing Then
+            ' Perform the reorder
+            PerformQLReorder(qlDragItem, qlDropTarget)
+        End If
+        ' Clean up drag state
+        If qlDropTarget IsNot Nothing Then
+            qlDropTarget.BackColor = Color.Empty
+        End If
+        qlDragItem = Nothing
+        qlDragActive = False
+        qlDropTarget = Nothing
+        qlDragFolderPath = Nothing
+    End Sub
+
+    Private Sub PerformQLReorder(dragItem As ToolStripMenuItem, dropTarget As ToolStripMenuItem)
+        If qlDragFolderPath Is Nothing Then Exit Sub
+
+        Dim dragQli As QLInfo = dragItem.Tag
+        Dim dropQli As QLInfo = dropTarget.Tag
+
+        Dim dragName As String = If(dragQli.path.EndsWith("\"), dragQli.name, IO.Path.GetFileName(dragQli.path))
+        Dim dropName As String = If(dropQli.path.EndsWith("\"), dropQli.name, IO.Path.GetFileName(dropQli.path))
+
+        dBug.Print($"QL Reorder: '{dragName}' to position of '{dropName}'")
+
+        ' Get current sort order or build from current menu
+        Dim sortOrder As List(Of String) = ReadSortOrder(qlDragFolderPath)
+
+        ' If no sort order exists, build it from the current menu items
+        If sortOrder.Count = 0 Then
+            Dim parent = dragItem.GetCurrentParent()
+            If parent IsNot Nothing Then
+                For Each item As ToolStripItem In parent.Items
+                    If TypeOf item Is ToolStripMenuItem AndAlso TypeOf item.Tag Is QLInfo Then
+                        Dim qli As QLInfo = item.Tag
+                        Dim itemName As String = If(qli.path.EndsWith("\"), qli.name, IO.Path.GetFileName(qli.path))
+                        sortOrder.Add(itemName)
+                    End If
+                Next
+            End If
+        End If
+
+        ' Remove drag item from current position
+        sortOrder.RemoveAll(Function(s) s.Equals(dragName, StringComparison.OrdinalIgnoreCase))
+
+        ' Find drop target position and insert
+        Dim dropIndex As Integer = sortOrder.FindIndex(Function(s) s.Equals(dropName, StringComparison.OrdinalIgnoreCase))
+        If dropIndex >= 0 Then
+            sortOrder.Insert(dropIndex, dragName)
+        Else
+            sortOrder.Add(dragName)
+        End If
+
+        ' Save the new sort order
+        WriteSortOrder(qlDragFolderPath, sortOrder)
+
+        ' Refresh the menu by triggering a re-parse (close and reopen would refresh)
+        dBug.Print($"QL Sort order saved: {String.Join(", ", sortOrder.Take(5))}...")
+    End Sub
 
     Private Sub QLMenuItem_Paint(sender As ToolStripMenuItem, e As PaintEventArgs)
         If QLCtxMenuOpenedOn Is sender Then
@@ -1306,7 +1545,7 @@ Partial Public NotInheritable Class FrmMain
         Try
             IO.Directory.CreateDirectory(newfolderPath)
         Catch ex As Exception
-
+            dBug.Print($"CreateDirectory failed: {ex.Message}")
         End Try
 
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
@@ -1411,8 +1650,8 @@ Partial Public NotInheritable Class FrmMain
         Dim exepath As String = ""
         Try
             exepath = mos("ExecutablePath")
-        Catch
-
+        Catch ex As Exception
+            dBug.Print($"Failed to get ExecutablePath: {ex.Message}")
         End Try
 
         Dim oLink As Object
@@ -1522,7 +1761,8 @@ Partial Public NotInheritable Class FrmMain
         cmsQuickLaunch.Close()
         Try
             AppActivate(scalaPID) 'fix right click drag bug
-        Catch
+        Catch ex As Exception
+            dBug.Print($"Failed to activate ScalA on menu close: {ex.Message}")
         End Try
         'If Not My.Settings.MinMin OrElse Not AltPP?.isSDL Then Detach(False)
         ttMain.Hide(cboAlt)
@@ -1610,6 +1850,24 @@ Partial Public NotInheritable Class FrmMain
             SetWindowPos(hwnd, SWP_HWND.TOPMOST, loc.X, loc.Y, -1, -1, SetWindowPosFlags.IgnoreZOrder Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
         End If
 
+        ' Handle overflow for large folders - constrain menu to screen bounds
+        Dim menuScreen = Screen.FromPoint(sender.Bounds.Location)
+        Dim menuWorkingArea = menuScreen.WorkingArea
+        Dim maxHeight As Integer = menuWorkingArea.Height - 20
+
+        ' Set MaximumSize to enable scroll arrows when content exceeds screen height
+        If sender.MaximumSize.Height <> maxHeight Then
+            sender.MaximumSize = New Size(0, maxHeight)
+        End If
+
+        ' Ensure menu doesn't go off-screen vertically
+        If sender.Bottom > menuWorkingArea.Bottom Then
+            sender.Top = Math.Max(menuWorkingArea.Top, menuWorkingArea.Bottom - sender.Height)
+        End If
+        If sender.Top < menuWorkingArea.Top Then
+            sender.Top = menuWorkingArea.Top
+        End If
+
     End Sub
 
     Dim cts As New Threading.CancellationTokenSource
@@ -1624,37 +1882,29 @@ Partial Public NotInheritable Class FrmMain
         '        'EvictIconCacheItem(qli.path)
         '    End If
         'Next
-#If DEBUG Then
-        If dBug.pasting AndAlso e.CloseReason = ToolStripDropDownCloseReason.AppFocusChange Then
-            Try
 
+        ' Keep menu open during paste operations when progress dialog steals focus
+        If qlPasting AndAlso e.CloseReason = ToolStripDropDownCloseReason.AppFocusChange Then
+            Try
                 Dim fgw = GetForegroundWindow()
-                Dim id As Integer
-                GetWindowThreadProcessId(fgw, id)
-                Dim name As String = Process.GetProcessById(id).ProcessName
-                dBug.Print($"pasting closes menu due to activation of {name} {GetWindowClass(fgw)} {GetWindowText(fgw)}")
-                If id = scalaPID AndAlso "OperationStatusWindow" = GetWindowClass(fgw) AndAlso "Progress" = GetWindowText(fgw) Then
+                Dim pid As Integer
+                GetWindowThreadProcessId(fgw, pid)
+                dBug.Print($"pasting: menu close due to {GetWindowClass(fgw)} ""{GetWindowText(fgw)}"" pid={pid}")
+                ' Cancel close if it's the explorer progress dialog (OperationStatusWindow)
+                If pid = scalaPID AndAlso GetWindowClass(fgw) = "OperationStatusWindow" Then
                     e.Cancel = True
-                    Task.Run(Sub()
-                                 Threading.Thread.Sleep(25)
-                                 'SetForegroundWindow(ScalaHandle)
-                             End Sub)
-                    'Task.Run(Sub()
-                    '             Me.Invoke(Sub()
-                    '                           sender.close()
-                    '                           dBug.Print("bleep")
-                    '                           'Threading.Thread.Sleep(100)
-                    '                           ParseSubDir(sender.owneritem, EventArgs.Empty)
-                    '                           sender.Show()
-                    '                       End Sub)
-                    '         End Sub)
                     Return
                 End If
             Catch ex As Exception
-
+                dBug.Print($"Failed to check foreground window on menu close: {ex.Message}")
             End Try
         End If
-#End If
+
+        ' Allow close when force close flag is set (e.g., paste action)
+        If qlForceClose Then
+            cts?.Cancel()
+            Return
+        End If
 
         If My.Computer.Keyboard.CtrlKeyDown AndAlso
                 (e.CloseReason = ToolStripDropDownCloseReason.ItemClicked OrElse e.CloseReason = ToolStripDropDownCloseReason.AppFocusChange) Then
@@ -1673,11 +1923,13 @@ Partial Public NotInheritable Class FrmMain
 
         cts.Cancel() 'cancel deferred icon loading and setvis
         ctrlshift_pressed = False
+        qlForceClose = False ' Reset force close flag
+        ' Reset paste state when menu actually closes
+        qlPasting = False
+        qlPasteTargetPath = Nothing
+        qlPasteOwnerItem = Nothing
         'sender.Items.Clear() 'this couses menu to stutter opening
         dBug.Print($"QL closed reason: {e.CloseReason} {caption_Mousedown}")
-#If DEBUG Then
-        'If dBug.pasting Then Debugger.Break()
-#End If
 
         'If cboAlt.SelectedIndex > 0 Then
         '    If (AltPP?.IsActive OrElse GetActiveProcessID() = scalaPID) AndAlso e.CloseReason <> ToolStripDropDownCloseReason.AppClicked Then
@@ -1701,7 +1953,8 @@ Partial Public NotInheritable Class FrmMain
                                            scaleFixForm?.Close()
                                            scaleFixForm = Nothing
                                        End Sub)
-                         Catch
+                         Catch ex As Exception
+                             dBug.Print($"Failed to close scaleFixForm: {ex.Message}")
                          End Try
                      End If
                  End Sub)
@@ -1791,12 +2044,25 @@ Partial Public NotInheritable Class FrmMain
                          EditBox = Control.FromHandle(hEditBox)
                          AddHandler EditBox.KeyDown, AddressOf EditBox_KeyDown
                          AddHandler EditBox.KeyPress, AddressOf EditBox_KeyPress
+
+                         ' Select only filename without extension (exclude folders, .lnk, .url)
+                         Dim isFolder As Boolean = Path.EndsWith("\")
+                         Dim ext As String = System.IO.Path.GetExtension(Path).ToLower()
+                         Dim isHiddenExt As Boolean = hideExt.Contains(ext)
+
+                         If Not isFolder AndAlso Not isHiddenExt AndAlso currentName.Contains(".") Then
+                             Dim lastDot As Integer = currentName.LastIndexOf(".")
+                             If lastDot > 0 Then
+                                 EditBoxHelper.SetSelection(hEditBox, 0, lastDot)
+                             End If
+                         End If
                      End If
 
                      Threading.Thread.Sleep(50)
                      Try
                          AppActivate(scalaPID)
-                     Catch
+                     Catch ex As Exception
+                         dBug.Print($"Failed to activate ScalA after rename dialog: {ex.Message}")
                      End Try
                      watch.Stop()
                  End Sub)
@@ -1823,6 +2089,19 @@ Partial Public NotInheritable Class FrmMain
 
         dBug.Print($"Rename to {toName}")
         If toName <> "" AndAlso currentName <> toName Then
+            ' Check if extension is being changed (exclude folders and hidden extensions)
+            Dim isFolder As Boolean = Path.EndsWith("\")
+            Dim oldExt As String = System.IO.Path.GetExtension(currentName).ToLower()
+            Dim newExt As String = System.IO.Path.GetExtension(toName).ToLower()
+            If Not isFolder AndAlso Not hideExt.Contains(System.IO.Path.GetExtension(Path).ToLower()) AndAlso oldExt <> newExt Then
+                Dim confirmResult = CustomMessageBox.Show(Me,
+                    $"If you change a file name extension, the file might become unusable.{vbCrLf}{vbCrLf}Are you sure you want to change it?",
+                    "Rename", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+                If confirmResult <> DialogResult.Yes Then
+                    Exit Sub
+                End If
+            End If
+
             dBug.Print($"oldpath: {Path}")
             If hideExt.Contains(System.IO.Path.GetExtension(Path).ToLower) Then toName &= System.IO.Path.GetExtension(Path)
             'If Path.EndsWith("\") Then Path = System.IO.Path.GetDirectoryName(Path)
@@ -2321,9 +2600,33 @@ Partial Public NotInheritable Class FrmMain
         Dim act As String = sender.tag.action
 
         If {"Paste", "PasteLink"}.Contains(act) Then
+            ' Show confirmation when pasting folders
+            Dim folderCount As Integer = clipBoardInfo.Files.Where(Function(f) IO.Directory.Exists(f)).Count()
+            If folderCount > 0 Then
+                Dim fileCount As Integer = clipBoardInfo.Files.Where(Function(f) IO.File.Exists(f)).Count()
+                Dim msg As String
+                If fileCount > 0 AndAlso folderCount > 0 Then
+                    msg = $"About to paste {fileCount} file(s) and {folderCount} folder(s).{vbCrLf}{vbCrLf}Are you sure you want to continue?"
+                Else
+                    msg = $"About to paste {folderCount} folder(s).{vbCrLf}{vbCrLf}Are you sure you want to continue?"
+                End If
+                Dim confirmResult = CustomMessageBox.Show(Me, msg, "Confirm Paste", MessageBoxButtons.OKCancel, MessageBoxIcon.Question)
+                If confirmResult <> DialogResult.OK Then
+                    Exit Sub
+                End If
+            End If
             tgt = IO.Path.GetDirectoryName(tgt.TrimEnd("\"c))
-            CloseOtherDropDowns(cmsQuickLaunch.Items)
-            cmsQuickLaunch.Close()
+
+            ' Set paste tracking state instead of closing menu
+            qlPasting = True
+            qlPasteTargetPath = tgt
+
+            ' Find the owner menu item (folder) for later refresh
+            If TypeOf sender Is ToolStripMenuItem Then
+                Dim menuItem = CType(sender, ToolStripMenuItem)
+                qlPasteOwnerItem = TryCast(menuItem.OwnerItem, ToolStripMenuItem)
+            End If
+
             Task.Run(Sub()
                          Dim watch As Stopwatch = Stopwatch.StartNew()
                          Dim hndl As IntPtr = IntPtr.Zero
@@ -2342,15 +2645,46 @@ Partial Public NotInheritable Class FrmMain
                                                               Return True ' continue enumeration
                                                           End Function
 
+                         ' Wait for progress dialog to appear (up to 5 seconds)
                          While watch.ElapsedMilliseconds < 5000 AndAlso Not found
                              EnumWindows(wndProc, IntPtr.Zero)
                              If found Then Exit While
                              Threading.Thread.Sleep(50)
                          End While
-                         dBug.Print($"enumwindow {hndl} ""{GetWindowText(hndl)}""")
-                         SetWindowPos(hndl, If(My.Settings.topmost, SWP_HWND.TOPMOST, SWP_HWND.TOP), 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
-                         SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
-                         If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+
+                         If found Then
+                             dBug.Print($"enumwindow {hndl} ""{GetWindowText(hndl)}""")
+                             SetWindowPos(hndl, If(My.Settings.topmost, SWP_HWND.TOPMOST, SWP_HWND.TOP), 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                             SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
+                             If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+
+                             ' Wait for progress dialog to close (paste complete)
+                             While IsWindow(hndl)
+                                 Threading.Thread.Sleep(100)
+                             End While
+                             dBug.Print("Paste progress dialog closed")
+                         Else
+                             ' No progress dialog appeared (fast paste), wait a bit for filesystem
+                             Threading.Thread.Sleep(200)
+                         End If
+
+                         ' Refresh the menu after paste completes
+                         If Not Me.Disposing AndAlso Not Me.IsDisposed Then
+                             Try
+                                 Me.Invoke(Sub()
+                                               dBug.Print($"Refreshing QL after paste, owner={qlPasteOwnerItem?.Text}")
+                                               If qlPasteOwnerItem IsNot Nothing AndAlso cmsQuickLaunch.Visible Then
+                                                   ' Refresh the folder's dropdown contents
+                                                   ParseSubDir(qlPasteOwnerItem, EventArgs.Empty)
+                                               End If
+                                               qlPasting = False
+                                               qlPasteTargetPath = Nothing
+                                               qlPasteOwnerItem = Nothing
+                                           End Sub)
+                             Catch ex As Exception
+                                 dBug.Print($"Failed to refresh QL after paste: {ex.Message}")
+                             End Try
+                         End If
                          watch.Stop()
                      End Sub)
         End If
@@ -2829,6 +3163,69 @@ Partial Public NotInheritable Class FrmMain
         CustomToolTip.ShowTooltipWithDelay(sender.ToolTipText, cmsAlt.Handle, rc, (sender.ToolTipText.Count(Function(c) c = vbLf) + 5) * 1000)
     End Sub
 End Class
+
+''' <summary>
+''' Module for QuickLaunch custom sort order persistence
+''' </summary>
+Module QLSort
+    Public Const SORT_FILE_NAME As String = ".qlsort"
+
+    ''' <summary>
+    ''' Reads the custom sort order from the .qlsort file in the specified folder
+    ''' </summary>
+    Public Function ReadSortOrder(folderPath As String) As List(Of String)
+        Dim sortFile As String = IO.Path.Combine(folderPath, SORT_FILE_NAME)
+        Dim result As New List(Of String)
+        Try
+            If IO.File.Exists(sortFile) Then
+                result = IO.File.ReadAllLines(sortFile).Where(Function(l) Not String.IsNullOrWhiteSpace(l)).ToList()
+            End If
+        Catch ex As Exception
+            dBug.Print($"Failed to read sort file: {ex.Message}")
+        End Try
+        Return result
+    End Function
+
+    ''' <summary>
+    ''' Writes the custom sort order to the .qlsort file in the specified folder
+    ''' </summary>
+    Public Sub WriteSortOrder(folderPath As String, sortOrder As IEnumerable(Of String))
+        Dim sortFile As String = IO.Path.Combine(folderPath, SORT_FILE_NAME)
+        Try
+            IO.File.WriteAllLines(sortFile, sortOrder)
+            ' Set file as hidden
+            IO.File.SetAttributes(sortFile, IO.FileAttributes.Hidden)
+        Catch ex As Exception
+            dBug.Print($"Failed to write sort file: {ex.Message}")
+        End Try
+    End Sub
+
+    ''' <summary>
+    ''' Gets the sort index for an item. Items in sort order get their index, others get MaxValue.
+    ''' </summary>
+    Public Function GetSortIndex(sortOrder As List(Of String), itemName As String) As Integer
+        Dim idx As Integer = sortOrder.FindIndex(Function(s) s.Equals(itemName, StringComparison.OrdinalIgnoreCase))
+        Return If(idx >= 0, idx, Integer.MaxValue)
+    End Function
+
+    ''' <summary>
+    ''' Applies custom sort order to items. Items not in sort order are appended naturally sorted.
+    ''' </summary>
+    Public Function ApplySortOrder(Of T)(items As IEnumerable(Of T), sortOrder As List(Of String), nameSelector As Func(Of T, String), nsSorter As IComparer(Of String)) As List(Of T)
+        If sortOrder.Count = 0 Then
+            Return items.OrderBy(nameSelector, nsSorter).ToList()
+        End If
+
+        Dim sorted = items.Where(Function(it) sortOrder.Any(Function(s) s.Equals(nameSelector(it), StringComparison.OrdinalIgnoreCase))) _
+                          .OrderBy(Function(it) GetSortIndex(sortOrder, nameSelector(it))).ToList()
+
+        Dim unsorted = items.Where(Function(it) Not sortOrder.Any(Function(s) s.Equals(nameSelector(it), StringComparison.OrdinalIgnoreCase))) _
+                            .OrderBy(nameSelector, nsSorter).ToList()
+
+        sorted.AddRange(unsorted)
+        Return sorted
+    End Function
+End Module
 
 Public Structure QLInfo
     Public path As String

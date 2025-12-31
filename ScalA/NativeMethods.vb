@@ -3,6 +3,13 @@ Imports System.Text
 
 Module NativeMethods
 
+    ' High-resolution timer functions
+    <DllImport("winmm.dll")>
+    Public Function timeBeginPeriod(uPeriod As UInteger) As UInteger : End Function
+
+    <DllImport("winmm.dll")>
+    Public Function timeEndPeriod(uPeriod As UInteger) As UInteger : End Function
+
     <DllImport("mpr.dll", CharSet:=CharSet.Unicode, SetLastError:=True)>
     Public Function WNetGetConnection(<MarshalAs(UnmanagedType.LPTStr)> localName As String,
         <MarshalAs(UnmanagedType.LPTStr)> remoteName As Text.StringBuilder, ByRef length As Integer) As Integer : End Function
@@ -285,6 +292,8 @@ Module NativeMethods
     Public Function IsWindowVisible(ByVal hWnd As IntPtr) As Boolean : End Function
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function IsWindowEnabled(hWnd As IntPtr) As Boolean : End Function
+    <DllImport("user32.dll")>
+    Public Function IsWindow(hWnd As IntPtr) As Boolean : End Function
 
     <DllImport("user32.dll")>
     Public Function RedrawWindow(hWnd As IntPtr, lprcUpdate As IntPtr, hrgnUpdate As IntPtr, flags As RedrawWindowFlags) As Boolean : End Function
@@ -900,6 +909,18 @@ Module NativeMethods
         ''' <summary>Undocumented</summary>
         ''' <remarks>SWP_STATECHANGED</remarks>
         StateChanged = &H8000
+
+        ' Common flag combinations to reduce code duplication
+        ''' <summary>Move only, no resize, no activate, no z-order change</summary>
+        SWP_MoveOnly = IgnoreResize Or DoNotActivate Or IgnoreZOrder
+        ''' <summary>Resize only, no move, no activate</summary>
+        SWP_ResizeOnly = IgnoreMove Or DoNotActivate Or IgnoreZOrder
+        ''' <summary>No move, no resize, no activate (z-order change only)</summary>
+        SWP_ZOrderOnly = IgnoreMove Or IgnoreResize Or DoNotActivate
+        ''' <summary>No move, no resize, no activate, no owner z-order change</summary>
+        SWP_NoMoveNoResizeNoActivate = IgnoreMove Or IgnoreResize Or DoNotActivate Or DoNotChangeOwnerZOrder
+        ''' <summary>No move, no resize, async</summary>
+        SWP_AsyncNoMoveNoResize = IgnoreMove Or IgnoreResize Or ASyncWindowPosition
     End Enum
 
     <DllImport("user32.dll", SetLastError:=True)>

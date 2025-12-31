@@ -10,8 +10,8 @@ Partial NotInheritable Class FrmMain
 
     'Dim rcW As Rectangle ' windowrect
     Dim rcC As Rectangle ' clientrect
-    Public newX As Integer
-    Public newY As Integer
+    Public NewX As Integer
+    Public NewY As Integer
 
     Private storedX As Integer = 0
     Private storedY As Integer = 0
@@ -61,7 +61,7 @@ Partial NotInheritable Class FrmMain
                 Try
                     AppActivate(scalaPID)
                 Catch ex As Exception
-
+                    dBug.Print($"AppActivate scalaPID failed: {ex.Message}")
                 End Try
                 Exit Sub
             Else 'CycleOnClose
@@ -418,7 +418,8 @@ Partial NotInheritable Class FrmMain
                         but.Image = Nothing
                         but.pidCache = 0
                     End If
-                Catch
+                Catch ex As Exception
+                    dBug.Print($"Button cleanup failed: {ex.Message}")
                 End Try
             End Sub)
 

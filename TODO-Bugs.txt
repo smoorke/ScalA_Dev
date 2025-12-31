@@ -1,3 +1,32 @@
+**Code Cleanup TODO**
+- [ ] Split large files into partial classes (best done manually in Visual Studio):
+  - frmMain.vb (2,081 lines) - suggested splits:
+    - frmMain.Resolution.vb: WindowsScaling, GetScaling, CmbResolution_*, ReZoom, FindClosestResolution
+    - frmMain.EqLock.vb: DoEqLock, PnlEqLock_* handlers, ChkEqLock_*
+    - frmMain.Attach.vb: Attach, Detach, setActive
+    - frmMain.Overview.vb: AddAButtons, UpdateButtonLayout, UpdateButtonLayout2, GetNextPerfectSquare
+    - frmMain.Utilities.vb: UntrapMouse, Cycle, CloseErrorDialog*, RestartSelf, UnelevateSelf
+  - ContextMenus.vb (2,917 lines) -> ContextMenus.vb, ContextMenus.QuickLaunch.vb, ContextMenus.Helpers.vb
+  - AstoniaProcess.vb (1,709 lines) -> AstoniaProcess.vb, AstoniaProcess.Window.vb, AstoniaProcess.Registry.vb
+- [x] Add debug logging to empty catch blocks (completed)
+- [x] Update hardcoded color values to use constants (completed)
+- [x] Convert public fields to properties (completed)
+- [x] Add onError handler to FileSystemWatchers (completed)
+
+**Feature TODO (from Discord)**
+- [ ] Investigate SDL_HINT_VIDEO_EGL_ALLOW_TRANSPARENCY for SDL offscreen rendering
+- [x] Add warning icon when client isn't running in DPI Override + manual/auto setting (implemented)
+- [ ] BigHealthBars on selected legacy clients (emulate SDL)
+- [ ] Low-level mouse hook for smoother cursor tracking (tested - needs different approach, async worker causes position lag/jumping)
+- [x] Add confirmation dialog on pasting folders
+- [x] Handle QL dropdown overflow for large folders (implemented - shows first 50 items, then "<x more...>" that loads 50 more on click)
+- [x] Determine drive type of QL folders and set maxdegree appropriately
+- [x] Add installer wizard for sdl2-compat (implemented - Settings > Misc tab)
+- [x] Keep QL open after paste and update to reflect changes (implemented - cancels close from OperationStatusWindow, refreshes after paste completes)
+- [x] Rename dialog: select to last dot only (exclude folders/lnk/url)
+- [x] Show confirmation on renaming extension
+- [x] Investigate drag and drop to sort QL items (implemented)
+
 **Known Issues/Bugs**
 - QuickLaunch may fail to close when clicking outside of QL after clicking an item with ctrl held.
 - Having 2 instances of ScalA on differently scaled monitors attached to same alt is wonky.
@@ -17,11 +46,11 @@ There is an NVIDIA driver bug that makes zoom only go to max 2050 wide and tall 
 -# Using restart tool found in CRU will fix until next pc restart/reboot. but it has habit of hanging some apps/games. ScalA does not have to be running while applying this.
 
 
-**WhishList**
-- Option to always start on Overview instead of autoselecting if there is only 1 alt.
-- Autoselect Active Astonia Client.
-- Show Idled alt names on caption. eg `Bool (Someone)` or `Someone (Bool)` instead of just `Someone`. This for Overview as well as selected alts. 
-- Option to only list Alts on the same desktop as ScalA.
--# This is a no go w/o an official windows api to see what window is on which desktop.(unofficial hacks have too many edge cases for different windows build versions)
+**WishList**
+- [x] Option to always start on Overview instead of autoselecting if there is only 1 alt. (implemented)
+- [x] Show Idled alt names on caption. (implemented)
+- [-] Autoselect Active Astonia Client. (not implementing)
+- [-] Option to only list Alts on the same desktop as ScalA. (no official Windows API)
+- [-] Overlay button with customizable QuickCommands. (not implementing - abuse prone)
 
 -# Note: Items on wishlist may not be implemented at all. Feel free to post below with additional features you want added.
