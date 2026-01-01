@@ -2399,6 +2399,134 @@ Partial Public NotInheritable Class FrmMain
 
         Return New Cursor(ptr)
     End Function
+    Public Function ExtractTextDarkPixels(ByVal src As Bitmap, ByVal textRect As Rectangle, ByVal bgColor As Color, targetAlpha As Single) As Bitmap
+
+        ' Ensure format
+        If src.PixelFormat <> Imaging.PixelFormat.Format32bppArgb Then
+            src = src.Clone(New Rectangle(0, 0, src.Width, src.Height),
+                        Imaging.PixelFormat.Format32bppArgb)
+        End If
+
+        textRect.Intersect(New Rectangle(0, 0, src.Width, src.Height))
+        If textRect.IsEmpty Then Return New Bitmap(src.Width, src.Height)
+
+        Dim mask As New Bitmap(src.Width, src.Height, Imaging.PixelFormat.Format32bppArgb)
+
+        Dim srcData = src.LockBits(New Rectangle(0, 0, src.Width, src.Height),
+                               Imaging.ImageLockMode.ReadOnly,
+                               Imaging.PixelFormat.Format32bppArgb)
+
+        Dim dstData = mask.LockBits(New Rectangle(0, 0, mask.Width, mask.Height),
+                                Imaging.ImageLockMode.WriteOnly,
+                                Imaging.PixelFormat.Format32bppArgb)
+
+        ' Background luminance
+        Dim bgLum As Integer = bgColor.R * 299 + bgColor.G * 587 + bgColor.B * 114
+        'Dim whiteLum As Integer = 255 * 1000
+        Dim effectiveBgLum As Integer = CInt(bgLum * targetAlpha)
+
+        For y As Integer = textRect.Top To textRect.Bottom - 1
+            Dim srcRow As IntPtr = srcData.Scan0 + y * srcData.Stride
+            Dim dstRow As IntPtr = dstData.Scan0 + y * dstData.Stride
+
+            For x As Integer = textRect.Left To textRect.Right - 1
+                Dim i As Integer = x * 4
+
+                Dim b As Byte = Runtime.InteropServices.Marshal.ReadByte(srcRow, i)
+                Dim g As Byte = Runtime.InteropServices.Marshal.ReadByte(srcRow, i + 1)
+                Dim r As Byte = Runtime.InteropServices.Marshal.ReadByte(srcRow, i + 2)
+
+                ' Luminance compare (no tolerance)
+                Dim lum As Integer = r * 299 + g * 587 + b * 114
+
+                If lum >= effectiveBgLum Then Continue For
+
+                Runtime.InteropServices.Marshal.WriteByte(dstRow, i, b)
+                Runtime.InteropServices.Marshal.WriteByte(dstRow, i + 1, g)
+                Runtime.InteropServices.Marshal.WriteByte(dstRow, i + 2, r)
+                Runtime.InteropServices.Marshal.WriteByte(dstRow, i + 3, 255)
+            Next
+        Next
+
+        src.UnlockBits(srcData)
+        mask.UnlockBits(dstData)
+
+        Return mask
+    End Function
+
+    Function createcursor_v1(sender As ToolStripMenuItem, e As MouseEventArgs) As Cursor
+        ' Ensure the dropdown is open to get proper bounds
+        Dim ts As ToolStripDropDown = sender.Owner
+
+        ' Create a bitmap of the whole dropdown
+        Dim fullBmp As New Bitmap(ts.Width, ts.Height)
+        ts.DrawToBitmap(fullBmp, New Rectangle(Point.Empty, ts.Size))
+
+        ' Crop the item to remove border and arrow
+        Dim iBounds = sender.Bounds
+        Dim itemRect As Rectangle = New Rectangle(iBounds.X + 3, iBounds.Y + 1, iBounds.Width - 18, iBounds.Height - 2)
+        Dim itemBmp As New Bitmap(itemRect.Width, itemRect.Height)
+        Using g As Graphics = Graphics.FromImage(itemBmp)
+            g.DrawImage(fullBmp, 0, 0, itemRect, GraphicsUnit.Pixel)
+        End Using
+
+        Dim bgColor = itemBmp.GetPixel(itemBmp.Width - 1, 0)
+
+
+        ' Make a larger target bitmap (14 px wider)
+        Dim extraWidth As Integer = 13
+        Dim targetBmp As New Bitmap(itemBmp.Width + extraWidth, itemBmp.Height)
+        Using g As Graphics = Graphics.FromImage(targetBmp)
+            g.Clear(bgColor)
+            ' Draw original itemBmp onto the larger bitmap
+            g.DrawImageUnscaled(itemBmp, New Point(0, 0))
+        End Using
+
+        Dim textRect As Rectangle = New Rectangle(sender.ContentRectangle.X + 31, sender.ContentRectangle.Y - 1, sender.ContentRectangle.Width - 18, sender.ContentRectangle.Height)
+
+        ' extract exact text pixels
+        Dim textMask As Bitmap = ExtractTextDarkPixels(targetBmp, textRect, bgColor, 0.7)
+
+        ' Apply transparency for drag cursor
+        Dim cursorBmp As Bitmap = New Bitmap(targetBmp.AsTransparent(0.7), targetBmp.Size)
+
+        'redraw icon fully opaque and draw text
+        If sender.Image IsNot Nothing Then
+            Using g As Graphics = Graphics.FromImage(cursorBmp)
+                ' Draw icon at its normal location
+                g.DrawImage(sender.Image, New Point(2, 2))
+                g.DrawImageUnscaled(textMask, 0, 0)
+            End Using
+        End If
+
+        ' Overlay the normal cursor
+        Dim dragBmpWidth As Integer = cursorBmp.Width
+        Dim dragBmpHeight As Integer = cursorBmp.Height
+        Dim cursorWidth As Integer = Cursors.Default.Size.Width
+        Dim cursorHeight As Integer = Cursors.Default.Size.Height
+
+        Dim cursorX As Integer = e.X - 3
+        Dim cursorY As Integer = e.Y - 1
+
+        Dim requiredWidth As Integer = Math.Max(dragBmpWidth, cursorX + cursorWidth)
+        Dim requiredHeight As Integer = Math.Max(dragBmpHeight, cursorY + cursorHeight)
+
+        If requiredWidth > dragBmpWidth OrElse requiredHeight > dragBmpHeight Then
+            Dim newBmp As New Bitmap(requiredWidth, requiredHeight)
+            Using g As Graphics = Graphics.FromImage(newBmp)
+                g.DrawImage(cursorBmp, 0, 0)
+                Cursors.Default.Draw(g, New Rectangle(cursorX, cursorY, cursorWidth, cursorHeight))
+            End Using
+            cursorBmp.Dispose()
+            cursorBmp = newBmp
+        Else
+            Using g As Graphics = Graphics.FromImage(cursorBmp)
+                Cursors.Default.Draw(g, New Rectangle(cursorX, cursorY, cursorWidth, cursorHeight))
+            End Using
+        End If
+        Return CreateAlphaCursor(cursorBmp, cursorX, cursorY)
+    End Function
+
     Private Sub QL_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs) 'Handles cmsQuickLaunch.mousedown
         Dim qli As QLInfo = CType(sender.Tag, QLInfo)
         If e.Button = MouseButtons.Middle Then
@@ -2408,101 +2536,8 @@ Partial Public NotInheritable Class FrmMain
             sender.Checked = False
             Application.DoEvents()
 
-            ' Ensure the dropdown is open to get proper bounds
-            Dim ts As ToolStripDropDown = sender.Owner
-
-            ' Create a bitmap of the whole dropdown
-            Dim fullBmp As New Bitmap(ts.Width, ts.Height)
-            ts.DrawToBitmap(fullBmp, New Rectangle(Point.Empty, ts.Size))
-
-            ' Crop the item to remove border and arrow
-            Dim iBounds = sender.Bounds
-            Dim itemRect As Rectangle = New Rectangle(iBounds.X + 3, iBounds.Y + 1, iBounds.Width - 18, iBounds.Height - 2)
-            Dim itemBmp As New Bitmap(itemRect.Width, itemRect.Height)
-            Using g As Graphics = Graphics.FromImage(itemBmp)
-                g.DrawImage(fullBmp, 0, 0, itemRect, GraphicsUnit.Pixel)
-            End Using
-
-            ' Make a larger target bitmap (14 px wider)
-            Dim extraWidth As Integer = 13
-            Dim targetBmp As New Bitmap(itemBmp.Width + extraWidth, itemBmp.Height)
-            Using g As Graphics = Graphics.FromImage(targetBmp)
-                ' Fill with transparency
-                g.Clear(itemBmp.GetPixel(itemBmp.Width - 1, 0))
-                ' Draw original itemBmp onto the larger bitmap, offset to center if desired
-                g.DrawImageUnscaled(itemBmp, New Point(0, 0))
-                ' clear text
-                'g.FillRectangle(New SolidBrush(itemBmp.GetPixel(itemBmp.Width - 1, 0)), New Rectangle(24, 0, targetBmp.Width, targetBmp.Height))
-            End Using
-
-            ' Apply transparency for drag cursor
-            Dim cursorBmp As Bitmap = New Bitmap(targetBmp.AsTransparent(0.8), targetBmp.Size)
-
-            'redraw icon fully opaque and text
-            If sender.Image IsNot Nothing Then
-                Using g As Graphics = Graphics.FromImage(cursorBmp)
-                    ' Draw icon at its normal location
-                    g.DrawImage(sender.Image, New Point(2, 2))
-
-                    ''this renders bold due to alpha blending mismatch 24bit vs 32ARGB according to gpt
-                    ''Redraw text using GDI
-                    'Using textbrush As SolidBrush = New SolidBrush(sender.ForeColor)
-                    '   Dim textBounds As Rectangle = New Rectangle(sender.ContentRectangle.X + 31, sender.ContentRectangle.Y - 1, sender.ContentRectangle.Width, sender.ContentRectangle.Height)
-                    '   TextRenderer.DrawText(g, sender.Text, sender.Font, textBounds, sender.ForeColor, TextFormatFlags.Left Or TextFormatFlags.VerticalCenter Or TextFormatFlags.SingleLine Or TextFormatFlags.NoPadding)
-                    'End Using
-                End Using
-            End If
-
-            'also turns out bold
-#If 0 Then
-            ' Create a temporary opaque surface for text
-            Dim textBmp As New Bitmap(cursorBmp.Width, cursorBmp.Height, Imaging.PixelFormat.Format24bppRgb)
-
-            Using gText As Graphics = Graphics.FromImage(textBmp)
-            ' Fill with same background color (fully opaque)
-            Dim bgColor As Color = cursorBmp.GetPixel(cursorBmp.Width - 1, 0)
-            gText.Clear(bgColor)
-
-            ' Draw text using GDI onto opaque surface
-            Dim textBounds As Rectangle = New Rectangle(sender.ContentRectangle.X + 31, sender.ContentRectangle.Y - 1, sender.ContentRectangle.Width, sender.ContentRectangle.Height)
-
-                TextRenderer.DrawText(gText, sender.Text, sender.Font, textBounds, sender.ForeColor, TextFormatFlags.Left Or TextFormatFlags.VerticalCenter Or TextFormatFlags.SingleLine Or TextFormatFlags.NoPadding)
-            End Using
-
-            ' Composite text back onto ARGB bitmap
-            Using g As Graphics = Graphics.FromImage(cursorBmp)
-            g.DrawImageUnscaled(textBmp, 0, 0)
-            End Using
-#End If
-
-            ' Overlay the normal cursor
-            Dim dragBmpWidth As Integer = cursorBmp.Width
-            Dim dragBmpHeight As Integer = cursorBmp.Height
-            Dim cursorWidth As Integer = Cursors.Default.Size.Width
-            Dim cursorHeight As Integer = Cursors.Default.Size.Height
-
-            Dim cursorX As Integer = e.X - 3
-            Dim cursorY As Integer = e.Y - 1
-
-            Dim requiredWidth As Integer = Math.Max(dragBmpWidth, cursorX + cursorWidth)
-            Dim requiredHeight As Integer = Math.Max(dragBmpHeight, cursorY + cursorHeight)
-
-            If requiredWidth > dragBmpWidth OrElse requiredHeight > dragBmpHeight Then
-                Dim newBmp As New Bitmap(requiredWidth, requiredHeight)
-                Using g As Graphics = Graphics.FromImage(newBmp)
-                    g.DrawImage(cursorBmp, 0, 0)
-                    Cursors.Default.Draw(g, New Rectangle(cursorX, cursorY, cursorWidth, cursorHeight))
-                End Using
-                cursorBmp.Dispose()
-                cursorBmp = newBmp
-            Else
-                Using g As Graphics = Graphics.FromImage(cursorBmp)
-                    Cursors.Default.Draw(g, New Rectangle(cursorX, cursorY, cursorWidth, cursorHeight))
-                End Using
-            End If
-
             ' Create cursor
-            DragCursor = CreateAlphaCursor(cursorBmp, cursorX, cursorY)
+            DragCursor = createcursor_v1(sender, e)
 
             ' Start drag
             AddHandler sender.GiveFeedback, AddressOf QL_Givefeedback
@@ -2515,7 +2550,7 @@ Partial Public NotInheritable Class FrmMain
             Application.DoEvents()
 
 
-            sender.DoDragDrop(sender, DragDropEffects.Move)
+            sender.DoDragDrop(sender, DragDropEffects.Move Or DragDropEffects.Scroll)
 
             RemoveHandler sender.GiveFeedback, AddressOf QL_Givefeedback
 
