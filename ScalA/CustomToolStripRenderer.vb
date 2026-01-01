@@ -71,9 +71,11 @@
     Public Shared insertItemAbove As ToolStripItem = Nothing
     Public Shared insertItemBelow As ToolStripItem = Nothing
 
+    Private Shared separatorPenNormal As New Pen(COLOR_WINDOWS_BLUE, 2)
+    Private Shared seperatorpenBold As New Pen(COLOR_WINDOWS_BLUE, 3)
 #If DEBUG Then
-    Private Shared seperatorPenAbove As New Pen(Color.Red, 3)
-    Private Shared seperatorPenBelow As New Pen(Color.Green, 3)
+    Private Shared separatorPenAbove As New Pen(Color.Red, 2)   ' COLOR_HIGHLIGHT_BLUE), 1)
+    Private Shared separatorPenBelow As New Pen(Color.Green, 2) ' COLOR_HIGHLIGHT_BLUE), 1)
 
     Protected Overrides Sub OnRenderMenuItemBackground(e As ToolStripItemRenderEventArgs)
         Dim sender = e.Item
@@ -85,24 +87,25 @@
 
         MyBase.OnRenderMenuItemBackground(e)
 
+        Dim AboveOffset = If(insertItemBelow?.Tag Is Nothing OrElse (TypeOf insertItemBelow.Tag IsNot QLInfo), 1, 0)
+
         If insertItemAbove Is sender AndAlso FrmMain.draggeditem IsNot sender Then
-            e.Graphics.DrawLine(seperatorPenAbove, New Point(0, sender.Bounds.Height), New Point(sender.Bounds.Width, sender.Bounds.Height))
+            e.Graphics.DrawLine(If(FrmMain.chkDebug.Checked, separatorPenAbove, If(insertItemBelow Is Nothing, seperatorpenBold, separatorPenNormal)), New Point(6, sender.Bounds.Height - AboveOffset), New Point(sender.Bounds.Width - 6, sender.Bounds.Height - AboveOffset))
         End If
         If insertItemBelow Is sender AndAlso FrmMain.draggeditem IsNot sender Then
-            e.Graphics.DrawLine(seperatorPenBelow, New Point(0, 0), New Point(sender.Bounds.Width, 0))
+            e.Graphics.DrawLine(If(FrmMain.chkDebug.Checked, separatorPenBelow, If(insertItemAbove Is Nothing, seperatorpenBold, separatorPenNormal)), New Point(6, 0), New Point(sender.Bounds.Width - 6, 0))
         End If
     End Sub
 
 #Else
- Private Shared seperatorPen As New Pen(Color.Black, 2)
     Protected Overrides Sub OnRenderMenuItemBackground(e As ToolStripItemRenderEventArgs)
         MyBase.OnRenderMenuItemBackground(e)
         Dim sender = e.Item
         If insertItemAbove Is sender AndAlso FrmMain.draggeditem IsNot sender Then
-            e.Graphics.DrawLine(seperatorPen, New Point(0, sender.Bounds.Height), New Point(sender.Bounds.Width, sender.Bounds.Height))
+            e.Graphics.DrawLine(separatorPenNormal, New Point(0, sender.Bounds.Height), New Point(sender.Bounds.Width, sender.Bounds.Height))
         End If
         If insertItemBelow Is sender AndAlso FrmMain.draggeditem IsNot sender Then
-            e.Graphics.DrawLine(seperatorPen, New Point(0, 0), New Point(sender.Bounds.Width, 0))
+            e.Graphics.DrawLine(separatorPenNormal, New Point(0, 0), New Point(sender.Bounds.Width, 0))
         End If
     End Sub
 #End If
