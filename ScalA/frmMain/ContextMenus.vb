@@ -802,7 +802,7 @@ Partial Public NotInheritable Class FrmMain
                                  Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
                                  Dim dispname As String = System.IO.Path.GetFileName(fulldirs)
 
-                                 Dim qli As New QLInfo With {.path = fulldirs & "\", .hidden = hidden, .name = dispname}
+                                 Dim qli As New QLInfo With {.path = fulldirs & "\", .hidden = hidden, .name = dispname, .isFolder = True}
                                  Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), folderIcon) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
 
                                  Me.BeginInvoke(Sub()
@@ -819,6 +819,11 @@ Partial Public NotInheritable Class FrmMain
                                                     AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
 
                                                     ' Drag & Drop sorting handlers
+                                                    AddHandler smenu.DropDown.DragEnter, AddressOf QL_DragEnter
+                                                    AddHandler smenu.DropDown.DragOver, AddressOf QL_DragOver
+
+                                                    smenu.DropDown.AllowDrop = True
+
                                                     'AddHandler smenu.MouseDown, AddressOf QLMenuItem_MouseDown
                                                     'AddHandler smenu.MouseMove, AddressOf QLMenuItem_MouseMove
                                                     'AddHandler smenu.MouseEnter, AddressOf QLMenuItem_MouseEnter
@@ -877,6 +882,7 @@ Partial Public NotInheritable Class FrmMain
                                              'Dim hid As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
                                              Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
                                              qli.name = dispname
+                                             qli.isFolder = True
                                              Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), folderIconWithOverlay) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
 
                                              Me.BeginInvoke(Sub()
@@ -893,6 +899,11 @@ Partial Public NotInheritable Class FrmMain
                                                                 AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
 
                                                                 ' Drag & Drop sorting handlers
+                                                                AddHandler smenu.DropDown.DragEnter, AddressOf QL_DragEnter
+                                                                AddHandler smenu.DropDown.DragOver, AddressOf QL_DragOver
+
+                                                                smenu.DropDown.AllowDrop = True
+
                                                                 'AddHandler smenu.MouseDown, AddressOf QLMenuItem_MouseDown
                                                                 'AddHandler smenu.MouseMove, AddressOf QLMenuItem_MouseMove
                                                                 'AddHandler smenu.MouseEnter, AddressOf QLMenuItem_MouseEnter
@@ -916,6 +927,7 @@ Partial Public NotInheritable Class FrmMain
                                  End If
 
                                  qli.name = linkName
+                                 qli.isFolder = False
 
                                  Dim item As New ToolStripMenuItem(If(vis, linkName.Replace("&", "&&"), "*Hidden*")) With {.Tag = qli, .Visible = vis}
                                  Me.BeginInvoke(Sub()
@@ -2280,7 +2292,8 @@ Partial Public NotInheritable Class FrmMain
         Return col.Where(Function(itm) itm.Visible AndAlso TypeOf itm.Tag Is QLInfo AndAlso Not itm.HasDropDownItems).ToList
     End Function
 
-    Public DragCursor As Cursor
+    Public Shared DragCursor As Cursor
+    Public Shared draggeditem As ToolStripMenuItem = Nothing
 
     Private Sub QL_DragEnter(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragEnter
         Debug.Print("QL dragenter")
@@ -2288,11 +2301,73 @@ Partial Public NotInheritable Class FrmMain
         Cursor.Current = DragCursor
     End Sub
     Private Sub QL_DragOver(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragOver
-        Debug.Print($"QL dragOver {sender}")
-        'e.Effect = DragDropEffects.Move
+
+        Dim draggedInfo As QLInfo = CType(draggeditem.Tag, QLInfo)
+        Dim clientPt As Point
+
+        Dim items As ToolStripItemCollection
+
+        If TypeOf sender Is ContextMenuStrip Then
+            clientPt = DirectCast(sender, ContextMenuStrip).PointToClient(New Point(e.X, e.Y))
+            items = DirectCast(sender, ContextMenuStrip).Items
+        ElseIf TypeOf sender Is ToolStripDropDownMenu Then
+            clientPt = DirectCast(sender, ToolStripDropDownMenu).PointToClient(New Point(e.X, e.Y))
+            items = DirectCast(sender, ToolStripDropDownMenu).Items
+        Else
+            e.Effect = DragDropEffects.None
+            Exit Sub
+        End If
+
+        Dim insertIndex = -1
+
+        Dim folderCount As Integer = items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo AndAlso CType(it.Tag, QLInfo).isFolder).Count
+
+        dBug.Print($"ql_dragover {sender.GetType} foldercount {folderCount}")
+
+        For i As Integer = 0 To items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo).Count - 1
+            Dim item As ToolStripItem = items(i)
+            If TypeOf item IsNot ToolStripMenuItem Then Continue For
+
+            Dim info As QLInfo = item.Tag
+            If info.isFolder <> draggedInfo.isFolder AndAlso i <> folderCount - 1 Then Continue For
+
+            ' Only consider same-type items
+            If item.Bounds.Contains(clientPt) Then
+                Dim midY As Integer = item.Bounds.Y + (item.Bounds.Height \ 2)
+                insertIndex = If(clientPt.Y < midY, i, i + 1)
+                Exit For
+            End If
+        Next
+
+        If insertIndex >= 0 Then 'AndAlso TypeOf (e.Data.GetData(GetType(ToolStripMenuItem))?.tag) Is QLInfo Then
+            e.Effect = DragDropEffects.Move
+            Debug.Print($"insertIndex {insertIndex}")
+            If insertIndex = 0 Then
+                CustomToolStripRenderer.insertItemAbove = Nothing
+                CustomToolStripRenderer.insertItemBelow = items(0)
+            ElseIf insertIndex = cmsQuickLaunch.Items.Count Then
+                CustomToolStripRenderer.insertItemAbove = items(insertIndex)
+                CustomToolStripRenderer.insertItemBelow = Nothing
+            Else
+                CustomToolStripRenderer.insertItemAbove = items(insertIndex - 1)
+                CustomToolStripRenderer.insertItemBelow = items(insertIndex)
+            End If
+            sender.Invalidate()
+        Else
+            e.Effect = DragDropEffects.None
+            CustomToolStripRenderer.insertItemAbove = Nothing
+            CustomToolStripRenderer.insertItemBelow = Nothing
+        End If
+
+        If CustomToolStripRenderer.insertItemAbove Is draggeditem OrElse CustomToolStripRenderer.insertItemBelow Is draggeditem Then
+            CustomToolStripRenderer.insertItemAbove = Nothing
+            CustomToolStripRenderer.insertItemBelow = Nothing
+            sender.Invalidate()
+        End If
+
     End Sub
+
     Private Sub QL_Givefeedback(sender As Object, e As GiveFeedbackEventArgs)
-        Debug.Print($"QL_givefeedback")
         e.UseDefaultCursors = False
     End Sub
     Public Function CreateAlphaCursor(bmp As Bitmap, xHotSpot As Integer, yHotSpot As Integer) As Cursor
@@ -2303,11 +2378,20 @@ Partial Public NotInheritable Class FrmMain
         tmp.yHotspot = yHotSpot
         tmp.fIcon = False
         ptr = CreateIconIndirect(tmp)
+
+        DeleteObject(tmp.hbmColor)
+        DeleteObject(tmp.hbmMask)
+
         Return New Cursor(ptr)
     End Function
     Private Sub QL_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs) 'Handles cmsQuickLaunch.mousedown
         Dim qli As QLInfo = CType(sender.Tag, QLInfo)
         If e.Button = MouseButtons.Middle Then
+
+            Dim wasChecked As Boolean = sender.Checked
+
+            sender.Checked = False
+            Application.DoEvents()
 
             ' Ensure the dropdown is open to get proper bounds
             Dim ts As ToolStripDropDown = sender.Owner
@@ -2332,18 +2416,49 @@ Partial Public NotInheritable Class FrmMain
                 g.Clear(itemBmp.GetPixel(itemBmp.Width - 1, 0))
                 ' Draw original itemBmp onto the larger bitmap, offset to center if desired
                 g.DrawImageUnscaled(itemBmp, New Point(0, 0))
+                ' clear text
+                'g.FillRectangle(New SolidBrush(itemBmp.GetPixel(itemBmp.Width - 1, 0)), New Rectangle(24, 0, targetBmp.Width, targetBmp.Height))
             End Using
 
             ' Apply transparency for drag cursor
-            Dim cursorBmp As Bitmap = New Bitmap(targetBmp.AsTransparent(0.75), targetBmp.Size)
+            Dim cursorBmp As Bitmap = New Bitmap(targetBmp.AsTransparent(0.8), targetBmp.Size)
 
-            'redraw icon fully opaque
+            'redraw icon fully opaque and text
             If sender.Image IsNot Nothing Then
                 Using g As Graphics = Graphics.FromImage(cursorBmp)
                     ' Draw icon at its normal location
                     g.DrawImage(sender.Image, New Point(2, 2))
+
+                    ''this renders bold due to alpha blending mismatch 24bit vs 32ARGB according to gpt
+                    ''Redraw text using GDI
+                    'Using textbrush As SolidBrush = New SolidBrush(sender.ForeColor)
+                    '   Dim textBounds As Rectangle = New Rectangle(sender.ContentRectangle.X + 31, sender.ContentRectangle.Y - 1, sender.ContentRectangle.Width, sender.ContentRectangle.Height)
+                    '   TextRenderer.DrawText(g, sender.Text, sender.Font, textBounds, sender.ForeColor, TextFormatFlags.Left Or TextFormatFlags.VerticalCenter Or TextFormatFlags.SingleLine Or TextFormatFlags.NoPadding)
+                    'End Using
                 End Using
             End If
+
+            'also turns out bold
+#If 0 Then
+            ' Create a temporary opaque surface for text
+            Dim textBmp As New Bitmap(cursorBmp.Width, cursorBmp.Height, Imaging.PixelFormat.Format24bppRgb)
+
+            Using gText As Graphics = Graphics.FromImage(textBmp)
+            ' Fill with same background color (fully opaque)
+            Dim bgColor As Color = cursorBmp.GetPixel(cursorBmp.Width - 1, 0)
+            gText.Clear(bgColor)
+
+            ' Draw text using GDI onto opaque surface
+            Dim textBounds As Rectangle = New Rectangle(sender.ContentRectangle.X + 31, sender.ContentRectangle.Y - 1, sender.ContentRectangle.Width, sender.ContentRectangle.Height)
+
+                TextRenderer.DrawText(gText, sender.Text, sender.Font, textBounds, sender.ForeColor, TextFormatFlags.Left Or TextFormatFlags.VerticalCenter Or TextFormatFlags.SingleLine Or TextFormatFlags.NoPadding)
+            End Using
+
+            ' Composite text back onto ARGB bitmap
+            Using g As Graphics = Graphics.FromImage(cursorBmp)
+            g.DrawImageUnscaled(textBmp, 0, 0)
+            End Using
+#End If
 
             ' Create cursor
             DragCursor = CreateAlphaCursor(cursorBmp, e.X - 3, e.Y - 1)
@@ -2351,12 +2466,24 @@ Partial Public NotInheritable Class FrmMain
             ' Start drag
             AddHandler sender.GiveFeedback, AddressOf QL_Givefeedback
             Cursor.Current = DragCursor
-            sender.Checked = False
+
+            draggeditem = sender
+
+            sender.Select()
+            sender.Owner.Invalidate()
             Application.DoEvents()
+
+
             sender.DoDragDrop(sender, DragDropEffects.Scroll Or DragDropEffects.Move)
 
             RemoveHandler sender.GiveFeedback, AddressOf QL_Givefeedback
 
+            sender.Checked = wasChecked
+            CustomToolStripRenderer.insertItemAbove = Nothing
+            CustomToolStripRenderer.insertItemBelow = Nothing
+            draggeditem = Nothing
+
+            sender.Owner?.Invalidate()
 
 
             'DragCursor = CreateAlphaCursor(New Bitmap(sender.Image.AsTransparent(0.8), sender.Image.Size), sender.Image.Height \ 2, sender.Image.Height \ 2)
@@ -3328,6 +3455,7 @@ Public Structure QLInfo
     Public target As String
     'Public invalidTarget As Boolean
     Public pointsToDir As Boolean
+    Public isFolder As Boolean
 #If DEBUG Then
     Public test As String
 #End If

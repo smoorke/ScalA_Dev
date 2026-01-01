@@ -68,6 +68,43 @@
             End If
         Next
     End Sub
+    Public Shared insertItemAbove As ToolStripItem = Nothing
+    Public Shared insertItemBelow As ToolStripItem = Nothing
+
+#If DEBUG Then
+    Private Shared seperatorPenAbove As New Pen(Color.Red, 3)
+    Private Shared seperatorPenBelow As New Pen(Color.Green, 3)
+
+    Protected Overrides Sub OnRenderMenuItemBackground(e As ToolStripItemRenderEventArgs)
+        Dim sender = e.Item
+
+        If FrmMain.draggeditem Is sender Then
+            dBug.log($"OnRenderMenuItemBackground selecting {sender}")
+            sender.Select()
+        End If
+
+        MyBase.OnRenderMenuItemBackground(e)
+        If insertItemAbove Is sender AndAlso FrmMain.draggeditem IsNot sender Then
+            e.Graphics.DrawLine(seperatorPenAbove, New Point(0, sender.Bounds.Height), New Point(sender.Bounds.Width, sender.Bounds.Height))
+        End If
+        If insertItemBelow Is sender AndAlso FrmMain.draggeditem IsNot sender Then
+            e.Graphics.DrawLine(seperatorPenBelow, New Point(0, 0), New Point(sender.Bounds.Width, 0))
+        End If
+    End Sub
+
+#Else
+ Private Shared seperatorPen As New Pen(Color.Black, 2)
+    Protected Overrides Sub OnRenderMenuItemBackground(e As ToolStripItemRenderEventArgs)
+        MyBase.OnRenderMenuItemBackground(e)
+        Dim sender = e.Item
+        If insertItemAbove Is sender AndAlso FrmMain.draggeditem IsNot sender Then
+            e.Graphics.DrawLine(seperatorPen, New Point(0, sender.Bounds.Height), New Point(sender.Bounds.Width, sender.Bounds.Height))
+        End If
+        If insertItemBelow Is sender AndAlso FrmMain.draggeditem IsNot sender Then
+            e.Graphics.DrawLine(seperatorPen, New Point(0, 0), New Point(0, sender.Bounds.Height))
+        End If
+    End Sub
+#End If
 
 End Class
 
