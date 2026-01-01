@@ -79,11 +79,12 @@
         Dim sender = e.Item
 
         If FrmMain.draggeditem Is sender Then
-            dBug.log($"OnRenderMenuItemBackground selecting {sender}")
+            'dBug.log($"OnRenderMenuItemBackground selecting {sender}")
             sender.Select()
         End If
 
         MyBase.OnRenderMenuItemBackground(e)
+
         If insertItemAbove Is sender AndAlso FrmMain.draggeditem IsNot sender Then
             e.Graphics.DrawLine(seperatorPenAbove, New Point(0, sender.Bounds.Height), New Point(sender.Bounds.Width, sender.Bounds.Height))
         End If

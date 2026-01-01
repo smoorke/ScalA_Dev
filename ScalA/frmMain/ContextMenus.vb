@@ -2296,7 +2296,7 @@ Partial Public NotInheritable Class FrmMain
     Public Shared draggeditem As ToolStripMenuItem = Nothing
 
     Private Sub QL_DragEnter(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragEnter
-        Debug.Print("QL dragenter")
+        'Debug.Print("QL dragenter")
         'e.Effect = DragDropEffects.Move
         Cursor.Current = DragCursor
     End Sub
@@ -2321,9 +2321,9 @@ Partial Public NotInheritable Class FrmMain
         Dim insertIndex = -1
 
         Dim lastFolderIndex As Integer = items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo AndAlso CType(it.Tag, QLInfo).isFolder).Count - 1
-        Dim lastIndex As Integer = items.Count - 1
+        Dim lastIndex As Integer = items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo).Count - 1
 
-        dBug.log($"ql_dragover {sender.GetType}")
+        'dBug.log($"ql_dragover {sender.GetType}")
 
         For i As Integer = 0 To items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo).Count - 1
             Dim item As ToolStripItem = items(i)
@@ -2374,7 +2374,14 @@ Partial Public NotInheritable Class FrmMain
         End If
 
     End Sub
-
+    Private Sub QL_DragLeave(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragLeave
+        Debug.Print($"QL dragleave {sender.GetType}") 'this doesn't fire. idk why
+        'e.Effect = DragDropEffects.Move
+        CustomToolStripRenderer.insertItemAbove = Nothing
+        CustomToolStripRenderer.insertItemBelow = Nothing
+        sender.Invalidate()
+        Cursor.Current = Cursors.Default
+    End Sub
     Private Sub QL_Givefeedback(sender As Object, e As GiveFeedbackEventArgs)
         e.UseDefaultCursors = False
     End Sub
@@ -2468,8 +2475,34 @@ Partial Public NotInheritable Class FrmMain
             End Using
 #End If
 
+            ' Overlay the normal cursor
+            Dim dragBmpWidth As Integer = cursorBmp.Width
+            Dim dragBmpHeight As Integer = cursorBmp.Height
+            Dim cursorWidth As Integer = Cursors.Default.Size.Width
+            Dim cursorHeight As Integer = Cursors.Default.Size.Height
+
+            Dim cursorX As Integer = e.X - 3
+            Dim cursorY As Integer = e.Y - 1
+
+            Dim requiredWidth As Integer = Math.Max(dragBmpWidth, cursorX + cursorWidth)
+            Dim requiredHeight As Integer = Math.Max(dragBmpHeight, cursorY + cursorHeight)
+
+            If requiredWidth > dragBmpWidth OrElse requiredHeight > dragBmpHeight Then
+                Dim newBmp As New Bitmap(requiredWidth, requiredHeight)
+                Using g As Graphics = Graphics.FromImage(newBmp)
+                    g.DrawImage(cursorBmp, 0, 0)
+                    Cursors.Default.Draw(g, New Rectangle(cursorX, cursorY, cursorWidth, cursorHeight))
+                End Using
+                cursorBmp.Dispose()
+                cursorBmp = newBmp
+            Else
+                Using g As Graphics = Graphics.FromImage(cursorBmp)
+                    Cursors.Default.Draw(g, New Rectangle(cursorX, cursorY, cursorWidth, cursorHeight))
+                End Using
+            End If
+
             ' Create cursor
-            DragCursor = CreateAlphaCursor(cursorBmp, e.X - 3, e.Y - 1)
+            DragCursor = CreateAlphaCursor(cursorBmp, cursorX, cursorY)
 
             ' Start drag
             AddHandler sender.GiveFeedback, AddressOf QL_Givefeedback
@@ -2482,7 +2515,7 @@ Partial Public NotInheritable Class FrmMain
             Application.DoEvents()
 
 
-            sender.DoDragDrop(sender, DragDropEffects.Scroll Or DragDropEffects.Move)
+            sender.DoDragDrop(sender, DragDropEffects.Move)
 
             RemoveHandler sender.GiveFeedback, AddressOf QL_Givefeedback
 
