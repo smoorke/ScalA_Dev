@@ -101,7 +101,7 @@
             e.Graphics.DrawLine(seperatorPen, New Point(0, sender.Bounds.Height), New Point(sender.Bounds.Width, sender.Bounds.Height))
         End If
         If insertItemBelow Is sender AndAlso FrmMain.draggeditem IsNot sender Then
-            e.Graphics.DrawLine(seperatorPen, New Point(0, 0), New Point(0, sender.Bounds.Height))
+            e.Graphics.DrawLine(seperatorPen, New Point(0, 0), New Point(sender.Bounds.Width, 0))
         End If
     End Sub
 #End If

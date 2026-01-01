@@ -2329,7 +2329,7 @@ Partial Public NotInheritable Class FrmMain
             If TypeOf item IsNot ToolStripMenuItem Then Continue For
 
             Dim info As QLInfo = item.Tag
-            If info.isFolder <> draggedInfo.isFolder AndAlso i <> folderCount - 1 Then Continue For
+            If info.isFolder <> draggedInfo.isFolder AndAlso i <> folderCount Then Continue For
 
             ' Only consider same-type items
             If item.Bounds.Contains(clientPt) Then
@@ -2341,11 +2341,10 @@ Partial Public NotInheritable Class FrmMain
 
         If insertIndex >= 0 Then 'AndAlso TypeOf (e.Data.GetData(GetType(ToolStripMenuItem))?.tag) Is QLInfo Then
             e.Effect = DragDropEffects.Move
-            Debug.Print($"insertIndex {insertIndex}")
             If insertIndex = 0 Then
                 CustomToolStripRenderer.insertItemAbove = Nothing
                 CustomToolStripRenderer.insertItemBelow = items(0)
-            ElseIf insertIndex = cmsQuickLaunch.Items.Count Then
+            ElseIf insertIndex = Items.Count Then
                 CustomToolStripRenderer.insertItemAbove = items(insertIndex)
                 CustomToolStripRenderer.insertItemBelow = Nothing
             Else
