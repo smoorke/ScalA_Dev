@@ -2321,6 +2321,7 @@ Partial Public NotInheritable Class FrmMain
         Dim insertIndex = -1
 
         Dim lastFolderIndex As Integer = items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo AndAlso CType(it.Tag, QLInfo).isFolder).Count - 1
+        Dim lastIndex As Integer = items.Count - 1
 
         dBug.log($"ql_dragover {sender.GetType}")
 
@@ -2348,8 +2349,16 @@ Partial Public NotInheritable Class FrmMain
                 CustomToolStripRenderer.insertItemAbove = items(insertIndex)
                 CustomToolStripRenderer.insertItemBelow = Nothing
             Else
-                CustomToolStripRenderer.insertItemAbove = items(insertIndex - 1)
-                CustomToolStripRenderer.insertItemBelow = items(insertIndex)
+                Dim aboveIndex = insertIndex - 1
+                While aboveIndex AndAlso Not items(aboveIndex).Visible
+                    aboveIndex -= 1
+                End While
+                Dim belowIndex = insertIndex
+                While belowIndex < lastIndex AndAlso Not items(belowIndex).Visible
+                    belowIndex += 1
+                End While
+                CustomToolStripRenderer.insertItemAbove = items(aboveIndex)
+                CustomToolStripRenderer.insertItemBelow = items(belowIndex)
             End If
             sender.Invalidate()
         Else
