@@ -2320,16 +2320,16 @@ Partial Public NotInheritable Class FrmMain
 
         Dim insertIndex = -1
 
-        Dim folderCount As Integer = items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo AndAlso CType(it.Tag, QLInfo).isFolder).Count
+        Dim lastFolderIndex As Integer = items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo AndAlso CType(it.Tag, QLInfo).isFolder).Count - 1
 
-        dBug.Print($"ql_dragover {sender.GetType} foldercount {folderCount}")
+        dBug.log($"ql_dragover {sender.GetType}")
 
         For i As Integer = 0 To items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo).Count - 1
             Dim item As ToolStripItem = items(i)
             If TypeOf item IsNot ToolStripMenuItem Then Continue For
 
             Dim info As QLInfo = item.Tag
-            If info.isFolder <> draggedInfo.isFolder AndAlso i <> folderCount Then Continue For
+            If info.isFolder <> draggedInfo.isFolder AndAlso i <> lastFolderIndex Then Continue For
 
             ' Only consider same-type items
             If item.Bounds.Contains(clientPt) Then
