@@ -179,6 +179,8 @@ Partial NotInheritable Class FrmMain
                 Me.Cursor = Cursors.Default
                 'frmCaptureClickBehind.Bounds = Me.RectangleToScreen(pbZoom.Bounds)
                 If AltPP?.IsRunning AndAlso Me.WindowState <> FormWindowState.Minimized Then
+                    ' Update zoom state for SDL2 wrapper
+                    ZoomStateIPC.UpdateFromFrmMain(Me, AltPP?.isSDL)
 #If DEBUG Then
                     pbZoom.Visible = True
 #End If

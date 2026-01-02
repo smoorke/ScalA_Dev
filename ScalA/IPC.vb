@@ -381,6 +381,7 @@ Module IPC
             _mmfInstances?.Dispose()
             SelectSema?.Dispose()
             SelectDoneSema?.Dispose()
+            ZoomStateIPC.CleanupZoomState()
         Finally
             _mutex?.ReleaseMutex()
             _mutex?.Dispose()

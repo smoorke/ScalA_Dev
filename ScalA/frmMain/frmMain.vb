@@ -263,6 +263,8 @@ Partial Public NotInheritable Class FrmMain
                     AltPP.TopMost = True
                 End If
 
+                ' Initialize zoom state for SDL2 wrapper
+                ZoomStateIPC.UpdateFromFrmMain(Me, AltPP?.isSDL)
 
                 moveBusy = False
             Else 'AltPP.Id = 0
@@ -1160,6 +1162,9 @@ Partial Public NotInheritable Class FrmMain
             cornerSE.Visible = False
         End If
 
+        ' Update zoom state for SDL2 wrapper (viewport size changed)
+        ZoomStateIPC.UpdateFromFrmMain(Me, AltPP?.isSDL)
+
     End Sub
 
     Private Sub DoEqLock(newSize As Size)
@@ -1770,6 +1775,8 @@ Partial Public NotInheritable Class FrmMain
     Private prevDetach As String
 #End If
     Public Function Detach(show As Boolean) As Long
+        ' Disable zoom state for SDL2 wrapper
+        ZoomStateIPC.SetZoomStateEnabled(False)
 #If DEBUG Then
         If prevDetach <> AltPP?.UserName Then
             dBug.Print($"Detach from: {AltPP?.UserName} show:{show}")
