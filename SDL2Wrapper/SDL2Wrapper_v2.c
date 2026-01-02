@@ -12,18 +12,16 @@
 
 typedef uint32_t Uint32;
 
-/* Shared memory structure */
+/* Shared memory structure - 28 bytes */
 #pragma pack(push, 1)
 typedef struct {
-    DWORD scalaPid;
-    DWORD gameWindowHandle;
-    int   zoomRectX;
-    int   zoomRectY;
-    int   zoomRectWidth;
-    int   zoomRectHeight;
-    int   clientWidth;
-    int   clientHeight;
-    int   enabled;
+    int viewportX;      /* pbZoom screen X */
+    int viewportY;      /* pbZoom screen Y */
+    int viewportW;      /* pbZoom width */
+    int viewportH;      /* pbZoom height */
+    int clientW;        /* game client width */
+    int clientH;        /* game client height */
+    int enabled;        /* 1 = transform active */
 } ScalAZoomState;
 #pragma pack(pop)
 
@@ -40,33 +38,22 @@ static PFN_SDL_GetMouseState g_Real_GetMouseState = NULL;
 static PFN_SDL_GetGlobalMouseState g_Real_GetGlobalMouseState = NULL;
 static PFN_SDL_GetRelativeMouseState g_Real_GetRelativeMouseState = NULL;
 
-/* Check if ScalA is alive */
-static int IsScalAAlive(void) {
-    if (!g_pState || g_pState->scalaPid == 0) return 0;
-    HANDLE h = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, g_pState->scalaPid);
-    if (!h) return 0;
-    DWORD code;
-    int alive = GetExitCodeProcess(h, &code) && code == STILL_ACTIVE;
-    CloseHandle(h);
-    return alive;
-}
-
-/* Map mouse position */
+/* Map mouse position from viewport to game client coords */
 static void MapMousePos(int* x, int* y) {
-    if (!g_pState || !g_pState->enabled || !IsScalAAlive()) return;
-    if (g_pState->zoomRectWidth <= 0 || g_pState->zoomRectHeight <= 0) return;
-    if (g_pState->clientWidth <= 0 || g_pState->clientHeight <= 0) return;
+    if (!g_pState || !g_pState->enabled) return;
+    if (g_pState->viewportW <= 0 || g_pState->viewportH <= 0) return;
+    if (g_pState->clientW <= 0 || g_pState->clientH <= 0) return;
 
     POINT pt;
     GetCursorPos(&pt);
 
-    int relX = pt.x - g_pState->zoomRectX;
-    int relY = pt.y - g_pState->zoomRectY;
+    int relX = pt.x - g_pState->viewportX;
+    int relY = pt.y - g_pState->viewportY;
 
-    if (relX >= 0 && relX < g_pState->zoomRectWidth &&
-        relY >= 0 && relY < g_pState->zoomRectHeight) {
-        *x = (relX * g_pState->clientWidth) / g_pState->zoomRectWidth;
-        *y = (relY * g_pState->clientHeight) / g_pState->zoomRectHeight;
+    if (relX >= 0 && relX < g_pState->viewportW &&
+        relY >= 0 && relY < g_pState->viewportH) {
+        *x = (relX * g_pState->clientW) / g_pState->viewportW;
+        *y = (relY * g_pState->clientH) / g_pState->viewportH;
     }
 }
 

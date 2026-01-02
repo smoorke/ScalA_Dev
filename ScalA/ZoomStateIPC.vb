@@ -7,19 +7,17 @@ Imports System.Runtime.InteropServices
 Module ZoomStateIPC
 
     ''' <summary>
-    ''' Zoom state structure - must match SDL2Wrapper's ScalAZoomState
+    ''' Zoom state structure - must match SDL2Wrapper's ScalAZoomState (28 bytes)
     ''' </summary>
     <StructLayout(LayoutKind.Sequential, Pack:=1)>
     Public Structure ScalAZoomState
-        Public ScalaPid As Integer          ' ScalA process ID
-        Public GameWindowHandle As Integer  ' Game window handle being managed
         Public ViewportX As Integer         ' pbZoom screen X position
         Public ViewportY As Integer         ' pbZoom screen Y position
-        Public ViewportWidth As Integer     ' pbZoom width (what user sees)
-        Public ViewportHeight As Integer    ' pbZoom height (what user sees)
-        Public GameClientWidth As Integer   ' Original game client width (rcC.Width)
-        Public GameClientHeight As Integer  ' Original game client height (rcC.Height)
-        Public Enabled As Integer           ' 1 if transform should be applied, 0 otherwise
+        Public ViewportW As Integer         ' pbZoom width (what user sees)
+        Public ViewportH As Integer         ' pbZoom height (what user sees)
+        Public ClientW As Integer           ' Original game client width
+        Public ClientH As Integer           ' Original game client height
+        Public Enabled As Integer           ' 1 if transform active, 0 otherwise
     End Structure
 
     Private _zoomStateMmf As MemoryMappedFile = Nothing
@@ -45,14 +43,12 @@ Module ZoomStateIPC
 
             ' Initialize with disabled state
             Dim initialState As New ScalAZoomState With {
-                .ScalaPid = scalaPID,
-                .GameWindowHandle = 0,
                 .ViewportX = 0,
                 .ViewportY = 0,
-                .ViewportWidth = 0,
-                .ViewportHeight = 0,
-                .GameClientWidth = 0,
-                .GameClientHeight = 0,
+                .ViewportW = 0,
+                .ViewportH = 0,
+                .ClientW = 0,
+                .ClientH = 0,
                 .Enabled = 0
             }
             _zoomStateMmva.Write(0, initialState)
@@ -66,23 +62,17 @@ Module ZoomStateIPC
     ''' <summary>
     ''' Update the zoom state with current viewport and game dimensions
     ''' </summary>
-    ''' <param name="viewportScreenBounds">Screen bounds of pbZoom (Me.RectangleToScreen(pbZoom.Bounds))</param>
-    ''' <param name="gameClientSize">Size of game client area (rcC.Size)</param>
-    ''' <param name="gameWindowHandle">Handle of the game window</param>
-    ''' <param name="enabled">Whether coordinate transformation should be active</param>
-    Public Sub UpdateZoomState(viewportScreenBounds As Rectangle, gameClientSize As Size, gameWindowHandle As IntPtr, enabled As Boolean)
+    Public Sub UpdateZoomState(viewportScreenBounds As Rectangle, gameClientSize As Size, enabled As Boolean)
         If _zoomStateMmva Is Nothing Then Return
 
         Try
             Dim state As New ScalAZoomState With {
-                .ScalaPid = scalaPID,
-                .GameWindowHandle = gameWindowHandle.ToInt32(),
                 .ViewportX = viewportScreenBounds.X,
                 .ViewportY = viewportScreenBounds.Y,
-                .ViewportWidth = viewportScreenBounds.Width,
-                .ViewportHeight = viewportScreenBounds.Height,
-                .GameClientWidth = gameClientSize.Width,
-                .GameClientHeight = gameClientSize.Height,
+                .ViewportW = viewportScreenBounds.Width,
+                .ViewportH = viewportScreenBounds.Height,
+                .ClientW = gameClientSize.Width,
+                .ClientH = gameClientSize.Height,
                 .Enabled = If(enabled, 1, 0)
             }
             _zoomStateMmva.Write(0, state)
@@ -134,8 +124,6 @@ Module ZoomStateIPC
     ''' <summary>
     ''' Update zoom state from frmMain state - call this after zoom/move/resize events
     ''' </summary>
-    ''' <param name="frm">The FrmMain instance</param>
-    ''' <param name="enabled">Whether coordinate transformation should be active</param>
     Public Sub UpdateFromFrmMain(frm As FrmMain, enabled As Boolean)
         If frm Is Nothing OrElse frm.AltPP Is Nothing OrElse Not frm.AltPP.IsRunning Then
             SetZoomStateEnabled(False)
@@ -147,14 +135,12 @@ Module ZoomStateIPC
             InitZoomState(frm.AltPP.Id)
         End If
 
-        ' Get viewport screen bounds
-        Dim viewportScreenBounds As Rectangle = frm.RectangleToScreen(frm.pbZoom.Bounds)
-
-        ' Get game client size
-        Dim gameClientSize As Size = frm.AltPP.ClientRect.Size
+        ' Get viewport screen bounds and game client size
+        Dim viewportBounds As Rectangle = frm.RectangleToScreen(frm.pbZoom.Bounds)
+        Dim clientSize As Size = frm.AltPP.ClientRect.Size
 
         ' Update shared memory
-        UpdateZoomState(viewportScreenBounds, gameClientSize, frm.AltPP.MainWindowHandle, enabled)
+        UpdateZoomState(viewportBounds, clientSize, enabled)
     End Sub
 
 End Module
