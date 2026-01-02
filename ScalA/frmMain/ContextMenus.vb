@@ -2295,12 +2295,25 @@ Partial Public NotInheritable Class FrmMain
     Public Shared DragCursor As Cursor
     Public Shared draggeditem As ToolStripMenuItem = Nothing
 
-    Private Sub QL_DragEnter(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragEnter
-        'Debug.Print("QL dragenter")
+    Private Sub InvalidateRecurse(col As ToolStripItemCollection)
+        col(0).Owner.Invalidate()
+        For Each item In col.OfType(Of ToolStripMenuItem).Where(Function(it) it.HasDropDownItems)
+            InvalidateRecurse(item.DropDownItems)
+        Next
+    End Sub
+
+    Private Sub QL_DragEnter(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragEnter ', dropdown.dragenter
+        Debug.Print($"QL dragenter {sender}")
+
+        CustomToolStripRenderer.insertItemAbove = Nothing
+        CustomToolStripRenderer.insertItemBelow = Nothing
+
+        InvalidateRecurse(cmsQuickLaunch.Items)
+
         'e.Effect = DragDropEffects.Move
         Cursor.Current = DragCursor
     End Sub
-    Private Sub QL_DragOver(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragOver
+    Private Sub QL_DragOver(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragOver ', dropdown.dragover
 
         Dim draggedInfo As QLInfo = CType(draggeditem.Tag, QLInfo)
         Dim clientPt As Point
@@ -2345,22 +2358,26 @@ Partial Public NotInheritable Class FrmMain
             If insertIndex = 0 Then
                 CustomToolStripRenderer.insertItemAbove = Nothing
                 CustomToolStripRenderer.insertItemBelow = items(0)
-            ElseIf insertIndex = Items.Count Then
+            ElseIf insertIndex = items.Count Then
                 CustomToolStripRenderer.insertItemAbove = items(insertIndex)
                 CustomToolStripRenderer.insertItemBelow = Nothing
             Else
                 Dim aboveIndex = insertIndex - 1
+                Dim belowIndex = insertIndex
+                'Debug.Print($"indices a{aboveIndex} b{belowIndex}")
                 While aboveIndex AndAlso Not items(aboveIndex).Visible
                     aboveIndex -= 1
                 End While
-                Dim belowIndex = insertIndex
                 While belowIndex < lastIndex AndAlso Not items(belowIndex).Visible
                     belowIndex += 1
                 End While
                 CustomToolStripRenderer.insertItemAbove = items(aboveIndex)
                 CustomToolStripRenderer.insertItemBelow = items(belowIndex)
+
+                If CType(CustomToolStripRenderer.insertItemAbove.Tag, QLInfo).isFolder <> draggedInfo.isFolder Then CustomToolStripRenderer.insertItemAbove = Nothing
+                If CType(CustomToolStripRenderer.insertItemBelow.Tag, QLInfo).isFolder <> draggedInfo.isFolder Then CustomToolStripRenderer.insertItemBelow = Nothing
+
             End If
-            sender.Invalidate()
         Else
             e.Effect = DragDropEffects.None
             CustomToolStripRenderer.insertItemAbove = Nothing
@@ -2370,10 +2387,16 @@ Partial Public NotInheritable Class FrmMain
         If CustomToolStripRenderer.insertItemAbove Is draggeditem OrElse CustomToolStripRenderer.insertItemBelow Is draggeditem Then
             CustomToolStripRenderer.insertItemAbove = Nothing
             CustomToolStripRenderer.insertItemBelow = Nothing
-            sender.Invalidate()
         End If
 
+        sender.Invalidate()
     End Sub
+
+    Private Sub QL_QueryContinueDrag(ByVal sender As Object, ByVal e As QueryContinueDragEventArgs) 'Handles cmsQuickLaunch.QueryContinueDrag
+        Debug.Print($"QueryContinueDrag {sender} {sender.owner}")
+
+    End Sub
+
     Private Sub QL_DragLeave(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragLeave
         Debug.Print($"QL dragleave {sender.GetType}") 'this doesn't fire. idk why
         'e.Effect = DragDropEffects.Move
@@ -2541,6 +2564,8 @@ Partial Public NotInheritable Class FrmMain
 
             ' Start drag
             AddHandler sender.GiveFeedback, AddressOf QL_Givefeedback
+            AddHandler sender.QueryContinueDrag, AddressOf QL_QueryContinueDrag
+
             Cursor.Current = DragCursor
 
             draggeditem = sender
@@ -2549,9 +2574,10 @@ Partial Public NotInheritable Class FrmMain
             sender.Owner.Invalidate()
             Application.DoEvents()
 
-
             sender.DoDragDrop(sender, DragDropEffects.Move Or DragDropEffects.Scroll)
 
+
+            RemoveHandler sender.QueryContinueDrag, AddressOf QL_QueryContinueDrag
             RemoveHandler sender.GiveFeedback, AddressOf QL_Givefeedback
 
             sender.Checked = wasChecked
