@@ -1,10 +1,10 @@
 Imports System.IO
 Imports System.Net.Http
-Imports System.Runtime.CompilerServices
+Imports System.Web.Script.Serialization
 
 Public Class SDL2CompatInstaller
 
-    Private Const SDL2_COMPAT_RELEASE_URL As String = "https://github.com/libsdl-org/sdl2-compat/releases/latest/download/sdl2-compat-win32-x64.zip"
+    Private Const SDL2_COMPAT_RELEASE_LATEST_JSON As String = "https://api.github.com/repos/libsdl-org/sdl2-compat/releases/latest"
     Private Const SDL2_COMPAT_GITHUB_URL As String = "https://github.com/libsdl-org/sdl2-compat"
 
     Private _targetPath As String = String.Empty
@@ -82,10 +82,17 @@ Public Class SDL2CompatInstaller
                 If Not File.Exists(IO.Path.Combine(txtPath.Text, "SDL2.dll")) Then
                     lblStatus.Text = "Not an Astonia SDL game client"
                 Else
+                    btnInstall.Enabled = True
+                    Dim info As FileVersionInfo = FileVersionInfo.GetVersionInfo(IO.Path.Combine(txtPath.Text, "SDL2.dll"))
                     If Not File.Exists(IO.Path.Combine(txtPath.Text, "SDL3.dll")) Then
-                        btnInstall.Enabled = True
+                        btnInstall.Text = "Install/Repair"
+                    ElseIf info.ProductName = "Simple DirectMedia Layer 2.0 wrapper" Then
+                        Dim version = info.FileVersion.Replace(",", ".").ToCharArray.Where(Function(c) Not Char.IsWhiteSpace(c)).ToArray()
+                        lblStatus.Text = $"SDL2 compat {New String(version, 0, Array.LastIndexOf(version, "."c))} already installed"
+                        btnInstall.Text = "Update/Repair"
                     Else
-                        lblStatus.Text = "SDL3 already installed"
+                        lblStatus.Text = "Unknown Version Installed"
+                        btnInstall.Text = "Install/Repair"
                     End If
                 End If
             End If
@@ -150,12 +157,27 @@ Public Class SDL2CompatInstaller
 
             ' Download the zip file
             Using client As New HttpClient()
-                client.Timeout = TimeSpan.FromMinutes(5)
-                Using response = Await client.GetAsync(SDL2_COMPAT_RELEASE_URL, HttpCompletionOption.ResponseHeadersRead)
-                    response.EnsureSuccessStatusCode()
+                client.Timeout = TimeSpan.FromMinutes(1)
+                client.DefaultRequestHeaders.Add("User-Agent", "ScalA.exe/SDL2-Compat Installer for Astonia 3") ' GitHub API requires User-Agent
 
-                    Using fs As New IO.FileStream(tempZipPath, IO.FileMode.Create, IO.FileAccess.Write, IO.FileShare.None)
-                        Await response.Content.CopyToAsync(fs)
+                Using jsonResponse = Await client.GetAsync(SDL2_COMPAT_RELEASE_LATEST_JSON, HttpCompletionOption.ResponseHeadersRead)
+                    jsonResponse.EnsureSuccessStatusCode()
+
+                    'parse JSON file, get download URL
+                    Dim jsonText As String = Await jsonResponse.Content.ReadAsStringAsync()
+                    Dim serializer As New JavaScriptSerializer()
+                    Dim assets As Object() = serializer.DeserializeObject(jsonText)("assets")
+
+                    Dim assets0 As Dictionary(Of String, Object) = assets(0)
+
+                    Dim zipUrl As String = assets0.Where(Function(kv) kv.Key = "browser_download_url").FirstOrDefault.Value
+
+                    Debug.Print(zipUrl)
+
+                    Using response = Await client.GetAsync(zipUrl, HttpCompletionOption.ResponseHeadersRead)
+                        Using fs As New IO.FileStream(tempZipPath, IO.FileMode.Create, IO.FileAccess.Write, IO.FileShare.None)
+                            Await response.Content.CopyToAsync(fs)
+                        End Using
                     End Using
                 End Using
             End Using
@@ -183,7 +205,8 @@ Public Class SDL2CompatInstaller
 
             lblStatus.Text = "Installing..."
 
-            ' Copy SDL2.dll and SDL3.dll to target directory
+            ' Copy SDL2.dll and SDL3.dll to target directory. Todo: write SDL_compat_Installer.exe, If path is in ProgramFiles it needs elevation. it will also need to terminate and restart all clients that are installed there
+
             File.Copy(extractedSdl2, sdl2DllPath, True)
             File.Copy(extractedSdl3, sdl3DllPath, True)
 
@@ -200,8 +223,7 @@ Public Class SDL2CompatInstaller
 
             CustomMessageBox.Show(Me,
                 $"SDL2-compat has been installed successfully!{vbCrLf}{vbCrLf}" &
-                $"Installed to:{vbCrLf}{sdl2DllPath}{vbCrLf}{sdl3DllPath}{vbCrLf}{vbCrLf}" &
-                "Please restart the game client for changes to take effect.",
+                $"Installed to:{vbCrLf}{sdl2DllPath}{vbCrLf}{sdl3DllPath}{vbCrLf}{vbCrLf}",
                 "Installation Complete", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
             Me.DialogResult = DialogResult.OK

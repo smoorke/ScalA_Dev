@@ -3646,7 +3646,7 @@ Module QLSort
     End Function
 
     ''' <summary>
-    ''' Applies custom sort order to items. Items not in sort order are appended naturally sorted.
+    ''' Applies custom sort order to items.
     ''' </summary>
     Public Function ApplySortOrderV1(Of T)(items As IEnumerable(Of T), sortOrder As List(Of String), nameSelector As Func(Of T, String), nsSorter As IComparer(Of String)) As List(Of T)
         If sortOrder.Count = 0 Then
