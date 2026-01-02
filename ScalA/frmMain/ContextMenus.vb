@@ -3704,7 +3704,8 @@ Module QLSort
         'do magic
         Dim i As Integer = 0
         For j = 0 To ol.Count - 1
-            If sortOrder.Any(Function(s) s.Equals(nameSelector(ol(j)), StringComparison.OrdinalIgnoreCase)) Then
+            Dim oj = j
+            If sortOrder.Any(Function(s) s.Equals(nameSelector(ol(oj)), StringComparison.OrdinalIgnoreCase)) Then
                 ol(j) = pl(i) : i += 1
             End If
         Next
