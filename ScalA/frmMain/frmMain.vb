@@ -266,6 +266,9 @@ Partial Public NotInheritable Class FrmMain
                 ' Initialize zoom state for SDL2 wrapper
                 ZoomStateIPC.UpdateFromFrmMain(Me, If(AltPP?.isSDL, False))
 
+                ' Check if SDL2 wrapper should be installed
+                SDL2WrapperHelper.CheckAndPromptInstall(AltPP, Me)
+
                 moveBusy = False
             Else 'AltPP.Id = 0
 

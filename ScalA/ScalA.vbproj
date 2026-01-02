@@ -158,6 +158,7 @@
     <Compile Include="Hotkey.vb" />
     <Compile Include="IPC.vb" />
     <Compile Include="ZoomStateIPC.vb" />
+    <Compile Include="SDL2WrapperHelper.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
