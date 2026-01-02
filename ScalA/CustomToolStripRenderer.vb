@@ -71,8 +71,8 @@
     Public Shared insertItemAbove As ToolStripItem = Nothing
     Public Shared insertItemBelow As ToolStripItem = Nothing
 
-    Private Shared separatorPenNormal As New Pen(COLOR_WINDOWS_BLUE, 2)
-    Private Shared seperatorpenBold As New Pen(COLOR_WINDOWS_BLUE, 3)
+    Private Shared separatorPenNormal As New Pen(Color.Red, 2)
+    Private Shared seperatorpenBold As New Pen(Color.Red, 3)
 #If DEBUG Then
     Private Shared separatorPenAbove As New Pen(Color.Red, 2)   ' COLOR_HIGHLIGHT_BLUE), 1)
     Private Shared separatorPenBelow As New Pen(Color.Green, 2) ' COLOR_HIGHLIGHT_BLUE), 1)
@@ -82,7 +82,7 @@
 
         If FrmMain.draggeditem Is sender Then
             'dBug.log($"OnRenderMenuItemBackground selecting {sender}")
-            sender.Select()
+            sender.Select() 'todo add diffrent method to show which item is the dragsource
         End If
 
         MyBase.OnRenderMenuItemBackground(e)

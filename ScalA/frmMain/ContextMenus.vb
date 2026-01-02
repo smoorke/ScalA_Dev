@@ -822,6 +822,7 @@ Partial Public NotInheritable Class FrmMain
                                                     AddHandler smenu.DropDown.DragEnter, AddressOf QL_DragEnter
                                                     AddHandler smenu.DropDown.DragOver, AddressOf QL_DragOver
 
+
                                                     smenu.DropDown.AllowDrop = True
 
                                                     'AddHandler smenu.MouseDown, AddressOf QLMenuItem_MouseDown
@@ -839,7 +840,6 @@ Partial Public NotInheritable Class FrmMain
                                  End If
                              End Sub)
 
-            ' can't get enumeratedata to propagate exceptions so still using the old way here
             'Parallel.ForEach(IO.Directory.EnumerateFiles(pth).AsThrottled(usableCores).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)), opts,
             'Sub(fullLink As String)
             Parallel.ForEach(EnumerateData(pth, False, cantok).AsThrottled(usableCores).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p.cFileName).ToLower)), opts,
@@ -957,8 +957,8 @@ Partial Public NotInheritable Class FrmMain
 
         ' Apply custom sort order if available
         Dim sortOrder As List(Of String) = ReadSortOrder(pth)
-        Dim sortedDirs = ApplySortOrder(Dirs.ToList(), sortOrder, Function(d) CType(d.Tag, QLInfo).name, nsSorter)
-        Dim sortedFiles = ApplySortOrder(Files.ToList(), sortOrder, Function(f) IO.Path.GetFileName(CType(f.Tag, QLInfo).path), nsSorter)
+        Dim sortedDirs = ApplySortOrderV2(Dirs.ToList(), sortOrder, Function(d) CType(d.Tag, QLInfo).path.TrimEnd("\"c), nsSorter)
+        Dim sortedFiles = ApplySortOrderV2(Files.ToList(), sortOrder, Function(f) CType(f.Tag, QLInfo).path, nsSorter)
         Dim allItems = sortedDirs.Concat(sortedFiles).ToList()
 
         ' Handle overflow for large folders
@@ -1079,14 +1079,19 @@ Partial Public NotInheritable Class FrmMain
             .Tag = remainingItems,
             .ForeColor = COLOR_WINDOWS_BLUE
         }
-        AddHandler moreItem.Click, AddressOf LoadMoreItems_Click
+        AddHandler moreItem.MouseDown, AddressOf LoadMoreItems_MouseDown
         Return moreItem
     End Function
 
     ''' <summary>
     ''' Handles click on "Load More" item - inserts remaining items into the menu.
     ''' </summary>
-    Private Sub LoadMoreItems_Click(sender As Object, e As EventArgs)
+    Private Sub LoadMoreItems_MouseDown(sender As Object, e As MouseEventArgs)
+
+        If Not e.Button.HasFlag(MouseButtons.Left) Then
+            Exit Sub
+        End If
+
         Dim moreItem As ToolStripMenuItem = CType(sender, ToolStripMenuItem)
         Dim remainingItems As List(Of ToolStripItem) = CType(moreItem.Tag, List(Of ToolStripItem))
         Dim owner As ToolStripDropDown = moreItem.Owner
@@ -2303,7 +2308,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub QL_DragEnter(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragEnter ', dropdown.dragenter
-        Debug.Print($"QL dragenter {sender}")
+        'Debug.Print($"QL dragenter {sender}")
 
         CustomToolStripRenderer.insertItemAbove = Nothing
         CustomToolStripRenderer.insertItemBelow = Nothing
@@ -2313,6 +2318,10 @@ Partial Public NotInheritable Class FrmMain
         'e.Effect = DragDropEffects.Move
         Cursor.Current = DragCursor
     End Sub
+
+    Public QL_HoveredItem As ToolStripMenuItem = Nothing
+    Public QL_LastDropDownOpenTick As Integer = 0
+    Public QL_DropDownOpenDelayMs As Integer = 200
     Private Sub QL_DragOver(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragOver ', dropdown.dragover
 
         Dim draggedInfo As QLInfo = CType(draggeditem.Tag, QLInfo)
@@ -2330,6 +2339,8 @@ Partial Public NotInheritable Class FrmMain
             e.Effect = DragDropEffects.None
             Exit Sub
         End If
+
+        If Not items.Contains(draggeditem) Then Exit Sub
 
         Dim insertIndex = -1
 
@@ -2389,22 +2400,122 @@ Partial Public NotInheritable Class FrmMain
             CustomToolStripRenderer.insertItemBelow = Nothing
         End If
 
+
+        'drag and drop between submenus canceled untill we write itemcreation sub
+        sender.Invalidate()
+        Exit Sub
+
+
+        'handle opening of submenus
+
+        Dim now As Integer = Environment.TickCount
+
+        For Each item As ToolStripMenuItem In items.OfType(Of ToolStripMenuItem).Where(Function(it) it.Visible AndAlso it.HasDropDownItems AndAlso Not it.DropDown.Visible AndAlso TypeOf it.Tag Is QLInfo)
+            If item.Bounds.Contains(clientPt) Then
+
+                Dim elapsed As Integer = now - QL_LastDropDownOpenTick
+
+                If QL_HoveredItem IsNot item Then
+                    QL_HoveredItem = item
+                    Exit For
+                End If
+
+                If Not item.DropDown.Visible AndAlso elapsed >= QL_DropDownOpenDelayMs Then
+
+                    CloseOtherDropDowns(items)
+
+                    item.Select()
+                    item.ShowDropDown()
+                    QL_LastDropDownOpenTick = now
+
+                End If
+
+            End If
+        Next
+
         sender.Invalidate()
     End Sub
 
     Private Sub QL_QueryContinueDrag(ByVal sender As Object, ByVal e As QueryContinueDragEventArgs) 'Handles cmsQuickLaunch.QueryContinueDrag
-        Debug.Print($"QueryContinueDrag {sender} {sender.owner}")
+        'Debug.Print($"QueryContinueDrag {sender} {sender.owner}")
+
+        If WindowFromPoint(MousePosition) <> draggeditem.Owner.Handle Then
+            CustomToolStripRenderer.insertItemAbove = Nothing
+            CustomToolStripRenderer.insertItemBelow = Nothing
+            draggeditem.Owner.Invalidate()
+            Cursor.Current = Cursors.Default
+        End If
 
     End Sub
 
     Private Sub QL_DragLeave(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragLeave
-        Debug.Print($"QL dragleave {sender.GetType}") 'this doesn't fire. idk why
+        Debug.Print($"QL dragleave {sender}") 'this doesn't fire. idk why
         'e.Effect = DragDropEffects.Move
         CustomToolStripRenderer.insertItemAbove = Nothing
         CustomToolStripRenderer.insertItemBelow = Nothing
         sender.Invalidate()
         Cursor.Current = Cursors.Default
     End Sub
+
+    Private Sub QL_DragDrop(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragDrop
+        Debug.Print($"dragdrop {sender} {e.Data}")
+        Dim draggedInfo As QLInfo = CType(draggeditem.Tag, QLInfo)
+
+        Dim clientPt As Point = sender.PointToClient(New Point(e.X, e.Y))
+        Dim items As ToolStripItemCollection = sender.items
+
+        'If TypeOf sender Is ContextMenuStrip Then
+        '    clientPt = DirectCast(sender, ContextMenuStrip).PointToClient(New Point(e.X, e.Y))
+        'ElseIf TypeOf sender Is ToolStripDropDownMenu Then
+        '    clientPt = DirectCast(sender, ToolStripDropDownMenu).PointToClient(New Point(e.X, e.Y))
+        'End If
+
+        Dim insertIndex = -1
+
+        Dim lastFolderIndex As Integer = items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo AndAlso CType(it.Tag, QLInfo).isFolder).Count - 1
+        Dim lastIndex As Integer = items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo).Count - 1
+
+        For i As Integer = 0 To items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo).Count - 1
+            Dim item As ToolStripItem = items(i)
+            If TypeOf item IsNot ToolStripMenuItem Then Continue For
+
+            Dim info As QLInfo = item.Tag
+            ' Only consider same-type items
+            If info.isFolder <> draggedInfo.isFolder AndAlso i <> lastFolderIndex Then Continue For
+
+            If item.Bounds.Contains(clientPt) Then
+                Dim midY As Integer = item.Bounds.Y + (item.Bounds.Height \ 2)
+                insertIndex = If(clientPt.Y < midY, i, i + 1)
+                Exit For
+            End If
+        Next
+
+        'If draggeditem.HasDropDownItems Then draggeditem.DropDown.Close()
+
+        If items.IndexOf(draggeditem) < insertIndex Then insertIndex -= 1
+
+        If items.IndexOf(draggeditem) <> insertIndex AndAlso items(insertIndex).Tag.isfolder = draggeditem.Tag.isfolder Then
+            Debug.Print($"{items.IndexOf(draggeditem)}<>{insertIndex} {items(insertIndex).Tag.isfolder} {draggeditem.Tag.isfolder}")
+            items.Insert(insertIndex, draggeditem)
+
+
+
+            Dim path As String
+
+            If TypeOf sender Is ContextMenuStrip Then
+                path = My.Settings.links
+            Else
+                path = CType(sender.owneritem.Tag, QLInfo).path
+            End If
+
+            Debug.Print($"writesortorder {path}")
+
+            WriteSortOrder(path, items.Cast(Of ToolStripItem).Where(Function(i) TypeOf i.Tag Is QLInfo).Select(Function(it) CType(it.Tag, QLInfo).path.TrimEnd("\"c)))
+
+        End If
+
+    End Sub
+
     Private Sub QL_Givefeedback(sender As Object, e As GiveFeedbackEventArgs)
         e.UseDefaultCursors = False
     End Sub
@@ -2446,7 +2557,7 @@ Partial Public NotInheritable Class FrmMain
         ' Background luminance
         Dim bgLum As Integer = bgColor.R * 299 + bgColor.G * 587 + bgColor.B * 114
         'Dim whiteLum As Integer = 255 * 1000
-        Dim effectiveBgLum As Integer = CInt(bgLum * targetAlpha)
+        Dim effectiveBgLum As Integer = CInt(bgLum * targetAlpha * 0.9)
 
         For y As Integer = textRect.Top To textRect.Bottom - 1
             Dim srcRow As IntPtr = srcData.Scan0 + y * srcData.Stride
@@ -2478,7 +2589,7 @@ Partial Public NotInheritable Class FrmMain
     End Function
 
     Function createcursor_v1(sender As ToolStripMenuItem, e As MouseEventArgs) As Cursor
-        ' Ensure the dropdown is open to get proper bounds
+
         Dim ts As ToolStripDropDown = sender.Owner
 
         ' Create a bitmap of the whole dropdown
@@ -2508,10 +2619,10 @@ Partial Public NotInheritable Class FrmMain
         Dim textRect As Rectangle = New Rectangle(sender.ContentRectangle.X + 31, sender.ContentRectangle.Y - 1, sender.ContentRectangle.Width - 18, sender.ContentRectangle.Height)
 
         ' extract exact text pixels
-        Dim textMask As Bitmap = ExtractTextDarkPixels(targetBmp, textRect, bgColor, 0.7)
+        Dim textMask As Bitmap = ExtractTextDarkPixels(targetBmp, textRect, bgColor, 0.5)
 
         ' Apply transparency for drag cursor
-        Dim cursorBmp As Bitmap = New Bitmap(targetBmp.AsTransparent(0.7), targetBmp.Size)
+        Dim cursorBmp As Bitmap = New Bitmap(targetBmp.AsTransparent(0.5), targetBmp.Size)
 
         'redraw icon fully opaque and draw text
         If sender.Image IsNot Nothing Then
@@ -2561,31 +2672,31 @@ Partial Public NotInheritable Class FrmMain
 
             ' Create cursor
             DragCursor = createcursor_v1(sender, e)
+            Cursor.Current = DragCursor
 
             ' Start drag
             AddHandler sender.GiveFeedback, AddressOf QL_Givefeedback
             AddHandler sender.QueryContinueDrag, AddressOf QL_QueryContinueDrag
-
-            Cursor.Current = DragCursor
+            AddHandler sender.Owner.DragDrop, AddressOf QL_DragDrop
 
             draggeditem = sender
 
-            sender.Select()
             sender.Owner.Invalidate()
+            sender.DropDown?.Close()
             Application.DoEvents()
 
-            sender.DoDragDrop(sender, DragDropEffects.Move Or DragDropEffects.Scroll)
-
+            Dim res = sender.DoDragDrop(sender, DragDropEffects.Move Or DragDropEffects.Scroll)
 
             RemoveHandler sender.QueryContinueDrag, AddressOf QL_QueryContinueDrag
             RemoveHandler sender.GiveFeedback, AddressOf QL_Givefeedback
+            RemoveHandler sender.Owner.DragDrop, AddressOf QL_DragDrop
 
             sender.Checked = wasChecked
             CustomToolStripRenderer.insertItemAbove = Nothing
             CustomToolStripRenderer.insertItemBelow = Nothing
             draggeditem = Nothing
 
-            sender.Owner?.Invalidate()
+            InvalidateRecurse(cmsQuickLaunch.Items)
 
 
             'DragCursor = CreateAlphaCursor(New Bitmap(sender.Image.AsTransparent(0.8), sender.Image.Size), sender.Image.Height \ 2, sender.Image.Height \ 2)
@@ -3515,6 +3626,9 @@ Module QLSort
     Public Sub WriteSortOrder(folderPath As String, sortOrder As IEnumerable(Of String))
         Dim sortFile As String = IO.Path.Combine(folderPath, SORT_FILE_NAME)
         Try
+            ' clear hidden attrib so we can write
+            If IO.File.Exists(sortFile) Then IO.File.SetAttributes(sortFile, IO.FileAttributes.Normal)
+
             IO.File.WriteAllLines(sortFile, sortOrder)
             ' Set file as hidden
             IO.File.SetAttributes(sortFile, IO.FileAttributes.Hidden)
@@ -3534,20 +3648,69 @@ Module QLSort
     ''' <summary>
     ''' Applies custom sort order to items. Items not in sort order are appended naturally sorted.
     ''' </summary>
-    Public Function ApplySortOrder(Of T)(items As IEnumerable(Of T), sortOrder As List(Of String), nameSelector As Func(Of T, String), nsSorter As IComparer(Of String)) As List(Of T)
+    Public Function ApplySortOrderV1(Of T)(items As IEnumerable(Of T), sortOrder As List(Of String), nameSelector As Func(Of T, String), nsSorter As IComparer(Of String)) As List(Of T)
         If sortOrder.Count = 0 Then
             Return items.OrderBy(nameSelector, nsSorter).ToList()
         End If
 
-        Dim sorted = items.Where(Function(it) sortOrder.Any(Function(s) s.Equals(nameSelector(it), StringComparison.OrdinalIgnoreCase))) _
-                          .OrderBy(Function(it) GetSortIndex(sortOrder, nameSelector(it))).ToList()
+        ' Build pinned list in exact sortOrder
+        Dim pinned As New List(Of T)
+        For Each name In sortOrder
+            For Each it In items
+                If String.Equals(nameSelector(it), name, StringComparison.OrdinalIgnoreCase) Then
+                    pinned.Add(it)
+                End If
+            Next
+        Next
 
-        Dim unsorted = items.Where(Function(it) Not sortOrder.Any(Function(s) s.Equals(nameSelector(it), StringComparison.OrdinalIgnoreCase))) _
-                            .OrderBy(nameSelector, nsSorter).ToList()
+        ' Build free list
+        Dim freeItems = items _
+            .Where(Function(it) GetSortIndex(sortOrder, nameSelector(it)) = Integer.MaxValue) _
+            .OrderBy(nameSelector, nsSorter) _
+            .ToList()
 
-        sorted.AddRange(unsorted)
-        Return sorted
+        ' Merge
+        Dim result As New List(Of T)
+        Dim freeIdx As Integer = 0
+
+        For Each p In pinned
+            While freeIdx < freeItems.Count AndAlso
+                  nsSorter.Compare(nameSelector(freeItems(freeIdx)), nameSelector(p)) < 0
+                result.Add(freeItems(freeIdx))
+                freeIdx += 1
+            End While
+
+            result.Add(p)
+        Next
+
+        ' Append remaining free items
+        While freeIdx < freeItems.Count
+            result.Add(freeItems(freeIdx))
+            freeIdx += 1
+        End While
+
+        Return result
+
     End Function
+
+    Public Function ApplySortOrderV2(Of T)(items As IEnumerable(Of T), sortOrder As List(Of String), nameSelector As Func(Of T, String), nsSorter As IComparer(Of String)) As List(Of T)
+        'natural sort all items
+        Dim ol = items.OrderBy(nameSelector, nsSorter).ToList()
+        If sortOrder.Count = 0 Then Return ol
+        'extract pinned items in natural order
+        Dim pl = ol.Where(Function(it) sortOrder.Any(Function(s) s.Equals(nameSelector(it), StringComparison.OrdinalIgnoreCase))).ToList()
+        'sort pinned items to sortorder
+        pl.Sort(Function(a, b) GetSortIndex(sortOrder, nameSelector(a)).CompareTo(GetSortIndex(sortOrder, nameSelector(b))))
+        'do magic
+        Dim i As Integer = 0
+        For j = 0 To ol.Count - 1
+            If sortOrder.Any(Function(s) s.Equals(nameSelector(ol(j)), StringComparison.OrdinalIgnoreCase)) Then
+                ol(j) = pl(i) : i += 1
+            End If
+        Next
+        Return ol 'unpinned items stay in natural order, pinned items follow sortOrder
+    End Function
+
 End Module
 
 Public Structure QLInfo
