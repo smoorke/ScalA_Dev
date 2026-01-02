@@ -264,7 +264,7 @@ Partial Public NotInheritable Class FrmMain
                 End If
 
                 ' Initialize zoom state for SDL2 wrapper
-                ZoomStateIPC.UpdateFromFrmMain(Me, AltPP?.isSDL)
+                ZoomStateIPC.UpdateFromFrmMain(Me, If(AltPP?.isSDL, False))
 
                 moveBusy = False
             Else 'AltPP.Id = 0
@@ -1163,7 +1163,7 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         ' Update zoom state for SDL2 wrapper (viewport size changed)
-        ZoomStateIPC.UpdateFromFrmMain(Me, AltPP?.isSDL)
+        ZoomStateIPC.UpdateFromFrmMain(Me, If(AltPP?.isSDL, False))
 
     End Sub
 
