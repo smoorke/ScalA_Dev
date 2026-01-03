@@ -3404,7 +3404,7 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         Dim pp As Process = New Process With {.StartInfo = New ProcessStartInfo With {.FileName = tmpDir & bat,
-                                                                       .Arguments = """" & pth & """",
+                                                                       .Arguments = """" & pth.Replace("&", "^&") & """",
                                                                        .WorkingDirectory = System.IO.Path.GetDirectoryName(pth),
                                                                        .WindowStyle = ProcessWindowStyle.Hidden,
                                                                        .CreateNoWindow = True}}
