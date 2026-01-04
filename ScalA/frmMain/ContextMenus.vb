@@ -1016,13 +1016,7 @@ Partial Public NotInheritable Class FrmMain
 
     Dim QLCtxMenuOpenedOn As ToolStripMenuItem
 
-    ' Drag & Drop sorting state
-    Private qlDragItem As ToolStripMenuItem = Nothing
-    Private qlDragStartPoint As Point
-    Private qlDragActive As Boolean = False
-    Private qlDropTarget As ToolStripMenuItem = Nothing
-    Private qlDragFolderPath As String = Nothing
-    Private Const QL_DRAG_THRESHOLD As Integer = 5
+    ' Drag & Drop sorting state moved to QLDragDropHandler.State
 
     ' Flag to force QL close (bypasses Ctrl-held check)
     Private qlForceClose As Boolean = False
@@ -1038,44 +1032,33 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub QLMenuItem_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs)
         If e.Button = MouseButtons.Right AndAlso TypeOf sender.Tag Is QLInfo Then
-            qlDragItem = sender
-            qlDragStartPoint = e.Location
-            qlDragActive = False
-            Dim qli As QLInfo = sender.Tag
-            qlDragFolderPath = IO.Path.GetDirectoryName(qli.path.TrimEnd("\"c))
+            QLDragDropHandler.State.Start(sender, e.Location)
         End If
     End Sub
 
     Dim DragSep As New ToolStripSeparator
 
     Private Sub QLMenuItem_MouseMove(sender As ToolStripMenuItem, e As MouseEventArgs)
-        If qlDragItem IsNot Nothing AndAlso e.Button = MouseButtons.Right Then
+        Dim state = QLDragDropHandler.State
+        If state.DraggedItem IsNot Nothing AndAlso e.Button = MouseButtons.Right Then
             ' Check if we've moved enough to start dragging
-            'If Not qlDragActive Then
-            '    Dim dx As Integer = Math.Abs(e.X - qlDragStartPoint.X)
-            '    Dim dy As Integer = Math.Abs(e.Y - qlDragStartPoint.Y)
-            '    If dx > QL_DRAG_THRESHOLD OrElse dy > QL_DRAG_THRESHOLD Then
-            '        qlDragActive = True
-            '        dBug.Print($"QL Drag started: {qlDragItem.Text}")
-            '    End If
-            'End If
-
-            If sender IsNot qlDragItem Then
-
+            If Not state.IsActive AndAlso IsDragThresholdExceeded(state.StartPoint, e.Location) Then
+                state.IsActive = True
+                dBug.Print($"QL Drag started: {state.DraggedItem.Text}")
             End If
-
         End If
     End Sub
 
     Private Sub QLMenuItem_MouseEnter(sender As ToolStripMenuItem, e As EventArgs)
-        If qlDragActive AndAlso qlDragItem IsNot Nothing AndAlso sender IsNot qlDragItem Then
+        Dim state = QLDragDropHandler.State
+        If state.IsActive AndAlso state.DraggedItem IsNot Nothing AndAlso sender IsNot state.DraggedItem Then
             If TypeOf sender.Tag Is QLInfo Then
                 ' Clear previous highlight
-                If qlDropTarget IsNot Nothing AndAlso qlDropTarget IsNot sender Then
-                    qlDropTarget.BackColor = Color.Empty
+                If state.DropTarget IsNot Nothing AndAlso state.DropTarget IsNot sender Then
+                    state.DropTarget.BackColor = Color.Empty
                 End If
                 ' Highlight new drop target
-                qlDropTarget = sender
+                state.DropTarget = sender
                 sender.BackColor = Color.FromArgb(100, COLOR_HIGHLIGHT_BLUE)
                 dBug.Print($"QL Drop target: {sender.Text}")
             End If
@@ -1083,64 +1066,29 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub QLMenuItem_MouseUp(sender As ToolStripMenuItem, e As MouseEventArgs)
-        If qlDragActive AndAlso qlDragItem IsNot Nothing AndAlso qlDropTarget IsNot Nothing Then
-            ' Perform the reorder
-            ' PerformQLReorder(qlDragItem, qlDropTarget) 'this doesn't work
+        Dim state = QLDragDropHandler.State
+        If state.IsActive AndAlso state.DraggedItem IsNot Nothing AndAlso state.DropTarget IsNot Nothing Then
+            ' Perform the reorder - now handled by QL_DragDrop
         End If
         ' Clean up drag state
-        If qlDropTarget IsNot Nothing Then
-            qlDropTarget.BackColor = Color.Empty
-        End If
-        qlDragItem = Nothing
-        qlDragActive = False
-        qlDropTarget = Nothing
-        qlDragFolderPath = Nothing
+        state.Reset()
     End Sub
 
     Private Sub PerformQLReorder(dragItem As ToolStripMenuItem, dropTarget As ToolStripMenuItem)
-        If qlDragFolderPath Is Nothing Then Exit Sub
+        Dim state = QLDragDropHandler.State
+        If state.FolderPath Is Nothing Then Exit Sub
 
-        Dim dragQli As QLInfo = dragItem.Tag
-        Dim dropQli As QLInfo = dropTarget.Tag
+        Dim dragQli As QLInfo = CType(dragItem.Tag, QLInfo)
+        Dim dropQli As QLInfo = CType(dropTarget.Tag, QLInfo)
 
         Dim dragName As String = If(dragQli.path.EndsWith("\"), dragQli.name, IO.Path.GetFileName(dragQli.path))
         Dim dropName As String = If(dropQli.path.EndsWith("\"), dropQli.name, IO.Path.GetFileName(dropQli.path))
 
         dBug.Print($"QL Reorder: '{dragName}' to position of '{dropName}'")
 
-        ' Get current sort order or build from current menu
-        Dim sortOrder As List(Of String) = ReadSortOrder(qlDragFolderPath)
-
-        ' If no sort order exists, build it from the current menu items
-        If sortOrder.Count = 0 Then
-            Dim parent = dragItem.GetCurrentParent()
-            If parent IsNot Nothing Then
-                For Each item As ToolStripItem In parent.Items
-                    If TypeOf item Is ToolStripMenuItem AndAlso TypeOf item.Tag Is QLInfo Then
-                        Dim qli As QLInfo = item.Tag
-                        Dim itemName As String = If(qli.path.EndsWith("\"), qli.name, IO.Path.GetFileName(qli.path))
-                        sortOrder.Add(itemName)
-                    End If
-                Next
-            End If
-        End If
-
-        ' Remove drag item from current position
-        sortOrder.RemoveAll(Function(s) s.Equals(dragName, StringComparison.OrdinalIgnoreCase))
-
-        ' Find drop target position and insert
-        Dim dropIndex As Integer = sortOrder.FindIndex(Function(s) s.Equals(dropName, StringComparison.OrdinalIgnoreCase))
-        If dropIndex >= 0 Then
-            sortOrder.Insert(dropIndex, dragName)
-        Else
-            sortOrder.Add(dragName)
-        End If
-
-        ' Save the new sort order
-        WriteSortOrder(qlDragFolderPath, sortOrder)
-
-        ' Refresh the menu by triggering a re-parse (close and reopen would refresh)
-        dBug.Print($"QL Sort order saved: {String.Join(", ", sortOrder.Take(5))}...")
+        ' Delegate to QLDragDropHandler
+        QLDragDropHandler.UpdateSortOrder(state.FolderPath, dragName, dropName, dragItem.GetCurrentParent()?.Items)
+        dBug.Print($"QL Sort order saved")
     End Sub
 
     Private Sub QLMenuItem_Paint(sender As ToolStripMenuItem, e As PaintEventArgs)

@@ -1,9 +1,89 @@
 Namespace QL
 
     ''' <summary>
+    ''' Holds the state of a drag-drop operation
+    ''' </summary>
+    Public Class DragState
+        ''' <summary>
+        ''' The item currently being dragged
+        ''' </summary>
+        Public DraggedItem As ToolStripMenuItem = Nothing
+
+        ''' <summary>
+        ''' Custom cursor shown during drag
+        ''' </summary>
+        Public DragCursor As Cursor = Nothing
+
+        ''' <summary>
+        ''' The starting point of the drag operation
+        ''' </summary>
+        Public StartPoint As Point
+
+        ''' <summary>
+        ''' Whether a drag is actively in progress
+        ''' </summary>
+        Public IsActive As Boolean = False
+
+        ''' <summary>
+        ''' The current drop target during drag
+        ''' </summary>
+        Public DropTarget As ToolStripMenuItem = Nothing
+
+        ''' <summary>
+        ''' Path to the folder containing dragged items
+        ''' </summary>
+        Public FolderPath As String = Nothing
+
+        ''' <summary>
+        ''' Item being hovered over during drag
+        ''' </summary>
+        Public HoveredItem As ToolStripMenuItem = Nothing
+
+        ''' <summary>
+        ''' Tick count when last dropdown was opened
+        ''' </summary>
+        Public LastDropDownOpenTick As Integer = 0
+
+        ''' <summary>
+        ''' Resets the drag state after a drag operation completes
+        ''' </summary>
+        Public Sub Reset()
+            If DropTarget IsNot Nothing Then
+                DropTarget.BackColor = Color.Empty
+            End If
+            DraggedItem = Nothing
+            IsActive = False
+            DropTarget = Nothing
+            FolderPath = Nothing
+            HoveredItem = Nothing
+        End Sub
+
+        ''' <summary>
+        ''' Starts a new drag operation
+        ''' </summary>
+        ''' <param name="item">Item being dragged</param>
+        ''' <param name="startLocation">Starting mouse location</param>
+        Public Sub Start(item As ToolStripMenuItem, startLocation As Point)
+            DraggedItem = item
+            StartPoint = startLocation
+            IsActive = False
+
+            If TypeOf item.Tag Is QLInfo Then
+                Dim qli As QLInfo = CType(item.Tag, QLInfo)
+                FolderPath = IO.Path.GetDirectoryName(qli.path.TrimEnd("\"c))
+            End If
+        End Sub
+    End Class
+
+    ''' <summary>
     ''' Module for QuickLaunch drag-drop reordering logic
     ''' </summary>
     Public Module QLDragDropHandler
+
+        ''' <summary>
+        ''' Shared drag state for the QuickLaunch menu
+        ''' </summary>
+        Public ReadOnly State As New DragState()
 
         ''' <summary>
         ''' Drag threshold in pixels before drag operation starts
