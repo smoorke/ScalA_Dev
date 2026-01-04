@@ -1017,7 +1017,8 @@ Module NativeMethods
     End Enum
     <DllImport("user32.dll")>
     Public Function GetMessageExtraInfo() As IntPtr : End Function
-
+    <DllImport("kernel32.dll", CharSet:=CharSet.Unicode, SetLastError:=True)>
+    Public Function SetEnvironmentVariable(lpName As String, lpValue As String) As Boolean : End Function
     <StructLayout(LayoutKind.Sequential)>
     Public Structure PT
         Public x As Int32
