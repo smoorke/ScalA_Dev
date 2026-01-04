@@ -9,6 +9,8 @@ Public NotInheritable Class FrmSettings
     Public Property SysMenu As New SysMenu(Me)
     Dim startup As Boolean = True
     Private Shared ExplorerIcon As Bitmap = QLIconCache.GetIconFromFile(IO.Path.Combine(Environment.ExpandEnvironmentVariables("%windir%"), "explorer.exe"), supressCacheMiss:=True)
+
+#Region "Form Lifecycle"
     Private Sub FrmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         'storeZoom = My.Settings.zoom
 
@@ -314,7 +316,9 @@ Public NotInheritable Class FrmSettings
         'End If
         MyBase.WndProc(m)
     End Sub
+#End Region
 
+#Region "Utility Functions"
     Private restoreWhitelist As Boolean = My.Settings.Whitelist
 
     'https://docs.microsoft.com/en-us/windows/win32/api/shellapi/ne-shellapi-shstockiconid
@@ -400,7 +404,9 @@ Public NotInheritable Class FrmSettings
     '    FrmMain.btnMin.Enabled = Not sender.Checked
     '    FrmMain.btnMax.Enabled = Not sender.Checked
     'End Sub
+#End Region
 
+#Region "Save and Cancel"
     Private Function ParseResolutions() As Boolean
         Const width = 0
         Const height = 1
@@ -735,6 +741,9 @@ Public NotInheritable Class FrmSettings
     '    End If
 
     'End Sub
+#End Region
+
+#Region "Priority Helpers"
     Private Function mapCmbIndexToPriority(pri As Integer) As Integer
         Select Case pri
             Case 0
@@ -767,7 +776,9 @@ Public NotInheritable Class FrmSettings
                 Return -1
         End Select
     End Function
+#End Region
 
+#Region "Resolutions Tab"
     Private Sub TxtResolutions_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtResolutions.KeyPress
         If Not (Char.IsDigit(e.KeyChar) Or Char.IsControl(e.KeyChar) Or e.KeyChar.ToString.ToLower = "x") Then
             e.Handled = True
@@ -793,7 +804,9 @@ Public NotInheritable Class FrmSettings
     '    numYoffset.Text = 0
     '    manualNumUpdate = True
     'End Sub
+#End Region
 
+#Region "QuickLaunch Tab"
     Private Sub BtnOpenFolderDialog_Click(sender As Object, e As EventArgs) Handles btnOpenFolderDialog.Click
         txtQuickLaunchPath.SuspendLayout()
         txtQuickLaunchPath.Text = ChangeLinksDir(My.Settings.links)
@@ -835,7 +848,9 @@ Public NotInheritable Class FrmSettings
             dBug.Print($"Failed to open in explorer: {ex.Message}")
         End Try
     End Sub
+#End Region
 
+#Region "Hotkeys Tab"
     Private Shared ReadOnly keyNames() As String = {"", "", "", "", "", "", "", "", "{Backspace}", "{Tab}", "", "", "", "{Enter}", "", "", ' 0-15
                                     "", "", "", "{Pause}", "", "", "", "", "", "", "", "{Escape}", "", "", "", "", ' 16-31
                                     "{Space}", "{PageUp}", "{PageDown}", "{End}", "{Home}", "{Left}", "{Up}", "{Right}", "{Down}", "", "", "", "{PrintSrcn}", "{Insert}", "{Delete}", "", ' 32-47
@@ -1391,7 +1406,9 @@ Public NotInheritable Class FrmSettings
         txtCloseAll.LostFocus, txtTogTop.LostFocus, txtAlterOverviewMinKey.LostFocus, txtAlterOverviewPlusKey.LostFocus, txtAlterOverviewStarKey.LostFocus
         sender.backColor = Color.White
     End Sub
+#End Region
 
+#Region "Misc Handlers"
     Private Sub FrmSettings_Activated(sender As Object, e As EventArgs) Handles Me.Activated
         If Not Me.startup Then
             FrmMain.CloseOtherDropDowns(FrmMain.cmsQuickLaunch.Items, Nothing)
@@ -1404,5 +1421,6 @@ Public NotInheritable Class FrmSettings
             installer.ShowDialog(Me)
         End Using
     End Sub
+#End Region
 
 End Class
