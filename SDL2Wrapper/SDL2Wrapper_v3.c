@@ -28,10 +28,10 @@ typedef uint16_t Uint16;
 
 /* Header (64 bytes) - reserved space for future expansion */
 typedef struct {
-    int version;        /* Structure version set by ScalA */
-    int count;          /* Number of entries in use */
-    int dllVersion;     /* Version reported back by DLL (for mismatch detection) */
-    int reserved[13];   /* Reserved for future use */
+    int version;            /* Structure version set by ScalA */
+    int count;              /* Number of entries in use */
+    int versionMismatch;    /* Set to 1 by DLL if version doesn't match */
+    int reserved[13];       /* Reserved for future use */
 } ScalAZoomHeader;
 
 #define WRAPPER_VERSION 1
@@ -92,8 +92,10 @@ static void ConnectSharedMem(void) {
     if (g_hMapFile) {
         g_pState = (ScalAZoomState*)MapViewOfFile(g_hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, sizeof(ScalAZoomState));
         if (g_pState) {
-            /* Write our version so ScalA can detect mismatches */
-            g_pState->header.dllVersion = WRAPPER_VERSION;
+            /* Flip mismatch flag if ScalA version doesn't match ours */
+            if (g_pState->header.version != WRAPPER_VERSION) {
+                g_pState->header.versionMismatch = 1;
+            }
         }
     }
 }

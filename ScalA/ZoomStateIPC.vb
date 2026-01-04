@@ -31,7 +31,7 @@ Module ZoomStateIPC
     ' Header offsets
     Private Const HDR_VERSION As Integer = 0
     Private Const HDR_COUNT As Integer = 4
-    Private Const HDR_DLLVERSION As Integer = 8
+    Private Const HDR_VERSIONMISMATCH As Integer = 8
 
     ' Entry field offsets (relative to entry start)
     Private Const ENT_SCALAPID As Integer = 0
@@ -236,25 +236,16 @@ Module ZoomStateIPC
     End Sub
 
     ''' <summary>
-    ''' Get the DLL version reported by the wrapper (0 if not connected)
+    ''' Check if the DLL flagged a version mismatch
     ''' </summary>
-    Public Function GetDllVersion() As Integer
-        If _zoomStateMmva Is Nothing Then Return 0
-        Try
-            Return _zoomStateMmva.ReadInt32(HDR_DLLVERSION)
-        Catch
-            Return 0
-        End Try
-    End Function
-
-    ''' <summary>
-    ''' Check if there's a version mismatch between ScalA and the wrapper DLL
-    ''' </summary>
-    ''' <returns>True if mismatch detected, False if OK or not connected</returns>
+    ''' <returns>True if DLL set mismatch flag, False otherwise</returns>
     Public Function HasVersionMismatch() As Boolean
-        Dim dllVer As Integer = GetDllVersion()
-        If dllVer = 0 Then Return False ' Not connected yet
-        Return dllVer <> STRUCT_VERSION
+        If _zoomStateMmva Is Nothing Then Return False
+        Try
+            Return _zoomStateMmva.ReadInt32(HDR_VERSIONMISMATCH) <> 0
+        Catch
+            Return False
+        End Try
     End Function
 
 End Module
