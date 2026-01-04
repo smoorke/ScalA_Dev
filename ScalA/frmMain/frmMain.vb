@@ -124,6 +124,7 @@ Partial Public NotInheritable Class FrmMain
             'IPC.AddOrUpdateInstance(scalaPID, sender.SelectedIndex = 0, AltPP.Id)
             UpdateTitle()
             UpdateDpiWarning()
+            UpdateWrapperWarning()
 
             If sender.SelectedIndex = 0 Then
                 If Not My.Settings.gameOnOverview Then
@@ -400,6 +401,63 @@ Partial Public NotInheritable Class FrmMain
             Catch ex As Exception
                 dBug.Print($"Failed to enable DPI Override: {ex.Message}")
                 CustomMessageBox.Show(Me, "Failed to enable DPI Override: " & ex.Message,
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' Updates SDL2 wrapper warning icon visibility based on version mismatch detection.
+    ''' Shows warning when the DLL flags a version mismatch with ScalA.
+    ''' </summary>
+    Private Sub UpdateWrapperWarning()
+        If AltPP Is Nothing OrElse AltPP.Id = 0 OrElse Not AltPP.isSDL Then
+            pbWrapperWarning.Visible = False
+            Return
+        End If
+
+        ' Show warning if DLL detected version mismatch
+        Dim needsWarning As Boolean = ZoomStateIPC.HasVersionMismatch()
+        pbWrapperWarning.Visible = needsWarning
+
+        ' Position the icon right after the DPI warning (or title if DPI warning not visible)
+        If needsWarning Then
+            If pbDpiWarning.Visible Then
+                pbWrapperWarning.Left = pbDpiWarning.Right + 4
+            Else
+                pbWrapperWarning.Left = lblTitle.Right + 4
+            End If
+        End If
+    End Sub
+
+    Private Sub PbWrapperWarning_Click(sender As Object, e As MouseEventArgs) Handles pbWrapperWarning.MouseUp
+        If e.Button <> MouseButtons.Left Then Exit Sub
+
+        ' Reinstall wrapper for the current client
+        If AltPP IsNot Nothing AndAlso AltPP.Id <> 0 AndAlso AltPP.isSDL Then
+            Dim sdl2Dir As String = SDL2WrapperHelper.GetSDL2Directory(AltPP)
+            If String.IsNullOrEmpty(sdl2Dir) Then
+                CustomMessageBox.Show(Me, "Could not find SDL2.dll location for this game.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Return
+            End If
+
+            Try
+                If SDL2WrapperHelper.InstallWrapper(sdl2Dir) Then
+                    dBug.Print($"Reinstalled SDL2 wrapper to {sdl2Dir}")
+                    pbWrapperWarning.Visible = False
+
+                    CustomMessageBox.Show(Me, "SDL2 wrapper has been reinstalled." & vbCrLf & vbCrLf &
+                        "Restart the game for changes to take effect.",
+                        "Wrapper Updated", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Else
+                    CustomMessageBox.Show(Me, "Failed to reinstall SDL2 wrapper." & vbCrLf &
+                        "You may need to run ScalA as administrator.",
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                End If
+            Catch ex As Exception
+                dBug.Print($"Failed to reinstall wrapper: {ex.Message}")
+                CustomMessageBox.Show(Me, "Failed to reinstall SDL2 wrapper: " & ex.Message,
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
         End If
@@ -2096,7 +2154,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
     Private prevMPX As Integer
     Private Sub Caption_MouseMove(sender As Object, e As MouseEventArgs) Handles btnStart.MouseMove, cboAlt.MouseMove, cmbResolution.MouseMove,
-                                                                                 pnlTitleBar.MouseMove, lblTitle.MouseMove, pbDpiWarning.MouseMove,
+                                                                                 pnlTitleBar.MouseMove, lblTitle.MouseMove, pbDpiWarning.MouseMove, pbWrapperWarning.MouseMove,
                                                                                  pnlUpdate.MouseMove, pbUpdateAvailable.MouseMove, ChkEqLock.MouseMove,
                                                                                  pnlSys.MouseMove, btnMin.MouseMove, btnMax.MouseMove, btnQuit.MouseMove
         If cboAlt.SelectedIndex = 0 Then Exit Sub

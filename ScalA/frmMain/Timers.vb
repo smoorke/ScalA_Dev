@@ -116,6 +116,9 @@ Partial NotInheritable Class FrmMain
 
         If Not UpdateTitle() Then Exit Sub
 
+        ' Check for SDL2 wrapper version mismatch periodically
+        UpdateWrapperWarning()
+
         If Me.WindowState = FormWindowState.Minimized Then
             altSelectedOrOverview = Nothing
             Exit Sub
