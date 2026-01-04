@@ -5,13 +5,14 @@ Imports System.Threading
 ''' <summary>
 ''' Shares zoom state with SDL2 wrapper DLL for mouse coordinate transformation
 ''' Supports multiple ScalA instances controlling the same game
+''' Dynamically grows if more instances are needed
 ''' </summary>
 Module ZoomStateIPC
 
     ''' <summary>
-    ''' Maximum number of ScalA instances that can control the same game
+    ''' Initial capacity for ScalA instances - will grow if needed
     ''' </summary>
-    Public Const MAX_SCALA_INSTANCES As Integer = 8
+    Private Const INITIAL_CAPACITY As Integer = 32
 
     ''' <summary>
     ''' Header size (64 bytes) - reserved space for future expansion
@@ -24,14 +25,15 @@ Module ZoomStateIPC
     Public Const ENTRY_SIZE As Integer = 64
 
     ''' <summary>
-    ''' Current structure version
+    ''' Current structure version - bump when layout changes
     ''' </summary>
-    Public Const STRUCT_VERSION As Integer = 1
+    Public Const STRUCT_VERSION As Integer = 2
 
     ' Header offsets
     Private Const HDR_VERSION As Integer = 0
     Private Const HDR_COUNT As Integer = 4
     Private Const HDR_VERSIONMISMATCH As Integer = 8
+    Private Const HDR_MAXINSTANCES As Integer = 12  ' Current allocated capacity
 
     ' Entry field offsets (relative to entry start)
     Private Const ENT_SCALAPID As Integer = 0
@@ -48,11 +50,14 @@ Module ZoomStateIPC
     Private _zoomStateMutex As Mutex = Nothing
     Private _currentGamePid As Integer = 0
     Private _mySlotIndex As Integer = -1
+    Private _currentMaxInstances As Integer = 0
 
     ''' <summary>
-    ''' Size of the shared memory: 64-byte header + 64-byte entries
+    ''' Calculate shared memory size for given capacity
     ''' </summary>
-    Private ReadOnly SHARED_MEM_SIZE As Integer = HEADER_SIZE + (ENTRY_SIZE * MAX_SCALA_INSTANCES)
+    Private Function CalcSharedMemSize(capacity As Integer) As Integer
+        Return HEADER_SIZE + (ENTRY_SIZE * capacity)
+    End Function
 
     ''' <summary>
     ''' Initialize zoom state sharing for a specific game process
@@ -70,17 +75,35 @@ Module ZoomStateIPC
             Dim mutexName As String = $"ScalA_ZoomState_Mutex_{gamePid}"
 
             _zoomStateMutex = New Mutex(False, mutexName)
-            _zoomStateMmf = MemoryMappedFile.CreateOrOpen(mapName, SHARED_MEM_SIZE)
+
+            ' Try to open existing map first to check its size
+            Dim existingMax As Integer = 0
+            Try
+                Using existingMmf = MemoryMappedFile.OpenExisting(mapName)
+                    Using existingView = existingMmf.CreateViewAccessor()
+                        existingMax = existingView.ReadInt32(HDR_MAXINSTANCES)
+                    End Using
+                End Using
+            Catch
+                ' Map doesn't exist yet, we'll create it
+            End Try
+
+            ' Use existing capacity or initial capacity
+            _currentMaxInstances = If(existingMax > 0, existingMax, INITIAL_CAPACITY)
+            Dim memSize As Integer = CalcSharedMemSize(_currentMaxInstances)
+
+            _zoomStateMmf = MemoryMappedFile.CreateOrOpen(mapName, memSize)
             _zoomStateMmva = _zoomStateMmf.CreateViewAccessor()
             _currentGamePid = gamePid
 
-            ' Initialize header version if needed and find our slot
+            ' Initialize header and find our slot
             _zoomStateMutex.WaitOne()
             Try
-                ' Set version in header
+                ' Set version and max instances in header
                 _zoomStateMmva.Write(HDR_VERSION, STRUCT_VERSION)
+                _zoomStateMmva.Write(HDR_MAXINSTANCES, _currentMaxInstances)
                 _mySlotIndex = FindOrCreateSlot()
-                dBug.Print($"ZoomStateIPC: Initialized for game PID {gamePid}, using slot {_mySlotIndex}")
+                dBug.Print($"ZoomStateIPC: Initialized for game PID {gamePid}, using slot {_mySlotIndex}/{_currentMaxInstances}")
             Finally
                 _zoomStateMutex.ReleaseMutex()
             End Try
@@ -99,17 +122,20 @@ Module ZoomStateIPC
 
     ''' <summary>
     ''' Find existing slot for this ScalA instance or create a new one
+    ''' Will trigger resize if all slots are in use
     ''' </summary>
     Private Function FindOrCreateSlot() As Integer
         Dim myPid As Integer = scalaPID
+        Dim maxSlots As Integer = _currentMaxInstances
+        If maxSlots <= 0 Then maxSlots = INITIAL_CAPACITY
 
         ' Read current count from header
         Dim count As Integer = _zoomStateMmva.ReadInt32(HDR_COUNT)
-        If count < 0 OrElse count > MAX_SCALA_INSTANCES Then count = 0
+        If count < 0 OrElse count > maxSlots Then count = 0
 
         ' Look for existing slot with our PID or an empty/dead slot
         Dim emptySlot As Integer = -1
-        For i As Integer = 0 To MAX_SCALA_INSTANCES - 1
+        For i As Integer = 0 To maxSlots - 1
             Dim entryPid As Integer = _zoomStateMmva.ReadInt32(EntryOffset(i) + ENT_SCALAPID)
 
             If entryPid = myPid Then
@@ -129,8 +155,16 @@ Module ZoomStateIPC
             End If
         Next
 
+        ' If no empty slot found, try to resize
         If emptySlot = -1 Then
-            emptySlot = 0 ' Fallback to first slot if all are taken
+            If TryResize() Then
+                ' After resize, use the first new slot
+                emptySlot = maxSlots
+            Else
+                ' Resize failed, overwrite first slot as fallback
+                dBug.Print($"ZoomStateIPC: WARNING - All {maxSlots} slots in use, overwriting slot 0")
+                emptySlot = 0
+            End If
         End If
 
         ' Initialize our slot
@@ -144,6 +178,50 @@ Module ZoomStateIPC
         End If
 
         Return emptySlot
+    End Function
+
+    ''' <summary>
+    ''' Resize the shared memory to double the current capacity
+    ''' Must be called while holding the mutex
+    ''' </summary>
+    Private Function TryResize() As Boolean
+        If _zoomStateMmva Is Nothing OrElse _currentMaxInstances <= 0 Then Return False
+
+        Try
+            Dim oldMax As Integer = _currentMaxInstances
+            Dim newMax As Integer = oldMax * 2
+            Dim mapName As String = $"ScalA_ZoomState_{_currentGamePid}"
+            Dim oldSize As Integer = CalcSharedMemSize(oldMax)
+            Dim newSize As Integer = CalcSharedMemSize(newMax)
+
+            dBug.Print($"ZoomStateIPC: Resizing from {oldMax} to {newMax} instances")
+
+            ' Read all existing data
+            Dim oldData(oldSize - 1) As Byte
+            _zoomStateMmva.ReadArray(0, oldData, 0, oldSize)
+
+            ' Close current handles
+            _zoomStateMmva.Dispose()
+            _zoomStateMmf.Dispose()
+            _zoomStateMmva = Nothing
+            _zoomStateMmf = Nothing
+
+            ' Create new larger map (this replaces the old one since we closed it)
+            _zoomStateMmf = MemoryMappedFile.CreateOrOpen(mapName, newSize)
+            _zoomStateMmva = _zoomStateMmf.CreateViewAccessor()
+
+            ' Copy old data and update header
+            _zoomStateMmva.WriteArray(0, oldData, 0, oldSize)
+            _zoomStateMmva.Write(HDR_MAXINSTANCES, newMax)
+            _currentMaxInstances = newMax
+
+            dBug.Print($"ZoomStateIPC: Resize complete, now {newMax} instances")
+            Return True
+
+        Catch ex As Exception
+            dBug.Print($"ZoomStateIPC: Resize failed - {ex.Message}")
+            Return False
+        End Try
     End Function
 
     ''' <summary>
@@ -211,6 +289,7 @@ Module ZoomStateIPC
 
         _currentGamePid = 0
         _mySlotIndex = -1
+        _currentMaxInstances = 0
     End Sub
 
     ''' <summary>

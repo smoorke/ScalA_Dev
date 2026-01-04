@@ -21,8 +21,8 @@ typedef int64_t Sint64;
 typedef uint64_t Uint64;
 typedef uint16_t Uint16;
 
-/* Maximum ScalA instances per game - must match ZoomStateIPC.vb */
-#define MAX_SCALA_INSTANCES 8
+/* Default max instances - used if header.maxInstances is 0 (old ScalA) */
+#define DEFAULT_MAX_INSTANCES 32
 
 #pragma pack(push, 1)
 
@@ -31,10 +31,11 @@ typedef struct {
     int version;            /* Structure version set by ScalA */
     int count;              /* Number of entries in use */
     int versionMismatch;    /* Set to 1 by DLL if version doesn't match */
-    int reserved[13];       /* Reserved for future use */
+    int maxInstances;       /* Current allocated capacity (dynamic) */
+    int reserved[12];       /* Reserved for future use */
 } ScalAZoomHeader;
 
-#define WRAPPER_VERSION 1
+#define WRAPPER_VERSION 2
 
 /* Single entry for one ScalA instance (64 bytes) - reserved space for expansion */
 typedef struct {
@@ -49,18 +50,32 @@ typedef struct {
     int reserved[8];    /* Reserved for future use */
 } ScalAZoomEntry;
 
-/* Shared memory layout: header + array of entries */
-typedef struct {
-    ScalAZoomHeader header;
-    ScalAZoomEntry entries[MAX_SCALA_INSTANCES];
-} ScalAZoomState;
-
 #pragma pack(pop)
+
+/*
+ * Shared memory layout: header + dynamic array of entries
+ * The DLL maps enough for MAX_MAPPED_INSTANCES but only walks up to header.maxInstances
+ */
+#define MAX_MAPPED_INSTANCES 256  /* Max we'll map - should cover any reasonable usage */
+#define HEADER_SIZE 64
+#define ENTRY_SIZE 64
 
 static HMODULE g_hReal = NULL;
 static HANDLE g_hMapFile = NULL;
-static ScalAZoomState* g_pState = NULL;
+static void* g_pMappedMem = NULL;  /* Raw pointer to mapped memory */
 static char g_szError[256] = {0};
+
+/* Helper to get header from mapped memory */
+static ScalAZoomHeader* GetHeader(void) {
+    return (ScalAZoomHeader*)g_pMappedMem;
+}
+
+/* Helper to get entry by index from mapped memory */
+static ScalAZoomEntry* GetEntry(int index) {
+    if (!g_pMappedMem) return NULL;
+    char* base = (char*)g_pMappedMem;
+    return (ScalAZoomEntry*)(base + HEADER_SIZE + (index * ENTRY_SIZE));
+}
 
 /* ========== DLL Loading with Fallback ========== */
 
@@ -90,11 +105,14 @@ static void ConnectSharedMem(void) {
     sprintf(name, "ScalA_ZoomState_%lu", GetCurrentProcessId());
     g_hMapFile = OpenFileMappingA(FILE_MAP_READ | FILE_MAP_WRITE, FALSE, name);
     if (g_hMapFile) {
-        g_pState = (ScalAZoomState*)MapViewOfFile(g_hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, sizeof(ScalAZoomState));
-        if (g_pState) {
+        /* Map enough memory for max possible instances */
+        size_t mapSize = HEADER_SIZE + (ENTRY_SIZE * MAX_MAPPED_INSTANCES);
+        g_pMappedMem = MapViewOfFile(g_hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, mapSize);
+        if (g_pMappedMem) {
+            ScalAZoomHeader* hdr = GetHeader();
             /* Flip mismatch flag if ScalA version doesn't match ours */
-            if (g_pState->header.version != WRAPPER_VERSION) {
-                g_pState->header.versionMismatch = 1;
+            if (hdr->version != WRAPPER_VERSION) {
+                hdr->versionMismatch = 1;
             }
         }
     }
@@ -104,14 +122,22 @@ static void ConnectSharedMem(void) {
 
 /* Find the active entry whose viewport contains the mouse cursor */
 static ScalAZoomEntry* FindActiveEntry(POINT* pt) {
-    if (!g_pState) return NULL;
+    if (!g_pMappedMem) return NULL;
 
-    int count = g_pState->header.count;
-    if (count <= 0 || count > MAX_SCALA_INSTANCES) count = MAX_SCALA_INSTANCES;
+    ScalAZoomHeader* hdr = GetHeader();
+
+    /* Read maxInstances from header, fall back to default if 0 (old ScalA) */
+    int maxInstances = hdr->maxInstances;
+    if (maxInstances <= 0) maxInstances = DEFAULT_MAX_INSTANCES;
+    if (maxInstances > MAX_MAPPED_INSTANCES) maxInstances = MAX_MAPPED_INSTANCES;
+
+    int count = hdr->count;
+    if (count <= 0 || count > maxInstances) count = maxInstances;
 
     /* Walk array to find an enabled entry whose viewport contains the mouse */
     for (int i = 0; i < count; i++) {
-        ScalAZoomEntry* e = &g_pState->entries[i];
+        ScalAZoomEntry* e = GetEntry(i);
+        if (!e) continue;
 
         if (e->scalaPID == 0 || !e->enabled) continue;
         if (e->viewportW <= 0 || e->viewportH <= 0) continue;
@@ -128,8 +154,8 @@ static ScalAZoomEntry* FindActiveEntry(POINT* pt) {
 }
 
 static void MapMousePos(int* x, int* y) {
-    if (!g_pState) ConnectSharedMem();
-    if (!g_pState) return;
+    if (!g_pMappedMem) ConnectSharedMem();
+    if (!g_pMappedMem) return;
 
     POINT pt;
     GetCursorPos(&pt);
@@ -1422,7 +1448,7 @@ BOOL WINAPI DllMain(HINSTANCE hInst, DWORD reason, LPVOID reserved) {
         ConnectSharedMem();
 
     } else if (reason == DLL_PROCESS_DETACH) {
-        if (g_pState) { UnmapViewOfFile(g_pState); g_pState = NULL; }
+        if (g_pMappedMem) { UnmapViewOfFile(g_pMappedMem); g_pMappedMem = NULL; }
         if (g_hMapFile) { CloseHandle(g_hMapFile); g_hMapFile = NULL; }
         if (g_hReal) { FreeLibrary(g_hReal); g_hReal = NULL; }
     }
