@@ -52,7 +52,11 @@
     End Sub
 
     Protected Overrides Sub OnRenderItemImage(e As ToolStripItemImageRenderEventArgs)
-        e.Graphics.DrawImage(e.Item.Image, e.ImageRectangle)
+        Try
+            e.Graphics.DrawImage(e.Item.Image, e.ImageRectangle)
+        Catch ex As Exception
+            e.Graphics.DrawImage(e.Item.Image.Clone(), e.ImageRectangle)
+        End Try
     End Sub
 
     Private Sub InvalidateCheckedItems(items As ToolStripItemCollection)
