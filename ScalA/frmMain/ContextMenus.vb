@@ -747,7 +747,7 @@ Partial Public NotInheritable Class FrmMain
 
     Private Shared ReadOnly nsSorter As IComparer(Of String) = New NaturalStringSorter
 
-    Private Function ParseDir(pth As String) As List(Of ToolStripItem)
+    Private Function ParseDir(pth As String, Optional itemsOnly As Boolean = False) As List(Of ToolStripItem)
         Dim menuItems As New List(Of ToolStripItem)
         Dim isEmpty As Boolean = True
         'Const ICONTIMEOUT = 50
@@ -960,6 +960,11 @@ Partial Public NotInheritable Class FrmMain
         Dim sortedDirs = ApplySortOrderV2(Dirs.ToList(), sortOrder, Function(d) CType(d.Tag, QLInfo).path.TrimEnd("\"c), nsSorter)
         Dim sortedFiles = ApplySortOrderV2(Files.ToList(), sortOrder, Function(f) CType(f.Tag, QLInfo).path, nsSorter)
         Dim allItems = sortedDirs.Concat(sortedFiles).ToList()
+
+        If itemsOnly Then
+            DeferredIconLoading(Dirs, Files, cantok)
+            Return allItems
+        End If
 
         ' Handle overflow for large folders
         If allItems.Count > QL_INITIAL_ITEMS Then
@@ -1927,7 +1932,7 @@ Partial Public NotInheritable Class FrmMain
             End Try
         End If
 
-        ' Allow close when force close flag is set (e.g., paste action)
+        ' Allow close when force close flag is set
         If qlForceClose Then
             cts?.Cancel()
             Return
@@ -2025,8 +2030,8 @@ Partial Public NotInheritable Class FrmMain
         Dim Name As String = qli.name
 
         dBug.Print($"QlCtxRename {Path} {Name}")
-        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
-        cmsQuickLaunch.Close()
+        'CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        'cmsQuickLaunch.Close()
         RenameMethod(Path, Name)
     End Sub
 
@@ -2087,7 +2092,7 @@ Partial Public NotInheritable Class FrmMain
 
                      Threading.Thread.Sleep(50)
                      Try
-                         AppActivate(scalaPID)
+                         'AppActivate(scalaPID)
                      Catch ex As Exception
                          dBug.Print($"Failed to activate ScalA after rename dialog: {ex.Message}")
                      End Try
@@ -2222,8 +2227,10 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub QlCtxDelete(sender As MenuItem, e As EventArgs)
-        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
-        cmsQuickLaunch.Close()
+        'CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        'cmsQuickLaunch.Close()
+
+        Dim tsmi As ToolStripMenuItem = sender.Parent.Tag
 
         Dim Path As String = CType(sender.Parent.Tag.Tag, QLInfo).path
         Dim name As String = sender.Parent.Tag.Text
@@ -2237,16 +2244,27 @@ Partial Public NotInheritable Class FrmMain
             Dim filesCount As Integer = System.IO.Directory.GetFiles(Path, "*.*", IO.SearchOption.AllDirectories).Where(Function(f) IO.Path.GetFileName(f.ToLower) <> "desktop.ini").Count
             Dim filS As String = If(filesCount = 1, "", "s")
             folderContentsMessage &= $"This folder contains {folderCount} folder{folS} and {filesCount} file{filS}."
-            If shiftdown OrElse CustomMessageBox.Show(Me, $"Are you sure you want to move ""{name}"" to the Recycle Bin?" & folderContentsMessage & $"{vbCrLf}Hold Shift to Permanently Delete.",
+            If shiftdown OrElse CustomMessageBox.Show(Control.FromHandle(tsmi.DropDown.Handle), $"Are you sure you want to move ""{name}"" to the Recycle Bin?" & folderContentsMessage & $"{vbCrLf}Hold Shift to Permanently Delete.",
                                        "Confirm Delete", MessageBoxButtons.YesNo) = DialogResult.Yes Then
                 My.Computer.FileSystem.DeleteDirectory(Path, FileIO.UIOption.OnlyErrorDialogs,
                          If(shiftdown OrElse My.Computer.Keyboard.ShiftKeyDown, FileIO.RecycleOption.DeletePermanently, FileIO.RecycleOption.SendToRecycleBin),
                          FileIO.UICancelOption.DoNothing)
+                If Not IO.Directory.Exists(Path) Then
+                    If tsmi.HasDropDownItems Then
+                        CloseOtherDropDowns(tsmi.GetCurrentParent().Items)
+                    End If
+                    tsmi.GetCurrentParent().Items.Remove(tsmi)
+                    'Application.DoEvents()
+                End If
             End If
         Else
-            My.Computer.FileSystem.DeleteFile(Path, FileIO.UIOption.AllDialogs,
+            My.Computer.FileSystem.DeleteFile(Path, FileIO.UIOption.OnlyErrorDialogs,
                          If(shiftdown, FileIO.RecycleOption.DeletePermanently, FileIO.RecycleOption.SendToRecycleBin),
                          FileIO.UICancelOption.DoNothing)
+            If Not IO.File.Exists(Path) Then
+                tsmi.GetCurrentParent().Items.Remove(tsmi)
+                'Application.DoEvents()
+            End If
         End If
     End Sub
 
@@ -3033,22 +3051,36 @@ Partial Public NotInheritable Class FrmMain
         Dim tgt As String = sender.tag.path
         Dim act As String = sender.tag.action
 
+        Dim dropdown As Object
+
+        If TypeOf sender Is MenuItem Then
+            Dim tsmi As ToolStripMenuItem = CType(sender, MenuItem).Parent.Tag
+            If tsmi.HasDropDownItems Then
+                dropdown = TopMostToolStripMenuItem.DropDown
+            Else
+                dropdown = tsmi.GetCurrentParent()
+            End If
+        Else
+            dropdown = Nothing
+        End If
+
+
         If {"Paste", "PasteLink"}.Contains(act) Then
             ' Show confirmation when pasting folders
-            Dim folderCount As Integer = clipBoardInfo.Files.Where(Function(f) IO.Directory.Exists(f)).Count()
-            If folderCount > 0 Then
-                Dim fileCount As Integer = clipBoardInfo.Files.Where(Function(f) IO.File.Exists(f)).Count()
-                Dim msg As String
-                If fileCount > 0 AndAlso folderCount > 0 Then
-                    msg = $"About to paste {fileCount} file(s) and {folderCount} folder(s).{vbCrLf}{vbCrLf}Are you sure you want to continue?"
-                Else
-                    msg = $"About to paste {folderCount} folder(s).{vbCrLf}{vbCrLf}Are you sure you want to continue?"
-                End If
-                Dim confirmResult = CustomMessageBox.Show(Me, msg, "Confirm Paste", MessageBoxButtons.OKCancel, MessageBoxIcon.Question)
-                If confirmResult <> DialogResult.OK Then
-                    Exit Sub
-                End If
-            End If
+            'Dim folderCount As Integer = clipBoardInfo.Files.Where(Function(f) IO.Directory.Exists(f)).Count()
+            'If folderCount > 0 Then
+            '    Dim fileCount As Integer = clipBoardInfo.Files.Where(Function(f) IO.File.Exists(f)).Count()
+            '    Dim msg As String
+            '    If fileCount > 0 AndAlso folderCount > 0 Then
+            '        msg = $"About to paste {fileCount} file(s) and {folderCount} folder(s).{vbCrLf}{vbCrLf}Are you sure you want to continue?"
+            '    Else
+            '        msg = $"About to paste {folderCount} folder(s).{vbCrLf}{vbCrLf}Are you sure you want to continue?"
+            '    End If
+            '    Dim confirmResult = CustomMessageBox.Show(Me, msg, "Confirm Paste", MessageBoxButtons.OKCancel, MessageBoxIcon.Question)
+            '    If confirmResult <> DialogResult.OK Then
+            '        Exit Sub
+            '    End If
+            'End If
             tgt = IO.Path.GetDirectoryName(tgt.TrimEnd("\"c))
 
             ' Set paste tracking state instead of closing menu
@@ -3088,9 +3120,9 @@ Partial Public NotInheritable Class FrmMain
 
                          If found Then
                              dBug.Print($"enumwindow {hndl} ""{GetWindowText(hndl)}""")
-                             SetWindowPos(hndl, If(My.Settings.topmost, SWP_HWND.TOPMOST, SWP_HWND.TOP), 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
-                             SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
-                             If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
+                             SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
+                             'SetWindowLong(hndl, GWL_HWNDPARENT, topWindHandle)
+                             'If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
 
                              ' Wait for progress dialog to close (paste complete)
                              While IsWindow(hndl)
@@ -3105,16 +3137,22 @@ Partial Public NotInheritable Class FrmMain
                          ' Refresh the menu after paste completes
                          If Not Me.Disposing AndAlso Not Me.IsDisposed Then
                              Try
+                                 Dim newItems = ParseDir(tgt, True) ' Your function returning updated items
                                  Me.Invoke(Sub()
-                                               dBug.Print($"Refreshing QL after paste, owner={qlPasteOwnerItem?.Text}")
-                                               If qlPasteOwnerItem IsNot Nothing AndAlso cmsQuickLaunch.Visible Then
-                                                   ' Refresh the folder's dropdown contents
-                                                   ParseSubDir(qlPasteOwnerItem, EventArgs.Empty)
-                                               End If
-                                               qlPasting = False
-                                               qlPasteTargetPath = Nothing
-                                               qlPasteOwnerItem = Nothing
+                                               Dim idx = 0
+                                               Dim insertIndex = 0
+                                               Dim origitems As ToolStripItemCollection = dropdown.items
+                                               For Each item As ToolStripMenuItem In newItems.Cast(Of ToolStripItem).OfType(Of ToolStripMenuItem).Where(Function(it) TypeOf it.Tag Is QLInfo).ToList
+                                                   Dim qli As QLInfo = item.Tag
+                                                   If qli.path <> CType(origitems(idx).Tag, QLInfo).path Then
+                                                       origitems.Insert(insertIndex, newItems(idx))
+                                                       'newItems.RemoveAt(idx)
+                                                   End If
+                                                   idx += 1
+                                                   insertIndex += 1
+                                               Next
                                            End Sub)
+
                              Catch ex As Exception
                                  dBug.Print($"Failed to refresh QL after paste: {ex.Message}")
                              End Try
@@ -3328,7 +3366,7 @@ Partial Public NotInheritable Class FrmMain
 
     Dim explorerPath As String = Environment.ExpandEnvironmentVariables("%windir%\explorer.exe").Trim.ToLowerInvariant()
     Private waitCursorTimer As Stopwatch
-    Private Sub OpenLnk(ByVal sender As ToolStripItem, ByVal e As System.Windows.Forms.MouseEventArgs) 'handles item.MouseDown
+    Private Sub OpenLnk(ByVal sender As ToolStripMenuItem, ByVal e As System.Windows.Forms.MouseEventArgs) 'handles item.MouseDown
 
         Dim qli = sender.Tag
         Dim pth As String = qli.path
@@ -3394,29 +3432,38 @@ Partial Public NotInheritable Class FrmMain
                       setMenuCursor(cmsQuickLaunch, Cursors.WaitCursor)
                   End Sub)
 
-        Dim bat As String = "\AsInvoker.bat"
-        Dim tmpDir As String = IO.Path.Combine(FileIO.SpecialDirectories.Temp, "ScalA")
+        'Dim bat As String = "\AsInvoker.bat"
+        'Dim tmpDir As String = IO.Path.Combine(FileIO.SpecialDirectories.Temp, "ScalA")
 
-        If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
-        If Not FileIO.FileSystem.FileExists(tmpDir & bat) OrElse
-           Not FileIO.FileSystem.GetFileInfo(tmpDir & bat).Length = My.Resources.AsInvoker.Length Then
-            FileIO.FileSystem.WriteAllText(tmpDir & bat, My.Resources.AsInvoker, False, System.Text.Encoding.ASCII)
-        End If
+        'If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
+        'If Not FileIO.FileSystem.FileExists(tmpDir & bat) OrElse
+        '   Not FileIO.FileSystem.GetFileInfo(tmpDir & bat).Length = My.Resources.AsInvoker.Length Then
+        '    FileIO.FileSystem.WriteAllText(tmpDir & bat, My.Resources.AsInvoker, False, System.Text.Encoding.ASCII)
+        'End If
 
-        Dim pp As Process = New Process With {.StartInfo = New ProcessStartInfo With {.FileName = tmpDir & bat,
-                                                                       .Arguments = """" & pth & """",
-                                                                       .WorkingDirectory = System.IO.Path.GetDirectoryName(pth),
-                                                                       .WindowStyle = ProcessWindowStyle.Hidden,
-                                                                       .CreateNoWindow = True}}
+        'Dim pp As Process = New Process With {.StartInfo = New ProcessStartInfo With {.FileName = tmpDir & bat,
+        '                                                               .Arguments = """" & pth.Replace("^", "^^").Replace("&", "^&").Replace("%", "^%") & """",
+        '                                                               .WorkingDirectory = System.IO.Path.GetDirectoryName(pth),
+        '                                                               .WindowStyle = ProcessWindowStyle.Hidden,
+        '                                                               .CreateNoWindow = True}}
+
+        Dim pp As Process = New Process With {.StartInfo = New ProcessStartInfo With {
+                                                               .FileName = pth,
+                                                               .WorkingDirectory = System.IO.Path.GetDirectoryName(pth)}}
 
 
         Try
+            SetEnvironmentVariable("__COMPAT_LAYER", "RUNASINVOKER")
             pp.Start()
             MRU.Add(pth)
         Catch ex As Exception
             dBug.Print($"pp.start {ex.Message}")
+            Me.Invoke(Sub()
+                          CustomMessageBox.Show(Control.FromHandle(sender.Owner.Handle), $"Failed to launch{vbCrLf}{pth}{vbCrLf}{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                      End Sub)
         Finally
             pp.Dispose()
+            SetEnvironmentVariable("__COMPAT_LAYER", Nothing)
             Task.Run(Sub()
                          Dim timout As Integer = 123
                          Threading.Thread.Sleep(timout)
