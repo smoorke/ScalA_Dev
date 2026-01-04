@@ -28,10 +28,13 @@ typedef uint16_t Uint16;
 
 /* Header (64 bytes) - reserved space for future expansion */
 typedef struct {
-    int version;        /* Structure version (currently 1) */
+    int version;        /* Structure version set by ScalA */
     int count;          /* Number of entries in use */
-    int reserved[14];   /* Reserved for future use */
+    int dllVersion;     /* Version reported back by DLL (for mismatch detection) */
+    int reserved[13];   /* Reserved for future use */
 } ScalAZoomHeader;
+
+#define WRAPPER_VERSION 1
 
 /* Single entry for one ScalA instance (64 bytes) - reserved space for expansion */
 typedef struct {
@@ -85,9 +88,14 @@ static void ConnectSharedMem(void) {
     if (g_hMapFile) return;
     char name[64];
     sprintf(name, "ScalA_ZoomState_%lu", GetCurrentProcessId());
-    g_hMapFile = OpenFileMappingA(FILE_MAP_READ, FALSE, name);
-    if (g_hMapFile)
-        g_pState = (ScalAZoomState*)MapViewOfFile(g_hMapFile, FILE_MAP_READ, 0, 0, sizeof(ScalAZoomState));
+    g_hMapFile = OpenFileMappingA(FILE_MAP_READ | FILE_MAP_WRITE, FALSE, name);
+    if (g_hMapFile) {
+        g_pState = (ScalAZoomState*)MapViewOfFile(g_hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, sizeof(ScalAZoomState));
+        if (g_pState) {
+            /* Write our version so ScalA can detect mismatches */
+            g_pState->header.dllVersion = WRAPPER_VERSION;
+        }
+    }
 }
 
 /* ========== Mouse Position Mapping ========== */
