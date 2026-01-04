@@ -1,28 +1,57 @@
 Imports System.IO.MemoryMappedFiles
 Imports System.Runtime.InteropServices
+Imports System.Threading
 
 ''' <summary>
 ''' Shares zoom state with SDL2 wrapper DLL for mouse coordinate transformation
+''' Supports multiple ScalA instances controlling the same game
 ''' </summary>
 Module ZoomStateIPC
 
     ''' <summary>
-    ''' Zoom state structure - must match SDL2Wrapper's ScalAZoomState (28 bytes)
+    ''' Maximum number of ScalA instances that can control the same game
     ''' </summary>
-    <StructLayout(LayoutKind.Sequential, Pack:=1)>
-    Public Structure ScalAZoomState
-        Public ViewportX As Integer         ' pbZoom screen X position
-        Public ViewportY As Integer         ' pbZoom screen Y position
-        Public ViewportW As Integer         ' pbZoom width (what user sees)
-        Public ViewportH As Integer         ' pbZoom height (what user sees)
-        Public ClientW As Integer           ' Original game client width
-        Public ClientH As Integer           ' Original game client height
-        Public Enabled As Integer           ' 1 if transform active, 0 otherwise
-    End Structure
+    Public Const MAX_SCALA_INSTANCES As Integer = 8
+
+    ''' <summary>
+    ''' Header size (64 bytes) - reserved space for future expansion
+    ''' </summary>
+    Public Const HEADER_SIZE As Integer = 64
+
+    ''' <summary>
+    ''' Entry size (64 bytes) - reserved space for future expansion
+    ''' </summary>
+    Public Const ENTRY_SIZE As Integer = 64
+
+    ''' <summary>
+    ''' Current structure version
+    ''' </summary>
+    Public Const STRUCT_VERSION As Integer = 1
+
+    ' Header offsets
+    Private Const HDR_VERSION As Integer = 0
+    Private Const HDR_COUNT As Integer = 4
+
+    ' Entry field offsets (relative to entry start)
+    Private Const ENT_SCALAPID As Integer = 0
+    Private Const ENT_VIEWPORTX As Integer = 4
+    Private Const ENT_VIEWPORTY As Integer = 8
+    Private Const ENT_VIEWPORTW As Integer = 12
+    Private Const ENT_VIEWPORTH As Integer = 16
+    Private Const ENT_CLIENTW As Integer = 20
+    Private Const ENT_CLIENTH As Integer = 24
+    Private Const ENT_ENABLED As Integer = 28
 
     Private _zoomStateMmf As MemoryMappedFile = Nothing
     Private _zoomStateMmva As MemoryMappedViewAccessor = Nothing
+    Private _zoomStateMutex As Mutex = Nothing
     Private _currentGamePid As Integer = 0
+    Private _mySlotIndex As Integer = -1
+
+    ''' <summary>
+    ''' Size of the shared memory: 64-byte header + 64-byte entries
+    ''' </summary>
+    Private ReadOnly SHARED_MEM_SIZE As Integer = HEADER_SIZE + (ENTRY_SIZE * MAX_SCALA_INSTANCES)
 
     ''' <summary>
     ''' Initialize zoom state sharing for a specific game process
@@ -37,45 +66,102 @@ Module ZoomStateIPC
 
         Try
             Dim mapName As String = $"ScalA_ZoomState_{gamePid}"
-            _zoomStateMmf = MemoryMappedFile.CreateOrOpen(mapName, Marshal.SizeOf(GetType(ScalAZoomState)))
+            Dim mutexName As String = $"ScalA_ZoomState_Mutex_{gamePid}"
+
+            _zoomStateMutex = New Mutex(False, mutexName)
+            _zoomStateMmf = MemoryMappedFile.CreateOrOpen(mapName, SHARED_MEM_SIZE)
             _zoomStateMmva = _zoomStateMmf.CreateViewAccessor()
             _currentGamePid = gamePid
 
-            ' Initialize with disabled state
-            Dim initialState As New ScalAZoomState With {
-                .ViewportX = 0,
-                .ViewportY = 0,
-                .ViewportW = 0,
-                .ViewportH = 0,
-                .ClientW = 0,
-                .ClientH = 0,
-                .Enabled = 0
-            }
-            _zoomStateMmva.Write(0, initialState)
+            ' Initialize header version if needed and find our slot
+            _zoomStateMutex.WaitOne()
+            Try
+                ' Set version in header
+                _zoomStateMmva.Write(HDR_VERSION, STRUCT_VERSION)
+                _mySlotIndex = FindOrCreateSlot()
+                dBug.Print($"ZoomStateIPC: Initialized for game PID {gamePid}, using slot {_mySlotIndex}")
+            Finally
+                _zoomStateMutex.ReleaseMutex()
+            End Try
 
-            dBug.Print($"ZoomStateIPC: Initialized for game PID {gamePid}")
         Catch ex As Exception
             dBug.Print($"ZoomStateIPC: Failed to initialize - {ex.Message}")
         End Try
     End Sub
 
     ''' <summary>
+    ''' Get the byte offset for an entry
+    ''' </summary>
+    Private Function EntryOffset(slotIndex As Integer) As Integer
+        Return HEADER_SIZE + (slotIndex * ENTRY_SIZE)
+    End Function
+
+    ''' <summary>
+    ''' Find existing slot for this ScalA instance or create a new one
+    ''' </summary>
+    Private Function FindOrCreateSlot() As Integer
+        Dim myPid As Integer = scalaPID
+
+        ' Read current count from header
+        Dim count As Integer = _zoomStateMmva.ReadInt32(HDR_COUNT)
+        If count < 0 OrElse count > MAX_SCALA_INSTANCES Then count = 0
+
+        ' Look for existing slot with our PID or an empty/dead slot
+        Dim emptySlot As Integer = -1
+        For i As Integer = 0 To MAX_SCALA_INSTANCES - 1
+            Dim entryPid As Integer = _zoomStateMmva.ReadInt32(EntryOffset(i) + ENT_SCALAPID)
+
+            If entryPid = myPid Then
+                Return i ' Found our existing slot
+            End If
+
+            If emptySlot = -1 AndAlso entryPid = 0 Then
+                emptySlot = i ' Found an empty slot
+            ElseIf emptySlot = -1 AndAlso entryPid <> 0 Then
+                ' Check if this ScalA is still running
+                Try
+                    Process.GetProcessById(entryPid)
+                Catch
+                    ' Process not running, we can use this slot
+                    emptySlot = i
+                End Try
+            End If
+        Next
+
+        If emptySlot = -1 Then
+            emptySlot = 0 ' Fallback to first slot if all are taken
+        End If
+
+        ' Initialize our slot
+        Dim offset As Integer = EntryOffset(emptySlot)
+        _zoomStateMmva.Write(offset + ENT_SCALAPID, myPid)
+        _zoomStateMmva.Write(offset + ENT_ENABLED, 0)
+
+        ' Update count if needed
+        If emptySlot >= count Then
+            _zoomStateMmva.Write(HDR_COUNT, emptySlot + 1)
+        End If
+
+        Return emptySlot
+    End Function
+
+    ''' <summary>
     ''' Update the zoom state with current viewport and game dimensions
     ''' </summary>
     Public Sub UpdateZoomState(viewportScreenBounds As Rectangle, gameClientSize As Size, enabled As Boolean)
-        If _zoomStateMmva Is Nothing Then Return
+        If _zoomStateMmva Is Nothing OrElse _mySlotIndex < 0 Then Return
 
         Try
-            Dim state As New ScalAZoomState With {
-                .ViewportX = viewportScreenBounds.X,
-                .ViewportY = viewportScreenBounds.Y,
-                .ViewportW = viewportScreenBounds.Width,
-                .ViewportH = viewportScreenBounds.Height,
-                .ClientW = gameClientSize.Width,
-                .ClientH = gameClientSize.Height,
-                .Enabled = If(enabled, 1, 0)
-            }
-            _zoomStateMmva.Write(0, state)
+            Dim offset As Integer = EntryOffset(_mySlotIndex)
+
+            ' Write entry fields (ScalaPID already set during init)
+            _zoomStateMmva.Write(offset + ENT_VIEWPORTX, viewportScreenBounds.X)
+            _zoomStateMmva.Write(offset + ENT_VIEWPORTY, viewportScreenBounds.Y)
+            _zoomStateMmva.Write(offset + ENT_VIEWPORTW, viewportScreenBounds.Width)
+            _zoomStateMmva.Write(offset + ENT_VIEWPORTH, viewportScreenBounds.Height)
+            _zoomStateMmva.Write(offset + ENT_CLIENTW, gameClientSize.Width)
+            _zoomStateMmva.Write(offset + ENT_CLIENTH, gameClientSize.Height)
+            _zoomStateMmva.Write(offset + ENT_ENABLED, If(enabled, 1, 0))
         Catch ex As Exception
             dBug.Print($"ZoomStateIPC: Failed to update - {ex.Message}")
         End Try
@@ -85,13 +171,9 @@ Module ZoomStateIPC
     ''' Enable or disable coordinate transformation
     ''' </summary>
     Public Sub SetZoomStateEnabled(enabled As Boolean)
-        If _zoomStateMmva Is Nothing Then Return
+        If _zoomStateMmva Is Nothing OrElse _mySlotIndex < 0 Then Return
         Try
-            ' Read current state, update enabled flag, write back
-            Dim state As ScalAZoomState
-            _zoomStateMmva.Read(0, state)
-            state.Enabled = If(enabled, 1, 0)
-            _zoomStateMmva.Write(0, state)
+            _zoomStateMmva.Write(EntryOffset(_mySlotIndex) + ENT_ENABLED, If(enabled, 1, 0))
         Catch ex As Exception
             dBug.Print($"ZoomStateIPC: Failed to set enabled - {ex.Message}")
         End Try
@@ -102,12 +184,17 @@ Module ZoomStateIPC
     ''' </summary>
     Public Sub CleanupZoomState()
         Try
-            ' Disable before cleanup
-            If _zoomStateMmva IsNot Nothing Then
-                Dim state As ScalAZoomState
-                _zoomStateMmva.Read(0, state)
-                state.Enabled = 0
-                _zoomStateMmva.Write(0, state)
+            ' Clear our slot before cleanup
+            If _zoomStateMmva IsNot Nothing AndAlso _mySlotIndex >= 0 Then
+                _zoomStateMutex?.WaitOne()
+                Try
+                    Dim offset As Integer = EntryOffset(_mySlotIndex)
+                    ' Clear entry by setting ScalaPID to 0 (marks as unused)
+                    _zoomStateMmva.Write(offset + ENT_SCALAPID, 0)
+                    _zoomStateMmva.Write(offset + ENT_ENABLED, 0)
+                Finally
+                    _zoomStateMutex?.ReleaseMutex()
+                End Try
             End If
         Catch
         End Try
@@ -118,7 +205,11 @@ Module ZoomStateIPC
         _zoomStateMmf?.Dispose()
         _zoomStateMmf = Nothing
 
+        _zoomStateMutex?.Dispose()
+        _zoomStateMutex = Nothing
+
         _currentGamePid = 0
+        _mySlotIndex = -1
     End Sub
 
     ''' <summary>
