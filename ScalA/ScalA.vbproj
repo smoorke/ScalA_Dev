@@ -179,6 +179,16 @@
     <Compile Include="frmMain\QuickLaunch\QuickLaunch.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="frmMain\QuickLaunch\QuickLaunchEvents.vb" />
+    <Compile Include="frmMain\QuickLaunch\QLTypes.vb" />
+    <Compile Include="frmMain\QuickLaunch\QLSort.vb" />
+    <Compile Include="frmMain\QuickLaunch\QLIconCache.vb" />
+    <Compile Include="frmMain\QuickLaunch\QLDirectoryParser.vb" />
+    <Compile Include="frmMain\QuickLaunch\QLDragDropHandler.vb" />
+    <Compile Include="frmMain\QuickLaunch\QLClipboardHandler.vb" />
+    <Compile Include="frmMain\QuickLaunch\QLFileOperations.vb" />
+    <Compile Include="frmMain\QuickLaunch\QLItemHandler.vb" />
+    <Compile Include="frmMain\QuickLaunch\QuickLaunchManager.vb" />
     <Compile Include="ScreenManager.vb" />
     <Compile Include="Settings.vb" />
     <Compile Include="ShellLinkInfo.vb" />
