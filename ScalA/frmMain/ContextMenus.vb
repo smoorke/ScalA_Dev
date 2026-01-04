@@ -1746,14 +1746,10 @@ Partial Public NotInheritable Class FrmMain
         Dim Name As String = qli.name
 
         dBug.Print($"QlCtxRename {Path} {Name}")
-        'CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
-        'cmsQuickLaunch.Close()
         RenameMethod(Path, Name)
     End Sub
 
-    Private ReservedNames() As String = {"CON", "PRN", "AUX", "NUL",
-        "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
-        "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"}
+    ' ReservedNames moved to QLFileOperations.ReservedNames
 
     Public renameOpen As Boolean
     Private Sub RenameMethod(Path As String, currentName As String, Optional isCreateFolder As Boolean = False)
@@ -1830,7 +1826,7 @@ Partial Public NotInheritable Class FrmMain
 
         renameOpen = False
 
-        If ReservedNames.Contains(IO.Path.GetFileNameWithoutExtension(toName).ToUpper) Then
+        If QLFileOperations.IsReservedName(toName) Then
             CustomMessageBox.Show(Me, $"Error renaming ""{currentName}"" to ""{toName}""{vbCrLf}The specified device name is invalid.", If(isCreateFolder, "Create New folder", "Rename"), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Exit Sub
         End If
@@ -1953,13 +1949,11 @@ Partial Public NotInheritable Class FrmMain
 
         dBug.Print($"Delete {Path}")
         Dim shiftdown = My.Computer.Keyboard.ShiftKeyDown
-        Dim folderContentsMessage As String = vbCrLf
         If Path.EndsWith("\") Then
-            Dim folderCount As Integer = System.IO.Directory.GetDirectories(Path, "*.*", IO.SearchOption.AllDirectories).Count
-            Dim folS As String = If(folderCount = 1, "", "s")
-            Dim filesCount As Integer = System.IO.Directory.GetFiles(Path, "*.*", IO.SearchOption.AllDirectories).Where(Function(f) IO.Path.GetFileName(f.ToLower) <> "desktop.ini").Count
-            Dim filS As String = If(filesCount = 1, "", "s")
-            folderContentsMessage &= $"This folder contains {folderCount} folder{folS} and {filesCount} file{filS}."
+            Dim stats = QLFileOperations.GetFolderStats(Path)
+            Dim folS As String = If(stats.FolderCount = 1, "", "s")
+            Dim filS As String = If(stats.FileCount = 1, "", "s")
+            Dim folderContentsMessage As String = $"{vbCrLf}This folder contains {stats.FolderCount} folder{folS} and {stats.FileCount} file{filS}."
             If shiftdown OrElse CustomMessageBox.Show(Control.FromHandle(tsmi.DropDown.Handle), $"Are you sure you want to move ""{name}"" to the Recycle Bin?" & folderContentsMessage & $"{vbCrLf}Hold Shift to Permanently Delete.",
                                        "Confirm Delete", MessageBoxButtons.YesNo) = DialogResult.Yes Then
                 My.Computer.FileSystem.DeleteDirectory(Path, FileIO.UIOption.OnlyErrorDialogs,
@@ -2053,16 +2047,12 @@ Partial Public NotInheritable Class FrmMain
         Cursor.Current = DragCursor
     End Sub
 
-    Public QL_HoveredItem As ToolStripMenuItem = Nothing
-    Public QL_LastDropDownOpenTick As Integer = 0
-    Public QL_DropDownOpenDelayMs As Integer = 200
-    Private Sub QL_DragOver(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragOver ', dropdown.dragover
-
+    Private Sub QL_DragOver(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragOver
         Dim draggedInfo As QLInfo = CType(draggeditem.Tag, QLInfo)
         Dim clientPt As Point
-
         Dim items As ToolStripItemCollection
 
+        ' Get client point and items collection based on sender type
         If TypeOf sender Is ContextMenuStrip Then
             clientPt = DirectCast(sender, ContextMenuStrip).PointToClient(New Point(e.X, e.Y))
             items = DirectCast(sender, ContextMenuStrip).Items
@@ -2076,96 +2066,18 @@ Partial Public NotInheritable Class FrmMain
 
         If Not items.Contains(draggeditem) Then Exit Sub
 
-        Dim insertIndex = -1
+        ' Use QLDragDropHandler to calculate insert position
+        Dim pos = QLDragDropHandler.CalculateInsertPosition(items, clientPt, draggedInfo, draggeditem)
 
-        Dim lastFolderIndex As Integer = items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo AndAlso CType(it.Tag, QLInfo).isFolder).Count - 1
-        Dim lastIndex As Integer = items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo).Count - 1
-
-        'dBug.log($"ql_dragover {sender.GetType}")
-
-        For i As Integer = 0 To items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo).Count - 1
-            Dim item As ToolStripItem = items(i)
-            If TypeOf item IsNot ToolStripMenuItem Then Continue For
-
-            Dim info As QLInfo = item.Tag
-            If info.isFolder <> draggedInfo.isFolder AndAlso i <> lastFolderIndex Then Continue For
-
-            ' Only consider same-type items
-            If item.Bounds.Contains(clientPt) Then
-                Dim midY As Integer = item.Bounds.Y + (item.Bounds.Height \ 2)
-                insertIndex = If(clientPt.Y < midY, i, i + 1)
-                Exit For
-            End If
-        Next
-
-        If insertIndex >= 0 Then 'AndAlso TypeOf (e.Data.GetData(GetType(ToolStripMenuItem))?.tag) Is QLInfo Then
+        If pos.IsValid Then
             e.Effect = DragDropEffects.Move
-            If insertIndex = 0 Then
-                CustomToolStripRenderer.insertItemAbove = Nothing
-                CustomToolStripRenderer.insertItemBelow = items(0)
-            ElseIf insertIndex = items.Count Then
-                CustomToolStripRenderer.insertItemAbove = items(insertIndex)
-                CustomToolStripRenderer.insertItemBelow = Nothing
-            Else
-                Dim aboveIndex = insertIndex - 1
-                Dim belowIndex = insertIndex
-                'Debug.Print($"indices a{aboveIndex} b{belowIndex}")
-                While aboveIndex AndAlso Not items(aboveIndex).Visible
-                    aboveIndex -= 1
-                End While
-                While belowIndex < lastIndex AndAlso Not items(belowIndex).Visible
-                    belowIndex += 1
-                End While
-                CustomToolStripRenderer.insertItemAbove = items(aboveIndex)
-                CustomToolStripRenderer.insertItemBelow = items(belowIndex)
-
-                If CType(CustomToolStripRenderer.insertItemAbove.Tag, QLInfo).isFolder <> draggedInfo.isFolder Then CustomToolStripRenderer.insertItemAbove = Nothing
-                If CType(CustomToolStripRenderer.insertItemBelow.Tag, QLInfo).isFolder <> draggedInfo.isFolder Then CustomToolStripRenderer.insertItemBelow = Nothing
-
-            End If
+            CustomToolStripRenderer.insertItemAbove = pos.ItemAbove
+            CustomToolStripRenderer.insertItemBelow = pos.ItemBelow
         Else
             e.Effect = DragDropEffects.None
             CustomToolStripRenderer.insertItemAbove = Nothing
             CustomToolStripRenderer.insertItemBelow = Nothing
         End If
-
-        If CustomToolStripRenderer.insertItemAbove Is draggeditem OrElse CustomToolStripRenderer.insertItemBelow Is draggeditem Then
-            CustomToolStripRenderer.insertItemAbove = Nothing
-            CustomToolStripRenderer.insertItemBelow = Nothing
-        End If
-
-
-        'drag and drop between submenus canceled untill we write itemcreation sub
-        sender.Invalidate()
-        Exit Sub
-
-
-        'handle opening of submenus
-
-        Dim now As Integer = Environment.TickCount
-
-        For Each item As ToolStripMenuItem In items.OfType(Of ToolStripMenuItem).Where(Function(it) it.Visible AndAlso it.HasDropDownItems AndAlso Not it.DropDown.Visible AndAlso TypeOf it.Tag Is QLInfo)
-            If item.Bounds.Contains(clientPt) Then
-
-                Dim elapsed As Integer = now - QL_LastDropDownOpenTick
-
-                If QL_HoveredItem IsNot item Then
-                    QL_HoveredItem = item
-                    Exit For
-                End If
-
-                If Not item.DropDown.Visible AndAlso elapsed >= QL_DropDownOpenDelayMs Then
-
-                    CloseOtherDropDowns(items)
-
-                    item.Select()
-                    item.ShowDropDown()
-                    QL_LastDropDownOpenTick = now
-
-                End If
-
-            End If
-        Next
 
         sender.Invalidate()
     End Sub
@@ -2198,56 +2110,23 @@ Partial Public NotInheritable Class FrmMain
         Dim clientPt As Point = sender.PointToClient(New Point(e.X, e.Y))
         Dim items As ToolStripItemCollection = sender.items
 
-        'If TypeOf sender Is ContextMenuStrip Then
-        '    clientPt = DirectCast(sender, ContextMenuStrip).PointToClient(New Point(e.X, e.Y))
-        'ElseIf TypeOf sender Is ToolStripDropDownMenu Then
-        '    clientPt = DirectCast(sender, ToolStripDropDownMenu).PointToClient(New Point(e.X, e.Y))
-        'End If
+        ' Use QLDragDropHandler to calculate insert position
+        Dim pos = QLDragDropHandler.CalculateInsertPosition(items, clientPt, draggedInfo, draggeditem)
 
-        Dim insertIndex = -1
+        If Not pos.IsValid Then Exit Sub
 
-        Dim lastFolderIndex As Integer = items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo AndAlso CType(it.Tag, QLInfo).isFolder).Count - 1
-        Dim lastIndex As Integer = items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo).Count - 1
-
-        For i As Integer = 0 To items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo).Count - 1
-            Dim item As ToolStripItem = items(i)
-            If TypeOf item IsNot ToolStripMenuItem Then Continue For
-
-            Dim info As QLInfo = item.Tag
-            ' Only consider same-type items
-            If info.isFolder <> draggedInfo.isFolder AndAlso i <> lastFolderIndex Then Continue For
-
-            If item.Bounds.Contains(clientPt) Then
-                Dim midY As Integer = item.Bounds.Y + (item.Bounds.Height \ 2)
-                insertIndex = If(clientPt.Y < midY, i, i + 1)
-                Exit For
-            End If
-        Next
-
-        'If draggeditem.HasDropDownItems Then draggeditem.DropDown.Close()
-
-        If items.IndexOf(draggeditem) < insertIndex Then insertIndex -= 1
-
-        If items.IndexOf(draggeditem) <> insertIndex AndAlso items(insertIndex).Tag.isfolder = draggeditem.Tag.isfolder Then
-            Debug.Print($"{items.IndexOf(draggeditem)}<>{insertIndex} {items(insertIndex).Tag.isfolder} {draggeditem.Tag.isfolder}")
-            items.Insert(insertIndex, draggeditem)
-
-
-
-            Dim path As String
-
-            If TypeOf sender Is ContextMenuStrip Then
-                path = My.Settings.links
-            Else
-                path = CType(sender.owneritem.Tag, QLInfo).path
-            End If
-
-            Debug.Print($"writesortorder {path}")
-
-            WriteSortOrder(path, items.Cast(Of ToolStripItem).Where(Function(i) TypeOf i.Tag Is QLInfo).Select(Function(it) CType(it.Tag, QLInfo).path.TrimEnd("\"c)))
-
+        ' Determine folder path for sort order persistence
+        Dim folderPath As String
+        If TypeOf sender Is ContextMenuStrip Then
+            folderPath = My.Settings.links
+        Else
+            folderPath = CType(sender.owneritem.Tag, QLInfo).path
         End If
 
+        ' Use QLDragDropHandler to perform the reorder
+        If QLDragDropHandler.PerformReorder(items, draggeditem, pos.Index, folderPath) Then
+            Debug.Print($"writesortorder {folderPath}")
+        End If
     End Sub
 
     Private Sub QL_Givefeedback(sender As Object, e As GiveFeedbackEventArgs)
