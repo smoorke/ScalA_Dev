@@ -1,7 +1,9 @@
 ﻿Imports System.ComponentModel
 
+''' <summary>
+''' Custom ContextMenuStrip for the QuickLaunch menu with custom rendering
+''' </summary>
 NotInheritable Class QuickLaunch : Inherits ContextMenuStrip
-
 
     Public Sub New()
         Me.Renderer = New CustomToolStripRenderer()
@@ -22,9 +24,19 @@ NotInheritable Class QuickLaunch : Inherits ContextMenuStrip
 
 End Class
 
+''' <summary>
+''' Custom ToolStripMenuItem for QuickLaunch with right-click tracking and click cancellation support
+''' </summary>
 Public NotInheritable Class QLMenuItem : Inherits ToolStripMenuItem
 
+    ''' <summary>
+    ''' When True, prevents the click event from firing (used during drag operations)
+    ''' </summary>
     Public CancelClick As Boolean = False
+
+    ''' <summary>
+    ''' Tracks which menu item received the last right mouse button down event
+    ''' </summary>
     Public Shared RMouseDownOn As QLMenuItem
 
     Public Sub New(text As String, Optional ico As Image = Nothing)

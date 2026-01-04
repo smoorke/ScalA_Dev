@@ -1,8 +1,5 @@
 ﻿Public NotInheritable Class ScreenManager
 
-    'TODO: replace more calls to Screen.ScalingPercent with ScreenManager.ScalingPercent
-
-
     ''' <summary>
     ''' Returns a list of screens to the left of the specified screen.
     ''' Caches the result to avoid repeated calculations.
