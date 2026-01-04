@@ -1,4 +1,5 @@
 ﻿Imports System.Runtime.InteropServices
+Imports ScalA.QL
 Public Class frmDebug
 #If DEBUG Then
     Private Sub frmDebug_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -322,18 +323,18 @@ Public Class frmDebug
     Private Sub PurgeIconCacheMiscToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles PurgeIconCacheMiscToolStripMenuItem.Click
         Dim counter As Integer = 0
         Dim hasUrl As Boolean = False
-        For Each key In FrmMain.iconCache.Keys.Where(Function(k)
+        For Each key In QLIconCache.IconCache.Keys.Where(Function(k)
                                                          Dim it As String = k.ToLower
                                                          Return Not (k.EndsWith("\") OrElse k.EndsWith(".lnk") OrElse k.EndsWith(".exe"))
                                                      End Function)
-            If FrmMain.iconCache.TryRemove(key, Nothing) Then
+            If QLIconCache.IconCache.TryRemove(key, Nothing) Then
                 If key.ToLower.EndsWith(".url") Then hasUrl = True
                 counter += 1
                 dBug.Print($"removed {key}")
             End If
         Next
-        If hasUrl Then FrmMain.DefURLicons.Clear()
-        dBug.Print($"{counter} items removed, urlcache.size {FrmMain.DefURLicons.count}")
+        If hasUrl Then QLIconCache.DefURLicons.Clear()
+        dBug.Print($"{counter} items removed, urlcache.size {QLIconCache.DefURLicons.count}")
     End Sub
 
     Private Sub TootltiptestToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles TootltiptestToolStripMenuItem.Click

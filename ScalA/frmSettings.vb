@@ -3,11 +3,12 @@ Imports System.IO
 Imports System.Net.Http
 Imports System.Runtime.Serialization.Formatters.Binary
 Imports System.Text
+Imports ScalA.QL
 
 Public NotInheritable Class FrmSettings
     Public Property SysMenu As New SysMenu(Me)
     Dim startup As Boolean = True
-    Private Shared ExplorerIcon As Bitmap = FrmMain.GetIconFromFile(IO.Path.Combine(Environment.ExpandEnvironmentVariables("%windir%"), "explorer.exe"), supressCacheMiss:=True)
+    Private Shared ExplorerIcon As Bitmap = QLIconCache.GetIconFromFile(IO.Path.Combine(Environment.ExpandEnvironmentVariables("%windir%"), "explorer.exe"), supressCacheMiss:=True)
     Private Sub FrmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         'storeZoom = My.Settings.zoom
 
@@ -452,7 +453,7 @@ Public NotInheritable Class FrmSettings
                 CustomMessageBox.Show(Me, $"Directory {txtQuickLaunchPath.Text} does not exist!", "Error")
                 Exit Sub
             End If
-            FrmMain.iconCache.Clear()
+            QLIconCache.IconCache.Clear()
 
             ResolvedLinkwatchers_Clear()
             My.Settings.links = txtQuickLaunchPath.Text
@@ -627,16 +628,16 @@ Public NotInheritable Class FrmSettings
             My.Settings.QLResolveLnk = ChkQLResolveLnk.Checked
             Task.Run(Sub()
                          Dim count As Integer = 0
-                         For Each it As String In FrmMain.iconCache.Keys.Where(Function(i) i.EndsWith(".lnk"))
+                         For Each it As String In QLIconCache.IconCache.Keys.Where(Function(i) i.EndsWith(".lnk"))
                              'Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(it) 'this is very slow. hence it is run in a task
                              'Dim target As String = oLink.TargetPath
                              Dim target As String = New ShellLinkInfo(it).TargetPath 'this is faster. still opting to using task tho
                              If IO.Directory.Exists(target) Then
-                                 If FrmMain.iconCache.TryRemove(it, Nothing) Then
+                                 If QLIconCache.IconCache.TryRemove(it, Nothing) Then
                                      count += 1
                                  End If
-                                 For Each t As String In FrmMain.iconCache.Keys.Where(Function(l) l.StartsWith(target))
-                                     If FrmMain.iconCache.TryRemove(t, Nothing) Then
+                                 For Each t As String In QLIconCache.IconCache.Keys.Where(Function(l) l.StartsWith(target))
+                                     If QLIconCache.IconCache.TryRemove(t, Nothing) Then
                                          count += 1
                                      End If
                                  Next
@@ -1133,8 +1134,8 @@ Public NotInheritable Class FrmSettings
     End Sub
 
     Private Sub ResetIconCacheToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ResetIconCacheToolStripMenuItem.Click
-        FrmMain.iconCache.Clear()
-        FrmMain.DefURLicons.Clear()
+        QLIconCache.IconCache.Clear()
+        QLIconCache.DefURLicons.Clear()
         ResolvedLinkwatchers_Clear()
         btnRefreshICdisplay.PerformClick()
     End Sub
@@ -1199,8 +1200,8 @@ Public NotInheritable Class FrmSettings
 
         Await Task.Delay(100)
 
-        lblICacheCount.Text = $"Count: {FrmMain.iconCache.Count()}"
-        Dim size As Double = GetObjectSize(FrmMain.iconCache) / 1024.0
+        lblICacheCount.Text = $"Count: {QLIconCache.IconCache.Count()}"
+        Dim size As Double = GetObjectSize(QLIconCache.IconCache) / 1024.0
         Dim suff As String = "KB"
         If size > 1024 Then
             size = size / 1024.0

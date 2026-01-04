@@ -229,7 +229,7 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
     Private Sub MoveToolStripMenuItem_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) Handles MoveToolStripMenuItem.DropDownOpening
-        Dim lst = EnumOtherOverviews.OrderBy(Function(p) p.ProcessName, nsSorter).ToList
+        Dim lst = EnumOtherOverviews.OrderBy(Function(p) p.ProcessName, NsSorter).ToList
         MoveToolStripMenuItem.DropDownItems.Clear()
         MoveToolStripMenuItem.DropDownItems.Add(NoOtherOverviewsToolStripMenuItem)
         NoOtherOverviewsToolStripMenuItem.Visible = lst.Count = 0
@@ -545,208 +545,7 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
-    Friend Shared ReadOnly iconCache As New ConcurrentDictionary(Of String, Bitmap)
-
-    Private Function GetIconFromCache(qli As QLInfo) As Bitmap
-        Try
-            Return iconCache.GetOrAdd(qli.path, AddressOf GetIconFromFile) _
-                            .AsTransparent(If(qli.hidden, If(My.Settings.DarkMode, 0.4, 0.5), 1)) _
-                            .addOverlay(If(My.Settings.QLResolveLnk AndAlso ((qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target?.EndsWith("\"c)) OrElse qli.pointsToDir), My.Resources.shortcutOverlay, Nothing), True)
-            '.addOverlay(If(Not String.IsNullOrEmpty(qli.target) AndAlso Not (IO.File.Exists(qli.target) OrElse IO.Directory.Exists(qli.target)), My.Resources.WarningOverlay, Nothing), True)
-        Catch ex As Exception
-            dBug.Print($"GetIcon Exception {ex.Message}")
-            Return Nothing
-        End Try
-    End Function
-
-    Public Function EvictIconCacheItem(item As String)
-        If item.ToLower.EndsWith(".url") Then DefURLicons.Clear()
-        Return iconCache.TryRemove(item, Nothing)
-    End Function
-
-    Public Sub EvictNonWatchedIcons()
-        For Each pth In iconCache.Keys.ToList
-            If Not {".lnk", ".exe", ".url"}.Contains(IO.Path.GetExtension(pth).ToLower) AndAlso Not pth.EndsWith("\") Then
-                iconCache.TryRemove(pth, Nothing)
-            End If
-        Next
-    End Sub
-
-    Public Function GetIconFromFile(PathName As String, Optional deffolder As Boolean = False, Optional supressCacheMiss As Boolean = False) As Bitmap
-#If DEBUG Then
-        If Not supressCacheMiss Then dBug.Print($"iconCahceMiss: {PathName}")
-#End If
-
-        Dim bm As Bitmap = Nothing
-        Dim fi As New SHFILEINFOW
-        Dim ico As Icon = Nothing
-
-        If PathName.EndsWith("\") Then
-
-            Dim flags As UInteger = SHGFI_ICON Or SHGFI_SMALLICON
-            If deffolder Then flags = flags Or SHGFI_USEFILEATTRIBUTES
-
-            SHGetFileInfoW(PathName, FILE_ATTRIBUTE_DIRECTORY, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), flags)
-            If fi.hIcon = IntPtr.Zero Then
-                dBug.Print("hIcon empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
-                Throw New Exception
-            End If
-            ico = Icon.FromHandle(fi.hIcon)
-            bm = ico.ToBitmap
-            DestroyIcon(ico.Handle)
-            Return bm
-
-        Else 'not a folder
-            If PathName.ToLower.EndsWith(".url") Then
-                Try
-
-                    'Dim iconPath As String = Nothing
-                    Dim iconIndex As Integer = 0
-                    Dim iconFilePath As String = Nothing
-                    Dim URLTarget As String = Nothing
-
-
-                    For Each line In IO.File.ReadLines(PathName)
-                        If line.StartsWith("IconFile=", StringComparison.OrdinalIgnoreCase) Then
-                            iconFilePath = line.Substring("IconFile=".Length).Trim()
-                        ElseIf line.StartsWith("IconIndex=", StringComparison.OrdinalIgnoreCase) Then
-                            Integer.TryParse(line.Substring("IconIndex=".Length).Trim(), iconIndex)
-                        ElseIf line.StartsWith("URL=", StringComparison.OrdinalIgnoreCase) Then
-                            URLTarget = line.Substring("URL=".Length).Trim()
-                        End If
-                    Next
-
-                    If String.IsNullOrEmpty(iconFilePath) AndAlso Not String.IsNullOrEmpty(URLTarget) AndAlso URLTarget.Substring(0, 8).Contains("://") AndAlso URLTarget.Length > 3 Then
-                        Dim proto = URLTarget.Split(":")(0)
-                        If {"https", "http", "ftp"}.Contains(proto) Then bm = GetDefaultBrowserIcon(proto)
-                        If bm IsNot Nothing Then Return bm
-                    End If
-
-                    If Not String.IsNullOrEmpty(iconFilePath) Then
-                        Dim hIcoA As IntPtr() = {IntPtr.Zero}
-                        Dim ret As Integer = ExtractIconEx(iconFilePath, iconIndex, Nothing, hIcoA, 1)
-                        Debug.Print($"ExtractIconEx {ret} ""{iconFilePath}"" {iconIndex} ""{PathName}""")
-                        ico = Icon.FromHandle(hIcoA(0))
-
-                        'Dim ret = ExtractIcon(IntPtr.Zero, iconFilePath, iconIndex)
-                        'ico = Icon.FromHandle(ret)
-
-                        bm = ico.ToBitmap
-                        DestroyIcon(ico.Handle)
-
-                        If bm IsNot Nothing Then Return bm
-                    Else
-                        'todo: invoke windows url icon handler to get the icon
-
-                        'error: this loads incorrect icon
-                        Dim ret = SHGetFileInfoW(PathName, FILE_ATTRIBUTE_NORMAL, fi, Marshal.SizeOf(fi), SHGFI_USEFILEATTRIBUTES Or SHGFI_SMALLICON Or SHGFI_ICON)
-                        ico = Icon.FromHandle(fi.hIcon)
-                        bm = ico.ToBitmap
-                        DestroyIcon(ico.Handle)
-                        If bm IsNot Nothing Then Return bm
-                    End If
-
-                Catch ex As Exception
-                    Debug.Print("Failed to load .url icon: " & ex.Message)
-                End Try
-            End If
-
-            Dim list As IntPtr = SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_SYSICONINDEX Or SHGFI_SMALLICON)
-
-            If list = IntPtr.Zero Then
-                Dim lastError = Runtime.InteropServices.Marshal.GetLastWin32Error()
-                dBug.Print($"SHGetFileInfoW list empty: {lastError}")
-            End If
-            Dim hIcon As IntPtr = ImageList_GetIcon(list, fi.iIcon, 0)
-            ImageList_Destroy(list)
-            If hIcon = IntPtr.Zero Then
-                Dim lastError = Runtime.InteropServices.Marshal.GetLastWin32Error()
-                dBug.Print($"ImageList_GetIcon empty: {lastError}")
-            End If
-            Try
-                ico = Icon.FromHandle(hIcon)
-                bm = ico.ToBitmap
-
-            Catch ex As Exception
-                bm = Nothing
-            End Try
-
-        End If
-        DestroyIcon(If(ico?.Handle, IntPtr.Zero))
-        ico?.Dispose()
-
-        Return bm
-    End Function
-
-
-
-    Public Shared DefURLicons As ConcurrentDictionary(Of String, Bitmap) = New ConcurrentDictionary(Of String, Bitmap)
-
-    Function GetDefaultBrowserIcon(urlScheme As String) As Bitmap
-        urlScheme = urlScheme.ToLowerInvariant()
-        Debug.Print($"getDefBrowserIcon {urlScheme} {DefURLicons.Keys.Contains(urlScheme)}")
-        Return DefURLicons.GetOrAdd(urlScheme,
-                           Function(proto)
-                               dBug.Print($"DefURLicon cachemiss {proto}")
-
-                               Dim progId As String = Nothing
-
-                               ' 1. Try UserChoice (per-user)
-                               Using key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(GetUserChoiceKeyPath(proto))
-                                   If key IsNot Nothing Then
-                                       progId = TryCast(key.GetValue("ProgId"), String)
-                                   End If
-                               End Using
-
-                               ' 2. Fallback: system-wide association
-                               ' Uncomment if you want to support fallback:
-                               'If String.IsNullOrEmpty(progId) Then
-                               '    Using key = Registry.ClassesRoot.OpenSubKey(proto)
-                               '        If key IsNot Nothing Then
-                               '            progId = TryCast(key.GetValue(Nothing), String)
-                               '        End If
-                               '    End Using
-                               'End If
-
-                               If String.IsNullOrEmpty(progId) Then Return Nothing
-
-                               RegistryWatcher.Init(proto)
-
-                               ' 3. Get DefaultIcon for the ProgId
-                               Using iconKey = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey(progId & "\DefaultIcon")
-                                   If iconKey IsNot Nothing Then
-                                       Dim iconValue = TryCast(iconKey.GetValue(Nothing), String)
-                                       If Not String.IsNullOrEmpty(iconValue) Then
-                                           iconValue = iconValue.Trim()
-                                           Dim idx As Integer = 0
-                                           Dim pth As String
-                                           If iconValue.Contains(",") Then
-                                               Dim parts() As String = iconValue.Split(",")
-                                               pth = parts(0).Trim
-                                               Integer.TryParse(parts(1).Trim, idx)
-                                           Else
-                                               pth = iconValue
-                                           End If
-                                           pth = pth.Trim(""""c)
-
-                                           Dim icns() As IntPtr = {IntPtr.Zero}
-                                           Dim ret = ExtractIconEx(pth, idx, {IntPtr.Zero}, icns, 1)
-
-                                           If ret = 0 OrElse icns(0) = IntPtr.Zero Then Return Nothing
-
-                                           Dim icn As Icon = Icon.FromHandle(icns(0))
-                                           Dim bm = icn.ToBitmap
-                                           DestroyIcon(icn.Handle)
-                                           Return bm
-                                       End If
-                                   End If
-                               End Using
-
-                               Return Nothing
-                           End Function)
-    End Function
-
-    Private Shared ReadOnly nsSorter As IComparer(Of String) = New NaturalStringSorter
+    ' Icon caching now in QLIconCache module
 
     Private Function ParseDir(pth As String, Optional itemsOnly As Boolean = False) As List(Of ToolStripItem)
         Dim menuItems As New List(Of ToolStripItem)
@@ -804,7 +603,7 @@ Partial Public NotInheritable Class FrmMain
                                  Dim dispname As String = System.IO.Path.GetFileName(fulldirs)
 
                                  Dim qli As New QLInfo With {.path = fulldirs & "\", .hidden = hidden, .name = dispname, .isFolder = True}
-                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), folderIcon) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
+                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), FolderIcon) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
 
                                  Me.BeginInvoke(Sub()
                                                     smenu.DropDownItems.Add("(Dummy)").Enabled = False
@@ -884,7 +683,7 @@ Partial Public NotInheritable Class FrmMain
                                              Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
                                              qli.name = dispname
                                              qli.isFolder = True
-                                             Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), folderIconWithOverlay) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
+                                             Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), FolderIconWithOverlay) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
 
                                              Me.BeginInvoke(Sub()
 
@@ -958,8 +757,8 @@ Partial Public NotInheritable Class FrmMain
 
         ' Apply custom sort order if available
         Dim sortOrder As List(Of String) = ReadSortOrder(pth)
-        Dim sortedDirs = ApplySortOrderV2(Dirs.ToList(), sortOrder, Function(d) CType(d.Tag, QLInfo).path.TrimEnd("\"c), nsSorter)
-        Dim sortedFiles = ApplySortOrderV2(Files.ToList(), sortOrder, Function(f) CType(f.Tag, QLInfo).path, nsSorter)
+        Dim sortedDirs = ApplySortOrderV2(Dirs.ToList(), sortOrder, Function(d) CType(d.Tag, QLInfo).path.TrimEnd("\"c), NsSorter)
+        Dim sortedFiles = ApplySortOrderV2(Files.ToList(), sortOrder, Function(f) CType(f.Tag, QLInfo).path, NsSorter)
         Dim allItems = sortedDirs.Concat(sortedFiles).ToList()
 
         If itemsOnly Then
@@ -1165,38 +964,7 @@ Partial Public NotInheritable Class FrmMain
         Next
     End Sub
 
-    Private Iterator Function EnumerateData(pth As String, dirs As Boolean, ct As CancellationToken) As IEnumerable(Of WIN32_FIND_DATAW)
-
-        If ct.IsCancellationRequested Then Exit Function
-
-        Dim findData As New WIN32_FIND_DATAW()
-        Dim searchOp As Integer = If(dirs, 1, 0)
-
-        Dim hFind As IntPtr = FindFirstFileExW(IO.Path.Combine(pth, "*.*"), FINDEX_INFO_LEVELS.FindExInfoBasic, findData, searchOp, IntPtr.Zero, 0)
-        If hFind = New IntPtr(-1) Then
-            Return
-        End If
-        Try
-            Do
-                If ct.IsCancellationRequested Then Exit Function
-
-                Dim fname As String = findData.cFileName
-                If fname <> "." AndAlso fname <> ".." Then
-
-                    Dim isDir As Boolean = findData.dwFileAttributes.HasFlag(IO.FileAttributes.Directory) ' (findData.dwFileAttributes And FILE_ATTRIBUTE_DIRECTORY) <> 0
-                    If dirs = isDir Then
-                        'Debug.Print($"finddata ""{findData.cFileName}""")
-                        Yield findData
-                    End If
-
-                End If
-
-            Loop While FindNextFileW(hFind, findData)
-        Finally
-            FindClose(hFind)
-        End Try
-
-    End Function
+    ' EnumerateData now in QLDirectoryParser module
 
 
     Private Sub QL_DropDownOpened(sender As ToolStripMenuItem, e As EventArgs)
@@ -1515,12 +1283,11 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
-    Private folderIcon As Bitmap = GetIconFromFile(FileIO.SpecialDirectories.Temp & "\", True, True)
-    Private folderIconWithOverlay = folderIcon.addOverlay(My.Resources.shortcutOverlay, True)
+    ' folderIcon now in QLIconCache module
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
         dBug.Print("addshortcut.sendertag:" & sender.Tag)
         sender.DropDownItems.Clear()
-        Dim folderitem = New ToolStripMenuItem("Folder", folderIcon) With {.Tag = sender.Tag}
+        Dim folderitem = New ToolStripMenuItem("Folder", FolderIcon) With {.Tag = sender.Tag}
         AddHandler folderitem.MouseDown, AddressOf Ql_NewFolder
         sender.DropDownItems.Add(folderitem)
         sender.DropDownItems.Add(New ToolStripSeparator())
@@ -2305,7 +2072,7 @@ Partial Public NotInheritable Class FrmMain
         End Try
     End Sub
 
-    Private ReadOnly folderHbm As IntPtr = folderIcon.GetHbitmap(Color.Black)
+    Private ReadOnly folderHbm As IntPtr = FolderIcon.GetHbitmap(Color.Black)
     Private ReadOnly plusHbm As IntPtr = New Bitmap(My.Resources.Add, New Size(16, 16)).GetHbitmap(Color.Black)
 
     'Dim QlCtxIsOpen As Boolean = False 'to handle glitch in contextmenu when moving astonia window

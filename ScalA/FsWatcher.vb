@@ -2,6 +2,7 @@
 Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Threading
+Imports ScalA.QL
 Module FsWatcher
 
     Private usingLatestReg As Boolean? = Nothing
@@ -52,13 +53,13 @@ Module FsWatcher
 
         Public Shared Sub OnRegistryChanged(proto As String)
             dBug.Print($"Registry changed for protocol: {proto}")
-            FrmMain.DefURLicons.TryRemove(proto, Nothing)
-            If FrmMain.DefURLicons.Keys.Contains(proto) Then Throw New Exception
+            QLIconCache.DefURLicons.TryRemove(proto, Nothing)
+            If QLIconCache.DefURLicons.Keys.Contains(proto) Then Throw New Exception
 
-            For Each key In FrmMain.iconCache.Keys.Where(Function(k) k.EndsWith(".url"))
-                FrmMain.iconCache.TryRemove(key, Nothing)
+            For Each key In QLIconCache.IconCache.Keys.Where(Function(k) k.EndsWith(".url"))
+                QLIconCache.IconCache.TryRemove(key, Nothing)
             Next
-            If FrmMain.iconCache.Keys.Any(Function(k) k.ToLower.EndsWith(".url")) Then Throw New Exception
+            If QLIconCache.IconCache.Keys.Any(Function(k) k.ToLower.EndsWith(".url")) Then Throw New Exception
 
         End Sub
 
@@ -320,7 +321,7 @@ Module FsWatcher
 
     End Sub
 
-    Private ReadOnly iconCache As ConcurrentDictionary(Of String, Bitmap) = FrmMain.iconCache
+    Private ReadOnly iconCache As ConcurrentDictionary(Of String, Bitmap) = QLIconCache.IconCache
 
     Private Sub OnDeleteDir(sender As System.IO.FileSystemWatcher, e As System.IO.FileSystemEventArgs)
         dBug.Print($"Delete Dir: {sender.NotifyFilter}")

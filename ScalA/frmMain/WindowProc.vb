@@ -1,4 +1,5 @@
 ﻿Imports System.Runtime.InteropServices
+Imports ScalA.QL
 
 Public NotInheritable Class WindowProc
     'dummy class to prevent form generation
@@ -432,7 +433,7 @@ Partial NotInheritable Class FrmMain
 
                 End If
                 'clear QL iconcache
-                iconCache.Clear()
+                QLIconCache.IconCache.Clear()
 
             Case WM_CLIPBOARDUPDATE
                 dBug.Print("WM_CLIPBOARDUPDATE")
@@ -453,7 +454,7 @@ Partial NotInheritable Class FrmMain
             Case WM_SHNOTIFY
                 dBug.Print("Assoc change")
                 'clear non-wathed icons from cache
-                EvictNonWatchedIcons()
+                QLIconCache.EvictNonWatchedIcons()
             Case WM_ENTERMENULOOP
                 dBug.Print($"WM_ENTERMENULOOP {cmsQuickLaunch.Visible}")
                 SysMenu.Visible = Not cmsQuickLaunch.Visible
