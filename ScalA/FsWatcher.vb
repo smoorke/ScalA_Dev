@@ -390,6 +390,9 @@ Module FsWatcher
         dBug.Print($"FileSystemWatcher error: {ex.Message}")
         If TypeOf ex Is InternalBufferOverflowException Then
             dBug.Print("FileSystemWatcher buffer overflow - some events may have been lost")
+            'we don't know which. invalidate whole cache
+            iconCache.Clear()
+            ResolvedLinkwatchers_Clear()
         End If
     End Sub
 
