@@ -161,6 +161,111 @@ Namespace QL
                 StringComparer.OrdinalIgnoreCase)
         End Function
 
+        ''' <summary>
+        ''' Result of paste menu configuration
+        ''' </summary>
+        Public Structure PasteMenuConfig
+            Public PasteEnabled As Boolean
+            Public PasteLinkVisible As Boolean
+            Public PasteText As String
+            Public PasteLinkText As String
+            Public PasteTooltip As String
+            Public PasteIcon As Bitmap
+            Public PasteLinkIcon As Bitmap
+        End Structure
+
+        ''' <summary>
+        ''' Configures paste menu items based on clipboard content
+        ''' </summary>
+        ''' <param name="clipInfo">Clipboard file information</param>
+        ''' <param name="getIconFunc">Function to get icon for a file path</param>
+        ''' <param name="shortcutOverlay">Overlay bitmap for shortcut icons</param>
+        ''' <param name="multiPasteIcon">Icon for multiple file paste</param>
+        ''' <returns>Configuration for paste menu items</returns>
+        Public Function GetPasteMenuConfig(clipInfo As ClipboardFileInfo,
+                                           getIconFunc As Func(Of String, Boolean, Boolean, Bitmap),
+                                           shortcutOverlay As Bitmap,
+                                           multiPasteIcon As Bitmap) As PasteMenuConfig
+
+            Dim config As New PasteMenuConfig With {
+                .PasteEnabled = False,
+                .PasteLinkVisible = False,
+                .PasteText = "Paste",
+                .PasteLinkText = "Paste Shortcut"
+            }
+
+            If clipInfo.Files Is Nothing OrElse clipInfo.Files.Count = 0 Then
+                Return config
+            End If
+
+            config.PasteEnabled = True
+            config.PasteLinkVisible = clipInfo.Action.HasFlag(DragDropEffects.Link)
+
+            If clipInfo.Files.Count = 1 Then
+                Dim filePath As String = clipInfo.Files(0)
+
+                If Not (IO.File.Exists(filePath) OrElse IO.Directory.Exists(filePath)) Then
+                    config.PasteEnabled = False
+                    config.PasteLinkVisible = False
+                    Return config
+                End If
+
+                ' Get display name
+                Dim displayName As String = IO.Path.GetFileName(filePath)
+                If String.IsNullOrEmpty(displayName) Then displayName = filePath
+                If HideExtensions.Contains(IO.Path.GetExtension(displayName).ToLower()) Then
+                    displayName = IO.Path.GetFileNameWithoutExtension(displayName)
+                End If
+
+                Dim actionText As String = If(clipInfo.Action.HasFlag(DragDropEffects.Move), "Move", "Paste")
+                config.PasteText = $"{actionText} ""{displayName.CapWithEllipsis(16)}"""
+                config.PasteLinkText = "Paste Shortcut"
+
+                If displayName.Length > 16 Then
+                    config.PasteTooltip = displayName
+                End If
+
+                ' Get icon
+                If getIconFunc IsNot Nothing Then
+                    Dim ico As Bitmap = getIconFunc(filePath, False, True)
+                    Dim shortcuttedIcon As Bitmap = ico.addOverlay(shortcutOverlay)
+
+                    If filePath.ToLower().EndsWith(".lnk") Then
+                        config.PasteIcon = shortcuttedIcon
+                        config.PasteLinkVisible = False
+                    Else
+                        config.PasteIcon = ico
+                    End If
+                    config.PasteLinkIcon = shortcuttedIcon
+                End If
+            Else
+                ' Multiple files
+                Dim actionText As String = If(clipInfo.Action.HasFlag(DragDropEffects.Move), "Move", "Paste")
+                config.PasteText = $"{actionText} Multiple ({clipInfo.Files.Count})"
+                config.PasteLinkText = "Paste Shortcuts"
+
+                ' Build tooltip
+                Dim sb As New Text.StringBuilder()
+                Dim idx As Integer = 0
+                For Each clipPath As String In clipInfo.Files
+                    sb.AppendLine(IO.Path.GetFileName(clipPath) & If(IO.Directory.Exists(clipPath), "\", ""))
+                    idx += 1
+                    If idx >= 5 Then
+                        sb.AppendLine($"<and {clipInfo.Files.Count - idx} more>")
+                        Exit For
+                    End If
+                Next
+                config.PasteTooltip = sb.ToString()
+
+                config.PasteIcon = multiPasteIcon
+                If shortcutOverlay IsNot Nothing AndAlso multiPasteIcon IsNot Nothing Then
+                    config.PasteLinkIcon = multiPasteIcon.addOverlay(shortcutOverlay)
+                End If
+            End If
+
+            Return config
+        End Function
+
     End Module
 
 End Namespace ' QL

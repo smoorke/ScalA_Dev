@@ -2274,6 +2274,89 @@ Partial Public NotInheritable Class FrmMain
         Return CreateAlphaCursor(cursorBmp, cursorX, cursorY)
     End Function
 
+#Region "QL Context Menu Helpers"
+    ''' <summary>
+    ''' Creates a MenuItem for clipboard operations
+    ''' </summary>
+    Private Function CreateClipMenuItem(text As String, path As String, action As String) As MenuItem
+        Return New MenuItem(text, AddressOf ClipAction) With {
+            .Tag = New MenuTag With {.path = path, .action = action}
+        }
+    End Function
+
+    ''' <summary>
+    ''' Applies paste menu configuration from QLClipboardHandler
+    ''' </summary>
+    Private Sub ApplyPasteMenuConfig(pasteItem As MenuItem, pasteLinkItem As MenuItem,
+                                     menu As ContextMenu, purgeList As List(Of IntPtr))
+        Dim config = QLClipboardHandler.GetPasteMenuConfig(
+            clipBoardInfo,
+            AddressOf GetIconFromFile,
+            My.Resources.shortcutOverlay,
+            My.Resources.multiPaste)
+
+        pasteItem.Enabled = config.PasteEnabled
+        pasteLinkItem.Visible = config.PasteLinkVisible
+
+        If config.PasteEnabled Then
+            pasteItem.Text = config.PasteText
+            pasteLinkItem.Text = config.PasteLinkText
+
+            If Not String.IsNullOrEmpty(config.PasteTooltip) Then
+                Dim tag As MenuTag = CType(pasteItem.Tag, MenuTag)
+                tag.tooltip = config.PasteTooltip
+                pasteItem.Tag = tag
+            End If
+
+            ' Apply icons
+            Dim menuItems = menu.MenuItems.Cast(Of MenuItem).ToList()
+            Dim cmdpos As Integer = menuItems.TakeWhile(Function(m) m.Handle <> pasteItem.Handle).Count(Function(it) it.Visible)
+
+            If config.PasteIcon IsNot Nothing Then
+                Dim pastehbm As IntPtr = config.PasteIcon.GetHbitmap(Color.Black)
+                purgeList.Add(pastehbm)
+                SetMenuItemBitmaps(menu.Handle, cmdpos, MF_BYPOSITION, pastehbm, Nothing)
+            End If
+
+            If config.PasteLinkVisible AndAlso config.PasteLinkIcon IsNot Nothing Then
+                Dim pasteShortcutHbm As IntPtr = config.PasteLinkIcon.GetHbitmap(Color.Black)
+                purgeList.Add(pasteShortcutHbm)
+                SetMenuItemBitmaps(menu.Handle, cmdpos + 1, MF_BYPOSITION, pasteShortcutHbm, Nothing)
+            End If
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' Builds the Astonia process submenu for creating shortcuts
+    ''' </summary>
+    Private Sub BuildAstoniaProcessSubmenu(QlCtxNewMenu As MenuItem, targetPath As String, purgeList As List(Of IntPtr))
+        Dim aplist As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.UserName).ToList
+
+        For Each ap As AstoniaProcess In aplist
+            QlCtxNewMenu.MenuItems.Add(New MenuItem(ap.UserName, AddressOf QlCtxNewAlt) With {.Tag = {ap, targetPath}})
+        Next
+
+        If aplist.Count = 0 Then
+            QlCtxNewMenu.MenuItems.Add(New MenuItem("(None)") With {.Enabled = False})
+        ElseIf aplist.Count >= 2 Then
+            QlCtxNewMenu.MenuItems.Add(New MenuItem("-"))
+            Dim AddAllItem = New MenuItem("Add All", AddressOf QlCtxAddAll) With {.Tag = targetPath}
+            QlCtxNewMenu.MenuItems.Add(AddAllItem)
+            SetMenuItemBitmaps(QlCtxNewMenu.Handle, aplist.Count + 3, MF_BYPOSITION, plusHbm, Nothing)
+        End If
+
+        ' Apply icons to process items
+        Dim staticCount As Integer = 2 ' Folder + separator
+        Dim i As Integer = staticCount
+        For Each item As MenuItem In QlCtxNewMenu.MenuItems.OfType(Of MenuItem).Skip(staticCount).Where(Function(m) m.Tag IsNot Nothing AndAlso TypeOf (m.Tag) IsNot String)
+            Dim althbm As IntPtr = New Bitmap(DirectCast(item.Tag(0), AstoniaProcess).GetIcon?.ToBitmap, New Size(16, 16)).GetHbitmap(Color.Black)
+            purgeList.Add(althbm)
+            SetMenuItemBitmaps(QlCtxNewMenu.Handle, i, MF_BYPOSITION, althbm, Nothing)
+            i += 1
+        Next
+    End Sub
+#End Region
+
     Private Sub QL_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs) 'Handles cmsQuickLaunch.mousedown
         Dim qli As QLInfo = CType(sender.Tag, QLInfo)
         If e.Button = MouseButtons.Middle Then
@@ -2347,10 +2430,10 @@ Partial Public NotInheritable Class FrmMain
 
             Dim OpenItem = New MenuItem("Open", AddressOf QlCtxOpen) With {.DefaultItem = True}
 
-            Dim cutItem = New MenuItem("Cut", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "Cut"}}
-            Dim copyItem = New MenuItem("Copy", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "Copy"}}
-            Dim pasteItem = New MenuItem("Paste", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "Paste"}}
-            Dim pasteLinkItem = New MenuItem("Paste Shortcut", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "PasteLink"}}
+            Dim cutItem = CreateClipMenuItem("Cut", path, "Cut")
+            Dim copyItem = CreateClipMenuItem("Copy", path, "Copy")
+            Dim pasteItem = CreateClipMenuItem("Paste", path, "Paste")
+            Dim pasteLinkItem = CreateClipMenuItem("Paste Shortcut", path, "PasteLink")
 
             Application.DoEvents() ' allow submenu to fully render
             Dim executableSubItems = executableItems(sender.DropDownItems.OfType(Of ToolStripMenuItem))
@@ -2394,104 +2477,11 @@ Partial Public NotInheritable Class FrmMain
             QlCtxNewMenu})
 #End If
 
-            Dim MenuItems As IEnumerable(Of MenuItem) = QlCtxMenu.MenuItems.Cast(Of MenuItem).ToList
-
             clipBoardInfo = GetClipboardFilesAndAction()
-
-            Dim pastehbm As IntPtr
-            Dim pasteShortcutHbm As IntPtr
-
             Dim purgeList As New List(Of IntPtr)
 
-            If clipBoardInfo.Files?.Count > 0 Then
-                pasteItem.Enabled = True
-
-                pasteLinkItem.Visible = clipBoardInfo.Action.HasFlag(DragDropEffects.Link)
-
-                If clipBoardInfo.Files.Count = 1 Then
-                    If (IO.File.Exists(clipBoardInfo.Files(0)) OrElse IO.Directory.Exists(clipBoardInfo.Files(0))) Then
-
-                        Dim nm As String = IO.Path.GetFileName(clipBoardInfo.Files(0))
-                        If String.IsNullOrEmpty(nm) Then nm = clipBoardInfo.Files(0)
-                        If hideExt.Contains(IO.Path.GetExtension(nm)) Then
-                            nm = IO.Path.GetFileNameWithoutExtension(nm)
-                        End If
-
-                        pasteItem.Text = $"{If(clipBoardInfo.Action.HasFlag(DragDropEffects.Move), "Move", "Paste")} ""{nm.CapWithEllipsis(16)}"""
-                        pasteLinkItem.Text = "Paste Shortcut"
-
-                        If nm.Length > 16 Then
-                            Dim tag As MenuTag = CType(pasteItem.Tag, MenuTag)
-                            tag.tooltip = nm
-                            pasteItem.Tag = tag
-                        End If
-
-                        'Dim ico As Bitmap = GetIconFromCache(New QLInfo With {.path = clipBoardInfo.Files(0)})
-
-                        Dim ico As Bitmap = GetIconFromFile(clipBoardInfo.Files(0), False, True) 'cannot go async here. updating bitmaps after menu has been show is all kinds of wonky. todo preload icon on clipchange
-
-                        Dim shortcuttedIcon As Bitmap = ico.addOverlay(My.Resources.shortcutOverlay)
-
-                        If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
-                            ico = shortcuttedIcon
-                            pasteLinkItem.Visible = False
-                        End If
-
-                        pastehbm = ico.GetHbitmap(Color.Black)
-                        pasteShortcutHbm = shortcuttedIcon.GetHbitmap(Color.Black)
-
-                        purgeList.Add(pastehbm)
-                        purgeList.Add(pasteShortcutHbm)
-
-                        Dim cmdpos As Integer = MenuItems.TakeWhile(Function(m) m.Handle <> pasteItem.Handle).Count(Function(it) it.Visible)
-
-                        SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos, MF_BYPOSITION, pastehbm, Nothing)
-
-                        If pasteLinkItem.Visible Then SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos + 1, MF_BYPOSITION, pasteShortcutHbm, Nothing)
-
-                    Else
-                        pasteItem.Enabled = False
-                        pasteLinkItem.Visible = False
-                    End If
-                Else 'more than 1 file/dir.
-
-                    pasteItem.Text = $"{If(clipBoardInfo.Action.HasFlag(DragDropEffects.Move), "Move", "Paste")} Multiple ({clipBoardInfo.Files?.Count})"
-
-                    Dim tag As MenuTag = pasteItem.Tag
-                    Dim idx = 0
-                    Dim sb As New Text.StringBuilder
-                    For Each clippath As String In clipBoardInfo.Files
-                        sb.AppendLine(IO.Path.GetFileName(clippath) & If(IO.Directory.Exists(clippath), "\", ""))
-                        idx += 1
-                        If idx >= 5 Then
-                            sb.AppendLine($"<and {clipBoardInfo.Files.Count - idx} more>")
-                            Exit For
-                        End If
-                    Next
-                    tag.tooltip = sb.ToString
-                    pasteItem.Tag = tag
-
-                    pasteLinkItem.Text = "Paste Shortcuts"
-
-                    pastehbm = My.Resources.multiPaste.GetHbitmap(Color.Black)
-                    pasteShortcutHbm = multipasteBitmapOverlay.GetHbitmap(Color.Black)
-
-                    purgeList.Add(pastehbm)
-                    purgeList.Add(pasteShortcutHbm)
-
-                    Dim cmdpos As Integer = MenuItems.TakeWhile(Function(m) m.Handle <> pasteItem.Handle).Count(Function(it) it.Visible)
-
-                    SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos, MF_BYPOSITION, pastehbm, Nothing)
-
-                    If pasteLinkItem.Visible Then SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos + 1, MF_BYPOSITION, pasteShortcutHbm, Nothing)
-
-                    'DestroyIcon(ico.Handle)
-                End If
-
-            Else
-                pasteItem.Enabled = False
-                pasteLinkItem.Visible = False
-            End If
+            ' Configure paste menu items using helper
+            ApplyPasteMenuConfig(pasteItem, pasteLinkItem, QlCtxMenu, purgeList)
 
             Dim name As String = qli.name
 
@@ -2504,29 +2494,16 @@ Partial Public NotInheritable Class FrmMain
 
             newFolderItem.Tag = path
 
-            Dim QlCtxNewMenuStaticItemsCount As Integer = QlCtxNewMenu.MenuItems.Count
+            ' Build Astonia process submenu
+            BuildAstoniaProcessSubmenu(QlCtxNewMenu, path, purgeList)
 
-            'dynamically add menuitems
-            Dim aplist As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.UserName).ToList
-            For Each ap As AstoniaProcess In aplist
-                QlCtxNewMenu.MenuItems.Add(New MenuItem(ap.UserName, AddressOf QlCtxNewAlt) With {.Tag = {ap, path}})
-            Next
-            If aplist.Count = 0 Then
-                QlCtxNewMenu.MenuItems.Add(New MenuItem("(None)") With {.Enabled = False})
-            ElseIf aplist.Count >= 2 Then
-                QlCtxNewMenu.MenuItems.Add(New MenuItem("-"))
-                Dim AddAllItem = New MenuItem("Add All", AddressOf QlCtxAddAll) With {.Tag = path}
-                QlCtxNewMenu.MenuItems.Add(AddAllItem)
-                SetMenuItemBitmaps(QlCtxNewMenu.Handle, aplist.Count + 3, MF_BYPOSITION, plusHbm, Nothing)
-            End If
-
-            'ModifyMenuW(QlCtxMenu.Handle, 0, MF_BYPOSITION, GetMenuItemID(QlCtxMenu.Handle, 0), $"{name.CapWithEllipsis(25)}")
+            ' Configure Open item with truncated name
             OpenItem.Text = name.Replace("&", "&&").CapWithEllipsis(25)
-
             If name.Length > 25 Then
                 OpenItem.Tag = New MenuTag With {.tooltip = name}
             End If
 
+            ' Apply menu item icons
             Dim hbm = IntPtr.Zero
             If sender.Image IsNot Nothing Then
                 hbm = DirectCast(sender.Image, Bitmap).GetHbitmap(Color.Black)
@@ -2534,15 +2511,9 @@ Partial Public NotInheritable Class FrmMain
             End If
 
             SetMenuItemBitmaps(QlCtxNewMenu.Handle, 0, MF_BYPOSITION, folderHbm, Nothing)
-            SetMenuItemBitmaps(QlCtxMenu.Handle, MenuItems.Count(Function(it) it.Visible) - 1, MF_BYPOSITION, plusHbm, Nothing)
+            Dim visibleMenuCount = QlCtxMenu.MenuItems.Cast(Of MenuItem).Count(Function(it) it.Visible)
+            SetMenuItemBitmaps(QlCtxMenu.Handle, visibleMenuCount - 1, MF_BYPOSITION, plusHbm, Nothing)
 
-            Dim i = QlCtxNewMenuStaticItemsCount
-            For Each item As MenuItem In QlCtxNewMenu.MenuItems.OfType(Of MenuItem).Skip(i).Where(Function(m) m.Tag IsNot Nothing AndAlso TypeOf (m.Tag) IsNot String)
-                Dim althbm As IntPtr = New Bitmap(DirectCast(item.Tag(0), AstoniaProcess).GetIcon?.ToBitmap, New Size(16, 16)).GetHbitmap(Color.Black)
-                purgeList.Add(althbm)
-                SetMenuItemBitmaps(QlCtxNewMenu.Handle, i, MF_BYPOSITION, althbm, Nothing)
-                i += 1
-            Next
             dBug.Print($"purgeList.Count {purgeList.Count}")
 
             'MenuToolTip.InitializeTooltip(sender.Owner.Handle)
