@@ -2952,7 +2952,7 @@ Partial Public NotInheritable Class FrmMain
         'End If
         Dim sli As New ShellLinkInfo(pth)
         'find broken explorer dialog and press ok
-        If sli.PointsToDir AndAlso Not String.IsNullOrEmpty(sli.TargetPath) AndAlso Not IO.Directory.Exists(sli.TargetPath) Then
+        If QLItemHandler.IsBrokenDirectoryLink(sli) Then
             EnumWindows(Function(hwnd As IntPtr, lParam As IntPtr)
                             If Not IsWindowVisible(hwnd) Then Return True
                             If GetWindowClass(hwnd) <> "#32770" Then Return True
@@ -2998,49 +2998,30 @@ Partial Public NotInheritable Class FrmMain
                       setMenuCursor(cmsQuickLaunch, Cursors.WaitCursor)
                   End Sub)
 
-        'Dim bat As String = "\AsInvoker.bat"
-        'Dim tmpDir As String = IO.Path.Combine(FileIO.SpecialDirectories.Temp, "ScalA")
+        ' Launch using QLItemHandler
+        Dim launchInfo = QLItemHandler.PrepareLaunch(qli)
+        Dim launchResult = QLItemHandler.LaunchItem(launchInfo)
 
-        'If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
-        'If Not FileIO.FileSystem.FileExists(tmpDir & bat) OrElse
-        '   Not FileIO.FileSystem.GetFileInfo(tmpDir & bat).Length = My.Resources.AsInvoker.Length Then
-        '    FileIO.FileSystem.WriteAllText(tmpDir & bat, My.Resources.AsInvoker, False, System.Text.Encoding.ASCII)
-        'End If
-
-        'Dim pp As Process = New Process With {.StartInfo = New ProcessStartInfo With {.FileName = tmpDir & bat,
-        '                                                               .Arguments = """" & pth.Replace("^", "^^").Replace("&", "^&").Replace("%", "^%") & """",
-        '                                                               .WorkingDirectory = System.IO.Path.GetDirectoryName(pth),
-        '                                                               .WindowStyle = ProcessWindowStyle.Hidden,
-        '                                                               .CreateNoWindow = True}}
-
-        Dim pp As Process = New Process With {.StartInfo = New ProcessStartInfo With {
-                                                               .FileName = pth,
-                                                               .WorkingDirectory = System.IO.Path.GetDirectoryName(pth)}}
-
-
-        Try
-            SetEnvironmentVariable("__COMPAT_LAYER", "RUNASINVOKER")
-            pp.Start()
+        If launchResult.Success Then
             MRU.Add(pth)
-        Catch ex As Exception
-            dBug.Print($"pp.start {ex.Message}")
+        Else
+            dBug.Print($"pp.start {launchResult.ErrorMessage}")
             Me.Invoke(Sub()
-                          CustomMessageBox.Show(Control.FromHandle(sender.Owner.Handle), $"Failed to launch{vbCrLf}{pth}{vbCrLf}{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                          CustomMessageBox.Show(Control.FromHandle(sender.Owner.Handle), $"Failed to launch{vbCrLf}{pth}{vbCrLf}{launchResult.ErrorMessage}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                       End Sub)
-        Finally
-            pp.Dispose()
-            SetEnvironmentVariable("__COMPAT_LAYER", Nothing)
-            Task.Run(Sub()
-                         Dim timout As Integer = 123
-                         Threading.Thread.Sleep(timout)
-                         If waitCursorTimer.ElapsedMilliseconds >= timout Then
-                             Me.BeginInvoke(Sub()
-                                                Cursor = Cursors.Arrow
-                                                setMenuCursor(cmsQuickLaunch, Cursors.Arrow)
-                                            End Sub)
-                         End If
-                     End Sub)
-        End Try
+        End If
+
+        ' Reset cursor after delay
+        Task.Run(Sub()
+                     Dim timeout As Integer = 123
+                     Threading.Thread.Sleep(timeout)
+                     If waitCursorTimer.ElapsedMilliseconds >= timeout Then
+                         Me.BeginInvoke(Sub()
+                                            Cursor = Cursors.Arrow
+                                            setMenuCursor(cmsQuickLaunch, Cursors.Arrow)
+                                        End Sub)
+                     End If
+                 End Sub)
 
         'Exit Sub
         'hoist error dialogs to front/owned.

@@ -186,6 +186,54 @@ Namespace QL
         ''' </summary>
         Public Const COMPAT_LAYER_VALUE As String = "RUNASINVOKER"
 
+        ''' <summary>
+        ''' Result of a launch operation
+        ''' </summary>
+        Public Structure LaunchResult
+            Public Success As Boolean
+            Public ProcessId As Integer
+            Public ErrorMessage As String
+        End Structure
+
+        ''' <summary>
+        ''' Launches an item with RUNASINVOKER compatibility
+        ''' </summary>
+        ''' <param name="launchInfo">Prepared launch information</param>
+        ''' <returns>LaunchResult with success status</returns>
+        Public Function LaunchItem(launchInfo As LaunchInfo) As LaunchResult
+            Dim result As New LaunchResult With {.Success = False}
+
+            Dim psi As New ProcessStartInfo With {
+                .FileName = launchInfo.Path,
+                .WorkingDirectory = launchInfo.WorkingDirectory
+            }
+
+            Try
+                Environment.SetEnvironmentVariable(COMPAT_LAYER_VAR, COMPAT_LAYER_VALUE)
+                Using proc As Process = Process.Start(psi)
+                    result.Success = True
+                    result.ProcessId = proc?.Id
+                End Using
+            Catch ex As Exception
+                result.ErrorMessage = ex.Message
+            Finally
+                Environment.SetEnvironmentVariable(COMPAT_LAYER_VAR, Nothing)
+            End Try
+
+            Return result
+        End Function
+
+        ''' <summary>
+        ''' Checks if a shortcut points to a missing directory
+        ''' </summary>
+        ''' <param name="sli">ShellLinkInfo for the shortcut</param>
+        ''' <returns>True if shortcut points to missing directory</returns>
+        Public Function IsBrokenDirectoryLink(sli As ShellLinkInfo) As Boolean
+            Return sli.PointsToDir AndAlso
+                   Not String.IsNullOrEmpty(sli.TargetPath) AndAlso
+                   Not IO.Directory.Exists(sli.TargetPath)
+        End Function
+
     End Module
 
 End Namespace ' QL
