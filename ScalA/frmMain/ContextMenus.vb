@@ -547,6 +547,26 @@ Partial Public NotInheritable Class FrmMain
 
     ' Icon caching now in QLIconCache module
 
+#Region "ParseDir Helpers"
+    ''' <summary>
+    ''' Attaches standard event handlers to a QuickLaunch menu item
+    ''' </summary>
+    Private Sub AttachQLMenuItemHandlers(item As ToolStripMenuItem, isFolder As Boolean)
+        AddHandler item.MouseDown, AddressOf QL_MouseDown
+        AddHandler item.Paint, AddressOf QLMenuItem_Paint
+
+        If isFolder Then
+            AddHandler item.DoubleClick, AddressOf DblClickDir
+            AddHandler item.DropDownOpening, AddressOf ParseSubDir
+            AddHandler item.DropDownOpened, AddressOf QL_DropDownOpened
+            AddHandler item.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
+            AddHandler item.DropDown.DragEnter, AddressOf QL_DragEnter
+            AddHandler item.DropDown.DragOver, AddressOf QL_DragOver
+            item.DropDown.AllowDrop = True
+        End If
+    End Sub
+#End Region
+
     Private Function ParseDir(pth As String, Optional itemsOnly As Boolean = False) As List(Of ToolStripItem)
         Dim menuItems As New List(Of ToolStripItem)
         Dim isEmpty As Boolean = True
@@ -607,28 +627,7 @@ Partial Public NotInheritable Class FrmMain
 
                                  Me.BeginInvoke(Sub()
                                                     smenu.DropDownItems.Add("(Dummy)").Enabled = False
-
-                                                    AddHandler smenu.MouseDown, AddressOf QL_MouseDown
-                                                    AddHandler smenu.DoubleClick, AddressOf DblClickDir
-                                                    AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
-                                                    AddHandler smenu.DropDownOpened, AddressOf QL_DropDownOpened
-                                                    'AddHandler smenu.DropDownOpened, AddressOf DeferredIconLoading
-                                                    AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
-                                                    'AddHandler smenu.DropDown.Closed, AddressOf QL_DropDownClosed
-
-                                                    AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
-
-                                                    ' Drag & Drop sorting handlers
-                                                    AddHandler smenu.DropDown.DragEnter, AddressOf QL_DragEnter
-                                                    AddHandler smenu.DropDown.DragOver, AddressOf QL_DragOver
-
-
-                                                    smenu.DropDown.AllowDrop = True
-
-                                                    'AddHandler smenu.MouseDown, AddressOf QLMenuItem_MouseDown
-                                                    'AddHandler smenu.MouseMove, AddressOf QLMenuItem_MouseMove
-                                                    'AddHandler smenu.MouseEnter, AddressOf QLMenuItem_MouseEnter
-                                                    'AddHandler smenu.MouseUp, AddressOf QLMenuItem_MouseUp
+                                                    AttachQLMenuItemHandlers(smenu, isFolder:=True)
                                                 End Sub)
 
                                  Dirs.Add(smenu)
@@ -686,28 +685,8 @@ Partial Public NotInheritable Class FrmMain
                                              Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), FolderIconWithOverlay) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
 
                                              Me.BeginInvoke(Sub()
-
                                                                 smenu.DropDownItems.Add("(Dummy)").Enabled = False
-
-                                                                AddHandler smenu.MouseDown, AddressOf QL_MouseDown
-                                                                AddHandler smenu.DoubleClick, AddressOf DblClickDir
-                                                                AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
-                                                                AddHandler smenu.DropDownOpened, AddressOf QL_DropDownOpened
-                                                                AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
-                                                                'AddHandler smenu.DropDown.Closed, AddressOf QL_DropDownClosed
-
-                                                                AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
-
-                                                                ' Drag & Drop sorting handlers
-                                                                AddHandler smenu.DropDown.DragEnter, AddressOf QL_DragEnter
-                                                                AddHandler smenu.DropDown.DragOver, AddressOf QL_DragOver
-
-                                                                smenu.DropDown.AllowDrop = True
-
-                                                                'AddHandler smenu.MouseDown, AddressOf QLMenuItem_MouseDown
-                                                                'AddHandler smenu.MouseMove, AddressOf QLMenuItem_MouseMove
-                                                                'AddHandler smenu.MouseEnter, AddressOf QLMenuItem_MouseEnter
-                                                                'AddHandler smenu.MouseUp, AddressOf QLMenuItem_MouseUp
+                                                                AttachQLMenuItemHandlers(smenu, isFolder:=True)
                                                             End Sub)
 
                                              addLinkWatcher(target, fullLink)
@@ -730,18 +709,7 @@ Partial Public NotInheritable Class FrmMain
                                  qli.isFolder = False
 
                                  Dim item As New ToolStripMenuItem(If(vis, linkName.Replace("&", "&&"), "*Hidden*")) With {.Tag = qli, .Visible = vis}
-                                 Me.BeginInvoke(Sub()
-                                                    AddHandler item.MouseDown, AddressOf QL_MouseDown
-                                                    'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
-                                                    'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
-                                                    AddHandler item.Paint, AddressOf QLMenuItem_Paint
-
-                                                    ' Drag & Drop sorting handlers
-                                                    'AddHandler item.MouseDown, AddressOf QLMenuItem_MouseDown
-                                                    'AddHandler item.MouseMove, AddressOf QLMenuItem_MouseMove
-                                                    'AddHandler item.MouseEnter, AddressOf QLMenuItem_MouseEnter
-                                                    'AddHandler item.MouseUp, AddressOf QLMenuItem_MouseUp
-                                                End Sub)
+                                 Me.BeginInvoke(Sub() AttachQLMenuItemHandlers(item, isFolder:=False))
 
                                  Files.Add(item)
                                  If vis Then
