@@ -265,18 +265,9 @@ Module IPC
             Dim existingIndex As Integer = Array.FindIndex(_Instances, Function(inst) inst.pid = id)
 
             If existingIndex = -1 Then
-                ' The instance does not exist, you can add it now
-                ' todo: find an index that has an empty instance
+                ' The instance does not exist, add it now
+                ' Note: showsome defaults to False if not provided (safe default)
                 ReDim Preserve _Instances(sharednum)
-
-
-                ' Dim showingsome = False // My.Settings.Whitelist todo complete this
-
-                'Dim showsome = Not FrmMain.blackList.Contains("Someone") AndAlso
-                '                  (Not FrmMain.topSortList.Contains("Someone") OrElse
-                '                   Not FrmMain.botSortList.Contains("Someone"))
-
-
                 _Instances(sharednum) = New ScalAInfo(id, overview, apID, showsome)
 
                 If sharednum <> localnum Then
