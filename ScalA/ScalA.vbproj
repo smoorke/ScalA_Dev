@@ -199,6 +199,38 @@
     <Compile Include="UpdateDialog.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="BatchShortcutManager.Designer.vb">
+      <DependentUpon>BatchShortcutManager.vb</DependentUpon>
+    </Compile>
+    <Compile Include="BatchShortcutManager.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LauncherTemplate.vb" />
+    <Compile Include="LauncherTemplateManager.vb" />
+    <Compile Include="LauncherSetupControl.Designer.vb">
+      <DependentUpon>LauncherSetupControl.vb</DependentUpon>
+    </Compile>
+    <Compile Include="LauncherSetupControl.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="frmLauncherTemplateEdit.Designer.vb">
+      <DependentUpon>frmLauncherTemplateEdit.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmLauncherTemplateEdit.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmLauncherSetup.Designer.vb">
+      <DependentUpon>frmLauncherSetup.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmLauncherSetup.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmQuickShortcut.Designer.vb">
+      <DependentUpon>frmQuickShortcut.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmQuickShortcut.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="SDL2CompatInstaller.Designer.vb">
       <DependentUpon>SDL2CompatInstaller.vb</DependentUpon>
     </Compile>

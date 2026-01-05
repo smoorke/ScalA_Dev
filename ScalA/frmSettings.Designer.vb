@@ -53,6 +53,8 @@ Partial NotInheritable Class FrmSettings
         Me.btnOpenFolderDialog = New System.Windows.Forms.Button()
         Me.cmsQLFolder = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.OpenInExplorerToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.LauncherSetupToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.BatchShortcutManagerToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ResetIconCacheToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.txtQuickLaunchPath = New System.Windows.Forms.TextBox()
         Me.TxtFilterAddExt = New System.Windows.Forms.TextBox()
@@ -476,15 +478,27 @@ Partial NotInheritable Class FrmSettings
         '
         'cmsQLFolder
         '
-        Me.cmsQLFolder.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenInExplorerToolStripMenuItem, ToolStripMenuItem1, Me.ResetIconCacheToolStripMenuItem})
+        Me.cmsQLFolder.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenInExplorerToolStripMenuItem, Me.LauncherSetupToolStripMenuItem, Me.BatchShortcutManagerToolStripMenuItem, ToolStripMenuItem1, Me.ResetIconCacheToolStripMenuItem})
         Me.cmsQLFolder.Name = "cmsQLFolder"
-        Me.cmsQLFolder.Size = New System.Drawing.Size(183, 54)
+        Me.cmsQLFolder.Size = New System.Drawing.Size(210, 98)
         '
         'OpenInExplorerToolStripMenuItem
         '
         Me.OpenInExplorerToolStripMenuItem.Name = "OpenInExplorerToolStripMenuItem"
-        Me.OpenInExplorerToolStripMenuItem.Size = New System.Drawing.Size(182, 22)
+        Me.OpenInExplorerToolStripMenuItem.Size = New System.Drawing.Size(209, 22)
         Me.OpenInExplorerToolStripMenuItem.Text = "Open in File Explorer"
+        '
+        'LauncherSetupToolStripMenuItem
+        '
+        Me.LauncherSetupToolStripMenuItem.Name = "LauncherSetupToolStripMenuItem"
+        Me.LauncherSetupToolStripMenuItem.Size = New System.Drawing.Size(209, 22)
+        Me.LauncherSetupToolStripMenuItem.Text = "Launcher Setup..."
+        '
+        'BatchShortcutManagerToolStripMenuItem
+        '
+        Me.BatchShortcutManagerToolStripMenuItem.Name = "BatchShortcutManagerToolStripMenuItem"
+        Me.BatchShortcutManagerToolStripMenuItem.Size = New System.Drawing.Size(182, 22)
+        Me.BatchShortcutManagerToolStripMenuItem.Text = "Batch Shortcut Manager..."
         '
         'ResetIconCacheToolStripMenuItem
         '
@@ -1959,6 +1973,8 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents tmrAlign As Timer
     Friend WithEvents cmsQLFolder As ContextMenuStrip
     Friend WithEvents OpenInExplorerToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents LauncherSetupToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents BatchShortcutManagerToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ttSettings As ToolTip
     Friend WithEvents tabResolutions As TabPage
     Friend WithEvents txtResolutions As TextBox

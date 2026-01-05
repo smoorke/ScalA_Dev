@@ -848,6 +848,18 @@ Public NotInheritable Class FrmSettings
             dBug.Print($"Failed to open in explorer: {ex.Message}")
         End Try
     End Sub
+
+    Private Sub BatchShortcutManagerToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles BatchShortcutManagerToolStripMenuItem.Click
+        Using bsm As New BatchShortcutManager(txtQuickLaunchPath.Text)
+            bsm.ShowDialog(Me)
+        End Using
+    End Sub
+
+    Private Sub LauncherSetupToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles LauncherSetupToolStripMenuItem.Click
+        Using ls As New frmLauncherSetup()
+            ls.ShowDialog(Me)
+        End Using
+    End Sub
 #End Region
 
 #Region "Hotkeys Tab"

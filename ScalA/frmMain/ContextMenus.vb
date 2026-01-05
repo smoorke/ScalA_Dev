@@ -1206,6 +1206,21 @@ Partial Public NotInheritable Class FrmMain
         Dim folderitem = New ToolStripMenuItem("Folder", FolderIcon) With {.Tag = sender.Tag}
         AddHandler folderitem.MouseDown, AddressOf Ql_NewFolder
         sender.DropDownItems.Add(folderitem)
+
+        ' Add "From Template" submenu if templates exist
+        Dim templates = LauncherTemplateManager.GetTemplates()
+        If templates.Count > 0 Then
+            Dim templateMenu = New ToolStripMenuItem("From Template...", My.Resources.Add)
+            For Each template In templates
+                Dim templateItem = New ToolStripMenuItem(template.Name) With {
+                    .Tag = New Object() {template, sender.Tag}
+                }
+                AddHandler templateItem.Click, AddressOf CreateShortcutFromTemplate
+                templateMenu.DropDownItems.Add(templateItem)
+            Next
+            sender.DropDownItems.Add(templateMenu)
+        End If
+
         sender.DropDownItems.Add(New ToolStripSeparator())
 
         For Each alt As AstoniaProcess In AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.UserName)
@@ -1236,6 +1251,28 @@ Partial Public NotInheritable Class FrmMain
                                                         Debug.Print("Closed child dropdown because parent closed.")
                                                     End Sub
         End If
+    End Sub
+
+    ''' <summary>
+    ''' Creates a shortcut from a launcher template via the quick shortcut dialog
+    ''' </summary>
+    Private Sub CreateShortcutFromTemplate(sender As Object, e As EventArgs)
+        Dim menuItem = TryCast(sender, ToolStripMenuItem)
+        If menuItem Is Nothing OrElse menuItem.Tag Is Nothing Then Return
+
+        ' Extract template and folder path from tag
+        Dim tagData = DirectCast(menuItem.Tag, Object())
+        Dim template = DirectCast(tagData(0), LauncherTemplate)
+        Dim folderPath = CStr(tagData(1))
+
+        ' Close the menus
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
+
+        ' Show the quick shortcut dialog
+        Using dlg As New frmQuickShortcut(template, My.Settings.links, folderPath)
+            dlg.ShowDialog(Me)
+        End Using
     End Sub
 
     Private Sub CreateNewFolder(newpath As String)
@@ -1952,6 +1989,26 @@ Partial Public NotInheritable Class FrmMain
         OpenProps(sender.Parent.Tag, New MouseEventArgs(MouseButtons.Right, 1, MousePosition.X, MousePosition.Y, 0))
     End Sub
 
+    Private Sub OpenBatchShortcutManager(sender As MenuItem, e As EventArgs)
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
+
+        ' Get the folder path from the menu context
+        Dim folderPath As String = My.Settings.links
+        Dim ctxMenu = TryCast(sender.Parent, ContextMenu)
+        If ctxMenu IsNot Nothing Then
+            Dim menuItem = TryCast(ctxMenu.Tag, ToolStripMenuItem)
+            If menuItem IsNot Nothing AndAlso TypeOf menuItem.Tag Is QL.QLInfo Then
+                Dim qli = DirectCast(menuItem.Tag, QL.QLInfo)
+                folderPath = qli.path
+            End If
+        End If
+
+        Using bsm As New BatchShortcutManager(folderPath.TrimEnd("\"c))
+            bsm.ShowDialog(Me)
+        End Using
+    End Sub
+
     Private Sub QlCtxNewFolder(sender As MenuItem, e As EventArgs)
         dBug.Print($"QlCtxNewFolder sender:{sender}")
         dBug.Print($"tag:    {sender?.Tag}")
@@ -2424,6 +2481,8 @@ Partial Public NotInheritable Class FrmMain
                 New MenuItem("-"),
                 New MenuItem("Properties", AddressOf QlCtxProps),
                 New MenuItem("-"),
+                New MenuItem("Batch Shortcut Manager...", AddressOf OpenBatchShortcutManager) With {.Visible = path.EndsWith("\")},
+                New MenuItem("-") With {.Visible = path.EndsWith("\")},
             QlCtxNewMenu})
 #Else
             QlCtxMenu = New ContextMenu({
@@ -2442,6 +2501,8 @@ Partial Public NotInheritable Class FrmMain
                 New MenuItem("-"),
                 New MenuItem("Dump Info", AddressOf dBug.dumpItemInfo),
                 New MenuItem("-"),
+                New MenuItem("Batch Shortcut Manager...", AddressOf OpenBatchShortcutManager) With {.Visible = path.EndsWith("\")},
+                New MenuItem("-") With {.Visible = path.EndsWith("\")},
             QlCtxNewMenu})
 #End If
 
