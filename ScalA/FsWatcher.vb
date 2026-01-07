@@ -405,6 +405,7 @@ Module FsWatcher
                 iconCache.TryRemove(e.FullPath.Substring(0, e.FullPath.LastIndexOf("\") + 1), Nothing)
             End If
             If hideExt.Contains(System.IO.Path.GetExtension(e.FullPath).ToLower) Then
+                FrmMain.pasteStopWatch.Restart()
                 iconCache.TryRemove(e.FullPath, Nothing)
             End If
         End If

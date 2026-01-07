@@ -749,10 +749,10 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         If isEmpty Then
+            'todo refactor this into a func that returns the items, we need to reuse it in QLCtxDelete
             menuItems.Add(New ToolStripMenuItem("(Empty)") With {.Enabled = False, .ToolTipText = $"{If(hiddencount, $"Press Ctrl-Shift to reveal {hiddencount} Files/Dirs.{vbCrLf}", "")}Folder may still contain unwatched items.{vbCrLf}Go to Settings/QL and adjust Filter if you are missing files."})
             clipBoardInfo = GetClipboardFilesAndAction()
             If clipBoardInfo.Files?.Count > 0 AndAlso clipBoardInfo.Files.Any(Function(f) IO.File.Exists(f) OrElse IO.Directory.Exists(f)) Then
-
 
                 PasteSep = New ToolStripSeparator
 
@@ -843,6 +843,9 @@ Partial Public NotInheritable Class FrmMain
         watch.Stop()
         Return menuItems
     End Function
+
+
+
 
     ''' <summary>
     ''' Creates a "Load More" menu item that displays remaining items when clicked.
@@ -1978,7 +1981,7 @@ Partial Public NotInheritable Class FrmMain
                          FileIO.UICancelOption.DoNothing)
             If Not IO.File.Exists(Path) Then
                 tsmi.GetCurrentParent().Items.Remove(tsmi)
-                'Application.DoEvents()
+                'todo if items is empty add <empty> and other items. see parsedir for construction
             End If
         End If
     End Sub
@@ -2642,6 +2645,7 @@ Partial Public NotInheritable Class FrmMain
         End If
     End Sub
     Dim tpmParam As New TPMPARAMS With {.cbSize = Marshal.SizeOf(Of TPMPARAMS)}
+    Public Shared pasteStopWatch As Stopwatch = Stopwatch.StartNew()
     Private Sub ClipAction(sender As Object, e As EventArgs)
         Dim tgt As String = sender.tag.path
         Dim act As String = sender.tag.action
@@ -2650,17 +2654,17 @@ Partial Public NotInheritable Class FrmMain
 
         If TypeOf sender Is MenuItem Then
             Dim tsmi As ToolStripMenuItem = CType(sender, MenuItem).Parent.Tag
-            If tsmi.HasDropDownItems Then
-                dropdown = TopMostToolStripMenuItem.DropDown
-            Else
-                dropdown = tsmi.GetCurrentParent()
-            End If
+            dropdown = tsmi.GetCurrentParent()
         Else
-            dropdown = Nothing
+            Dim tsmi As ToolStripMenuItem = CType(sender, ToolStripMenuItem).OwnerItem
+            dropdown = tsmi.GetCurrentParent()
         End If
 
+        'todo set busy cursor
 
         If {"Paste", "PasteLink"}.Contains(act) Then
+
+
             ' Show confirmation when pasting folders
             'Dim folderCount As Integer = clipBoardInfo.Files.Where(Function(f) IO.Directory.Exists(f)).Count()
             'If folderCount > 0 Then
@@ -2688,79 +2692,68 @@ Partial Public NotInheritable Class FrmMain
                 qlPasteOwnerItem = TryCast(menuItem.OwnerItem, ToolStripMenuItem)
             End If
 
-            Task.Run(Sub()
-                         Dim watch As Stopwatch = Stopwatch.StartNew()
-                         Dim hndl As IntPtr = IntPtr.Zero
+            If act = "Paste" Then Task.Run(Sub()
+                                               Dim watch As Stopwatch = Stopwatch.StartNew()
+                                               Dim hndl As IntPtr = IntPtr.Zero
 
-                         Dim found As Boolean = False
-                         Dim wndProc As EnumWindowsProc = Function(hwnd, lParam)
-                                                              If GetWindowClass(hwnd) = "OperationStatusWindow" Then
-                                                                  Dim pid As Integer
-                                                                  GetWindowThreadProcessId(hwnd, pid)
-                                                                  If pid = scalaPID Then
-                                                                      hndl = hwnd
-                                                                      found = True
-                                                                      Return False ' stop enumeration
-                                                                  End If
-                                                              End If
-                                                              Return True ' continue enumeration
-                                                          End Function
+                                               Dim found As Boolean = False
+                                               Dim wndProc As EnumWindowsProc = Function(hwnd, lParam)
+                                                                                    If GetWindowClass(hwnd) = "OperationStatusWindow" Then
+                                                                                        Dim pid As Integer
+                                                                                        GetWindowThreadProcessId(hwnd, pid)
+                                                                                        If pid = scalaPID Then
+                                                                                            hndl = hwnd
+                                                                                            found = True
+                                                                                            Return False ' stop enumeration
+                                                                                        End If
+                                                                                    End If
+                                                                                    Return True ' continue enumeration
+                                                                                End Function
 
-                         ' Wait for progress dialog to appear (up to 5 seconds)
-                         While watch.ElapsedMilliseconds < 5000 AndAlso Not found
-                             EnumWindows(wndProc, IntPtr.Zero)
-                             If found Then Exit While
-                             Threading.Thread.Sleep(50)
-                         End While
+                                               ' Wait for progress dialog to appear (up to 5 seconds)
+                                               While watch.ElapsedMilliseconds < 5000 AndAlso Not found
+                                                   EnumWindows(wndProc, IntPtr.Zero)
+                                                   If found Then Exit While
+                                                   Threading.Thread.Sleep(50)
+                                               End While
 
-                         If found Then
-                             dBug.Print($"enumwindow {hndl} ""{GetWindowText(hndl)}""")
-                             SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
-                             'SetWindowLong(hndl, GWL_HWNDPARENT, topWindHandle)
-                             'If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
+                                               If found Then
+                                                   dBug.Print($"enumwindow {hndl} ""{GetWindowText(hndl)}""")
+                                                   SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
+                                                   'SetWindowLong(hndl, GWL_HWNDPARENT, topWindHandle)
+                                                   'If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate)
 
-                             ' Wait for progress dialog to close (paste complete)
-                             While IsWindow(hndl)
-                                 Threading.Thread.Sleep(100)
-                             End While
-                             dBug.Print("Paste progress dialog closed")
-                         Else
-                             ' No progress dialog appeared (fast paste), wait a bit for filesystem
-                             Threading.Thread.Sleep(200)
-                         End If
+                                                   ' Wait for progress dialog to close (paste complete)
+                                                   While IsWindow(hndl)
+                                                       Threading.Thread.Sleep(100)
+                                                   End While
+                                                   dBug.Print("Paste progress dialog closed")
+                                               End If
 
-                         ' Refresh the menu after paste completes
-                         If Not Me.Disposing AndAlso Not Me.IsDisposed Then
-                             Try
-                                 Dim newItems = ParseDir(tgt, True) ' Your function returning updated items
-                                 Me.Invoke(Sub()
-                                               Dim idx = 0
-                                               Dim insertIndex = 0
-                                               Dim origitems As ToolStripItemCollection = dropdown.items
-                                               For Each item As ToolStripMenuItem In newItems.Cast(Of ToolStripItem).OfType(Of ToolStripMenuItem).Where(Function(it) TypeOf it.Tag Is QLInfo).ToList
-                                                   Dim qli As QLInfo = item.Tag
-                                                   If qli.path <> CType(origitems(idx).Tag, QLInfo).path Then
-                                                       origitems.Insert(insertIndex, newItems(idx))
-                                                       'newItems.RemoveAt(idx)
-                                                   End If
-                                                   idx += 1
-                                                   insertIndex += 1
-                                               Next
+                                               ' Refresh the menu after paste completes
+                                               If Not Me.Disposing AndAlso Not Me.IsDisposed Then
+                                                   Try
+                                                       UpdateMenuDropDown(dropdown, ParseDir(tgt, True))
+                                                   Catch ex As Exception
+                                                       dBug.Print($"Failed to refresh QL after paste: {ex.Message}")
+                                                   End Try
+                                               End If
+                                               watch.Stop()
                                            End Sub)
-
-                             Catch ex As Exception
-                                 dBug.Print($"Failed to refresh QL after paste: {ex.Message}")
-                             End Try
-                         End If
-                         watch.Stop()
-                     End Sub)
         End If
 
         dBug.Print($"Clipaction {act} ""{tgt}""")
+        pasteStopWatch.Reset()
         InvokeExplorerVerb(tgt, act, ScalaHandle)
-        If act.StartsWith("Paste") Then
-
-        Else
+        If act = "PasteLink" Then
+            Task.Run(Sub()
+                         'fswatchers changed event restarts sw
+                         While pasteStopWatch.ElapsedMilliseconds <= 100
+                             Threading.Thread.Sleep(50)
+                         End While
+                         UpdateMenuDropDown(dropdown, ParseDir(tgt, True))
+                     End Sub)
+        ElseIf Not act.StartsWith("Paste") Then
 
             'SetFileDropListWithEffect(tgt.TrimEnd("\"c), act = "Cut") 'this is brokne. leads to silent crash
 
@@ -2804,6 +2797,23 @@ Partial Public NotInheritable Class FrmMain
                          End Sub)
             End If
         End If
+    End Sub
+
+    Private Sub UpdateMenuDropDown(dropdown As Object, newitems As List(Of ToolStripItem))
+        'todo if newitems is empty add <empty> items
+        'todo add backroundcolor fade to the inserted items
+        Me.Invoke(Sub()
+                      Dim idx = 0
+                      Dim origItems As ToolStripItemCollection = dropdown.items
+                      For Each item As ToolStripMenuItem In newitems.Cast(Of ToolStripItem).OfType(Of ToolStripMenuItem).Where(Function(it) TypeOf it.Tag Is QLInfo).ToList
+                          Dim qli As QLInfo = item.Tag
+                          If qli.path <> CType(origItems(idx).Tag, QLInfo).path Then
+                              origItems.Insert(idx, newitems(idx))
+                              dBug.Print($"Inserting {newitems(idx)}")
+                          End If
+                          idx += 1
+                      Next
+                  End Sub)
     End Sub
 
     Private Sub UpdateMenuChecks(menu As ToolStripItemCollection, itemSet As HashSet(Of String))
