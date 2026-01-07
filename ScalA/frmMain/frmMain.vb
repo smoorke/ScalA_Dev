@@ -306,30 +306,19 @@ Partial Public NotInheritable Class FrmMain
             End If
         End Try
     End Sub
-    Private Const DWMWA_EXTENDED_FRAME_BOUNDS As Integer = 9
     Public Function WindowsScaling() As Integer
-        Dim rcFrame As RECT
-        DwmGetWindowAttribute(ScalaHandle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
-        Dim rcWind As RECT
-        GetWindowRect(ScalaHandle, rcWind)
-        Dim percent = Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25
+        Dim hMon As IntPtr = MonitorFromWindow(ScalaHandle, MONITORFLAGS.DEFAULTTONEAREST)
+        Dim percent As Integer = GetMonitorScaling(hMon)
 
         FrmSettings.pb100PWarning.Visible = percent <> 100
-
-        'dBug.Print($"WS: settings vis {FrmSettings.Visible}")
-        If Double.IsNaN(percent) Then Return 100
         Return percent
     End Function
 
     Public Function GetScaling(hWnd As IntPtr) As Integer
-        Dim rcFrame As RECT
-        DwmGetWindowAttribute(hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
-        Dim rcWind As RECT
-        GetWindowRect(hWnd, rcWind)
-        Dim rcClient As RECT
-        GetClientRect(hWnd, rcClient)
-        Dim hasBorder As Boolean = rcWind.bottom - rcWind.top <> rcClient.bottom
-        Return Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25 + If(hasBorder, 0, 25)
+        If hWnd = IntPtr.Zero Then Return 100
+
+        Dim hMon As IntPtr = MonitorFromWindow(hWnd, MONITORFLAGS.DEFAULTTONEAREST)
+        Return GetMonitorScaling(hMon)
     End Function
 
     Public Resizing As Boolean

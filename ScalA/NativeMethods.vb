@@ -30,8 +30,35 @@ Module NativeMethods
     <DllImport("user32.dll", CharSet:=CharSet.Auto, ExactSpelling:=True)>
     Public Function MonitorFromPoint(pt As Point, dwFlags As MONITORFLAGS) As IntPtr : End Function
 
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, ExactSpelling:=True)>
+    Public Function MonitorFromWindow(hwnd As IntPtr, dwFlags As MONITORFLAGS) As IntPtr : End Function
+
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
     Public Function GetMonitorInfo(hmonitor As IntPtr, ByRef info As MonitorInfo) As Boolean : End Function
+
+    ' Returns the scale factor for a monitor (Win 8.1+)
+    ' scale values: 100, 125, 150, 175, 200, etc.
+    <DllImport("Shcore.dll", SetLastError:=True)>
+    Public Function GetScaleFactorForMonitor(hMon As IntPtr, ByRef pScale As DEVICE_SCALE_FACTOR) As Integer : End Function
+
+    Public Enum DEVICE_SCALE_FACTOR As Integer
+        SCALE_100_PERCENT = 100
+        SCALE_120_PERCENT = 120
+        SCALE_125_PERCENT = 125
+        SCALE_140_PERCENT = 140
+        SCALE_150_PERCENT = 150
+        SCALE_160_PERCENT = 160
+        SCALE_175_PERCENT = 175
+        SCALE_180_PERCENT = 180
+        SCALE_200_PERCENT = 200
+        SCALE_225_PERCENT = 225
+        SCALE_250_PERCENT = 250
+        SCALE_300_PERCENT = 300
+        SCALE_350_PERCENT = 350
+        SCALE_400_PERCENT = 400
+        SCALE_450_PERCENT = 450
+        SCALE_500_PERCENT = 500
+    End Enum
 
     Public Enum MONITORFLAGS As UInt32
         DEFAULTTONULL = &H0
@@ -810,10 +837,39 @@ Module NativeMethods
 
     <DllImport("gdi32.dll")>
     Public Function GetDeviceCaps(ByVal hDC As IntPtr, ByVal nIndex As Integer) As Integer : End Function
+    Public Const LOGPIXELSX As Integer = 88
+    Public Const LOGPIXELSY As Integer = 90
+
     <DllImport("user32.dll")>
     Public Function GetDC(ByVal hwnd As IntPtr) As IntPtr : End Function
     <DllImport("user32.dll")>
     Public Function ReleaseDC(ByVal hWnd As IntPtr, ByVal hDC As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean : End Function
+
+    ''' <summary>
+    ''' Gets the scaling percentage for a monitor. Uses GetScaleFactorForMonitor on Win 8.1+,
+    ''' falls back to system DPI via GetDeviceCaps on Win 7/8.0.
+    ''' </summary>
+    Public Function GetMonitorScaling(hMon As IntPtr) As Integer
+        ' Try GetScaleFactorForMonitor first (Win 8.1+)
+        Dim scaleFactor As DEVICE_SCALE_FACTOR
+        Try
+            Dim hr As Integer = GetScaleFactorForMonitor(hMon, scaleFactor)
+            If hr = 0 Then Return CInt(scaleFactor)
+        Catch ex As EntryPointNotFoundException
+            ' API not available (Win 7/8.0)
+        Catch ex As DllNotFoundException
+            ' Shcore.dll not present
+        End Try
+
+        ' Fallback: system DPI via GetDeviceCaps (Win 7/8.0 only have system-wide DPI)
+        Dim hdc As IntPtr = GetDC(IntPtr.Zero)
+        Try
+            Dim dpi As Integer = GetDeviceCaps(hdc, LOGPIXELSX)
+            Return CInt(dpi * 100 / 96) ' 96 DPI = 100%, 120 DPI = 125%, etc.
+        Finally
+            ReleaseDC(IntPtr.Zero, hdc)
+        End Try
+    End Function
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function SetLayeredWindowAttributes(hWnd As IntPtr, crKey As UInteger, bAlpha As Byte, dwFlags As UInteger) As Boolean : End Function
     Public Const LWA_COLORKEY As Integer = &H1
