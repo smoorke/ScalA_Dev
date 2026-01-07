@@ -1307,6 +1307,9 @@ Module NativeMethods
 
     Public Const WM_MOUSEHOVER = &H2A1
 
+    Public Const WM_DPICHANGED As Integer = &H2E0
+    Public Const WM_GETDPISCALEDSIZE As Integer = &H2E4
+
     Public Const WM_CLIPBOARDUPDATE As Integer = &H31D
 
     Public Const WM_DWMCOLORIZATIONCOLORCHANGED = &H320
@@ -1411,7 +1414,8 @@ Module NativeMethods
     <DllImport("user32.dll")>
     Public Function MapVirtualKeyW(ByVal uCode As UInteger, ByVal uMapType As UInteger) As UInteger
     End Function
-
+    <DllImport("user32.dll")>
+    Public Function GetDpiForWindow(hWnd As IntPtr) As Integer : End Function
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function ToUnicode(
               ByVal wVirtKey As UInteger,

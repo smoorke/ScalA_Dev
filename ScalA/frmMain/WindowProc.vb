@@ -211,8 +211,11 @@ Partial NotInheritable Class FrmMain
                 End If
             Case WM_ENTERSIZEMOVE
                 dBug.Print($"WM_ENTERSIZEMOVE")
+                InSizeMove = True
             Case WM_EXITSIZEMOVE
                 dBug.Print($"WM_EXITSIZEMOVE")
+                AltPP?.ResetCache()
+                ReZoom(My.Settings.resol)
                 If Not (My.Settings.gameOnOverview AndAlso cboAlt.SelectedIndex = 0) Then UpdateThumb(If(chkDebug.Checked, 128, 255))
                 If My.Settings.SizingBorder Then
                     If Me.WindowState = FormWindowState.Maximized Then
@@ -224,6 +227,7 @@ Partial NotInheritable Class FrmMain
                 AltPP?.ResetCache()
                 Me.Invalidate()
                 moveBusy = False
+                InSizeMove = False
             Case WM_SIZE ' = &h0005
                 Dim sz As Size = New LParamMap(m.LParam)
                 dBug.Print($"WM_SIZE {m.WParam} {sz}")
@@ -275,16 +279,20 @@ Partial NotInheritable Class FrmMain
                 If StructureToPtrSupported Then 'Marshal.StructureToPtr requires 4.5.1 or higher
                     If caption_Mousedown AndAlso captionMoveTrigger AndAlso New Point(winpos.x, winpos.y) = Me.RestoreBounds.Location Then
                         winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreMove
-                        System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                         dBug.Print($"Moveglitch fixed")
                         captionMoveTrigger = False
                     End If
                     If suppressRestoreBounds AndAlso New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy) = Me.RestoreBounds Then
                         winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreMove
-                        System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                         dBug.Print($"Restoreglitch tweaked")
                         'suppressRestoreBounds = False
                     End If
+                    If InSizeMove Then
+                        winpos.cx = My.Settings.resol.Width + 2
+                        winpos.cy = My.Settings.resol.Height + pnlTitleBar.Height + 1
+                        winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreResize
+                    End If
+                    System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                 End If
                'Debug.Print("WinposChanging:")
                 'Debug.Print($"{winpos.flags}")
@@ -565,6 +573,8 @@ Partial NotInheritable Class FrmMain
                 Finally
                     CloseHandle(hThread)
                 End Try
+            Case WM_DPICHANGED
+                Debug.Print("WM_DPICHANGED")
 #If DEBUG Then
 
             'Case &H6 ' WM_ACTIVATE
@@ -642,6 +652,9 @@ Partial NotInheritable Class FrmMain
     End Sub
 
 #If DEBUG Then
+    Public OriginalSize As Size
+    Public OriginalLocation As Point
+    Public DpiChanging As Boolean
     Public Enum WM_ 'getnerated by chadGPT, needs sanity check
         WM_NULL = &H0
         WM_CREATE = &H1
@@ -812,6 +825,6 @@ Partial NotInheritable Class FrmMain
 
     Dim prevLoc As Point
     Dim sizeMoveBusy As Boolean = False
-
+    Private InSizeMove As Boolean
 
 End Class

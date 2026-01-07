@@ -8,12 +8,12 @@
     Partial Friend Class MyApplication
 
         Private Sub MyApplication_Startup(sender As Object, e As Microsoft.VisualBasic.ApplicationServices.StartupEventArgs) Handles Me.Startup
-            ' Request 1ms timer resolution for smoother cursor tracking
+            'Request 1ms timer resolution for smoother cursor tracking
             timeBeginPeriod(1)
         End Sub
 
         Private Sub MyApplication_Shutdown(sender As Object, e As EventArgs) Handles Me.Shutdown
-            ' Restore default timer resolution
+            'Restore default timer resolution
             timeEndPeriod(1)
         End Sub
 

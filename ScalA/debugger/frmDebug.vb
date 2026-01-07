@@ -147,7 +147,7 @@ Public Class frmDebug
     Private Sub btnAltInfo_Click(sender As Object, e As EventArgs) Handles btnAltInfo.Click
         If FrmMain.AltPP IsNot Nothing AndAlso FrmMain.AltPP.Id <> 0 Then
             Dim ap As AstoniaProcess = FrmMain.AltPP
-            dBug.Print($"{ap.Name} {ap.MainWindowHandle} DPI:{ap.DpiAware} SDL:{ap.isSDL} WS:{FrmMain.WindowsScaling}% AS:{ap.WindowsScaling}%", 1)
+            dBug.Print($"{ap.Name} {ap.MainWindowHandle} DPI:{ap.DpiAware} SDL:{ap.isSDL} WS:{FrmMain.WindowsScaling}% AS:{ap.WindowsScalingV2}%", 1)
             dBug.Print($"co: {ap.ClientOffset} rcc:{ap.ClientRect} rcw:{ap.WindowRect}", 1)
         Else
             dBug.Print("No Alt Proc Active", 1)

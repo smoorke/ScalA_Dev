@@ -275,6 +275,18 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         Return Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25 + 25
     End Function
 
+    Public Function WindowsScalingV2() As Integer
+        If FrmMain.WindowsScaling <> 100 Then
+            'fallback to V1 when we are not dpi aware
+            Return WindowsScaling()
+        End If
+
+        Dim dpi As Integer = GetDpiForWindow(Me.MainWindowHandle)
+        Return CInt(dpi / 96.0 * 100)
+
+    End Function
+
+
     Public Function CenterBehind(centerOn As Control, Optional extraSWPFlags As UInteger = 0, Optional force As Boolean = False, Optional fixThumb As Boolean = False) As Boolean
         If Not force AndAlso centerOn.RectangleToScreen(centerOn.Bounds).Contains(Form.MousePosition) Then Return False
         Dim pt As Point = centerOn.PointToScreen(New Point(centerOn.Width / 2, centerOn.Height / 2))

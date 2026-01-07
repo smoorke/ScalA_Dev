@@ -1,6 +1,15 @@
 ﻿Imports System.IO.Compression
 Imports System.Net.Http
 
+'Module Main
+'    Sub Main()
+'        Application.EnableVisualStyles()
+'        Application.SetCompatibleTextRenderingDefault(False)
+'        Application.Run(FrmMain)
+'        My.Settings.Save()
+'    End Sub
+'End Module
+
 Partial Public NotInheritable Class FrmMain
 
     Private _altPP As AstoniaProcess
@@ -153,7 +162,7 @@ Partial Public NotInheritable Class FrmMain
                 PnlEqLock.Visible = False
                 AOshowEqLock = False
                 Me.TopMost = My.Settings.topmost
-                If Not startup AndAlso My.Settings.MaxNormOverview AndAlso Me.WindowState <> FormWindowState.Maximized Then
+                If Not Startup AndAlso My.Settings.MaxNormOverview AndAlso Me.WindowState <> FormWindowState.Maximized Then
                     btnMax.PerformClick()
                 End If
                 Exit Sub
@@ -231,7 +240,8 @@ Partial Public NotInheritable Class FrmMain
                 Dim ScalAWinScaling = Me.WindowsScaling()
 
                 dBug.Print($"{ScalAWinScaling}% ScalA windows scaling")
-                dBug.Print($"{AltPP.WindowsScaling}% altPP windows scaling")
+                dBug.Print($"{AltPP.WindowsScalingV2}% altPP windows scaling")
+
 
                 'Dim failcounter = 0
                 'If AltPP.WindowsScaling <> ScalAWinScaling Then 'scala is scaled diffrent than Alt
@@ -372,7 +382,7 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         ' Show warning if client is on non-100% scaled display without DPI Override
-        Dim needsWarning As Boolean = AltPP.WindowsScaling <> 100 AndAlso Not AltPP.RegHighDpiAware
+        Dim needsWarning As Boolean = AltPP.WindowsScalingV2 <> 100 AndAlso Not AltPP.RegHighDpiAware
         pbDpiWarning.Visible = needsWarning
 
         ' Position the icon right after the title text
@@ -622,7 +632,7 @@ Partial Public NotInheritable Class FrmMain
 
         AddHandler Application.Idle, AddressOf Application_Idle
 
-        If My.Settings.DisableWinKey OrElse My.Settings.OnlyEsc OrElse My.Settings.NoAltTab Then keybHook.Hook()
+        If My.Settings.DisableWinKey OrElse My.Settings.OnlyEsc OrElse My.Settings.NoAltTab Then KeybHook.Hook()
 
         clipBoardInfo = GetClipboardFilesAndAction()
         registerClipListener()
@@ -673,7 +683,7 @@ Partial Public NotInheritable Class FrmMain
             Dim msWA As Rectangle = Screen.PrimaryScreen.WorkingArea
             Me.Location = New Point(Math.Max(msWA.Left, (msWA.Width - Me.Width) / 2), Math.Max(msWA.Top, (msWA.Height - Me.Height) / 2))
         End If
-        startup = False
+        Startup = False
         If My.Settings.StartMaximized Then
             btnMax.PerformClick()
         End If
@@ -2102,14 +2112,14 @@ Partial Public NotInheritable Class FrmMain
 
         'dBug.Print("CaptionMouseMove")
         If AltPP Is Nothing Then Exit Sub
-        newX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - If(AltPP?.ClientOffset.X, 0)
-        newY = Me.Location.Y
+        NewX = MousePosition.X.Map(ptZ.X, ptZ.X + pbZoom.Width, ptZ.X, ptZ.X + pbZoom.Width - rcC.Width) - If(AltPP?.ClientOffset.X, 0)
+        NewY = Me.Location.Y
 
         Dim flags = swpFlags
         If Not AltPP?.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
         If AltPP?.IsBelow(ScalaHandle) Then flags.SetFlag(SetWindowPosFlags.IgnoreZOrder)
         Task.Run(Sub()
-                     SetWindowPos(If(AltPP?.MainWindowHandle, IntPtr.Zero), ScalaHandle, newX, newY, -1, -1, flags)
+                     SetWindowPos(If(AltPP?.MainWindowHandle, IntPtr.Zero), ScalaHandle, NewX, NewY, -1, -1, flags)
                  End Sub)
 
     End Sub
