@@ -116,7 +116,8 @@ Public Module LauncherTemplateManager
                                    targetFolder As String,
                                    Optional widthOverride As Integer? = Nothing,
                                    Optional heightOverride As Integer? = Nothing,
-                                   Optional optionsOverride As String = Nothing) As Boolean
+                                   Optional optionsOverride As String = Nothing,
+                                   Optional overwrite As Boolean = False) As Boolean
 
         If template Is Nothing Then Return False
         If String.IsNullOrWhiteSpace(username) Then Return False
@@ -127,14 +128,16 @@ Public Module LauncherTemplateManager
             Dim shortcutName = SanitizeFileName(username) & ".lnk"
             Dim shortcutPath = IO.Path.Combine(targetFolder, shortcutName)
 
-            ' Handle duplicate names
-            Dim counter = 1
-            While File.Exists(shortcutPath)
-                shortcutName = $"{SanitizeFileName(username)} ({counter}).lnk"
-                shortcutPath = IO.Path.Combine(targetFolder, shortcutName)
-                counter += 1
-                If counter > 100 Then Return False ' Safety limit
-            End While
+            ' Handle duplicate names (unless overwrite is enabled)
+            If Not overwrite Then
+                Dim counter = 1
+                While File.Exists(shortcutPath)
+                    shortcutName = $"{SanitizeFileName(username)} ({counter}).lnk"
+                    shortcutPath = IO.Path.Combine(targetFolder, shortcutName)
+                    counter += 1
+                    If counter > 100 Then Return False ' Safety limit
+                End While
+            End If
 
             ' Build arguments
             Dim arguments = template.BuildArguments(username, password, widthOverride, heightOverride, optionsOverride)
@@ -169,7 +172,7 @@ Public Module LauncherTemplateManager
     ''' <summary>
     ''' Sanitizes a filename by removing invalid characters
     ''' </summary>
-    Private Function SanitizeFileName(name As String) As String
+    Public Function SanitizeFileName(name As String) As String
         Dim invalid = IO.Path.GetInvalidFileNameChars()
         Dim result = name
 

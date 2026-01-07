@@ -26,7 +26,7 @@ Partial Class frmLauncherSetup
         Me.launcherSetupControl1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.launcherSetupControl1.Location = New System.Drawing.Point(0, 0)
         Me.launcherSetupControl1.Name = "launcherSetupControl1"
-        Me.launcherSetupControl1.Size = New System.Drawing.Size(414, 320)
+        Me.launcherSetupControl1.Size = New System.Drawing.Size(414, 420)
         Me.launcherSetupControl1.TabIndex = 0
         Me.launcherSetupControl1.TargetFolder = ""
         '
@@ -34,7 +34,7 @@ Partial Class frmLauncherSetup
         '
         Me.btnClose.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnClose.Location = New System.Drawing.Point(327, 326)
+        Me.btnClose.Location = New System.Drawing.Point(327, 426)
         Me.btnClose.Name = "btnClose"
         Me.btnClose.Size = New System.Drawing.Size(75, 23)
         Me.btnClose.TabIndex = 1
@@ -46,7 +46,7 @@ Partial Class frmLauncherSetup
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.btnClose
-        Me.ClientSize = New System.Drawing.Size(414, 361)
+        Me.ClientSize = New System.Drawing.Size(414, 461)
         Me.Controls.Add(Me.btnClose)
         Me.Controls.Add(Me.launcherSetupControl1)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
