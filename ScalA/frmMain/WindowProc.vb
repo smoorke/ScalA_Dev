@@ -168,6 +168,12 @@ Partial NotInheritable Class FrmMain
                         FrmSettings.WindowState = FormWindowState.Normal
                         FrmSettings.Activate()
                         Exit Sub
+                    Case MC_HELP
+                        dBug.Print("Help called by sysMenu")
+                        Using helpForm As New frmHelp()
+                            helpForm.ShowDialog(Me)
+                        End Using
+                        Exit Sub
                 End Select
             Case WM_QUERYOPEN
                 dBug.Print("WM_QUERYOPEN")

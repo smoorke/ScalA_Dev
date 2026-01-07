@@ -225,6 +225,13 @@
     <Compile Include="frmLauncherSetup.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="frmHelp.Designer.vb">
+      <DependentUpon>frmHelp.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmHelp.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HelpContent.vb" />
     <Compile Include="frmQuickShortcut.Designer.vb">
       <DependentUpon>frmQuickShortcut.vb</DependentUpon>
     </Compile>

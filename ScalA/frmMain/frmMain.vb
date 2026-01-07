@@ -1555,6 +1555,12 @@ Partial Public NotInheritable Class FrmMain
         'suppressWM_MOVEcwp = False
     End Sub
 
+    Private Sub BtnHelp_Click(sender As Object, e As EventArgs) Handles btnHelp.Click
+        Using helpForm As New frmHelp()
+            helpForm.ShowDialog(Me)
+        End Using
+    End Sub
+
     Private Sub MinAllActiveOverview()
         For Each but As AButton In pnlOverview.Controls.OfType(Of AButton).Where(Function(b) b.AP IsNot Nothing)
             If Not but.AP.HasExited Then

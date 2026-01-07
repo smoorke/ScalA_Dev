@@ -41,6 +41,7 @@ Partial NotInheritable Class FrmMain
         Me.pbWrapperWarning = New System.Windows.Forms.PictureBox()
         Me.pnlUpdate = New System.Windows.Forms.Panel()
         Me.pbUpdateAvailable = New System.Windows.Forms.PictureBox()
+        Me.btnHelp = New System.Windows.Forms.Button()
         Me.ChkEqLock = New System.Windows.Forms.CheckBox()
         Me.lblTitle = New System.Windows.Forms.Label()
         Me.pnlButtons = New System.Windows.Forms.Panel()
@@ -209,6 +210,7 @@ Partial NotInheritable Class FrmMain
         Me.pnlTitleBar.Controls.Add(Me.pbDpiWarning)
         Me.pnlTitleBar.Controls.Add(Me.pbWrapperWarning)
         Me.pnlTitleBar.Controls.Add(Me.pnlUpdate)
+        Me.pnlTitleBar.Controls.Add(Me.btnHelp)
         Me.pnlTitleBar.Controls.Add(Me.ChkEqLock)
         Me.pnlTitleBar.Controls.Add(Me.lblTitle)
         Me.pnlTitleBar.Location = New System.Drawing.Point(270, 0)
@@ -267,6 +269,21 @@ Partial NotInheritable Class FrmMain
         Me.pnlUpdate.Size = New System.Drawing.Size(24, 25)
         Me.pnlUpdate.TabIndex = 14
         Me.pnlUpdate.Visible = False
+        '
+        'btnHelp
+        '
+        Me.btnHelp.Dock = System.Windows.Forms.DockStyle.Right
+        Me.btnHelp.FlatAppearance.BorderSize = 0
+        Me.btnHelp.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnHelp.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnHelp.Location = New System.Drawing.Point(556, 0)
+        Me.btnHelp.Name = "btnHelp"
+        Me.btnHelp.Size = New System.Drawing.Size(24, 25)
+        Me.btnHelp.TabIndex = 17
+        Me.btnHelp.TabStop = False
+        Me.btnHelp.Text = "?"
+        Me.ttMain.SetToolTip(Me.btnHelp, "Help && FAQ")
+        Me.btnHelp.UseVisualStyleBackColor = True
         '
         'pbUpdateAvailable
         '
@@ -808,4 +825,5 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents CloseAllButNameToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ActiveOverviewToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripMenuItem2 As ToolStripSeparator
+    Friend WithEvents btnHelp As Button
 End Class
