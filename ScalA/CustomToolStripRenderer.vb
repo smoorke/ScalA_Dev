@@ -2,8 +2,11 @@
     Inherits ToolStripProfessionalRenderer
     Implements IDisposable
 
+
+    Public Shared MyColorTable As CustomColorTable = New CustomColorTable()
+
     Public Sub New()
-        MyBase.New(New CustomColorTable())
+        MyBase.New(MyColorTable)
     End Sub
 
     Public animTimer As New Timer() With {.Interval = 99}

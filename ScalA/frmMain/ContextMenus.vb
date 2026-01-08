@@ -3205,20 +3205,62 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub UpdateMenuDropDown(dropdown As Object, newitems As List(Of ToolStripItem))
+
+        If dropdown.items Is Nothing OrElse dropdown.items.count = 0 OrElse newitems.Count = 0 Then
+            Exit Sub
+        End If
+
         'todo if newitems is empty add <empty> items
-        'todo add backroundcolor fade to the inserted items
+
+        'set backgoundcolor to selected
+        Dim clr As Color = CustomToolStripRenderer.MyColorTable.MenuItemSelected
+        For Each item As ToolStripItem In newitems
+            item.BackColor = clr
+        Next
+
+        Dim insertedItems As New List(Of ToolStripItem)
         Me.Invoke(Sub()
                       Dim idx = 0
                       Dim origItems As ToolStripItemCollection = dropdown.items
-                      For Each item As ToolStripMenuItem In newitems.Cast(Of ToolStripItem).OfType(Of ToolStripMenuItem).Where(Function(it) TypeOf it.Tag Is QLInfo).ToList
-                          Dim qli As QLInfo = item.Tag
-                          If qli.path <> CType(origItems(idx).Tag, QLInfo).path Then
+                      For Each nItem As ToolStripMenuItem In newitems.Cast(Of ToolStripItem).OfType(Of ToolStripMenuItem).Where(Function(it) TypeOf it.Tag Is QLInfo).ToList
+                          Dim niQli As QLInfo = nItem.Tag
+                          If niQli.path <> CType(origItems(idx).Tag, QLInfo).path Then
                               origItems.Insert(idx, newitems(idx))
+                              insertedItems.Add(newitems(idx))
                               dBug.Print($"Inserting {newitems(idx)}")
                           End If
                           idx += 1
                       Next
                   End Sub)
+
+        'fade backgroundcolor
+        Task.Run(Sub()
+                     Dim swFade = Stopwatch.StartNew()
+                     Const FadeTime As Integer = 1000
+
+                     Do
+                         Dim elapsed = swFade.ElapsedMilliseconds
+                         If elapsed >= FadeTime Then Exit Do
+
+                         Dim progress As Double = elapsed / FadeTime
+                         Dim alpha As Integer = CInt(255 * (1.0 - progress))
+
+                         Me.Invoke(Sub()
+                                       For Each item In insertedItems
+                                           item.BackColor = Color.FromArgb(alpha, clr)
+                                       Next
+                                   End Sub)
+
+                         Threading.Thread.Sleep(16)
+                     Loop
+
+                     Me.BeginInvoke(Sub()
+                                        For Each item In insertedItems
+                                            item.BackColor = Color.Transparent
+                                        Next
+                                    End Sub)
+                 End Sub
+            )
     End Sub
 
     Private Sub UpdateMenuChecks(menu As ToolStripItemCollection, itemSet As HashSet(Of String))
