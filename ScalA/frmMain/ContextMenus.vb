@@ -3236,14 +3236,14 @@ Partial Public NotInheritable Class FrmMain
         'fade backgroundcolor
         Task.Run(Sub()
                      Dim swFade = Stopwatch.StartNew()
-                     Const FadeTime As Integer = 1000
+                     Const FadeTime As Integer = 750
 
                      Do
                          Dim elapsed = swFade.ElapsedMilliseconds
                          If elapsed >= FadeTime Then Exit Do
 
                          Dim progress As Double = elapsed / FadeTime
-                         Dim alpha As Integer = CInt(255 * (1.0 - progress))
+                         Dim alpha As Integer = Math.Max(0, (255 * (1.0 - progress)))
 
                          Me.Invoke(Sub()
                                        For Each item In insertedItems
