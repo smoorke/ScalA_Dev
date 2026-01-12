@@ -135,7 +135,25 @@ Namespace QL
 
             Return ol
         End Function
+        Public Function ApplySortOrderV3(Of T)(items As IEnumerable(Of T), sortOrder As List(Of String), nameSelector As Func(Of T, String), nsSorter As IComparer(Of String)) As List(Of T)
+            ' Build lookup: name -> index
+            Dim orderMap As New Dictionary(Of String, Integer)(StringComparer.OrdinalIgnoreCase)
+            For i = 0 To sortOrder.Count - 1
+                If Not orderMap.ContainsKey(sortOrder(i)) Then
+                    orderMap(sortOrder(i)) = i
+                End If
+            Next
 
+            Return items.OrderBy(Function(it)
+                                     Dim idx As Integer
+                                     If orderMap.TryGetValue(nameSelector(it), idx) Then
+                                         Return idx
+                                     End If
+                                     Return Integer.MaxValue
+                                 End Function) _
+                        .ThenBy(nameSelector, nsSorter) _
+                        .ToList()
+        End Function
     End Module
 
 End Namespace ' QL

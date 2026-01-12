@@ -725,8 +725,8 @@ Partial Public NotInheritable Class FrmMain
 
         ' Apply custom sort order if available
         Dim sortOrder As List(Of String) = ReadSortOrder(pth)
-        Dim sortedDirs = ApplySortOrderV2(Dirs.ToList(), sortOrder, Function(d) CType(d.Tag, QLInfo).path.TrimEnd("\"c), NsSorter)
-        Dim sortedFiles = ApplySortOrderV2(Files.ToList(), sortOrder, Function(f) CType(f.Tag, QLInfo).path, NsSorter)
+        Dim sortedDirs = ApplySortOrderV3(Dirs.ToList(), sortOrder, Function(d) CType(d.Tag, QLInfo).path.TrimEnd("\"c), NsSorter)
+        Dim sortedFiles = ApplySortOrderV3(Files.ToList(), sortOrder, Function(f) CType(f.Tag, QLInfo).path, NsSorter)
         Dim allItems = sortedDirs.Concat(sortedFiles).ToList()
 
         If itemsOnly Then
