@@ -263,27 +263,12 @@ Partial NotInheritable Class FrmMain
         '
         Me.pnlUpdate.Controls.Add(Me.pbUpdateAvailable)
         Me.pnlUpdate.Dock = System.Windows.Forms.DockStyle.Right
-        Me.pnlUpdate.Location = New System.Drawing.Point(580, 0)
+        Me.pnlUpdate.Location = New System.Drawing.Point(556, 0)
         Me.pnlUpdate.Margin = New System.Windows.Forms.Padding(0)
         Me.pnlUpdate.Name = "pnlUpdate"
         Me.pnlUpdate.Size = New System.Drawing.Size(24, 25)
         Me.pnlUpdate.TabIndex = 14
         Me.pnlUpdate.Visible = False
-        '
-        'btnHelp
-        '
-        Me.btnHelp.Dock = System.Windows.Forms.DockStyle.Right
-        Me.btnHelp.FlatAppearance.BorderSize = 0
-        Me.btnHelp.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnHelp.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnHelp.Location = New System.Drawing.Point(556, 0)
-        Me.btnHelp.Name = "btnHelp"
-        Me.btnHelp.Size = New System.Drawing.Size(24, 25)
-        Me.btnHelp.TabIndex = 17
-        Me.btnHelp.TabStop = False
-        Me.btnHelp.Text = "?"
-        Me.ttMain.SetToolTip(Me.btnHelp, "Help && FAQ")
-        Me.btnHelp.UseVisualStyleBackColor = True
         '
         'pbUpdateAvailable
         '
@@ -296,6 +281,21 @@ Partial NotInheritable Class FrmMain
         Me.pbUpdateAvailable.TabIndex = 14
         Me.pbUpdateAvailable.TabStop = False
         Me.ttMain.SetToolTip(Me.pbUpdateAvailable, "An Update is Available")
+        '
+        'btnHelp
+        '
+        Me.btnHelp.Dock = System.Windows.Forms.DockStyle.Right
+        Me.btnHelp.FlatAppearance.BorderSize = 0
+        Me.btnHelp.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnHelp.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnHelp.Location = New System.Drawing.Point(580, 0)
+        Me.btnHelp.Name = "btnHelp"
+        Me.btnHelp.Size = New System.Drawing.Size(24, 25)
+        Me.btnHelp.TabIndex = 17
+        Me.btnHelp.TabStop = False
+        Me.btnHelp.Text = "?"
+        Me.ttMain.SetToolTip(Me.btnHelp, "Help & FAQ")
+        Me.btnHelp.UseVisualStyleBackColor = True
         '
         'ChkEqLock
         '
