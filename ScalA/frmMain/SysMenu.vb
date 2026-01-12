@@ -100,6 +100,7 @@ End Class
 Partial NotInheritable Class FrmMain
     Dim SysMenu As SysMenu
     Const MC_SETTINGS As Integer = &H8000 + 1337
+    Const MC_HELP As Integer = &H8000 + 1338
     Public Sub InitSysMenu()
         SysMenu = New SysMenu(Me)
         If SysMenu Then
@@ -107,8 +108,9 @@ Partial NotInheritable Class FrmMain
                 'remove alt-F4 from close item
                 .Rename(SC_CLOSE, "&Close ScalA")
                 .SetDefault(SC_CLOSE)
-                'add settings
+                'add settings and help
                 .InsertSeperator(0)
+                .InsertItem(0, MC_HELP, "&Help && FAQ")
                 .InsertItem(0, MC_SETTINGS, "Se&ttings")
                 .SetBitmaps(MC_SETTINGS, My.Resources.gear_wheel, Nothing)
             End With

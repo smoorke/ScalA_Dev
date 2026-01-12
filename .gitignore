@@ -333,3 +333,16 @@ ASALocalRun/
 # Local History for Visual Studio
 .localhistory/
 ScalA/Resources/ScalA_Updater.exe
+ScalA/Resources/SDL2Wrapper.dll
+
+# SDL2Wrapper build outputs
+SDL2Wrapper/*.dll
+SDL2Wrapper/*.exp
+SDL2Wrapper/*.lib
+SDL2Wrapper/*.obj
+SDL2Wrapper/*.res
+SDL2Wrapper/build_output.txt
+
+# Misc
+nul
+pr_body.md

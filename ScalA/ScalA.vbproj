@@ -157,6 +157,8 @@
     <Compile Include="Globals.vb" />
     <Compile Include="Hotkey.vb" />
     <Compile Include="IPC.vb" />
+    <Compile Include="ZoomStateIPC.vb" />
+    <Compile Include="SDL2WrapperHelper.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -177,6 +179,16 @@
     <Compile Include="frmMain\QuickLaunch\QuickLaunch.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="frmMain\QuickLaunch\QuickLaunchEvents.vb" />
+    <Compile Include="frmMain\QuickLaunch\QLTypes.vb" />
+    <Compile Include="frmMain\QuickLaunch\QLSort.vb" />
+    <Compile Include="frmMain\QuickLaunch\QLIconCache.vb" />
+    <Compile Include="frmMain\QuickLaunch\QLDirectoryParser.vb" />
+    <Compile Include="frmMain\QuickLaunch\QLDragDropHandler.vb" />
+    <Compile Include="frmMain\QuickLaunch\QLClipboardHandler.vb" />
+    <Compile Include="frmMain\QuickLaunch\QLFileOperations.vb" />
+    <Compile Include="frmMain\QuickLaunch\QLItemHandler.vb" />
+    <Compile Include="frmMain\QuickLaunch\QuickLaunchManager.vb" />
     <Compile Include="ScreenManager.vb" />
     <Compile Include="Settings.vb" />
     <Compile Include="ShellLinkInfo.vb" />
@@ -185,6 +197,45 @@
       <DependentUpon>UpdateDialog.vb</DependentUpon>
     </Compile>
     <Compile Include="UpdateDialog.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BatchShortcutManager.Designer.vb">
+      <DependentUpon>BatchShortcutManager.vb</DependentUpon>
+    </Compile>
+    <Compile Include="BatchShortcutManager.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LauncherTemplate.vb" />
+    <Compile Include="LauncherTemplateManager.vb" />
+    <Compile Include="LauncherSetupControl.Designer.vb">
+      <DependentUpon>LauncherSetupControl.vb</DependentUpon>
+    </Compile>
+    <Compile Include="LauncherSetupControl.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="frmLauncherTemplateEdit.Designer.vb">
+      <DependentUpon>frmLauncherTemplateEdit.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmLauncherTemplateEdit.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmLauncherSetup.Designer.vb">
+      <DependentUpon>frmLauncherSetup.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmLauncherSetup.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmHelp.Designer.vb">
+      <DependentUpon>frmHelp.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmHelp.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HelpContent.vb" />
+    <Compile Include="frmQuickShortcut.Designer.vb">
+      <DependentUpon>frmQuickShortcut.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmQuickShortcut.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SDL2CompatInstaller.Designer.vb">

@@ -1,4 +1,6 @@
-﻿Public NotInheritable Class CustomToolStripRenderer
+﻿Imports ScalA.QL
+
+Public NotInheritable Class CustomToolStripRenderer
     Inherits ToolStripProfessionalRenderer
     Implements IDisposable
 

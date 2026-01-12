@@ -266,13 +266,10 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     End Function
 
     Public Function WindowsScaling() As Integer
+        If Me.MainWindowHandle = IntPtr.Zero Then Return 0
 
-        Dim rcFrame As RECT
-        DwmGetWindowAttribute(Me.MainWindowHandle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
-        Dim rcWind As RECT
-        GetWindowRect(Me.MainWindowHandle, rcWind)
-        If rcFrame.right = 0 OrElse rcWind.right = 0 Then Return 0
-        Return Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25 + 25
+        Dim hMon As IntPtr = MonitorFromWindow(Me.MainWindowHandle, MONITORFLAGS.DEFAULTTONEAREST)
+        Return GetMonitorScaling(hMon)
     End Function
 
     Public Function WindowsScalingV2() As Integer

@@ -1,4 +1,5 @@
 ﻿Imports System.Runtime.InteropServices
+Imports ScalA.QL
 
 Public NotInheritable Class WindowProc
     'dummy class to prevent form generation
@@ -167,6 +168,12 @@ Partial NotInheritable Class FrmMain
                         FrmSettings.WindowState = FormWindowState.Normal
                         FrmSettings.Activate()
                         Exit Sub
+                    Case MC_HELP
+                        dBug.Print("Help called by sysMenu")
+                        Using helpForm As New frmHelp()
+                            helpForm.ShowDialog(Me)
+                        End Using
+                        Exit Sub
                 End Select
             Case WM_QUERYOPEN
                 dBug.Print("WM_QUERYOPEN")
@@ -179,6 +186,8 @@ Partial NotInheritable Class FrmMain
                 Me.Cursor = Cursors.Default
                 'frmCaptureClickBehind.Bounds = Me.RectangleToScreen(pbZoom.Bounds)
                 If AltPP?.IsRunning AndAlso Me.WindowState <> FormWindowState.Minimized Then
+                    ' Update zoom state for SDL2 wrapper
+                    ZoomStateIPC.UpdateFromFrmMain(Me, If(AltPP?.isSDL, False))
 #If DEBUG Then
                     pbZoom.Visible = True
 #End If
@@ -438,7 +447,7 @@ Partial NotInheritable Class FrmMain
 
                 End If
                 'clear QL iconcache
-                iconCache.Clear()
+                QLIconCache.IconCache.Clear()
 
             Case WM_CLIPBOARDUPDATE
                 dBug.Print("WM_CLIPBOARDUPDATE")
@@ -459,7 +468,7 @@ Partial NotInheritable Class FrmMain
             Case WM_SHNOTIFY
                 dBug.Print("Assoc change")
                 'clear non-wathed icons from cache
-                EvictNonWatchedIcons()
+                QLIconCache.EvictNonWatchedIcons()
             Case WM_ENTERMENULOOP
                 dBug.Print($"WM_ENTERMENULOOP {cmsQuickLaunch.Visible}")
                 SysMenu.Visible = Not cmsQuickLaunch.Visible

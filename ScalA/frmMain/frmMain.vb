@@ -133,6 +133,7 @@ Partial Public NotInheritable Class FrmMain
             'IPC.AddOrUpdateInstance(scalaPID, sender.SelectedIndex = 0, AltPP.Id)
             UpdateTitle()
             UpdateDpiWarning()
+            UpdateWrapperWarning()
 
             If sender.SelectedIndex = 0 Then
                 If Not My.Settings.gameOnOverview Then
@@ -273,6 +274,8 @@ Partial Public NotInheritable Class FrmMain
                     AltPP.TopMost = True
                 End If
 
+                ' Initialize zoom state for SDL2 wrapper
+                ZoomStateIPC.UpdateFromFrmMain(Me, If(AltPP?.isSDL, False))
 
                 moveBusy = False
             Else 'AltPP.Id = 0
@@ -313,30 +316,19 @@ Partial Public NotInheritable Class FrmMain
             End If
         End Try
     End Sub
-    Private Const DWMWA_EXTENDED_FRAME_BOUNDS As Integer = 9
     Public Function WindowsScaling() As Integer
-        Dim rcFrame As RECT
-        DwmGetWindowAttribute(ScalaHandle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
-        Dim rcWind As RECT
-        GetWindowRect(ScalaHandle, rcWind)
-        Dim percent = Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25
+        Dim hMon As IntPtr = MonitorFromWindow(ScalaHandle, MONITORFLAGS.DEFAULTTONEAREST)
+        Dim percent As Integer = GetMonitorScaling(hMon)
 
         FrmSettings.pb100PWarning.Visible = percent <> 100
-
-        'dBug.Print($"WS: settings vis {FrmSettings.Visible}")
-        If Double.IsNaN(percent) Then Return 100
         Return percent
     End Function
 
     Public Function GetScaling(hWnd As IntPtr) As Integer
-        Dim rcFrame As RECT
-        DwmGetWindowAttribute(hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
-        Dim rcWind As RECT
-        GetWindowRect(hWnd, rcWind)
-        Dim rcClient As RECT
-        GetClientRect(hWnd, rcClient)
-        Dim hasBorder As Boolean = rcWind.bottom - rcWind.top <> rcClient.bottom
-        Return Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25 + If(hasBorder, 0, 25)
+        If hWnd = IntPtr.Zero Then Return 100
+
+        Dim hMon As IntPtr = MonitorFromWindow(hWnd, MONITORFLAGS.DEFAULTTONEAREST)
+        Return GetMonitorScaling(hMon)
     End Function
 
     Public Resizing As Boolean
@@ -408,6 +400,63 @@ Partial Public NotInheritable Class FrmMain
             Catch ex As Exception
                 dBug.Print($"Failed to enable DPI Override: {ex.Message}")
                 CustomMessageBox.Show(Me, "Failed to enable DPI Override: " & ex.Message,
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' Updates SDL2 wrapper warning icon visibility based on version mismatch detection.
+    ''' Shows warning when the DLL flags a version mismatch with ScalA.
+    ''' </summary>
+    Private Sub UpdateWrapperWarning()
+        If AltPP Is Nothing OrElse AltPP.Id = 0 OrElse Not AltPP.isSDL Then
+            pbWrapperWarning.Visible = False
+            Return
+        End If
+
+        ' Show warning if DLL detected version mismatch
+        Dim needsWarning As Boolean = ZoomStateIPC.HasVersionMismatch()
+        pbWrapperWarning.Visible = needsWarning
+
+        ' Position the icon right after the DPI warning (or title if DPI warning not visible)
+        If needsWarning Then
+            If pbDpiWarning.Visible Then
+                pbWrapperWarning.Left = pbDpiWarning.Right + 4
+            Else
+                pbWrapperWarning.Left = lblTitle.Right + 4
+            End If
+        End If
+    End Sub
+
+    Private Sub PbWrapperWarning_Click(sender As Object, e As MouseEventArgs) Handles pbWrapperWarning.MouseUp
+        If e.Button <> MouseButtons.Left Then Exit Sub
+
+        ' Reinstall wrapper for the current client
+        If AltPP IsNot Nothing AndAlso AltPP.Id <> 0 AndAlso AltPP.isSDL Then
+            Dim sdl2Dir As String = SDL2WrapperHelper.GetSDL2Directory(AltPP)
+            If String.IsNullOrEmpty(sdl2Dir) Then
+                CustomMessageBox.Show(Me, "Could not find SDL2.dll location for this game.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Return
+            End If
+
+            Try
+                If SDL2WrapperHelper.InstallWrapper(sdl2Dir) Then
+                    dBug.Print($"Reinstalled SDL2 wrapper to {sdl2Dir}")
+                    pbWrapperWarning.Visible = False
+
+                    CustomMessageBox.Show(Me, "SDL2 wrapper has been reinstalled." & vbCrLf & vbCrLf &
+                        "Restart the game for changes to take effect.",
+                        "Wrapper Updated", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Else
+                    CustomMessageBox.Show(Me, "Failed to reinstall SDL2 wrapper." & vbCrLf &
+                        "You may need to run ScalA as administrator.",
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                End If
+            Catch ex As Exception
+                dBug.Print($"Failed to reinstall wrapper: {ex.Message}")
+                CustomMessageBox.Show(Me, "Failed to reinstall SDL2 wrapper: " & ex.Message,
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
         End If
@@ -1170,6 +1219,9 @@ Partial Public NotInheritable Class FrmMain
             cornerSE.Visible = False
         End If
 
+        ' Update zoom state for SDL2 wrapper (viewport size changed)
+        ZoomStateIPC.UpdateFromFrmMain(Me, If(AltPP?.isSDL, False))
+
     End Sub
 
     Private Sub DoEqLock(newSize As Size)
@@ -1513,6 +1565,12 @@ Partial Public NotInheritable Class FrmMain
         'suppressWM_MOVEcwp = False
     End Sub
 
+    Private Sub BtnHelp_Click(sender As Object, e As EventArgs) Handles btnHelp.Click
+        Using helpForm As New frmHelp()
+            helpForm.ShowDialog(Me)
+        End Using
+    End Sub
+
     Private Sub MinAllActiveOverview()
         For Each but As AButton In pnlOverview.Controls.OfType(Of AButton).Where(Function(b) b.AP IsNot Nothing)
             If Not but.AP.HasExited Then
@@ -1780,6 +1838,8 @@ Partial Public NotInheritable Class FrmMain
     Private prevDetach As String
 #End If
     Public Function Detach(show As Boolean) As Long
+        ' Disable zoom state for SDL2 wrapper
+        ZoomStateIPC.SetZoomStateEnabled(False)
 #If DEBUG Then
         If prevDetach <> AltPP?.UserName Then
             dBug.Print($"Detach from: {AltPP?.UserName} show:{show}")
@@ -2099,7 +2159,7 @@ Partial Public NotInheritable Class FrmMain
     End Sub
     Private prevMPX As Integer
     Private Sub Caption_MouseMove(sender As Object, e As MouseEventArgs) Handles btnStart.MouseMove, cboAlt.MouseMove, cmbResolution.MouseMove,
-                                                                                 pnlTitleBar.MouseMove, lblTitle.MouseMove, pbDpiWarning.MouseMove,
+                                                                                 pnlTitleBar.MouseMove, lblTitle.MouseMove, pbDpiWarning.MouseMove, pbWrapperWarning.MouseMove,
                                                                                  pnlUpdate.MouseMove, pbUpdateAvailable.MouseMove, ChkEqLock.MouseMove,
                                                                                  pnlSys.MouseMove, btnMin.MouseMove, btnMax.MouseMove, btnQuit.MouseMove
         If cboAlt.SelectedIndex = 0 Then Exit Sub

@@ -1,6 +1,7 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.Runtime.InteropServices
 Imports System.Threading
+Imports ScalA.QL
 
 Public NotInheritable Class ContextMenus
     'dummy class to prevent form being generated
@@ -228,7 +229,7 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
     Private Sub MoveToolStripMenuItem_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) Handles MoveToolStripMenuItem.DropDownOpening
-        Dim lst = EnumOtherOverviews.OrderBy(Function(p) p.ProcessName, nsSorter).ToList
+        Dim lst = EnumOtherOverviews.OrderBy(Function(p) p.ProcessName, NsSorter).ToList
         MoveToolStripMenuItem.DropDownItems.Clear()
         MoveToolStripMenuItem.DropDownItems.Add(NoOtherOverviewsToolStripMenuItem)
         NoOtherOverviewsToolStripMenuItem.Visible = lst.Count = 0
@@ -544,208 +545,27 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
-    Friend Shared ReadOnly iconCache As New ConcurrentDictionary(Of String, Bitmap)
+    ' Icon caching now in QLIconCache module
 
-    Private Function GetIconFromCache(qli As QLInfo) As Bitmap
-        Try
-            Return iconCache.GetOrAdd(qli.path, AddressOf GetIconFromFile) _
-                            .AsTransparent(If(qli.hidden, If(My.Settings.DarkMode, 0.4, 0.5), 1)) _
-                            .addOverlay(If(My.Settings.QLResolveLnk AndAlso ((qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target?.EndsWith("\"c)) OrElse qli.pointsToDir), My.Resources.shortcutOverlay, Nothing), True)
-            '.addOverlay(If(Not String.IsNullOrEmpty(qli.target) AndAlso Not (IO.File.Exists(qli.target) OrElse IO.Directory.Exists(qli.target)), My.Resources.WarningOverlay, Nothing), True)
-        Catch ex As Exception
-            dBug.Print($"GetIcon Exception {ex.Message}")
-            Return Nothing
-        End Try
-    End Function
+#Region "ParseDir Helpers"
+    ''' <summary>
+    ''' Attaches standard event handlers to a QuickLaunch menu item
+    ''' </summary>
+    Private Sub AttachQLMenuItemHandlers(item As ToolStripMenuItem, isFolder As Boolean)
+        AddHandler item.MouseDown, AddressOf QL_MouseDown
+        AddHandler item.Paint, AddressOf QLMenuItem_Paint
 
-    Public Function EvictIconCacheItem(item As String)
-        If item.ToLower.EndsWith(".url") Then DefURLicons.Clear()
-        Return iconCache.TryRemove(item, Nothing)
-    End Function
-
-    Public Sub EvictNonWatchedIcons()
-        For Each pth In iconCache.Keys.ToList
-            If Not {".lnk", ".exe", ".url"}.Contains(IO.Path.GetExtension(pth).ToLower) AndAlso Not pth.EndsWith("\") Then
-                iconCache.TryRemove(pth, Nothing)
-            End If
-        Next
-    End Sub
-
-    Public Function GetIconFromFile(PathName As String, Optional deffolder As Boolean = False, Optional supressCacheMiss As Boolean = False) As Bitmap
-#If DEBUG Then
-        If Not supressCacheMiss Then dBug.Print($"iconCahceMiss: {PathName}")
-#End If
-
-        Dim bm As Bitmap = Nothing
-        Dim fi As New SHFILEINFOW
-        Dim ico As Icon = Nothing
-
-        If PathName.EndsWith("\") Then
-
-            Dim flags As UInteger = SHGFI_ICON Or SHGFI_SMALLICON
-            If deffolder Then flags = flags Or SHGFI_USEFILEATTRIBUTES
-
-            SHGetFileInfoW(PathName, FILE_ATTRIBUTE_DIRECTORY, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), flags)
-            If fi.hIcon = IntPtr.Zero Then
-                dBug.Print("hIcon empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
-                Throw New Exception
-            End If
-            ico = Icon.FromHandle(fi.hIcon)
-            bm = ico.ToBitmap
-            DestroyIcon(ico.Handle)
-            Return bm
-
-        Else 'not a folder
-            If PathName.ToLower.EndsWith(".url") Then
-                Try
-
-                    'Dim iconPath As String = Nothing
-                    Dim iconIndex As Integer = 0
-                    Dim iconFilePath As String = Nothing
-                    Dim URLTarget As String = Nothing
-
-
-                    For Each line In IO.File.ReadLines(PathName)
-                        If line.StartsWith("IconFile=", StringComparison.OrdinalIgnoreCase) Then
-                            iconFilePath = line.Substring("IconFile=".Length).Trim()
-                        ElseIf line.StartsWith("IconIndex=", StringComparison.OrdinalIgnoreCase) Then
-                            Integer.TryParse(line.Substring("IconIndex=".Length).Trim(), iconIndex)
-                        ElseIf line.StartsWith("URL=", StringComparison.OrdinalIgnoreCase) Then
-                            URLTarget = line.Substring("URL=".Length).Trim()
-                        End If
-                    Next
-
-                    If String.IsNullOrEmpty(iconFilePath) AndAlso Not String.IsNullOrEmpty(URLTarget) AndAlso URLTarget.Substring(0, 8).Contains("://") AndAlso URLTarget.Length > 3 Then
-                        Dim proto = URLTarget.Split(":")(0)
-                        If {"https", "http", "ftp"}.Contains(proto) Then bm = GetDefaultBrowserIcon(proto)
-                        If bm IsNot Nothing Then Return bm
-                    End If
-
-                    If Not String.IsNullOrEmpty(iconFilePath) Then
-                        Dim hIcoA As IntPtr() = {IntPtr.Zero}
-                        Dim ret As Integer = ExtractIconEx(iconFilePath, iconIndex, Nothing, hIcoA, 1)
-                        Debug.Print($"ExtractIconEx {ret} ""{iconFilePath}"" {iconIndex} ""{PathName}""")
-                        ico = Icon.FromHandle(hIcoA(0))
-
-                        'Dim ret = ExtractIcon(IntPtr.Zero, iconFilePath, iconIndex)
-                        'ico = Icon.FromHandle(ret)
-
-                        bm = ico.ToBitmap
-                        DestroyIcon(ico.Handle)
-
-                        If bm IsNot Nothing Then Return bm
-                    Else
-                        'todo: invoke windows url icon handler to get the icon
-
-                        'error: this loads incorrect icon
-                        Dim ret = SHGetFileInfoW(PathName, FILE_ATTRIBUTE_NORMAL, fi, Marshal.SizeOf(fi), SHGFI_USEFILEATTRIBUTES Or SHGFI_SMALLICON Or SHGFI_ICON)
-                        ico = Icon.FromHandle(fi.hIcon)
-                        bm = ico.ToBitmap
-                        DestroyIcon(ico.Handle)
-                        If bm IsNot Nothing Then Return bm
-                    End If
-
-                Catch ex As Exception
-                    Debug.Print("Failed to load .url icon: " & ex.Message)
-                End Try
-            End If
-
-            Dim list As IntPtr = SHGetFileInfoW(PathName, 0, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), SHGFI_SYSICONINDEX Or SHGFI_SMALLICON)
-
-            If list = IntPtr.Zero Then
-                Dim lastError = Runtime.InteropServices.Marshal.GetLastWin32Error()
-                dBug.Print($"SHGetFileInfoW list empty: {lastError}")
-            End If
-            Dim hIcon As IntPtr = ImageList_GetIcon(list, fi.iIcon, 0)
-            ImageList_Destroy(list)
-            If hIcon = IntPtr.Zero Then
-                Dim lastError = Runtime.InteropServices.Marshal.GetLastWin32Error()
-                dBug.Print($"ImageList_GetIcon empty: {lastError}")
-            End If
-            Try
-                ico = Icon.FromHandle(hIcon)
-                bm = ico.ToBitmap
-
-            Catch ex As Exception
-                bm = Nothing
-            End Try
-
+        If isFolder Then
+            AddHandler item.DoubleClick, AddressOf DblClickDir
+            AddHandler item.DropDownOpening, AddressOf ParseSubDir
+            AddHandler item.DropDownOpened, AddressOf QL_DropDownOpened
+            AddHandler item.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
+            AddHandler item.DropDown.DragEnter, AddressOf QL_DragEnter
+            AddHandler item.DropDown.DragOver, AddressOf QL_DragOver
+            item.DropDown.AllowDrop = True
         End If
-        DestroyIcon(If(ico?.Handle, IntPtr.Zero))
-        ico?.Dispose()
-
-        Return bm
-    End Function
-
-
-
-    Public Shared DefURLicons As ConcurrentDictionary(Of String, Bitmap) = New ConcurrentDictionary(Of String, Bitmap)
-
-    Function GetDefaultBrowserIcon(urlScheme As String) As Bitmap
-        urlScheme = urlScheme.ToLowerInvariant()
-        Debug.Print($"getDefBrowserIcon {urlScheme} {DefURLicons.Keys.Contains(urlScheme)}")
-        Return DefURLicons.GetOrAdd(urlScheme,
-                           Function(proto)
-                               dBug.Print($"DefURLicon cachemiss {proto}")
-
-                               Dim progId As String = Nothing
-
-                               ' 1. Try UserChoice (per-user)
-                               Using key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(GetUserChoiceKeyPath(proto))
-                                   If key IsNot Nothing Then
-                                       progId = TryCast(key.GetValue("ProgId"), String)
-                                   End If
-                               End Using
-
-                               ' 2. Fallback: system-wide association
-                               ' Uncomment if you want to support fallback:
-                               'If String.IsNullOrEmpty(progId) Then
-                               '    Using key = Registry.ClassesRoot.OpenSubKey(proto)
-                               '        If key IsNot Nothing Then
-                               '            progId = TryCast(key.GetValue(Nothing), String)
-                               '        End If
-                               '    End Using
-                               'End If
-
-                               If String.IsNullOrEmpty(progId) Then Return Nothing
-
-                               RegistryWatcher.Init(proto)
-
-                               ' 3. Get DefaultIcon for the ProgId
-                               Using iconKey = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey(progId & "\DefaultIcon")
-                                   If iconKey IsNot Nothing Then
-                                       Dim iconValue = TryCast(iconKey.GetValue(Nothing), String)
-                                       If Not String.IsNullOrEmpty(iconValue) Then
-                                           iconValue = iconValue.Trim()
-                                           Dim idx As Integer = 0
-                                           Dim pth As String
-                                           If iconValue.Contains(",") Then
-                                               Dim parts() As String = iconValue.Split(",")
-                                               pth = parts(0).Trim
-                                               Integer.TryParse(parts(1).Trim, idx)
-                                           Else
-                                               pth = iconValue
-                                           End If
-                                           pth = pth.Trim(""""c)
-
-                                           Dim icns() As IntPtr = {IntPtr.Zero}
-                                           Dim ret = ExtractIconEx(pth, idx, {IntPtr.Zero}, icns, 1)
-
-                                           If ret = 0 OrElse icns(0) = IntPtr.Zero Then Return Nothing
-
-                                           Dim icn As Icon = Icon.FromHandle(icns(0))
-                                           Dim bm = icn.ToBitmap
-                                           DestroyIcon(icn.Handle)
-                                           Return bm
-                                       End If
-                                   End If
-                               End Using
-
-                               Return Nothing
-                           End Function)
-    End Function
-
-    Private Shared ReadOnly nsSorter As IComparer(Of String) = New NaturalStringSorter
+    End Sub
+#End Region
 
     Private Function ParseDir(pth As String, Optional itemsOnly As Boolean = False) As List(Of ToolStripItem)
         Dim menuItems As New List(Of ToolStripItem)
@@ -803,32 +623,11 @@ Partial Public NotInheritable Class FrmMain
                                  Dim dispname As String = System.IO.Path.GetFileName(fulldirs)
 
                                  Dim qli As New QLInfo With {.path = fulldirs & "\", .hidden = hidden, .name = dispname, .isFolder = True}
-                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), folderIcon) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
+                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), FolderIcon) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
 
                                  Me.BeginInvoke(Sub()
                                                     smenu.DropDownItems.Add("(Dummy)").Enabled = False
-
-                                                    AddHandler smenu.MouseDown, AddressOf QL_MouseDown
-                                                    AddHandler smenu.DoubleClick, AddressOf DblClickDir
-                                                    AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
-                                                    AddHandler smenu.DropDownOpened, AddressOf QL_DropDownOpened
-                                                    'AddHandler smenu.DropDownOpened, AddressOf DeferredIconLoading
-                                                    AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
-                                                    'AddHandler smenu.DropDown.Closed, AddressOf QL_DropDownClosed
-
-                                                    AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
-
-                                                    ' Drag & Drop sorting handlers
-                                                    AddHandler smenu.DropDown.DragEnter, AddressOf QL_DragEnter
-                                                    AddHandler smenu.DropDown.DragOver, AddressOf QL_DragOver
-
-
-                                                    smenu.DropDown.AllowDrop = True
-
-                                                    'AddHandler smenu.MouseDown, AddressOf QLMenuItem_MouseDown
-                                                    'AddHandler smenu.MouseMove, AddressOf QLMenuItem_MouseMove
-                                                    'AddHandler smenu.MouseEnter, AddressOf QLMenuItem_MouseEnter
-                                                    'AddHandler smenu.MouseUp, AddressOf QLMenuItem_MouseUp
+                                                    AttachQLMenuItemHandlers(smenu, isFolder:=True)
                                                 End Sub)
 
                                  Dirs.Add(smenu)
@@ -883,31 +682,11 @@ Partial Public NotInheritable Class FrmMain
                                              Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
                                              qli.name = dispname
                                              qli.isFolder = True
-                                             Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), folderIconWithOverlay) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
+                                             Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), FolderIconWithOverlay) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
 
                                              Me.BeginInvoke(Sub()
-
                                                                 smenu.DropDownItems.Add("(Dummy)").Enabled = False
-
-                                                                AddHandler smenu.MouseDown, AddressOf QL_MouseDown
-                                                                AddHandler smenu.DoubleClick, AddressOf DblClickDir
-                                                                AddHandler smenu.DropDownOpening, AddressOf ParseSubDir
-                                                                AddHandler smenu.DropDownOpened, AddressOf QL_DropDownOpened
-                                                                AddHandler smenu.DropDown.Closing, AddressOf CmsQuickLaunch_Closing
-                                                                'AddHandler smenu.DropDown.Closed, AddressOf QL_DropDownClosed
-
-                                                                AddHandler smenu.Paint, AddressOf QLMenuItem_Paint
-
-                                                                ' Drag & Drop sorting handlers
-                                                                AddHandler smenu.DropDown.DragEnter, AddressOf QL_DragEnter
-                                                                AddHandler smenu.DropDown.DragOver, AddressOf QL_DragOver
-
-                                                                smenu.DropDown.AllowDrop = True
-
-                                                                'AddHandler smenu.MouseDown, AddressOf QLMenuItem_MouseDown
-                                                                'AddHandler smenu.MouseMove, AddressOf QLMenuItem_MouseMove
-                                                                'AddHandler smenu.MouseEnter, AddressOf QLMenuItem_MouseEnter
-                                                                'AddHandler smenu.MouseUp, AddressOf QLMenuItem_MouseUp
+                                                                AttachQLMenuItemHandlers(smenu, isFolder:=True)
                                                             End Sub)
 
                                              addLinkWatcher(target, fullLink)
@@ -930,18 +709,7 @@ Partial Public NotInheritable Class FrmMain
                                  qli.isFolder = False
 
                                  Dim item As New ToolStripMenuItem(If(vis, linkName.Replace("&", "&&"), "*Hidden*")) With {.Tag = qli, .Visible = vis}
-                                 Me.BeginInvoke(Sub()
-                                                    AddHandler item.MouseDown, AddressOf QL_MouseDown
-                                                    'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
-                                                    'AddHandler item.MouseLeave, AddressOf QL_MouseLeave
-                                                    AddHandler item.Paint, AddressOf QLMenuItem_Paint
-
-                                                    ' Drag & Drop sorting handlers
-                                                    'AddHandler item.MouseDown, AddressOf QLMenuItem_MouseDown
-                                                    'AddHandler item.MouseMove, AddressOf QLMenuItem_MouseMove
-                                                    'AddHandler item.MouseEnter, AddressOf QLMenuItem_MouseEnter
-                                                    'AddHandler item.MouseUp, AddressOf QLMenuItem_MouseUp
-                                                End Sub)
+                                 Me.BeginInvoke(Sub() AttachQLMenuItemHandlers(item, isFolder:=False))
 
                                  Files.Add(item)
                                  If vis Then
@@ -957,8 +725,8 @@ Partial Public NotInheritable Class FrmMain
 
         ' Apply custom sort order if available
         Dim sortOrder As List(Of String) = ReadSortOrder(pth)
-        Dim sortedDirs = ApplySortOrderV2(Dirs.ToList(), sortOrder, Function(d) CType(d.Tag, QLInfo).path.TrimEnd("\"c), nsSorter)
-        Dim sortedFiles = ApplySortOrderV2(Files.ToList(), sortOrder, Function(f) CType(f.Tag, QLInfo).path, nsSorter)
+        Dim sortedDirs = ApplySortOrderV2(Dirs.ToList(), sortOrder, Function(d) CType(d.Tag, QLInfo).path.TrimEnd("\"c), NsSorter)
+        Dim sortedFiles = ApplySortOrderV2(Files.ToList(), sortOrder, Function(f) CType(f.Tag, QLInfo).path, NsSorter)
         Dim allItems = sortedDirs.Concat(sortedFiles).ToList()
 
         If itemsOnly Then
@@ -1167,38 +935,7 @@ Partial Public NotInheritable Class FrmMain
         Next
     End Sub
 
-    Private Iterator Function EnumerateData(pth As String, dirs As Boolean, ct As CancellationToken) As IEnumerable(Of WIN32_FIND_DATAW)
-
-        If ct.IsCancellationRequested Then Exit Function
-
-        Dim findData As New WIN32_FIND_DATAW()
-        Dim searchOp As Integer = If(dirs, 1, 0)
-
-        Dim hFind As IntPtr = FindFirstFileExW(IO.Path.Combine(pth, "*.*"), FINDEX_INFO_LEVELS.FindExInfoBasic, findData, searchOp, IntPtr.Zero, 0)
-        If hFind = New IntPtr(-1) Then
-            Return
-        End If
-        Try
-            Do
-                If ct.IsCancellationRequested Then Exit Function
-
-                Dim fname As String = findData.cFileName
-                If fname <> "." AndAlso fname <> ".." Then
-
-                    Dim isDir As Boolean = findData.dwFileAttributes.HasFlag(IO.FileAttributes.Directory) ' (findData.dwFileAttributes And FILE_ATTRIBUTE_DIRECTORY) <> 0
-                    If dirs = isDir Then
-                        'Debug.Print($"finddata ""{findData.cFileName}""")
-                        Yield findData
-                    End If
-
-                End If
-
-            Loop While FindNextFileW(hFind, findData)
-        Finally
-            FindClose(hFind)
-        End Try
-
-    End Function
+    ' EnumerateData now in QLDirectoryParser module
 
 
     Private Sub QL_DropDownOpened(sender As ToolStripMenuItem, e As EventArgs)
@@ -1250,13 +987,7 @@ Partial Public NotInheritable Class FrmMain
 
     Dim QLCtxMenuOpenedOn As ToolStripMenuItem
 
-    ' Drag & Drop sorting state
-    Private qlDragItem As ToolStripMenuItem = Nothing
-    Private qlDragStartPoint As Point
-    Private qlDragActive As Boolean = False
-    Private qlDropTarget As ToolStripMenuItem = Nothing
-    Private qlDragFolderPath As String = Nothing
-    Private Const QL_DRAG_THRESHOLD As Integer = 5
+    ' Drag & Drop sorting state moved to QLDragDropHandler.State
 
     ' Flag to force QL close (bypasses Ctrl-held check)
     Private qlForceClose As Boolean = False
@@ -1272,44 +1003,33 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub QLMenuItem_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs)
         If e.Button = MouseButtons.Right AndAlso TypeOf sender.Tag Is QLInfo Then
-            qlDragItem = sender
-            qlDragStartPoint = e.Location
-            qlDragActive = False
-            Dim qli As QLInfo = sender.Tag
-            qlDragFolderPath = IO.Path.GetDirectoryName(qli.path.TrimEnd("\"c))
+            QLDragDropHandler.State.Start(sender, e.Location)
         End If
     End Sub
 
     Dim DragSep As New ToolStripSeparator
 
     Private Sub QLMenuItem_MouseMove(sender As ToolStripMenuItem, e As MouseEventArgs)
-        If qlDragItem IsNot Nothing AndAlso e.Button = MouseButtons.Right Then
+        Dim state = QLDragDropHandler.State
+        If state.DraggedItem IsNot Nothing AndAlso e.Button = MouseButtons.Right Then
             ' Check if we've moved enough to start dragging
-            'If Not qlDragActive Then
-            '    Dim dx As Integer = Math.Abs(e.X - qlDragStartPoint.X)
-            '    Dim dy As Integer = Math.Abs(e.Y - qlDragStartPoint.Y)
-            '    If dx > QL_DRAG_THRESHOLD OrElse dy > QL_DRAG_THRESHOLD Then
-            '        qlDragActive = True
-            '        dBug.Print($"QL Drag started: {qlDragItem.Text}")
-            '    End If
-            'End If
-
-            If sender IsNot qlDragItem Then
-
+            If Not state.IsActive AndAlso IsDragThresholdExceeded(state.StartPoint, e.Location) Then
+                state.IsActive = True
+                dBug.Print($"QL Drag started: {state.DraggedItem.Text}")
             End If
-
         End If
     End Sub
 
     Private Sub QLMenuItem_MouseEnter(sender As ToolStripMenuItem, e As EventArgs)
-        If qlDragActive AndAlso qlDragItem IsNot Nothing AndAlso sender IsNot qlDragItem Then
+        Dim state = QLDragDropHandler.State
+        If state.IsActive AndAlso state.DraggedItem IsNot Nothing AndAlso sender IsNot state.DraggedItem Then
             If TypeOf sender.Tag Is QLInfo Then
                 ' Clear previous highlight
-                If qlDropTarget IsNot Nothing AndAlso qlDropTarget IsNot sender Then
-                    qlDropTarget.BackColor = Color.Empty
+                If state.DropTarget IsNot Nothing AndAlso state.DropTarget IsNot sender Then
+                    state.DropTarget.BackColor = Color.Empty
                 End If
                 ' Highlight new drop target
-                qlDropTarget = sender
+                state.DropTarget = sender
                 sender.BackColor = Color.FromArgb(100, COLOR_HIGHLIGHT_BLUE)
                 dBug.Print($"QL Drop target: {sender.Text}")
             End If
@@ -1317,64 +1037,29 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub QLMenuItem_MouseUp(sender As ToolStripMenuItem, e As MouseEventArgs)
-        If qlDragActive AndAlso qlDragItem IsNot Nothing AndAlso qlDropTarget IsNot Nothing Then
-            ' Perform the reorder
-            ' PerformQLReorder(qlDragItem, qlDropTarget) 'this doesn't work
+        Dim state = QLDragDropHandler.State
+        If state.IsActive AndAlso state.DraggedItem IsNot Nothing AndAlso state.DropTarget IsNot Nothing Then
+            ' Perform the reorder - now handled by QL_DragDrop
         End If
         ' Clean up drag state
-        If qlDropTarget IsNot Nothing Then
-            qlDropTarget.BackColor = Color.Empty
-        End If
-        qlDragItem = Nothing
-        qlDragActive = False
-        qlDropTarget = Nothing
-        qlDragFolderPath = Nothing
+        state.Reset()
     End Sub
 
     Private Sub PerformQLReorder(dragItem As ToolStripMenuItem, dropTarget As ToolStripMenuItem)
-        If qlDragFolderPath Is Nothing Then Exit Sub
+        Dim state = QLDragDropHandler.State
+        If state.FolderPath Is Nothing Then Exit Sub
 
-        Dim dragQli As QLInfo = dragItem.Tag
-        Dim dropQli As QLInfo = dropTarget.Tag
+        Dim dragQli As QLInfo = CType(dragItem.Tag, QLInfo)
+        Dim dropQli As QLInfo = CType(dropTarget.Tag, QLInfo)
 
         Dim dragName As String = If(dragQli.path.EndsWith("\"), dragQli.name, IO.Path.GetFileName(dragQli.path))
         Dim dropName As String = If(dropQli.path.EndsWith("\"), dropQli.name, IO.Path.GetFileName(dropQli.path))
 
         dBug.Print($"QL Reorder: '{dragName}' to position of '{dropName}'")
 
-        ' Get current sort order or build from current menu
-        Dim sortOrder As List(Of String) = ReadSortOrder(qlDragFolderPath)
-
-        ' If no sort order exists, build it from the current menu items
-        If sortOrder.Count = 0 Then
-            Dim parent = dragItem.GetCurrentParent()
-            If parent IsNot Nothing Then
-                For Each item As ToolStripItem In parent.Items
-                    If TypeOf item Is ToolStripMenuItem AndAlso TypeOf item.Tag Is QLInfo Then
-                        Dim qli As QLInfo = item.Tag
-                        Dim itemName As String = If(qli.path.EndsWith("\"), qli.name, IO.Path.GetFileName(qli.path))
-                        sortOrder.Add(itemName)
-                    End If
-                Next
-            End If
-        End If
-
-        ' Remove drag item from current position
-        sortOrder.RemoveAll(Function(s) s.Equals(dragName, StringComparison.OrdinalIgnoreCase))
-
-        ' Find drop target position and insert
-        Dim dropIndex As Integer = sortOrder.FindIndex(Function(s) s.Equals(dropName, StringComparison.OrdinalIgnoreCase))
-        If dropIndex >= 0 Then
-            sortOrder.Insert(dropIndex, dragName)
-        Else
-            sortOrder.Add(dragName)
-        End If
-
-        ' Save the new sort order
-        WriteSortOrder(qlDragFolderPath, sortOrder)
-
-        ' Refresh the menu by triggering a re-parse (close and reopen would refresh)
-        dBug.Print($"QL Sort order saved: {String.Join(", ", sortOrder.Take(5))}...")
+        ' Delegate to QLDragDropHandler
+        QLDragDropHandler.UpdateSortOrder(state.FolderPath, dragName, dropName, dragItem.GetCurrentParent()?.Items)
+        dBug.Print($"QL Sort order saved")
     End Sub
 
     Private Sub QLMenuItem_Paint(sender As ToolStripMenuItem, e As PaintEventArgs)
@@ -1517,14 +1202,28 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
-    Private folderIcon As Bitmap = GetIconFromFile(FileIO.SpecialDirectories.Temp & "\", True, True)
-    Private folderIconWithOverlay = folderIcon.addOverlay(My.Resources.shortcutOverlay, True)
+    ' folderIcon now in QLIconCache module
     Private Sub AddShortcutMenu_DropDownOpening(sender As ToolStripMenuItem, e As EventArgs) 'Handles addShortcutMenu.DropDownOpening
         dBug.Print("addshortcut.sendertag:" & sender.Tag)
         sender.DropDownItems.Clear()
-        Dim folderitem = New ToolStripMenuItem("Folder", folderIcon) With {.Tag = sender.Tag}
+        Dim folderitem = New ToolStripMenuItem("Folder", FolderIcon) With {.Tag = sender.Tag}
         AddHandler folderitem.MouseDown, AddressOf Ql_NewFolder
         sender.DropDownItems.Add(folderitem)
+
+        ' Add "From Template" submenu if templates exist
+        Dim templates = LauncherTemplateManager.GetTemplates()
+        If templates.Count > 0 Then
+            Dim templateMenu = New ToolStripMenuItem("From Template...", My.Resources.Add)
+            For Each template In templates
+                Dim templateItem = New ToolStripMenuItem(template.Name) With {
+                    .Tag = New Object() {template, sender.Tag}
+                }
+                AddHandler templateItem.Click, AddressOf CreateShortcutFromTemplate
+                templateMenu.DropDownItems.Add(templateItem)
+            Next
+            sender.DropDownItems.Add(templateMenu)
+        End If
+
         sender.DropDownItems.Add(New ToolStripSeparator())
 
         For Each alt As AstoniaProcess In AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.UserName)
@@ -1555,6 +1254,28 @@ Partial Public NotInheritable Class FrmMain
                                                         Debug.Print("Closed child dropdown because parent closed.")
                                                     End Sub
         End If
+    End Sub
+
+    ''' <summary>
+    ''' Creates a shortcut from a launcher template via the quick shortcut dialog
+    ''' </summary>
+    Private Sub CreateShortcutFromTemplate(sender As Object, e As EventArgs)
+        Dim menuItem = TryCast(sender, ToolStripMenuItem)
+        If menuItem Is Nothing OrElse menuItem.Tag Is Nothing Then Return
+
+        ' Extract template and folder path from tag
+        Dim tagData = DirectCast(menuItem.Tag, Object())
+        Dim template = DirectCast(tagData(0), LauncherTemplate)
+        Dim folderPath = CStr(tagData(1))
+
+        ' Close the menus
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
+
+        ' Show the quick shortcut dialog
+        Using dlg As New frmQuickShortcut(template, My.Settings.links, folderPath)
+            dlg.ShowDialog(Me)
+        End Using
     End Sub
 
     Private Sub CreateNewFolder(newpath As String)
@@ -2033,14 +1754,10 @@ Partial Public NotInheritable Class FrmMain
         Dim Name As String = qli.name
 
         dBug.Print($"QlCtxRename {Path} {Name}")
-        'CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
-        'cmsQuickLaunch.Close()
         RenameMethod(Path, Name)
     End Sub
 
-    Private ReservedNames() As String = {"CON", "PRN", "AUX", "NUL",
-        "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
-        "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"}
+    ' ReservedNames moved to QLFileOperations.ReservedNames
 
     Public renameOpen As Boolean
     Private Sub RenameMethod(Path As String, currentName As String, Optional isCreateFolder As Boolean = False)
@@ -2117,7 +1834,7 @@ Partial Public NotInheritable Class FrmMain
 
         renameOpen = False
 
-        If ReservedNames.Contains(IO.Path.GetFileNameWithoutExtension(toName).ToUpper) Then
+        If QLFileOperations.IsReservedName(toName) Then
             CustomMessageBox.Show(Me, $"Error renaming ""{currentName}"" to ""{toName}""{vbCrLf}The specified device name is invalid.", If(isCreateFolder, "Create New folder", "Rename"), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Exit Sub
         End If
@@ -2240,13 +1957,11 @@ Partial Public NotInheritable Class FrmMain
 
         dBug.Print($"Delete {Path}")
         Dim shiftdown = My.Computer.Keyboard.ShiftKeyDown
-        Dim folderContentsMessage As String = vbCrLf
         If Path.EndsWith("\") Then
-            Dim folderCount As Integer = System.IO.Directory.GetDirectories(Path, "*.*", IO.SearchOption.AllDirectories).Count
-            Dim folS As String = If(folderCount = 1, "", "s")
-            Dim filesCount As Integer = System.IO.Directory.GetFiles(Path, "*.*", IO.SearchOption.AllDirectories).Where(Function(f) IO.Path.GetFileName(f.ToLower) <> "desktop.ini").Count
-            Dim filS As String = If(filesCount = 1, "", "s")
-            folderContentsMessage &= $"This folder contains {folderCount} folder{folS} and {filesCount} file{filS}."
+            Dim stats = QLFileOperations.GetFolderStats(Path)
+            Dim folS As String = If(stats.FolderCount = 1, "", "s")
+            Dim filS As String = If(stats.FileCount = 1, "", "s")
+            Dim folderContentsMessage As String = $"{vbCrLf}This folder contains {stats.FolderCount} folder{folS} and {stats.FileCount} file{filS}."
             If shiftdown OrElse CustomMessageBox.Show(Control.FromHandle(tsmi.DropDown.Handle), $"Are you sure you want to move ""{name}"" to the Recycle Bin?" & folderContentsMessage & $"{vbCrLf}Hold Shift to Permanently Delete.",
                                        "Confirm Delete", MessageBoxButtons.YesNo) = DialogResult.Yes Then
                 My.Computer.FileSystem.DeleteDirectory(Path, FileIO.UIOption.OnlyErrorDialogs,
@@ -2275,6 +1990,26 @@ Partial Public NotInheritable Class FrmMain
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
         OpenProps(sender.Parent.Tag, New MouseEventArgs(MouseButtons.Right, 1, MousePosition.X, MousePosition.Y, 0))
+    End Sub
+
+    Private Sub OpenBatchShortcutManager(sender As MenuItem, e As EventArgs)
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
+
+        ' Get the folder path from the menu context
+        Dim folderPath As String = My.Settings.links
+        Dim ctxMenu = TryCast(sender.Parent, ContextMenu)
+        If ctxMenu IsNot Nothing Then
+            Dim menuItem = TryCast(ctxMenu.Tag, ToolStripMenuItem)
+            If menuItem IsNot Nothing AndAlso TypeOf menuItem.Tag Is QL.QLInfo Then
+                Dim qli = DirectCast(menuItem.Tag, QL.QLInfo)
+                folderPath = qli.path
+            End If
+        End If
+
+        Using bsm As New BatchShortcutManager(folderPath.TrimEnd("\"c))
+            bsm.ShowDialog(Me)
+        End Using
     End Sub
 
     Private Sub QlCtxNewFolder(sender As MenuItem, e As EventArgs)
@@ -2307,7 +2042,7 @@ Partial Public NotInheritable Class FrmMain
         End Try
     End Sub
 
-    Private ReadOnly folderHbm As IntPtr = folderIcon.GetHbitmap(Color.Black)
+    Private ReadOnly folderHbm As IntPtr = FolderIcon.GetHbitmap(Color.Black)
     Private ReadOnly plusHbm As IntPtr = New Bitmap(My.Resources.Add, New Size(16, 16)).GetHbitmap(Color.Black)
 
     'Dim QlCtxIsOpen As Boolean = False 'to handle glitch in contextmenu when moving astonia window
@@ -2340,16 +2075,12 @@ Partial Public NotInheritable Class FrmMain
         Cursor.Current = DragCursor
     End Sub
 
-    Public QL_HoveredItem As ToolStripMenuItem = Nothing
-    Public QL_LastDropDownOpenTick As Integer = 0
-    Public QL_DropDownOpenDelayMs As Integer = 200
-    Private Sub QL_DragOver(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragOver ', dropdown.dragover
-
+    Private Sub QL_DragOver(sender As Object, e As DragEventArgs) Handles cmsQuickLaunch.DragOver
         Dim draggedInfo As QLInfo = CType(draggeditem.Tag, QLInfo)
         Dim clientPt As Point
-
         Dim items As ToolStripItemCollection
 
+        ' Get client point and items collection based on sender type
         If TypeOf sender Is ContextMenuStrip Then
             clientPt = DirectCast(sender, ContextMenuStrip).PointToClient(New Point(e.X, e.Y))
             items = DirectCast(sender, ContextMenuStrip).Items
@@ -2363,96 +2094,18 @@ Partial Public NotInheritable Class FrmMain
 
         If Not items.Contains(draggeditem) Then Exit Sub
 
-        Dim insertIndex = -1
+        ' Use QLDragDropHandler to calculate insert position
+        Dim pos = QLDragDropHandler.CalculateInsertPosition(items, clientPt, draggedInfo, draggeditem)
 
-        Dim lastFolderIndex As Integer = items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo AndAlso CType(it.Tag, QLInfo).isFolder).Count - 1
-        Dim lastIndex As Integer = items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo).Count - 1
-
-        'dBug.log($"ql_dragover {sender.GetType}")
-
-        For i As Integer = 0 To items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo).Count - 1
-            Dim item As ToolStripItem = items(i)
-            If TypeOf item IsNot ToolStripMenuItem Then Continue For
-
-            Dim info As QLInfo = item.Tag
-            If info.isFolder <> draggedInfo.isFolder AndAlso i <> lastFolderIndex Then Continue For
-
-            ' Only consider same-type items
-            If item.Bounds.Contains(clientPt) Then
-                Dim midY As Integer = item.Bounds.Y + (item.Bounds.Height \ 2)
-                insertIndex = If(clientPt.Y < midY, i, i + 1)
-                Exit For
-            End If
-        Next
-
-        If insertIndex >= 0 Then 'AndAlso TypeOf (e.Data.GetData(GetType(ToolStripMenuItem))?.tag) Is QLInfo Then
+        If pos.IsValid Then
             e.Effect = DragDropEffects.Move
-            If insertIndex = 0 Then
-                CustomToolStripRenderer.insertItemAbove = Nothing
-                CustomToolStripRenderer.insertItemBelow = items(0)
-            ElseIf insertIndex = items.Count Then
-                CustomToolStripRenderer.insertItemAbove = items(insertIndex)
-                CustomToolStripRenderer.insertItemBelow = Nothing
-            Else
-                Dim aboveIndex = insertIndex - 1
-                Dim belowIndex = insertIndex
-                'Debug.Print($"indices a{aboveIndex} b{belowIndex}")
-                While aboveIndex AndAlso Not items(aboveIndex).Visible
-                    aboveIndex -= 1
-                End While
-                While belowIndex < lastIndex AndAlso Not items(belowIndex).Visible
-                    belowIndex += 1
-                End While
-                CustomToolStripRenderer.insertItemAbove = items(aboveIndex)
-                CustomToolStripRenderer.insertItemBelow = items(belowIndex)
-
-                If CType(CustomToolStripRenderer.insertItemAbove.Tag, QLInfo).isFolder <> draggedInfo.isFolder Then CustomToolStripRenderer.insertItemAbove = Nothing
-                If CType(CustomToolStripRenderer.insertItemBelow.Tag, QLInfo).isFolder <> draggedInfo.isFolder Then CustomToolStripRenderer.insertItemBelow = Nothing
-
-            End If
+            CustomToolStripRenderer.insertItemAbove = pos.ItemAbove
+            CustomToolStripRenderer.insertItemBelow = pos.ItemBelow
         Else
             e.Effect = DragDropEffects.None
             CustomToolStripRenderer.insertItemAbove = Nothing
             CustomToolStripRenderer.insertItemBelow = Nothing
         End If
-
-        If CustomToolStripRenderer.insertItemAbove Is draggeditem OrElse CustomToolStripRenderer.insertItemBelow Is draggeditem Then
-            CustomToolStripRenderer.insertItemAbove = Nothing
-            CustomToolStripRenderer.insertItemBelow = Nothing
-        End If
-
-
-        'drag and drop between submenus canceled untill we write itemcreation sub
-        sender.Invalidate()
-        Exit Sub
-
-
-        'handle opening of submenus
-
-        Dim now As Integer = Environment.TickCount
-
-        For Each item As ToolStripMenuItem In items.OfType(Of ToolStripMenuItem).Where(Function(it) it.Visible AndAlso it.HasDropDownItems AndAlso Not it.DropDown.Visible AndAlso TypeOf it.Tag Is QLInfo)
-            If item.Bounds.Contains(clientPt) Then
-
-                Dim elapsed As Integer = now - QL_LastDropDownOpenTick
-
-                If QL_HoveredItem IsNot item Then
-                    QL_HoveredItem = item
-                    Exit For
-                End If
-
-                If Not item.DropDown.Visible AndAlso elapsed >= QL_DropDownOpenDelayMs Then
-
-                    CloseOtherDropDowns(items)
-
-                    item.Select()
-                    item.ShowDropDown()
-                    QL_LastDropDownOpenTick = now
-
-                End If
-
-            End If
-        Next
 
         sender.Invalidate()
     End Sub
@@ -2485,56 +2138,23 @@ Partial Public NotInheritable Class FrmMain
         Dim clientPt As Point = sender.PointToClient(New Point(e.X, e.Y))
         Dim items As ToolStripItemCollection = sender.items
 
-        'If TypeOf sender Is ContextMenuStrip Then
-        '    clientPt = DirectCast(sender, ContextMenuStrip).PointToClient(New Point(e.X, e.Y))
-        'ElseIf TypeOf sender Is ToolStripDropDownMenu Then
-        '    clientPt = DirectCast(sender, ToolStripDropDownMenu).PointToClient(New Point(e.X, e.Y))
-        'End If
+        ' Use QLDragDropHandler to calculate insert position
+        Dim pos = QLDragDropHandler.CalculateInsertPosition(items, clientPt, draggedInfo, draggeditem)
 
-        Dim insertIndex = -1
+        If Not pos.IsValid Then Exit Sub
 
-        Dim lastFolderIndex As Integer = items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo AndAlso CType(it.Tag, QLInfo).isFolder).Count - 1
-        Dim lastIndex As Integer = items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo).Count - 1
-
-        For i As Integer = 0 To items.Cast(Of ToolStripItem).Where(Function(it) TypeOf it.Tag Is QLInfo).Count - 1
-            Dim item As ToolStripItem = items(i)
-            If TypeOf item IsNot ToolStripMenuItem Then Continue For
-
-            Dim info As QLInfo = item.Tag
-            ' Only consider same-type items
-            If info.isFolder <> draggedInfo.isFolder AndAlso i <> lastFolderIndex Then Continue For
-
-            If item.Bounds.Contains(clientPt) Then
-                Dim midY As Integer = item.Bounds.Y + (item.Bounds.Height \ 2)
-                insertIndex = If(clientPt.Y < midY, i, i + 1)
-                Exit For
-            End If
-        Next
-
-        'If draggeditem.HasDropDownItems Then draggeditem.DropDown.Close()
-
-        If items.IndexOf(draggeditem) < insertIndex Then insertIndex -= 1
-
-        If items.IndexOf(draggeditem) <> insertIndex AndAlso items(insertIndex).Tag.isfolder = draggeditem.Tag.isfolder Then
-            Debug.Print($"{items.IndexOf(draggeditem)}<>{insertIndex} {items(insertIndex).Tag.isfolder} {draggeditem.Tag.isfolder}")
-            items.Insert(insertIndex, draggeditem)
-
-
-
-            Dim path As String
-
-            If TypeOf sender Is ContextMenuStrip Then
-                path = My.Settings.links
-            Else
-                path = CType(sender.owneritem.Tag, QLInfo).path
-            End If
-
-            Debug.Print($"writesortorder {path}")
-
-            WriteSortOrder(path, items.Cast(Of ToolStripItem).Where(Function(i) TypeOf i.Tag Is QLInfo).Select(Function(it) CType(it.Tag, QLInfo).path.TrimEnd("\"c)))
-
+        ' Determine folder path for sort order persistence
+        Dim folderPath As String
+        If TypeOf sender Is ContextMenuStrip Then
+            folderPath = My.Settings.links
+        Else
+            folderPath = CType(sender.owneritem.Tag, QLInfo).path
         End If
 
+        ' Use QLDragDropHandler to perform the reorder
+        If QLDragDropHandler.PerformReorder(items, draggeditem, pos.Index, folderPath) Then
+            Debug.Print($"writesortorder {folderPath}")
+        End If
     End Sub
 
     Private Sub QL_Givefeedback(sender As Object, e As GiveFeedbackEventArgs)
@@ -2682,6 +2302,89 @@ Partial Public NotInheritable Class FrmMain
         Return CreateAlphaCursor(cursorBmp, cursorX, cursorY)
     End Function
 
+#Region "QL Context Menu Helpers"
+    ''' <summary>
+    ''' Creates a MenuItem for clipboard operations
+    ''' </summary>
+    Private Function CreateClipMenuItem(text As String, path As String, action As String) As MenuItem
+        Return New MenuItem(text, AddressOf ClipAction) With {
+            .Tag = New MenuTag With {.path = path, .action = action}
+        }
+    End Function
+
+    ''' <summary>
+    ''' Applies paste menu configuration from QLClipboardHandler
+    ''' </summary>
+    Private Sub ApplyPasteMenuConfig(pasteItem As MenuItem, pasteLinkItem As MenuItem,
+                                     menu As ContextMenu, purgeList As List(Of IntPtr))
+        Dim config = QLClipboardHandler.GetPasteMenuConfig(
+            clipBoardInfo,
+            AddressOf GetIconFromFile,
+            My.Resources.shortcutOverlay,
+            My.Resources.multiPaste)
+
+        pasteItem.Enabled = config.PasteEnabled
+        pasteLinkItem.Visible = config.PasteLinkVisible
+
+        If config.PasteEnabled Then
+            pasteItem.Text = config.PasteText
+            pasteLinkItem.Text = config.PasteLinkText
+
+            If Not String.IsNullOrEmpty(config.PasteTooltip) Then
+                Dim tag As MenuTag = CType(pasteItem.Tag, MenuTag)
+                tag.tooltip = config.PasteTooltip
+                pasteItem.Tag = tag
+            End If
+
+            ' Apply icons
+            Dim menuItems = menu.MenuItems.Cast(Of MenuItem).ToList()
+            Dim cmdpos As Integer = menuItems.TakeWhile(Function(m) m.Handle <> pasteItem.Handle).Count(Function(it) it.Visible)
+
+            If config.PasteIcon IsNot Nothing Then
+                Dim pastehbm As IntPtr = config.PasteIcon.GetHbitmap(Color.Black)
+                purgeList.Add(pastehbm)
+                SetMenuItemBitmaps(menu.Handle, cmdpos, MF_BYPOSITION, pastehbm, Nothing)
+            End If
+
+            If config.PasteLinkVisible AndAlso config.PasteLinkIcon IsNot Nothing Then
+                Dim pasteShortcutHbm As IntPtr = config.PasteLinkIcon.GetHbitmap(Color.Black)
+                purgeList.Add(pasteShortcutHbm)
+                SetMenuItemBitmaps(menu.Handle, cmdpos + 1, MF_BYPOSITION, pasteShortcutHbm, Nothing)
+            End If
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' Builds the Astonia process submenu for creating shortcuts
+    ''' </summary>
+    Private Sub BuildAstoniaProcessSubmenu(QlCtxNewMenu As MenuItem, targetPath As String, purgeList As List(Of IntPtr))
+        Dim aplist As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.UserName).ToList
+
+        For Each ap As AstoniaProcess In aplist
+            QlCtxNewMenu.MenuItems.Add(New MenuItem(ap.UserName, AddressOf QlCtxNewAlt) With {.Tag = {ap, targetPath}})
+        Next
+
+        If aplist.Count = 0 Then
+            QlCtxNewMenu.MenuItems.Add(New MenuItem("(None)") With {.Enabled = False})
+        ElseIf aplist.Count >= 2 Then
+            QlCtxNewMenu.MenuItems.Add(New MenuItem("-"))
+            Dim AddAllItem = New MenuItem("Add All", AddressOf QlCtxAddAll) With {.Tag = targetPath}
+            QlCtxNewMenu.MenuItems.Add(AddAllItem)
+            SetMenuItemBitmaps(QlCtxNewMenu.Handle, aplist.Count + 3, MF_BYPOSITION, plusHbm, Nothing)
+        End If
+
+        ' Apply icons to process items
+        Dim staticCount As Integer = 2 ' Folder + separator
+        Dim i As Integer = staticCount
+        For Each item As MenuItem In QlCtxNewMenu.MenuItems.OfType(Of MenuItem).Skip(staticCount).Where(Function(m) m.Tag IsNot Nothing AndAlso TypeOf (m.Tag) IsNot String)
+            Dim althbm As IntPtr = New Bitmap(DirectCast(item.Tag(0), AstoniaProcess).GetIcon?.ToBitmap, New Size(16, 16)).GetHbitmap(Color.Black)
+            purgeList.Add(althbm)
+            SetMenuItemBitmaps(QlCtxNewMenu.Handle, i, MF_BYPOSITION, althbm, Nothing)
+            i += 1
+        Next
+    End Sub
+#End Region
+
     Private Sub QL_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs) 'Handles cmsQuickLaunch.mousedown
         Dim qli As QLInfo = CType(sender.Tag, QLInfo)
         If e.Button = MouseButtons.Middle Then
@@ -2755,10 +2458,10 @@ Partial Public NotInheritable Class FrmMain
 
             Dim OpenItem = New MenuItem("Open", AddressOf QlCtxOpen) With {.DefaultItem = True}
 
-            Dim cutItem = New MenuItem("Cut", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "Cut"}}
-            Dim copyItem = New MenuItem("Copy", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "Copy"}}
-            Dim pasteItem = New MenuItem("Paste", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "Paste"}}
-            Dim pasteLinkItem = New MenuItem("Paste Shortcut", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "PasteLink"}}
+            Dim cutItem = CreateClipMenuItem("Cut", path, "Cut")
+            Dim copyItem = CreateClipMenuItem("Copy", path, "Copy")
+            Dim pasteItem = CreateClipMenuItem("Paste", path, "Paste")
+            Dim pasteLinkItem = CreateClipMenuItem("Paste Shortcut", path, "PasteLink")
 
             Application.DoEvents() ' allow submenu to fully render
             Dim executableSubItems = executableItems(sender.DropDownItems.OfType(Of ToolStripMenuItem))
@@ -2781,6 +2484,8 @@ Partial Public NotInheritable Class FrmMain
                 New MenuItem("-"),
                 New MenuItem("Properties", AddressOf QlCtxProps),
                 New MenuItem("-"),
+                New MenuItem("Batch Shortcut Manager...", AddressOf OpenBatchShortcutManager) With {.Visible = path.EndsWith("\")},
+                New MenuItem("-") With {.Visible = path.EndsWith("\")},
             QlCtxNewMenu})
 #Else
             QlCtxMenu = New ContextMenu({
@@ -2799,107 +2504,16 @@ Partial Public NotInheritable Class FrmMain
                 New MenuItem("-"),
                 New MenuItem("Dump Info", AddressOf dBug.dumpItemInfo),
                 New MenuItem("-"),
+                New MenuItem("Batch Shortcut Manager...", AddressOf OpenBatchShortcutManager) With {.Visible = path.EndsWith("\")},
+                New MenuItem("-") With {.Visible = path.EndsWith("\")},
             QlCtxNewMenu})
 #End If
 
-            Dim MenuItems As IEnumerable(Of MenuItem) = QlCtxMenu.MenuItems.Cast(Of MenuItem).ToList
-
             clipBoardInfo = GetClipboardFilesAndAction()
-
-            Dim pastehbm As IntPtr
-            Dim pasteShortcutHbm As IntPtr
-
             Dim purgeList As New List(Of IntPtr)
 
-            If clipBoardInfo.Files?.Count > 0 Then
-                pasteItem.Enabled = True
-
-                pasteLinkItem.Visible = clipBoardInfo.Action.HasFlag(DragDropEffects.Link)
-
-                If clipBoardInfo.Files.Count = 1 Then
-                    If (IO.File.Exists(clipBoardInfo.Files(0)) OrElse IO.Directory.Exists(clipBoardInfo.Files(0))) Then
-
-                        Dim nm As String = IO.Path.GetFileName(clipBoardInfo.Files(0))
-                        If String.IsNullOrEmpty(nm) Then nm = clipBoardInfo.Files(0)
-                        If hideExt.Contains(IO.Path.GetExtension(nm)) Then
-                            nm = IO.Path.GetFileNameWithoutExtension(nm)
-                        End If
-
-                        pasteItem.Text = $"{If(clipBoardInfo.Action.HasFlag(DragDropEffects.Move), "Move", "Paste")} ""{nm.CapWithEllipsis(16)}"""
-                        pasteLinkItem.Text = "Paste Shortcut"
-
-                        If nm.Length > 16 Then
-                            Dim tag As MenuTag = CType(pasteItem.Tag, MenuTag)
-                            tag.tooltip = nm
-                            pasteItem.Tag = tag
-                        End If
-
-                        'Dim ico As Bitmap = GetIconFromCache(New QLInfo With {.path = clipBoardInfo.Files(0)})
-
-                        Dim ico As Bitmap = GetIconFromFile(clipBoardInfo.Files(0), False, True) 'cannot go async here. updating bitmaps after menu has been show is all kinds of wonky. todo preload icon on clipchange
-
-                        Dim shortcuttedIcon As Bitmap = ico.addOverlay(My.Resources.shortcutOverlay)
-
-                        If clipBoardInfo.Files(0).ToLower.EndsWith(".lnk") Then
-                            ico = shortcuttedIcon
-                            pasteLinkItem.Visible = False
-                        End If
-
-                        pastehbm = ico.GetHbitmap(Color.Black)
-                        pasteShortcutHbm = shortcuttedIcon.GetHbitmap(Color.Black)
-
-                        purgeList.Add(pastehbm)
-                        purgeList.Add(pasteShortcutHbm)
-
-                        Dim cmdpos As Integer = MenuItems.TakeWhile(Function(m) m.Handle <> pasteItem.Handle).Count(Function(it) it.Visible)
-
-                        SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos, MF_BYPOSITION, pastehbm, Nothing)
-
-                        If pasteLinkItem.Visible Then SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos + 1, MF_BYPOSITION, pasteShortcutHbm, Nothing)
-
-                    Else
-                        pasteItem.Enabled = False
-                        pasteLinkItem.Visible = False
-                    End If
-                Else 'more than 1 file/dir.
-
-                    pasteItem.Text = $"{If(clipBoardInfo.Action.HasFlag(DragDropEffects.Move), "Move", "Paste")} Multiple ({clipBoardInfo.Files?.Count})"
-
-                    Dim tag As MenuTag = pasteItem.Tag
-                    Dim idx = 0
-                    Dim sb As New Text.StringBuilder
-                    For Each clippath As String In clipBoardInfo.Files
-                        sb.AppendLine(IO.Path.GetFileName(clippath) & If(IO.Directory.Exists(clippath), "\", ""))
-                        idx += 1
-                        If idx >= 5 Then
-                            sb.AppendLine($"<and {clipBoardInfo.Files.Count - idx} more>")
-                            Exit For
-                        End If
-                    Next
-                    tag.tooltip = sb.ToString
-                    pasteItem.Tag = tag
-
-                    pasteLinkItem.Text = "Paste Shortcuts"
-
-                    pastehbm = My.Resources.multiPaste.GetHbitmap(Color.Black)
-                    pasteShortcutHbm = multipasteBitmapOverlay.GetHbitmap(Color.Black)
-
-                    purgeList.Add(pastehbm)
-                    purgeList.Add(pasteShortcutHbm)
-
-                    Dim cmdpos As Integer = MenuItems.TakeWhile(Function(m) m.Handle <> pasteItem.Handle).Count(Function(it) it.Visible)
-
-                    SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos, MF_BYPOSITION, pastehbm, Nothing)
-
-                    If pasteLinkItem.Visible Then SetMenuItemBitmaps(QlCtxMenu.Handle, cmdpos + 1, MF_BYPOSITION, pasteShortcutHbm, Nothing)
-
-                    'DestroyIcon(ico.Handle)
-                End If
-
-            Else
-                pasteItem.Enabled = False
-                pasteLinkItem.Visible = False
-            End If
+            ' Configure paste menu items using helper
+            ApplyPasteMenuConfig(pasteItem, pasteLinkItem, QlCtxMenu, purgeList)
 
             Dim name As String = qli.name
 
@@ -2912,29 +2526,16 @@ Partial Public NotInheritable Class FrmMain
 
             newFolderItem.Tag = path
 
-            Dim QlCtxNewMenuStaticItemsCount As Integer = QlCtxNewMenu.MenuItems.Count
+            ' Build Astonia process submenu
+            BuildAstoniaProcessSubmenu(QlCtxNewMenu, path, purgeList)
 
-            'dynamically add menuitems
-            Dim aplist As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList).OrderBy(Function(ap) ap.UserName).ToList
-            For Each ap As AstoniaProcess In aplist
-                QlCtxNewMenu.MenuItems.Add(New MenuItem(ap.UserName, AddressOf QlCtxNewAlt) With {.Tag = {ap, path}})
-            Next
-            If aplist.Count = 0 Then
-                QlCtxNewMenu.MenuItems.Add(New MenuItem("(None)") With {.Enabled = False})
-            ElseIf aplist.Count >= 2 Then
-                QlCtxNewMenu.MenuItems.Add(New MenuItem("-"))
-                Dim AddAllItem = New MenuItem("Add All", AddressOf QlCtxAddAll) With {.Tag = path}
-                QlCtxNewMenu.MenuItems.Add(AddAllItem)
-                SetMenuItemBitmaps(QlCtxNewMenu.Handle, aplist.Count + 3, MF_BYPOSITION, plusHbm, Nothing)
-            End If
-
-            'ModifyMenuW(QlCtxMenu.Handle, 0, MF_BYPOSITION, GetMenuItemID(QlCtxMenu.Handle, 0), $"{name.CapWithEllipsis(25)}")
+            ' Configure Open item with truncated name
             OpenItem.Text = name.Replace("&", "&&").CapWithEllipsis(25)
-
             If name.Length > 25 Then
                 OpenItem.Tag = New MenuTag With {.tooltip = name}
             End If
 
+            ' Apply menu item icons
             Dim hbm = IntPtr.Zero
             If sender.Image IsNot Nothing Then
                 hbm = DirectCast(sender.Image, Bitmap).GetHbitmap(Color.Black)
@@ -2942,15 +2543,9 @@ Partial Public NotInheritable Class FrmMain
             End If
 
             SetMenuItemBitmaps(QlCtxNewMenu.Handle, 0, MF_BYPOSITION, folderHbm, Nothing)
-            SetMenuItemBitmaps(QlCtxMenu.Handle, MenuItems.Count(Function(it) it.Visible) - 1, MF_BYPOSITION, plusHbm, Nothing)
+            Dim visibleMenuCount = QlCtxMenu.MenuItems.Cast(Of MenuItem).Count(Function(it) it.Visible)
+            SetMenuItemBitmaps(QlCtxMenu.Handle, visibleMenuCount - 1, MF_BYPOSITION, plusHbm, Nothing)
 
-            Dim i = QlCtxNewMenuStaticItemsCount
-            For Each item As MenuItem In QlCtxNewMenu.MenuItems.OfType(Of MenuItem).Skip(i).Where(Function(m) m.Tag IsNot Nothing AndAlso TypeOf (m.Tag) IsNot String)
-                Dim althbm As IntPtr = New Bitmap(DirectCast(item.Tag(0), AstoniaProcess).GetIcon?.ToBitmap, New Size(16, 16)).GetHbitmap(Color.Black)
-                purgeList.Add(althbm)
-                SetMenuItemBitmaps(QlCtxNewMenu.Handle, i, MF_BYPOSITION, althbm, Nothing)
-                i += 1
-            Next
             dBug.Print($"purgeList.Count {purgeList.Count}")
 
             'MenuToolTip.InitializeTooltip(sender.Owner.Handle)
@@ -3438,7 +3033,7 @@ Partial Public NotInheritable Class FrmMain
         'End If
         Dim sli As New ShellLinkInfo(pth)
         'find broken explorer dialog and press ok
-        If sli.PointsToDir AndAlso Not String.IsNullOrEmpty(sli.TargetPath) AndAlso Not IO.Directory.Exists(sli.TargetPath) Then
+        If QLItemHandler.IsBrokenDirectoryLink(sli) Then
             EnumWindows(Function(hwnd As IntPtr, lParam As IntPtr)
                             If Not IsWindowVisible(hwnd) Then Return True
                             If GetWindowClass(hwnd) <> "#32770" Then Return True
@@ -3484,49 +3079,30 @@ Partial Public NotInheritable Class FrmMain
                       setMenuCursor(cmsQuickLaunch, Cursors.WaitCursor)
                   End Sub)
 
-        'Dim bat As String = "\AsInvoker.bat"
-        'Dim tmpDir As String = IO.Path.Combine(FileIO.SpecialDirectories.Temp, "ScalA")
+        ' Launch using QLItemHandler
+        Dim launchInfo = QLItemHandler.PrepareLaunch(qli)
+        Dim launchResult = QLItemHandler.LaunchItem(launchInfo)
 
-        'If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
-        'If Not FileIO.FileSystem.FileExists(tmpDir & bat) OrElse
-        '   Not FileIO.FileSystem.GetFileInfo(tmpDir & bat).Length = My.Resources.AsInvoker.Length Then
-        '    FileIO.FileSystem.WriteAllText(tmpDir & bat, My.Resources.AsInvoker, False, System.Text.Encoding.ASCII)
-        'End If
-
-        'Dim pp As Process = New Process With {.StartInfo = New ProcessStartInfo With {.FileName = tmpDir & bat,
-        '                                                               .Arguments = """" & pth.Replace("^", "^^").Replace("&", "^&").Replace("%", "^%") & """",
-        '                                                               .WorkingDirectory = System.IO.Path.GetDirectoryName(pth),
-        '                                                               .WindowStyle = ProcessWindowStyle.Hidden,
-        '                                                               .CreateNoWindow = True}}
-
-        Dim pp As Process = New Process With {.StartInfo = New ProcessStartInfo With {
-                                                               .FileName = pth,
-                                                               .WorkingDirectory = System.IO.Path.GetDirectoryName(pth)}}
-
-
-        Try
-            SetEnvironmentVariable("__COMPAT_LAYER", "RUNASINVOKER")
-            pp.Start()
+        If launchResult.Success Then
             MRU.Add(pth)
-        Catch ex As Exception
-            dBug.Print($"pp.start {ex.Message}")
+        Else
+            dBug.Print($"pp.start {launchResult.ErrorMessage}")
             Me.Invoke(Sub()
-                          CustomMessageBox.Show(Control.FromHandle(sender.Owner.Handle), $"Failed to launch{vbCrLf}{pth}{vbCrLf}{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                          CustomMessageBox.Show(Control.FromHandle(sender.Owner.Handle), $"Failed to launch{vbCrLf}{pth}{vbCrLf}{launchResult.ErrorMessage}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                       End Sub)
-        Finally
-            pp.Dispose()
-            SetEnvironmentVariable("__COMPAT_LAYER", Nothing)
-            Task.Run(Sub()
-                         Dim timout As Integer = 123
-                         Threading.Thread.Sleep(timout)
-                         If waitCursorTimer.ElapsedMilliseconds >= timout Then
-                             Me.BeginInvoke(Sub()
-                                                Cursor = Cursors.Arrow
-                                                setMenuCursor(cmsQuickLaunch, Cursors.Arrow)
-                                            End Sub)
-                         End If
-                     End Sub)
-        End Try
+        End If
+
+        ' Reset cursor after delay
+        Task.Run(Sub()
+                     Dim timeout As Integer = 123
+                     Threading.Thread.Sleep(timeout)
+                     If waitCursorTimer.ElapsedMilliseconds >= timeout Then
+                         Me.BeginInvoke(Sub()
+                                            Cursor = Cursors.Arrow
+                                            setMenuCursor(cmsQuickLaunch, Cursors.Arrow)
+                                        End Sub)
+                     End If
+                 End Sub)
 
         'Exit Sub
         'hoist error dialogs to front/owned.
@@ -3697,139 +3273,8 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 End Class
 
-''' <summary>
-''' Module for QuickLaunch custom sort order persistence
-''' </summary>
-Module QLSort
-    Public Const SORT_FILE_NAME As String = ".qlsort"
-
-    ''' <summary>
-    ''' Reads the custom sort order from the .qlsort file in the specified folder
-    ''' </summary>
-    Public Function ReadSortOrder(folderPath As String) As List(Of String)
-        Dim sortFile As String = IO.Path.Combine(folderPath, SORT_FILE_NAME)
-        Dim result As New List(Of String)
-        Try
-            If IO.File.Exists(sortFile) Then
-                result = IO.File.ReadAllLines(sortFile).Where(Function(l) Not String.IsNullOrWhiteSpace(l)).ToList()
-            End If
-        Catch ex As Exception
-            dBug.Print($"Failed to read sort file: {ex.Message}")
-        End Try
-        Return result
-    End Function
-
-    ''' <summary>
-    ''' Writes the custom sort order to the .qlsort file in the specified folder
-    ''' </summary>
-    Public Sub WriteSortOrder(folderPath As String, sortOrder As IEnumerable(Of String))
-        Dim sortFile As String = IO.Path.Combine(folderPath, SORT_FILE_NAME)
-        Try
-            ' clear hidden attrib so we can write
-            If IO.File.Exists(sortFile) Then IO.File.SetAttributes(sortFile, IO.FileAttributes.Normal)
-
-            IO.File.WriteAllLines(sortFile, sortOrder)
-            ' Set file as hidden
-            IO.File.SetAttributes(sortFile, IO.FileAttributes.Hidden)
-        Catch ex As Exception
-            dBug.Print($"Failed to write sort file: {ex.Message}")
-        End Try
-    End Sub
-
-    ''' <summary>
-    ''' Gets the sort index for an item. Items in sort order get their index, others get MaxValue.
-    ''' </summary>
-    Public Function GetSortIndex(sortOrder As List(Of String), itemName As String) As Integer
-        Dim idx As Integer = sortOrder.FindIndex(Function(s) s.Equals(itemName, StringComparison.OrdinalIgnoreCase))
-        Return If(idx >= 0, idx, Integer.MaxValue)
-    End Function
-
-    ''' <summary>
-    ''' Applies custom sort order to items.
-    ''' </summary>
-    Public Function ApplySortOrderV1(Of T)(items As IEnumerable(Of T), sortOrder As List(Of String), nameSelector As Func(Of T, String), nsSorter As IComparer(Of String)) As List(Of T)
-        If sortOrder.Count = 0 Then
-            Return items.OrderBy(nameSelector, nsSorter).ToList()
-        End If
-
-        ' Build pinned list in exact sortOrder
-        Dim pinned As New List(Of T)
-        For Each name In sortOrder
-            For Each it In items
-                If String.Equals(nameSelector(it), name, StringComparison.OrdinalIgnoreCase) Then
-                    pinned.Add(it)
-                End If
-            Next
-        Next
-
-        ' Build free list
-        Dim freeItems = items _
-            .Where(Function(it) GetSortIndex(sortOrder, nameSelector(it)) = Integer.MaxValue) _
-            .OrderBy(nameSelector, nsSorter) _
-            .ToList()
-
-        ' Merge
-        Dim result As New List(Of T)
-        Dim freeIdx As Integer = 0
-
-        For Each p In pinned
-            While freeIdx < freeItems.Count AndAlso
-                  nsSorter.Compare(nameSelector(freeItems(freeIdx)), nameSelector(p)) < 0
-                result.Add(freeItems(freeIdx))
-                freeIdx += 1
-            End While
-
-            result.Add(p)
-        Next
-
-        ' Append remaining free items
-        While freeIdx < freeItems.Count
-            result.Add(freeItems(freeIdx))
-            freeIdx += 1
-        End While
-
-        Return result
-
-    End Function
-
-    Public Function ApplySortOrderV2(Of T)(items As IEnumerable(Of T), sortOrder As List(Of String), nameSelector As Func(Of T, String), nsSorter As IComparer(Of String)) As List(Of T)
-        'natural sort all items
-        Dim ol = items.OrderBy(nameSelector, nsSorter).ToList()
-        If sortOrder.Count = 0 Then Return ol
-        'extract pinned items in natural order
-        Dim pl = ol.Where(Function(it) sortOrder.Any(Function(s) s.Equals(nameSelector(it), StringComparison.OrdinalIgnoreCase))).ToList()
-        'sort pinned items to sortorder
-        pl.Sort(Function(a, b) GetSortIndex(sortOrder, nameSelector(a)).CompareTo(GetSortIndex(sortOrder, nameSelector(b))))
-        'do magic
-        Dim i As Integer = 0
-        For j = 0 To ol.Count - 1
-            Dim oj = j
-            If sortOrder.Any(Function(s) s.Equals(nameSelector(ol(oj)), StringComparison.OrdinalIgnoreCase)) Then
-                ol(j) = pl(i) : i += 1
-            End If
-        Next
-        Return ol 'unpinned items stay in natural order, pinned items follow sortOrder
-    End Function
-
-End Module
-
-Public Structure QLInfo
-    Public path As String
-    Public hidden As Boolean
-    Public name As String
-    Public target As String
-    'Public invalidTarget As Boolean
-    Public pointsToDir As Boolean
-    Public isFolder As Boolean
-#If DEBUG Then
-    Public test As String
-#End If
-End Structure
-Public Structure MenuTag
-    Public path As String
-    Public action As String
-    Public tooltip As String
-End Structure
+' QLSort module moved to QL\QLSort.vb
+' QLInfo and MenuTag structures moved to QL\QLTypes.vb
 
 Module ImageExtension
     ''' <summary>

@@ -38,8 +38,10 @@ Partial NotInheritable Class FrmMain
         Me.pnlTitleBar = New System.Windows.Forms.Panel()
         Me.chkDebug = New System.Windows.Forms.CheckBox()
         Me.pbDpiWarning = New System.Windows.Forms.PictureBox()
+        Me.pbWrapperWarning = New System.Windows.Forms.PictureBox()
         Me.pnlUpdate = New System.Windows.Forms.Panel()
         Me.pbUpdateAvailable = New System.Windows.Forms.PictureBox()
+        Me.btnHelp = New System.Windows.Forms.Button()
         Me.ChkEqLock = New System.Windows.Forms.CheckBox()
         Me.lblTitle = New System.Windows.Forms.Label()
         Me.pnlButtons = New System.Windows.Forms.Panel()
@@ -99,6 +101,7 @@ Partial NotInheritable Class FrmMain
         Me.cmsQuickLaunch.SuspendLayout()
         Me.pnlTitleBar.SuspendLayout()
         CType(Me.pbDpiWarning, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.pbWrapperWarning, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.pnlUpdate.SuspendLayout()
         CType(Me.pbUpdateAvailable, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.pnlButtons.SuspendLayout()
@@ -205,7 +208,9 @@ Partial NotInheritable Class FrmMain
         Me.pnlTitleBar.BackColor = System.Drawing.SystemColors.Control
         Me.pnlTitleBar.Controls.Add(Me.chkDebug)
         Me.pnlTitleBar.Controls.Add(Me.pbDpiWarning)
+        Me.pnlTitleBar.Controls.Add(Me.pbWrapperWarning)
         Me.pnlTitleBar.Controls.Add(Me.pnlUpdate)
+        Me.pnlTitleBar.Controls.Add(Me.btnHelp)
         Me.pnlTitleBar.Controls.Add(Me.ChkEqLock)
         Me.pnlTitleBar.Controls.Add(Me.lblTitle)
         Me.pnlTitleBar.Location = New System.Drawing.Point(270, 0)
@@ -240,6 +245,20 @@ Partial NotInheritable Class FrmMain
         Me.ttMain.SetToolTip(Me.pbDpiWarning, "DPI Override not enabled" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Click to enable DPI Override for this client")
         Me.pbDpiWarning.Visible = False
         '
+        'pbWrapperWarning
+        '
+        Me.pbWrapperWarning.BackgroundImage = Global.ScalA.My.Resources.Resources.Warning
+        Me.pbWrapperWarning.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
+        Me.pbWrapperWarning.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.pbWrapperWarning.Location = New System.Drawing.Point(120, 4)
+        Me.pbWrapperWarning.Margin = New System.Windows.Forms.Padding(0)
+        Me.pbWrapperWarning.Name = "pbWrapperWarning"
+        Me.pbWrapperWarning.Size = New System.Drawing.Size(18, 18)
+        Me.pbWrapperWarning.TabIndex = 16
+        Me.pbWrapperWarning.TabStop = False
+        Me.ttMain.SetToolTip(Me.pbWrapperWarning, "SDL2 wrapper version mismatch" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Click to reinstall wrapper")
+        Me.pbWrapperWarning.Visible = False
+        '
         'pnlUpdate
         '
         Me.pnlUpdate.Controls.Add(Me.pbUpdateAvailable)
@@ -250,6 +269,21 @@ Partial NotInheritable Class FrmMain
         Me.pnlUpdate.Size = New System.Drawing.Size(24, 25)
         Me.pnlUpdate.TabIndex = 14
         Me.pnlUpdate.Visible = False
+        '
+        'btnHelp
+        '
+        Me.btnHelp.Dock = System.Windows.Forms.DockStyle.Right
+        Me.btnHelp.FlatAppearance.BorderSize = 0
+        Me.btnHelp.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnHelp.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnHelp.Location = New System.Drawing.Point(556, 0)
+        Me.btnHelp.Name = "btnHelp"
+        Me.btnHelp.Size = New System.Drawing.Size(24, 25)
+        Me.btnHelp.TabIndex = 17
+        Me.btnHelp.TabStop = False
+        Me.btnHelp.Text = "?"
+        Me.ttMain.SetToolTip(Me.btnHelp, "Help && FAQ")
+        Me.btnHelp.UseVisualStyleBackColor = True
         '
         'pbUpdateAvailable
         '
@@ -709,6 +743,7 @@ Partial NotInheritable Class FrmMain
         Me.pnlTitleBar.ResumeLayout(False)
         Me.pnlTitleBar.PerformLayout()
         CType(Me.pbDpiWarning, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.pbWrapperWarning, System.ComponentModel.ISupportInitialize).EndInit()
         Me.pnlUpdate.ResumeLayout(False)
         CType(Me.pbUpdateAvailable, System.ComponentModel.ISupportInitialize).EndInit()
         Me.pnlButtons.ResumeLayout(False)
@@ -769,6 +804,7 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents pnlUpdate As Panel
     Friend WithEvents pbUpdateAvailable As PictureBox
     Friend WithEvents pbDpiWarning As PictureBox
+    Friend WithEvents pbWrapperWarning As PictureBox
     Friend WithEvents cmsQuit As ContextMenuStrip
     Friend WithEvents CloseScalAToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents CloseAstoniaToolStripMenuItem As ToolStripMenuItem
@@ -788,4 +824,5 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents CloseAllButNameToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ActiveOverviewToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripMenuItem2 As ToolStripSeparator
+    Friend WithEvents btnHelp As Button
 End Class

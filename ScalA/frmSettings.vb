@@ -3,11 +3,14 @@ Imports System.IO
 Imports System.Net.Http
 Imports System.Runtime.Serialization.Formatters.Binary
 Imports System.Text
+Imports ScalA.QL
 
 Public NotInheritable Class FrmSettings
     Public Property SysMenu As New SysMenu(Me)
     Dim startup As Boolean = True
-    Private Shared ExplorerIcon As Bitmap = FrmMain.GetIconFromFile(IO.Path.Combine(Environment.ExpandEnvironmentVariables("%windir%"), "explorer.exe"), supressCacheMiss:=True)
+    Private Shared ExplorerIcon As Bitmap = QLIconCache.GetIconFromFile(IO.Path.Combine(Environment.ExpandEnvironmentVariables("%windir%"), "explorer.exe"), supressCacheMiss:=True)
+
+#Region "Form Lifecycle"
     Private Sub FrmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         'storeZoom = My.Settings.zoom
 
@@ -313,7 +316,9 @@ Public NotInheritable Class FrmSettings
         'End If
         MyBase.WndProc(m)
     End Sub
+#End Region
 
+#Region "Utility Functions"
     Private restoreWhitelist As Boolean = My.Settings.Whitelist
 
     'https://docs.microsoft.com/en-us/windows/win32/api/shellapi/ne-shellapi-shstockiconid
@@ -399,7 +404,9 @@ Public NotInheritable Class FrmSettings
     '    FrmMain.btnMin.Enabled = Not sender.Checked
     '    FrmMain.btnMax.Enabled = Not sender.Checked
     'End Sub
+#End Region
 
+#Region "Save and Cancel"
     Private Function ParseResolutions() As Boolean
         Const width = 0
         Const height = 1
@@ -452,7 +459,7 @@ Public NotInheritable Class FrmSettings
                 CustomMessageBox.Show(Me, $"Directory {txtQuickLaunchPath.Text} does not exist!", "Error")
                 Exit Sub
             End If
-            FrmMain.iconCache.Clear()
+            QLIconCache.IconCache.Clear()
 
             ResolvedLinkwatchers_Clear()
             My.Settings.links = txtQuickLaunchPath.Text
@@ -627,16 +634,16 @@ Public NotInheritable Class FrmSettings
             My.Settings.QLResolveLnk = ChkQLResolveLnk.Checked
             Task.Run(Sub()
                          Dim count As Integer = 0
-                         For Each it As String In FrmMain.iconCache.Keys.Where(Function(i) i.EndsWith(".lnk"))
+                         For Each it As String In QLIconCache.IconCache.Keys.Where(Function(i) i.EndsWith(".lnk"))
                              'Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(it) 'this is very slow. hence it is run in a task
                              'Dim target As String = oLink.TargetPath
                              Dim target As String = New ShellLinkInfo(it).TargetPath 'this is faster. still opting to using task tho
                              If IO.Directory.Exists(target) Then
-                                 If FrmMain.iconCache.TryRemove(it, Nothing) Then
+                                 If QLIconCache.IconCache.TryRemove(it, Nothing) Then
                                      count += 1
                                  End If
-                                 For Each t As String In FrmMain.iconCache.Keys.Where(Function(l) l.StartsWith(target))
-                                     If FrmMain.iconCache.TryRemove(t, Nothing) Then
+                                 For Each t As String In QLIconCache.IconCache.Keys.Where(Function(l) l.StartsWith(target))
+                                     If QLIconCache.IconCache.TryRemove(t, Nothing) Then
                                          count += 1
                                      End If
                                  Next
@@ -734,6 +741,9 @@ Public NotInheritable Class FrmSettings
     '    End If
 
     'End Sub
+#End Region
+
+#Region "Priority Helpers"
     Private Function mapCmbIndexToPriority(pri As Integer) As Integer
         Select Case pri
             Case 0
@@ -766,7 +776,9 @@ Public NotInheritable Class FrmSettings
                 Return -1
         End Select
     End Function
+#End Region
 
+#Region "Resolutions Tab"
     Private Sub TxtResolutions_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtResolutions.KeyPress
         If Not (Char.IsDigit(e.KeyChar) Or Char.IsControl(e.KeyChar) Or e.KeyChar.ToString.ToLower = "x") Then
             e.Handled = True
@@ -792,7 +804,9 @@ Public NotInheritable Class FrmSettings
     '    numYoffset.Text = 0
     '    manualNumUpdate = True
     'End Sub
+#End Region
 
+#Region "QuickLaunch Tab"
     Private Sub BtnOpenFolderDialog_Click(sender As Object, e As EventArgs) Handles btnOpenFolderDialog.Click
         txtQuickLaunchPath.SuspendLayout()
         txtQuickLaunchPath.Text = ChangeLinksDir(My.Settings.links)
@@ -835,6 +849,20 @@ Public NotInheritable Class FrmSettings
         End Try
     End Sub
 
+    Private Sub BatchShortcutManagerToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles BatchShortcutManagerToolStripMenuItem.Click
+        Using bsm As New BatchShortcutManager(txtQuickLaunchPath.Text)
+            bsm.ShowDialog(Me)
+        End Using
+    End Sub
+
+    Private Sub LauncherSetupToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles LauncherSetupToolStripMenuItem.Click
+        Using ls As New frmLauncherSetup()
+            ls.ShowDialog(Me)
+        End Using
+    End Sub
+#End Region
+
+#Region "Hotkeys Tab"
     Private Shared ReadOnly keyNames() As String = {"", "", "", "", "", "", "", "", "{Backspace}", "{Tab}", "", "", "", "{Enter}", "", "", ' 0-15
                                     "", "", "", "{Pause}", "", "", "", "", "", "", "", "{Escape}", "", "", "", "", ' 16-31
                                     "{Space}", "{PageUp}", "{PageDown}", "{End}", "{Home}", "{Left}", "{Up}", "{Right}", "{Down}", "", "", "", "{PrintSrcn}", "{Insert}", "{Delete}", "", ' 32-47
@@ -1133,8 +1161,8 @@ Public NotInheritable Class FrmSettings
     End Sub
 
     Private Sub ResetIconCacheToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ResetIconCacheToolStripMenuItem.Click
-        FrmMain.iconCache.Clear()
-        FrmMain.DefURLicons.Clear()
+        QLIconCache.IconCache.Clear()
+        QLIconCache.DefURLicons.Clear()
         ResolvedLinkwatchers_Clear()
         btnRefreshICdisplay.PerformClick()
     End Sub
@@ -1199,8 +1227,8 @@ Public NotInheritable Class FrmSettings
 
         Await Task.Delay(100)
 
-        lblICacheCount.Text = $"Count: {FrmMain.iconCache.Count()}"
-        Dim size As Double = GetObjectSize(FrmMain.iconCache) / 1024.0
+        lblICacheCount.Text = $"Count: {QLIconCache.IconCache.Count()}"
+        Dim size As Double = GetObjectSize(QLIconCache.IconCache) / 1024.0
         Dim suff As String = "KB"
         If size > 1024 Then
             size = size / 1024.0
@@ -1390,7 +1418,9 @@ Public NotInheritable Class FrmSettings
         txtCloseAll.LostFocus, txtTogTop.LostFocus, txtAlterOverviewMinKey.LostFocus, txtAlterOverviewPlusKey.LostFocus, txtAlterOverviewStarKey.LostFocus
         sender.backColor = Color.White
     End Sub
+#End Region
 
+#Region "Misc Handlers"
     Private Sub FrmSettings_Activated(sender As Object, e As EventArgs) Handles Me.Activated
         If Not Me.startup Then
             FrmMain.CloseOtherDropDowns(FrmMain.cmsQuickLaunch.Items, Nothing)
@@ -1403,5 +1433,6 @@ Public NotInheritable Class FrmSettings
             installer.ShowDialog(Me)
         End Using
     End Sub
+#End Region
 
 End Class

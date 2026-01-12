@@ -1,8 +1,5 @@
 ﻿Public NotInheritable Class ScreenManager
 
-    'TODO: replace more calls to Screen.ScalingPercent with ScreenManager.ScalingPercent
-
-
     ''' <summary>
     ''' Returns a list of screens to the left of the specified screen.
     ''' Caches the result to avoid repeated calculations.
@@ -156,31 +153,11 @@
         End Get
     End Property
 
-    Private Const DWMWA_EXTENDED_FRAME_BOUNDS = 9
     Private Function _ScalingPercent() As Integer
-        'TODO: investigate GetScaleFactorForMonitor (win8.1 and up only) and incorporate here if usefull
-
         If Me._screen Is Nothing Then Throw New NullReferenceException("_screen is nothing")
 
-        Dim grab As New InactiveForm(Me._screen)
-        Dim GrabHandler As EventHandler = Sub()
-                                              grab.Location += New Point(1, 1) 'need to update the location so the frame changes
-                                              Dim rcFrame As RECT
-                                              DwmGetWindowAttribute(grab.Handle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
-                                              Dim rcWind As RECT
-                                              GetWindowRect(grab.Handle, rcWind)
-                                              grab.Tag = Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25
-                                              grab.Close()
-                                              RemoveHandler grab.Shown, GrabHandler 'remove handler so GC can do its thing
-                                              grab.Dispose()
-                                          End Sub
-        AddHandler grab.Shown, GrabHandler
-
-        'BUG: due to this blocking operation the user cannot drag across monitor boundaries 'do not call in WM_poschange
-        grab.ShowDialog()
-
-        Return grab.Tag
-
+        Dim hMon As IntPtr = MonitorFromPoint(Me._screen.Bounds.Location, MONITORFLAGS.DEFAULTTONEAREST)
+        Return GetMonitorScaling(hMon)
     End Function
 
     ' Narrowing operator from ScreenManager to Screen
@@ -325,8 +302,6 @@ End Class
 
 Module ScreenExtensions
 
-    Private Const DWMWA_EXTENDED_FRAME_BOUNDS = 9
-
     <System.Runtime.CompilerServices.Extension()>
     Public Function ScalingPercent(scrn As Screen) As Integer
         Return ScreenManager.FromScreen(scrn).ScalingPercent()
@@ -334,39 +309,10 @@ Module ScreenExtensions
 
     <System.Runtime.CompilerServices.Extension()>
     Public Function ScalingPercentTask(scrn As Screen) As Task(Of Integer)
-        Dim grab As New InactiveForm(scrn)
-        Dim tcs As New TaskCompletionSource(Of Integer)
-        Dim GrabHandler As EventHandler = Sub()
-                                              grab.Location += New Point(1, 1) 'need to update the location so the frame changes
-                                              Dim rcFrame As RECT
-                                              DwmGetWindowAttribute(grab.Handle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
-                                              Dim rcWind As RECT
-                                              GetWindowRect(grab.Handle, rcWind)
-                                              tcs.SetResult(Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25)
-                                              grab.Close()
-                                              RemoveHandler grab.Shown, GrabHandler 'remove handler so GC can do its thing
-                                              grab.Dispose()
-                                          End Sub
-        AddHandler grab.Shown, GrabHandler
-        grab.Show()
-        Return tcs.Task
+        ' With GetScaleFactorForMonitor this is now synchronous, but keep Task signature for compatibility
+        Return Task.FromResult(ScreenManager.FromScreen(scrn).ScalingPercent())
     End Function
 
-    Public NotInheritable Class InactiveForm : Inherits Form
-        Protected Overloads Overrides ReadOnly Property ShowWithoutActivation() As Boolean
-            Get
-                Return True
-            End Get
-        End Property
-        Public Sub New(scrn As Screen)
-            Me.FormBorderStyle = FormBorderStyle.None
-            Me.TransparencyKey = Color.White
-            Me.BackColor = Me.TransparencyKey
-            Me.ShowInTaskbar = False
-            Me.StartPosition = FormStartPosition.Manual
-            Me.Location = scrn.Bounds.Location
-        End Sub
-    End Class
 End Module
 
 #If DEBUG Then
