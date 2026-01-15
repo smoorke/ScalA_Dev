@@ -1896,6 +1896,7 @@ Partial Public NotInheritable Class FrmMain
         Next
         cboAlt.ForeColor = fcol
         cmbResolution.ForeColor = fcol
+        btnHelp.ForeColor = fcol
     End Sub
 
     Private Sub StartCloseErrorDialogThread()
