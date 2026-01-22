@@ -21,7 +21,8 @@
     Public Declare Function DwmUpdateThumbnailProperties Lib "dwmapi.dll" (ByVal hThumbnail As IntPtr, ByRef props As DWM_THUMBNAIL_PROPERTIES) As Integer
     Public Declare Function DwmUnregisterThumbnail Lib "dwmapi.dll" (ByVal Thumb As IntPtr) As Integer
     Public Declare Function DwmQueryThumbnailSourceSize Lib "dwmapi.dll" (hThumbnail As IntPtr, ByRef pSize As Size) As Integer
-
+    <Runtime.InteropServices.DllImport("dwmapi.dll")>
+    Public Function DwmFlush() As Integer : End Function
 End Module
 
 Public NotInheritable Class DWMAPI
@@ -152,6 +153,7 @@ Partial Public NotInheritable Class FrmMain
                                               startRC.Width + (endRC.Width - startRC.Width) * percent,
                                               startRC.Height + (endRC.Height - startRC.Height) * percent)
                          DwmUpdateThumbnailProperties(thumb, twp)
+                         DwmFlush()
                      End While
 
                      timer.Stop()
