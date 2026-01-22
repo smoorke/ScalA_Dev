@@ -1442,6 +1442,16 @@ Module NativeMethods
         Public cbSize As Integer
         Public rcExclude As RECT
     End Structure
+
+    Public Const SM_CYCAPTION As Integer = 4
+
+    <DllImport("user32.dll", SetLastError:=False)>
+    Public Function GetSystemMetrics(ByVal nIndex As Integer) As Integer
+    End Function
+
+    <DllImport("user32.dll")>
+    Public Function GetSystemMetricsForDpi(ByVal nIndex As Integer, ByVal dpi As UInteger) As Integer : End Function
+
     <DllImport("User32.Dll", EntryPoint:="TrackPopupMenuEx")>
     Public Function TrackPopupMenuEx(ByVal hmenu As IntPtr, ByVal fuFlags As Integer, ByVal x As Integer, ByVal y As Integer, ByVal hwnd As IntPtr, ByVal lptpm As IntPtr) As Integer : End Function
     <DllImport("User32.Dll")>

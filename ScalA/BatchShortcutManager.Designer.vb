@@ -23,6 +23,7 @@ Partial Class BatchShortcutManager
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.grpFolder = New System.Windows.Forms.GroupBox()
+        Me.chkRecursive = New System.Windows.Forms.CheckBox()
         Me.btnBrowse = New System.Windows.Forms.Button()
         Me.txtFolderPath = New System.Windows.Forms.TextBox()
         Me.grpPassword = New System.Windows.Forms.GroupBox()
@@ -57,7 +58,6 @@ Partial Class BatchShortcutManager
         Me.btnApply = New System.Windows.Forms.Button()
         Me.btnCancel = New System.Windows.Forms.Button()
         Me.lblStatus = New System.Windows.Forms.Label()
-        Me.chkRecursive = New System.Windows.Forms.CheckBox()
         Me.grpFolder.SuspendLayout()
         Me.grpPassword.SuspendLayout()
         Me.grpLaunchOption.SuspendLayout()
@@ -70,7 +70,8 @@ Partial Class BatchShortcutManager
         '
         'grpFolder
         '
-        Me.grpFolder.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.grpFolder.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.grpFolder.Controls.Add(Me.chkRecursive)
         Me.grpFolder.Controls.Add(Me.btnBrowse)
         Me.grpFolder.Controls.Add(Me.txtFolderPath)
@@ -80,6 +81,18 @@ Partial Class BatchShortcutManager
         Me.grpFolder.TabIndex = 0
         Me.grpFolder.TabStop = False
         Me.grpFolder.Text = "Target Folder"
+        '
+        'chkRecursive
+        '
+        Me.chkRecursive.AutoSize = True
+        Me.chkRecursive.Checked = True
+        Me.chkRecursive.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.chkRecursive.Location = New System.Drawing.Point(6, 45)
+        Me.chkRecursive.Name = "chkRecursive"
+        Me.chkRecursive.Size = New System.Drawing.Size(102, 17)
+        Me.chkRecursive.TabIndex = 2
+        Me.chkRecursive.Text = "Scan subfolders"
+        Me.chkRecursive.UseVisualStyleBackColor = True
         '
         'btnBrowse
         '
@@ -93,27 +106,17 @@ Partial Class BatchShortcutManager
         '
         'txtFolderPath
         '
-        Me.txtFolderPath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.txtFolderPath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtFolderPath.Location = New System.Drawing.Point(6, 21)
         Me.txtFolderPath.Name = "txtFolderPath"
         Me.txtFolderPath.Size = New System.Drawing.Size(307, 20)
         Me.txtFolderPath.TabIndex = 0
         '
-        'chkRecursive
-        '
-        Me.chkRecursive.AutoSize = True
-        Me.chkRecursive.Checked = True
-        Me.chkRecursive.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.chkRecursive.Location = New System.Drawing.Point(6, 45)
-        Me.chkRecursive.Name = "chkRecursive"
-        Me.chkRecursive.Size = New System.Drawing.Size(106, 17)
-        Me.chkRecursive.TabIndex = 2
-        Me.chkRecursive.Text = "Scan subfolders"
-        Me.chkRecursive.UseVisualStyleBackColor = True
-        '
         'grpPassword
         '
-        Me.grpPassword.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.grpPassword.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.grpPassword.Controls.Add(Me.txtPasswordNew)
         Me.grpPassword.Controls.Add(Me.lblPasswordArrow)
         Me.grpPassword.Controls.Add(Me.txtPasswordOld)
@@ -141,7 +144,7 @@ Partial Class BatchShortcutManager
         Me.lblPasswordArrow.Enabled = False
         Me.lblPasswordArrow.Location = New System.Drawing.Point(195, 45)
         Me.lblPasswordArrow.Name = "lblPasswordArrow"
-        Me.lblPasswordArrow.Size = New System.Drawing.Size(25, 13)
+        Me.lblPasswordArrow.Size = New System.Drawing.Size(16, 13)
         Me.lblPasswordArrow.TabIndex = 4
         Me.lblPasswordArrow.Text = "->"
         '
@@ -185,7 +188,8 @@ Partial Class BatchShortcutManager
         '
         'grpLaunchOption
         '
-        Me.grpLaunchOption.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.grpLaunchOption.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.grpLaunchOption.Controls.Add(Me.lblOptionHint)
         Me.grpLaunchOption.Controls.Add(Me.txtOptionNew)
         Me.grpLaunchOption.Controls.Add(Me.lblOptionArrow)
@@ -207,7 +211,7 @@ Partial Class BatchShortcutManager
         Me.lblOptionHint.ForeColor = System.Drawing.SystemColors.GrayText
         Me.lblOptionHint.Location = New System.Drawing.Point(63, 26)
         Me.lblOptionHint.Name = "lblOptionHint"
-        Me.lblOptionHint.Size = New System.Drawing.Size(123, 13)
+        Me.lblOptionHint.Size = New System.Drawing.Size(135, 13)
         Me.lblOptionHint.TabIndex = 6
         Me.lblOptionHint.Text = "(Leave Old empty to set all)"
         '
@@ -225,7 +229,7 @@ Partial Class BatchShortcutManager
         Me.lblOptionArrow.Enabled = False
         Me.lblOptionArrow.Location = New System.Drawing.Point(135, 45)
         Me.lblOptionArrow.Name = "lblOptionArrow"
-        Me.lblOptionArrow.Size = New System.Drawing.Size(25, 13)
+        Me.lblOptionArrow.Size = New System.Drawing.Size(16, 13)
         Me.lblOptionArrow.TabIndex = 4
         Me.lblOptionArrow.Text = "->"
         '
@@ -268,7 +272,8 @@ Partial Class BatchShortcutManager
         '
         'grpResolution
         '
-        Me.grpResolution.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.grpResolution.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.grpResolution.Controls.Add(Me.numNewHeight)
         Me.grpResolution.Controls.Add(Me.numNewWidth)
         Me.grpResolution.Controls.Add(Me.lblNewCustom)
@@ -366,7 +371,7 @@ Partial Class BatchShortcutManager
         Me.lblResArrow.Enabled = False
         Me.lblResArrow.Location = New System.Drawing.Point(195, 43)
         Me.lblResArrow.Name = "lblResArrow"
-        Me.lblResArrow.Size = New System.Drawing.Size(25, 13)
+        Me.lblResArrow.Size = New System.Drawing.Size(16, 13)
         Me.lblResArrow.TabIndex = 4
         Me.lblResArrow.Text = "->"
         '
@@ -443,7 +448,8 @@ Partial Class BatchShortcutManager
         '
         'lblStatus
         '
-        Me.lblStatus.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.lblStatus.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblStatus.Location = New System.Drawing.Point(12, 346)
         Me.lblStatus.Name = "lblStatus"
         Me.lblStatus.Size = New System.Drawing.Size(117, 23)

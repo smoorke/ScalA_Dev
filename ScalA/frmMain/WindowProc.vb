@@ -11,10 +11,9 @@ Partial NotInheritable Class FrmMain
 
     Dim suppressRestoreBounds As Boolean = False
 
-    Dim StructureToPtrSupported As Boolean = False
-
-
     Dim moveSW As Stopwatch = Stopwatch.StartNew
+
+    Dim DpiChanging As Boolean = False
 
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
@@ -237,7 +236,9 @@ Partial NotInheritable Class FrmMain
                 Me.Invalidate()
                 moveBusy = False
                 InSizeMove = False
+                DpiChanging = False
             Case WM_SIZE ' = &h0005
+                DpiChanging = False
                 Dim sz As Size = New LParamMap(m.LParam)
                 dBug.Print($"WM_SIZE {m.WParam} {sz}")
                 If suppressRestoreBounds AndAlso sz.Width <= RestoreBounds.Size.Width AndAlso sz.Height <= RestoreBounds.Size.Height Then
@@ -296,16 +297,35 @@ Partial NotInheritable Class FrmMain
                         dBug.Print($"Restoreglitch tweaked")
                         'suppressRestoreBounds = False
                     End If
-                    If InSizeMove Then
-                        winpos.cx = My.Settings.resol.Width + 2
-                        winpos.cy = My.Settings.resol.Height + pnlTitleBar.Height + 1
+                    'todo: this is broken for maximizing but needed for DPI
+                    'winpos.cx = My.Settings.resol.Width + If(Me.WindowState = FormWindowState.Normal, 2, 0)
+                    'winpos.cy = My.Settings.resol.Height + If(Me.pnlTitleBar IsNot Nothing, Me.pnlTitleBar.Height, 24) + If(Me.WindowState = FormWindowState.Normal, 1, 0)
+
+                    If DpiChanging AndAlso winpos.cx <> Me.Width AndAlso Not winpos.flags.HasFlag(SetWindowPosFlags.IgnoreResize) Then
+                        Debug.Print($"{winpos.cx} {Me.Width}")
                         winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreResize
+                        'DpiChanging = False
                     End If
+
                     System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
+                    'Debug.Print("WinposChanging:")
+                    'Debug.Print($"{winpos.flags}")
+                    ' If Not Me.Disposing Then Debug.Print($"{winpos.hwndInsertAfter} {ScalaHandle} {FrmSizeBorder?.Handle} {frmOverlay?.Handle}")
                 End If
-               'Debug.Print("WinposChanging:")
-                'Debug.Print($"{winpos.flags}")
-               ' If Not Me.Disposing Then Debug.Print($"{winpos.hwndInsertAfter} {ScalaHandle} {FrmSizeBorder?.Handle} {frmOverlay?.Handle}")
+            Case WM_GETDPISCALEDSIZE
+                Debug.Print("WM_GETDPISCALEDSIZE")
+                DpiChanging = True
+                If StructureToPtrSupported Then
+                    'this deosn't work.
+                    ' rcW wrong?
+                    ' wrong type? SIZE vs Size
+                    'Dim rcW As RECT
+                    'GetWindowRect(Me.Handle, rcW)
+                    'Dim sz As New Size(rcW.bottom - rcW.top, rcW.right - rcW.left)
+                    'Marshal.StructureToPtr(sz, m.LParam, True)
+                End If
+            Case WM_DPICHANGED
+                Debug.Print("WM_DPICHANGED")
             Case WM_SHOWWINDOW
                 dBug.Print($"WM_SHOWWINDOW {m.WParam} {m.LParam}")
                 If m.WParam = SW_HIDE AndAlso m.LParam = SW_PARENTCLOSING Then 'minimize
@@ -582,8 +602,6 @@ Partial NotInheritable Class FrmMain
                 Finally
                     CloseHandle(hThread)
                 End Try
-            Case WM_DPICHANGED
-                Debug.Print("WM_DPICHANGED")
 #If DEBUG Then
 
             'Case &H6 ' WM_ACTIVATE
@@ -663,7 +681,7 @@ Partial NotInheritable Class FrmMain
 #If DEBUG Then
     Public OriginalSize As Size
     Public OriginalLocation As Point
-    Public DpiChanging As Boolean
+
     Public Enum WM_ 'getnerated by chadGPT, needs sanity check
         WM_NULL = &H0
         WM_CREATE = &H1

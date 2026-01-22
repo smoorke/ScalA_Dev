@@ -1001,66 +1001,66 @@ Partial Public NotInheritable Class FrmMain
     Private Const QL_INITIAL_ITEMS As Integer = 50
     Private Const QL_LOAD_MORE_BATCH As Integer = 50
 
-    Private Sub QLMenuItem_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs)
-        If e.Button = MouseButtons.Right AndAlso TypeOf sender.Tag Is QLInfo Then
-            QLDragDropHandler.State.Start(sender, e.Location)
-        End If
-    End Sub
+    'Private Sub QLMenuItem_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs)
+    '    If e.Button = MouseButtons.Right AndAlso TypeOf sender.Tag Is QLInfo Then
+    '        QLDragDropHandler.State.Start(sender, e.Location)
+    '    End If
+    'End Sub
 
-    Dim DragSep As New ToolStripSeparator
+    'Dim DragSep As New ToolStripSeparator
 
-    Private Sub QLMenuItem_MouseMove(sender As ToolStripMenuItem, e As MouseEventArgs)
-        Dim state = QLDragDropHandler.State
-        If state.DraggedItem IsNot Nothing AndAlso e.Button = MouseButtons.Right Then
-            ' Check if we've moved enough to start dragging
-            If Not state.IsActive AndAlso IsDragThresholdExceeded(state.StartPoint, e.Location) Then
-                state.IsActive = True
-                dBug.Print($"QL Drag started: {state.DraggedItem.Text}")
-            End If
-        End If
-    End Sub
+    'Private Sub QLMenuItem_MouseMove(sender As ToolStripMenuItem, e As MouseEventArgs)
+    '    Dim state = QLDragDropHandler.State
+    '    If state.DraggedItem IsNot Nothing AndAlso e.Button = MouseButtons.Right Then
+    '        ' Check if we've moved enough to start dragging
+    '        If Not state.IsActive AndAlso IsDragThresholdExceeded(state.StartPoint, e.Location) Then
+    '            state.IsActive = True
+    '            dBug.Print($"QL Drag started: {state.DraggedItem.Text}")
+    '        End If
+    '    End If
+    'End Sub
 
-    Private Sub QLMenuItem_MouseEnter(sender As ToolStripMenuItem, e As EventArgs)
-        Dim state = QLDragDropHandler.State
-        If state.IsActive AndAlso state.DraggedItem IsNot Nothing AndAlso sender IsNot state.DraggedItem Then
-            If TypeOf sender.Tag Is QLInfo Then
-                ' Clear previous highlight
-                If state.DropTarget IsNot Nothing AndAlso state.DropTarget IsNot sender Then
-                    state.DropTarget.BackColor = Color.Empty
-                End If
-                ' Highlight new drop target
-                state.DropTarget = sender
-                sender.BackColor = Color.FromArgb(100, COLOR_HIGHLIGHT_BLUE)
-                dBug.Print($"QL Drop target: {sender.Text}")
-            End If
-        End If
-    End Sub
+    'Private Sub QLMenuItem_MouseEnter(sender As ToolStripMenuItem, e As EventArgs)
+    '    Dim state = QLDragDropHandler.State
+    '    If state.IsActive AndAlso state.DraggedItem IsNot Nothing AndAlso sender IsNot state.DraggedItem Then
+    '        If TypeOf sender.Tag Is QLInfo Then
+    '            ' Clear previous highlight
+    '            If state.DropTarget IsNot Nothing AndAlso state.DropTarget IsNot sender Then
+    '                state.DropTarget.BackColor = Color.Empty
+    '            End If
+    '            ' Highlight new drop target
+    '            state.DropTarget = sender
+    '            sender.BackColor = Color.FromArgb(100, COLOR_HIGHLIGHT_BLUE)
+    '            dBug.Print($"QL Drop target: {sender.Text}")
+    '        End If
+    '    End If
+    'End Sub
 
-    Private Sub QLMenuItem_MouseUp(sender As ToolStripMenuItem, e As MouseEventArgs)
-        Dim state = QLDragDropHandler.State
-        If state.IsActive AndAlso state.DraggedItem IsNot Nothing AndAlso state.DropTarget IsNot Nothing Then
-            ' Perform the reorder - now handled by QL_DragDrop
-        End If
-        ' Clean up drag state
-        state.Reset()
-    End Sub
+    'Private Sub QLMenuItem_MouseUp(sender As ToolStripMenuItem, e As MouseEventArgs)
+    '    Dim state = QLDragDropHandler.State
+    '    If state.IsActive AndAlso state.DraggedItem IsNot Nothing AndAlso state.DropTarget IsNot Nothing Then
+    '        ' Perform the reorder - now handled by QL_DragDrop
+    '    End If
+    '    ' Clean up drag state
+    '    state.Reset()
+    'End Sub
 
-    Private Sub PerformQLReorder(dragItem As ToolStripMenuItem, dropTarget As ToolStripMenuItem)
-        Dim state = QLDragDropHandler.State
-        If state.FolderPath Is Nothing Then Exit Sub
+    'Private Sub PerformQLReorder(dragItem As ToolStripMenuItem, dropTarget As ToolStripMenuItem)
+    '    Dim state = QLDragDropHandler.State
+    '    If state.FolderPath Is Nothing Then Exit Sub
 
-        Dim dragQli As QLInfo = CType(dragItem.Tag, QLInfo)
-        Dim dropQli As QLInfo = CType(dropTarget.Tag, QLInfo)
+    '    Dim dragQli As QLInfo = CType(dragItem.Tag, QLInfo)
+    '    Dim dropQli As QLInfo = CType(dropTarget.Tag, QLInfo)
 
-        Dim dragName As String = If(dragQli.path.EndsWith("\"), dragQli.name, IO.Path.GetFileName(dragQli.path))
-        Dim dropName As String = If(dropQli.path.EndsWith("\"), dropQli.name, IO.Path.GetFileName(dropQli.path))
+    '    Dim dragName As String = If(dragQli.path.EndsWith("\"), dragQli.name, IO.Path.GetFileName(dragQli.path))
+    '    Dim dropName As String = If(dropQli.path.EndsWith("\"), dropQli.name, IO.Path.GetFileName(dropQli.path))
 
-        dBug.Print($"QL Reorder: '{dragName}' to position of '{dropName}'")
+    '    dBug.Print($"QL Reorder: '{dragName}' to position of '{dropName}'")
 
-        ' Delegate to QLDragDropHandler
-        QLDragDropHandler.UpdateSortOrder(state.FolderPath, dragName, dropName, dragItem.GetCurrentParent()?.Items)
-        dBug.Print($"QL Sort order saved")
-    End Sub
+    '    ' Delegate to QLDragDropHandler
+    '    QLDragDropHandler.UpdateSortOrder(state.FolderPath, dragName, dropName, dragItem.GetCurrentParent()?.Items)
+    '    dBug.Print($"QL Sort order saved")
+    'End Sub
 
     Private Sub QLMenuItem_Paint(sender As ToolStripMenuItem, e As PaintEventArgs)
         If QLCtxMenuOpenedOn Is sender Then
@@ -2092,7 +2092,10 @@ Partial Public NotInheritable Class FrmMain
             Exit Sub
         End If
 
-        If Not items.Contains(draggeditem) Then Exit Sub
+        If Not items.Contains(draggeditem) Then
+            'todo: when we enable cross menu drag/drop this needs changing
+            Exit Sub
+        End If
 
         ' Use QLDragDropHandler to calculate insert position
         Dim pos = QLDragDropHandler.CalculateInsertPosition(items, clientPt, draggedInfo, draggeditem)
@@ -2614,7 +2617,7 @@ Partial Public NotInheritable Class FrmMain
                 tpmParam.rcExclude = New RECT
             End If
 
-            TrackPopupMenuEx(QlCtxMenu.Handle, TPM_RECURSE, MousePosition.X, MousePosition.Y, ScalaHandle, tpmParam)
+            TrackPopupMenuEx(QlCtxMenu.Handle, TPM_RECURSE, MousePosition.X, MousePosition.Y, GetForegroundWindow(), tpmParam)
 
             CustomToolTip.HideTooltip()
 

@@ -176,7 +176,7 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc = New System.Windows.Forms.TabPage()
         Me.ChkAlwaysStartOnOverview = New System.Windows.Forms.CheckBox()
         Me.cmbPriority = New System.Windows.Forms.ComboBox()
-        Me.cmbTheme = New System.Windows.Forms.ComboBox()
+        Me.cboTheme = New System.Windows.Forms.ComboBox()
         Me.Label16 = New System.Windows.Forms.Label()
         Me.txtExe = New System.Windows.Forms.TextBox()
         Me.txtClass = New System.Windows.Forms.TextBox()
@@ -239,7 +239,7 @@ Partial NotInheritable Class FrmSettings
         'ToolStripMenuItem1
         '
         ToolStripMenuItem1.Name = "ToolStripMenuItem1"
-        ToolStripMenuItem1.Size = New System.Drawing.Size(179, 6)
+        ToolStripMenuItem1.Size = New System.Drawing.Size(208, 6)
         '
         'Label3
         '
@@ -480,30 +480,30 @@ Partial NotInheritable Class FrmSettings
         '
         Me.cmsQLFolder.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenInExplorerToolStripMenuItem, Me.LauncherSetupToolStripMenuItem, Me.BatchShortcutManagerToolStripMenuItem, ToolStripMenuItem1, Me.ResetIconCacheToolStripMenuItem})
         Me.cmsQLFolder.Name = "cmsQLFolder"
-        Me.cmsQLFolder.Size = New System.Drawing.Size(210, 98)
+        Me.cmsQLFolder.Size = New System.Drawing.Size(212, 98)
         '
         'OpenInExplorerToolStripMenuItem
         '
         Me.OpenInExplorerToolStripMenuItem.Name = "OpenInExplorerToolStripMenuItem"
-        Me.OpenInExplorerToolStripMenuItem.Size = New System.Drawing.Size(209, 22)
+        Me.OpenInExplorerToolStripMenuItem.Size = New System.Drawing.Size(211, 22)
         Me.OpenInExplorerToolStripMenuItem.Text = "Open in File Explorer"
         '
         'LauncherSetupToolStripMenuItem
         '
         Me.LauncherSetupToolStripMenuItem.Name = "LauncherSetupToolStripMenuItem"
-        Me.LauncherSetupToolStripMenuItem.Size = New System.Drawing.Size(209, 22)
+        Me.LauncherSetupToolStripMenuItem.Size = New System.Drawing.Size(211, 22)
         Me.LauncherSetupToolStripMenuItem.Text = "Launcher Setup..."
         '
         'BatchShortcutManagerToolStripMenuItem
         '
         Me.BatchShortcutManagerToolStripMenuItem.Name = "BatchShortcutManagerToolStripMenuItem"
-        Me.BatchShortcutManagerToolStripMenuItem.Size = New System.Drawing.Size(182, 22)
+        Me.BatchShortcutManagerToolStripMenuItem.Size = New System.Drawing.Size(211, 22)
         Me.BatchShortcutManagerToolStripMenuItem.Text = "Batch Shortcut Manager..."
         '
         'ResetIconCacheToolStripMenuItem
         '
         Me.ResetIconCacheToolStripMenuItem.Name = "ResetIconCacheToolStripMenuItem"
-        Me.ResetIconCacheToolStripMenuItem.Size = New System.Drawing.Size(182, 22)
+        Me.ResetIconCacheToolStripMenuItem.Size = New System.Drawing.Size(211, 22)
         Me.ResetIconCacheToolStripMenuItem.Text = "Reset Icon Cache"
         '
         'txtQuickLaunchPath
@@ -1798,7 +1798,7 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc.Controls.Add(Me.cmbPriority)
         Me.tabMisc.Controls.Add(Label1)
         Me.tabMisc.Controls.Add(Me.chkShowEnd)
-        Me.tabMisc.Controls.Add(Me.cmbTheme)
+        Me.tabMisc.Controls.Add(Me.cboTheme)
         Me.tabMisc.Controls.Add(Me.Label16)
         Me.tabMisc.Controls.Add(Me.txtExe)
         Me.tabMisc.Controls.Add(Label3)
@@ -1833,18 +1833,18 @@ Partial NotInheritable Class FrmSettings
         Me.cmbPriority.Items.AddRange(New Object() {"High : 13", "Above Normal : 10", "Normal : 8", "Below Norlmal : 6", "Idle : 4 "})
         Me.cmbPriority.Location = New System.Drawing.Point(189, 82)
         Me.cmbPriority.Name = "cmbPriority"
-        Me.cmbPriority.Size = New System.Drawing.Size(113, 21)
+        Me.cmbPriority.Size = New System.Drawing.Size(128, 21)
         Me.cmbPriority.TabIndex = 29
         '
-        'cmbTheme
+        'cboTheme
         '
-        Me.cmbTheme.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.cmbTheme.FormattingEnabled = True
-        Me.cmbTheme.Items.AddRange(New Object() {"System", "Light", "Dark"})
-        Me.cmbTheme.Location = New System.Drawing.Point(189, 59)
-        Me.cmbTheme.Name = "cmbTheme"
-        Me.cmbTheme.Size = New System.Drawing.Size(82, 21)
-        Me.cmbTheme.TabIndex = 25
+        Me.cboTheme.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cboTheme.FormattingEnabled = True
+        Me.cboTheme.Items.AddRange(New Object() {"System", "Light", "Dark"})
+        Me.cboTheme.Location = New System.Drawing.Point(189, 59)
+        Me.cboTheme.Name = "cboTheme"
+        Me.cboTheme.Size = New System.Drawing.Size(82, 21)
+        Me.cboTheme.TabIndex = 25
         '
         'Label16
         '
@@ -2039,7 +2039,7 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents chkCAALt As CheckBox
     Friend WithEvents chkCACtrl As CheckBox
     Friend WithEvents chkCloseAll As CheckBox
-    Friend WithEvents cmbTheme As ComboBox
+    Friend WithEvents cboTheme As ComboBox
     Friend WithEvents Label16 As Label
     Friend WithEvents cmsUpdate As ContextMenuStrip
     Friend WithEvents CheckNowToolStripMenuItem As ToolStripMenuItem

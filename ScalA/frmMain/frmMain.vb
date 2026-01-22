@@ -317,11 +317,16 @@ Partial Public NotInheritable Class FrmMain
         End Try
     End Sub
     Public Function WindowsScaling() As Integer
-        Dim hMon As IntPtr = MonitorFromWindow(ScalaHandle, MONITORFLAGS.DEFAULTTONEAREST)
-        Dim percent As Integer = GetMonitorScaling(hMon)
+        Dim rcFrame As RECT
+        DwmGetWindowAttribute(ScalaHandle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
+        Dim rcWind As RECT
+        GetWindowRect(ScalaHandle, rcWind)
+        Dim percent = Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25
 
-        FrmSettings.pb100PWarning.Visible = percent <> 100
+        Dim hMon As IntPtr = MonitorFromWindow(ScalaHandle, MONITORFLAGS.DEFAULTTONEAREST)
+        FrmSettings.pb100PWarning.Visible = GetMonitorScaling(hMon) <> 100
         Return percent
+
     End Function
 
     Public Function GetScaling(hWnd As IntPtr) As Integer
@@ -726,6 +731,7 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub FrmMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         dBug.Print("FrmMain_Shown")
+        DpiChanging = False
         suppressWM_MOVEcwp = False
         If Not Screen.AllScreens.Any(Function(s) s.WorkingArea.Contains(Me.Location)) Then
             dBug.Print("location out of bounds")

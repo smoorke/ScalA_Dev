@@ -33,7 +33,7 @@
         'FrmMain.Cursor = Cursors.Arrow
         FrmMain.AltPP?.ThreadInput(False) 'fix busy cursor on sdl when called from trayicon
         'Dim cmd As Integer = TrackPopupMenuEx(Me.Handle, TPM_RETURNCMD, pos.X, pos.Y, _form.Handle, Nothing)
-        Dim cmd As Integer = TrackPopupMenuEx(Me.Handle, TPM_RETURNCMD, pos.X, pos.Y, FrmMain.Handle, IntPtr.Zero)
+        Dim cmd As Integer = TrackPopupMenuEx(Me.Handle, TPM_RETURNCMD, pos.X, pos.Y, ScalaHandle, IntPtr.Zero)
 
         'Me.Visible = False 'handled in wndproc
         If cmd > 0 Then

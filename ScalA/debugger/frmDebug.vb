@@ -2,6 +2,13 @@
 Imports ScalA.QL
 Public Class frmDebug
 #If DEBUG Then
+
+    Dim DesignedClientSize As Size
+    Public Sub New()
+        InitializeComponent()
+        DesignedClientSize = Me.ClientSize
+    End Sub
+
     Private Sub frmDebug_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         If logbuilder Is Nothing Then
             logbuilder = New System.Text.StringBuilder With {.Capacity = 100_000}
@@ -18,8 +25,29 @@ Public Class frmDebug
 
         Me.Owner = FrmMain
 
-        dBug.Print("FrmDebug Load", 1)
+        Dim rcC As RECT
+        GetClientRect(Me.Handle, rcC)
+        Dim rcw As RECT
+        GetWindowRect(Me.Handle, rcw)
+
+        dBug.Print($"frmDebug Load {rcC.right} {rcC.bottom}", 1)
+
+        Me.Size = New Size(rcw.right - rcw.left - rcC.right + DesignedClientSize.Width,
+                           rcw.bottom - rcw.top - rcC.bottom + DesignedClientSize.Height)
+
     End Sub
+    Private Sub frmDebug_Shown(sender As Object, e As EventArgs) Handles Me.Shown
+
+        Dim rcC As RECT
+        GetClientRect(Me.Handle, rcC)
+
+        Debug.Print($"frmDebug_Shown {rcC.right} {rcC.bottom}")
+
+        ' Me.DpiChanging = False
+        Me.startup = False
+    End Sub
+
+    'Dim DpiChanging As Boolean = False
 
     Private Sub tmrDebug_Tick(sender As Object, e As EventArgs) Handles tmrDebug.Tick
         If logbuilder IsNot Nothing Then
@@ -124,6 +152,7 @@ Public Class frmDebug
 
     Private Sub txtDebugLog_MouseWheel(sender As Object, e As MouseEventArgs) Handles txtDebugLog.MouseWheel
         If e.Delta > 0 Then ' Scrolling up disables auto-scroll
+            'todo: only turn off if the is a vertscrollbar
             chkAutoScroll.Checked = False
         Else
             Dim si As New SCROLLINFO With {.cbSize = Marshal.SizeOf(GetType(SCROLLINFO)), .fMask = SIF_ALL}
@@ -260,6 +289,29 @@ Public Class frmDebug
 
     Private crtMode As Boolean = frmCrt.Visible
 
+    Dim startup As Boolean = True
+
+
+    Protected Overrides Sub WndProc(ByRef m As Message)
+        Select Case m.Msg
+            Case WM_WINDOWPOSCHANGING
+                Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
+                If StructureToPtrSupported Then
+                    If Not winpos.flags.HasFlag(SetWindowPosFlags.IgnoreResize) Then
+                        Dim rcW As RECT
+                        GetWindowRect(Me.Handle, rcW)
+                        Dim rcC As RECT
+                        GetClientRect(Me.Handle, rcC)
+                        Debug.Print($"rcC {rcC.right} {rcC.bottom}")
+                        winpos.cx = rcW.right - rcW.left - rcC.right + DesignedClientSize.Width
+                        winpos.cy = rcW.bottom - rcW.top - rcC.bottom + DesignedClientSize.Height
+                        System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
+                    End If
+                End If
+        End Select
+
+        MyBase.WndProc(m)
+    End Sub
 
     Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
         'If FrmMain.AltPP Is Nothing Then
@@ -341,6 +393,8 @@ Public Class frmDebug
         'MenuToolTip.InitializeTooltip(Me.Handle)
         'MenuToolTip.ShowTooltipWithDelay("Test123", 0, 0)
     End Sub
+
+
 #End If
 End Class
 #If DEBUG Then

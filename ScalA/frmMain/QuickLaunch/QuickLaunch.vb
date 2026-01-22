@@ -1,5 +1,9 @@
 ﻿Imports System.ComponentModel
 
+Public NotInheritable Class Dummy_QL
+    'dummy class to prevent desiger from treating this as a component
+End Class
+
 ''' <summary>
 ''' Custom ContextMenuStrip for the QuickLaunch menu with custom rendering
 ''' </summary>
@@ -75,9 +79,5 @@ Public NotInheritable Class QLMenuItem : Inherits ToolStripMenuItem
         End If
 
     End Sub
-
-End Class
-
-Partial NotInheritable Class frmMain
 
 End Class

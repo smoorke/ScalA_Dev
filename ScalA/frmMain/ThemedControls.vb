@@ -106,6 +106,7 @@ Public NotInheritable Class ThemedComboBox
         If _buffer Is Nothing Then _buffer = New Bitmap(ClientRectangle.Width, ClientRectangle.Height)
 
         Using g = Graphics.FromImage(_buffer)
+            g.Clear(Color.Transparent)
             Dim rect = New Rectangle(0, 0, ClientSize.Width, ClientSize.Height)
             'Dim textColor = If(_theme, Colors.LightText, Color.Black)
             Dim textColor = _ForeColor

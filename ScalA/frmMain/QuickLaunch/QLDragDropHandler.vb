@@ -12,7 +12,7 @@ Namespace QL
         ''' <summary>
         ''' Custom cursor shown during drag
         ''' </summary>
-        Public DragCursor As Cursor = Nothing
+        Public Shared DragCursor As Cursor = Nothing
 
         ''' <summary>
         ''' The starting point of the drag operation
@@ -58,21 +58,21 @@ Namespace QL
             HoveredItem = Nothing
         End Sub
 
-        ''' <summary>
-        ''' Starts a new drag operation
-        ''' </summary>
-        ''' <param name="item">Item being dragged</param>
-        ''' <param name="startLocation">Starting mouse location</param>
-        Public Sub Start(item As ToolStripMenuItem, startLocation As Point)
-            DraggedItem = item
-            StartPoint = startLocation
-            IsActive = False
+        '''' <summary>
+        '''' Starts a new drag operation
+        '''' </summary>
+        '''' <param name="item">Item being dragged</param>
+        '''' <param name="startLocation">Starting mouse location</param>
+        'Public Sub Start(item As ToolStripMenuItem, startLocation As Point)
+        '    DraggedItem = item
+        '    StartPoint = startLocation
+        '    IsActive = False
 
-            If TypeOf item.Tag Is QLInfo Then
-                Dim qli As QLInfo = CType(item.Tag, QLInfo)
-                FolderPath = IO.Path.GetDirectoryName(qli.path.TrimEnd("\"c))
-            End If
-        End Sub
+        '    If TypeOf item.Tag Is QLInfo Then
+        '        Dim qli As QLInfo = CType(item.Tag, QLInfo)
+        '        FolderPath = IO.Path.GetDirectoryName(qli.path.TrimEnd("\"c))
+        '    End If
+        'End Sub
     End Class
 
     ''' <summary>
@@ -80,15 +80,15 @@ Namespace QL
     ''' </summary>
     Public Module QLDragDropHandler
 
-        ''' <summary>
-        ''' Shared drag state for the QuickLaunch menu
-        ''' </summary>
-        Public ReadOnly State As New DragState()
+        '''' <summary>
+        '''' Shared drag state for the QuickLaunch menu
+        '''' </summary>
+        'Public ReadOnly State As New DragState()
 
-        ''' <summary>
-        ''' Drag threshold in pixels before drag operation starts
-        ''' </summary>
-        Public Const QL_DRAG_THRESHOLD As Integer = 5
+        '''' <summary>
+        '''' Drag threshold in pixels before drag operation starts
+        '''' </summary>
+        'Public Const QL_DRAG_THRESHOLD As Integer = 5
 
         ''' <summary>
         ''' Delay in milliseconds before opening a folder during drag hover
@@ -250,70 +250,70 @@ Namespace QL
             Return True
         End Function
 
-        ''' <summary>
-        ''' Builds a sort order list from menu items when no persisted order exists
-        ''' </summary>
-        ''' <param name="items">Collection of menu items</param>
-        ''' <returns>List of item paths in current order</returns>
-        Public Function BuildSortOrderFromItems(items As ToolStripItemCollection) As List(Of String)
-            Dim sortOrder As New List(Of String)
+        '''' <summary>
+        '''' Builds a sort order list from menu items when no persisted order exists
+        '''' </summary>
+        '''' <param name="items">Collection of menu items</param>
+        '''' <returns>List of item paths in current order</returns>
+        'Public Function BuildSortOrderFromItems(items As ToolStripItemCollection) As List(Of String)
+        '    Dim sortOrder As New List(Of String)
 
-            For Each item As ToolStripItem In items
-                If TypeOf item Is ToolStripMenuItem AndAlso TypeOf item.Tag Is QLInfo Then
-                    Dim qli As QLInfo = CType(item.Tag, QLInfo)
-                    Dim itemName As String = If(qli.path.EndsWith("\"), qli.name, IO.Path.GetFileName(qli.path))
-                    sortOrder.Add(itemName)
-                End If
-            Next
+        '    For Each item As ToolStripItem In items
+        '        If TypeOf item Is ToolStripMenuItem AndAlso TypeOf item.Tag Is QLInfo Then
+        '            Dim qli As QLInfo = CType(item.Tag, QLInfo)
+        '            Dim itemName As String = If(qli.path.EndsWith("\"), qli.name, IO.Path.GetFileName(qli.path))
+        '            sortOrder.Add(itemName)
+        '        End If
+        '    Next
 
-            Return sortOrder
-        End Function
+        '    Return sortOrder
+        'End Function
 
-        ''' <summary>
-        ''' Updates sort order by moving an item to a new position
-        ''' </summary>
-        ''' <param name="folderPath">Path to the folder</param>
-        ''' <param name="dragName">Name of the item being dragged</param>
-        ''' <param name="dropName">Name of the item to drop before</param>
-        ''' <param name="fallbackItems">Items to build order from if none exists</param>
-        Public Sub UpdateSortOrder(folderPath As String,
-                                   dragName As String,
-                                   dropName As String,
-                                   Optional fallbackItems As ToolStripItemCollection = Nothing)
+        '''' <summary>
+        '''' Updates sort order by moving an item to a new position
+        '''' </summary>
+        '''' <param name="folderPath">Path to the folder</param>
+        '''' <param name="dragName">Name of the item being dragged</param>
+        '''' <param name="dropName">Name of the item to drop before</param>
+        '''' <param name="fallbackItems">Items to build order from if none exists</param>
+        'Public Sub UpdateSortOrder(folderPath As String,
+        '                           dragName As String,
+        '                           dropName As String,
+        '                           Optional fallbackItems As ToolStripItemCollection = Nothing)
 
-            Dim sortOrder As List(Of String) = ReadSortOrder(folderPath)
+        '    Dim sortOrder As List(Of String) = ReadSortOrder(folderPath)
 
-            ' If no sort order exists, build from fallback items
-            If sortOrder.Count = 0 AndAlso fallbackItems IsNot Nothing Then
-                sortOrder = BuildSortOrderFromItems(fallbackItems)
-            End If
+        '    ' If no sort order exists, build from fallback items
+        '    If sortOrder.Count = 0 AndAlso fallbackItems IsNot Nothing Then
+        '        sortOrder = BuildSortOrderFromItems(fallbackItems)
+        '    End If
 
-            ' Remove drag item from current position
-            sortOrder.RemoveAll(Function(s) s.Equals(dragName, StringComparison.OrdinalIgnoreCase))
+        '    ' Remove drag item from current position
+        '    sortOrder.RemoveAll(Function(s) s.Equals(dragName, StringComparison.OrdinalIgnoreCase))
 
-            ' Find drop target position and insert
-            Dim dropIndex As Integer = sortOrder.FindIndex(Function(s) s.Equals(dropName, StringComparison.OrdinalIgnoreCase))
-            If dropIndex >= 0 Then
-                sortOrder.Insert(dropIndex, dragName)
-            Else
-                sortOrder.Add(dragName)
-            End If
+        '    ' Find drop target position and insert
+        '    Dim dropIndex As Integer = sortOrder.FindIndex(Function(s) s.Equals(dropName, StringComparison.OrdinalIgnoreCase))
+        '    If dropIndex >= 0 Then
+        '        sortOrder.Insert(dropIndex, dragName)
+        '    Else
+        '        sortOrder.Add(dragName)
+        '    End If
 
-            ' Save the new sort order
-            WriteSortOrder(folderPath, sortOrder)
-        End Sub
+        '    ' Save the new sort order
+        '    WriteSortOrder(folderPath, sortOrder)
+        'End Sub
 
-        ''' <summary>
-        ''' Checks if a drag has exceeded the threshold to start
-        ''' </summary>
-        ''' <param name="startPoint">Starting mouse position</param>
-        ''' <param name="currentPoint">Current mouse position</param>
-        ''' <returns>True if drag threshold exceeded</returns>
-        Public Function IsDragThresholdExceeded(startPoint As Point, currentPoint As Point) As Boolean
-            Dim dx As Integer = Math.Abs(currentPoint.X - startPoint.X)
-            Dim dy As Integer = Math.Abs(currentPoint.Y - startPoint.Y)
-            Return dx > QL_DRAG_THRESHOLD OrElse dy > QL_DRAG_THRESHOLD
-        End Function
+        '''' <summary>
+        '''' Checks if a drag has exceeded the threshold to start
+        '''' </summary>
+        '''' <param name="startPoint">Starting mouse position</param>
+        '''' <param name="currentPoint">Current mouse position</param>
+        '''' <returns>True if drag threshold exceeded</returns>
+        'Public Function IsDragThresholdExceeded(startPoint As Point, currentPoint As Point) As Boolean
+        '    Dim dx As Integer = Math.Abs(currentPoint.X - startPoint.X)
+        '    Dim dy As Integer = Math.Abs(currentPoint.Y - startPoint.Y)
+        '    Return dx > QL_DRAG_THRESHOLD OrElse dy > QL_DRAG_THRESHOLD
+        'End Function
 
     End Module
 

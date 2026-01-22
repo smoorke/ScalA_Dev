@@ -10,7 +10,13 @@ Public NotInheritable Class FrmSettings
     Dim startup As Boolean = True
     Private Shared ExplorerIcon As Bitmap = QLIconCache.GetIconFromFile(IO.Path.Combine(Environment.ExpandEnvironmentVariables("%windir%"), "explorer.exe"), supressCacheMiss:=True)
 
+    Dim DesignedClientSize As Size
+
 #Region "Form Lifecycle"
+    Public Sub New()
+        InitializeComponent()
+        DesignedClientSize = Me.ClientSize
+    End Sub
     Private Sub FrmSettings_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         'storeZoom = My.Settings.zoom
 
@@ -154,7 +160,7 @@ Public NotInheritable Class FrmSettings
 
         NumExtraMax.Value = My.Settings.ExtraMaxColRow
 
-        cmbTheme.SelectedIndex = My.Settings.Theme - 1
+        cboTheme.SelectedIndex = My.Settings.Theme - 1
 
         cboScalingMode.SelectedIndex = My.Settings.ScalingMode
 
@@ -223,6 +229,13 @@ Public NotInheritable Class FrmSettings
         cmbPriority.SelectedIndex = mapPriorityToCmbIndex(My.Settings.Priority)
 
         Me.TopMost = True ' My.Settings.topmost
+
+        Dim rcC As RECT
+        GetClientRect(Me.Handle, rcC)
+
+        dBug.Print($"frmSettings load {rcC.right} {rcC.bottom}", 1)
+        Me.Size = New Size(Me.Width - rcC.right + DesignedClientSize.Width,
+                           Me.Height - rcC.bottom + DesignedClientSize.Height)
     End Sub
 
     Private Sub FrmSettings_Shown(sender As Object, e As EventArgs) Handles Me.Shown
@@ -230,6 +243,8 @@ Public NotInheritable Class FrmSettings
         'Me.Owner = FrmMain
 
         startup = False
+
+
 
         'AllowSetForegroundWindow(ASFW_ANY)
         'SetForegroundWindow(GetDesktopWindow)
@@ -241,79 +256,27 @@ Public NotInheritable Class FrmSettings
 
         'FrmMain.Attach(FrmMain.AltPP)
     End Sub
+
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case WM_ENTERMENULOOP
                 SysMenu.Visible = True
             Case WM_EXITMENULOOP
                 SysMenu.Visible = False
+            Case WM_WINDOWPOSCHANGING
+                Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
+                If StructureToPtrSupported Then
+                    If Not startup AndAlso Not winpos.flags.HasFlag(SetWindowPosFlags.IgnoreResize) Then
+                        Dim rcC As RECT
+                        GetClientRect(Me.Handle, rcC)
+                        Debug.Print($"rcC {rcC.right} {rcC.bottom}")
+                        winpos.cx = Me.Width - rcC.right + DesignedClientSize.Width
+                        winpos.cy = Me.Height - rcC.bottom + DesignedClientSize.Height
+                        System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
+                    End If
+                End If
         End Select
-        'If Me.Owner Is Nothing Then 'this to address ghost form when closing settings.
-        '    Select Case m.Msg
-        '        Case WM_ENTERMENULOOP
-        '            dBug.Print("GhostSettings EnterMenuLoop")
-        '            FrmMain.AltPP?.Activate()
-        '            Me.Close()
-        '            Exit Sub
-        '        Case WM_KEYDOWN
-        '            dBug.Print($"GhostSettings WM_KEYDOWN {m.WParam} {m.LParam}")
-        '            dBug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
-        '            If FrmMain.cboAlt.SelectedIndex > 0 Then
-        '                FrmMain.AltPP.Activate()
-        '                Dim key As Keys = m.WParam
-        '                If Not FrmMain.AltPP.isSDL Then
-        '                    SendMessage(FrmMain.AltPP.MainWindowHandle, WM_KEYDOWN, key, IntPtr.Zero)
-        '                Else
-        '                    Dim scan As Byte = New LParamMap(m.LParam)
-        '                    If key = Keys.Escape OrElse (key >= Keys.F1 AndAlso key <= Keys.F12) OrElse
-        '                       key = Keys.Back Then
-        '                        SendScanKey(scan)
-        '                    ElseIf key = Keys.Delete OrElse key = Keys.PageUp OrElse key = Keys.PageDown OrElse
-        '                           key = Keys.End OrElse key = Keys.Home Then
-        '                        SendScanKeyEx(scan)
-        '                    Else
-        '                        SendKey(key)
-        '                    End If
-        '                End If
-        '            End If
-        '            'Me.Close()
-        '            Exit Sub
-        '        Case WM_KEYUP
-        '            dBug.Print($"GhostSettings WM_KEYUP {m.WParam} {m.LParam}")
-        '            dBug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
-        '            If FrmMain.cboAlt.SelectedIndex > 0 Then
-        '                FrmMain.AltPP.Activate()
-        '                Dim scan As Byte = New LParamMap(m.LParam)
-        '                If scan = 28 Then
-        '                    If Not FrmMain.AltPP.isSDL Then
-        '                        SendKeys.Send("{ENTER}")
-        '                    Else
-        '                        SendScanKey(scan)
-        '                    End If
-        '                End If
-        '            End If
-        '            'Me.Close()
-        '            Exit Sub
-        '        Case WM_CHAR
-        '            dBug.Print($"GhostSettings WM_CHAR {m.WParam} {m.LParam}")
-        '            dBug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
-        '            If FrmMain.cboAlt.SelectedIndex > 0 Then
-        '                FrmMain.AltPP.Activate()
-        '                If Not FrmMain.AltPP.isSDL Then
-        '                    SendMessage(FrmMain.AltPP.MainWindowHandle, WM_CHAR, m.WParam, IntPtr.Zero)
-        '                End If
-        '            End If
-        '            'Me.Close()
-        '        Case WM_SYSKEYDOWN
-        '            dBug.Print($"GhostSettings WM_SYSKEY {m.WParam} {m.LParam}")
-        '            If FrmMain.cboAlt.SelectedIndex > 0 Then
-        '                FrmMain.AltPP.Activate()
-        '            End If
-        '            'Me.Close()
-        '            Exit Sub
-        '    End Select
-        '
-        'End If
+
         MyBase.WndProc(m)
     End Sub
 #End Region
@@ -587,8 +550,8 @@ Public NotInheritable Class FrmSettings
 
         My.Settings.OneLessRowCol = ChkLessRowCol.Checked
 
-        If My.Settings.Theme <> cmbTheme.SelectedIndex + 1 Then
-            My.Settings.Theme = cmbTheme.SelectedIndex + 1
+        If My.Settings.Theme <> cboTheme.SelectedIndex + 1 Then
+            My.Settings.Theme = cboTheme.SelectedIndex + 1
 
             Dim darkmode As Boolean = WinUsingDarkTheme()
 
@@ -670,9 +633,9 @@ Public NotInheritable Class FrmSettings
         My.Settings.AllowCtrlShiftEsc = chkAllowShiftEsc.Checked
 
         If My.Settings.DisableWinKey OrElse My.Settings.OnlyEsc OrElse My.Settings.NoAltTab Then
-            keybHook.Hook()
+            KeybHook.Hook()
         Else
-            keybHook.Unhook()
+            KeybHook.Unhook()
         End If
 
         My.Settings.AutoCloseIdle = chkAutoCloseSomeone.Checked
@@ -1429,9 +1392,7 @@ Public NotInheritable Class FrmSettings
     End Sub
 
     Private Sub btnSDL2Compat_Click(sender As Object, e As EventArgs) Handles btnSDL2Compat.Click
-        Using installer As New SDL2CompatInstaller()
-            installer.ShowDialog(Me)
-        End Using
+        SDL2CompatInstaller.Show(Me)
     End Sub
 #End Region
 

@@ -19,6 +19,8 @@ Module Globals
 
     Public Property KeybHook As New KeyboardHook
 
+    Public Property StructureToPtrSupported As Boolean = False
+
     Public Property MouseButtonStale As MouseButtons
 
     Public ReadOnly hideExt As String() = {".lnk", ".url"}

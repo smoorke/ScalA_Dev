@@ -29,43 +29,6 @@ Partial Class frmQuickShortcut
         Me.btnNewFolder = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
-        'lblTemplate
-        '
-        Me.lblTemplate.AutoSize = True
-        Me.lblTemplate.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold)
-        Me.lblTemplate.Location = New System.Drawing.Point(12, 9)
-        Me.lblTemplate.Name = "lblTemplate"
-        Me.lblTemplate.Size = New System.Drawing.Size(62, 13)
-        Me.lblTemplate.TabIndex = 0
-        Me.lblTemplate.Text = "Template:"
-        '
-        'lblFolder
-        '
-        Me.lblFolder.AutoSize = True
-        Me.lblFolder.Location = New System.Drawing.Point(12, 35)
-        Me.lblFolder.Name = "lblFolder"
-        Me.lblFolder.Size = New System.Drawing.Size(39, 13)
-        Me.lblFolder.TabIndex = 1
-        Me.lblFolder.Text = "Folder:"
-        '
-        'cboFolder
-        '
-        Me.cboFolder.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.cboFolder.FormattingEnabled = True
-        Me.cboFolder.Location = New System.Drawing.Point(74, 32)
-        Me.cboFolder.Name = "cboFolder"
-        Me.cboFolder.Size = New System.Drawing.Size(180, 21)
-        Me.cboFolder.TabIndex = 2
-        '
-        'btnNewFolder
-        '
-        Me.btnNewFolder.Location = New System.Drawing.Point(260, 30)
-        Me.btnNewFolder.Name = "btnNewFolder"
-        Me.btnNewFolder.Size = New System.Drawing.Size(28, 23)
-        Me.btnNewFolder.TabIndex = 3
-        Me.btnNewFolder.Text = "+"
-        Me.btnNewFolder.UseVisualStyleBackColor = True
-        '
         'lblCharacter
         '
         Me.lblCharacter.AutoSize = True
@@ -117,6 +80,43 @@ Partial Class frmQuickShortcut
         Me.btnCancel.TabIndex = 9
         Me.btnCancel.Text = "Cancel"
         Me.btnCancel.UseVisualStyleBackColor = True
+        '
+        'lblTemplate
+        '
+        Me.lblTemplate.AutoSize = True
+        Me.lblTemplate.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold)
+        Me.lblTemplate.Location = New System.Drawing.Point(12, 9)
+        Me.lblTemplate.Name = "lblTemplate"
+        Me.lblTemplate.Size = New System.Drawing.Size(63, 13)
+        Me.lblTemplate.TabIndex = 0
+        Me.lblTemplate.Text = "Template:"
+        '
+        'lblFolder
+        '
+        Me.lblFolder.AutoSize = True
+        Me.lblFolder.Location = New System.Drawing.Point(12, 35)
+        Me.lblFolder.Name = "lblFolder"
+        Me.lblFolder.Size = New System.Drawing.Size(39, 13)
+        Me.lblFolder.TabIndex = 1
+        Me.lblFolder.Text = "Folder:"
+        '
+        'cboFolder
+        '
+        Me.cboFolder.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cboFolder.FormattingEnabled = True
+        Me.cboFolder.Location = New System.Drawing.Point(74, 32)
+        Me.cboFolder.Name = "cboFolder"
+        Me.cboFolder.Size = New System.Drawing.Size(180, 21)
+        Me.cboFolder.TabIndex = 2
+        '
+        'btnNewFolder
+        '
+        Me.btnNewFolder.Location = New System.Drawing.Point(260, 30)
+        Me.btnNewFolder.Name = "btnNewFolder"
+        Me.btnNewFolder.Size = New System.Drawing.Size(28, 23)
+        Me.btnNewFolder.TabIndex = 3
+        Me.btnNewFolder.Text = "+"
+        Me.btnNewFolder.UseVisualStyleBackColor = True
         '
         'frmQuickShortcut
         '

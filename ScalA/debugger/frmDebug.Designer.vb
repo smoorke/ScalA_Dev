@@ -52,8 +52,8 @@ Partial Class frmDebug
         Me.cmsDebugFuncs = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.DumpWatchersToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.PurgeIconCacheMiscToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.btnIpcInfo = New System.Windows.Forms.Button()
         Me.TootltiptestToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.btnIpcInfo = New System.Windows.Forms.Button()
         lblMinimum = New System.Windows.Forms.Label()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
@@ -270,7 +270,7 @@ Partial Class frmDebug
         '
         Me.cmsDebugFuncs.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DumpWatchersToolStripMenuItem, Me.PurgeIconCacheMiscToolStripMenuItem, Me.TootltiptestToolStripMenuItem})
         Me.cmsDebugFuncs.Name = "cmsDebugFuncs"
-        Me.cmsDebugFuncs.Size = New System.Drawing.Size(187, 92)
+        Me.cmsDebugFuncs.Size = New System.Drawing.Size(187, 70)
         '
         'DumpWatchersToolStripMenuItem
         '
@@ -284,6 +284,12 @@ Partial Class frmDebug
         Me.PurgeIconCacheMiscToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
         Me.PurgeIconCacheMiscToolStripMenuItem.Text = "PurgeIconCacheMisc"
         '
+        'TootltiptestToolStripMenuItem
+        '
+        Me.TootltiptestToolStripMenuItem.Name = "TootltiptestToolStripMenuItem"
+        Me.TootltiptestToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
+        Me.TootltiptestToolStripMenuItem.Text = "Tootltiptest"
+        '
         'btnIpcInfo
         '
         Me.btnIpcInfo.Location = New System.Drawing.Point(316, 402)
@@ -293,16 +299,10 @@ Partial Class frmDebug
         Me.btnIpcInfo.Text = "IPC Info"
         Me.btnIpcInfo.UseVisualStyleBackColor = True
         '
-        'TootltiptestToolStripMenuItem
-        '
-        Me.TootltiptestToolStripMenuItem.Name = "TootltiptestToolStripMenuItem"
-        Me.TootltiptestToolStripMenuItem.Size = New System.Drawing.Size(186, 22)
-        Me.TootltiptestToolStripMenuItem.Text = "Tootltiptest"
-        '
         'frmDebug
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.ClientSize = New System.Drawing.Size(748, 450)
         Me.Controls.Add(Me.btnIpcInfo)
         Me.Controls.Add(Me.btnTest)

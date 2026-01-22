@@ -21,6 +21,11 @@ Public Class SDL2CompatInstaller
         End Set
     End Property
 
+    Dim DesignedClientSize As Size
+    Public Sub New()
+        InitializeComponent()
+        DesignedClientSize = Me.ClientSize
+    End Sub
     Private Sub SDL2CompatInstaller_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ' Try to auto-detect path from current client
         If FrmMain.AltPP IsNot Nothing AndAlso FrmMain.AltPP.Id <> 0 Then
@@ -43,8 +48,32 @@ Public Class SDL2CompatInstaller
         End If
 
         UpdateLabelAndButtonState()
+
+        ' fix scaling issue
+        Dim rcC As RECT
+        GetClientRect(Me.Handle, rcC)
+
+        Me.Size = New Size(Me.Width - rcC.right + DesignedClientSize.Width,
+                           Me.Height - rcC.bottom + DesignedClientSize.Height)
     End Sub
 
+    Protected Overrides Sub WndProc(ByRef m As Message)
+        Select Case m.Msg
+            Case WM_WINDOWPOSCHANGING
+                Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
+                If StructureToPtrSupported Then
+                    If Not winpos.flags.HasFlag(SetWindowPosFlags.IgnoreResize) Then
+                        Dim rcC As RECT
+                        GetClientRect(Me.Handle, rcC)
+                        winpos.cx = Me.Width - rcC.right + DesignedClientSize.Width
+                        winpos.cy = Me.Height - rcC.bottom + DesignedClientSize.Height
+                        System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
+                    End If
+                End If
+        End Select
+
+        MyBase.WndProc(m)
+    End Sub
     Private Sub btnBrowse_Click(sender As Object, e As EventArgs) Handles btnBrowse.Click
         Dim fpd As New FolderPicker With {
                 .Title = "Select the game directory where SDL3.dll should be installed",

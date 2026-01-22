@@ -176,9 +176,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="NativeMethods.vb" />
-    <Compile Include="frmMain\QuickLaunch\QuickLaunch.vb">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="frmMain\QuickLaunch\QuickLaunch.vb" />
     <Compile Include="frmMain\QuickLaunch\QuickLaunchEvents.vb" />
     <Compile Include="frmMain\QuickLaunch\QLTypes.vb" />
     <Compile Include="frmMain\QuickLaunch\QLSort.vb" />
@@ -246,8 +244,17 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="BatchShortcutManager.resx">
+      <DependentUpon>BatchShortcutManager.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="debugger\frmDebug.resx">
       <DependentUpon>frmDebug.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmHelp.resx">
+      <DependentUpon>frmHelp.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmLauncherTemplateEdit.resx">
+      <DependentUpon>frmLauncherTemplateEdit.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmMain\frmBehind.resx">
       <DependentUpon>frmBehind.vb</DependentUpon>
@@ -257,6 +264,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmMain\FrmSizeBorder.resx">
       <DependentUpon>FrmSizeBorder.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmQuickShortcut.resx">
+      <DependentUpon>frmQuickShortcut.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmSettings.resx">
       <DependentUpon>frmSettings.vb</DependentUpon>

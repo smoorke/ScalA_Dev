@@ -52,7 +52,8 @@ Partial Class frmLauncherTemplateEdit
         '
         'txtName
         '
-        Me.txtName.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.txtName.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtName.Location = New System.Drawing.Point(80, 12)
         Me.txtName.Name = "txtName"
         Me.txtName.Size = New System.Drawing.Size(242, 20)
@@ -63,13 +64,14 @@ Partial Class frmLauncherTemplateEdit
         Me.lblExePath.AutoSize = True
         Me.lblExePath.Location = New System.Drawing.Point(12, 41)
         Me.lblExePath.Name = "lblExePath"
-        Me.lblExePath.Size = New System.Drawing.Size(52, 13)
+        Me.lblExePath.Size = New System.Drawing.Size(53, 13)
         Me.lblExePath.TabIndex = 2
         Me.lblExePath.Text = "Exe Path:"
         '
         'txtExePath
         '
-        Me.txtExePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.txtExePath.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtExePath.Location = New System.Drawing.Point(80, 38)
         Me.txtExePath.Name = "txtExePath"
         Me.txtExePath.Size = New System.Drawing.Size(207, 20)
@@ -96,7 +98,8 @@ Partial Class frmLauncherTemplateEdit
         '
         'txtWorkDir
         '
-        Me.txtWorkDir.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.txtWorkDir.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtWorkDir.Location = New System.Drawing.Point(80, 64)
         Me.txtWorkDir.Name = "txtWorkDir"
         Me.txtWorkDir.Size = New System.Drawing.Size(207, 20)
@@ -114,7 +117,8 @@ Partial Class frmLauncherTemplateEdit
         '
         'grpResolution
         '
-        Me.grpResolution.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.grpResolution.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.grpResolution.Controls.Add(Me.numHeight)
         Me.grpResolution.Controls.Add(Me.lblX)
         Me.grpResolution.Controls.Add(Me.numWidth)
@@ -160,7 +164,7 @@ Partial Class frmLauncherTemplateEdit
         Me.lblWidth.AutoSize = True
         Me.lblWidth.Location = New System.Drawing.Point(6, 21)
         Me.lblWidth.Name = "lblWidth"
-        Me.lblWidth.Size = New System.Drawing.Size(56, 13)
+        Me.lblWidth.Size = New System.Drawing.Size(57, 13)
         Me.lblWidth.TabIndex = 0
         Me.lblWidth.Text = "Width x H:"
         '
@@ -169,13 +173,14 @@ Partial Class frmLauncherTemplateEdit
         Me.lblOptions.AutoSize = True
         Me.lblOptions.Location = New System.Drawing.Point(12, 149)
         Me.lblOptions.Name = "lblOptions"
-        Me.lblOptions.Size = New System.Drawing.Size(62, 13)
+        Me.lblOptions.Size = New System.Drawing.Size(64, 13)
         Me.lblOptions.TabIndex = 9
         Me.lblOptions.Text = "Options (-o):"
         '
         'txtOptions
         '
-        Me.txtOptions.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.txtOptions.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtOptions.Location = New System.Drawing.Point(80, 146)
         Me.txtOptions.Name = "txtOptions"
         Me.txtOptions.Size = New System.Drawing.Size(100, 20)
