@@ -1378,6 +1378,7 @@ Module NativeMethods
     Public Const SC_MAXIMIZE As Integer = &HF030
     Public Const SC_CLOSE As Integer = &HF060
     Public Const SC_RESTORE As Integer = &HF120
+    Public Const SC_CONTEXTHELP As Integer = &HF180
 
     Public Const TPM_RECURSE = &H1
     Public Const TPM_RIGHTBUTTON = &H2
