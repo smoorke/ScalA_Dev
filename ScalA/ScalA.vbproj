@@ -29,6 +29,7 @@
     </WarningsAsErrors>
     <Prefer32Bit>false</Prefer32Bit>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <DefineConstants>PROJECT="Main"</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -43,6 +44,7 @@
     </WarningsAsErrors>
     <RemoveIntegerChecks>true</RemoveIntegerChecks>
     <Prefer32Bit>false</Prefer32Bit>
+    <DefineConstants>PROJECT="Main"</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <OptionExplicit>On</OptionExplicit>

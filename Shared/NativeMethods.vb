@@ -2,7 +2,7 @@
 Imports System.Text
 
 Module NativeMethods
-#If DEBUG Then
+#If PROJECT = "Main" Then
 
     ' High-resolution timer functions
     <DllImport("winmm.dll")>
@@ -34,9 +34,6 @@ Module NativeMethods
     <DllImport("user32.dll", CharSet:=CharSet.Auto, ExactSpelling:=True)>
     Public Function MonitorFromWindow(hwnd As IntPtr, dwFlags As MONITORFLAGS) As IntPtr : End Function
 
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
-    Public Function GetMonitorInfo(hmonitor As IntPtr, ByRef info As MonitorInfo) As Boolean : End Function
-
     ' Returns the scale factor for a monitor (Win 8.1+)
     ' scale values: 100, 125, 150, 175, 200, etc.
     <DllImport("Shcore.dll", SetLastError:=True)>
@@ -67,14 +64,6 @@ Module NativeMethods
         DEFAULTTONEAREST = &H2
     End Enum
 
-    <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Auto, Pack:=4)>
-    Public Structure MonitorInfo
-        Public cbSize As UInteger
-        Public rcMonitor As RECT
-        Public rcWork As RECT
-        Public dwFlags As UInteger
-    End Structure
-
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function SystemParametersInfo(uiAction As SPI, uiParam As UInteger,
         ByRef pvParam As IntPtr, fWinIni As UInteger) As <MarshalAs(UnmanagedType.Bool)> Boolean
@@ -85,9 +74,6 @@ Module NativeMethods
         GETFOREGROUNDLOCKTIMEOUT = &H2000
         SETFOREGROUNDLOCKTIMEOUT = &H2001
     End Enum
-
-    <DllImport("user32.dll")>
-    Public Function FlashWindow(hwnd As IntPtr, <MarshalAs(UnmanagedType.Bool)> bInvert As Boolean) As <MarshalAs(UnmanagedType.Bool)> Boolean : End Function
 
     <Runtime.CompilerServices.Extension>
     Public Function ToRECT(rct As Rectangle) As RECT
@@ -236,12 +222,6 @@ Module NativeMethods
         Public cy As Integer
         Public flags As SetWindowPosFlags
     End Structure
-    <StructLayout(LayoutKind.Sequential)>
-    Structure NCCALCSIZE_PARAMS
-        <MarshalAs(UnmanagedType.ByValArray, SizeConst:=3)>
-        Public rgrc As RECT()
-        Public lppos As WINDOWPOS
-    End Structure
 
     Public Const LSFW_LOCK As UInteger = 1
     Public Const LSFW_UNLOCK As UInteger = 2
@@ -320,11 +300,6 @@ Module NativeMethods
     Public Function IsWindowVisible(ByVal hWnd As IntPtr) As Boolean : End Function
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function IsWindowEnabled(hWnd As IntPtr) As Boolean : End Function
-    <DllImport("user32.dll")>
-    Public Function IsWindow(hWnd As IntPtr) As Boolean : End Function
-
-    <DllImport("user32.dll")>
-    Public Function RedrawWindow(hWnd As IntPtr, lprcUpdate As IntPtr, hrgnUpdate As IntPtr, flags As RedrawWindowFlags) As Boolean : End Function
 
     <Flags()>
     Public Enum RedrawWindowFlags As UInteger
@@ -422,9 +397,6 @@ Module NativeMethods
     <DllImport("Shell32", CharSet:=CharSet.Auto, SetLastError:=True)>
     Public Function ShellExecuteEx(ByRef lpExecInfo As SHELLEXECUTEINFO) As Boolean : End Function
 
-    <DllImport("user32.dll", SetLastError:=True)>
-    Public Sub SwitchToThisWindow(hWnd As IntPtr, fAltTab As Boolean) : End Sub
-
     <DllImport("user32.dll", SetLastError:=False)>
     Public Function GetDesktopWindow() As IntPtr : End Function
 
@@ -463,12 +435,10 @@ Module NativeMethods
     Public Const GWL_STYLE As Integer = -16
     Public Const GWL_EXSTYLE As Integer = -20
 
-    <DllImport("user32.dll", SetLastError:=True, CharSet:=CharSet.Auto)>
-    Public Function EnumWindows(lpEnumFunc As EnumWindowsProc, lParam As IntPtr) As Boolean : End Function
+
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function EnumChildWindows(hWndParent As IntPtr, lpEnumFunc As EnumWindowsProc, lParam As IntPtr) As Boolean : End Function
 
-    Public Delegate Function EnumWindowsProc(hWnd As IntPtr, lParam As IntPtr) As Boolean
 
     <DllImport("user32.dll")>
     Public Function EnumThreadWindows(dwThreadId As UInteger, lpfn As EnumThreadDelegate, lParam As IntPtr) As Boolean : End Function
@@ -807,8 +777,7 @@ Module NativeMethods
     Public Function ScreenToClient(ByVal hWnd As IntPtr, ByRef lpPoint As Point) As Boolean : End Function
     <DllImport("user32.dll")>
     Public Function GetForegroundWindow() As IntPtr : End Function
-    <DllImport("user32.dll")>
-    Public Function GetWindowThreadProcessId(ByVal hWnd As IntPtr, <Out()> ByRef lpdwProcessId As UInteger) As UInteger : End Function
+
     <DllImport("kernel32.dll", SetLastError:=True)>
     Public Function GetProcessIdOfThread(hThread As IntPtr) As UInteger : End Function
     <DllImport("kernel32.dll", SetLastError:=True)>
@@ -1445,15 +1414,6 @@ Module NativeMethods
         Public rcExclude As RECT
     End Structure
 
-    Public Const SM_CYCAPTION As Integer = 4
-
-    <DllImport("user32.dll", SetLastError:=False)>
-    Public Function GetSystemMetrics(ByVal nIndex As Integer) As Integer
-    End Function
-
-    <DllImport("user32.dll")>
-    Public Function GetSystemMetricsForDpi(ByVal nIndex As Integer, ByVal dpi As UInteger) As Integer : End Function
-
     <DllImport("User32.Dll", EntryPoint:="TrackPopupMenuEx")>
     Public Function TrackPopupMenuEx(ByVal hmenu As IntPtr, ByVal fuFlags As Integer, ByVal x As Integer, ByVal y As Integer, ByVal hwnd As IntPtr, ByVal lptpm As IntPtr) As Integer : End Function
     <DllImport("User32.Dll")>
@@ -1469,31 +1429,14 @@ Module NativeMethods
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function RemoveClipboardFormatListener(hwnd As IntPtr) As Boolean : End Function
 
-    <DllImport("user32.dll", SetLastError:=True)>
-    Public Function GetClipboardOwner() As IntPtr : End Function
-
     Public Const WM_SHNOTIFY As Integer = &H401
     Public Const SHCNE_ASSOCCHANGED As Integer = &H8000000
     Public Const SHCNRF_ShellLevel As Integer = &H2
 
     Public Declare Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Keys) As Short
-    <DllImport("user32.dll", SetLastError:=True)>
-    Public Function GetKeyboardState(ByVal lpKeyState As Byte()) As Boolean : End Function
-    <DllImport("user32.dll")>
-    Public Function MapVirtualKeyW(ByVal uCode As UInteger, ByVal uMapType As UInteger) As UInteger
-    End Function
+
     <DllImport("user32.dll")>
     Public Function GetDpiForWindow(hWnd As IntPtr) As Integer : End Function
-    <DllImport("user32.dll", SetLastError:=True)>
-    Public Function ToUnicode(
-              ByVal wVirtKey As UInteger,
-              ByVal wScanCode As UInteger,
-              ByVal lpKeyState As Byte(),
-        <Out> ByVal pwszBuff As Char(),
-              ByVal cchBuff As Integer,
-              ByVal wFlags As UInteger
-        ) As Integer
-    End Function
 
     <DllImport("kernel32.dll", CharSet:=CharSet.Unicode, SetLastError:=True)>
     Public Function CreateFile(
@@ -1646,30 +1589,9 @@ Module NativeMethods
         FORMAT_MESSAGE_FROM_HMODULE = &H800
     End Enum
 
-    <System.Runtime.InteropServices.DllImport("kernel32.dll")>
-    Public Function QueryFullProcessImageName(hprocess As IntPtr, dwFlags As Integer, lpExeName As System.Text.StringBuilder, ByRef size As Integer) As Boolean : End Function
-
     <System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet:=CharSet.Unicode, SetLastError:=True)>
     Public Function GetFinalPathNameByHandleW(hFile As IntPtr, ByVal lpszFilePath As System.Text.StringBuilder, ByVal cchFilePath As Integer, ByVal dwFlags As UInteger) As Integer : End Function
 
-
-    Enum ProcessAccessFlags As UInteger
-        All = &H1FFFFF
-        Terminate = &H1
-        CreateThread = &H2
-        VMOperation = &H8
-        VMRead = &H10
-        VMWrite = &H20
-        DupHandle = &H40
-        SetInformation = &H200
-        QueryInformation = &H400
-        QueryLimitedInformation = &H1000
-        Synchronize = &H100000
-    End Enum
-    <System.Runtime.InteropServices.DllImport("kernel32.dll")>
-    Public Function OpenProcess(dwDesiredAccess As ProcessAccessFlags, bInheritHandle As Boolean, dwProcessId As Integer) As IntPtr : End Function
-    <System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError:=True)>
-    Public Function CloseHandle(hHandle As IntPtr) As Boolean : End Function
     <System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError:=True)>
     Public Function GetExitCodeProcess(hHandle As IntPtr, ByRef eCode As Integer) As Boolean : End Function
 
@@ -1683,6 +1605,63 @@ Module NativeMethods
 
 #End Region
 
+#If DEBUG Then
+    <DllImport("user32.dll")>
+    Public Function FlashWindow(hwnd As IntPtr, <MarshalAs(UnmanagedType.Bool)> bInvert As Boolean) As <MarshalAs(UnmanagedType.Bool)> Boolean : End Function
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
+    Public Function GetMonitorInfo(hmonitor As IntPtr, ByRef info As MonitorInfo) As Boolean : End Function
+    <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Auto, Pack:=4)>
+    Public Structure MonitorInfo
+        Public cbSize As UInteger
+        Public rcMonitor As RECT
+        Public rcWork As RECT
+        Public dwFlags As UInteger
+    End Structure
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function GetClipboardOwner() As IntPtr : End Function
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function GetKeyboardState(ByVal lpKeyState As Byte()) As Boolean : End Function
+    <StructLayout(LayoutKind.Sequential)>
+    Structure NCCALCSIZE_PARAMS
+        <MarshalAs(UnmanagedType.ByValArray, SizeConst:=3)>
+        Public rgrc As RECT()
+        Public lppos As WINDOWPOS
+    End Structure
+    <DllImport("user32.dll")>
+    Public Function RedrawWindow(hWnd As IntPtr, lprcUpdate As IntPtr, hrgnUpdate As IntPtr, flags As RedrawWindowFlags) As Boolean : End Function
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Sub SwitchToThisWindow(hWnd As IntPtr, fAltTab As Boolean) : End Sub
 #End If 'DEBUG
+#End If 'Main
+#If PROJECT = "Main" OrElse PROJECT = "DpiHelper" Then
+
+    <System.Runtime.InteropServices.DllImport("kernel32.dll")>
+    Public Function OpenProcess(dwDesiredAccess As ProcessAccessFlags, bInheritHandle As Boolean, dwProcessId As Integer) As IntPtr : End Function
+    <System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError:=True)>
+    Public Function CloseHandle(hHandle As IntPtr) As Boolean : End Function
+    Enum ProcessAccessFlags As UInteger
+        All = &H1FFFFF
+        Terminate = &H1
+        CreateThread = &H2
+        VMOperation = &H8
+        VMRead = &H10
+        VMWrite = &H20
+        DupHandle = &H40
+        SetInformation = &H200
+        QueryInformation = &H400
+        QueryLimitedInformation = &H1000
+        Synchronize = &H100000
+    End Enum
+    <DllImport("user32.dll", SetLastError:=True, CharSet:=CharSet.Auto)>
+    Public Function EnumWindows(lpEnumFunc As EnumWindowsProc, lParam As IntPtr) As Boolean : End Function
+    Public Delegate Function EnumWindowsProc(hWnd As IntPtr, lParam As IntPtr) As Boolean
+    <DllImport("user32.dll")>
+    Public Function GetWindowThreadProcessId(ByVal hWnd As IntPtr, <Out()> ByRef lpdwProcessId As UInteger) As UInteger : End Function
+    <DllImport("user32.dll")>
+    Public Function IsWindow(hWnd As IntPtr) As Boolean : End Function
+    <System.Runtime.InteropServices.DllImport("kernel32.dll")>
+    Public Function QueryFullProcessImageName(hprocess As IntPtr, dwFlags As Integer, lpExeName As System.Text.StringBuilder, ByRef size As Integer) As Boolean : End Function
+#End If
+
 
 End Module
