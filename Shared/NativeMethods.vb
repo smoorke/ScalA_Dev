@@ -2,6 +2,7 @@
 Imports System.Text
 
 Module NativeMethods
+#If DEBUG Then
 
     ' High-resolution timer functions
     <DllImport("winmm.dll")>
@@ -1682,6 +1683,6 @@ Module NativeMethods
 
 #End Region
 
-
+#End If 'DEBUG
 
 End Module

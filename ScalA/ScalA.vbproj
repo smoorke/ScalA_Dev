@@ -95,6 +95,9 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Shared\NativeMethods.vb">
+      <Link>NativeMethods.vb</Link>
+    </Compile>
     <Compile Include="AButton.vb" />
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="AstoniaProcess.vb" />
@@ -175,7 +178,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="NativeMethods.vb" />
     <Compile Include="frmMain\QuickLaunch\QuickLaunch.vb" />
     <Compile Include="frmMain\QuickLaunch\QuickLaunchEvents.vb" />
     <Compile Include="frmMain\QuickLaunch\QLTypes.vb" />

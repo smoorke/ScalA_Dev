@@ -93,6 +93,9 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Shared\NativeMethods.vb">
+      <Link>NativeMethods.vb</Link>
+    </Compile>
     <Compile Include="DpiHelperMain.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
