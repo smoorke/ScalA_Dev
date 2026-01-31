@@ -1002,6 +1002,7 @@ Partial NotInheritable Class FrmSettings
         'ChkSizeBorder
         '
         Me.ChkSizeBorder.AutoSize = True
+        Me.ChkSizeBorder.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.ChkSizeBorder.Location = New System.Drawing.Point(206, 80)
         Me.ChkSizeBorder.Name = "ChkSizeBorder"
         Me.ChkSizeBorder.Size = New System.Drawing.Size(88, 17)
@@ -1913,10 +1914,13 @@ Partial NotInheritable Class FrmSettings
         Me.Controls.Add(Me.tbcSettings)
         Me.Controls.Add(Me.btnCancel)
         Me.Controls.Add(Me.btnOK)
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
+        Me.HelpButton = True
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
+        Me.MinimizeBox = False
         Me.Name = "FrmSettings"
+        Me.ShowIcon = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "ScalA Settings"
         grpAlterOverviewMinMax.ResumeLayout(False)
