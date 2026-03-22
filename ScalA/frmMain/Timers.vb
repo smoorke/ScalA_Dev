@@ -377,15 +377,15 @@ Partial NotInheritable Class FrmMain
                         Dim sw = swDict.GetOrAdd(ap.Id, Stopwatch.StartNew)
                         If but.Image Is Nothing OrElse sw.ElapsedMilliseconds > 200 Then
                             sw.Reset()
-                            EnqueueLowPriJob(Sub()
-                                                 Threading.Thread.Sleep(Rnd() * 33)
-                                                 Dim img As Image = ap.GetHealthbar
-                                                 Me.BeginInvoke(Sub()
-                                                                    but.Image?.Dispose()
-                                                                    but.Image = img
-                                                                    sw.Start()
-                                                                End Sub)
-                                             End Sub)
+                            EnqueueLowPriJob(ap.Id, Sub()
+                                                        Threading.Thread.Sleep(Rnd() * 33)
+                                                        Dim img As Image = ap.GetHealthbar
+                                                        Me.BeginInvoke(Sub()
+                                                                           but.Image?.Dispose()
+                                                                           but.Image = img
+                                                                           sw.Start()
+                                                                       End Sub)
+                                                    End Sub)
                         End If
 
                         but.ContextMenuStrip = cmsAlt
@@ -686,16 +686,30 @@ Partial NotInheritable Class FrmMain
         Loop
     End Sub
 
-    Public LowPriJobs As New Concurrent.BlockingCollection(Of Action)
+    Public LowPriJobs As New Concurrent.BlockingCollection(Of Tuple(Of Integer, ULong, Action))
     Public LowPriWorkerThread As Threading.Thread
-    'Public LowPriWorkerEvent As New Threading.AutoResetEvent(False)
-    'Public LowPriWorkerLock As New Object()
-    Public Sub EnqueueLowPriJob(job As Action)
-        LowPriJobs.Add(job)
+    Public JobVersions As New Concurrent.ConcurrentDictionary(Of Integer, ULong)
+    Public Sub EnqueueLowPriJob(id As Integer, job As Action)
+        Dim newVersion As ULong = JobVersions.AddOrUpdate(id, 1, Function(key, oldVal) oldVal + 1)
+
+        ' Enqueue with version snapshot
+        LowPriJobs.Add(Tuple.Create(id, newVersion, job))
     End Sub
     Public Sub LowPriWorkerLoop()
-        For Each job As Action In LowPriJobs.GetConsumingEnumerable
-            Call job()
+        For Each item In LowPriJobs.GetConsumingEnumerable()
+            Dim id As Integer = item.Item1
+            Dim version As ULong = item.Item2
+            Dim job As Action = item.Item3
+
+            Dim currentVersion As ULong = 0
+            If JobVersions.TryGetValue(id, currentVersion) Then
+                ' Only execute if latest
+                If version = currentVersion Then
+                    job()
+                Else
+                    Debug.Print("Skipped outdated job for ID: " & id)
+                End If
+            End If
         Next
     End Sub
 
