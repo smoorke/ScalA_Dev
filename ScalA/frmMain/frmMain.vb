@@ -595,6 +595,9 @@ Partial Public NotInheritable Class FrmMain
         WorkerThread = New Threading.Thread(AddressOf WorkerLoop) With {.IsBackground = True, .Priority = Threading.ThreadPriority.Highest}
         WorkerThread.Start()
 
+        LowPriWorkerThread = New Threading.Thread(AddressOf LowPriWorkerLoop) With {.IsBackground = True, .Priority = Threading.ThreadPriority.Lowest}
+        LowPriWorkerThread.Start()
+
         StartCloseErrorDialogThread()
 
     End Sub

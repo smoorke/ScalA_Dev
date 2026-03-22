@@ -377,15 +377,15 @@ Partial NotInheritable Class FrmMain
                         Dim sw = swDict.GetOrAdd(ap.Id, Stopwatch.StartNew)
                         If but.Image Is Nothing OrElse sw.ElapsedMilliseconds > 200 Then
                             sw.Reset()
-                            Task.Run(Sub()
-                                         Threading.Thread.Sleep(Rnd() * 33)
-                                         Dim img As Image = ap.GetHealthbar
-                                         Me.BeginInvoke(Sub()
-                                                            but.Image?.Dispose()
-                                                            but.Image = img
-                                                            sw.Start()
-                                                        End Sub)
-                                     End Sub)
+                            EnqueueLowPriJob(Sub()
+                                                 Threading.Thread.Sleep(Rnd() * 33)
+                                                 Dim img As Image = ap.GetHealthbar
+                                                 Me.BeginInvoke(Sub()
+                                                                    but.Image?.Dispose()
+                                                                    but.Image = img
+                                                                    sw.Start()
+                                                                End Sub)
+                                             End Sub)
                         End If
 
                         but.ContextMenuStrip = cmsAlt
@@ -686,6 +686,20 @@ Partial NotInheritable Class FrmMain
         Loop
     End Sub
 
+    Public LowPriJobs As New Concurrent.BlockingCollection(Of Action)
+    Public LowPriWorkerThread As Threading.Thread
+    'Public LowPriWorkerEvent As New Threading.AutoResetEvent(False)
+    'Public LowPriWorkerLock As New Object()
+    Public Sub EnqueueLowPriJob(job As Action)
+        LowPriJobs.Add(job)
+    End Sub
+    Public Sub LowPriWorkerLoop()
+        For Each job As Action In LowPriJobs.GetConsumingEnumerable
+            Call job()
+        Next
+    End Sub
+
+
     Private activeID As Integer = 0
     Private Shared activeIsAstonia As Boolean = False
     Private swAutoClose As Stopwatch = Stopwatch.StartNew
@@ -930,8 +944,8 @@ Partial NotInheritable Class FrmMain
             '  1   1  | 0
 
             If Not (My.Settings.OnlyAutoCloseOnNoSomeone AndAlso IPC.getInstances.Any(Function(si) si.showingSomeones)) Then
-                Dim dumm = Task.Run(Sub()
-                                        Parallel.ForEach(AstoniaProcess.loggedIns.Values.Where(Function(p) p.Name = "Someone").ToArray,
+                'Dim dumm = Task.Run(Sub()
+                Parallel.ForEach(AstoniaProcess.loggedIns.Values.Where(Function(p) p.Name = "Someone").ToArray,
                                             Sub(it As AstoniaProcess)
                                                 If it.hasLoggedIn Then
                                                     dBug.Print($"AutoClosing {it.loggedInAs}")
@@ -939,7 +953,7 @@ Partial NotInheritable Class FrmMain
                                                     AstoniaProcess.loggedIns.TryRemove(it.Id, Nothing)
                                                 End If
                                             End Sub)
-                                    End Sub)
+                'End Sub)
                 'For Each ap In AstoniaProcess.loggedIns.Where(Function(p) p.Name = "Someone").ToArray
                 '    'If ap.Name = "Bool" OrElse ap.Name = "Someone" Then dBug.print($"Autoclose {ap.Name} ""{ap.hasLoggedIn}""")
                 '    If ap.hasLoggedIn Then
