@@ -59,17 +59,16 @@ Public Class BatchShortcutManager
 
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
-            Case WM_WINDOWPOSCHANGING
-                Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
+            Case WM_GETDPISCALEDSIZE
+                Debug.Print($"WM_GETDPISCALEDSIZE")
                 If StructureToPtrSupported Then
-                    If Not winpos.flags.HasFlag(SetWindowPosFlags.IgnoreResize) Then
-                        Dim rcC As RECT
-                        GetClientRect(Me.Handle, rcC)
-                        winpos.cx = Me.Width - rcC.right + DesignedClientSize.Width
-                        winpos.cy = Me.Height - rcC.bottom + DesignedClientSize.Height
-                        System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
-                    End If
+                    'Dim sz = Marshal.PtrToStructure(Of Win32_SIZE)(m.LParam)
+                    'sz.cx = DesignedClientSize.Width
+                    'sz.cy = DesignedClientSize.Height
+                    'Marshal.StructureToPtr(sz, m.LParam, False)
                 End If
+                m.Result = 1
+                Exit Sub
         End Select
 
         MyBase.WndProc(m)
@@ -429,5 +428,6 @@ Public Class BatchShortcutManager
             End Try
         Next
     End Sub
+
 
 End Class

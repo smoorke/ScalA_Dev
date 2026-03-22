@@ -1,5 +1,7 @@
-﻿Imports System.IO.Compression
+﻿Imports System.Drawing.Printing
+Imports System.IO.Compression
 Imports System.Net.Http
+Imports System.Windows.Forms.VisualStyles
 
 'Module Main
 '    Sub Main()
@@ -316,7 +318,7 @@ Partial Public NotInheritable Class FrmMain
             End If
         End Try
     End Sub
-    Public Function WindowsScaling() As Integer
+    Public Function WindowsScaling() As Integer 'needs porting to external exe
         Dim rcFrame As RECT
         DwmGetWindowAttribute(ScalaHandle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
         Dim rcWind As RECT
@@ -704,8 +706,30 @@ Partial Public NotInheritable Class FrmMain
 
         StartCloseErrorDialogThread()
 
-    End Sub
+        'fix border for help button
+        FixHelpButtonLayout(btnHelp)
 
+    End Sub
+    Public Sub FixHelpButtonLayout(ByVal btnHelp As Button)
+
+        Dim host As New UserControl With {.Dock = DockStyle.Right, .Width = btnHelp.Width}
+
+        btnHelp.Dock = DockStyle.None
+        btnHelp.Parent.Controls.Add(host)
+
+        host.Controls.Add(btnHelp)
+        host.BringToFront()
+
+        'vert nudge
+        btnHelp.Location = New Point(0, -1)
+
+        'text align
+        btnHelp.TextAlign = Drawing.ContentAlignment.MiddleCenter
+        btnHelp.Padding = New Padding(0, 2, 0, 0)
+
+        'remove button border
+        btnHelp.Region = New Region(New Rectangle(1, 1, btnHelp.Width - 2, btnHelp.Height - 2))
+    End Sub
     Private Sub prioritySetter()
         Do
             Threading.Thread.Sleep(500)
@@ -1004,7 +1028,7 @@ Partial Public NotInheritable Class FrmMain
             '         End Sub)
             Dim msg As Message = Message.Create(ScalaHandle, WM_NCLBUTTONDOWN, New IntPtr(HTCAPTION), IntPtr.Zero)
             Me.WndProc(msg)
-
+            InMove = False
             'AltPP?.ThreadInput(True)
 
             caption_Mousedown = False
@@ -1553,7 +1577,7 @@ Partial Public NotInheritable Class FrmMain
             restoreLoc = Me.Location
             dBug.Print("restoreLoc " & restoreLoc.ToString)
         End If
-        AppActivate(scalaPID)
+        SetForegroundWindow(ScalaHandle)
 
         If My.Settings.MinMin AndAlso pnlOverview.Visible AndAlso My.Settings.gameOnOverview Then
             Detach(True)
@@ -1569,12 +1593,19 @@ Partial Public NotInheritable Class FrmMain
         Me.WindowState = FormWindowState.Minimized
         dBug.Print($"WS {Me.WindowState}")
         'suppressWM_MOVEcwp = False
+        SetForegroundWindow(ScalaHandle)
     End Sub
 
-    Private Sub BtnHelp_Click(sender As Object, e As EventArgs) Handles btnHelp.Click
-        Using helpForm As New frmHelp()
-            helpForm.ShowDialog(Me)
-        End Using
+    Dim helpButtonDown As Boolean = False
+    Private Sub btnHelp_MouseEnter(sender As Object, e As EventArgs) Handles btnHelp.MouseEnter
+        If Not MouseButtons Then helpButtonDown = False
+    End Sub
+    Private Sub BtnHelp_MouseDown(sender As Object, e As EventArgs) Handles btnHelp.MouseDown
+        helpButtonDown = True
+    End Sub
+    Private Sub BtnHelp_MouseUp(sender As Button, e As EventArgs) Handles btnHelp.MouseUp
+        If helpButtonDown AndAlso sender.Parent.RectangleToScreen(sender.Bounds).Contains(MousePosition) Then frmHelp.Show(Me)
+        helpButtonDown = False
     End Sub
 
     Private Sub MinAllActiveOverview()
@@ -1763,6 +1794,7 @@ Partial Public NotInheritable Class FrmMain
             If Me.Location = New Point(-32000, -32000) Then Me.Location = restoreLoc
             Me.WindowState = FormWindowState.Maximized
             sender.Text = "🗗"
+            sender.Padding = New Padding(0, 1, 0, 0)
             Me.Invalidate()
             ttMain.SetToolTip(sender, "Restore")
             wasMaximized = True
@@ -1775,6 +1807,7 @@ Partial Public NotInheritable Class FrmMain
             Me.Location = restoreLoc
             Me.WindowState = FormWindowState.Normal
             sender.Text = "⧠"
+            sender.Padding = New Padding(0, 2, 0, 0)
             ttMain.SetToolTip(sender, "Maximize")
             'wasMaximized = False
             ReZoom(My.Settings.resol)
@@ -2191,4 +2224,43 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
+    Private Sub BtnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
+
+    End Sub
+
+    Private Sub btnstart_MouseDown(sender As Object, e As MouseEventArgs) Handles btnStart.MouseDown
+
+    End Sub
+
+    Private Sub Various_MouseUp(sender As Object, e As MouseEventArgs) Handles pnlSys.MouseUp, pnlButtons.MouseUp, MyBase.MouseUp, ChkEqLock.MouseUp, cboAlt.MouseUp, btnStart.MouseUp, btnQuit.MouseUp
+
+    End Sub
+
+    Private Sub CmbResolution_DropDown(sender As Object, e As EventArgs) Handles cmbResolution.DropDown
+
+    End Sub
+
+    Private Sub CmbResolution_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cmbResolution.SelectedIndexChanged
+
+    End Sub
+
+    Private Sub ComboBoxes_DropDownClosed(sender As Object, e As EventArgs) Handles cmbResolution.DropDownClosed, cboAlt.DropDownClosed
+
+    End Sub
+
+    Private Sub CmbResolution_MouseUp(sender As Object, e As MouseEventArgs) Handles cmbResolution.MouseUp
+
+    End Sub
+
+    Private Sub cmbResolution_MouseWheel(sender As Object, e As MouseEventArgs) Handles cmbResolution.MouseWheel
+
+    End Sub
+
+    Private Sub CboAlt_DropDown(sender As Object, e As EventArgs) Handles cboAlt.DropDown
+
+    End Sub
+
+    Private Sub CboAlt_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboAlt.SelectedIndexChanged
+
+    End Sub
 End Class

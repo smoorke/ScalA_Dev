@@ -1,8 +1,13 @@
 ﻿Imports System.Runtime.InteropServices
-Imports System.Text
 
 Module NativeMethods
-#If PROJECT = "Main" Then
+#If PROJECT = "Main" OrElse DEBUG Then
+    <StructLayout(LayoutKind.Sequential)>
+    Public Structure Win32_SIZE
+        Public cx As Integer
+        Public cy As Integer
+    End Structure
+
 
     ' High-resolution timer functions
     <DllImport("winmm.dll")>
@@ -1421,7 +1426,7 @@ Module NativeMethods
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>
     Public Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByVal lParam As IntPtr) As IntPtr : End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
-    Public Function SendMessage(ByVal hWnd As IntPtr, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As StringBuilder) As IntPtr : End Function
+    Public Function SendMessage(ByVal hWnd As IntPtr, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As Text.StringBuilder) As IntPtr : End Function
 
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function AddClipboardFormatListener(hwnd As IntPtr) As Boolean : End Function
@@ -1509,7 +1514,7 @@ Module NativeMethods
     Public Function GetWindowText(hWnd As IntPtr) As String
         Dim length As Integer = NativeMethods.SendMessage(hWnd, WM_GETTEXTLENGTH, IntPtr.Zero, IntPtr.Zero).ToInt32()
         If length > 0 Then
-            Dim sb As New StringBuilder(length + 1)
+            Dim sb As New Text.StringBuilder(length + 1)
             NativeMethods.SendMessage(hWnd, WM_GETTEXT, sb.Capacity, sb)
             Return sb.ToString()
         Else

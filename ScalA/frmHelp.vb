@@ -1,12 +1,22 @@
+Imports System.Runtime.InteropServices
+
 ''' <summary>
 ''' Help and FAQ window with categorized documentation
 ''' </summary>
 Public Class frmHelp
-    Dim DesignedClientSize As Size
-    Public Sub New(Optional initialPath As String = "")
+    Dim CurrentClientSize As Size
+    Public Sub New()
         InitializeComponent()
-        DesignedClientSize = Me.ClientSize
+        CurrentClientSize = Me.ClientSize
     End Sub
+
+    Protected Friend Overloads Sub Show(Optional owner As Form = Nothing)
+        Me.BringToFront()
+        If IsIconic(Me.Handle) Then Me.WndProc(New Message With {.HWnd = Me.Handle, .Msg = WM_SYSCOMMAND, .WParam = SC_RESTORE})
+        If Not Me.Visible Then MyBase.Show(owner)
+    End Sub
+
+
     Private Sub frmHelp_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         PopulateCategories()
         ' Select welcome node
@@ -18,28 +28,72 @@ Public Class frmHelp
         Dim rcC As RECT
         GetClientRect(Me.Handle, rcC)
 
-        Me.Size = New Size(Me.Width - rcC.right + DesignedClientSize.Width,
-                           Me.Height - rcC.bottom + DesignedClientSize.Height)
+        Me.Size = New Size(Me.Width - rcC.right + CurrentClientSize.Width,
+                           Me.Height - rcC.bottom + CurrentClientSize.Height)
     End Sub
 
+    Dim gti As New GUITHREADINFO With {.cbSize = Marshal.SizeOf(Of GUITHREADINFO)}
+    Dim InMove As Boolean = False
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case WM_WINDOWPOSCHANGING
                 Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
                 If StructureToPtrSupported Then
                     If Not winpos.flags.HasFlag(SetWindowPosFlags.IgnoreResize) Then
-                        Dim rcC As RECT
-                        GetClientRect(Me.Handle, rcC)
-                        winpos.cx = Me.Width - rcC.right + DesignedClientSize.Width
-                        winpos.cy = Me.Height - rcC.bottom + DesignedClientSize.Height
-                        System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
+                        Dim tid = GetWindowThreadProcessId(Me.Handle, Nothing)
+                        If InMove Then ' GetGUIThreadInfo(tid, gti) AndAlso (gti.flags And &H2) = 2 AndAlso  SendMessage(Me.Handle, WM_NCHITTEST, IntPtr.Zero, New LParamMap(Control.MousePosition)) = HTCAPTION Then
+                            Debug.Print($"help sizemove {gti.flags} {SendMessage(Me.Handle, WM_NCHITTEST, IntPtr.Zero, New LParamMap(Control.MousePosition)) = HTCAPTION}")
+                            Dim rcC As RECT
+                            GetClientRect(Me.Handle, rcC)
+                            winpos.cx = Me.Width - rcC.right + CurrentClientSize.Width
+                            winpos.cy = Me.Height - rcC.bottom + CurrentClientSize.Height
+                            System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
+                        End If
                     End If
                 End If
+            Case WM_NCLBUTTONDOWN
+                If m.WParam = HTCAPTION Then
+                    InMove = True
+                End If
+            Case WM_SYSCOMMAND
+                If m.WParam = SC_MOVE Then
+                    InMove = True
+                End If
+            Case WM_NCLBUTTONUP
+                InMove = False
+            Case WM_EXITSIZEMOVE
+                InMove = False
+
+            Case WM_GETDPISCALEDSIZE
+                If StructureToPtrSupported Then
+                    Dim sz = Marshal.PtrToStructure(Of Size)(m.LParam)
+                    Dim rcW As RECT
+                    GetWindowRect(Me.Handle, rcW)
+                    Dim rcC As RECT
+                    GetClientRect(Me.Handle, rcC)
+                    Dim factor = (m.WParam.ToInt32 And &HFFFF) / currentDPI
+                    Debug.Print($"rcC {rcC.right} {rcC.bottom} {factor} {rcW.bottom - rcW.top - rcC.bottom}")
+                    sz.Width = CurrentClientSize.Width + (rcW.right - rcW.left - rcC.right) * factor
+                    sz.Height = CurrentClientSize.Height + (rcW.bottom - rcW.top - rcC.bottom) * factor
+                    Marshal.StructureToPtr(sz, m.LParam, False)
+                End If
+                m.Result = 1
+                Exit Sub
+            Case WM_DPICHANGED
+                currentDPI = m.WParam.ToInt32 And &HFFFF
+
         End Select
 
         MyBase.WndProc(m)
+        Select Case m.Msg
+            Case WM_NCLBUTTONDOWN
+                If m.WParam = HTCAPTION Then
+                    InMove = False
+                End If
+        End Select
+        CurrentClientSize = Me.ClientSize
     End Sub
-
+    Dim currentDPI = 96
     Private Sub PopulateCategories()
         tvCategories.Nodes.Clear()
 

@@ -1,6 +1,5 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.Runtime.InteropServices
-Imports System.Threading
 Imports ScalA.QL
 
 Public NotInheritable Class ContextMenus
@@ -556,6 +555,8 @@ Partial Public NotInheritable Class FrmMain
         AddHandler item.Paint, AddressOf QLMenuItem_Paint
 
         If isFolder Then
+            item.DropDown.ImageScalingSize = New Size(16, 16)
+
             AddHandler item.DoubleClick, AddressOf DblClickDir
             AddHandler item.DropDownOpening, AddressOf ParseSubDir
             AddHandler item.DropDownOpened, AddressOf QL_DropDownOpened
@@ -567,9 +568,10 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 #End Region
 
-    Private Function ParseDir(pth As String, Optional itemsOnly As Boolean = False) As List(Of ToolStripItem)
+    Private Function ParseDir(pth As String) As List(Of ToolStripItem)
         Dim menuItems As New List(Of ToolStripItem)
         Dim isEmpty As Boolean = True
+
         'Const ICONTIMEOUT = 50
         Const TOTALTIMEOUT = 2000
         Dim timedout As Boolean = False
@@ -578,6 +580,9 @@ Partial Public NotInheritable Class FrmMain
 
         Dim Dirs As New ConcurrentBag(Of ToolStripItem)
         Dim Files As New ConcurrentBag(Of ToolStripItem)
+        Dim ilDirs As New List(Of ToolStripItem)
+        Dim ilFiles As New List(Of ToolStripItem)
+
         cts = New Threading.CancellationTokenSource
         cantok = cts.Token
 
@@ -607,118 +612,161 @@ Partial Public NotInheritable Class FrmMain
             Return menuItems
         End Try
         Try
-            Parallel.ForEach(EnumerateData(pth, True, cantok).AsThrottled(usableCores), opts,
-                             Sub(data As WIN32_FIND_DATAW)
+            'Parallel.ForEach(EnumerateData(pth, True, cantok).AsThrottled(usableCores), opts,
+            '                 Sub(data As WIN32_FIND_DATAW)
+            For Each data As WIN32_FIND_DATAW In EnumerateData(pth, True, cantok)
 
-                                 Dim fulldirs As String = IO.Path.Combine(pth, data.cFileName)
+                Dim fulldirs As String = IO.Path.Combine(pth, data.cFileName)
 
-                                 Dim attr As System.IO.FileAttributes = data.dwFileAttributes
-                                 Dim hidden As Boolean = False
-                                 If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then
-                                     Threading.Interlocked.Increment(hiddencount)
-                                     hidden = True
-                                 End If
+                Dim attr As System.IO.FileAttributes = data.dwFileAttributes
+                Dim hidden As Boolean = False
+                If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then
+                    Threading.Interlocked.Increment(hiddencount)
+                    hidden = True
+                End If
 
-                                 Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
-                                 Dim dispname As String = System.IO.Path.GetFileName(fulldirs)
+                Dim dispname As String = System.IO.Path.GetFileName(fulldirs)
+                Dim qli As New QLInfo With {.path = fulldirs & "\", .hidden = hidden, .name = dispname, .isFolder = True}
+                Dim icon As New Bitmap(16, 16)
+                Dim needLoading As Boolean = False
+                If Not IconCache.TryGetValue(fulldirs & "\", icon) Then
+                    icon = FolderIcon ' GetIconFromCache(qli)
+                    needLoading = True
+                End If
 
-                                 Dim qli As New QLInfo With {.path = fulldirs & "\", .hidden = hidden, .name = dispname, .isFolder = True}
-                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), FolderIcon) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
+                Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
 
-                                 Me.BeginInvoke(Sub()
-                                                    smenu.DropDownItems.Add("(Dummy)").Enabled = False
-                                                    AttachQLMenuItemHandlers(smenu, isFolder:=True)
-                                                End Sub)
+                Dim smenu As New QLMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), icon) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
 
-                                 Dirs.Add(smenu)
-                                 If vis Then
-                                     isEmpty = False
-                                 End If
-                                 If watch.ElapsedMilliseconds > TOTALTIMEOUT Then
-                                     timedout = True
-                                 End If
-                             End Sub)
+                If needLoading Then
+                    ilDirs.Add(smenu)
+                End If
 
+                'Me.BeginInvoke(Sub()
+                smenu.DropDownItems.Add("(Dummy)").Enabled = False
+                AttachQLMenuItemHandlers(smenu, isFolder:=True)
+                'End Sub)
+
+                Dirs.Add(smenu)
+                If vis Then
+                    isEmpty = False
+                End If
+                If watch.ElapsedMilliseconds > TOTALTIMEOUT Then
+                    timedout = True
+                End If
+                'End Sub)
+            Next
             'Parallel.ForEach(IO.Directory.EnumerateFiles(pth).AsThrottled(usableCores).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)), opts,
             'Sub(fullLink As String)
-            Parallel.ForEach(EnumerateData(pth, False, cantok).AsThrottled(usableCores).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p.cFileName).ToLower)), opts,
-                             Sub(data As WIN32_FIND_DATAW)
-                                 Dim fullLink As String = IO.Path.Combine(pth, data.cFileName)
+            'Parallel.ForEach(EnumerateData(pth, False, cantok).AsThrottled(usableCores).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p.cFileName).ToLower)), opts,
+            '                 Sub(data As WIN32_FIND_DATAW)
 
-                                 Dim attr As System.IO.FileAttributes = data.dwFileAttributes 'New System.IO.FileInfo(fullLink).Attributes
-                                 Dim hidden As Boolean = False
-                                 If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then
-                                     Threading.Interlocked.Increment(hiddencount)
-                                     hidden = True
-                                 End If
+            For Each data As WIN32_FIND_DATAW In EnumerateData(pth, False, cantok).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p.cFileName).ToLower))
+
+                Dim fullLink As String = IO.Path.Combine(pth, data.cFileName)
+
+                Dim attr As System.IO.FileAttributes = data.dwFileAttributes 'New System.IO.FileInfo(fullLink).Attributes
+                Dim hidden As Boolean = False
+                If attr.HasFlag(System.IO.FileAttributes.Hidden) OrElse attr.HasFlag(System.IO.FileAttributes.System) Then
+                    Threading.Interlocked.Increment(hiddencount)
+                    hidden = True
+                End If
 
 
-                                 'don't add self to list
-                                 If System.IO.Path.GetFileName(fullLink) = System.IO.Path.GetFileName(Environment.GetCommandLineArgs(0)) Then Exit Sub 'Continue For
-                                 If fullLink = Environment.GetCommandLineArgs(0) Then Exit Sub 'Continue For
-                                 Dim target As String = String.Empty
+                'don't add self to list
+                If System.IO.Path.GetFileName(fullLink) = System.IO.Path.GetFileName(Environment.GetCommandLineArgs(0)) Then Continue For '  Exit Sub '
+                If fullLink = Environment.GetCommandLineArgs(0) Then Continue For ' Exit Sub '
+                Dim target As String = String.Empty
 
-                                 Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
+                Dim vis As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
 
-                                 Dim qli As New QLInfo With {.path = fullLink, .hidden = hidden}
+                Dim qli As New QLInfo With {.path = fullLink, .hidden = hidden}
 
-                                 If fullLink.ToLower.EndsWith(".lnk") Then
+                If fullLink.ToLower.EndsWith(".lnk") Then
 
-                                     Dim lin As New ShellLinkInfo(fullLink)
+                    Dim lin As New ShellLinkInfo(fullLink)
 
-                                     target = lin.TargetPath
+                    target = lin.TargetPath
 
-                                     qli.target = target
+                    qli.target = target
 
-                                     If My.Settings.QLResolveLnk Then
+                    If My.Settings.QLResolveLnk Then
 
-                                         qli.pointsToDir = lin.PointsToDir 'pointstodir can be false negative when access is denied
+                        qli.pointsToDir = lin.PointsToDir 'pointstodir can be false negative when access is denied
 
-                                         If lin.PointsToDir OrElse (Not String.IsNullOrEmpty(target) AndAlso CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, target, 200)) Then
+                        If lin.PointsToDir OrElse (Not String.IsNullOrEmpty(target) AndAlso CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, target, 200)) Then
 
-                                             If Not qli.target.EndsWith("\"c) Then qli.target &= "\"
+                            If Not qli.target.EndsWith("\"c) Then qli.target &= "\"
 
-                                             'Dim hid As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
-                                             Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
-                                             qli.name = dispname
-                                             qli.isFolder = True
-                                             Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), FolderIconWithOverlay) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
+                            'Dim hid As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
+                            Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
+                            qli.name = dispname
+                            qli.isFolder = True
 
-                                             Me.BeginInvoke(Sub()
-                                                                smenu.DropDownItems.Add("(Dummy)").Enabled = False
-                                                                AttachQLMenuItemHandlers(smenu, isFolder:=True)
-                                                            End Sub)
+                            Dim icn As New Bitmap(16, 16)
+                            Dim needLoad As Boolean = False
+                            If Not IconCache.TryGetValue(fullLink, icn) Then
+                                icn = FolderIconWithOverlay 'GetIconFromCache(qli)
+                                needLoad = True
+                            End If
 
-                                             addLinkWatcher(target, fullLink)
+                            Dim smenu As New QLMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), icn) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
 
-                                             Dirs.Add(smenu)
-                                             If vis Then isEmpty = False
+                            If needLoad Then
+                                ilDirs.Add(smenu)
+                            End If
 
-                                             Exit Sub 'Continue For
-                                         End If
-                                     End If
-                                 End If
-                                 Dim linkName As String
-                                 If hideExt.Contains(System.IO.Path.GetExtension(fullLink).ToLower) Then
-                                     linkName = System.IO.Path.GetFileNameWithoutExtension(fullLink)
-                                 Else
-                                     linkName = System.IO.Path.GetFileName(fullLink)
-                                 End If
+                            'Me.BeginInvoke(Sub()
+                            smenu.DropDownItems.Add("(Dummy)").Enabled = False
+                            AttachQLMenuItemHandlers(smenu, isFolder:=True)
+                            'End Sub)
 
-                                 qli.name = linkName
-                                 qli.isFolder = False
+                            addLinkWatcher(target, fullLink)
 
-                                 Dim item As New ToolStripMenuItem(If(vis, linkName.Replace("&", "&&"), "*Hidden*")) With {.Tag = qli, .Visible = vis}
-                                 Me.BeginInvoke(Sub() AttachQLMenuItemHandlers(item, isFolder:=False))
+                            Dirs.Add(smenu)
+                            If vis Then isEmpty = False
 
-                                 Files.Add(item)
-                                 If vis Then
-                                     isEmpty = False
-                                 End If
-                                 If watch.ElapsedMilliseconds > TOTALTIMEOUT Then
-                                     timedout = True
-                                 End If
-                             End Sub)
+                            Continue For ' Exit Sub '
+                        End If
+                    End If
+                End If
+                Dim linkName As String
+                If hideExt.Contains(System.IO.Path.GetExtension(fullLink).ToLower) Then
+                    linkName = System.IO.Path.GetFileNameWithoutExtension(fullLink)
+                Else
+                    linkName = System.IO.Path.GetFileName(fullLink)
+                End If
+
+                qli.name = linkName
+                qli.isFolder = False
+
+                Dim icon As New Bitmap(16, 16)
+                Dim needLoading As Boolean = False
+
+                If Not IconCache.TryGetValue(fullLink, icon) Then
+                    icon = EmptyIcon ' GetIconFromCache(qli)
+                    needLoading = True
+                End If
+
+                Dim item As New ToolStripMenuItem(If(vis, linkName.Replace("&", "&&"), "*Hidden*"), icon) With {.Tag = qli, .Visible = vis}
+
+                If needLoading Then
+                    ilFiles.Add(item)
+                End If
+
+                'Me.BeginInvoke(Sub()
+                AttachQLMenuItemHandlers(item, isFolder:=False)
+                'End Sub)
+
+                Files.Add(item)
+                If vis Then
+                    isEmpty = False
+                End If
+                If watch.ElapsedMilliseconds > TOTALTIMEOUT Then
+                    timedout = True
+                End If
+                '    End Sub)
+            Next
         Catch ex As System.OperationCanceledException
             menuItems.Add(New ToolStripMenuItem("<Operation Canceled>", My.Resources.denied) With {.Enabled = False})
         End Try
@@ -727,22 +775,22 @@ Partial Public NotInheritable Class FrmMain
         Dim sortOrder As List(Of String) = ReadSortOrder(pth)
         Dim sortedDirs = ApplySortOrderV3(Dirs.ToList(), sortOrder, Function(d) CType(d.Tag, QLInfo).path.TrimEnd("\"c), NsSorter)
         Dim sortedFiles = ApplySortOrderV3(Files.ToList(), sortOrder, Function(f) CType(f.Tag, QLInfo).path, NsSorter)
-        Dim allItems = sortedDirs.Concat(sortedFiles).ToList()
+        menuItems.AddRange(sortedDirs.Concat(sortedFiles).ToArray)
 
-        If itemsOnly Then
-            DeferredIconLoading(Dirs, Files, cantok)
-            Return allItems
-        End If
+        'If itemsOnly Then
+        '    DeferredIconLoading(Dirs, Files, cantok)
+        '    Return allItems
+        'End If
 
         ' Handle overflow for large folders
-        If allItems.Count > QL_INITIAL_ITEMS Then
-            menuItems = allItems.Take(QL_INITIAL_ITEMS).ToList()
-            Dim remainingItems = allItems.Skip(QL_INITIAL_ITEMS).ToList()
-            Dim moreItem = CreateLoadMoreItem(remainingItems)
-            menuItems.Add(moreItem)
-        Else
-            menuItems = allItems
-        End If
+        'If allItems.Count > QL_INITIAL_ITEMS Then
+        '    menuItems = allItems.Take(QL_INITIAL_ITEMS).ToList()
+        '    Dim remainingItems = allItems.Skip(QL_INITIAL_ITEMS).ToList()
+        '    Dim moreItem = CreateLoadMoreItem(remainingItems)
+        '    menuItems.Add(moreItem)
+        'Else
+        '    menuItems = allItems
+        'End If
 
         If timedout Then
             menuItems.Add(New ToolStripMenuItem("<TimedOut>") With {.Enabled = False})
@@ -750,7 +798,7 @@ Partial Public NotInheritable Class FrmMain
 
         If isEmpty Then
             'todo refactor this into a func that returns the items, we need to reuse it in QLCtxDelete
-            menuItems.Add(New ToolStripMenuItem("(Empty)") With {.Enabled = False, .ToolTipText = $"{If(hiddencount, $"Press Ctrl-Shift to reveal {hiddencount} Files/Dirs.{vbCrLf}", "")}Folder may still contain unwatched items.{vbCrLf}Go to Settings/QL and adjust Filter if you are missing files."})
+            menuItems.Add(New ToolStripMenuItem("(Empty)") With {.Enabled = False, .ToolTipText = $"{If(hiddencount, $"Press Ctrl+Shift to reveal {hiddencount} Files/Dirs.{vbCrLf}", "")}Folder may still contain unwatched items.{vbCrLf}Go to Settings/QL and adjust Filter if you are missing files."})
             clipBoardInfo = GetClipboardFilesAndAction()
             If clipBoardInfo.Files?.Count > 0 AndAlso clipBoardInfo.Files.Any(Function(f) IO.File.Exists(f) OrElse IO.Directory.Exists(f)) Then
 
@@ -837,80 +885,12 @@ Partial Public NotInheritable Class FrmMain
         'cts?.Dispose()
         'cts = New Threading.CancellationTokenSource
         'cantok = cts.Token
-        DeferredIconLoading(Dirs, Files, cantok)
+        DeferredIconLoading(ilDirs.Concat(ilFiles), menuItems, cantok)
 
         dBug.Print($"parsing ""{pth}"" took {watch.ElapsedMilliseconds} ms")
         watch.Stop()
         Return menuItems
     End Function
-
-
-
-
-    ''' <summary>
-    ''' Creates a "Load More" menu item that displays remaining items when clicked.
-    ''' </summary>
-    Private Function CreateLoadMoreItem(remainingItems As List(Of ToolStripItem)) As ToolStripMenuItem
-        Dim moreItem As New ToolStripMenuItem($"<{remainingItems.Count} more...>") With {
-            .Tag = remainingItems,
-            .ForeColor = COLOR_WINDOWS_BLUE
-        }
-        AddHandler moreItem.MouseDown, AddressOf LoadMoreItems_MouseDown
-        Return moreItem
-    End Function
-
-    ''' <summary>
-    ''' Handles click on "Load More" item - inserts remaining items into the menu.
-    ''' </summary>
-    Private Sub LoadMoreItems_MouseDown(sender As Object, e As MouseEventArgs)
-
-        If Not e.Button.HasFlag(MouseButtons.Left) Then
-            Exit Sub
-        End If
-
-        Dim moreItem As ToolStripMenuItem = CType(sender, ToolStripMenuItem)
-        Dim remainingItems As List(Of ToolStripItem) = CType(moreItem.Tag, List(Of ToolStripItem))
-        Dim owner As ToolStripDropDown = moreItem.Owner
-
-        If owner Is Nothing OrElse remainingItems Is Nothing Then Exit Sub
-
-        ' Find position of the "more" item
-        Dim insertIndex As Integer = owner.Items.IndexOf(moreItem)
-        If insertIndex < 0 Then Exit Sub
-
-        ' Remove the "more" item
-        owner.Items.Remove(moreItem)
-
-        ' Determine how many items to load this batch
-        Dim itemsToAdd As List(Of ToolStripItem)
-        Dim newRemainingItems As List(Of ToolStripItem) = Nothing
-
-        If remainingItems.Count > QL_LOAD_MORE_BATCH Then
-            itemsToAdd = remainingItems.Take(QL_LOAD_MORE_BATCH).ToList()
-            newRemainingItems = remainingItems.Skip(QL_LOAD_MORE_BATCH).ToList()
-        Else
-            itemsToAdd = remainingItems
-        End If
-
-        ' Insert the new items at the position of the old "more" item
-        For i As Integer = 0 To itemsToAdd.Count - 1
-            owner.Items.Insert(insertIndex + i, itemsToAdd(i))
-        Next
-
-        ' If there are still more items, add a new "more" item
-        If newRemainingItems IsNot Nothing AndAlso newRemainingItems.Count > 0 Then
-            Dim newMoreItem = CreateLoadMoreItem(newRemainingItems)
-            owner.Items.Insert(insertIndex + itemsToAdd.Count, newMoreItem)
-        End If
-
-        ' Start deferred icon loading for the newly added items
-        Dim dirs As New ConcurrentBag(Of ToolStripItem)(itemsToAdd.Where(Function(it) TypeOf it.Tag Is QLInfo AndAlso CType(it.Tag, QLInfo).path.EndsWith("\")))
-        Dim files As New ConcurrentBag(Of ToolStripItem)(itemsToAdd.Where(Function(it) TypeOf it.Tag Is QLInfo AndAlso Not CType(it.Tag, QLInfo).path.EndsWith("\")))
-        DeferredIconLoading(dirs, files, cantok)
-
-        moreItem.Dispose()
-        dBug.Print($"Loaded {itemsToAdd.Count} more items, {If(newRemainingItems?.Count, 0)} remaining")
-    End Sub
 
 #If DEBUG Then
     Private Sub QL_DropDownClosed(sender As ToolStripDropDown, e As ToolStripDropDownClosedEventArgs)
@@ -949,28 +929,61 @@ Partial Public NotInheritable Class FrmMain
             SetWindowLong(handle, GWL_HWNDPARENT, GetWindowLong(cmsQuickLaunch.Handle, GWL_HWNDPARENT))
         End If
 
-        ' Handle overflow for large folders - constrain dropdown to screen bounds
-        Dim dropDown = sender.DropDown
-        Dim dropDownScreen = Screen.FromPoint(dropDown.Bounds.Location)
-        Dim workingArea = dropDownScreen.WorkingArea
+        '' Handle overflow for large folders - constrain dropdown to screen bounds
+        'Dim dropDown = sender.DropDown
+        'Dim dropDownScreen = Screen.FromPoint(dropDown.Bounds.Location)
+        'Dim workingArea = dropDownScreen.WorkingArea
 
-        ' Calculate maximum height based on screen working area with some padding
-        Dim maxHeight As Integer = workingArea.Height - 20
+        '' Calculate maximum height based on screen working area with some padding
+        'Dim maxHeight As Integer = workingArea.Height - 20
 
-        ' Set MaximumSize to enable scroll arrows when content exceeds screen height
-        If dropDown.MaximumSize.Height <> maxHeight Then
-            dropDown.MaximumSize = New Size(0, maxHeight)
-        End If
+        '' Set MaximumSize to enable scroll arrows when content exceeds screen height
+        'If dropDown.MaximumSize.Height <> maxHeight Then
+        '    dropDown.MaximumSize = New Size(0, maxHeight)
+        'End If
 
         ' Ensure dropdown doesn't go off-screen vertically
-        Dim dropDownBounds = dropDown.Bounds
-        If dropDownBounds.Bottom > workingArea.Bottom Then
-            Dim newY As Integer = Math.Max(workingArea.Top, workingArea.Bottom - dropDown.Height)
-            dropDown.Top = newY
-        End If
-        If dropDownBounds.Top < workingArea.Top Then
-            dropDown.Top = workingArea.Top
-        End If
+        'Dim dropDownBounds = dropDown.Bounds
+        'If dropDownBounds.Bottom > workingArea.Bottom Then
+        '    Dim newY As Integer = Math.Max(workingArea.Top, workingArea.Bottom - dropDown.Height)
+        '    dropDown.Top = newY
+        'End If
+        'If dropDownBounds.Top < workingArea.Top Then
+        '    dropDown.Top = workingArea.Top
+        'End If
+
+        ' Fade-in animation
+        Dim fadeDurationMs As Double = 250 ' total fade time
+        Dim sw As Stopwatch = Stopwatch.StartNew()
+        Dim steps As Integer = 0
+
+        sender.DropDown.Opacity = 1
+
+        'Task.Run(Sub()
+        '             Dim progress As Double = 0
+        '             While progress < 1.0
+        '                 steps += 1
+        '                 progress = Math.Min(1.0, sw.Elapsed.TotalMilliseconds / fadeDurationMs)
+        '                 Dim opacityValue As Double = progress
+
+        '                 ' Marshal to UI thread
+        '                 sender.DropDown.Invoke(Sub()
+        '                                            sender.DropDown.Opacity = opacityValue
+        '                                        End Sub)
+
+        '                 DwmFlush() ' very short sleep for smooth interpolation
+        '             End While
+        '             Debug.Print($"fadesteps={steps} duration={sw.ElapsedMilliseconds}ms")
+        '             ' Ensure fully opaque at the end
+        '             sender.DropDown.BeginInvoke(Sub()
+        '                                             sender.DropDown.Opacity = 1
+        '                                             tmrActive.Enabled = True
+        '                                             tmrHotkeys.Enabled = True
+        '                                             tmrTick.Enabled = cboAlt.SelectedIndex <> 0
+        '                                             tmrOverview.Enabled = cboAlt.SelectedIndex = 0
+        '                                         End Sub)
+        '             'DeferredIconLoading(sender.DropDownItems.Cast(Of ToolStripItem).OfType(Of ToolStripMenuItem), cantok)
+        '         End Sub)
 
     End Sub
 
@@ -1119,43 +1132,59 @@ Partial Public NotInheritable Class FrmMain
                  End Sub)
     End Sub
 
-    Private Sub DeferredIconLoading(Dirs As IEnumerable(Of ToolStripItem), Files As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
-        Task.Run(Sub()
-                     Try
-                         Dim opts As New ParallelOptions With {.CancellationToken = ct, .MaxDegreeOfParallelism = Math.Max(1, usableCores - 2)}
-                         Dim items = Files.Concat(Dirs)
-                         Parallel.ForEach(items, opts,
-                                          Sub(it As ToolStripMenuItem)
-                                              Dim qli As QLInfo = it.Tag
-                                              Dim ico = GetIconFromCache(qli)
-                                              Dim check As Boolean = clipBoardInfo.Files?.Contains(qli.path.TrimEnd("\"c))
-                                              Me.Invoke(Sub()
+    Private Sub DeferredIconLoading(items As IEnumerable(Of ToolStripItem), allitems As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
+
+
+        Try
+
+            'EnqueueLatestJob(Sub()
+            Dim opts As New ParallelOptions With {.CancellationToken = ct, .MaxDegreeOfParallelism = Math.Max(1, (usableCores \ 2) - 2)}
+            Task.Run(Sub()
+                         'Dim items = Files.Concat(Dirs)
+                         Try
+                             Parallel.ForEach(items.Where(Function(it) TypeOf it.Tag Is QLInfo).ToArray, opts,
+                                 Sub(it As ToolStripMenuItem)
+                                     Dim qli As QLInfo = it.Tag
+                                     Dim ico = GetIconFromCache(qli)
+
+                                     'Dim check As Boolean = clipBoardInfo.Files?.Contains(qli.path.TrimEnd("\"c))
+
+                                     'If qli.path.EndsWith(".lnk") AndAlso Not String.IsNullOrEmpty(qli.target) AndAlso
+                                     '  Not CallAsTaskWithTimeout(Function(p) IO.File.Exists(p) OrElse IO.Directory.Exists(p), qli.target, 500) Then
+                                     '    ico = ico.addOverlay(My.Resources.WarningOverlay, True)
+                                     'End If
+
+                                     Me.BeginInvoke(Sub()
+                                                        'If it.Owner?.Bounds.Contains(it.Owner?.PointToScreen(it.Bounds.Location)) Then
+                                                        it.Image = ico
+                                                        'End If
+                                                        '              'it.Checked = check
+                                                    End Sub)
+                                 End Sub)
+                             Parallel.ForEach(allitems.Where(Function(it) TypeOf it.Tag Is QLInfo).ToArray, opts,
+                                 Sub(it As ToolStripMenuItem)
+                                     Dim qli As QLInfo = it.Tag
+                                     If qli.path.EndsWith(".lnk") AndAlso Not String.IsNullOrEmpty(qli.target) AndAlso
+                                        Not CallAsTaskWithTimeout(Function(p) IO.File.Exists(p) OrElse IO.Directory.Exists(p), qli.target, 500) Then
+                                         Dim ico = GetIconFromCache(qli).addOverlay(My.Resources.WarningOverlay, True)
+                                         Me.BeginInvoke(Sub()
                                                             it.Image = ico
-                                                            it.Checked = check
+                                                            'it.Invalidate()
                                                         End Sub)
-                                          End Sub)
+                                     End If
+                                 End Sub)
+                         Catch ex As Exception
 
-                         Parallel.ForEach(items, opts,
-                                          Sub(it As ToolStripMenuItem)
-                                              Dim qli As QLInfo = it.Tag
-                                              If qli.path.EndsWith(".lnk") AndAlso Not String.IsNullOrEmpty(qli.target) AndAlso
-                                                Not CallAsTaskWithTimeout(Function(p) IO.File.Exists(p) OrElse IO.Directory.Exists(p), qli.target, 500) Then
-                                                  'qli.invalidTarget = True
-                                                  'it.Tag = qli
-                                                  Dim ico = it.Image.addOverlay(My.Resources.WarningOverlay, True)
-                                                  Me.Invoke(Sub()
-                                                                it.Image = ico
-                                                                'it.Invalidate()
-                                                            End Sub)
-                                              End If
-                                          End Sub)
+                         End Try
+                     End Sub)
 
-                     Catch ex As System.OperationCanceledException
-                         dBug.Print("deferrediconloading operationCanceled")
-                     Catch
-                         dBug.Print("deferredIconLoading general exception")
-                     End Try
-                 End Sub, ct)
+
+        Catch ex As System.OperationCanceledException
+            dBug.Print("deferrediconloading operationCanceled")
+        Catch
+            dBug.Print("deferredIconLoading general exception")
+        End Try
+        '   End Sub) ', ct)
     End Sub
     Public Sub CloseOtherDropDowns(items As ToolStripItemCollection, Optional keep As HashSet(Of ToolStripMenuItem) = Nothing)
         If keep Is Nothing Then keep = New HashSet(Of ToolStripMenuItem)
@@ -1187,19 +1216,22 @@ Partial Public NotInheritable Class FrmMain
         'Dim target = If(sender.Tag.length >= 4, sender.Tag(3), sender.Tag(0))
         Dim target = If(String.IsNullOrEmpty(qli.target), qli.path, qli.target)
 
-        'sender.DropDownItems.Clear()
+        sender.DropDownItems.Clear()
         'Dim olditems = New ToolStripItemCollection(sender.Owner, sender.DropDownItems.Cast(Of ToolStripItem).ToArray)
-        DisposeMenuRecurse(sender.DropDownItems)
+        'DisposeMenuRecurse(sender.DropDownItems)
 
         If CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, target, 750) Then
-            sender.DropDownItems.AddRange(ParseDir(target).ToArray)
+            sender.DropDown.SuspendLayout()
+            Dim itms = ParseDir(target).ToArray
+            sender.DropDown.ImageScalingSize = New Size(16, 16)
+            sender.DropDownItems.AddRange(itms)
+            sender.DropDown.ResumeLayout()
         Else
             Dim dirname As String = IO.Path.GetDirectoryName(target.TrimEnd("\"c))
             Debug.Print($"dir missing {dirname}")
             Dim name = target.Replace(dirname, "").Trim("\"c)
             sender.DropDownItems.Add(New ToolStripMenuItem("<Error>", My.Resources.Warning) With {.Enabled = False, .ToolTipText = $"'{name}'{vbCrLf}Target Directory Missing"})
         End If
-
     End Sub
 
     ' folderIcon now in QLIconCache module
@@ -1210,19 +1242,19 @@ Partial Public NotInheritable Class FrmMain
         AddHandler folderitem.MouseDown, AddressOf Ql_NewFolder
         sender.DropDownItems.Add(folderitem)
 
-        ' Add "From Template" submenu if templates exist
-        Dim templates = LauncherTemplateManager.GetTemplates()
-        If templates.Count > 0 Then
-            Dim templateMenu = New ToolStripMenuItem("From Template...", My.Resources.Add)
-            For Each template In templates
-                Dim templateItem = New ToolStripMenuItem(template.Name) With {
-                    .Tag = New Object() {template, sender.Tag}
-                }
-                AddHandler templateItem.Click, AddressOf CreateShortcutFromTemplate
-                templateMenu.DropDownItems.Add(templateItem)
-            Next
-            sender.DropDownItems.Add(templateMenu)
-        End If
+        '' Add "From Template" submenu if templates exist
+        'Dim templates = LauncherTemplateManager.GetTemplates()
+        'If templates.Count > 0 Then
+        '    Dim templateMenu = New ToolStripMenuItem("From Template...", My.Resources.Add)
+        '    For Each template In templates
+        '        Dim templateItem = New ToolStripMenuItem(template.Name) With {
+        '            .Tag = New Object() {template, sender.Tag}
+        '        }
+        '        AddHandler templateItem.Click, AddressOf CreateShortcutFromTemplate
+        '        templateMenu.DropDownItems.Add(templateItem)
+        '    Next
+        '    sender.DropDownItems.Add(templateMenu)
+        'End If
 
         sender.DropDownItems.Add(New ToolStripSeparator())
 
@@ -1494,7 +1526,6 @@ Partial Public NotInheritable Class FrmMain
 
     End Class
     Private Sub CmsQuickLaunch_Opening(sender As ContextMenuStrip, e As System.ComponentModel.CancelEventArgs) Handles cmsQuickLaunch.Opening
-
         UntrapMouse(MouseButtonStale)
 
         If Not (My.Computer.Keyboard.ShiftKeyDown AndAlso Not My.Computer.Keyboard.CtrlKeyDown) Then
@@ -1512,6 +1543,7 @@ Partial Public NotInheritable Class FrmMain
 
         CloseOtherDropDowns(cmsQuickLaunch.Items, New HashSet(Of ToolStripMenuItem))
         cmsQuickLaunch.Close()
+
         Try
             AppActivate(scalaPID) 'fix right click drag bug
         Catch ex As Exception
@@ -1543,7 +1575,9 @@ Partial Public NotInheritable Class FrmMain
 
         If My.Computer.Keyboard.CtrlKeyDown AndAlso My.Computer.Keyboard.ShiftKeyDown Then ctrlshift_pressed = True
 
+        sender.SuspendLayout()
         sender.Items.AddRange(ParseDir(IO.Path.GetFullPath(My.Settings.links)).ToArray)
+        sender.ResumeLayout()
 
         'If My.Computer.Keyboard.CtrlKeyDown Then
         '    sender.Items.Add(New ToolStripSeparator())
@@ -1564,8 +1598,6 @@ Partial Public NotInheritable Class FrmMain
     'Private closeAllAtBottom As Boolean = True
 
     Private Sub cmsQuickLaunch_Opened(sender As ContextMenuStrip, e As EventArgs) Handles cmsQuickLaunch.Opened
-
-
         sender.AllowDrop = True
 
         'Task.Run(Sub()
@@ -1674,8 +1706,10 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub CmsQuickLaunch_Closed(sender As ContextMenuStrip, e As ToolStripDropDownClosedEventArgs) Handles cmsQuickLaunch.Closed
 
-
-
+        tmrActive.Enabled = True
+        tmrHotkeys.Enabled = True
+        tmrTick.Enabled = cboAlt.SelectedIndex <> 0
+        tmrOverview.Enabled = cboAlt.SelectedIndex = 0
 
         cts.Cancel() 'cancel deferred icon loading and setvis
         ctrlshift_pressed = False
@@ -1847,7 +1881,7 @@ Partial Public NotInheritable Class FrmMain
             Dim newExt As String = System.IO.Path.GetExtension(toName).ToLower()
             If Not isFolder AndAlso Not hideExt.Contains(System.IO.Path.GetExtension(Path).ToLower()) AndAlso oldExt <> newExt Then
                 Dim confirmResult = CustomMessageBox.Show(Me,
-                    $"If you change a file name extension, the file might become unusable.{vbCrLf}{vbCrLf}Are you sure you want to change it?",
+                    $"If you change a filename extension, the file might become unusable.{vbCrLf}{vbCrLf}Are you sure you want to change it?",
                     "Rename", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
                 If confirmResult <> DialogResult.Yes Then
                     Exit Sub
@@ -2487,7 +2521,7 @@ Partial Public NotInheritable Class FrmMain
                 New MenuItem("-"),
                 New MenuItem("Properties", AddressOf QlCtxProps),
                 New MenuItem("-"),
-                New MenuItem("Batch Shortcut Manager...", AddressOf OpenBatchShortcutManager) With {.Visible = path.EndsWith("\")},
+                New MenuItem("Batch Edit", AddressOf OpenBatchShortcutManager) With {.Visible = path.EndsWith("\")},
                 New MenuItem("-") With {.Visible = path.EndsWith("\")},
             QlCtxNewMenu})
 #Else
@@ -2507,7 +2541,7 @@ Partial Public NotInheritable Class FrmMain
                 New MenuItem("-"),
                 New MenuItem("Dump Info", AddressOf dBug.dumpItemInfo),
                 New MenuItem("-"),
-                New MenuItem("Batch Shortcut Manager...", AddressOf OpenBatchShortcutManager) With {.Visible = path.EndsWith("\")},
+                New MenuItem("Batch Edit", AddressOf OpenBatchShortcutManager) With {.Visible = path.EndsWith("\")},
                 New MenuItem("-") With {.Visible = path.EndsWith("\")},
             QlCtxNewMenu})
 #End If
@@ -2736,7 +2770,7 @@ Partial Public NotInheritable Class FrmMain
                                                ' Refresh the menu after paste completes
                                                If Not Me.Disposing AndAlso Not Me.IsDisposed Then
                                                    Try
-                                                       UpdateMenuDropDown(dropdown, ParseDir(tgt, True))
+                                                       UpdateMenuDropDown(dropdown, ParseDir(tgt))
                                                    Catch ex As Exception
                                                        dBug.Print($"Failed to refresh QL after paste: {ex.Message}")
                                                    End Try
@@ -2754,7 +2788,7 @@ Partial Public NotInheritable Class FrmMain
                          While pasteStopWatch.ElapsedMilliseconds <= 100
                              Threading.Thread.Sleep(50)
                          End While
-                         UpdateMenuDropDown(dropdown, ParseDir(tgt, True))
+                         UpdateMenuDropDown(dropdown, ParseDir(tgt))
                      End Sub)
         ElseIf Not act.StartsWith("Paste") Then
 

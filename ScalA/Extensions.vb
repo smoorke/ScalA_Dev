@@ -186,10 +186,22 @@ Module Extensions
     End Function
 
 
-
+    ''' <summary>
+    ''' 
+    ''' Runtime Error when called on non-enum types<br/>
+    ''' <para><c>TODO: Implement roslyn analyzer to Error on compile</c></para>
+    ''' </summary>
+    ''' <typeparam name="T"></typeparam>
+    ''' <param name="flags"></param>
+    ''' <param name="value"></param>
     <System.Runtime.CompilerServices.Extension()>
-    Public Sub SetFlag(ByRef flags As SetWindowPosFlags, value As SetWindowPosFlags)
-        flags = flags Or value
+    Public Sub SetFlag(Of T As Structure)(ByRef flags As T, value As T)
+        flags = [Enum].ToObject(GetType(T), Convert.ToUInt64(flags) Or Convert.ToUInt64(value))
     End Sub
+
+    <Extension()>
+    Public Function HasFlagsAny(ByVal value As [Enum], ByVal flags As [Enum]) As Boolean
+        Return (Convert.ToUInt64(value) And Convert.ToUInt64(flags)) <> 0UL
+    End Function
 
 End Module

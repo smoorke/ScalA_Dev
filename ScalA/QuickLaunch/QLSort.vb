@@ -144,16 +144,16 @@ Namespace QL
                 End If
             Next
 
-            Return items.Select(Function(it)
-                                    Dim Name = nameSelector(it)
-                                    Dim idx As Integer
-                                    If Not orderMap.TryGetValue(name, idx) Then
-                                        idx = Integer.MaxValue
+            Return items.Select(Function(Item)
+                                    Dim Name = nameSelector(Item)
+                                    Dim Index As Integer
+                                    If Not orderMap.TryGetValue(Name, Index) Then
+                                        Index = Integer.MaxValue
                                     End If
-                                    Return New With {.Item = it, .Index = idx, name}
+                                    Return New With {Item, Index, Name}
                                 End Function) _
-                                .OrderBy(Function(x) x.Index).ThenBy(Function(x) x.Name, nsSorter) _
-                                .Select(Function(x) x.Item).ToList()
+                         .OrderBy(Function(x) x.Index).ThenBy(Function(x) x.Name, nsSorter) _
+                         .Select(Function(x) x.item).ToList()
         End Function
     End Module
 

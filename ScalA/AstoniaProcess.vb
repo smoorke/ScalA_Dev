@@ -265,7 +265,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
     End Function
 
-    Public Function WindowsScaling() As Integer
+    Public Function WindowsScaling() As Integer 'todo: this needs porting to an external app and revert to framebounds
         If Me.MainWindowHandle = IntPtr.Zero Then Return 0
 
         Dim hMon As IntPtr = MonitorFromWindow(Me.MainWindowHandle, MONITORFLAGS.DEFAULTTONEAREST)
@@ -915,8 +915,13 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     <System.Runtime.InteropServices.DllImport("user32.dll")>
     Private Shared Function GetClientRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As Boolean : End Function
 
-    Public Function GetClientBitmap() As Bitmap
+    Dim clientBitmap As Bitmap
+    Dim swCBmRefresh As Stopwatch = Stopwatch.StartNew
+    Public Function GetClientBitmap(Optional useCached As Boolean = False) As Bitmap
         If proc Is Nothing Then Return Nothing
+        If useCached AndAlso clientBitmap IsNot Nothing AndAlso swCBmRefresh.ElapsedMilliseconds < 200 Then
+            Return clientBitmap.Clone
+        End If
         Try
             Dim rcc As Rectangle
             If Not GetClientRect(Me.MainWindowHandle, rcc) Then Return Nothing 'GetClientRect fails if astonia is running fullscreen and is tabbed out
@@ -924,20 +929,21 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             If rcc.Width = 0 OrElse rcc.Height = 0 Then Return Nothing
 
             Dim fact As Double = Me.WindowsScaling / 100
-            Dim bmp As New Bitmap(CInt(rcc.Width * fact), CInt(rcc.Height * fact))
+            clientBitmap = New Bitmap(CInt(rcc.Width * fact), CInt(rcc.Height * fact))
 
-            Using gBM As Graphics = Graphics.FromImage(bmp)
+            Using gBM As Graphics = Graphics.FromImage(clientBitmap)
                 Dim hdcBm As IntPtr
                 Try
                     hdcBm = gBM.GetHdc
                 Catch ex As Exception
-                    dBug.print("GetHdc error")
+                    dBug.Print("GetHdc error")
                     Return Nothing
                 End Try
                 PrintWindow(Me.MainWindowHandle, hdcBm, 1)
                 gBM.ReleaseHdc()
             End Using
-            Return bmp
+            swCBmRefresh.Restart()
+            Return clientBitmap.Clone
         Catch
             Return Nothing
         End Try
@@ -1119,7 +1125,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             Return bmp
         End If
 
-        Using g As Graphics = Graphics.FromImage(bmp), grab As Bitmap = GetClientBitmap()
+        Using g As Graphics = Graphics.FromImage(bmp), grab As Bitmap = GetClientBitmap(True)
 
             If grab Is Nothing Then Return Nothing
             If grab.Width = 0 OrElse grab.Height = 0 Then Return Nothing

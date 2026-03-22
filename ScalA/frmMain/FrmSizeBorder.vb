@@ -77,17 +77,17 @@
             End If
         End If
         If m.Msg = WM_ENTERSIZEMOVE Then
-            dBug.print("border WM_ENTERSIZEMOVE")
+            dBug.Print("border WM_ENTERSIZEMOVE")
             FrmMain.Resizing = True
             suppressWM_SIZING = True
-            'FrmMain.Detach(False) 'fix sluggish sizing on ugaris/vanilla
+            'FrmMain.Detach(False) 'fix sluggish sizing on ugaris/vanilla 'obsolete due to detaching input
             Task.Run(Sub() 'this to supress wmsizing with bad bounds cause of the detach
                          Threading.Thread.Sleep(50)
                          suppressWM_SIZING = False
                      End Sub)
         End If
         If m.Msg = WM_EXITSIZEMOVE Then
-            dBug.print("Border WM_EXITSIZEMOVE")
+            dBug.Print("Border WM_EXITSIZEMOVE")
 
             FrmMain.Attach(FrmMain.AltPP)
             Dim sr = New Rectangle(Me.Left + BorderSize, Me.Top + BorderSize, Me.Width - BorderSize * 2, Me.Height - BorderSize * 2)

@@ -17,6 +17,7 @@ Partial Class frmHelp
 
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmHelp))
         Me.splitContainer = New System.Windows.Forms.SplitContainer()
         Me.tvCategories = New System.Windows.Forms.TreeView()
         Me.rtbContent = New System.Windows.Forms.RichTextBox()
@@ -34,20 +35,21 @@ Partial Class frmHelp
         Me.splitContainer.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.splitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
         Me.splitContainer.Location = New System.Drawing.Point(0, 0)
         Me.splitContainer.Name = "splitContainer"
         '
         'splitContainer.Panel1
         '
         Me.splitContainer.Panel1.Controls.Add(Me.tvCategories)
-        Me.splitContainer.Panel1MinSize = 150
+        Me.splitContainer.Panel1MinSize = 200
         '
         'splitContainer.Panel2
         '
         Me.splitContainer.Panel2.Controls.Add(Me.rtbContent)
         Me.splitContainer.Panel2MinSize = 300
         Me.splitContainer.Size = New System.Drawing.Size(684, 411)
-        Me.splitContainer.SplitterDistance = 180
+        Me.splitContainer.SplitterDistance = 200
         Me.splitContainer.TabIndex = 0
         '
         'tvCategories
@@ -60,7 +62,7 @@ Partial Class frmHelp
         Me.tvCategories.Location = New System.Drawing.Point(0, 0)
         Me.tvCategories.Name = "tvCategories"
         Me.tvCategories.ShowLines = False
-        Me.tvCategories.Size = New System.Drawing.Size(180, 411)
+        Me.tvCategories.Size = New System.Drawing.Size(200, 411)
         Me.tvCategories.TabIndex = 0
         '
         'rtbContent
@@ -72,7 +74,7 @@ Partial Class frmHelp
         Me.rtbContent.Location = New System.Drawing.Point(0, 0)
         Me.rtbContent.Name = "rtbContent"
         Me.rtbContent.ReadOnly = True
-        Me.rtbContent.Size = New System.Drawing.Size(500, 411)
+        Me.rtbContent.Size = New System.Drawing.Size(480, 411)
         Me.rtbContent.TabIndex = 0
         Me.rtbContent.Text = ""
         '
@@ -104,10 +106,11 @@ Partial Class frmHelp
         Me.ClientSize = New System.Drawing.Size(684, 451)
         Me.Controls.Add(Me.splitContainer)
         Me.Controls.Add(Me.pnlBottom)
-        Me.MinimizeBox = False
-        Me.MinimumSize = New System.Drawing.Size(500, 400)
+        Me.DoubleBuffered = True
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+        Me.MaximizeBox = False
+        Me.MinimumSize = New System.Drawing.Size(520, 400)
         Me.Name = "frmHelp"
-        Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Help & FAQ"
         Me.splitContainer.Panel1.ResumeLayout(False)

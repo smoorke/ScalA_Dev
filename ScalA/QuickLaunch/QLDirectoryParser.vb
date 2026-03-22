@@ -44,7 +44,7 @@ Namespace QL
             If ct.IsCancellationRequested Then Exit Function
 
             Dim findData As New WIN32_FIND_DATAW()
-            Dim searchOp As Integer = If(dirs, 1, 0)
+            Dim searchOp As Integer = If(dirs, FINDEX_SEARCH_OPS.FindExSearchLimitToDirectories, 0)
 
             Dim hFind As IntPtr = FindFirstFileExW(IO.Path.Combine(pth, "*.*"), FINDEX_INFO_LEVELS.FindExInfoBasic, findData, searchOp, IntPtr.Zero, 0)
             If hFind = New IntPtr(-1) Then

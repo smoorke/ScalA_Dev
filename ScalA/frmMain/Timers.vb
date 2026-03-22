@@ -117,10 +117,11 @@ Partial NotInheritable Class FrmMain
         If Not UpdateTitle() Then Exit Sub
 
         ' Check for SDL2 wrapper version mismatch periodically
-        UpdateWrapperWarning()
+        'UpdateWrapperWarning() 'does not belong in this hot path
 
         If Me.WindowState = FormWindowState.Minimized Then
             altSelectedOrOverview = Nothing
+            'Debug.Print($"tmrtick bailed {Me.WindowState}")
             Exit Sub
         End If
 
@@ -157,7 +158,7 @@ Partial NotInheritable Class FrmMain
             If pci.flags = 0 Then ' cursor is hidden
                 wasVisible = False
                 Exit Sub ' do not move astonia when cursor is hidden. fixes scrollbar thumb.
-                ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
+                ' note there is a legacy client bug where clicking thumb will intermittently cause it to jump to bottom. spam click to trigger
             End If
 
             If My.Settings.HoverActivate Then
@@ -205,7 +206,10 @@ Partial NotInheritable Class FrmMain
                                          If ci.flags = 0 Then Exit Sub
                                          swpBusy = True
                                          Dim flags = swpFlags
-                                         If Not AltPP?.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
+                                         If Not AltPP?.IsActive() Then
+                                             'Debug.Print("inactive AltPp")
+                                             flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
+                                         End If
                                          If AltPP?.IsBelow(ScalaHandle) Then flags.SetFlag(SetWindowPosFlags.IgnoreZOrder)
                                          Dim pt As Point = MousePosition - New Point(newX + If(AltPP?.ClientOffset.X, 0), newY + If(AltPP?.ClientOffset.Y, 0))
                                          Dim wparam = WM_MOUSEMOVE_CreateWParam()
@@ -326,6 +330,16 @@ Partial NotInheritable Class FrmMain
                                 If Not doNotReplaceSysM Then
 
                                     'check if sysmenu is opened from taskbar/tbthumb
+                                    Debug.Assert(gti.hwndMenuOwner <> WindowFromPoint(Control.MousePosition))
+                                    Debug.Assert(gti.hwndMenuOwner <> GetAncestor(WindowFromPoint(Control.MousePosition), GA_ROOT))
+                                    Debug.Assert(GetAncestor(gti.hwndMenuOwner, GA_ROOT) <> WindowFromPoint(Control.MousePosition))
+                                    Debug.Assert(GetAncestor(gti.hwndMenuOwner, GA_ROOT) <> GetAncestor(WindowFromPoint(Control.MousePosition), GA_ROOT))
+
+                                    Debug.Print($"gti.hwndMenuOwner: {gti.hwndMenuOwner.ToInt32:X} ""{GetWindowClass(gti.hwndMenuOwner)}""")
+                                    Debug.Print($"GetAncestor        {GetAncestor(gti.hwndMenuOwner, GA_ROOT).ToInt32:X} ""{GetWindowClass(GetAncestor(gti.hwndMenuOwner, GA_ROOT))}""")
+                                    Debug.Print($"WindowFromPoint:   {WindowFromPoint(Control.MousePosition).ToInt32:X} ""{GetWindowClass(WindowFromPoint(Control.MousePosition))}""")
+                                    Debug.Print($"GetAncestor        {GetAncestor(WindowFromPoint(Control.MousePosition), GA_ROOT).ToInt32:X} ""{GetWindowClass(GetAncestor(WindowFromPoint(Control.MousePosition), GA_ROOT))}""")
+
                                     Dim hwnd = GetAncestor(WindowFromPoint(Control.MousePosition), GA_ROOT)
                                     Dim clss = GetWindowClass(hwnd)
                                     dBug.Print($"clss ""{clss}""")
@@ -465,7 +479,7 @@ Partial NotInheritable Class FrmMain
                     If Not AOBusy Then
                         AltPP = ap
                         If ap.IsMinimized Then
-                            dBug.Print($"before {rcwB} {rccB}")
+                            dBug.Print($"before {rcwB} {rccB} {Me.WindowState}")
                             ap.Restore()
                             rcwB = ap.WindowRect
                             rccB = ap.ClientRect
@@ -537,8 +551,11 @@ Partial NotInheritable Class FrmMain
                                                      GetCursorInfo(ci)
                                                      If ci.flags = 0 Then Exit Sub
                                                      AOBusy = True
-                                                     Dim flags = SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate
-                                                     If Not but.AP.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
+                                                     Dim flags = SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder ' Or SetWindowPosFlags.DoNotSendChangingEvent
+                                                     If Not but.AP.IsActive() Then
+                                                         'Debug.Print("Inactive AltPp")
+                                                         flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder) 'this is needed to restore from min on active overview
+                                                     End If
                                                      'If but.Tag?.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
                                                      Dim pt As Point = MousePosition - New Point(newXB + ap.ClientOffset.X, newYB + ap.ClientOffset.Y)
                                                      Dim wparam = WM_MOUSEMOVE_CreateWParam()

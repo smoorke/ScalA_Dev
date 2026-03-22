@@ -94,14 +94,14 @@ Public NotInheritable Class ShellLinkInfo
             Me.WorkingDirectory = sb.ToString().Trim()
 
             sb.Clear() : sb.EnsureCapacity(260)
-            shellLink.GetArguments(sb, sb.Capacity)
-            Me.Arguments = sb.ToString().Trim()
-
-            sb.Clear() : sb.EnsureCapacity(260)
             Dim iconIndex As Integer
             shellLink.GetIconLocation(sb, sb.Capacity, iconIndex)
             IconPath = sb.ToString().Trim()
             Me.IconIndex = iconIndex
+
+            sb.Clear() : sb.EnsureCapacity(1024)
+            shellLink.GetArguments(sb, sb.Capacity)
+            Me.Arguments = sb.ToString().Trim()
 
             Dim show As Integer
             shellLink.GetShowCmd(show)

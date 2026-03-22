@@ -14,6 +14,7 @@ Partial NotInheritable Class FrmMain
     Dim moveSW As Stopwatch = Stopwatch.StartNew
 
     Dim DpiChanging As Boolean = False
+    Dim InMove As Boolean = False
 
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
@@ -158,7 +159,7 @@ Partial NotInheritable Class FrmMain
                         m.Result = 0
                         Exit Sub
                     Case SC_SIZE
-                        SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, SC_SIZE, IntPtr.Zero)
+                        SendMessage(FrmSizeBorder.Handle, WM_SYSCOMMAND, m.WParam, IntPtr.Zero)
                         m.Result = 0
                         Exit Sub
                     Case MC_SETTINGS
@@ -167,12 +168,8 @@ Partial NotInheritable Class FrmMain
                         FrmSettings.WindowState = FormWindowState.Normal
                         FrmSettings.Activate()
                         Exit Sub
-                    Case MC_HELP
-                        dBug.Print("Help called by sysMenu")
-                        Using helpForm As New frmHelp()
-                            helpForm.ShowDialog(Me)
-                        End Using
-                        Exit Sub
+                    Case SC_MOVE
+                        InMove = True
                 End Select
             Case WM_QUERYOPEN
                 dBug.Print("WM_QUERYOPEN")
@@ -236,6 +233,7 @@ Partial NotInheritable Class FrmMain
                 Me.Invalidate()
                 moveBusy = False
                 InSizeMove = False
+                InMove = False
                 DpiChanging = False
             Case WM_SIZE ' = &h0005
                 DpiChanging = False
@@ -281,11 +279,29 @@ Partial NotInheritable Class FrmMain
                 End If
                 If Me.cmbResolution.SelectedIndex > 0 Then Me.moveBusy = False
                 prevLoc = Me.Location
+            Case WM_NCLBUTTONDOWN
+                If m.WParam = HTCAPTION Then
+                    'InMove = True
+                End If
             Case WM_WINDOWPOSCHANGING
                 'dBug.print($"vers: {System.Environment.Version}")
                 'New Version(System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription.Split(" "c)(2))}
                 'dBug.print(New Version(System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription).ToString)
                 Dim winpos As WINDOWPOS = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
+
+                If Not winpos.flags.HasFlag(SetWindowPosFlags.IgnoreZOrder) Then
+                    Dim pid As Integer
+                    GetWindowThreadProcessId(winpos.hwndInsertAfter, pid)
+                    Try
+                        Using p As Process = Process.GetProcessById(pid)
+
+                            Debug.Print($"Winpos.changing {winpos.hwndInsertAfter} {pid} ""{p.ProcessName}""")
+                        End Using
+                    Catch ex As Exception
+
+                    End Try
+                End If
+
                 If StructureToPtrSupported Then 'Marshal.StructureToPtr requires 4.5.1 or higher
                     If caption_Mousedown AndAlso captionMoveTrigger AndAlso New Point(winpos.x, winpos.y) = Me.RestoreBounds.Location Then
                         winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreMove
@@ -301,8 +317,8 @@ Partial NotInheritable Class FrmMain
                     'winpos.cx = My.Settings.resol.Width + If(Me.WindowState = FormWindowState.Normal, 2, 0)
                     'winpos.cy = My.Settings.resol.Height + If(Me.pnlTitleBar IsNot Nothing, Me.pnlTitleBar.Height, 24) + If(Me.WindowState = FormWindowState.Normal, 1, 0)
 
-                    If DpiChanging AndAlso winpos.cx <> Me.Width AndAlso Not winpos.flags.HasFlag(SetWindowPosFlags.IgnoreResize) Then
-                        Debug.Print($"{winpos.cx} {Me.Width}")
+                    If (False AndAlso DpiChanging) AndAlso winpos.cx <> Me.Width AndAlso Not winpos.flags.HasFlag(SetWindowPosFlags.IgnoreResize) Then
+                        Debug.Print($"BlaBaBaBah {winpos.cx} {Me.Width}")
                         winpos.flags = winpos.flags Or SetWindowPosFlags.IgnoreResize
                         'DpiChanging = False
                     End If
@@ -313,19 +329,20 @@ Partial NotInheritable Class FrmMain
                     ' If Not Me.Disposing Then Debug.Print($"{winpos.hwndInsertAfter} {ScalaHandle} {FrmSizeBorder?.Handle} {frmOverlay?.Handle}")
                 End If
             Case WM_GETDPISCALEDSIZE
-                Debug.Print("WM_GETDPISCALEDSIZE")
+                Debug.Print($"WM_GETDPISCALEDSIZE")
                 DpiChanging = True
                 If StructureToPtrSupported Then
-                    'this deosn't work.
-                    ' rcW wrong?
-                    ' wrong type? SIZE vs Size
-                    'Dim rcW As RECT
-                    'GetWindowRect(Me.Handle, rcW)
-                    'Dim sz As New Size(rcW.bottom - rcW.top, rcW.right - rcW.left)
-                    'Marshal.StructureToPtr(sz, m.LParam, True)
+                    'Dim sz = Marshal.PtrToStructure(Of Win32_SIZE)(m.LParam)
+                    'sz.cx = My.Settings.resol.Width + 2
+                    'sz.cy = My.Settings.resol.Height + 26
+                    'Marshal.StructureToPtr(sz, m.LParam, False)
                 End If
+                m.Result = 1
+                Exit Sub
             Case WM_DPICHANGED
                 Debug.Print("WM_DPICHANGED")
+                'DpiChanging = False
+                'SetWindowPos(ScalaHandle, IntPtr.Zero, -1, -1, My.Settings.resol.Width + 2, My.Settings.resol.Height + 24, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreZOrder)
             Case WM_SHOWWINDOW
                 dBug.Print($"WM_SHOWWINDOW {m.WParam} {m.LParam}")
                 If m.WParam = SW_HIDE AndAlso m.LParam = SW_PARENTCLOSING Then 'minimize
@@ -338,21 +355,43 @@ Partial NotInheritable Class FrmMain
                     FrmSizeBorder.Hide()
                     frmOverlay.Hide()
                     wasMaximized = (Me.WindowState = FormWindowState.Maximized)
-                    Me.DefWndProc(m)
                     Me.WindowState = FormWindowState.Minimized
+                    'todo: restore or minimize other Alts when on Overview and MinOnMin 
+                    Me.DefWndProc(m)
                     Exit Sub
                 End If
                 If m.WParam = SW_NORMAL AndAlso m.LParam = SW_PARENTOPENING Then 'restore
                     dBug.Print($"wasMaximized {wasMaximized}")
-                    If Not FrmSizeBorder.Visible AndAlso My.Settings.SizingBorder Then FrmSizeBorder.Show(If(FrmSizeBorder.Owner Is Nothing, Me, Nothing))
+                    If Not FrmSizeBorder.Visible AndAlso My.Settings.SizingBorder Then
+                        If FrmSizeBorder.Owner Is Nothing Then
+                            FrmSizeBorder.Show(Me)
+                        Else
+                            FrmSizeBorder.Show()
+                        End If
+                        FrmSizeBorder.BringToFront()
+                    End If
+                    Me.DefWndProc(m)
                     If wasMaximized Then
                         SetWindowPos(ScalaHandle, SWP_HWND.TOP, Bounds.X, Bounds.Y, MaximizedBounds.Width, MaximizedBounds.Height, SetWindowPosFlags.ShowWindow)
-                        'Me.WindowState = FormWindowState.Maximized
+                        Me.WindowState = FormWindowState.Maximized
+                    Else
+                        Me.WindowState = FormWindowState.Normal
                     End If
                     AltPP?.CenterBehind(pbZoom, 0, True, True) 'fix thumb breaking
                     FrmBehind.Show()
-                    If Not frmOverlay.Visible Then frmOverlay.Show(If(frmOverlay.Owner Is Nothing, Me, Nothing))
+                    If Not frmOverlay.Visible Then
+                        If frmOverlay.Owner Is Nothing Then
+                            frmOverlay.Show(Me)
+                        Else
+                            frmOverlay.Show()
+                        End If
+                        frmOverlay.BringToFront()
+                    End If
+                    Debug.Print($"tmrtick.enabled {tmrTick.Enabled} {Me.RectangleToScreen(pbZoom.Bounds)}")
+                    moveBusy = False
+                    Exit Sub
                 End If
+
             Case WM_WINDOWPOSCHANGED 'handle dragging of maximized window
                 'If posChangeBusy Then
                 '    dBug.print("WM_WINDOWPOSCHANGED busy")

@@ -104,6 +104,7 @@
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="AstoniaProcess.vb" />
     <Compile Include="ClipBoardHelper.vb" />
+    <Compile Include="FixedControls.vb" />
     <Compile Include="CustomToolStripRenderer.vb" />
     <Compile Include="debugger\dBug.vb" />
     <Compile Include="debugger\frmDebug.Designer.vb">
@@ -162,6 +163,7 @@
     <Compile Include="Globals.vb" />
     <Compile Include="Hotkey.vb" />
     <Compile Include="IPC.vb" />
+    <Compile Include="QuickLaunch\StickyButton.vb" />
     <Compile Include="ZoomStateIPC.vb" />
     <Compile Include="SDL2WrapperHelper.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
@@ -180,17 +182,17 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="frmMain\QuickLaunch\QuickLaunch.vb" />
-    <Compile Include="frmMain\QuickLaunch\QuickLaunchEvents.vb" />
-    <Compile Include="frmMain\QuickLaunch\QLTypes.vb" />
-    <Compile Include="frmMain\QuickLaunch\QLSort.vb" />
-    <Compile Include="frmMain\QuickLaunch\QLIconCache.vb" />
-    <Compile Include="frmMain\QuickLaunch\QLDirectoryParser.vb" />
-    <Compile Include="frmMain\QuickLaunch\QLDragDropHandler.vb" />
-    <Compile Include="frmMain\QuickLaunch\QLClipboardHandler.vb" />
-    <Compile Include="frmMain\QuickLaunch\QLFileOperations.vb" />
-    <Compile Include="frmMain\QuickLaunch\QLItemHandler.vb" />
-    <Compile Include="frmMain\QuickLaunch\QuickLaunchManager.vb" />
+    <Compile Include="QuickLaunch\QuickLaunch.vb" />
+    <Compile Include="QuickLaunch\QuickLaunchEvents.vb" />
+    <Compile Include="QuickLaunch\QLTypes.vb" />
+    <Compile Include="QuickLaunch\QLSort.vb" />
+    <Compile Include="QuickLaunch\QLIconCache.vb" />
+    <Compile Include="QuickLaunch\QLDirectoryParser.vb" />
+    <Compile Include="QuickLaunch\QLDragDropHandler.vb" />
+    <Compile Include="QuickLaunch\QLClipboardHandler.vb" />
+    <Compile Include="QuickLaunch\QLFileOperations.vb" />
+    <Compile Include="QuickLaunch\QLItemHandler.vb" />
+    <Compile Include="QuickLaunch\QuickLaunchManager.vb" />
     <Compile Include="ScreenManager.vb" />
     <Compile Include="Settings.vb" />
     <Compile Include="ShellLinkInfo.vb" />

@@ -1,6 +1,5 @@
 ﻿Imports System.IO
 Imports System.IO.Pipes
-Imports System.Runtime.InteropServices
 Imports System.Threading
 
 Module Main
@@ -67,7 +66,7 @@ Module Main
     Public Function AnyScalAWindowRunning() As Boolean
         Dim found As Boolean = False
         EnumWindows(Function(h As IntPtr, l As IntPtr) As Boolean
-                        If IsWindow(h) AndAlso GetModuleBuildName(h) = "Scala" Then
+                        If IsWindow(h) AndAlso IsScalA(h) Then
                             found = True
                             Return False
                         End If
@@ -87,19 +86,38 @@ Public Module Constants
     Public Const MutexName As String = "ScalA_DpiHelperSingleInstanceMutex"
 End Module
 
-Public Module NativeMethods
-    Public Delegate Function EnumWindowsProc(hWnd As IntPtr, lParam As IntPtr) As Boolean
-
-    <DllImport("user32.dll")>
-    Public Function EnumWindows(lpEnumFunc As EnumWindowsProc, lParam As IntPtr) As Boolean : End Function
-
-    <DllImport("user32.dll")>
-    Public Function IsWindow(hWnd As IntPtr) As Boolean : End Function
-End Module
-
 Public Module Extensions
     'todo: read actual name from ScalA project 
     Private ReadOnly OrigScalAfname As String = "ScalA.exe" 'scalaProc.MainModule.FileVersionInfo.OriginalFilename
+    Private ReadOnly ScalAProcessCache As Dictionary(Of IntPtr, ProcInfoCacheItem) = New Dictionary(Of IntPtr, ProcInfoCacheItem)
+
+    Private Class ProcInfoCacheItem
+        Public hWnd As IntPtr
+        Private _IsScala As Boolean?
+        Public Shared Function GetItem(hWnd) As ProcInfoCacheItem
+            Dim item As ProcInfoCacheItem = Nothing
+
+            If Not ScalAProcessCache.TryGetValue(hWnd, item) Then
+                item = New ProcInfoCacheItem(hWnd)
+                ScalAProcessCache(hWnd) = item
+            End If
+
+            Return item
+        End Function
+        Public Sub New(hWnd As IntPtr)
+            Me.hWnd = hWnd
+        End Sub
+        Public ReadOnly Property isScalA As Boolean
+            Get
+                If _IsScala IsNot Nothing Then Return _IsScala
+                _IsScala = hWnd.IsScalA
+                Return _IsScala
+            End Get
+        End Property
+        Public Function HasExitedSafe() As Boolean
+            Return False 'todo: implement
+        End Function
+    End Class
 
     '''' <summary>
     '''' Is process ScalA?
@@ -109,7 +127,7 @@ Public Module Extensions
     <System.Runtime.CompilerServices.Extension()>
     Public Function IsScalA(hWnd As IntPtr) As Boolean
         Dim pid As Integer
-        getwindowthreadid(hWnd, pid)
+        GetWindowThreadProcessId(hWnd, pid)
         Try
             Dim p As Process = Process.GetProcessById(pid)
             Return p.MainModule.FileVersionInfo.OriginalFilename = OrigScalAfname

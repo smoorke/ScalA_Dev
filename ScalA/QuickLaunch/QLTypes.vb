@@ -34,6 +34,11 @@ Namespace QL
         ''' </summary>
         Public isFolder As Boolean
 
+        ''' <summary>
+        ''' the icon was loaded correctly on first pass.
+        ''' </summary>
+        Public iconLoaded As Boolean
+
 #If DEBUG Then
         Public test As String
 #End If

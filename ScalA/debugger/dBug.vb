@@ -29,6 +29,17 @@ Module dBug
     End Sub
 
     <Conditional("DEBUG")>
+    Public Sub Dump()
+        dBug.Print("-Dump", 1)
+        dBug.Print($"AltPP {FrmMain.AltPP?.Name} {FrmMain.AltPP?.Id},1")
+        dBug.Print($"MoveBusy: {FrmMain.moveBusy},1")
+        dBug.Print($"AOBusy:   {FrmMain.AOBusy},1")
+        dBug.Print($"", 1)
+        dBug.Print("-EndDump", 1)
+    End Sub
+
+
+    <Conditional("DEBUG")>
     Friend Sub InitDebug()
 #If DEBUG Then
 

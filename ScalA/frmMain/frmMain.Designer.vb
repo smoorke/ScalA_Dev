@@ -36,13 +36,13 @@ Partial NotInheritable Class FrmMain
         Me.cmbResolution = New ScalA.ThemedComboBox()
         Me.cboAlt = New ScalA.ThemedComboBox()
         Me.pnlTitleBar = New System.Windows.Forms.Panel()
-        Me.chkDebug = New System.Windows.Forms.CheckBox()
+        Me.chkDebug = New ScalA.FixedCheckbox()
         Me.pbDpiWarning = New System.Windows.Forms.PictureBox()
         Me.pbWrapperWarning = New System.Windows.Forms.PictureBox()
         Me.pnlUpdate = New System.Windows.Forms.Panel()
         Me.pbUpdateAvailable = New System.Windows.Forms.PictureBox()
         Me.btnHelp = New System.Windows.Forms.Button()
-        Me.ChkEqLock = New System.Windows.Forms.CheckBox()
+        Me.ChkEqLock = New ScalA.FixedCheckbox()
         Me.lblTitle = New System.Windows.Forms.Label()
         Me.pnlButtons = New System.Windows.Forms.Panel()
         Me.btnMin = New System.Windows.Forms.Button()
@@ -81,7 +81,7 @@ Partial NotInheritable Class FrmMain
         Me.CloseToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.pnlOverview = New System.Windows.Forms.FlowLayoutPanel()
         Me.pnlMessage = New System.Windows.Forms.Panel()
-        Me.chkHideMessage = New System.Windows.Forms.CheckBox()
+        Me.chkHideMessage = New ScalA.FixedCheckbox()
         Me.pbMessage = New System.Windows.Forms.PictureBox()
         Me.pbZoom = New System.Windows.Forms.PictureBox()
         Me.sysTrayIcon = New System.Windows.Forms.NotifyIcon(Me.components)
@@ -289,13 +289,14 @@ Partial NotInheritable Class FrmMain
         Me.btnHelp.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnHelp.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnHelp.Location = New System.Drawing.Point(580, 0)
+        Me.btnHelp.Margin = New System.Windows.Forms.Padding(0)
         Me.btnHelp.Name = "btnHelp"
         Me.btnHelp.Size = New System.Drawing.Size(24, 25)
         Me.btnHelp.TabIndex = 17
         Me.btnHelp.TabStop = False
         Me.btnHelp.Text = "?"
         Me.ttMain.SetToolTip(Me.btnHelp, "Help & FAQ")
-        Me.btnHelp.UseVisualStyleBackColor = True
+        Me.btnHelp.UseVisualStyleBackColor = False
         '
         'ChkEqLock
         '
@@ -348,10 +349,12 @@ Partial NotInheritable Class FrmMain
         Me.btnMin.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnMin.Location = New System.Drawing.Point(0, 0)
         Me.btnMin.Name = "btnMin"
+        Me.btnMin.Padding = New System.Windows.Forms.Padding(0, 1, 0, 0)
         Me.btnMin.Size = New System.Drawing.Size(45, 23)
         Me.btnMin.TabIndex = 8
         Me.btnMin.TabStop = False
         Me.btnMin.Text = "⎯"
+        Me.btnMin.TextAlign = System.Drawing.ContentAlignment.TopCenter
         Me.ttMain.SetToolTip(Me.btnMin, "Minimize")
         Me.btnMin.UseVisualStyleBackColor = True
         '
@@ -364,10 +367,12 @@ Partial NotInheritable Class FrmMain
         Me.btnMax.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnMax.Location = New System.Drawing.Point(45, 0)
         Me.btnMax.Name = "btnMax"
+        Me.btnMax.Padding = New System.Windows.Forms.Padding(0, 2, 0, 0)
         Me.btnMax.Size = New System.Drawing.Size(45, 23)
         Me.btnMax.TabIndex = 9
         Me.btnMax.TabStop = False
         Me.btnMax.Text = "⧠"
+        Me.btnMax.TextAlign = System.Drawing.ContentAlignment.TopCenter
         Me.ttMain.SetToolTip(Me.btnMax, "Maximize")
         Me.btnMax.UseVisualStyleBackColor = True
         '
@@ -775,7 +780,6 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents CloseToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents pnlOverview As FlowLayoutPanel
     Friend WithEvents pnlMessage As Panel
-    Friend WithEvents chkHideMessage As CheckBox
     Friend WithEvents pbMessage As PictureBox
     Friend WithEvents cmsQuickLaunch As ContextMenuStrip
     Friend WithEvents DummyToolStripMenuItem As ToolStripMenuItem
@@ -783,7 +787,6 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents sysTrayIcon As NotifyIcon
     Friend WithEvents pnlTitleBar As Panel
     Friend WithEvents lblTitle As Label
-    Friend WithEvents chkDebug As CheckBox
     Friend WithEvents cornerNW As PictureBox
     Friend WithEvents cornerNE As PictureBox
     Friend WithEvents cornerSW As PictureBox
@@ -795,7 +798,6 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents BotLastToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents NoneSortToolStripMenuItem As ToolStripMenuItem
     Public WithEvents cmsAlt As ContextMenuStrip
-    Friend WithEvents ChkEqLock As CheckBox
     Friend WithEvents PnlEqLock As Panel
     Friend WithEvents ttMain As ToolTip
     Public WithEvents cmbResolution As ThemedComboBox
@@ -825,4 +827,7 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents ActiveOverviewToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripMenuItem2 As ToolStripSeparator
     Friend WithEvents btnHelp As Button
+    Friend WithEvents chkHideMessage As FixedCheckbox
+    Friend WithEvents chkDebug As FixedCheckbox
+    Friend WithEvents ChkEqLock As FixedCheckbox
 End Class

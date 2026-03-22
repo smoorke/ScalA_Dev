@@ -1,5 +1,6 @@
 Imports System.Collections.Concurrent
 Imports System.Runtime.InteropServices
+Imports System.Threading
 
 Namespace QL
 
@@ -40,6 +41,8 @@ Namespace QL
             End Get
         End Property
 
+        Public ReadOnly EmptyIcon As New Bitmap(1, 1)
+
         ''' <summary>
         ''' Gets the folder icon with shortcut overlay
         ''' </summary>
@@ -60,8 +63,8 @@ Namespace QL
         Public Function GetIconFromCache(qli As QLInfo) As Bitmap
             Try
                 Return IconCache.GetOrAdd(qli.path, AddressOf GetIconFromFile) _
-                                .AsTransparent(If(qli.hidden, If(My.Settings.DarkMode, 0.4, 0.5), 1)) _
-                                .addOverlay(If(My.Settings.QLResolveLnk AndAlso ((qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target?.EndsWith("\"c)) OrElse qli.pointsToDir), My.Resources.shortcutOverlay, Nothing), True)
+                                .AsTransparent(If(qli.hidden, If(My.Settings.DarkMode, 0.4, 0.5), 1)) ' _
+                '                .addOverlay(If(My.Settings.QLResolveLnk AndAlso ((qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target?.EndsWith("\"c)) OrElse qli.pointsToDir), My.Resources.shortcutOverlay, Nothing), False)
             Catch ex As Exception
                 dBug.Print($"GetIcon Exception {ex.Message}")
                 Return Nothing
@@ -98,7 +101,7 @@ Namespace QL
         ''' <returns>Icon bitmap</returns>
         Public Function GetIconFromFile(PathName As String, Optional deffolder As Boolean = False, Optional supressCacheMiss As Boolean = False) As Bitmap
 #If DEBUG Then
-            If Not supressCacheMiss Then dBug.Print($"iconCahceMiss: {PathName}")
+            'If Not supressCacheMiss Then dBug.Print($"iconCahceMiss: {PathName}") 'disabled for performancetesting
 #End If
 
             Dim bm As Bitmap = Nothing
@@ -110,13 +113,13 @@ Namespace QL
                 Dim flags As UInteger = SHGFI_ICON Or SHGFI_SMALLICON
                 If deffolder Then flags = flags Or SHGFI_USEFILEATTRIBUTES
 
-                SHGetFileInfoW(PathName, FILE_ATTRIBUTE_DIRECTORY, fi, Marshal.SizeOf(fi), flags)
+                SHGetFileInfoW(PathName, FILE_ATTRIBUTE_DIRECTORY, fi, Marshal.SizeOf(fi), SHGFI_ICON Or SHGFI_SMALLICON) 'flags)
                 If fi.hIcon = IntPtr.Zero Then
                     dBug.Print("hIcon empty: " & Marshal.GetLastWin32Error)
                     Throw New Exception
                 End If
                 ico = Icon.FromHandle(fi.hIcon)
-                bm = ico.ToBitmap
+                bm = ico.ToBitmap()
                 DestroyIcon(ico.Handle)
                 Return bm
 
@@ -187,7 +190,15 @@ Namespace QL
                 Catch ex As Exception
                     bm = Nothing
                 End Try
-
+                If My.Settings.QLResolveLnk AndAlso PathName.ToLower.EndsWith(".lnk") Then
+                    Dim oLink As ShellLinkInfo = New ShellLinkInfo(PathName) 'CreateObject("WScript.Shell").CreateShortcut(PathName)
+                    'Dim target As String = oLink.TargetPath
+                    If oLink.PointsToDir OrElse IO.Directory.Exists(oLink.TargetPath) Then
+                        Using g As Graphics = Graphics.FromImage(bm)
+                            g.DrawImage(My.Resources.shortcutOverlay, New Rectangle(New Point, bm.Size))
+                        End Using
+                    End If
+                End If
             End If
             DestroyIcon(If(ico?.Handle, IntPtr.Zero))
             ico?.Dispose()

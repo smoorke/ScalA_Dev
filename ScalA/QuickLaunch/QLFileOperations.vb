@@ -47,8 +47,7 @@ Namespace QL
         ''' <param name="fileName">Filename to check (with or without extension)</param>
         ''' <returns>True if name is reserved</returns>
         Public Function IsReservedName(fileName As String) As Boolean
-            Dim nameWithoutExt As String = IO.Path.GetFileNameWithoutExtension(fileName).ToUpperInvariant()
-            Return ReservedNames.Contains(nameWithoutExt)
+            Return ReservedNames.Contains(fileName.ToUpperInvariant())
         End Function
 
         ''' <summary>

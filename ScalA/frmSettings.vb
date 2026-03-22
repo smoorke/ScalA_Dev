@@ -245,7 +245,6 @@ Public NotInheritable Class FrmSettings
         startup = False
 
 
-
         'AllowSetForegroundWindow(ASFW_ANY)
         'SetForegroundWindow(GetDesktopWindow)
 
@@ -275,6 +274,21 @@ Public NotInheritable Class FrmSettings
                         System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                     End If
                 End If
+            Case WM_GETDPISCALEDSIZE
+                m.Result = 1
+                Exit Sub
+            Case WM_SYSCOMMAND
+                Select Case m.WParam
+                    Case SC_CONTEXTHELP
+                        frmHelp.Show(FrmMain)
+                        Exit Sub
+                End Select
+            Case WM_EXITSIZEMOVE
+                Dim rcC As RECT
+                GetClientRect(Me.Handle, rcC)
+                Debug.Print($"rcC {rcC.right} {rcC.bottom}")
+                Me.Width += DesignedClientSize.Width - rcC.right
+                Me.Height += DesignedClientSize.Height - rcC.bottom
         End Select
 
         MyBase.WndProc(m)

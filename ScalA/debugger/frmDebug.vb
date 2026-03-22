@@ -4,6 +4,7 @@ Public Class frmDebug
 #If DEBUG Then
 
     Dim DesignedClientSize As Size
+
     Public Sub New()
         InitializeComponent()
         DesignedClientSize = Me.ClientSize
@@ -290,7 +291,7 @@ Public Class frmDebug
     Private crtMode As Boolean = frmCrt.Visible
 
     Dim startup As Boolean = True
-
+    Dim currentDPI = 96
 
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
@@ -302,12 +303,29 @@ Public Class frmDebug
                         GetWindowRect(Me.Handle, rcW)
                         Dim rcC As RECT
                         GetClientRect(Me.Handle, rcC)
-                        Debug.Print($"rcC {rcC.right} {rcC.bottom}")
+                        'Debug.Print($"rcC {rcC.right} {rcC.bottom}")
                         winpos.cx = rcW.right - rcW.left - rcC.right + DesignedClientSize.Width
                         winpos.cy = rcW.bottom - rcW.top - rcC.bottom + DesignedClientSize.Height
                         System.Runtime.InteropServices.Marshal.StructureToPtr(winpos, m.LParam, True)
                     End If
                 End If
+            Case WM_GETDPISCALEDSIZE
+                If StructureToPtrSupported Then
+                    Dim sz = Marshal.PtrToStructure(Of Size)(m.LParam)
+                    Dim rcW As RECT
+                    GetWindowRect(Me.Handle, rcW)
+                    Dim rcC As RECT
+                    GetClientRect(Me.Handle, rcC)
+                    Dim factor = (m.WParam.ToInt32 And &HFFFF) / currentDPI
+                    Debug.Print($"rcC {rcC.right} {rcC.bottom} {factor} {rcW.bottom - rcW.top - rcC.bottom}")
+                    sz.Width = (rcW.right - rcW.left - rcC.right) * factor + DesignedClientSize.Width
+                    sz.Height = (rcW.bottom - rcW.top - rcC.bottom) * factor + DesignedClientSize.Height
+                    Marshal.StructureToPtr(sz, m.LParam, False)
+                End If
+                m.Result = 1
+                Exit Sub
+            Case WM_DPICHANGED
+                currentDPI = m.WParam.ToInt32 And &HFFFF
         End Select
 
         MyBase.WndProc(m)
@@ -393,7 +411,6 @@ Public Class frmDebug
         'MenuToolTip.InitializeTooltip(Me.Handle)
         'MenuToolTip.ShowTooltipWithDelay("Test123", 0, 0)
     End Sub
-
 
 #End If
 End Class
