@@ -411,12 +411,14 @@ Partial NotInheritable Class FrmMain
                             DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
                         End If
                     Else 'buttons w/o alts
-                        but.BeginInvoke(Sub() but.Text = "")
-                        but.AP = Nothing
-                        but.ContextMenuStrip = cmsQuickLaunch
-                        but.BackgroundImage = Nothing
-                        but.Image = Nothing
-                        but.pidCache = 0
+                        If but.pidCache <> 0 Then
+                            but.BeginInvoke(Sub() but.Text = "")
+                            but.AP = Nothing
+                            but.ContextMenuStrip = cmsQuickLaunch
+                            but.BackgroundImage = Nothing
+                            but.Image = Nothing
+                            but.pidCache = 0
+                        End If
                     End If
                 Catch
                 End Try
@@ -690,7 +692,13 @@ Partial NotInheritable Class FrmMain
     Public LowPriWorkerThread As Threading.Thread
     Public JobVersions As New Concurrent.ConcurrentDictionary(Of Integer, ULong)
     Public Sub EnqueueLowPriJob(id As Integer, job As Action)
-        Dim newVersion As ULong = JobVersions.AddOrUpdate(id, 1, Function(key, oldVal) oldVal + 1)
+        Dim newVersion As ULong = JobVersions.AddOrUpdate(id, 1, Function(key, oldVal)
+                                                                     If oldVal = ULong.MaxValue Then
+                                                                         Return 1UL
+                                                                     Else
+                                                                         Return oldVal + 1UL
+                                                                     End If
+                                                                 End Function)
 
         ' Enqueue with version snapshot
         LowPriJobs.Add(Tuple.Create(id, newVersion, job))
@@ -705,7 +713,11 @@ Partial NotInheritable Class FrmMain
             If JobVersions.TryGetValue(id, currentVersion) Then
                 ' Only execute if latest
                 If version = currentVersion Then
-                    job()
+                    Try
+                        job()
+                    Catch ex As Exception
+                        Debug.Print("Job failed for ID " & id & ": " & ex.Message)
+                    End Try
                 Else
                     Debug.Print("Skipped outdated job for ID: " & id)
                 End If
