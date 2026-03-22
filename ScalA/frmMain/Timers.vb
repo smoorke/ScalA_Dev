@@ -714,7 +714,7 @@ Partial NotInheritable Class FrmMain
                 ' Only execute if latest
                 If version = currentVersion Then
                     Try
-                        job()
+                        Call job()
                     Catch ex As Exception
                         Debug.Print("Job failed for ID " & id & ": " & ex.Message)
                     End Try
