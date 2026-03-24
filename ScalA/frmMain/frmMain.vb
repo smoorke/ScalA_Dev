@@ -1253,6 +1253,9 @@ Partial Public NotInheritable Class FrmMain
             AddHandler but.MouseEnter, AddressOf BtnAlt_MouseEnter
             AddHandler but.MouseLeave, AddressOf BtnAlt_MouseLeave
             AddHandler but.MouseUp, AddressOf Various_MouseUp
+
+            but.ContextMenuStrip = cmsQuickLaunch
+
             pnlOverview.Controls.Add(but)
         Next i
         pnlOverview.ResumeLayout()
