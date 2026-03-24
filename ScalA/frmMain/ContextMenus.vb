@@ -2270,9 +2270,9 @@ Partial Public NotInheritable Class FrmMain
         Dim act As String = sender.tag.action
 
         If {"Paste", "PasteLink"}.Contains(act) Then
-            tgt = IO.Path.GetDirectoryName(tgt.TrimEnd("\"c))
-            CloseOtherDropDowns(cmsQuickLaunch.Items)
-            cmsQuickLaunch.Close()
+            tgt = IO.Path.GetDirectoryName(tgt.TrimEnd("\"c)) & "\"
+            'CloseOtherDropDowns(cmsQuickLaunch.Items)
+            'cmsQuickLaunch.Close()
             Task.Run(Sub()
                          Dim watch As Stopwatch = Stopwatch.StartNew()
                          Dim hndl As IntPtr = IntPtr.Zero
