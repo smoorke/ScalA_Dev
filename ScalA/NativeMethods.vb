@@ -1337,10 +1337,17 @@ Module NativeMethods
     <DllImport("kernel32.dll", SetLastError:=True)>
     Public Function FindClose(hFindFile As IntPtr) As Boolean
     End Function
-
+    <StructLayout(LayoutKind.Sequential)>
+    Public Structure TPMPARAMS
+        Public cbSize As Integer
+        Public rcExclude As RECT
+    End Structure
 
     <DllImport("User32.Dll")>
-    Public Function TrackPopupMenuEx(ByVal hmenu As IntPtr, ByVal fuFlags As UInteger, ByVal x As Integer, ByVal y As Integer, ByVal hwnd As IntPtr, ByVal lptpm As Integer) As Integer : End Function
+    Public Function TrackPopupMenuEx(ByVal hmenu As IntPtr, ByVal fuFlags As UInteger, ByVal x As Integer, ByVal y As Integer, ByVal hwnd As IntPtr, ByVal lptpm As TPMPARAMS) As Integer : End Function
+    <DllImport("User32.Dll")>
+    Public Function TrackPopupMenuEx(ByVal hmenu As IntPtr, ByVal fuFlags As UInteger, ByVal x As Integer, ByVal y As Integer, ByVal hwnd As IntPtr, ByVal lptpm As IntPtr) As Integer : End Function
+
     <DllImport("user32.dll", CharSet:=CharSet.Auto)>
     Public Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByVal lParam As IntPtr) As IntPtr : End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
