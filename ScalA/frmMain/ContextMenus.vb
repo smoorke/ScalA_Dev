@@ -2104,6 +2104,22 @@ Partial Public NotInheritable Class FrmMain
             Dim MenuItems As IEnumerable(Of MenuItem) = QlCtxMenu.MenuItems.Cast(Of MenuItem).ToList
 
             RunAsAdminItem.Visible = My.Computer.Keyboard.ShiftKeyDown AndAlso Not sender.HasDropDownItems AndAlso Not My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator)
+            Try
+                Dim lowPath As String = qli.path.ToLowerInvariant
+                If lowPath.EndsWith(".url") OrElse lowPath.EndsWith(".website") Then
+                    RunAsAdminItem.Enabled = False
+                    RunAsAdminItem.Tag = New MenuTag With {.tooltip = $"Cannot Run a {If(lowPath.EndsWith(".url"), ".URL", ".Website")} file as Administrator."}
+                End If
+                If lowPath.EndsWith(".lnk") Then
+                    Dim sli As New ShellLinkInfo(qli.path)
+                    If String.IsNullOrWhiteSpace(sli.TargetPath) Then
+                        RunAsAdminItem.Enabled = False
+                        RunAsAdminItem.Tag = New MenuTag With {.tooltip = $"Cannot Run this Link as Administrator.{vbCrLf}It is Not Pointing Directly to an Executable."}
+                    End If
+                End If
+            Catch ex As Exception
+
+            End Try
 
             clipBoardInfo = GetClipboardFilesAndAction()
 
