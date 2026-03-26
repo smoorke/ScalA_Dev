@@ -2016,6 +2016,7 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub QL_MouseDown(sender As ToolStripMenuItem, e As MouseEventArgs) 'Handles cmsQuickLaunch.mousedown
         Dim qli As QLInfo = CType(sender.Tag, QLInfo)
+        Application.DoEvents()
         If e.Button = MouseButtons.Right Then
 
             dBug.Print("QL_MouseDown")
