@@ -1237,34 +1237,29 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             If close Then Me.CloseOrKill()
 
             ' Start the new process using a batch script to avoid admin rights prompt
-            Dim bat As String = "\AsInvoker.bat"
-            Dim tmpDir As String = FileIO.SpecialDirectories.Temp & "\ScalA"
+            'Dim bat As String = "\AsInvoker.bat"
+            'Dim tmpDir As String = FileIO.SpecialDirectories.Temp & "\ScalA"
 
-            If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
-            If Not FileIO.FileSystem.FileExists(tmpDir & bat) Then FileIO.FileSystem.WriteAllText(tmpDir & bat, My.Resources.AsInvoker, False)
+            'If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
+            'If Not FileIO.FileSystem.FileExists(tmpDir & bat) Then FileIO.FileSystem.WriteAllText(tmpDir & bat, My.Resources.AsInvoker, False)
 
-            Dim pp As New Process With {
-            .StartInfo = New ProcessStartInfo With {
-                .FileName = tmpDir & bat,
-                .Arguments = """" & shortcutlink & """",
-                .WindowStyle = ProcessWindowStyle.Hidden,
-                .CreateNoWindow = True
-                }
-            }
+            Dim pp As New Process With {.StartInfo = New ProcessStartInfo With {.FileName = shortcutlink}}
 
             ' Start the new process
             Try
                 alreadylaunched = True
+                Environment.SetEnvironmentVariable("__COMPAT_LAYER", "RUNASINVOKER")
                 pp.Start()
-                MRU.Bump(shortcutlink)
+                If Not mruNotfound Then MRU.Bump(shortcutlink)
             Catch ex As Exception
                 dBug.Print($"Failed to restart process: {ex.Message}")
                 Try
-                    FileIO.FileSystem.DeleteFile(shortcutlink)
+                    If mruNotfound AndAlso System.IO.File.Exists(shortcutlink) Then FileIO.FileSystem.DeleteFile(shortcutlink)
                 Catch x As Exception
 
                 End Try
             Finally
+                Environment.SetEnvironmentVariable("__COMPAT_LAYER", Nothing)
                 pp.Dispose()
                 Try
                     If mruNotfound AndAlso System.IO.File.Exists(shortcutlink) Then
@@ -1388,22 +1383,21 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
         Dim pp As Process
 
-        Dim bat As String = "\noAdmin.bat"
-        Dim tmpDir As String = FileIO.SpecialDirectories.Temp & "\ScalA"
+        'Dim bat As String = "\noAdmin.bat"
+        'Dim tmpDir As String = FileIO.SpecialDirectories.Temp & "\ScalA"
 
-        If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
-        If Not FileIO.FileSystem.FileExists(tmpDir & bat) Then FileIO.FileSystem.WriteAllText(tmpDir & bat, My.Resources.AsInvoker, False)
+        'If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
+        'If Not FileIO.FileSystem.FileExists(tmpDir & bat) Then FileIO.FileSystem.WriteAllText(tmpDir & bat, My.Resources.AsInvoker, False)
 
-        pp = New Process With {.StartInfo = New ProcessStartInfo With {.FileName = tmpDir & bat,
-                                                                       .Arguments = """" & shortcutlink & """",
-                                                                       .WindowStyle = ProcessWindowStyle.Hidden,
-                                                                       .CreateNoWindow = True}}
+        pp = New Process With {.StartInfo = New ProcessStartInfo With {.FileName = shortcutlink}}
         Try
             alreadylaunched = True
+            Environment.SetEnvironmentVariable("__COMPAT_LAYER", "RUNASINVOKER")
             pp.Start()
         Catch
             dBug.print("pp.start() except")
         Finally
+            Environment.SetEnvironmentVariable("__COMPAT_LAYER", Nothing)
             pp.Dispose()
         End Try
 

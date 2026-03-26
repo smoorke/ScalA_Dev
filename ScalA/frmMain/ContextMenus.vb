@@ -1737,6 +1737,13 @@ Partial Public NotInheritable Class FrmMain
         Dim unused = RestoreClicking()
 
     End Sub
+    Private Sub QlCtxOpenAsAdmin(sender As MenuItem, e As EventArgs)
+        dBug.Print($"QlCtxOpen sender:{sender}")
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
+        OpenLnk(sender.Parent.Tag, New MouseEventArgs(MouseButtons.Left, 1, MousePosition.X, MousePosition.Y, 0), "RunAs")
+    End Sub
+
 
     Private Sub QlCtxOpen(sender As MenuItem, e As EventArgs)
         dBug.Print($"QlCtxOpen sender:{sender}")
@@ -2005,6 +2012,8 @@ Partial Public NotInheritable Class FrmMain
 
     Private ReadOnly folderHbm As IntPtr = folderIcon.GetHbitmap(Color.Black)
     Private ReadOnly plusHbm As IntPtr = New Bitmap(My.Resources.Add, New Size(16, 16)).GetHbitmap(Color.Black)
+    Private ShieldHbm As IntPtr = IntPtr.Zero
+
 
     'Dim QlCtxIsOpen As Boolean = False 'to handle glitch in contextmenu when moving astonia window
     Dim QlCtxNewMenu As New MenuItem
@@ -2029,7 +2038,7 @@ Partial Public NotInheritable Class FrmMain
             Dim rcDrop As RECT
             Dim rcCurr As RECT
             Dim DropIsLeft As Boolean
-            If sender.HasDropDown Then
+            If sender.HasDropDownItems Then
                 Dim paren = If(TryCast(sender.GetCurrentParent(), ToolStripDropDown)?.Handle, IntPtr.Zero)
                 GetWindowRect(paren, rcCurr)
                 GetWindowRect(sender.DropDown.Handle, rcDrop)
@@ -2044,7 +2053,7 @@ Partial Public NotInheritable Class FrmMain
             Dim path As String = qli.path
 
             Dim OpenItem = New MenuItem("Open", AddressOf QlCtxOpen) With {.DefaultItem = True}
-
+            Dim RunAsAdminItem = New MenuItem("Run As Admin", AddressOf QlCtxOpenAsAdmin)
             Dim cutItem = New MenuItem("Cut", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "Cut"}}
             Dim copyItem = New MenuItem("Copy", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "Copy"}}
             Dim pasteItem = New MenuItem("Paste", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "Paste"}}
@@ -2058,6 +2067,7 @@ Partial Public NotInheritable Class FrmMain
 #If Not DEBUG Then
             QlCtxMenu = New ContextMenu({
             OpenItem,
+            RunAsAdminItem
                 New MenuItem((If(DropIsLeft, $"<--    Open All ({executableSubItems.Count})", $"Open All ({executableSubItems.Count}){vbTab}-->"), AddressOf QlCtxOpenAll) With {
                             .Visible = (path.EndsWith("\") OrElse (My.Settings.QLResolveLnk AndAlso path.ToLower.EndsWith(".lnk"))) AndAlso
                                         executableSubItems.Count > 0,
@@ -2073,13 +2083,13 @@ Partial Public NotInheritable Class FrmMain
             QlCtxNewMenu})
 #Else
             QlCtxMenu = New ContextMenu({
-            OpenItem,
+                OpenItem, RunAsAdminItem,
                 New MenuItem(If(DropIsLeft, $"<--    Open All ({executableSubItems.Count})", $"Open All ({executableSubItems.Count}){vbTab}-->"), AddressOf QlCtxOpenAll) With {
                             .Visible = (path.EndsWith("\") OrElse (My.Settings.QLResolveLnk AndAlso path.ToLower.EndsWith(".lnk"))) AndAlso
                                         executableSubItems.Count > 0,
                             .Tag = openallTag},
                 New MenuItem("-"),
-            cutItem, copyItem, pasteItem, pasteLinkItem,
+                cutItem, copyItem, pasteItem, pasteLinkItem,
                 New MenuItem("-"),
                 New MenuItem("Delete", AddressOf QlCtxDelete),
                 New MenuItem("Rename", AddressOf QlCtxRename),
@@ -2092,6 +2102,8 @@ Partial Public NotInheritable Class FrmMain
 #End If
 
             Dim MenuItems As IEnumerable(Of MenuItem) = QlCtxMenu.MenuItems.Cast(Of MenuItem).ToList
+
+            RunAsAdminItem.Visible = My.Computer.Keyboard.ShiftKeyDown AndAlso Not sender.HasDropDownItems AndAlso Not My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator)
 
             clipBoardInfo = GetClipboardFilesAndAction()
 
@@ -2228,6 +2240,20 @@ Partial Public NotInheritable Class FrmMain
             If sender.Image IsNot Nothing Then
                 hbm = DirectCast(sender.Image, Bitmap).GetHbitmap(Color.Black)
                 SetMenuItemBitmaps(QlCtxMenu.Handle, 0, MF_BYPOSITION, hbm, Nothing)
+            End If
+            If RunAsAdminItem.Visible Then
+                If ShieldHbm = IntPtr.Zero Then
+                    Dim hIcon As IntPtr = LoadImage(IntPtr.Zero, "#106", 1, 16, 16, 0)
+                    If hIcon <> IntPtr.Zero Then
+                        Dim ico As Icon = Icon.FromHandle(hIcon)
+                        Dim bmp As Bitmap = ico.ToBitmap()
+                        ShieldHbm = bmp.GetHbitmap(Color.Black)
+                        DestroyIcon(hIcon)
+                    End If
+                End If
+                If ShieldHbm <> IntPtr.Zero Then
+                    SetMenuItemBitmaps(QlCtxMenu.Handle, 1, MF_BYPOSITION, ShieldHbm, IntPtr.Zero)
+                End If
             End If
 
             SetMenuItemBitmaps(QlCtxNewMenu.Handle, 0, MF_BYPOSITION, folderHbm, Nothing)
@@ -2571,7 +2597,7 @@ Partial Public NotInheritable Class FrmMain
 
     Dim explorerPath As String = Environment.ExpandEnvironmentVariables("%windir%\explorer.exe").Trim.ToLowerInvariant()
     Private waitCursorTimer As Stopwatch
-    Private Sub OpenLnk(ByVal sender As ToolStripItem, ByVal e As System.Windows.Forms.MouseEventArgs) 'handles item.MouseDown
+    Private Sub OpenLnk(ByVal sender As ToolStripItem, ByVal e As System.Windows.Forms.MouseEventArgs, Optional verb As String = "") 'handles item.MouseDown
 
         Dim qli = sender.Tag
         Dim pth As String = qli.path
@@ -2637,28 +2663,28 @@ Partial Public NotInheritable Class FrmMain
                       setMenuCursor(cmsQuickLaunch, Cursors.WaitCursor)
                   End Sub)
 
-        Dim bat As String = "\AsInvoker.bat"
-        Dim tmpDir As String = IO.Path.Combine(FileIO.SpecialDirectories.Temp, "ScalA")
+        'Dim bat As String = "\AsInvoker.bat"
+        'Dim tmpDir As String = IO.Path.Combine(FileIO.SpecialDirectories.Temp, "ScalA")
 
-        If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
-        If Not FileIO.FileSystem.FileExists(tmpDir & bat) OrElse
-           Not FileIO.FileSystem.GetFileInfo(tmpDir & bat).Length = My.Resources.AsInvoker.Length Then
-            FileIO.FileSystem.WriteAllText(tmpDir & bat, My.Resources.AsInvoker, False, System.Text.Encoding.ASCII)
-        End If
+        'If Not FileIO.FileSystem.DirectoryExists(tmpDir) Then FileIO.FileSystem.CreateDirectory(tmpDir)
+        'If Not FileIO.FileSystem.FileExists(tmpDir & bat) OrElse
+        '   Not FileIO.FileSystem.GetFileInfo(tmpDir & bat).Length = My.Resources.AsInvoker.Length Then
+        '    FileIO.FileSystem.WriteAllText(tmpDir & bat, My.Resources.AsInvoker, False, System.Text.Encoding.ASCII)
+        'End If
 
-        Dim pp As Process = New Process With {.StartInfo = New ProcessStartInfo With {.FileName = tmpDir & bat,
-                                                                       .Arguments = """" & pth & """",
+        Dim pp As Process = New Process With {.StartInfo = New ProcessStartInfo With {.FileName = pth,
                                                                        .WorkingDirectory = System.IO.Path.GetDirectoryName(pth),
-                                                                       .WindowStyle = ProcessWindowStyle.Hidden,
-                                                                       .CreateNoWindow = True}}
+                                                                       .Verb = verb}}
 
 
         Try
+            Environment.SetEnvironmentVariable("__COMPAT_LAYER", "RUNASINVOKER")
             pp.Start()
             MRU.Add(pth)
         Catch ex As Exception
             dBug.Print($"pp.start {ex.Message}")
         Finally
+            Environment.SetEnvironmentVariable("__COMPAT_LAYER", Nothing)
             pp.Dispose()
             Task.Run(Sub()
                          Dim timout As Integer = 123
