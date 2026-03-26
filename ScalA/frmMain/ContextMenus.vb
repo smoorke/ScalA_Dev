@@ -546,7 +546,17 @@ Partial Public NotInheritable Class FrmMain
 
     Friend Shared ReadOnly iconCache As New ConcurrentDictionary(Of String, Bitmap)
 
-    Private Function GetIconFromCache(qli As QLInfo) As Bitmap
+    Private Function TryGetIconFromCache(qli As QLInfo, ByRef ico As Bitmap) As Boolean
+        If iconCache.TryGetValue(qli.path, ico) Then
+            ico = ico.AsTransparent(If(qli.hidden, If(My.Settings.DarkMode, 0.4, 0.5), 1)) _
+                 .addOverlay(If(My.Settings.QLResolveLnk AndAlso ((qli.path.ToLower.EndsWith(".lnk") AndAlso qli.target?.EndsWith("\"c)) OrElse qli.pointsToDir), My.Resources.shortcutOverlay, Nothing), True)
+            Return True
+        End If
+
+        Return False
+    End Function
+
+    Private Function GetSetIconFromCache(qli As QLInfo) As Bitmap
         Try
             Return iconCache.GetOrAdd(qli.path, AddressOf GetIconFromFile) _
                             .AsTransparent(If(qli.hidden, If(My.Settings.DarkMode, 0.4, 0.5), 1)) _
@@ -764,6 +774,8 @@ Partial Public NotInheritable Class FrmMain
         cts = New Threading.CancellationTokenSource
         cantok = cts.Token
 
+        clipBoardInfo = GetClipboardFilesAndAction()
+
         Dim opts As New ParallelOptions With {.CancellationToken = cantok, .MaxDegreeOfParallelism = Math.Max(1, usableCores - 2)}
         Dim hiddencount As Integer = 0
         Try
@@ -806,12 +818,12 @@ Partial Public NotInheritable Class FrmMain
 
                                  Dim ico As Bitmap = Nothing
                                  Dim needsLoad As Boolean = False
-                                 If Not iconCache.TryGetValue(fulldirs & "\", ico) Then
+                                 If Not TryGetIconFromCache(qli, ico) Then
                                      needsLoad = True
                                      ico = folderIcon
                                  End If
 
-                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), ico) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
+                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), ico) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True, .Checked = clipBoardInfo.Files?.Contains(fulldirs)}
 
                                  If needsLoad Then
                                      ilDirs.Add(smenu)
@@ -887,20 +899,17 @@ Partial Public NotInheritable Class FrmMain
                                              Dim ico As Bitmap = Nothing
                                              Dim needsLoad As Boolean = False
 
-                                             If Not iconCache.TryGetValue(fullLink, ico) Then
+                                             If Not TryGetIconFromCache(qli, ico) Then
                                                  needsLoad = True
                                                  ico = folderIconWithOverlay
                                              Else
-                                                 ico = ico.addOverlay(My.Resources.shortcutOverlay)
                                                  If Not String.IsNullOrEmpty(qli.target) AndAlso
                                                     Not CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, qli.target, 25) Then
-                                                     'qli.invalidTarget = True
-                                                     'it.Tag = qli
                                                      ico = ico.addOverlay(My.Resources.WarningOverlay, True)
                                                  End If
                                              End If
 
-                                             Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), ico) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
+                                             Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), ico) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True, .Checked = clipBoardInfo.Files?.Contains(fullLink)}
 
                                              If needsLoad Then
                                                  ilDirs.Add(smenu)
@@ -940,18 +949,16 @@ Partial Public NotInheritable Class FrmMain
 
                                  Dim icn As Bitmap = Nothing
                                  Dim needLoad As Boolean = False
-                                 If Not iconCache.TryGetValue(fullLink, icn) Then
+                                 If Not TryGetIconFromCache(qli, icn) Then
                                      needLoad = True
                                      icn = EmptyIcon
                                  Else
                                      If Not String.IsNullOrEmpty(qli.target) AndAlso
                                         Not CallAsTaskWithTimeout(AddressOf IO.File.Exists, qli.target, 25) Then
-                                         'qli.invalidTarget = True
-                                         'it.Tag = qli
                                          icn = icn.addOverlay(My.Resources.WarningOverlay, True)
                                      End If
                                  End If
-                                 Dim item As New ToolStripMenuItem(If(vis, linkName.Replace("&", "&&"), "*Hidden*"), icn) With {.Tag = qli, .Visible = vis}
+                                 Dim item As New ToolStripMenuItem(If(vis, linkName.Replace("&", "&&"), "*Hidden*"), icn) With {.Tag = qli, .Visible = vis, .Checked = clipBoardInfo.Files?.Contains(fullLink)}
 
                                  If needLoad Then
                                      ilFiles.Add(item)
@@ -1249,28 +1256,30 @@ Partial Public NotInheritable Class FrmMain
                          Parallel.ForEach(items, opts,
                                           Sub(it As ToolStripMenuItem)
                                               Dim qli As QLInfo = it.Tag
-                                              Dim ico = GetIconFromCache(qli)
-                                              Dim check As Boolean = clipBoardInfo.Files?.Contains(qli.path.TrimEnd("\"c))
+                                              Dim ico = GetSetIconFromCache(qli)
+                                              If qli.path.EndsWith(".lnk") AndAlso Not String.IsNullOrEmpty(qli.target) AndAlso
+                                                Not CallAsTaskWithTimeout(Function(p) IO.File.Exists(p) OrElse IO.Directory.Exists(p), qli.target, 500) Then
+                                                  ico = ico.addOverlay(My.Resources.WarningOverlay, True)
+                                              End If
                                               Me.Invoke(Sub()
                                                             it.Image = ico
-                                                            it.Checked = check
                                                         End Sub)
                                           End Sub)
 
-                         Parallel.ForEach(items, opts,
-                                          Sub(it As ToolStripMenuItem)
-                                              Dim qli As QLInfo = it.Tag
-                                              If qli.path.EndsWith(".lnk") AndAlso Not String.IsNullOrEmpty(qli.target) AndAlso
-                                                Not CallAsTaskWithTimeout(Function(p) IO.File.Exists(p) OrElse IO.Directory.Exists(p), qli.target, 500) Then
-                                                  'qli.invalidTarget = True
-                                                  'it.Tag = qli
-                                                  Dim ico = it.Image.addOverlay(My.Resources.WarningOverlay, True)
-                                                  Me.Invoke(Sub()
-                                                                it.Image = ico
-                                                                'it.Invalidate()
-                                                            End Sub)
-                                              End If
-                                          End Sub)
+                         'Parallel.ForEach(items, opts,
+                         '                 Sub(it As ToolStripMenuItem)
+                         '                     Dim qli As QLInfo = it.Tag
+                         '                     If qli.path.EndsWith(".lnk") AndAlso Not String.IsNullOrEmpty(qli.target) AndAlso
+                         '                       Not CallAsTaskWithTimeout(Function(p) IO.File.Exists(p) OrElse IO.Directory.Exists(p), qli.target, 500) Then
+                         '                         'qli.invalidTarget = True
+                         '                         'it.Tag = qli
+                         '                         Dim ico = it.Image.addOverlay(My.Resources.WarningOverlay, True)
+                         '                         Me.Invoke(Sub()
+                         '                                       it.Image = ico
+                         '                                       it.Invalidate()
+                         '                                   End Sub)
+                         '                     End If
+                         '                 End Sub)
 
                      Catch ex As System.OperationCanceledException
                          dBug.Print("deferrediconloading operationCanceled")
@@ -2106,9 +2115,10 @@ Partial Public NotInheritable Class FrmMain
             RunAsAdminItem.Visible = My.Computer.Keyboard.ShiftKeyDown AndAlso Not sender.HasDropDownItems AndAlso Not My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator)
             Try
                 Dim lowPath As String = qli.path.ToLowerInvariant
-                If lowPath.EndsWith(".url") OrElse lowPath.EndsWith(".website") Then
+                Dim ext As String = IO.Path.GetExtension(lowPath)
+                If Not {".exe", ".bat", ".cmd", ".msi", ".lnk"}.Contains(ext) Then
                     RunAsAdminItem.Enabled = False
-                    RunAsAdminItem.Tag = New MenuTag With {.tooltip = $"Cannot Run a {If(lowPath.EndsWith(".url"), ".URL", ".Website")} file as Administrator."}
+                    RunAsAdminItem.Tag = New MenuTag With {.tooltip = $"Cannot Run a {ext} file as Administrator."}
                 End If
                 If lowPath.EndsWith(".lnk") Then
                     Dim sli As New ShellLinkInfo(qli.path)
