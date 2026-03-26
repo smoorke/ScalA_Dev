@@ -757,7 +757,10 @@ Partial Public NotInheritable Class FrmMain
         Dim watch As Stopwatch = Stopwatch.StartNew()
 
         Dim Dirs As New ConcurrentBag(Of ToolStripItem)
+        Dim ilDirs As New ConcurrentBag(Of ToolStripItem)
         Dim Files As New ConcurrentBag(Of ToolStripItem)
+        Dim ilFiles As New ConcurrentBag(Of ToolStripItem)
+
         cts = New Threading.CancellationTokenSource
         cantok = cts.Token
 
@@ -781,6 +784,7 @@ Partial Public NotInheritable Class FrmMain
             End If
             menuItems.Add(New ToolStripMenuItem("<Access Denied>", My.Resources.denied) With {.Enabled = False, .ToolTipText = message})
             Return menuItems
+
         End Try
         Try
             Parallel.ForEach(EnumerateData(pth, True, cantok).AsThrottled(usableCores), opts,
@@ -799,7 +803,20 @@ Partial Public NotInheritable Class FrmMain
                                  Dim dispname As String = System.IO.Path.GetFileName(fulldirs)
 
                                  Dim qli As New QLInfo With {.path = fulldirs & "\", .hidden = hidden, .name = dispname}
-                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), folderIcon) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
+
+                                 Dim ico As Bitmap = Nothing
+                                 Dim needsLoad As Boolean = False
+                                 If Not iconCache.TryGetValue(fulldirs & "\", ico) Then
+                                     needsLoad = True
+                                     ico = folderIcon
+                                 End If
+
+                                 Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), ico) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
+
+                                 If needsLoad Then
+                                     ilDirs.Add(smenu)
+                                 End If
+
 
                                  Me.BeginInvoke(Sub()
                                                     smenu.DropDownItems.Add("(Dummy)").Enabled = False
@@ -824,7 +841,6 @@ Partial Public NotInheritable Class FrmMain
                                  End If
                              End Sub)
 
-            ' can't get enumeratedata to propagate exceptions so still using the old way here
             'Parallel.ForEach(IO.Directory.EnumerateFiles(pth).AsThrottled(usableCores).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p).ToLower)), opts,
             'Sub(fullLink As String)
             Parallel.ForEach(EnumerateData(pth, False, cantok).AsThrottled(usableCores).Where(Function(p) QLFilter.Contains(System.IO.Path.GetExtension(p.cFileName).ToLower)), opts,
@@ -867,7 +883,28 @@ Partial Public NotInheritable Class FrmMain
                                              'Dim hid As Boolean = Not hidden OrElse ctrlshift_pressed OrElse My.Settings.QLShowHidden
                                              Dim dispname As String = System.IO.Path.GetFileNameWithoutExtension(fullLink)
                                              qli.name = dispname
-                                             Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), folderIconWithOverlay) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
+
+                                             Dim ico As Bitmap = Nothing
+                                             Dim needsLoad As Boolean = False
+
+                                             If Not iconCache.TryGetValue(fullLink, ico) Then
+                                                 needsLoad = True
+                                                 ico = folderIconWithOverlay
+                                             Else
+                                                 ico = ico.addOverlay(My.Resources.shortcutOverlay)
+                                                 If Not String.IsNullOrEmpty(qli.target) AndAlso
+                                                    Not CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, qli.target, 25) Then
+                                                     'qli.invalidTarget = True
+                                                     'it.Tag = qli
+                                                     ico = ico.addOverlay(My.Resources.WarningOverlay, True)
+                                                 End If
+                                             End If
+
+                                             Dim smenu As New ToolStripMenuItem(If(vis, dispname.Replace("&", "&&"), "*Hidden*"), ico) With {.Tag = qli, .Visible = vis, .DoubleClickEnabled = True}
+
+                                             If needsLoad Then
+                                                 ilDirs.Add(smenu)
+                                             End If
 
                                              Me.BeginInvoke(Sub()
 
@@ -901,7 +938,25 @@ Partial Public NotInheritable Class FrmMain
 
                                  qli.name = linkName
 
-                                 Dim item As New ToolStripMenuItem(If(vis, linkName.Replace("&", "&&"), "*Hidden*")) With {.Tag = qli, .Visible = vis}
+                                 Dim icn As Bitmap = Nothing
+                                 Dim needLoad As Boolean = False
+                                 If Not iconCache.TryGetValue(fullLink, icn) Then
+                                     needLoad = True
+                                     icn = EmptyIcon
+                                 Else
+                                     If Not String.IsNullOrEmpty(qli.target) AndAlso
+                                        Not CallAsTaskWithTimeout(AddressOf IO.File.Exists, qli.target, 25) Then
+                                         'qli.invalidTarget = True
+                                         'it.Tag = qli
+                                         icn = icn.addOverlay(My.Resources.WarningOverlay, True)
+                                     End If
+                                 End If
+                                 Dim item As New ToolStripMenuItem(If(vis, linkName.Replace("&", "&&"), "*Hidden*"), icn) With {.Tag = qli, .Visible = vis}
+
+                                 If needLoad Then
+                                     ilFiles.Add(item)
+                                 End If
+
                                  Me.BeginInvoke(Sub()
                                                     AddHandler item.MouseDown, AddressOf QL_MouseDown
                                                     'AddHandler item.MouseEnter, AddressOf QL_MouseEnter
@@ -1017,12 +1072,17 @@ Partial Public NotInheritable Class FrmMain
         'cts?.Dispose()
         'cts = New Threading.CancellationTokenSource
         'cantok = cts.Token
-        DeferredIconLoading(Dirs, Files, cantok)
+
+        DeferredIconLoading(ilDirs, ilFiles, cantok)
 
         dBug.Print($"parsing ""{pth}"" took {watch.ElapsedMilliseconds} ms")
+        Debug.Print($"ilDirs: {ilDirs.Count} {ilFiles.Count}")
         watch.Stop()
         Return menuItems
     End Function
+
+    Dim EmptyIcon As New Bitmap(1, 1)
+
 #If DEBUG Then
     Private Sub QL_DropDownClosed(sender As ToolStripDropDown, e As ToolStripDropDownClosedEventArgs)
         For Each it As ToolStripItem In sender.Items.Cast(Of ToolStripItem).ToArray
@@ -1183,9 +1243,9 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub DeferredIconLoading(Dirs As IEnumerable(Of ToolStripItem), Files As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
         Task.Run(Sub()
+                     Dim items = Files.Concat(Dirs)
                      Try
                          Dim opts As New ParallelOptions With {.CancellationToken = ct, .MaxDegreeOfParallelism = Math.Max(1, usableCores - 2)}
-                         Dim items = Files.Concat(Dirs)
                          Parallel.ForEach(items, opts,
                                           Sub(it As ToolStripMenuItem)
                                               Dim qli As QLInfo = it.Tag
