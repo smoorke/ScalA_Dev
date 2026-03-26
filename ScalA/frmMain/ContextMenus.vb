@@ -2321,7 +2321,7 @@ Partial Public NotInheritable Class FrmMain
 
             Next
 
-            If sender.HasDropDown Then
+            If sender.HasDropDownItems Then
 
                 tpmParam.rcExclude = rcDrop
                 If Not DropIsLeft Then
