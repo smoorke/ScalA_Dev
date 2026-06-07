@@ -899,33 +899,46 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     <System.Runtime.InteropServices.DllImport("user32.dll")>
     Private Shared Function GetClientRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As Boolean : End Function
 
-    Public Function GetClientBitmap() As Bitmap
+
+    Public Function GetClientBitmap(Optional nonclient As Boolean = False) As Bitmap
         If proc Is Nothing Then Return Nothing
         Try
-            Dim rcc As Rectangle
-            If Not GetClientRect(Me.MainWindowHandle, rcc) Then Return Nothing 'GetClientRect fails if astonia is running fullscreen and is tabbed out
+            Dim rcc As RECT
+            If nonclient Then
+                If Not GetWindowRect(Me.MainWindowHandle, rcc) Then Return Nothing 'GetClientRect fails if astonia is running fullscreen and is tabbed out
+                rcc.right = rcc.right - rcc.left
+                rcc.bottom = rcc.bottom - rcc.top
+            Else
+                If Not GetClientRect(Me.MainWindowHandle, rcc) Then Return Nothing 'GetClientRect fails if astonia is running fullscreen and is tabbed out
+            End If
 
-            If rcc.Width = 0 OrElse rcc.Height = 0 Then Return Nothing
+            If rcc.right = 0 OrElse rcc.bottom = 0 Then Return Nothing
 
             Dim fact As Double = Me.WindowsScaling / 100
-            Dim bmp As New Bitmap(CInt(rcc.Width * fact), CInt(rcc.Height * fact))
+
+            Dim bmp As New Bitmap(CInt(rcc.right * fact), CInt(rcc.bottom * fact))
 
             Using gBM As Graphics = Graphics.FromImage(bmp)
                 Dim hdcBm As IntPtr
                 Try
                     hdcBm = gBM.GetHdc
                 Catch ex As Exception
-                    dBug.print("GetHdc error")
+                    dBug.Print("GetHdc error")
                     Return Nothing
                 End Try
-                PrintWindow(Me.MainWindowHandle, hdcBm, 1)
-                gBM.ReleaseHdc()
+                PrintWindow(Me.MainWindowHandle, hdcBm, If(nonclient, 0, 1))
+                gBM.ReleaseHdc(hdcBm)
             End Using
             Return bmp
         Catch
             Return Nothing
         End Try
     End Function
+
+
+
+
+
     Private _isSDL? As Boolean = Nothing
     Public ReadOnly Property isSDL() As Boolean
         Get
