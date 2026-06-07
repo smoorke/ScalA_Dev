@@ -168,16 +168,6 @@ Partial Public NotInheritable Class FrmMain
         Dim pp As AstoniaProcess = DirectCast(sender.SourceControl, AButton).AP
         sender.Tag = pp
 
-#If 0 Then
-#If DEBUG Then
-        Static DebugToolStripMenuItem As ToolStripMenuItem = Nothing
-        If DebugToolStripMenuItem Is Nothing Then
-            DebugToolStripMenuItem = New ToolStripMenuItem("Debug", Nothing, AddressOf dBug.DebugAlt)
-            sender.Items.Insert(0, DebugToolStripMenuItem)
-        End If
-        DebugToolStripMenuItem.Tag = pp
-#End If
-#End If
         SelectToolStripMenuItem.Text = "Select " & pp?.UserName
         SelectToolStripMenuItem.Image = pp?.GetIcon?.ToBitmap
         SelectToolStripMenuItem.Tag = pp
@@ -2076,8 +2066,8 @@ Partial Public NotInheritable Class FrmMain
 #If Not DEBUG Then
             QlCtxMenu = New ContextMenu({
             OpenItem,
-            RunAsAdminItem
-                New MenuItem((If(DropIsLeft, $"<--    Open All ({executableSubItems.Count})", $"Open All ({executableSubItems.Count}){vbTab}-->"), AddressOf QlCtxOpenAll) With {
+            RunAsAdminItem,
+                New MenuItem(If(DropIsLeft, $"<--    Open All ({executableSubItems.Count})", $"Open All ({executableSubItems.Count}){vbTab}-->"), AddressOf QlCtxOpenAll) With {
                             .Visible = (path.EndsWith("\") OrElse (My.Settings.QLResolveLnk AndAlso path.ToLower.EndsWith(".lnk"))) AndAlso
                                         executableSubItems.Count > 0,
                             .Tag = openallTag},
@@ -2496,7 +2486,7 @@ Partial Public NotInheritable Class FrmMain
 
             If Not restartBitmapInstalled Then
 
-                Using bmp As Bitmap = New Bitmap(My.Resources.Refresh, New Size(16, 16))
+                Using bmp As Bitmap = New Bitmap(My.Resources.Sync, New Size(16, 16))
                     Dim restartHbm As IntPtr = bmp.GetHbitmap(Color.Black)
                     SetMenuItemBitmaps(restartCM.Handle, 0, MF_BYPOSITION, restartHbm, Nothing)
                     ' The HBITMAP handle is created once and used for the lifetime of the app.
