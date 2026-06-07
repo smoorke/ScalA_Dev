@@ -66,6 +66,7 @@ Module dBug
         test.Items.Add(New ToolStripMenuItem("Open Debug Window", Nothing, AddressOf dBug.OpenDebugWindow))
         test.Items.Add(New ToolStripSeparator)
         test.Items.Add(New ToolStripMenuItem("Restart Client", My.Resources.Refresh, AddressOf dBug.RestartClient))
+        test.Items.Add(New ToolStripMenuItem("Save Bitmap", Nothing, AddressOf dBug.savebitmap))
         test.Items.Add(New ToolStripMenuItem("Throw Exception", Nothing, Sub()
                                                                              Throw New Exception()
                                                                          End Sub))
@@ -90,7 +91,12 @@ Module dBug
         AddHandler FrmMain.chkDebug.MouseUp, Sub(sen, ev) FrmMain.UntrapMouse(ev.Button)
 #End If
     End Sub
+
 #If DEBUG Then
+    Private Sub savebitmap()
+        Dim bmp As Bitmap = FrmMain.AltPP?.GetClientBitmap(True)
+        bmp.Save("F:/Grab.bmp")
+    End Sub
     Private Sub OpenDebugWindow(sender As Object, e As EventArgs)
         If Not frmDebug.Visible Then frmDebug.Show()
     End Sub
