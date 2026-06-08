@@ -943,13 +943,18 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Public ReadOnly Property isSDL() As Boolean
         Get
             If _isSDL Is Nothing Then
-                va.Read(0, shm)
-                If shm.pID = Me.Id Then
+                If GetWindowClass(Me.MainWindowHandle) = "SDL_app" Then
                     _isSDL = True
                 Else
                     _isSDL = False
                 End If
-                'dBug.print($"isSDL {Me.Name} {_isSDL} {shm.pID} {Me.Id}")
+                'va.Read(0, shm)
+                'If shm.pID = Me.Id Then
+                '    _isSDL = True
+                'Else
+                '    _isSDL = False
+                'End If
+                ''dBug.print($"isSDL {Me.Name} {_isSDL} {shm.pID} {Me.Id}")
             End If
             Return _isSDL
         End Get
