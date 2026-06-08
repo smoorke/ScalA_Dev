@@ -411,14 +411,14 @@ Partial NotInheritable Class FrmMain
                             DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
                         End If
                     Else 'buttons w/o alts
-                        If but.pidCache <> 0 Then
-                            but.BeginInvoke(Sub() but.Text = "")
+
+                        but.BeginInvoke(Sub() but.Text = "")
                             but.AP = Nothing
                             but.ContextMenuStrip = cmsQuickLaunch
                             but.BackgroundImage = Nothing
                             but.Image = Nothing
                             but.pidCache = 0
-                        End If
+
                     End If
                 Catch
                 End Try
