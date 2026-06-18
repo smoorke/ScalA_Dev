@@ -316,21 +316,46 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
         AllowSetForegroundWindow(ASFW_ANY)
         If SetForegroundWindow(Me.MainWindowHandle) Then
-            If isSDL AndAlso My.Computer.Keyboard.CtrlKeyDown Then
-                If (GetAsyncKeyState(Keys.LControlKey) And &H8000S) <> 0 Then
-                    ctrlInput(0).u.ki.dwFlags = KeyEventF.KeyDown Or KeyEventF.Scancode
-                Else
-                    ctrlInput(0).u.ki.dwFlags = KeyEventF.KeyDown Or KeyEventF.Scancode Or KeyEventF.ExtendedKey
+            If isSDL Then 're-prress modifier keys, todo: figure out if this is a CW issue or the com client has this too
+                If My.Computer.Keyboard.CtrlKeyDown Then
+                    KeyDownInput(0).u.ki.wScan = &H1D
+                    If (GetAsyncKeyState(Keys.LControlKey) And &H8000S) <> 0 Then
+                        KeyDownInput(0).u.ki.dwFlags = KeyEventF.KeyDown Or KeyEventF.Scancode
+                    Else 'r-ctrl
+                        KeyDownInput(0).u.ki.dwFlags = KeyEventF.KeyDown Or KeyEventF.Scancode Or KeyEventF.ExtendedKey
+                    End If
+                    SendInput(1, KeyDownInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
                 End If
-                SendInput(1, ctrlInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                If My.Computer.Keyboard.AltKeyDown Then
+                    KeyDownInput(0).u.ki.wScan = &H38
+                    If (GetAsyncKeyState(Keys.LMenu) And &H8000S) <> 0 Then
+                        KeyDownInput(0).u.ki.dwFlags = KeyEventF.KeyDown Or KeyEventF.Scancode
+                    Else 'r-ctrl
+                        KeyDownInput(0).u.ki.dwFlags = KeyEventF.KeyDown Or KeyEventF.Scancode Or KeyEventF.ExtendedKey
+                    End If
+                    SendInput(1, KeyDownInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                End If
+                If My.Computer.Keyboard.ShiftKeyDown Then
+                    If (GetAsyncKeyState(Keys.LShiftKey) And &H8000S) <> 0 Then
+                        KeyDownInput(0).u.ki.wScan = &H2A
+                        KeyDownInput(0).u.ki.dwFlags = KeyEventF.KeyDown Or KeyEventF.Scancode
+                    Else 'r-ctrl
+                        KeyDownInput(0).u.ki.wScan = &H36
+                        KeyDownInput(0).u.ki.dwFlags = KeyEventF.KeyDown Or KeyEventF.Scancode
+                    End If
+                    SendInput(1, KeyDownInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+                End If
+
             End If
             Return True
         End If
         Return False
     End Function
-    Dim ctrlInput As INPUT() = {
-                        New INPUT With {.type = InputType.INPUT_KEYBOARD, .u = New InputUnion With {.ki = New KEYBDINPUT With {.wScan = &H1D, .dwFlags = KeyEventF.KeyDown Or KeyEventF.Scancode}}}
+    Dim KeyDownInput As INPUT() = {
+                        New INPUT With {.type = InputType.INPUT_KEYBOARD, .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown Or KeyEventF.Scancode}}}
                    }
+
+
     Private _mwhCache As IntPtr = IntPtr.Zero
     Public ReadOnly Property MainWindowHandle() As IntPtr
         Get
