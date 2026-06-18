@@ -1983,7 +1983,7 @@ Partial Public NotInheritable Class FrmMain
         Dim excludGearLock As Integer = If(AltPP?.isSDL, 18, 0)
         Dim dx As Integer = (524 - excludGearLock).Map(0, 800, 0, rcC.Width)
 
-        Dim mx As Integer = mp.X.Map(0, sender.Bounds.Width, sx, dx)
+        Dim mox As Integer = mp.X.Map(0, sender.Bounds.Width, sx, dx)
 
         Dim lockHeight = 45
         If rc.Height >= 2000 Then
@@ -1993,14 +1993,14 @@ Partial Public NotInheritable Class FrmMain
         ElseIf rc.Height >= 1000 Then
             lockHeight += 40
         End If
-        Dim my As Integer = mp.Y.Map(0, sender.Bounds.Height, 0, lockHeight)
+        Dim moy As Integer = mp.Y.Map(0, sender.Bounds.Height, 0, lockHeight)
 
-        dBug.Print($"mx:{mx} my:{my}")
+        dBug.Print($"mx:{mox} my:{moy}")
 
 
 
-        'Dim isSdlWithSpallIcons
-        'todo:: block right clicks when SDL and spellIcons
+        'Dim isSdlWithSpellIcons
+        'todo:: block clicks when SDL and spellIcons
 
 
         If e.Button = MouseButtons.Middle OrElse e.Button = MouseButtons.Right Then
@@ -2013,11 +2013,13 @@ Partial Public NotInheritable Class FrmMain
 
             'SendMouseInput(If(e.Button = MouseButtons.Right, MouseEventF.RightDown, MouseEventF.MiddleDown))
 
-            SendMessage(AltPP?.MainWindowHandle, If(e.Button = MouseButtons.Right, WM_RBUTTONDOWN, WM_MBUTTONDOWN), wparam, New LParamMap(mx, my))
+            SendMessage(AltPP?.MainWindowHandle, If(e.Button = MouseButtons.Right, WM_RBUTTONDOWN, WM_MBUTTONDOWN), wparam, New LParamMap(mox, moy))
         End If
-
+        'Task.Run(Sub() Me.BeginInvoke(Sub() AltPP?.Activate()))
+        AltPP?.Activate()
 
     End Sub
+
     Private Sub PnlEqLock_MouseUp(sender As Panel, e As MouseEventArgs) Handles PnlEqLock.MouseUp
         dBug.Print($"pnlEqLock.MouseUp {e.Button} lock vis {PnlEqLock.Visible}")
         If (e.Button = MouseButtons.Right OrElse e.Button = MouseButtons.Middle) AndAlso PnlEqLock.Contains(MousePosition) Then
