@@ -942,14 +942,14 @@ Module NativeMethods
         Public dx As Integer
         Public dy As Integer
         Public mouseData As Integer
-        Public dwFlags As Integer
+        Public dwFlags As MouseEventF
         Public time As Integer
         Public dwExtraInfo As IntPtr
     End Structure
     Public Structure KEYBDINPUT
         Public wVk As UShort
         Public wScan As UShort
-        Public dwFlags As Integer
+        Public dwFlags As KeyEventF
         Public time As Integer
         Public dwExtraInfo As IntPtr
     End Structure
@@ -960,7 +960,7 @@ Module NativeMethods
     End Structure
     Public Structure INPUT
         Public type As Integer
-        Public u As InputUnion
+        Public u As InputUnion 'DO NOT unfold with fieldoffsets, we need the union here for anycpu 64 bit. 
     End Structure
 
     <Flags>
