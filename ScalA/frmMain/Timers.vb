@@ -492,6 +492,7 @@ Partial NotInheritable Class FrmMain
                                                     dBug.Print($"Activating {ap.Name}")
                                                     'If Not ap.Activate() Then NOP
                                                     SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
+                                                    ap.ReEnableModifiers()
                                                 End If
 #If DEBUG Then
                                             End If
