@@ -315,10 +315,22 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         If proc Is Nothing Then Return True
 
         AllowSetForegroundWindow(ASFW_ANY)
-        Return SetForegroundWindow(Me.MainWindowHandle)
-
+        If SetForegroundWindow(Me.MainWindowHandle) Then
+            If isSDL AndAlso My.Computer.Keyboard.CtrlKeyDown Then
+                If (GetAsyncKeyState(Keys.LControlKey) And &H8000S) <> 0 Then
+                    ctrlInput(0).u.ki.dwFlags = KeyEventF.KeyDown Or KeyEventF.Scancode
+                Else
+                    ctrlInput(0).u.ki.dwFlags = KeyEventF.KeyDown Or KeyEventF.Scancode Or KeyEventF.ExtendedKey
+                End If
+                SendInput(1, ctrlInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
+            End If
+            Return True
+        End If
+        Return False
     End Function
-
+    Dim ctrlInput As INPUT() = {
+                        New INPUT With {.type = InputType.INPUT_KEYBOARD, .u = New InputUnion With {.ki = New KEYBDINPUT With {.wScan = &H1D, .dwFlags = KeyEventF.KeyDown Or KeyEventF.Scancode}}}
+                   }
     Private _mwhCache As IntPtr = IntPtr.Zero
     Public ReadOnly Property MainWindowHandle() As IntPtr
         Get
@@ -1282,10 +1294,10 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 Try
                     If mruNotfound AndAlso System.IO.File.Exists(shortcutlink) Then
                         dBug.Print("Deleting shortcut")
-                        Task.Run(Sub()
-                                     Threading.Thread.Sleep(1000)
-                                     System.IO.File.Delete(shortcutlink)
-                                 End Sub)
+                        Task.Run(action:=Async Sub()
+                                             Await Task.Delay(1000)
+                                             System.IO.File.Delete(shortcutlink)
+                                         End Sub)
                     End If
                 Catch ex As Exception
 
