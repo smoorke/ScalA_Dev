@@ -316,7 +316,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
         AllowSetForegroundWindow(ASFW_ANY)
         If SetForegroundWindow(Me.MainWindowHandle) Then
-            ReEnableModifiers() 're-press modifier keys, todo: figure out if this is a CW issue or the com client has this too.
+            'ReEnableModifiers() 're-press modifier keys, todo: figure out if the com client has this issue.
             Return True
         End If
         Return False
@@ -324,10 +324,17 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     Dim KeyDownInput As INPUT() = {
                         New INPUT With {.type = InputType.INPUT_KEYBOARD, .u = New InputUnion With {.ki = New KEYBDINPUT With {.dwFlags = KeyEventF.KeyDown Or KeyEventF.Scancode}}}
                    }
+    Public Enum ScanCode
+        Control = &H1D
+        Alt = &H38
+        LShift = &H2A
+        RShift = &H36
+    End Enum
     Public Sub ReEnableModifiers()
+        Exit Sub 'fixed in CW, need to check Com Client
         If isSDL Then 'todo: figure out if this is a CW issue or the com client has this too.
             If My.Computer.Keyboard.CtrlKeyDown Then
-                KeyDownInput(0).u.ki.wScan = &H1D
+                KeyDownInput(0).u.ki.wScan = ScanCode.Control
                 If (GetAsyncKeyState(Keys.LControlKey) And &H8000S) <> 0 Then
                     KeyDownInput(0).u.ki.dwFlags = KeyEventF.KeyDown Or KeyEventF.Scancode
                 Else 'r-ctrl
@@ -336,7 +343,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                 SendInput(1, KeyDownInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
             End If
             If My.Computer.Keyboard.AltKeyDown Then
-                KeyDownInput(0).u.ki.wScan = &H38
+                KeyDownInput(0).u.ki.wScan = ScanCode.Alt
                 If (GetAsyncKeyState(Keys.LMenu) And &H8000S) <> 0 Then
                     KeyDownInput(0).u.ki.dwFlags = KeyEventF.KeyDown Or KeyEventF.Scancode
                 Else 'r-alt
@@ -346,9 +353,9 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             End If
             If My.Computer.Keyboard.ShiftKeyDown Then
                 If (GetAsyncKeyState(Keys.LShiftKey) And &H8000S) <> 0 Then
-                    KeyDownInput(0).u.ki.wScan = &H2A
+                    KeyDownInput(0).u.ki.wScan = ScanCode.LShift
                 Else 'r-shift
-                    KeyDownInput(0).u.ki.wScan = &H36
+                    KeyDownInput(0).u.ki.wScan = ScanCode.RShift
                 End If
                 KeyDownInput(0).u.ki.dwFlags = KeyEventF.KeyDown Or KeyEventF.Scancode
                 SendInput(1, KeyDownInput, Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT)))
