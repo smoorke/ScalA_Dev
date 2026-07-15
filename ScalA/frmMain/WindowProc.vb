@@ -17,6 +17,8 @@ Partial NotInheritable Class FrmMain
 
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
+
+
             Case Hotkey.WM_HOTKEY
                 dBug.Print($"Hotkey {m.WParam} pressed")
                 Select Case m.WParam
@@ -610,8 +612,20 @@ Partial NotInheritable Class FrmMain
 #End If
         End Select
 
-        MyBase.WndProc(m)  ' allow form to process this message
 
+        Select Case m.Msg
+            Case WM_NCHITTEST
+
+                Dim pt As Point = PointToClient(Cursor.Position)
+                Debug.Print($"Hittest {pt} {pnlTitleBar.Bounds}")
+                If pnlTitleBar.Bounds.Contains(pt) Then
+                    m.Result = HTCAPTION
+                    Debug.Print("HTCaption")
+                    Return
+                End If
+        End Select
+
+        MyBase.WndProc(m)  ' allow form to process this message
     End Sub
 
 #If DEBUG Then

@@ -319,6 +319,7 @@ Partial NotInheritable Class FrmMain
                                 Debug.Print($"set {ap.Name} as composited")
                             End If
                         ElseIf My.Settings.gameOnOverview AndAlso ap.IsActive Then ' andalso ap.isdl
+
                             If GetGUIThreadInfo(ap.MainThreadId, gti) AndAlso (gti.flags = 20) Then
                                 If Not doNotReplaceSysM Then
 
@@ -492,7 +493,7 @@ Partial NotInheritable Class FrmMain
                                                     dBug.Print($"Activating {ap.Name}")
                                                     'If Not ap.Activate() Then NOP
                                                     SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
-                                                    ap.ReEnableModifiers()
+                                                    'ap.ReEnableModifiers() 'todo: check com client if this is needed
                                                 End If
 #If DEBUG Then
                                             End If
@@ -546,8 +547,13 @@ Partial NotInheritable Class FrmMain
                                                          SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
                                                      End If
                                                      AllowSetForegroundWindow(ASFW_ANY)
-                                                     Attach(but.AP)
+                                                     If ap.IsAbove(ScalaHandle) Then
+                                                         ap.ThreadInput(True)
+                                                         SetWindowPos(ScalaHandle, If(My.Settings.topmost, SWP_HWND.TOPMOST, SWP_HWND.TOP), -1, -1, -1, -1, SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
+                                                     End If
+                                                     Attach(but.AP, detachThread:=False)
                                                      SetWindowPos(but.AP.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
+                                                     ap.ThreadInput(False)
                                                      If prevWMMMpt <> MousePosition Then
                                                          SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
                                                      End If

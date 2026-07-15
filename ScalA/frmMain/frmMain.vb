@@ -1591,7 +1591,7 @@ Partial Public NotInheritable Class FrmMain
             Dim botBorder As Integer = scrn.WorkingArea.Height * My.Settings.MaxBorderBot / 1000
 
             'find out where taskbar is and add 1 pixel at that location
-            'dirty hack to enable dragging when maximized, TODO: split up frmmain into 2, caption and zoom
+            'dirty hack to enable dragging when maximized, TODO: try NCHITTEST HTCAPTION on panel and label
             If leftBorder + rightborder + topBorder + botBorder = 0 Then
                 If scrn.WorkingArea.Left <> scrn.Bounds.Left Then leftBorder = 1
                 If scrn.WorkingArea.Top <> scrn.Bounds.Top Then topBorder = 1
@@ -1702,7 +1702,7 @@ Partial Public NotInheritable Class FrmMain
 
     Public ReadOnly restoreParent As UInteger = GetWindowLong(Me.Handle, GWL_HWNDPARENT)
     Private prevHWNDParent As IntPtr = restoreParent
-    Public Function Attach(ap As AstoniaProcess, Optional activate As Boolean = False) As Long
+    Public Function Attach(ap As AstoniaProcess, Optional activate As Boolean = False, Optional detachThread As Boolean = True) As Long
         Try
             If ap Is Nothing OrElse prevHWNDParent = ap.MainWindowHandle Then Return 0
             dBug.Print($"Attach to: {ap.Name} {ap.Id} activate {activate}")
@@ -1718,7 +1718,7 @@ Partial Public NotInheritable Class FrmMain
             'Dim ScalAThreadId As Integer = GetWindowThreadProcessId(ScalaHandle, Nothing) 'move this to a global since this won't change
             'Dim AstoniaThreadId As Integer = GetWindowThreadProcessId(ap.MainWindowHandle, Nothing) 'move this to astoniaproc
             'ap.ThreadInput(False) 
-            AttachThreadInput(ScalaThreadId, ap.MainThreadId, False) 'detach input so ctrl, shift and alt still work when there is an elevation mismatch, also fixes sleepy legacy clients lagging ScalA
+            If detachThread Then AttachThreadInput(ScalaThreadId, ap.MainThreadId, False) 'detach input so ctrl, shift and alt still work when there is an elevation mismatch, also fixes sleepy legacy clients lagging ScalA
 
             Return ret
         Finally
