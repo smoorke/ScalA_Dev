@@ -9,9 +9,9 @@ Module dBug
     Public minLogLevel As Integer = If(My.Application.CommandLineArgs.Contains("-llAll"), 0, 1)
 #End If
     <Conditional("DEBUG")>
-    Friend Sub Print(Message As String, Optional Level As Integer = 0)
+    Friend Sub Print(Message As String, Optional Level As Integer = 0, Optional omitDebugPrint As Boolean = False)
         If String.IsNullOrWhiteSpace(Message) Then Exit Sub
-        Debug.Print(Message)
+        If Not omitDebugPrint Then Debug.Print(Message)
         'lastlog = Message
 #If DEBUG Then
         If Level >= minLogLevel AndAlso logbuilder IsNot Nothing Then

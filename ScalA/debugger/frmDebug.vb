@@ -1,4 +1,5 @@
-﻿Imports System.Runtime.InteropServices
+﻿Imports System.IO.MemoryMappedFiles
+Imports System.Runtime.InteropServices
 Public Class frmDebug
 #If DEBUG Then
     Private Sub frmDebug_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -149,6 +150,14 @@ Public Class frmDebug
             Dim ap As AstoniaProcess = FrmMain.AltPP
             dBug.Print($"{ap.Name} {ap.MainWindowHandle} DPI:{ap.DpiAware} SDL:{ap.isSDL} WS:{FrmMain.WindowsScaling}% AS:{ap.WindowsScaling}%", 1)
             dBug.Print($"co: {ap.ClientOffset} rcc:{ap.ClientRect} rcw:{ap.WindowRect}", 1)
+            Dim shm As AstoniaProcess.MoacSharedMem
+            Dim map As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"MOAC{ap.Id}", Marshal.SizeOf(shm))
+            Dim va = map.CreateViewAccessor(0, Marshal.SizeOf(shm), MemoryMappedFileAccess.Read)
+            va.Read(0, shm)
+            dBug.Print($"shm:", 1)
+            dBug.Print($"{shm.pID} {shm.hp} {shm.shield} {shm.end} {shm.mana}", 1)
+            dBug.Print($"{shm.base:X} {shm.key:X} {shm.isprite:X} {shm.offX} {shm.offY}", 1)
+            dBug.Print($"{shm.flags} {shm.fsprite} {shm.swapped}", 1)
         Else
             dBug.Print("No Alt Proc Active", 1)
         End If
@@ -167,7 +176,7 @@ Public Class frmDebug
                     }
 
                 If sfd.ShowDialog = DialogResult.OK Then
-                    dBug.Print($"Saving as {sfd.FileName.Replace(Environment.UserName, "%USERNAME%")}", 1)
+                    dBug.Print($"Saving as {sfd.FileName.Replace($"\{Environment.UserName}\", "\%USERNAME%\")}", 1)
                     IO.File.WriteAllText(sfd.FileName, logbuilder.ToString)
                 Else
                     dBug.Print($"Save Cancelled", 1)
