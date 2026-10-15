@@ -408,7 +408,7 @@ Partial NotInheritable Class FrmMain
                     'handle taskbar changing
                     Dim newWA = Screen.FromPoint(Me.Location + New Point(Me.Width / 2, Me.Height / 2)).WorkingArea
                     'only do adjustment when size change or moved from top/bottom to sides
-                    If newWA.Height <> prevWA.Height OrElse newWA.Width <> prevWA.Width Then
+                    If newWA.Height <> prevWA.Height OrElse newWA.Width <> prevWA.Width OrElse newWA <> prevWA Then
                         dBug.Print($"Taskbar changed {prevWA}->{newWA}")
                         Me.WindowState = FormWindowState.Normal
                         btnMax.PerformClick() 'todo replace with gracefull resizing
