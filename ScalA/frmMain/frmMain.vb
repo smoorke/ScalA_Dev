@@ -605,7 +605,7 @@ Partial Public NotInheritable Class FrmMain
     Private Sub prioritySetter()
         Do
             Threading.Thread.Sleep(500)
-            If pnlOverview.IsHandleCreated AndAlso Not pnlOverview.IsDisposed AndAlso My.Settings.gameOnOverview AndAlso Me.Invoke(Function() pnlOverview.Visible) Then
+            If Not Me.IsDisposed AndAlso pnlOverview.IsHandleCreated AndAlso Not pnlOverview.IsDisposed AndAlso My.Settings.gameOnOverview AndAlso Me.Invoke(Function() pnlOverview.Visible) Then
                 Threading.Thread.Sleep(25)
                 Dim ablist As List(Of AButton) = Me.Invoke(Function() pnlOverview.Controls.OfType(Of AButton).Where(Function(a) a.Visible AndAlso a.AP IsNot Nothing).ToList)
                 For Each ab As AButton In ablist
