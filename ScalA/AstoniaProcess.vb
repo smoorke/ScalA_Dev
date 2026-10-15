@@ -267,8 +267,10 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
         Dim rcFrame As RECT
         DwmGetWindowAttribute(Me.MainWindowHandle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
+        dBug.Print($"rcFrame {rcFrame.ToRectangle}", 0, True)
         Dim rcWind As RECT
         GetWindowRect(Me.MainWindowHandle, rcWind)
+        dBug.Print($"rcwind: {rcWind.ToRectangle}", 0, True)
         If rcFrame.right = 0 OrElse rcWind.right = 0 Then Return 0
         Return Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25 + 25
     End Function
@@ -730,7 +732,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
     ''' </summary>
     ''' <returns></returns>
     ''' 
-    Public Function IsAstoniaClass() As Boolean
+    Public Shared Function IsAstoniaClass(p As Process) As Boolean
         Dim classes = My.Settings.className
         If classCache <> classes Then
             classCacheSet.Clear()
@@ -738,7 +740,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
                                                           .Select(Function(wc) Strings.Trim(wc)).Concat(sysMenClass))
             classCache = classes
         End If
-        Return classCacheSet.Contains(Me.WindowClass)
+        Return classCacheSet.Contains(GetWindowClass(p.MainWindowHandle))
     End Function
 
     Private _wc As String
@@ -842,15 +844,28 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             exeCache = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
             exeSettingCache = My.Settings.exe
         End If
-        Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p)
-                                                                                        If usecache Then
-                                                                                            Dim ap As AstoniaProcess = GetFromCache(p)
-                                                                                            Return ap
-                                                                                        Else
-                                                                                            Return New AstoniaProcess(p)
-                                                                                        End If
-                                                                                    End Function)) _
-            .Where(Function(ap) ap.Name = "Someone" AndAlso ap.IsAstoniaClass())
+
+        Return Process.GetProcesses().
+                Where(Function(p) exeCache.Contains(p.ProcessName) AndAlso IsAstoniaClass(p)).
+                Select(Function(p)
+                           If usecache Then
+                               Return GetFromCache(p)
+                           Else
+                               Return New AstoniaProcess(p)
+                           End If
+                       End Function).
+                Where(Function(ap) ap.Name = "Someone")
+
+
+        'Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p)
+        '                                                                                If usecache Then
+        '                                                                                    Dim ap As AstoniaProcess = GetFromCache(p)
+        '                                                                                    Return ap
+        '                                                                                Else
+        '                                                                                    Return New AstoniaProcess(p)
+        '                                                                                End If
+        '                                                                            End Function)) _
+        '    .Where(Function(ap) ap.Name = "Someone" AndAlso ap.IsAstoniaClass())
     End Function
 
     Public Shared Function EnumAll() As IEnumerable(Of AstoniaProcess)
@@ -858,24 +873,40 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
             exeCache = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
             exeSettingCache = My.Settings.exe
         End If
-        Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p) New AstoniaProcess(p))) _
-            .Where(Function(ap) ap.IsAstoniaClass())
+
+        Return Process.GetProcesses().
+                Where(Function(p) exeCache.Contains(p.ProcessName) AndAlso IsAstoniaClass(p)).
+                Select(Function(p) New AstoniaProcess(p))
+
+        ' Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p) New AstoniaProcess(p))) _
+        '     .Where(Function(ap) ap.IsAstoniaClass())
     End Function
 
     Public Shared Function ListProcesses(blacklist As IEnumerable(Of String), useCache As Boolean) As List(Of AstoniaProcess)
         'todo move updating cache to frmSettings
+
         If exeSettingCache <> My.Settings.exe Then
-            exeCache = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim).ToList
+            exeCache = My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries).Select(Function(s) s.Trim)
             exeSettingCache = My.Settings.exe
         End If
 
-        Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p) If(useCache, GetFromCache(p), New AstoniaProcess(p)))) _
-                    .Where(Function(ap)
-                               Dim nam = ap.UserName
-                               Return Not String.IsNullOrEmpty(nam) AndAlso Not blacklist.Contains(ap.Name) AndAlso
-                                     (Not My.Settings.Whitelist OrElse FrmMain.topSortList.Concat(FrmMain.botSortList).Contains(nam)) AndAlso
-                                      ap.IsAstoniaClass()
-                           End Function).ToList
+        Return Process.GetProcesses() _
+                .Where(Function(p) exeCache.Contains(p.ProcessName) AndAlso IsAstoniaClass(p)) _
+                .Select(Function(p) If(useCache, GetFromCache(p), New AstoniaProcess(p))) _
+                .Where(Function(ap)
+                           Dim nam = ap.UserName
+                           Return Not String.IsNullOrEmpty(nam) AndAlso Not blacklist.Contains(ap.Name) AndAlso
+                                 (Not My.Settings.Whitelist OrElse FrmMain.topSortList.Concat(FrmMain.botSortList).Contains(nam))
+                       End Function).ToList()
+
+
+        'Return exeCache.SelectMany(Function(s) Process.GetProcessesByName(s).Select(Function(p) If(useCache, GetFromCache(p), New AstoniaProcess(p)))) _
+        '            .Where(Function(ap)
+        '                       Dim nam = ap.UserName
+        '                       Return Not String.IsNullOrEmpty(nam) AndAlso Not blacklist.Contains(ap.Name) AndAlso
+        '                             (Not My.Settings.Whitelist OrElse FrmMain.topSortList.Concat(FrmMain.botSortList).Contains(nam)) AndAlso
+        '                              ap.IsAstoniaClass()
+        '                   End Function).ToList
     End Function
     Public Shared Function Enumerate(Optional useCache As Boolean = False) As IEnumerable(Of AstoniaProcess)
         Return AstoniaProcess.Enumerate({}, useCache)
