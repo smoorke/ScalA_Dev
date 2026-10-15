@@ -95,7 +95,7 @@ Partial NotInheritable Class FrmMain
 
                         If ctl Is pnlSys Then
                             ctl = pnlSys.GetChildAtPoint(pt)
-                            pt = ctl?.PointToClient(Control.MousePosition)
+                            pt = If(ctl?.PointToClient(Control.MousePosition), New Point)
                         End If
 
                         'open own sysmenu or open quicklaunch/settings when over specific button
@@ -396,17 +396,21 @@ Partial NotInheritable Class FrmMain
 
                                 Dim thumbid As IntPtr = IntPtr.Zero
                                 DwmRegisterThumbnail(ScalaHandle, ap.MainWindowHandle, thumbid)
-                                startThumbsDict(apID) = thumbid
-                                dBug.Print($"registered thumb {startThumbsDict(apID)} {ap.Name} {apID}")
+                                If thumbid <> IntPtr.Zero Then
+                                    startThumbsDict(apID) = thumbid
+                                    dBug.Print($"registered thumb {startThumbsDict(apID)} {ap.Name} {apID}")
+                                Else
+                                    dBug.Print($"regtumb error {ap.Name} {apID}")
+                                End If
                             End If
 
                             rectDic(apID) = but.ThumbRECT
                             Dim prp As New DWM_THUMBNAIL_PROPERTIES With {
-                         .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY,
-                         .opacity = opaDict.GetValueOrDefault(apID, If(chkDebug.Checked, 128, 255)),
-                         .fVisible = True,
-                         .rcDestination = rectDic(apID),
-                         .fSourceClientAreaOnly = True}
+                                .dwFlags = DwmThumbnailFlags.DWM_TNP_OPACITY Or DwmThumbnailFlags.DWM_TNP_VISIBLE Or DwmThumbnailFlags.DWM_TNP_RECTDESTINATION Or DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY,
+                                .opacity = opaDict.GetValueOrDefault(apID, If(chkDebug.Checked, 128, 255)),
+                                .fVisible = True,
+                                .rcDestination = rectDic(apID),
+                                .fSourceClientAreaOnly = True}
 
 
                             DwmUpdateThumbnailProperties(startThumbsDict(apID), prp)
@@ -547,13 +551,9 @@ Partial NotInheritable Class FrmMain
                                                          SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
                                                      End If
                                                      AllowSetForegroundWindow(ASFW_ANY)
-                                                     If ap.IsAbove(ScalaHandle) Then
-                                                         ap.ThreadInput(True)
-                                                         SetWindowPos(ScalaHandle, If(My.Settings.topmost, SWP_HWND.TOPMOST, SWP_HWND.TOP), -1, -1, -1, -1, SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
-                                                     End If
-                                                     Attach(but.AP, detachThread:=False)
+                                                     Attach(but.AP) ', detachThread:=False)
                                                      SetWindowPos(but.AP.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
-                                                     ap.ThreadInput(False)
+                                                     'ap.ThreadInput(False)
                                                      If prevWMMMpt <> MousePosition Then
                                                          SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
                                                      End If
@@ -586,9 +586,9 @@ Partial NotInheritable Class FrmMain
 
             End If
 
-            If Not thumbContainedMouse AndAlso My.Settings.gameOnOverview Then
+            If My.Settings.gameOnOverview Then
                 eqLockShown = False
-                AltPP = Nothing
+                If Not thumbContainedMouse Then AltPP = Nothing
                 Dim active = GetForegroundWindow()
                 'Dim activePP = alts.FirstOrDefault(Function(ap) ap.MainWindowHandle = active)
                 Dim activePP = alts.Find(Function(ap) ap.MainWindowHandle = active)
@@ -596,8 +596,9 @@ Partial NotInheritable Class FrmMain
                 If activePP IsNot Nothing Then
                     If Not activePP.IsBelow(ScalaHandle) Then
                         'AllowSetForegroundWindow(ASFW_ANY)
-                        activePP.ThreadInput(True) 'fix bringtofront issue
-                        Attach(activePP)
+                        Attach(activePP, detachThread:=False)
+                        'activePP.ThreadInput(True) 'fix bringtofront issue
+                        SetWindowPos(ScalaHandle, If(My.Settings.topmost, SWP_HWND.TOPMOST, SWP_HWND.TOP), -1, -1, -1, -1, SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
                         SetWindowPos(active, ScalaHandle, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
                         SetWindowPos(FrmBehind.Handle, active, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate)
                         activePP.ThreadInput(False)
