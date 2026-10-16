@@ -36,6 +36,8 @@ Partial NotInheritable Class FrmMain
         Me.cmbResolution = New ScalA.ThemedComboBox()
         Me.cboAlt = New ScalA.ThemedComboBox()
         Me.pnlTitleBar = New System.Windows.Forms.Panel()
+        Me.PnlWarning = New System.Windows.Forms.Panel()
+        Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.chkDebug = New System.Windows.Forms.CheckBox()
         Me.pnlUpdate = New System.Windows.Forms.Panel()
         Me.pbUpdateAvailable = New System.Windows.Forms.PictureBox()
@@ -97,6 +99,8 @@ Partial NotInheritable Class FrmMain
         Me.pnlSys.SuspendLayout()
         Me.cmsQuickLaunch.SuspendLayout()
         Me.pnlTitleBar.SuspendLayout()
+        Me.PnlWarning.SuspendLayout()
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.pnlUpdate.SuspendLayout()
         CType(Me.pbUpdateAvailable, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.pnlButtons.SuspendLayout()
@@ -201,6 +205,7 @@ Partial NotInheritable Class FrmMain
         'pnlTitleBar
         '
         Me.pnlTitleBar.BackColor = System.Drawing.SystemColors.Control
+        Me.pnlTitleBar.Controls.Add(Me.PnlWarning)
         Me.pnlTitleBar.Controls.Add(Me.chkDebug)
         Me.pnlTitleBar.Controls.Add(Me.pnlUpdate)
         Me.pnlTitleBar.Controls.Add(Me.ChkEqLock)
@@ -209,6 +214,29 @@ Partial NotInheritable Class FrmMain
         Me.pnlTitleBar.Name = "pnlTitleBar"
         Me.pnlTitleBar.Size = New System.Drawing.Size(641, 25)
         Me.pnlTitleBar.TabIndex = 14
+        '
+        'PnlWarning
+        '
+        Me.PnlWarning.Controls.Add(Me.PictureBox1)
+        Me.PnlWarning.Dock = System.Windows.Forms.DockStyle.Right
+        Me.PnlWarning.Location = New System.Drawing.Point(560, 0)
+        Me.PnlWarning.Margin = New System.Windows.Forms.Padding(0)
+        Me.PnlWarning.Name = "PnlWarning"
+        Me.PnlWarning.Size = New System.Drawing.Size(24, 25)
+        Me.PnlWarning.TabIndex = 15
+        Me.PnlWarning.Visible = False
+        '
+        'PictureBox1
+        '
+        Me.PictureBox1.BackgroundImage = Global.ScalA.My.Resources.Resources.Warning
+        Me.PictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom
+        Me.PictureBox1.Location = New System.Drawing.Point(3, 3)
+        Me.PictureBox1.Margin = New System.Windows.Forms.Padding(0)
+        Me.PictureBox1.Name = "PictureBox1"
+        Me.PictureBox1.Size = New System.Drawing.Size(20, 19)
+        Me.PictureBox1.TabIndex = 14
+        Me.PictureBox1.TabStop = False
+        Me.ttMain.SetToolTip(Me.PictureBox1, "An Update is Available")
         '
         'chkDebug
         '
@@ -227,7 +255,7 @@ Partial NotInheritable Class FrmMain
         '
         Me.pnlUpdate.Controls.Add(Me.pbUpdateAvailable)
         Me.pnlUpdate.Dock = System.Windows.Forms.DockStyle.Right
-        Me.pnlUpdate.Location = New System.Drawing.Point(580, 0)
+        Me.pnlUpdate.Location = New System.Drawing.Point(584, 0)
         Me.pnlUpdate.Margin = New System.Windows.Forms.Padding(0)
         Me.pnlUpdate.Name = "pnlUpdate"
         Me.pnlUpdate.Size = New System.Drawing.Size(24, 25)
@@ -255,7 +283,7 @@ Partial NotInheritable Class FrmMain
         Me.ChkEqLock.DataBindings.Add(New System.Windows.Forms.Binding("Checked", Global.ScalA.My.MySettings.Default, "LockEq", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
         Me.ChkEqLock.Dock = System.Windows.Forms.DockStyle.Right
         Me.ChkEqLock.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ChkEqLock.Location = New System.Drawing.Point(604, 0)
+        Me.ChkEqLock.Location = New System.Drawing.Point(608, 0)
         Me.ChkEqLock.Name = "ChkEqLock"
         Me.ChkEqLock.Padding = New System.Windows.Forms.Padding(0, 3, 3, 0)
         Me.ChkEqLock.Size = New System.Drawing.Size(37, 25)
@@ -692,6 +720,8 @@ Partial NotInheritable Class FrmMain
         Me.cmsQuickLaunch.ResumeLayout(False)
         Me.pnlTitleBar.ResumeLayout(False)
         Me.pnlTitleBar.PerformLayout()
+        Me.PnlWarning.ResumeLayout(False)
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.pnlUpdate.ResumeLayout(False)
         CType(Me.pbUpdateAvailable, System.ComponentModel.ISupportInitialize).EndInit()
         Me.pnlButtons.ResumeLayout(False)
@@ -770,4 +800,6 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents CloseAllButNameToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ActiveOverviewToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripMenuItem2 As ToolStripSeparator
+    Friend WithEvents PnlWarning As Panel
+    Friend WithEvents PictureBox1 As PictureBox
 End Class
