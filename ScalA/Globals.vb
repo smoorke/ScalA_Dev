@@ -9,6 +9,8 @@ Module Globals
 
     Public ReadOnly hideExt As String() = {".lnk", ".url"}
 
+    Public StructureToPtrSupported As Boolean = False
+
     Public AnimsEnabled As Boolean = getAnimationsEnabled()
     Public Sub setScalAPriority(pri As Integer)
         Dim hProcess As IntPtr = GetCurrentProcess()

@@ -3,7 +3,7 @@
         Me.FormBorderStyle = FormBorderStyle.None
         Me.DoubleBuffered = True
         Me.SetStyle(ControlStyles.ResizeRedraw, True)
-        Me.MinimumSize = New Size(400 + BorderSize * 2 + 2, 300 + BorderSize * 2 + FrmMain.pnlTitleBar.Height + 1)
+        Me.MinimumSize = New Size(400 + BorderSize * 2 + 2, 300 + BorderSize + FrmMain.pnlTitleBar.Height + 1)
     End Sub
 
 #If DEBUG Then
@@ -14,8 +14,8 @@
     Protected Overrides Sub OnPaint(ByVal e As PaintEventArgs)
         Dim xb As Integer = BorderSize + If(My.Settings.roundCorners, 2, 0)
         e.Graphics.FillRectangles(bru, {TopRC(), LeftRC(), RightRC(), BotRC(),
-                                  New Rectangle(0, 0, xb, xb), 'top left corner
-                                  New Rectangle(Me.ClientSize.Width - xb, 0, xb, xb), 'top right corner
+                                  New Rectangle(0, 0, xb, 3), 'top left corner
+                                  New Rectangle(Me.ClientSize.Width - xb, 0, xb, 3), 'top right corner
                                   New Rectangle(0, Me.ClientSize.Height - xb, xb, xb), 'bottom left corner
                                   New Rectangle(Me.ClientSize.Width - xb, Me.ClientSize.Height - xb, xb, xb)}) 'bottom right corner
     End Sub
@@ -42,10 +42,10 @@
             Case WM_SIZING
                 If Not suppressWM_SIZING Then
                     Dim rc As RECT = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, GetType(RECT))
-                    Dim sr As New Rectangle(rc.left + BorderSize, rc.top + BorderSize, rc.right - rc.left - BorderSize * 2, rc.bottom - rc.top - BorderSize * 2)
+                    Dim sr As New Rectangle(rc.left + BorderSize, rc.top, rc.right - rc.left - BorderSize * 2, rc.bottom - rc.top - BorderSize)
                     If sr <> prevSR Then
                         FrmMain.Bounds = sr
-                        Dim zoomSZ As New Size(sr.Width - 2, sr.Height - FrmMain.pnlTitleBar.Height - 1)
+                        Dim zoomSZ As New Size(sr.Width, sr.Height - FrmMain.pnlTitleBar.Height)
                         My.Settings.resol = zoomSZ
                         My.Settings.zoom = 0
                         FrmMain.ReZoom(zoomSZ)
@@ -90,9 +90,9 @@
             dBug.print("Border WM_EXITSIZEMOVE")
 
             FrmMain.Attach(FrmMain.AltPP)
-            Dim sr = New Rectangle(Me.Left + BorderSize, Me.Top + BorderSize, Me.Width - BorderSize * 2, Me.Height - BorderSize * 2)
+            Dim sr = New Rectangle(Me.Left + BorderSize, Me.Top, Me.Width - BorderSize * 2, Me.Height - BorderSize)
             FrmMain.Bounds = sr
-            Dim zoomSZ As New Size(sr.Width - 2, sr.Height - FrmMain.pnlTitleBar.Height - 1)
+            Dim zoomSZ As New Size(sr.Width, sr.Height - FrmMain.pnlTitleBar.Height)
             My.Settings.resol = zoomSZ
             My.Settings.zoom = 0
             FrmMain.ReZoom(zoomSZ)
@@ -107,7 +107,7 @@
     Const BorderSize As Integer = 6
 
     Function TopRC() As Rectangle
-        Return New Rectangle(0, 0, Me.ClientSize.Width, BorderSize + 1)
+        Return New Rectangle(0, 0, Me.ClientSize.Width, 3)
     End Function
 
     Function LeftRC() As Rectangle
@@ -145,7 +145,7 @@
             Return rc
         End Get
         Set(ByVal v As Rectangle)
-            SetWindowPos(Me.Handle, IntPtr.Zero, v.X - BorderSize, v.Y - BorderSize, v.Width + BorderSize * 2, v.Height + BorderSize * 2,
+            SetWindowPos(Me.Handle, IntPtr.Zero, v.X - BorderSize, v.Y, v.Width + BorderSize * 2, v.Height + BorderSize,
                             SetWindowPosFlags.IgnoreZOrder Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotSendChangingEvent)
         End Set
     End Property

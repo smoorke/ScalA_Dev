@@ -156,7 +156,7 @@ Partial NotInheritable Class FrmMain
         '
         Me.btnStart.ContextMenuStrip = Me.cmsQuickLaunch
         Me.btnStart.Font = New System.Drawing.Font("Courier New", 15.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnStart.Location = New System.Drawing.Point(2, 2)
+        Me.btnStart.Location = New System.Drawing.Point(3, 2)
         Me.btnStart.Name = "btnStart"
         Me.btnStart.Padding = New System.Windows.Forms.Padding(5)
         Me.btnStart.Size = New System.Drawing.Size(21, 21)
@@ -181,7 +181,7 @@ Partial NotInheritable Class FrmMain
         Me.cmbResolution.DropDownHeight = 4096
         Me.cmbResolution.FormattingEnabled = True
         Me.cmbResolution.IntegralHeight = False
-        Me.cmbResolution.Location = New System.Drawing.Point(187, 2)
+        Me.cmbResolution.Location = New System.Drawing.Point(188, 2)
         Me.cmbResolution.Name = "cmbResolution"
         Me.cmbResolution.Size = New System.Drawing.Size(80, 21)
         Me.cmbResolution.TabIndex = 17
@@ -195,7 +195,7 @@ Partial NotInheritable Class FrmMain
         Me.cboAlt.DropDownHeight = 4096
         Me.cboAlt.FormattingEnabled = True
         Me.cboAlt.IntegralHeight = False
-        Me.cboAlt.Location = New System.Drawing.Point(25, 2)
+        Me.cboAlt.Location = New System.Drawing.Point(26, 2)
         Me.cboAlt.Name = "cboAlt"
         Me.cboAlt.Size = New System.Drawing.Size(160, 21)
         Me.cboAlt.TabIndex = 16
@@ -210,9 +210,9 @@ Partial NotInheritable Class FrmMain
         Me.pnlTitleBar.Controls.Add(Me.pnlUpdate)
         Me.pnlTitleBar.Controls.Add(Me.ChkEqLock)
         Me.pnlTitleBar.Controls.Add(Me.lblTitle)
-        Me.pnlTitleBar.Location = New System.Drawing.Point(270, 0)
+        Me.pnlTitleBar.Location = New System.Drawing.Point(271, 0)
         Me.pnlTitleBar.Name = "pnlTitleBar"
-        Me.pnlTitleBar.Size = New System.Drawing.Size(641, 25)
+        Me.pnlTitleBar.Size = New System.Drawing.Size(645, 25)
         Me.pnlTitleBar.TabIndex = 14
         '
         'PnlWarning
@@ -243,7 +243,7 @@ Partial NotInheritable Class FrmMain
         Me.chkDebug.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.chkDebug.AutoSize = True
         Me.chkDebug.CheckAlign = System.Drawing.ContentAlignment.MiddleRight
-        Me.chkDebug.Location = New System.Drawing.Point(508, 6)
+        Me.chkDebug.Location = New System.Drawing.Point(512, 7)
         Me.chkDebug.Name = "chkDebug"
         Me.chkDebug.Size = New System.Drawing.Size(15, 14)
         Me.chkDebug.TabIndex = 11
@@ -295,12 +295,12 @@ Partial NotInheritable Class FrmMain
         'lblTitle
         '
         Me.lblTitle.AutoSize = True
-        Me.lblTitle.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblTitle.Font = New System.Drawing.Font("Segoe UI", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
         Me.lblTitle.Location = New System.Drawing.Point(-2, 5)
         Me.lblTitle.Name = "lblTitle"
-        Me.lblTitle.Size = New System.Drawing.Size(78, 15)
+        Me.lblTitle.Size = New System.Drawing.Size(52, 15)
         Me.lblTitle.TabIndex = 3
-        Me.lblTitle.Text = "- ScalA beta -"
+        Me.lblTitle.Text = "- ScalA -"
         '
         'pnlButtons
         '
@@ -322,7 +322,7 @@ Partial NotInheritable Class FrmMain
         Me.btnMin.FlatAppearance.BorderColor = System.Drawing.SystemColors.Control
         Me.btnMin.FlatAppearance.BorderSize = 0
         Me.btnMin.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnMin.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnMin.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
         Me.btnMin.Location = New System.Drawing.Point(0, 0)
         Me.btnMin.Name = "btnMin"
         Me.btnMin.Size = New System.Drawing.Size(45, 23)
@@ -338,7 +338,7 @@ Partial NotInheritable Class FrmMain
         Me.btnMax.FlatAppearance.BorderColor = System.Drawing.SystemColors.Control
         Me.btnMax.FlatAppearance.BorderSize = 0
         Me.btnMax.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnMax.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnMax.Font = New System.Drawing.Font("Microsoft Sans Serif", 14.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
         Me.btnMax.Location = New System.Drawing.Point(45, 0)
         Me.btnMax.Name = "btnMax"
         Me.btnMax.Size = New System.Drawing.Size(45, 23)
@@ -357,7 +357,7 @@ Partial NotInheritable Class FrmMain
         Me.btnQuit.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(102, Byte), Integer), CType(CType(102, Byte), Integer))
         Me.btnQuit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red
         Me.btnQuit.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnQuit.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnQuit.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
         Me.btnQuit.Location = New System.Drawing.Point(90, 0)
         Me.btnQuit.Name = "btnQuit"
         Me.btnQuit.Size = New System.Drawing.Size(45, 23)
@@ -582,7 +582,7 @@ Partial NotInheritable Class FrmMain
         '
         Me.pnlOverview.BackColor = System.Drawing.SystemColors.Control
         Me.pnlOverview.Controls.Add(Me.pnlMessage)
-        Me.pnlOverview.Location = New System.Drawing.Point(1, 25)
+        Me.pnlOverview.Location = New System.Drawing.Point(0, 25)
         Me.pnlOverview.Margin = New System.Windows.Forms.Padding(0)
         Me.pnlOverview.Name = "pnlOverview"
         Me.pnlOverview.Size = New System.Drawing.Size(898, 737)
@@ -621,7 +621,7 @@ Partial NotInheritable Class FrmMain
         'pbZoom
         '
         Me.pbZoom.BackColor = System.Drawing.Color.Magenta
-        Me.pbZoom.Location = New System.Drawing.Point(1, 25)
+        Me.pbZoom.Location = New System.Drawing.Point(0, 25)
         Me.pbZoom.Name = "pbZoom"
         Me.pbZoom.Size = New System.Drawing.Size(800, 600)
         Me.pbZoom.TabIndex = 0
@@ -709,8 +709,8 @@ Partial NotInheritable Class FrmMain
         Me.Controls.Add(Me.pnlButtons)
         Me.Controls.Add(Me.pnlTitleBar)
         Me.DoubleBuffered = True
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+        Me.MaximizeBox = False
         Me.Name = "FrmMain"
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen

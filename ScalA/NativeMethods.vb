@@ -773,7 +773,7 @@ Module NativeMethods
     <DllImport("user32.dll")>
     Public Function GetWindowThreadProcessId(ByVal hWnd As IntPtr, <Out()> ByRef lpdwProcessId As UInteger) As UInteger : End Function
 
-
+    Public Const DWMWA_CAPTION_BUTTON_BOUNDS As Integer = 5
     Public Const DWMWA_FORCE_ICONIC_REPRESENTATION As Integer = 7
     Public Const DWMWA_EXTENDED_FRAME_BOUNDS As Integer = 9
     Public Const DWMWA_HAS_ICONIC_BITMAP As Integer = 10
@@ -1214,9 +1214,13 @@ Module NativeMethods
     Public Const WM_DISPLAYCHANGE = &H7E
 
     Public Const WM_GETICON As Integer = &H7F
+
     Public Const WM_SETICON As UInteger = &H80
     Public Const ICON_SMALL As Integer = 0
     Public Const ICON_BIG As Integer = 1
+
+    Public Const WM_NCCALCSIZE As Integer = &H83
+
 
     Public Const WM_NCHITTEST As Integer = &H84
     Public Const WM_NCACTIVATE As Integer = &H86
@@ -1265,6 +1269,9 @@ Module NativeMethods
     Public Const WM_EXITSIZEMOVE = &H232
 
     Public Const WM_MOUSEHOVER = &H2A1
+
+    Public Const WM_DPICHANGED As Integer = &H2E0
+    Public Const WM_GETDPISCALEDSIZE As Integer = &H2E4
 
     Public Const WM_CLIPBOARDUPDATE As Integer = &H31D
 

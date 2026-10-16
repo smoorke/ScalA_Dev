@@ -9,9 +9,7 @@ Partial NotInheritable Class FrmMain
     Dim ThemeChanging As Boolean = False
 
     Dim suppressRestoreBounds As Boolean = False
-
-    Dim StructureToPtrSupported As Boolean = False
-
+    Dim blockWMSIZE As Boolean = False
 
     Dim moveSW As Stopwatch = Stopwatch.StartNew
 
@@ -238,7 +236,7 @@ Partial NotInheritable Class FrmMain
                     FrmBehind.Opacity = 0
                 Else
 #If DEBUG Then
-                    FrmBehind.Opacity = If(chkDebug.Checked, 1, 0.01)
+                    FrmBehind.Opacity = If(chkDebug?.Checked, 1, 0.01)
 #Else
                     FrmBehind.Opacity = 0.01
 #End If
@@ -267,7 +265,7 @@ Partial NotInheritable Class FrmMain
                                  End Sub)
                     End If
                 End If
-                If Me.cmbResolution.SelectedIndex > 0 Then Me.moveBusy = False
+                If Me.cmbResolution?.SelectedIndex > 0 Then Me.moveBusy = False
                 prevLoc = Me.Location
             Case WM_WINDOWPOSCHANGING
                 'dBug.print($"vers: {System.Environment.Version}")
@@ -287,8 +285,14 @@ Partial NotInheritable Class FrmMain
                         dBug.Print($"Restoreglitch tweaked")
                         'suppressRestoreBounds = False
                     End If
+                    If caption_Mousedown Then
+                        Debug.Print($"wpChanging {winpos.flags} {My.Settings.resol}")
+                        winpos.cx = My.Settings.resol.Width
+                        winpos.cy = My.Settings.resol.Height + pnlTitleBar.Height
+                        Marshal.StructureToPtr(winpos, m.LParam, True)
+                    End If
                 End If
-               'Debug.Print("WinposChanging:")
+                               'Debug.Print("WinposChanging:")
                 'Debug.Print($"{winpos.flags}")
                ' If Not Me.Disposing Then Debug.Print($"{winpos.hwndInsertAfter} {ScalaHandle} {FrmSizeBorder?.Handle} {frmOverlay?.Handle}")
             Case WM_SHOWWINDOW
@@ -362,7 +366,7 @@ Partial NotInheritable Class FrmMain
                     AOshowEqLock = False
 
                     Me.WindowState = FormWindowState.Normal
-                    ReZoom(New Drawing.Size(winpos.cx - 2, winpos.cy - pnlTitleBar.Height - 1))
+                    ReZoom(New Drawing.Size(winpos.cx, winpos.cy - pnlTitleBar.Height))
                     cmbResolution.SelectedIndex = My.Settings.zoom
 
                     If cboAlt.SelectedIndex > 0 Then AltPP?.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition Or SetWindowPosFlags.DoNotActivate)
@@ -376,7 +380,24 @@ Partial NotInheritable Class FrmMain
                     Exit Sub
                 End If
                 Me.Invalidate() 'fix transparency on caption buttons when restore from min
+            Case WM_GETDPISCALEDSIZE
+                m.Result = 1
+                Return
+            Case WM_NCCALCSIZE
+                If m.WParam <> IntPtr.Zero Then
 
+                    Dim params As NCCALCSIZE_PARAMS = Marshal.PtrToStructure(Of NCCALCSIZE_PARAMS)(m.LParam)
+
+                    params.rgrc(0).left += 1
+                    params.rgrc(0).top += 1
+                    params.rgrc(0).right -= 1
+                    params.rgrc(0).bottom -= 1
+
+                    Marshal.StructureToPtr(params, m.LParam, False)
+
+                    m.Result = 0
+                    Return
+                End If
             Case WM_STYLECHANGING '&h7C
                 Dim ss As StyleStruct = Marshal.PtrToStructure(m.LParam, GetType(StyleStruct))
                 dBug.Print($"WM_STYLECHANGING")

@@ -1058,9 +1058,9 @@ Partial Public NotInheritable Class FrmMain
         'Me.SuspendLayout()
         suppressResChange = True
         If Me.WindowState <> FormWindowState.Maximized Then
-            Me.Size = New Size(newSize.Width + 2, newSize.Height + pnlTitleBar.Height + 1)
-            pbZoom.Left = 1
-            pnlOverview.Left = 1
+            Me.Size = New Size(newSize.Width, newSize.Height + If(pnlTitleBar?.Height, 21))
+            'pbZoom.Left = 1
+            'pnlOverview.Left = 1
             pbZoom.Size = newSize
             pnlOverview.Size = newSize
             cmbResolution.Enabled = True
@@ -1069,8 +1069,8 @@ Partial Public NotInheritable Class FrmMain
             cmbResolution.SelectedIndex = My.Settings.zoom
 
         Else 'FormWindowState.Maximized
-            pbZoom.Left = 0
-            pnlOverview.Left = 0
+            'pbZoom.Left = 0
+            'pnlOverview.Left = 0
             pbZoom.Width = newSize.Width
             pbZoom.Height = newSize.Height - pnlTitleBar.Height
             pnlOverview.Size = pbZoom.Size
@@ -1592,55 +1592,56 @@ Partial Public NotInheritable Class FrmMain
 
             'find out where taskbar is and add 1 pixel at that location
             'dirty hack to enable dragging when maximized, TODO: try NCHITTEST HTCAPTION on panel and label
-            If leftBorder + rightborder + topBorder + botBorder = 0 Then
-                If scrn.WorkingArea.Left <> scrn.Bounds.Left Then leftBorder = 1
-                If scrn.WorkingArea.Top <> scrn.Bounds.Top Then topBorder = 1
-                If scrn.WorkingArea.Right <> scrn.Bounds.Right Then rightborder = 1
-                If scrn.WorkingArea.Bottom <> scrn.Bounds.Bottom Then botBorder = 1
-            End If
-            'if taskbar set to auto hide find where it is hiding
-            If leftBorder + rightborder + topBorder + botBorder = 0 Then
-                'Dim monifo As New MonitorInfo With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MonitorInfo))}
-                'GetMonitorInfo(MonitorFromPoint(scrn.Bounds.Location, MONITOR.DEFAULTTONEAREST), monifo)
-                Dim pabd As New APPBARDATA With {
-                        .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(APPBARDATA)),
-                        .rc = scrn.Bounds.ToRECT}
-                For edge = 0 To 3
-                    pabd.uEdge = edge
-                    If SHAppBarMessage(ABM.GETAUTOHIDEBAREX, pabd) <> IntPtr.Zero Then
-                        Select Case edge
-                            Case 0
-                                leftBorder = 1
-                                dBug.Print("Hidden taskbar left")
-                            Case 1
-                                topBorder = 1
-                                dBug.Print("Hidden taskbar top")
-                            Case 2
-                                rightborder = 1
-                                dBug.Print("Hidden taskbar right")
-                            Case 3
-                                botBorder = 1
-                                dBug.Print("Hidden taskbar bottom")
-                        End Select
-                        Exit For
-                    End If
-                Next
-            End If
-            'if no taskbar present add to bottom
-            If leftBorder + rightborder + topBorder + botBorder = 0 Then
-                dBug.Print("no taskbar present")
-                botBorder = 1
-            End If
+            ' note: using standard windowborder fixed this
+            'If leftBorder + rightborder + topBorder + botBorder = 0 Then
+            '    If scrn.WorkingArea.Left <> scrn.Bounds.Left Then leftBorder = 1
+            '    If scrn.WorkingArea.Top <> scrn.Bounds.Top Then topBorder = 1
+            '    If scrn.WorkingArea.Right <> scrn.Bounds.Right Then rightborder = 1
+            '    If scrn.WorkingArea.Bottom <> scrn.Bounds.Bottom Then botBorder = 1
+            'End If
+            ''if taskbar set to auto hide find where it is hiding
+            'If leftBorder + rightborder + topBorder + botBorder = 0 Then
+            '    'Dim monifo As New MonitorInfo With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(MonitorInfo))}
+            '    'GetMonitorInfo(MonitorFromPoint(scrn.Bounds.Location, MONITOR.DEFAULTTONEAREST), monifo)
+            '    Dim pabd As New APPBARDATA With {
+            '            .cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(APPBARDATA)),
+            '            .rc = scrn.Bounds.ToRECT}
+            '    For edge = 0 To 3
+            '        pabd.uEdge = edge
+            '        If SHAppBarMessage(ABM.GETAUTOHIDEBAREX, pabd) <> IntPtr.Zero Then
+            '            Select Case edge
+            '                Case 0
+            '                    leftBorder = 1
+            '                    dBug.Print("Hidden taskbar left")
+            '                Case 1
+            '                    topBorder = 1
+            '                    dBug.Print("Hidden taskbar top")
+            '                Case 2
+            '                    rightborder = 1
+            '                    dBug.Print("Hidden taskbar right")
+            '                Case 3
+            '                    botBorder = 1
+            '                    dBug.Print("Hidden taskbar bottom")
+            '            End Select
+            '            Exit For
+            '        End If
+            '    Next
+            'End If
+            ''if no taskbar present add to bottom
+            'If leftBorder + rightborder + topBorder + botBorder = 0 Then
+            '    dBug.Print("no taskbar present")
+            '    botBorder = 1
+            'End If
 
             dBug.Print($"leftborder {leftBorder}")
             dBug.Print($"topborder {topBorder}")
             dBug.Print($"rightborder {rightborder}")
             dBug.Print($"botborder {botBorder}")
 
-            Me.MaximizedBounds = New Rectangle(scrn.WorkingArea.Left - scrn.Bounds.Left + leftBorder,
-                                           scrn.WorkingArea.Top - scrn.Bounds.Top + topBorder,
-                                           scrn.WorkingArea.Width - leftBorder - rightborder,
-                                           scrn.WorkingArea.Height - topBorder - botBorder)
+            Me.MaximizedBounds = New Rectangle(scrn.WorkingArea.Left - scrn.Bounds.Left + leftBorder - 1,
+                                           scrn.WorkingArea.Top - scrn.Bounds.Top + topBorder - 1,
+                                           scrn.WorkingArea.Width - leftBorder - rightborder + 2,
+                                           scrn.WorkingArea.Height - topBorder - botBorder + 2)
 #End Region
             dBug.Print("new maxbound " & MaximizedBounds.ToString)
             If Me.WindowState = FormWindowState.Normal AndAlso Me.Location <> New Point(-32000, -32000) Then
@@ -2078,4 +2079,47 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
+    Private Sub BtnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
+
+    End Sub
+
+    Private Sub btnstart_MouseDown(sender As Object, e As MouseEventArgs) Handles btnStart.MouseDown
+
+    End Sub
+
+    Private Sub Various_MouseUp(sender As Object, e As MouseEventArgs) Handles pnlSys.MouseUp, pnlButtons.MouseUp, MyBase.MouseUp, ChkEqLock.MouseUp, cboAlt.MouseUp, btnStart.MouseUp, btnQuit.MouseUp
+
+    End Sub
+
+    Private Sub CmbResolution_DropDown(sender As Object, e As EventArgs) Handles cmbResolution.DropDown
+
+    End Sub
+
+    Private Sub CmbResolution_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cmbResolution.SelectedIndexChanged
+
+    End Sub
+
+    Private Sub ComboBoxes_DropDownClosed(sender As Object, e As EventArgs) Handles cmbResolution.DropDownClosed, cboAlt.DropDownClosed
+
+    End Sub
+
+    Private Sub CmbResolution_MouseUp(sender As Object, e As MouseEventArgs) Handles cmbResolution.MouseUp
+
+    End Sub
+
+    Private Sub cmbResolution_MouseWheel(sender As Object, e As MouseEventArgs) Handles cmbResolution.MouseWheel
+
+    End Sub
+
+    Private Sub CboAlt_DropDown(sender As Object, e As EventArgs) Handles cboAlt.DropDown
+
+    End Sub
+
+    Private Sub CboAlt_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboAlt.SelectedIndexChanged
+
+    End Sub
+
+    Private Sub pbUpdateAvailable_Click(sender As Object, e As MouseEventArgs) Handles pbUpdateAvailable.MouseDown
+
+    End Sub
 End Class

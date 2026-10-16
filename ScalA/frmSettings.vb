@@ -1,6 +1,7 @@
 ﻿Imports System.ComponentModel
 Imports System.IO
 Imports System.Net.Http
+Imports System.Runtime.InteropServices
 Imports System.Runtime.Serialization.Formatters.Binary
 Imports System.Text
 
@@ -221,7 +222,11 @@ Public NotInheritable Class FrmSettings
 
         Me.TopMost = True ' My.Settings.topmost
     End Sub
-
+    Public Sub New()
+        Me.AutoScaleMode = AutoScaleMode.None
+        InitializeComponent()
+        DesignedClientSize = Me.ClientSize
+    End Sub
     Private Sub FrmSettings_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         'FrmMain.Detach(False)
         'Me.Owner = FrmMain
@@ -238,12 +243,36 @@ Public NotInheritable Class FrmSettings
 
         'FrmMain.Attach(FrmMain.AltPP)
     End Sub
+    Dim DesignedClientSize As Size
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case WM_ENTERMENULOOP
                 SysMenu.Visible = True
             Case WM_EXITMENULOOP
                 SysMenu.Visible = False
+            Case WM_GETDPISCALEDSIZE
+                m.Result = 1
+                Exit Sub
+            Case WM_WINDOWPOSCHANGING
+                Dim winpos As WINDOWPOS = Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
+                If StructureToPtrSupported Then
+                    If Not startup AndAlso Not winpos.flags.HasFlag(SetWindowPosFlags.IgnoreResize) Then
+                        Dim rcC As RECT
+                        GetClientRect(Me.Handle, rcC)
+                        Debug.Print($"rcC {rcC.right} {rcC.bottom}")
+                        winpos.cx = Me.Width - rcC.right + DesignedClientSize.Width
+                        winpos.cy = Me.Height - rcC.bottom + DesignedClientSize.Height
+                        Marshal.StructureToPtr(winpos, m.LParam, True)
+                    End If
+                End If
+                'Case WM_DPICHANGED
+                '    Dim rcC As RECT
+                '    GetClientRect(Me.Handle, rcC)
+                '    Dim cX As Integer = Me.Width - rcC.right + DesignedClientSize.Width
+                '    Dim cY As Integer = Me.Height - rcC.bottom + DesignedClientSize.Height
+                '    SetWindowPos(Me.Handle, IntPtr.Zero, 0, 0, cX, cY, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreZOrder)
+                '    m.Result = 0
+                '    Exit Sub
         End Select
         'If Me.Owner Is Nothing Then 'this to address ghost form when closing settings.
         '    Select Case m.Msg
@@ -253,8 +282,8 @@ Public NotInheritable Class FrmSettings
         '            Me.Close()
         '            Exit Sub
         '        Case WM_KEYDOWN
-        '            dBug.Print($"GhostSettings WM_KEYDOWN {m.WParam} {m.LParam}")
         '            dBug.Print($"ScanCode {New LParamMap(m.LParam).scan}")
+        '            dBug.Print($"GhostSettings WM_KEYDOWN {m.WParam} {m.LParam}")
         '            If FrmMain.cboAlt.SelectedIndex > 0 Then
         '                FrmMain.AltPP.Activate()
         '                Dim key As Keys = m.WParam
