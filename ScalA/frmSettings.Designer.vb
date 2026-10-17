@@ -178,7 +178,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtExe = New System.Windows.Forms.TextBox()
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
-        Me.chkRoundCorners = New System.Windows.Forms.CheckBox()
         Me.pnlElevation = New System.Windows.Forms.Panel()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
@@ -648,7 +647,7 @@ Partial NotInheritable Class FrmSettings
         'chkOverViewIsGame
         '
         Me.chkOverViewIsGame.AutoSize = True
-        Me.chkOverViewIsGame.Location = New System.Drawing.Point(155, 10)
+        Me.chkOverViewIsGame.Location = New System.Drawing.Point(178, 10)
         Me.chkOverViewIsGame.Name = "chkOverViewIsGame"
         Me.chkOverViewIsGame.Size = New System.Drawing.Size(107, 17)
         Me.chkOverViewIsGame.TabIndex = 7
@@ -738,7 +737,7 @@ Partial NotInheritable Class FrmSettings
         'chkHoverActivate
         '
         Me.chkHoverActivate.AutoSize = True
-        Me.chkHoverActivate.Location = New System.Drawing.Point(155, 40)
+        Me.chkHoverActivate.Location = New System.Drawing.Point(178, 34)
         Me.chkHoverActivate.Name = "chkHoverActivate"
         Me.chkHoverActivate.Size = New System.Drawing.Size(112, 17)
         Me.chkHoverActivate.TabIndex = 26
@@ -1781,7 +1780,6 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc.Controls.Add(Me.ChkSingleInstance)
         Me.tabMisc.Controls.Add(Me.chkCheckForUpdate)
         Me.tabMisc.Controls.Add(Me.chkTopMost)
-        Me.tabMisc.Controls.Add(Me.chkRoundCorners)
         Me.tabMisc.Location = New System.Drawing.Point(4, 25)
         Me.tabMisc.Name = "tabMisc"
         Me.tabMisc.Padding = New System.Windows.Forms.Padding(3)
@@ -1793,7 +1791,7 @@ Partial NotInheritable Class FrmSettings
         'ChkAlwaysStartOnOverview
         '
         Me.ChkAlwaysStartOnOverview.AutoSize = True
-        Me.ChkAlwaysStartOnOverview.Location = New System.Drawing.Point(155, 25)
+        Me.ChkAlwaysStartOnOverview.Location = New System.Drawing.Point(26, 34)
         Me.ChkAlwaysStartOnOverview.Name = "ChkAlwaysStartOnOverview"
         Me.ChkAlwaysStartOnOverview.Size = New System.Drawing.Size(149, 17)
         Me.ChkAlwaysStartOnOverview.TabIndex = 30
@@ -1856,16 +1854,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkTopMost.TabIndex = 3
         Me.chkTopMost.Text = "Always On Top"
         Me.chkTopMost.UseVisualStyleBackColor = True
-        '
-        'chkRoundCorners
-        '
-        Me.chkRoundCorners.AutoSize = True
-        Me.chkRoundCorners.Location = New System.Drawing.Point(26, 35)
-        Me.chkRoundCorners.Name = "chkRoundCorners"
-        Me.chkRoundCorners.Size = New System.Drawing.Size(109, 17)
-        Me.chkRoundCorners.TabIndex = 2
-        Me.chkRoundCorners.Text = "Rounded Corners"
-        Me.chkRoundCorners.UseVisualStyleBackColor = True
         '
         'pnlElevation
         '
@@ -1960,7 +1948,6 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents tabMisc As TabPage
     Friend WithEvents txtExe As TextBox
     Friend WithEvents chkTopMost As CheckBox
-    Friend WithEvents chkRoundCorners As CheckBox
     Friend WithEvents txtClass As TextBox
     Friend WithEvents chkCycleAlts As CheckBox
     Friend WithEvents chkCycleUpAlt As CheckBox

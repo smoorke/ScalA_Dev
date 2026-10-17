@@ -29,7 +29,7 @@ Public NotInheritable Class FrmSettings
         End If
 
         chkTopMost.Checked = My.Settings.topmost
-        chkRoundCorners.Checked = My.Settings.roundCorners
+
         chkOverViewIsGame.Checked = My.Settings.gameOnOverview
         ChkAlwaysStartOnOverview.Checked = My.Settings.AlwaysStartOnOverview
 
@@ -513,13 +513,6 @@ Public NotInheritable Class FrmSettings
         End If
 
         My.Settings.AlwaysStartOnOverview = ChkAlwaysStartOnOverview.CheckState <> CheckState.Unchecked
-
-        My.Settings.roundCorners = chkRoundCorners.Checked
-
-        FrmMain.cornerNW.Visible = chkRoundCorners.Checked
-        FrmMain.cornerNE.Visible = chkRoundCorners.Checked
-        FrmMain.cornerSE.Visible = chkRoundCorners.Checked
-        FrmMain.cornerSW.Visible = chkRoundCorners.Checked
 
         'My.Settings.offset = New Point(numXoffset.Value, numYoffset.Value)
         My.Settings.exe = txtExe.Text

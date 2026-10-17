@@ -113,46 +113,6 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
-        Friend ReadOnly Property cornerNE() As System.Drawing.Bitmap
-            Get
-                Dim obj As Object = ResourceManager.GetObject("cornerNE", resourceCulture)
-                Return CType(obj,System.Drawing.Bitmap)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized resource of type System.Drawing.Bitmap.
-        '''</summary>
-        Friend ReadOnly Property cornerNW() As System.Drawing.Bitmap
-            Get
-                Dim obj As Object = ResourceManager.GetObject("cornerNW", resourceCulture)
-                Return CType(obj,System.Drawing.Bitmap)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized resource of type System.Drawing.Bitmap.
-        '''</summary>
-        Friend ReadOnly Property cornerSE() As System.Drawing.Bitmap
-            Get
-                Dim obj As Object = ResourceManager.GetObject("cornerSE", resourceCulture)
-                Return CType(obj,System.Drawing.Bitmap)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized resource of type System.Drawing.Bitmap.
-        '''</summary>
-        Friend ReadOnly Property cornerSW() As System.Drawing.Bitmap
-            Get
-                Dim obj As Object = ResourceManager.GetObject("cornerSW", resourceCulture)
-                Return CType(obj,System.Drawing.Bitmap)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized resource of type System.Drawing.Bitmap.
-        '''</summary>
         Friend ReadOnly Property denied() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("denied", resourceCulture)

@@ -239,10 +239,6 @@
     <None Include="Resources\Sync.png" />
     <None Include="Resources\moreF12.png" />
     <None Include="Resources\scrollbar_arrow_small_hot.png" />
-    <None Include="Resources\cornerNE.png" />
-    <None Include="Resources\cornerNW.png" />
-    <None Include="Resources\cornerSE.png" />
-    <None Include="Resources\cornerSW.png" />
     <None Include="Resources\About.png" />
     <None Include="Resources\Close.png" />
     <None Include="Resources\CloseAll.png" />

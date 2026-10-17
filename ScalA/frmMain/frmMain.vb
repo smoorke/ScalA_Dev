@@ -464,11 +464,6 @@ Partial Public NotInheritable Class FrmMain
         Me.chkHideMessage.Checked = My.Settings.hideMessage
 
 
-        'left big in designer to facilitate editing
-        cornerNW.Size = New Size(2, 2)
-        cornerNE.Size = New Size(2, 2)
-        cornerSW.Size = New Size(2, 2)
-        cornerSE.Size = New Size(2, 2)
 
         cmbResolution.Items.Add($"{My.Settings.resol.Width}x{My.Settings.resol.Height}")
         cmbResolution.Items.AddRange(zooms.Select(Function(ss) ss.Width & "x" & ss.Height).ToArray)
@@ -1101,26 +1096,7 @@ Partial Public NotInheritable Class FrmMain
         pnlTitleBar.Width = newSize.Width - pnlButtons.Width - pnlSys.Width
         dBug.Print($"rezoom pnlTitleBar.Width {pnlTitleBar.Width}")
 
-        cornerNW.Location = New Point(0, 0)
-        cornerNE.Location = New Point(Me.Width - 2, 0)
-        cornerSW.Location = New Point(0, Me.Height - 2)
-        cornerSE.Location = New Point(Me.Width - 2, Me.Height - 2)
-
         DoEqLock(newSize)
-
-        If Me.WindowState <> FormWindowState.Maximized AndAlso My.Settings.roundCorners Then
-
-            cornerNW.Visible = True
-            cornerNE.Visible = True
-            cornerSW.Visible = True
-            cornerSE.Visible = True
-
-        Else 'maximized
-            cornerNW.Visible = False
-            cornerNE.Visible = False
-            cornerSW.Visible = False
-            cornerSE.Visible = False
-        End If
 
     End Sub
 
@@ -1414,15 +1390,12 @@ Partial Public NotInheritable Class FrmMain
         sender.FlatAppearance.BorderColor = target.BackColor
     End Sub
     Private Sub BtnQuit_MouseEnter(sender As Button, e As EventArgs) Handles btnQuit.MouseEnter
-        cornerNE.BackColor = Color.Red
         sender.BackColor = Color.Red
     End Sub
     Private Sub BtnQuit_MouseLeave(sender As Button, e As EventArgs) Handles btnQuit.MouseLeave
-        cornerNE.BackColor = Color.Transparent
         sender.BackColor = Color.Transparent
     End Sub
     Private Sub BtnQuit_MouseDown(sender As Button, e As MouseEventArgs) Handles btnQuit.MouseDown
-        cornerNE.BackColor = Color.FromArgb(255, 102, 102)
         sender.BackColor = Color.FromArgb(255, 102, 102)
     End Sub
 
