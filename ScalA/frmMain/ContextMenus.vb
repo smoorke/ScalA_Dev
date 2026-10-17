@@ -2933,7 +2933,7 @@ Module ImageExtension
 
         'Dim lockObj = iconLocks.GetOrAdd(bmp, Function(__) New Object())
         'SyncLock lockObj
-        Dim bmp As Bitmap
+        Dim bmp As Bitmap = Nothing
         Try
             bmp = If(clone, bm.Clone, bm)
             Using g As Graphics = Graphics.FromImage(bmp)
@@ -2941,13 +2941,13 @@ Module ImageExtension
             End Using
         Catch ex As Exception
             SyncLock IconLock
-                bmp = If(clone, bm.Clone, bm)
-                Using g As Graphics = Graphics.FromImage(bmp)
-                    Try
+                Try
+                    bmp = If(clone, bm.Clone, bm)
+                    Using g As Graphics = Graphics.FromImage(bmp)
                         g.DrawImage(over, New Rectangle(New Point, bmp.Size))
-                    Catch
-                    End Try
-                End Using
+                    End Using
+                Catch
+                End Try
             End SyncLock
         End Try
         Return bmp

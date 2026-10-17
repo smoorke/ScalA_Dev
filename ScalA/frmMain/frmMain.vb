@@ -600,7 +600,7 @@ Partial Public NotInheritable Class FrmMain
 
         StartCloseErrorDialogThread()
 
-        startWinEventHooks()
+        startWinEventHooks(Me)
 
     End Sub
 
@@ -659,6 +659,8 @@ Partial Public NotInheritable Class FrmMain
         Dim sb As Rectangle = Me.RectangleToScreen(pbZoom.Bounds)
         frmOverlay.Bounds = sb 'New Rectangle(sb.X, sb.Y + 21, sb.Width, sb.Height - 21)
         'SetWindowPos(frmOverlay.Handle, 0, sb.X, sb.Y, sb.Width, sb.Height - 21, SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder)
+
+        SendMessage(ScalaHandle, WM_NCACTIVATE, True, ScalaHandle)
 
     End Sub
     Friend Shared updateToVersion As String = "Error"
@@ -857,8 +859,6 @@ Partial Public NotInheritable Class FrmMain
         Return reslist.ToArray
     End Function
 
-
-
 #Region " Move Self "
 
     Private MovingForm As Boolean
@@ -951,6 +951,7 @@ Partial Public NotInheritable Class FrmMain
         SaveLocation()
         tmrActive.Stop()
         Hotkey.UnregHotkey(Me)
+        stopWinEventHooks()
     End Sub
 
 
@@ -1225,7 +1226,7 @@ Partial Public NotInheritable Class FrmMain
         Catch ex As Exception
 
         End Try
-        SendMessage(ScalaHandle, WM_NCACTIVATE, True, IntPtr.Zero)
+        SendMessage(ScalaHandle, WM_NCACTIVATE, True, ScalaHandle)
     End Sub
 
 

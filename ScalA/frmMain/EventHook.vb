@@ -3,31 +3,30 @@
 Module EventHook
     Public ForegroundHook As IntPtr
     Public ForegroundDelegate As WinEventDelegate = AddressOf ForegroundHookProc
+    Private _self As FrmMain
 
-    Public Sub startWinEventHooks()
+    Public Sub startWinEventHooks(self As FrmMain)
         If ForegroundHook = IntPtr.Zero Then
-            SetWinEventHook(ForegroundHook, EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, ForegroundDelegate, 0, 0, WINEVENT_OUTOFCONTEXT)
+            _self = self
+            SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, ForegroundDelegate, 0, 0, WINEVENT_OUTOFCONTEXT)
         End If
     End Sub
 
+    Public Sub ForegroundHookProc(hWinEventHook As IntPtr, eventType As UInteger, hwnd As IntPtr, idObject As Integer, idChild As Integer, idEventThread As UInteger, msEventTime As UInteger)
 
-
-    Private Sub ForegroundHookProc(hWinEventHook As IntPtr, eventType As UInteger, hwnd As IntPtr, idObject As Integer, idChild As Integer, idEventThread As UInteger, msEventTime As UInteger)
-
-        Dim slaveActive As Boolean = (FrmMain.AltPP IsNot Nothing AndAlso hwnd = FrmMain.AltPP.MainWindowHandle) OrElse hwnd = ScalaHandle
+        Dim slaveActive As Boolean = (_self.AltPP IsNot Nothing AndAlso hwnd = _self.AltPP?.MainWindowHandle) OrElse hwnd = ScalaHandle
 
         Debug.Print($"SlaveActive {slaveActive} {hwnd}")
-        Debug.Print($"Altpp {FrmMain.AltPP?.MainWindowHandle} ScalA {ScalaHandle}")
-
+        Debug.Print($"Altpp {_self.AltPP?.MainWindowHandle} ScalA {ScalaHandle}")
 
         If isActive <> slaveActive Then
             isActive = slaveActive
             Debug.Print($"isActive Changed {isActive}")
-            If Not FrmMain.IsDisposed Then FrmMain.BeginInvoke(Sub()
-                                                                   FrmMain.suppressNCActivate = True
-                                                                   SendMessage(ScalaHandle, WM_NCACTIVATE, isActive, ScalaHandle)
-                                                                   FrmMain.suppressNCActivate = False
-                                                               End Sub)
+            If Not _self.IsDisposed Then _self.BeginInvoke(Sub()
+                                                               FrmMain.suppressNCActivate = True
+                                                               SendMessage(ScalaHandle, WM_NCACTIVATE, isActive, ScalaHandle)
+                                                               FrmMain.suppressNCActivate = False
+                                                           End Sub)
         End If
 
     End Sub
@@ -35,6 +34,7 @@ Module EventHook
     Public Sub stopWinEventHooks()
         If ForegroundHook <> IntPtr.Zero Then
             UnhookWinEvent(ForegroundHook)
+            ForegroundHook = IntPtr.Zero
         End If
     End Sub
 

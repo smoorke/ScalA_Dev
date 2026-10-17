@@ -567,7 +567,7 @@ Partial NotInheritable Class FrmMain
                 Me.Invalidate()
                 UpdateWindow(Me.Handle)
             Case WM_NCACTIVATE
-                dBug.Print($"WM_NCACTIVATE {m.WParam} {m.LParam} {suppressNCActivate}")
+                dBug.Print($"WM_NCACTIVATE W:{m.WParam} L:{m.LParam} isAct {isActive} suppress {suppressNCActivate}")
 
                 If m.WParam = IntPtr.Zero Then
 
