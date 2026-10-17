@@ -2943,7 +2943,10 @@ Module ImageExtension
             SyncLock IconLock
                 bmp = If(clone, bm.Clone, bm)
                 Using g As Graphics = Graphics.FromImage(bmp)
-                    g.DrawImage(over, New Rectangle(New Point, bmp.Size))
+                    Try
+                        g.DrawImage(over, New Rectangle(New Point, bmp.Size))
+                    Catch
+                    End Try
                 End Using
             End SyncLock
         End Try

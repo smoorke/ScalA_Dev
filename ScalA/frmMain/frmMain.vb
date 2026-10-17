@@ -600,6 +600,8 @@ Partial Public NotInheritable Class FrmMain
 
         StartCloseErrorDialogThread()
 
+        startWinEventHooks()
+
     End Sub
 
     Private Sub prioritySetter()
@@ -1058,7 +1060,7 @@ Partial Public NotInheritable Class FrmMain
         'Me.SuspendLayout()
         suppressResChange = True
         If Me.WindowState <> FormWindowState.Maximized Then
-            Me.Size = New Size(newSize.Width, newSize.Height + If(pnlTitleBar?.Height, 21))
+            Me.Size = New Size(newSize.Width + 2, newSize.Height + If(pnlTitleBar?.Height, 21) + 2)
             'pbZoom.Left = 1
             'pnlOverview.Left = 1
             pbZoom.Size = newSize
@@ -1463,6 +1465,10 @@ Partial Public NotInheritable Class FrmMain
         Me.WindowState = FormWindowState.Minimized
         dBug.Print($"WS {Me.WindowState}")
         'suppressWM_MOVEcwp = False
+        Me.BeginInvoke(Sub()
+                           'Threading.Thread.Sleep(16)
+                           SetForegroundWindow(ScalaHandle) 'this fixes immediate restoring after minimize throwing sysbeep
+                       End Sub)
     End Sub
 
     Private Sub MinAllActiveOverview()

@@ -7,6 +7,8 @@ Module Globals
 
     Public MouseButtonStale As MouseButtons
 
+    Public isActive As Boolean = False
+
     Public ReadOnly hideExt As String() = {".lnk", ".url"}
 
     Public StructureToPtrSupported As Boolean = False

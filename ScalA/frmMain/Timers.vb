@@ -1021,8 +1021,6 @@ Partial NotInheritable Class FrmMain
 
     Private altSelectedOrOverview As List(Of AstoniaProcess)
 
-
-
     ' why did i write this? intended use? why is this in timers? needs to be rewritten to use enumwndproc
     Private Function FindLowestZOrderHwnd(ByVal tP As List(Of AstoniaProcess), ByVal startHwnd As IntPtr) As IntPtr?
 

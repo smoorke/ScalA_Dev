@@ -241,6 +241,8 @@ Module NativeMethods
     <DllImport("user32.dll", SetLastError:=True, CharSet:=Runtime.InteropServices.CharSet.Auto)>
     Public Function FindWindow(ByVal lpClassName As String, ByVal lpWindowName As String) As IntPtr : End Function
 
+    <DllImport("user32.dll")>
+    Public Function UpdateWindow(hwnd As IntPtr) As Boolean : End Function
 
     ''' <summary>
     ''' note: this may need GetAncestor(hWnd, GA_ROOT) since it can return child controls

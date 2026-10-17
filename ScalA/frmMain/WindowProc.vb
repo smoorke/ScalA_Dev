@@ -11,6 +11,8 @@ Partial NotInheritable Class FrmMain
     Dim suppressRestoreBounds As Boolean = False
     Dim blockWMSIZE As Boolean = False
 
+    Friend Shared suppressNCActivate As Boolean
+
     Dim moveSW As Stopwatch = Stopwatch.StartNew
 
     Protected Overrides Sub WndProc(ByRef m As Message)
@@ -137,6 +139,7 @@ Partial NotInheritable Class FrmMain
                         End If
                         suppressWM_MOVEcwp = True
                         MyBase.DefWndProc(m)
+                        ReZoom(My.Settings.resol)
                         Me.Invalidate()
                         suppressWM_MOVEcwp = False
                         Exit Sub
@@ -285,7 +288,7 @@ Partial NotInheritable Class FrmMain
                         dBug.Print($"Restoreglitch tweaked")
                         'suppressRestoreBounds = False
                     End If
-                    If caption_Mousedown Then
+                    If caption_Mousedown And Not winpos.flags.HasFlag(SetWindowPosFlags.IgnoreResize) Then
                         Debug.Print($"wpChanging {winpos.flags} {My.Settings.resol}")
                         winpos.cx = My.Settings.resol.Width
                         winpos.cy = My.Settings.resol.Height + pnlTitleBar.Height
@@ -557,10 +560,46 @@ Partial NotInheritable Class FrmMain
                 If cboAlt.SelectedIndex > 0 Then
                     Attach(AltPP, True)
                 End If
+            Case WM_NCLBUTTONDOWN
+                If Not isActive Then
+                    isActive = True
+                End If
+                Me.Invalidate()
+                UpdateWindow(Me.Handle)
             Case WM_NCACTIVATE
-                dBug.Print("WM_NCACTIVATE")
+                dBug.Print($"WM_NCACTIVATE {m.WParam} {m.LParam} {suppressNCActivate}")
+
+                If m.WParam = IntPtr.Zero Then
+
+                    If suppressNCActivate = False Then
+                        BeginInvoke(Sub()
+                                        Threading.Thread.Sleep(16)
+
+                                        Dim fg = GetForegroundWindow()
+                                        Debug.Print($"fg {fg} {AltPP?.MainWindowHandle} {ScalaHandle}")
+                                        isActive = (AltPP IsNot Nothing AndAlso (fg = AltPP.MainWindowHandle OrElse fg = ScalaHandle))
+
+                                        If Not isActive Then
+                                            suppressNCActivate = True
+                                            SendMessage(Me.Handle, WM_NCACTIVATE, IntPtr.Zero, IntPtr.Zero)
+                                            suppressNCActivate = False
+                                        End If
+                                    End Sub)
+
+                        m.Result = 1
+                        Exit Sub
+                    End If
+                End If
+
                 setActive(True)
                 Me.Refresh()
+            Case WM_ACTIVATE
+                Debug.Print($"WM_ACTIVATE {m.HWnd} {m.WParam} {m.LParam}")
+                Debug.Print($"ScalaHandle {ScalaHandle} AltPP {AltPP?.MainWindowHandle}")
+            'Case WM_ACTIVATEAPP
+            '    If m.WParam = True Then
+            '        'isActive = True
+            '    End If
 #If DEBUG Then
 
             'Case &H6 ' WM_ACTIVATE
@@ -813,6 +852,7 @@ Partial NotInheritable Class FrmMain
         WM_EXITSIZEMOVE = &H232
         WM_DROPFILES = &H233
         WM_MDIREFRESHMENU = &H234
+        WM_NCMOUSELEAVE = &H2A2
     End Enum
 
 #End If
