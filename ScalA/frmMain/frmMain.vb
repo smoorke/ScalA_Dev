@@ -1225,6 +1225,7 @@ Partial Public NotInheritable Class FrmMain
         Catch ex As Exception
 
         End Try
+        SendMessage(ScalaHandle, WM_NCACTIVATE, True, IntPtr.Zero)
     End Sub
 
 
