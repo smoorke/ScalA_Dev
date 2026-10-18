@@ -3,7 +3,7 @@
         Me.FormBorderStyle = FormBorderStyle.None
         Me.DoubleBuffered = True
         Me.SetStyle(ControlStyles.ResizeRedraw, True)
-        Me.MinimumSize = New Size(400 + BorderSize * 2 + 2, 300 + BorderSize + FrmMain.pnlTitleBar.Height + 1)
+        Me.MinimumSize = New Size(400 + BorderSize * 2, 300 + BorderSize + FrmMain.pnlTitleBar.Height)
     End Sub
 
 #If DEBUG Then
