@@ -8,7 +8,7 @@ Module EventHook
     Public Sub startWinEventHooks(self As FrmMain)
         If ForegroundHook = IntPtr.Zero Then
             _self = self
-            SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, ForegroundDelegate, 0, 0, WINEVENT_OUTOFCONTEXT)
+            ForegroundHook = SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, ForegroundDelegate, 0, 0, WINEVENT_OUTOFCONTEXT)
         End If
     End Sub
 
@@ -19,12 +19,12 @@ Module EventHook
         Debug.Print($"SlaveActive {slaveActive} {hwnd}")
         Debug.Print($"Altpp {_self.AltPP?.MainWindowHandle} ScalA {ScalaHandle}")
 
-        If isActive <> slaveActive Then
-            isActive = slaveActive
-            Debug.Print($"isActive Changed {isActive}")
+        If BorderIsActive <> slaveActive Then
+            BorderIsActive = slaveActive
+            Debug.Print($"isActive Changed {BorderIsActive}")
             If Not _self.IsDisposed Then _self.BeginInvoke(Sub()
                                                                FrmMain.suppressNCActivate = True
-                                                               SendMessage(ScalaHandle, WM_NCACTIVATE, isActive, ScalaHandle)
+                                                               SendMessage(ScalaHandle, WM_NCACTIVATE, BorderIsActive, ScalaHandle)
                                                                FrmMain.suppressNCActivate = False
                                                            End Sub)
         End If

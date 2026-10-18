@@ -595,7 +595,7 @@ Partial Public NotInheritable Class FrmMain
 
         StartCloseErrorDialogThread()
 
-        startWinEventHooks(Me)
+        'startWinEventHooks(Me) 'polling in timer seems to be more stable to determine acitvation state
 
     End Sub
 
