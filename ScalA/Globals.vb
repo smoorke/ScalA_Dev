@@ -1,4 +1,5 @@
-﻿Imports System.Runtime.InteropServices
+﻿Imports System.ComponentModel
+Imports System.Runtime.InteropServices
 Module Globals
 
     Public startup As Boolean = True
@@ -7,7 +8,7 @@ Module Globals
 
     Public MouseButtonStale As MouseButtons
 
-    Public isActive As Boolean = False
+    Public BorderIsActive As Boolean = False
 
     Public ReadOnly hideExt As String() = {".lnk", ".url"}
 
@@ -64,11 +65,11 @@ Module Globals
         End Using
         Return False
     End Function
-    Public Function GetActiveProcessID() As UInteger
-        Dim hWnd As IntPtr = GetForegroundWindow()
+    Public Function GetActiveProcessID(Optional ByRef fgw As IntPtr = Nothing) As UInteger
+        If fgw = IntPtr.Zero Then fgw = GetForegroundWindow()
         Dim ProcessID As UInteger = 0
 
-        GetWindowThreadProcessId(hWnd, ProcessID)
+        GetWindowThreadProcessId(fgw, ProcessID)
 
         Return ProcessID
     End Function

@@ -604,11 +604,13 @@ Partial Public NotInheritable Class FrmMain
             Threading.Thread.Sleep(500)
             If Not Me.IsDisposed AndAlso pnlOverview.IsHandleCreated AndAlso Not pnlOverview.IsDisposed AndAlso My.Settings.gameOnOverview AndAlso Me.Invoke(Function() pnlOverview.Visible) Then
                 Threading.Thread.Sleep(25)
-                Dim ablist As List(Of AButton) = Me.Invoke(Function() pnlOverview.Controls.OfType(Of AButton).Where(Function(a) a.Visible AndAlso a.AP IsNot Nothing).ToList)
-                For Each ab As AButton In ablist
-                    Threading.Thread.Sleep(25)
-                    If Not ab?.IsDisposed Then ab.AP?.setPriority(My.Settings.Priority)
-                Next
+                If Not Me.IsDisposed Then
+                    Dim ablist As List(Of AButton) = Me.Invoke(Function() pnlOverview.Controls.OfType(Of AButton).Where(Function(a) a.Visible AndAlso a.AP IsNot Nothing).ToList)
+                    For Each ab As AButton In ablist
+                        Threading.Thread.Sleep(25)
+                        If Not ab?.IsDisposed Then ab.AP?.setPriority(My.Settings.Priority)
+                    Next
+                End If
             End If
         Loop
     End Sub
@@ -1056,7 +1058,7 @@ Partial Public NotInheritable Class FrmMain
         'Me.SuspendLayout()
         suppressResChange = True
         If Me.WindowState <> FormWindowState.Maximized Then
-            Me.Size = New Size(newSize.Width + 2, newSize.Height + If(pnlTitleBar?.Height, 21) + 2)
+            Me.Size = New Size(newSize.Width, newSize.Height + If(pnlTitleBar?.Height, 21))
             'pbZoom.Left = 1
             'pnlOverview.Left = 1
             pbZoom.Size = newSize
@@ -1748,7 +1750,7 @@ Partial Public NotInheritable Class FrmMain
     End Function
 
 
-    Private Sub setActive(active As Boolean)
+    Public Sub setActive(active As Boolean)
         Dim fcol As Color = Color.FromArgb(&HFF666666)
         If active Then fcol = If(My.Settings.DarkMode, Colors.LightText, SystemColors.ControlText)
         lblTitle.ForeColor = fcol

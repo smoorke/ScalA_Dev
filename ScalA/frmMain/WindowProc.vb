@@ -302,8 +302,8 @@ Partial NotInheritable Class FrmMain
                 dBug.Print($"WM_SHOWWINDOW {m.WParam} {m.LParam}")
                 If m.WParam = SW_HIDE AndAlso m.LParam = SW_PARENTCLOSING Then 'minimize
                     dBug.Print($"AltPP?{{{AltPP?.Id}}}.isSDL{{{AltPP?.isSDL}}}")
-                    If Not AltPP?.isSDL Then
-                        dBug.Print("Not AltPP?.isSDL")
+                    If Not AltPP?.isSDL OrElse cboAlt.SelectedIndex = 0 Then
+                        dBug.Print("Detach")
                         Detach(True)
                     End If
                     FrmBehind.Hide()
@@ -561,13 +561,13 @@ Partial NotInheritable Class FrmMain
                     Attach(AltPP, True)
                 End If
             Case WM_NCLBUTTONDOWN
-                If Not isActive Then
-                    isActive = True
+                If Not BorderIsActive Then
+                    BorderIsActive = True
                 End If
                 Me.Invalidate()
                 UpdateWindow(Me.Handle)
             Case WM_NCACTIVATE
-                dBug.Print($"WM_NCACTIVATE W:{m.WParam} L:{m.LParam} isAct {isActive} suppress {suppressNCActivate}")
+                dBug.Print($"WM_NCACTIVATE W:{m.WParam} L:{m.LParam} BisAct {BorderIsActive} suppress {suppressNCActivate}")
 
                 If m.WParam = IntPtr.Zero Then
 
@@ -577,9 +577,9 @@ Partial NotInheritable Class FrmMain
 
                                         Dim fg = GetForegroundWindow()
                                         Debug.Print($"fg {fg} {AltPP?.MainWindowHandle} {ScalaHandle}")
-                                        isActive = (AltPP IsNot Nothing AndAlso (fg = AltPP.MainWindowHandle OrElse fg = ScalaHandle))
+                                        BorderIsActive = (AltPP IsNot Nothing AndAlso (fg = AltPP.MainWindowHandle OrElse fg = ScalaHandle))
 
-                                        If Not isActive Then
+                                        If Not BorderIsActive Then
                                             suppressNCActivate = True
                                             SendMessage(Me.Handle, WM_NCACTIVATE, IntPtr.Zero, IntPtr.Zero)
                                             suppressNCActivate = False

@@ -762,16 +762,24 @@ Partial NotInheritable Class FrmMain
 
 
 
+        Dim fgw As IntPtr = IntPtr.Zero
+        activeID = GetActiveProcessID(fgw) ' this returns 0 when switching tasks
 
-        activeID = GetActiveProcessID() ' this returns 0 when switching tasks
-
-        If activeID = scalaPID OrElse activeID = AltPP?.Id OrElse
+        If fgw = ScalaHandle OrElse fgw = FrmSizeBorder.Handle OrElse fgw = AltPP?.MainWindowHandle OrElse
                 (My.Settings.gameOnOverview AndAlso pnlOverview.Visible AndAlso
-                pnlOverview.Controls.OfType(Of AButton).Any(Function(ab) ab.Visible AndAlso ab.AP IsNot Nothing AndAlso ab.AP.Id = activeID)) Then ' is on overview
+                pnlOverview.Controls.OfType(Of AButton).Any(Function(ab) ab.Visible AndAlso ab.AP IsNot Nothing AndAlso ab.AP.MainWindowHandle = fgw)) Then ' is on overview
             setActive(True)
+            If Not BorderIsActive Then
+                SendMessage(ScalaHandle, WM_NCACTIVATE, True, ScalaHandle)
+                BorderIsActive = True
+            End If
             If Not MouseButtons.HasFlag(MouseButtons.Middle) AndAlso Not MouseButtons.HasFlag(MouseButtons.Right) Then AltPP?.ThreadInput(False)
         ElseIf activeID <> 0 Then 'inactive
             setActive(False)
+            If BorderIsActive Then
+                SendMessage(ScalaHandle, WM_NCACTIVATE, False, IntPtr.Zero)
+                BorderIsActive = False
+            End If
             Dim wip = GetAncestor(WindowFromPoint(MousePosition), GA_ROOT)
             Dim pid As Integer
             GetWindowThreadProcessId(wip, pid)
