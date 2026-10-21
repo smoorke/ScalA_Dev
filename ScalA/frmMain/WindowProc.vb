@@ -673,17 +673,17 @@ Partial NotInheritable Class FrmMain
         End Select
 
 
-        Select Case m.Msg
-            Case WM_NCHITTEST
+        'Select Case m.Msg
+        '    Case WM_NCHITTEST
 
-                Dim pt As Point = PointToClient(Cursor.Position)
-                Debug.Print($"Hittest {pt} {pnlTitleBar.Bounds}")
-                If pnlTitleBar.Bounds.Contains(pt) Then
-                    m.Result = HTCAPTION
-                    Debug.Print("HTCaption")
-                    Return
-                End If
-        End Select
+        '        Dim pt As Point = PointToClient(Cursor.Position)
+        '        Debug.Print($"Hittest {pt} {pnlTitleBar.Bounds}")
+        '        If pnlTitleBar.Bounds.Contains(pt) Then
+        '            m.Result = HTCAPTION
+        '            Debug.Print("HTCaption")
+        '            Return
+        '        End If
+        'End Select
 
         MyBase.WndProc(m)  ' allow form to process this message
     End Sub
