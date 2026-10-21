@@ -263,7 +263,7 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
 
     End Function
 
-    Public Function WindowsScaling() As Integer
+    Public Function WindowsScaling() As Integer 'note. this no longer works due to being dpi aware (always 100%). move to arbiter process?
 
         Dim rcFrame As RECT
         DwmGetWindowAttribute(Me.MainWindowHandle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
