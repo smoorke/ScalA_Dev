@@ -1727,9 +1727,12 @@ Partial Public NotInheritable Class FrmMain
         Finally
             prevHWNDParent = restoreParent
             If show Then
-                AllowSetForegroundWindow(ASFW_ANY)
-                SetForegroundWindow(GetDesktopWindow)
-                SetForegroundWindow(ScalaHandle)
+                Me.BeginInvoke(Async Sub()
+                                   AllowSetForegroundWindow(ASFW_ANY)
+                                   SetForegroundWindow(GetDesktopWindow)
+                                   Await Task.Delay(16)
+                                   SetForegroundWindow(ScalaHandle)
+                               End Sub)
 
                 'SwitchToThisWindow(GetDesktopWindow(), True)
                 'SwitchToThisWindow(ScalaHandle, True)
