@@ -167,18 +167,6 @@ Namespace My
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
-        Public Property roundCorners() As Boolean
-            Get
-                Return CType(Me("roundCorners"),Boolean)
-            End Get
-            Set
-                Me("roundCorners") = value
-            End Set
-        End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
         Public Property gameOnOverview() As Boolean
             Get
                 Return CType(Me("gameOnOverview"),Boolean)
