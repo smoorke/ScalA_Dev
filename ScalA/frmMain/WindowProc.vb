@@ -305,6 +305,8 @@ Partial NotInheritable Class FrmMain
                     If Not AltPP?.isSDL OrElse cboAlt.SelectedIndex = 0 Then
                         dBug.Print("Detach")
                         Detach(True)
+                        ' Threading.Thread.Sleep(16)
+                        'SetForegroundWindow(ScalaHandle)
                     End If
                     FrmBehind.Hide()
                     FrmSizeBorder.Hide()
@@ -342,13 +344,13 @@ Partial NotInheritable Class FrmMain
                     If Not FrmSizeBorder.Visible AndAlso My.Settings.SizingBorder Then FrmSizeBorder.Show()
                 End If
 
-                If pbZoom IsNot Nothing Then
+                If pbZoom IsNot Nothing AndAlso pnlTitleBar IsNot Nothing Then
                     'frmOverlay.Bounds = New Rectangle(winpos.x, winpos.y + 21, winpos.cx, winpos.cy - 21)
                     'SetWindowPos(frmOverlay.Handle, 0, winpos.x, winpos.y + 21, winpos.cx, winpos.cy - 21, SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.DoNotChangeOwnerZOrder Or SetWindowPosFlags.DoNotReposition)
                     frmOverlay.Bounds = New Rectangle(winpos.x, winpos.y + 21, winpos.cx, winpos.cy - 21)
+                    FrmBehind.Bounds = New Rectangle(winpos.x, winpos.y + pnlTitleBar.Height, winpos.cx, winpos.cy - pnlTitleBar.Height)
                 End If
 
-                FrmBehind.Bounds = New Rectangle(winpos.x, winpos.y + 21, winpos.cx, winpos.cy - 21)
 
                 If FrmSizeBorder IsNot Nothing AndAlso Me.WindowState = FormWindowState.Normal Then
                     FrmSizeBorder.Bounds = New Rectangle(winpos.x, winpos.y, winpos.cx, winpos.cy)

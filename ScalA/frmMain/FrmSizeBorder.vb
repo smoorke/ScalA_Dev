@@ -12,12 +12,8 @@
     Private ReadOnly bru As Brush = Brushes.Black
 #End If
     Protected Overrides Sub OnPaint(ByVal e As PaintEventArgs)
-        Dim xb As Integer = BorderSize + If(My.Settings.roundCorners, 2, 0)
         e.Graphics.FillRectangles(bru, {TopRC(), LeftRC(), RightRC(), BotRC(),
-                                  New Rectangle(0, 0, xb, 3), 'top left corner
-                                  New Rectangle(Me.ClientSize.Width - xb, 0, xb, 3), 'top right corner
-                                  New Rectangle(0, Me.ClientSize.Height - xb, xb, xb), 'bottom left corner
-                                  New Rectangle(Me.ClientSize.Width - xb, Me.ClientSize.Height - xb, xb, xb)}) 'bottom right corner
+                                  TopLeftRC(), TopRightRC(), BotLeftRC(), BotRightRC()})
     End Sub
 
     Private Sub FrmBehind_Shown(sender As Object, e As EventArgs) Handles Me.Shown
@@ -105,9 +101,10 @@
     End Sub
 
     Const BorderSize As Integer = 6
+    Const TopBorderS As Integer = 4
 
     Function TopRC() As Rectangle
-        Return New Rectangle(0, 0, Me.ClientSize.Width, 3)
+        Return New Rectangle(0, 0, Me.ClientSize.Width, TopBorderS)
     End Function
 
     Function LeftRC() As Rectangle
@@ -123,19 +120,19 @@
     End Function
 
     Function TopLeftRC() As Rectangle
-        Return New Rectangle(0, 0, BorderSize * 2, BorderSize * 2)
+        Return New Rectangle(0, 0, BorderSize + 3, BorderSize)
     End Function
 
     Function TopRightRC() As Rectangle
-        Return New Rectangle(Me.ClientSize.Width - BorderSize * 2, 0, BorderSize * 2, BorderSize * 2)
+        Return New Rectangle(Me.ClientSize.Width - BorderSize - 3, 0, BorderSize + 3, BorderSize)
     End Function
 
     Function BotLeftRC() As Rectangle
-        Return New Rectangle(0, Me.ClientSize.Height - BorderSize * 2, BorderSize * 2, BorderSize * 2)
+        Return New Rectangle(0, Me.ClientSize.Height - BorderSize - 3, BorderSize + 3, BorderSize + 3)
     End Function
 
     Function BotRightRC() As Rectangle
-        Return New Rectangle(Me.ClientSize.Width - BorderSize * 2, Me.ClientSize.Height - BorderSize * 2, BorderSize * 2, BorderSize * 2)
+        Return New Rectangle(Me.ClientSize.Width - BorderSize - 3, Me.ClientSize.Height - BorderSize - 3, BorderSize + 3, BorderSize + 3)
     End Function
 
 
