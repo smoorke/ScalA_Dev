@@ -41,7 +41,7 @@
                     Dim sr As New Rectangle(rc.left + BorderSize, rc.top, rc.right - rc.left - BorderSize * 2, rc.bottom - rc.top - BorderSize)
                     If sr <> prevSR Then
                         FrmMain.Bounds = sr
-                        Dim zoomSZ As New Size(sr.Width - 2, sr.Height - FrmMain.pnlTitleBar.Height - 2)
+                        Dim zoomSZ As New Size(sr.Width - 2, sr.Height - FrmMain.pnlTitleBar.Height - 1)
                         My.Settings.resol = zoomSZ
                         My.Settings.zoom = 0
                         FrmMain.ReZoom(zoomSZ)
@@ -88,7 +88,7 @@
             FrmMain.Attach(FrmMain.AltPP)
             Dim sr = New Rectangle(Me.Left + BorderSize, Me.Top, Me.Width - BorderSize * 2, Me.Height - BorderSize)
             FrmMain.Bounds = sr
-            Dim zoomSZ As New Size(sr.Width - 2, sr.Height - FrmMain.pnlTitleBar.Height - 2)
+            Dim zoomSZ As New Size(sr.Width - 2, sr.Height - FrmMain.pnlTitleBar.Height - 1)
             My.Settings.resol = zoomSZ
             My.Settings.zoom = 0
             FrmMain.ReZoom(zoomSZ)

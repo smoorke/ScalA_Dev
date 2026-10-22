@@ -1058,7 +1058,7 @@ Partial Public NotInheritable Class FrmMain
         'Me.SuspendLayout()
         suppressResChange = True
         If Me.WindowState <> FormWindowState.Maximized Then
-            Me.Size = New Size(newSize.Width + 2, newSize.Height + If(pnlTitleBar?.Height, 23) + 2)
+            Me.Size = New Size(newSize.Width + 2, newSize.Height + If(pnlTitleBar?.Height, 25) + 1)
             'pbZoom.Left = 1
             'pnlOverview.Left = 1
             pbZoom.Size = newSize
