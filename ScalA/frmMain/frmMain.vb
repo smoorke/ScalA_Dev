@@ -307,7 +307,7 @@ Partial Public NotInheritable Class FrmMain
         DwmGetWindowAttribute(ScalaHandle, DWMWA_EXTENDED_FRAME_BOUNDS, rcFrame, System.Runtime.InteropServices.Marshal.SizeOf(rcFrame))
         Dim rcWind As RECT
         GetWindowRect(ScalaHandle, rcWind)
-        Dim percent = Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25
+        Dim percent = Int((rcFrame.right - rcFrame.left) / (rcWind.right - rcWind.left) * 100 / 25) * 25 + If(Me.WindowState = FormWindowState.Maximized, 25, 0)
 
         FrmSettings.pb100PWarning.Visible = percent <> 100
 
