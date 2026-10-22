@@ -45,7 +45,7 @@
                     Dim sr As New Rectangle(rc.left + BorderSize, rc.top, rc.right - rc.left - BorderSize * 2, rc.bottom - rc.top - BorderSize)
                     If sr <> prevSR Then
                         FrmMain.Bounds = sr
-                        Dim zoomSZ As New Size(sr.Width, sr.Height - FrmMain.pnlTitleBar.Height)
+                        Dim zoomSZ As New Size(sr.Width - 2, sr.Height - FrmMain.pnlTitleBar.Height - 2)
                         My.Settings.resol = zoomSZ
                         My.Settings.zoom = 0
                         FrmMain.ReZoom(zoomSZ)
@@ -77,22 +77,22 @@
             End If
         End If
         If m.Msg = WM_ENTERSIZEMOVE Then
-            dBug.print("border WM_ENTERSIZEMOVE")
+            dBug.Print("border WM_ENTERSIZEMOVE")
             FrmMain.Resizing = True
-            suppressWM_SIZING = True
+            'suppressWM_SIZING = True
             'FrmMain.Detach(False) 'fix sluggish sizing on ugaris/vanilla
-            Task.Run(Sub() 'this to supress wmsizing with bad bounds cause of the detach
-                         Threading.Thread.Sleep(50)
-                         suppressWM_SIZING = False
-                     End Sub)
+            'Task.Run(Sub() 'this to supress wmsizing with bad bounds cause of the detach
+            '             Threading.Thread.Sleep(50)
+            '             suppressWM_SIZING = False
+            '         End Sub)
         End If
         If m.Msg = WM_EXITSIZEMOVE Then
-            dBug.print("Border WM_EXITSIZEMOVE")
+            dBug.Print("Border WM_EXITSIZEMOVE")
 
             FrmMain.Attach(FrmMain.AltPP)
             Dim sr = New Rectangle(Me.Left + BorderSize, Me.Top, Me.Width - BorderSize * 2, Me.Height - BorderSize)
             FrmMain.Bounds = sr
-            Dim zoomSZ As New Size(sr.Width, sr.Height - FrmMain.pnlTitleBar.Height)
+            Dim zoomSZ As New Size(sr.Width - 2, sr.Height - FrmMain.pnlTitleBar.Height - 2)
             My.Settings.resol = zoomSZ
             My.Settings.zoom = 0
             FrmMain.ReZoom(zoomSZ)

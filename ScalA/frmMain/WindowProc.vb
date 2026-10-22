@@ -290,8 +290,8 @@ Partial NotInheritable Class FrmMain
                     End If
                     If caption_Mousedown And Not winpos.flags.HasFlag(SetWindowPosFlags.IgnoreResize) Then
                         Debug.Print($"wpChanging {winpos.flags} {My.Settings.resol}")
-                        winpos.cx = My.Settings.resol.Width
-                        winpos.cy = My.Settings.resol.Height + pnlTitleBar.Height
+                        winpos.cx = My.Settings.resol.Width + 2
+                        winpos.cy = My.Settings.resol.Height + pnlTitleBar.Height + 2
                         Marshal.StructureToPtr(winpos, m.LParam, True)
                     End If
                 End If
@@ -369,7 +369,7 @@ Partial NotInheritable Class FrmMain
                     AOshowEqLock = False
 
                     Me.WindowState = FormWindowState.Normal
-                    ReZoom(New Drawing.Size(winpos.cx, winpos.cy - pnlTitleBar.Height))
+                    ReZoom(New Drawing.Size(winpos.cx - 2, winpos.cy - pnlTitleBar.Height - 2))
                     cmbResolution.SelectedIndex = My.Settings.zoom
 
                     If cboAlt.SelectedIndex > 0 Then AltPP?.CenterBehind(pbZoom, SetWindowPosFlags.ASyncWindowPosition Or SetWindowPosFlags.DoNotActivate)

@@ -354,7 +354,7 @@ Partial Public NotInheritable Class FrmMain
         With My.Application.Info.Version
             Dim build = .Build + If(.Revision, 1, 0)
             Dim rev As String = If(.Revision, $"b{ .Revision}", "")
-            lblTitle.Text = $"- ScalA v{ .Major}.{ .Minor}.{build}{rev}{titleSuff}"
+            lblTitle.Text = $"- ScalA v{ .Major}.{ .Minor}.{build}{rev}{titleSuff} {My.Settings.resol} {Me.Size}"
         End With
         Return True
     End Function
@@ -1058,7 +1058,7 @@ Partial Public NotInheritable Class FrmMain
         'Me.SuspendLayout()
         suppressResChange = True
         If Me.WindowState <> FormWindowState.Maximized Then
-            Me.Size = New Size(newSize.Width, newSize.Height + If(pnlTitleBar?.Height, 21))
+            Me.Size = New Size(newSize.Width + 2, newSize.Height + If(pnlTitleBar?.Height, 23) + 2)
             'pbZoom.Left = 1
             'pnlOverview.Left = 1
             pbZoom.Size = newSize

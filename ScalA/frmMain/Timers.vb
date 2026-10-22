@@ -759,7 +759,9 @@ Partial NotInheritable Class FrmMain
         '    End If
         'End If
 
-
+#If DEBUG Then
+        UpdateTitle()
+#End If
 
 
         Dim fgw As IntPtr = IntPtr.Zero
