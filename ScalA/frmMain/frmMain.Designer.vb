@@ -555,12 +555,13 @@ Partial NotInheritable Class FrmMain
         'chkHideMessage
         '
         Me.chkHideMessage.AutoSize = True
+        Me.chkHideMessage.BackColor = System.Drawing.SystemColors.Control
         Me.chkHideMessage.Location = New System.Drawing.Point(129, 133)
         Me.chkHideMessage.Name = "chkHideMessage"
         Me.chkHideMessage.Size = New System.Drawing.Size(71, 17)
         Me.chkHideMessage.TabIndex = 11
         Me.chkHideMessage.Text = "Hide This"
-        Me.chkHideMessage.UseVisualStyleBackColor = True
+        Me.chkHideMessage.UseVisualStyleBackColor = False
         '
         'pbMessage
         '
@@ -609,7 +610,7 @@ Partial NotInheritable Class FrmMain
         '
         Me.btnStart.ContextMenuStrip = Me.cmsQuickLaunch
         Me.btnStart.Font = New System.Drawing.Font("Courier New", 15.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnStart.Location = New System.Drawing.Point(3, 2)
+        Me.btnStart.Location = New System.Drawing.Point(2, 2)
         Me.btnStart.Name = "btnStart"
         Me.btnStart.Padding = New System.Windows.Forms.Padding(5)
         Me.btnStart.Size = New System.Drawing.Size(21, 21)
@@ -622,7 +623,7 @@ Partial NotInheritable Class FrmMain
         Me.cmbResolution.DropDownHeight = 4096
         Me.cmbResolution.FormattingEnabled = True
         Me.cmbResolution.IntegralHeight = False
-        Me.cmbResolution.Location = New System.Drawing.Point(188, 2)
+        Me.cmbResolution.Location = New System.Drawing.Point(187, 2)
         Me.cmbResolution.Name = "cmbResolution"
         Me.cmbResolution.Size = New System.Drawing.Size(80, 21)
         Me.cmbResolution.TabIndex = 17
@@ -636,7 +637,7 @@ Partial NotInheritable Class FrmMain
         Me.cboAlt.DropDownHeight = 4096
         Me.cboAlt.FormattingEnabled = True
         Me.cboAlt.IntegralHeight = False
-        Me.cboAlt.Location = New System.Drawing.Point(26, 2)
+        Me.cboAlt.Location = New System.Drawing.Point(25, 2)
         Me.cboAlt.Name = "cboAlt"
         Me.cboAlt.Size = New System.Drawing.Size(160, 21)
         Me.cboAlt.TabIndex = 16
