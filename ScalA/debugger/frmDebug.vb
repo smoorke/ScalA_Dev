@@ -268,6 +268,13 @@ Public Class frmDebug
 
     Private crtMode As Boolean = frmCrt.Visible
 
+    Public Enum DWM_WINDOW_CORNER_PREFERENCE As Integer
+        DWMWCP_DEFAULT = 0
+        DWMWCP_DONOTROUND = 1
+        DWMWCP_ROUND = 2
+        DWMWCP_ROUNDSMALL = 3
+    End Enum
+
 
     Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
         'If FrmMain.AltPP Is Nothing Then
@@ -275,7 +282,20 @@ Public Class frmDebug
         '    Exit Sub
         'End If
 
-        dBug.Print($"pbZoom.Size {FrmMain.pbZoom.Size}")
+        'dBug.Print($"pbZoom.Size {FrmMain.pbZoom.Size}")
+
+        'Dim preference As Integer = 0
+
+        'Dim result As Integer = DwmSetWindowAttribute(
+        '    FrmMain.AltPP?.MainWindowHandle,
+        '    33,  ' DWMWA_WINDOW_CORNER_PREFERENCE
+        '    preference,
+        '    4
+        ')
+
+        ' Debug.Print("DWM result: " & result.ToString())
+
+        My.Settings.hideMessage = False
 
         'FrmMain.AltPP?.DebugListAllArgs()
         'dBug.Print("linkwatchers")
