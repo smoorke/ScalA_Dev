@@ -536,6 +536,7 @@ Partial NotInheritable Class FrmSettings
         '
         'btnOK
         '
+        Me.btnOK.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
         Me.btnOK.Location = New System.Drawing.Point(171, 214)
         Me.btnOK.Name = "btnOK"
         Me.btnOK.Size = New System.Drawing.Size(77, 23)
@@ -547,6 +548,7 @@ Partial NotInheritable Class FrmSettings
         'btnCancel
         '
         Me.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+        Me.btnCancel.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
         Me.btnCancel.Location = New System.Drawing.Point(254, 214)
         Me.btnCancel.Name = "btnCancel"
         Me.btnCancel.Size = New System.Drawing.Size(77, 23)
@@ -759,7 +761,7 @@ Partial NotInheritable Class FrmSettings
         'chkAlterOverview
         '
         Me.chkAlterOverview.AutoSize = True
-        Me.chkAlterOverview.Location = New System.Drawing.Point(24, 299)
+        Me.chkAlterOverview.Location = New System.Drawing.Point(40, 299)
         Me.chkAlterOverview.Name = "chkAlterOverview"
         Me.chkAlterOverview.Size = New System.Drawing.Size(130, 17)
         Me.chkAlterOverview.TabIndex = 23
@@ -867,6 +869,7 @@ Partial NotInheritable Class FrmSettings
         'lblElevated
         '
         Me.lblElevated.AutoSize = True
+        Me.lblElevated.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
         Me.lblElevated.Location = New System.Drawing.Point(28, 7)
         Me.lblElevated.Name = "lblElevated"
         Me.lblElevated.Size = New System.Drawing.Size(57, 13)
@@ -947,6 +950,7 @@ Partial NotInheritable Class FrmSettings
         Me.tbcSettings.Controls.Add(Me.tabMaximized)
         Me.tbcSettings.Controls.Add(Me.TabQL)
         Me.tbcSettings.Controls.Add(Me.tabMisc)
+        Me.tbcSettings.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
         Me.tbcSettings.Location = New System.Drawing.Point(-1, 0)
         Me.tbcSettings.Multiline = True
         Me.tbcSettings.Name = "tbcSettings"

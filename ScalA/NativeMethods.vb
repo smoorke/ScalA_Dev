@@ -791,6 +791,18 @@ Module NativeMethods
 
     <DllImport("dwmapi.dll")>
     Public Function DwmSetIconicLivePreviewBitmap(hwnd As IntPtr, hbitmap As IntPtr, ptClient As IntPtr, flags As UInteger) As Integer : End Function
+
+    <StructLayout(LayoutKind.Sequential)>
+    Public Structure MARGINS
+        Public cxLeftWidth As Integer
+        Public cxRightWidth As Integer
+        Public cyTopHeight As Integer
+        Public cyBottomHeight As Integer
+    End Structure
+
+    <DllImport("dwmapi.dll", PreserveSig:=True)>
+    Public Function DwmExtendFrameIntoClientArea(hWnd As IntPtr, ByRef pMarInset As MARGINS) As Integer : End Function
+
     <DllImport("user32.dll")>
     Public Function SetParent(hWndChild As IntPtr, hWndNewParent As IntPtr) As IntPtr : End Function
     'Public Declare Function DwmGetWindowAttribute Lib "dwmapi" (ByVal hwnd As IntPtr, ByVal dwAttribute As Integer, ByRef pvAttribute As RECT, ByVal cbAttribute As Integer) As Integer
