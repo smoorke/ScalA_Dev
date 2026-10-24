@@ -173,7 +173,7 @@ Partial NotInheritable Class FrmMain
                 End Select
             Case WM_QUERYOPEN
                 dBug.Print("WM_QUERYOPEN")
-                Attach(AltPP)
+                'Attach(AltPP)
             Case WM_ERASEBKGND
 
             Case WM_MOVE
@@ -405,15 +405,15 @@ Partial NotInheritable Class FrmMain
                     Return
                 End If
             Case WM_STYLECHANGING '&h7C
-                Dim ss As StyleStruct = Marshal.PtrToStructure(m.LParam, GetType(StyleStruct))
-                dBug.Print($"WM_STYLECHANGING")
-                If m.WParam = -20 Then 'ExStyle
-                    dBug.Print($"From: {CType(ss.styleOld, WindowStylesEx)}")
-                    dBug.Print($"  To: {CType(ss.styleNew, WindowStylesEx)}")
-                ElseIf m.WParam = -16 Then 'Style
-                    dBug.Print($"From: {CType(ss.styleOld, WindowStyles)}")
-                    dBug.Print($"  To: {CType(ss.styleNew, WindowStyles)}")
-                End If
+                'Dim ss As StyleStruct = Marshal.PtrToStructure(m.LParam, GetType(StyleStruct))
+                'dBug.Print($"WM_STYLECHANGING")
+                'If m.WParam = -20 Then 'ExStyle
+                '    dBug.Print($"From: {CType(ss.styleOld, WindowStylesEx)}")
+                '    dBug.Print($"  To: {CType(ss.styleNew, WindowStylesEx)}")
+                'ElseIf m.WParam = -16 Then 'Style
+                '    dBug.Print($"From: {CType(ss.styleOld, WindowStyles)}")
+                '    dBug.Print($"  To: {CType(ss.styleNew, WindowStyles)}")
+                'End If
                 'Marshal.StructureToPtr(ss, m.LParam, True)
             Case WM_SETTINGCHANGE '&H1A 
                 If m.WParam = 159 Then Exit Sub 'fix hang on Monitor Scaling change?
