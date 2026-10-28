@@ -809,7 +809,7 @@ Partial Public NotInheritable Class FrmMain
                                  Dim ico As Bitmap = Nothing
                                  Dim needsLoad As Boolean = False
                                  If Not TryGetIconFromCache(qli, ico) Then
-                                     needsLoad = True
+                                     needsLoad = IO.File.Exists(qli.path & "Desktop.ini")
                                      ico = folderIcon
                                  End If
 
