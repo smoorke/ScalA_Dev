@@ -1,5 +1,4 @@
-﻿Imports System.ComponentModel
-Imports System.Runtime.InteropServices
+﻿Imports System.Runtime.InteropServices
 Module Globals
 
     Public startup As Boolean = True
@@ -17,24 +16,22 @@ Module Globals
     Public AnimsEnabled As Boolean = getAnimationsEnabled()
 
     Private _RoundedCorners? As Boolean = Nothing
-    Public ReadOnly Property RoundedCorners() As Boolean
-        Get
-            If _RoundedCorners Is Nothing Then
-                If Environment.OSVersion.Version.Build >= 22000 Then
-                    Dim pref As Integer = -1
-                    Dim hr As Integer = DwmGetWindowAttribute(ScalaHandle, DWMWA_WINDOW_CORNER_PREFERENCE, pref, 4)
-                    If hr < 0 Then
-                        _RoundedCorners = False
-                    Else
-                        _RoundedCorners = pref = 2
-                    End If
-                Else
+    Public Function RoundedCorners(hwnd As IntPtr) As Boolean
+        If _RoundedCorners Is Nothing Then
+            If Environment.OSVersion.Version.Build >= 22000 Then
+                Dim pref As Integer = -1
+                Dim hr As Integer = DwmGetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, pref, 4)
+                If hr < 0 Then
                     _RoundedCorners = False
+                Else
+                    _RoundedCorners = pref <> 1
                 End If
+            Else
+                _RoundedCorners = False
             End If
-            Return _RoundedCorners
-        End Get
-    End Property
+        End If
+        Return _RoundedCorners
+    End Function
 
     Public Sub setScalAPriority(pri As Integer)
         Dim hProcess As IntPtr = GetCurrentProcess()

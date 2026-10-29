@@ -597,7 +597,7 @@ Partial Public NotInheritable Class FrmMain
 
         'startWinEventHooks(Me) 'polling in timer seems to be more stable to determine acitvation state
 
-        If Not RoundedCorners Then
+        If Not RoundedCorners(ScalaHandle) Then
             pnlOverview.Left += 1
             pbZoom.Left += 1
         End If

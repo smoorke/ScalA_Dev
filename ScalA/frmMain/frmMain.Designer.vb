@@ -116,12 +116,12 @@ Partial NotInheritable Class FrmMain
         'NoneSortSeperator1
         '
         NoneSortSeperator1.Name = "NoneSortSeperator1"
-        NoneSortSeperator1.Size = New System.Drawing.Size(115, 6)
+        NoneSortSeperator1.Size = New System.Drawing.Size(116, 6)
         '
         'NoneSortSeperator2
         '
         NoneSortSeperator2.Name = "NoneSortSeperator2"
-        NoneSortSeperator2.Size = New System.Drawing.Size(115, 6)
+        NoneSortSeperator2.Size = New System.Drawing.Size(116, 6)
         '
         'ToolStripSeparator2
         '
@@ -467,35 +467,35 @@ Partial NotInheritable Class FrmMain
         'TopFirstToolStripMenuItem
         '
         Me.TopFirstToolStripMenuItem.Name = "TopFirstToolStripMenuItem"
-        Me.TopFirstToolStripMenuItem.Size = New System.Drawing.Size(118, 22)
+        Me.TopFirstToolStripMenuItem.Size = New System.Drawing.Size(119, 22)
         Me.TopFirstToolStripMenuItem.Tag = "-2"
         Me.TopFirstToolStripMenuItem.Text = "Top First"
         '
         'TopLastToolStripMenuItem
         '
         Me.TopLastToolStripMenuItem.Name = "TopLastToolStripMenuItem"
-        Me.TopLastToolStripMenuItem.Size = New System.Drawing.Size(118, 22)
+        Me.TopLastToolStripMenuItem.Size = New System.Drawing.Size(119, 22)
         Me.TopLastToolStripMenuItem.Tag = "-1"
         Me.TopLastToolStripMenuItem.Text = "Top Last"
         '
         'NoneSortToolStripMenuItem
         '
         Me.NoneSortToolStripMenuItem.Name = "NoneSortToolStripMenuItem"
-        Me.NoneSortToolStripMenuItem.Size = New System.Drawing.Size(118, 22)
+        Me.NoneSortToolStripMenuItem.Size = New System.Drawing.Size(119, 22)
         Me.NoneSortToolStripMenuItem.Tag = "0"
         Me.NoneSortToolStripMenuItem.Text = "None"
         '
         'BotFirstToolStripMenuItem
         '
         Me.BotFirstToolStripMenuItem.Name = "BotFirstToolStripMenuItem"
-        Me.BotFirstToolStripMenuItem.Size = New System.Drawing.Size(118, 22)
+        Me.BotFirstToolStripMenuItem.Size = New System.Drawing.Size(119, 22)
         Me.BotFirstToolStripMenuItem.Tag = "1"
         Me.BotFirstToolStripMenuItem.Text = "Bot First"
         '
         'BotLastToolStripMenuItem
         '
         Me.BotLastToolStripMenuItem.Name = "BotLastToolStripMenuItem"
-        Me.BotLastToolStripMenuItem.Size = New System.Drawing.Size(118, 22)
+        Me.BotLastToolStripMenuItem.Size = New System.Drawing.Size(119, 22)
         Me.BotLastToolStripMenuItem.Tag = "2"
         Me.BotLastToolStripMenuItem.Text = "Bot Last"
         '
