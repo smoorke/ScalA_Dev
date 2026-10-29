@@ -393,11 +393,14 @@ Partial NotInheritable Class FrmMain
 
                     Dim params As NCCALCSIZE_PARAMS = Marshal.PtrToStructure(Of NCCALCSIZE_PARAMS)(m.LParam)
 
+                    If RoundedCorners Then
+                        params.rgrc(0).left += 1
+                        params.rgrc(0).top += 0
+                        params.rgrc(0).right -= 1
+                        params.rgrc(0).bottom -= 0
+                    Else
 
-                    params.rgrc(0).left += 1
-                    params.rgrc(0).top += 0
-                    params.rgrc(0).right -= 1
-                    params.rgrc(0).bottom -= 0
+                    End If
 
                     Marshal.StructureToPtr(params, m.LParam, False)
 

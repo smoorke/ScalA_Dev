@@ -15,6 +15,27 @@ Module Globals
     Public StructureToPtrSupported As Boolean = False
 
     Public AnimsEnabled As Boolean = getAnimationsEnabled()
+
+    Private _RoundedCorners? As Boolean = Nothing
+    Public ReadOnly Property RoundedCorners() As Boolean
+        Get
+            If _RoundedCorners Is Nothing Then
+                If Environment.OSVersion.Version.Build >= 22000 Then
+                    Dim pref As Integer = -1
+                    Dim hr As Integer = DwmGetWindowAttribute(ScalaHandle, DWMWA_WINDOW_CORNER_PREFERENCE, pref, 4)
+                    If hr < 0 Then
+                        _RoundedCorners = False
+                    Else
+                        _RoundedCorners = pref = 2
+                    End If
+                Else
+                    _RoundedCorners = False
+                End If
+            End If
+            Return _RoundedCorners
+        End Get
+    End Property
+
     Public Sub setScalAPriority(pri As Integer)
         Dim hProcess As IntPtr = GetCurrentProcess()
         Dim result As Boolean = SetPriorityClass(hProcess, pri)

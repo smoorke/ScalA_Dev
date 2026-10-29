@@ -779,10 +779,12 @@ Module NativeMethods
     Public Const DWMWA_FORCE_ICONIC_REPRESENTATION As Integer = 7
     Public Const DWMWA_EXTENDED_FRAME_BOUNDS As Integer = 9
     Public Const DWMWA_HAS_ICONIC_BITMAP As Integer = 10
+    Public Const DWMWA_WINDOW_CORNER_PREFERENCE As Integer = 33
 
     <DllImport("dwmapi.dll")>
     Public Function DwmGetWindowAttribute(hwnd As IntPtr, dwAttribute As Integer, ByRef pvAttribute As RECT, cbAttribute As Integer) As Integer : End Function
-
+    <DllImport("dwmapi.dll")>
+    Public Function DwmGetWindowAttribute(hwnd As IntPtr, dwAttribute As Integer, ByRef pvAttribute As Integer, cbAttribute As Integer) As Integer : End Function
     <DllImport("dwmapi.dll")>
     Public Function DwmSetWindowAttribute(hwnd As IntPtr, dwAttribute As Integer, ByRef pvAttribute As Integer, cbAttribute As Integer) As Integer : End Function
 
