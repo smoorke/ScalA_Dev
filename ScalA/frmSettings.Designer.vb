@@ -254,20 +254,20 @@ Partial NotInheritable Class FrmSettings
         'Label4
         '
         Label4.AutoSize = True
-        Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
         Label4.Location = New System.Drawing.Point(54, 3)
         Label4.Name = "Label4"
-        Label4.Size = New System.Drawing.Size(18, 9)
+        Label4.Size = New System.Drawing.Size(20, 12)
         Label4.TabIndex = 3
         Label4.Text = "Top"
         '
         'Label5
         '
         Label5.AutoSize = True
-        Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
         Label5.Location = New System.Drawing.Point(225, 3)
         Label5.Name = "Label5"
-        Label5.Size = New System.Drawing.Size(29, 9)
+        Label5.Size = New System.Drawing.Size(35, 12)
         Label5.TabIndex = 4
         Label5.Text = "Bottom"
         '
@@ -1833,7 +1833,7 @@ Partial NotInheritable Class FrmSettings
         '
         'txtExe
         '
-        Me.txtExe.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.txtExe.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
         Me.txtExe.Location = New System.Drawing.Point(12, 137)
         Me.txtExe.Name = "txtExe"
         Me.txtExe.Size = New System.Drawing.Size(286, 20)
@@ -1842,7 +1842,7 @@ Partial NotInheritable Class FrmSettings
         '
         'txtClass
         '
-        Me.txtClass.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.txtClass.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
         Me.txtClass.Location = New System.Drawing.Point(12, 163)
         Me.txtClass.Name = "txtClass"
         Me.txtClass.Size = New System.Drawing.Size(312, 20)
@@ -1878,6 +1878,7 @@ Partial NotInheritable Class FrmSettings
         Me.Controls.Add(Me.tbcSettings)
         Me.Controls.Add(Me.btnCancel)
         Me.Controls.Add(Me.btnOK)
+        Me.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
