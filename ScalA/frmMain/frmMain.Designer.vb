@@ -171,6 +171,7 @@ Partial NotInheritable Class FrmMain
         '
         Me.cmbResolution.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
         Me.cmbResolution.DropDownHeight = 4096
+        Me.cmbResolution.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
         Me.cmbResolution.FormattingEnabled = True
         Me.cmbResolution.IntegralHeight = False
         Me.cmbResolution.Location = New System.Drawing.Point(187, 2)
@@ -185,6 +186,7 @@ Partial NotInheritable Class FrmMain
         Me.cboAlt.DisplayMember = "DisplayName"
         Me.cboAlt.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable
         Me.cboAlt.DropDownHeight = 4096
+        Me.cboAlt.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
         Me.cboAlt.FormattingEnabled = True
         Me.cboAlt.IntegralHeight = False
         Me.cboAlt.Location = New System.Drawing.Point(25, 2)
@@ -274,7 +276,7 @@ Partial NotInheritable Class FrmMain
         Me.ChkEqLock.CheckState = System.Windows.Forms.CheckState.Checked
         Me.ChkEqLock.DataBindings.Add(New System.Windows.Forms.Binding("Checked", Global.ScalA.My.MySettings.Default, "LockEq", True, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged))
         Me.ChkEqLock.Dock = System.Windows.Forms.DockStyle.Right
-        Me.ChkEqLock.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ChkEqLock.Font = New System.Drawing.Font("Microsoft Sans Serif", 14.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
         Me.ChkEqLock.Location = New System.Drawing.Point(608, 0)
         Me.ChkEqLock.Name = "ChkEqLock"
         Me.ChkEqLock.Padding = New System.Windows.Forms.Padding(0, 3, 3, 0)
@@ -314,7 +316,7 @@ Partial NotInheritable Class FrmMain
         Me.btnMin.FlatAppearance.BorderColor = System.Drawing.SystemColors.Control
         Me.btnMin.FlatAppearance.BorderSize = 0
         Me.btnMin.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnMin.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
+        Me.btnMin.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
         Me.btnMin.Location = New System.Drawing.Point(0, 0)
         Me.btnMin.Name = "btnMin"
         Me.btnMin.Size = New System.Drawing.Size(45, 23)
@@ -646,8 +648,7 @@ Partial NotInheritable Class FrmMain
         '
         'FrmMain
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
         Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(1052, 855)
