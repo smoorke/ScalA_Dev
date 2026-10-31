@@ -142,23 +142,23 @@ Namespace CustomToolTip
                 HideTooltip()
                 Exit Sub
             Else
-                Task.Run(Sub()
-                             Do
-                                 Threading.Thread.Sleep(33)
-                             Loop While PtInRect(rcTrack, Control.MousePosition) AndAlso
-                                        Not (Control.MouseButtons.hasflag(MouseButtons.Right) OrElse
-                                             Control.MouseButtons.hasflag(MouseButtons.Middle) OrElse
-                                             Control.MouseButtons.hasflag(MouseButtons.Left))
+                Task.Run(action:=Async Sub()
+                                     Do
+                                         Await Task.Delay(33)
+                                     Loop While PtInRect(rcTrack, Control.MousePosition) AndAlso
+                                        Not (Control.MouseButtons.HasFlag(MouseButtons.Right) OrElse
+                                             Control.MouseButtons.HasFlag(MouseButtons.Middle) OrElse
+                                             Control.MouseButtons.HasFlag(MouseButtons.Left))
 
 
-                             If hideTimer IsNot Nothing Then
-                                 hideTimer.Stop()
-                                 RemoveHandler hideTimer.Tick, AddressOf HideTimer_Tick
-                                 hideTimer.Dispose()
-                                 hideTimer = Nothing
-                             End If
-                             HideTooltip()
-                         End Sub)
+                                     If hideTimer IsNot Nothing Then
+                                         hideTimer.Stop()
+                                         RemoveHandler hideTimer.Tick, AddressOf HideTimer_Tick
+                                         hideTimer.Dispose()
+                                         hideTimer = Nothing
+                                     End If
+                                     HideTooltip()
+                                 End Sub)
             End If
 
             Dim autoPopDelay = If(autopop, 5000)

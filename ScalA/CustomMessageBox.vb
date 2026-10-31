@@ -20,46 +20,46 @@
         visible = True
 
         ' Task to find the specific MessageBox HWND
-        Task.Run(Sub()
-                     Dim attempts As Integer = 0
-                     Do While visible AndAlso hWnd = IntPtr.Zero AndAlso attempts < 120
-                         Dim hW As IntPtr = FindWindow("#32770", caption)
-                         If hW <> IntPtr.Zero Then
-                             Dim hStatic As IntPtr = FindWindowEx(hW, IntPtr.Zero, "Static", message)
-                             If hStatic <> IntPtr.Zero AndAlso GetWindowText(hStatic) = message Then
-                                 SendMessage(hW, WM_SETICON, ICON_BIG, My.Resources.moa3.Handle)
-                                 hWnd = hW
-                                 EventReady.Set()
-                                 Exit Do
-                             End If
-                         End If
-                         Threading.Thread.Sleep(25)
-                         attempts += 1
-                     Loop
-                 End Sub)
+        Task.Run(action:=Async Sub()
+                             Dim attempts As Integer = 0
+                             Do While visible AndAlso hWnd = IntPtr.Zero AndAlso attempts < 120
+                                 Dim hW As IntPtr = FindWindow("#32770", caption)
+                                 If hW <> IntPtr.Zero Then
+                                     Dim hStatic As IntPtr = FindWindowEx(hW, IntPtr.Zero, "Static", message)
+                                     If hStatic <> IntPtr.Zero AndAlso GetWindowText(hStatic) = message Then
+                                         SendMessage(hW, WM_SETICON, ICON_BIG, My.Resources.moa3.Handle)
+                                         hWnd = hW
+                                         EventReady.Set()
+                                         Exit Do
+                                     End If
+                                 End If
+                                 Await Task.Delay(25)
+                                 attempts += 1
+                             Loop
+                         End Sub)
 
         ' Task to monitor ESC key
-        If MessageBoxButtons.YesNo = buttons Then Task.Run(Sub()
-                                                               Do While visible
-                                                                   If hWnd <> IntPtr.Zero AndAlso (GetAsyncKeyState(Keys.Escape) And &H8000) <> 0 Then
-                                                                       ' Find the last button in the MessageBox
-                                                                       Dim hLastBtn As IntPtr = IntPtr.Zero
-                                                                       Dim hBtn As IntPtr = IntPtr.Zero
-                                                                       Do
-                                                                           hBtn = FindWindowEx(hWnd, hBtn, "Button", Nothing)
-                                                                           If hBtn <> IntPtr.Zero Then hLastBtn = hBtn
-                                                                       Loop While hBtn <> IntPtr.Zero
+        If MessageBoxButtons.YesNo = buttons Then Task.Run(action:=Async Sub()
+                                                                       Do While visible
+                                                                           If hWnd <> IntPtr.Zero AndAlso (GetAsyncKeyState(Keys.Escape) And &H8000) <> 0 Then
+                                                                               ' Find the last button in the MessageBox
+                                                                               Dim hLastBtn As IntPtr = IntPtr.Zero
+                                                                               Dim hBtn As IntPtr = IntPtr.Zero
+                                                                               Do
+                                                                                   hBtn = FindWindowEx(hWnd, hBtn, "Button", Nothing)
+                                                                                   If hBtn <> IntPtr.Zero Then hLastBtn = hBtn
+                                                                               Loop While hBtn <> IntPtr.Zero
 
-                                                                       ' Click it if found
-                                                                       If hLastBtn <> IntPtr.Zero Then
-                                                                           SendMessage(hLastBtn, BM_CLICK, IntPtr.Zero, IntPtr.Zero)
-                                                                           Debug.Print("MessageBox ESC -> last button clicked")
-                                                                           Exit Do
-                                                                       End If
-                                                                   End If
-                                                                   Threading.Thread.Sleep(25)
-                                                               Loop
-                                                           End Sub)
+                                                                               ' Click it if found
+                                                                               If hLastBtn <> IntPtr.Zero Then
+                                                                                   SendMessage(hLastBtn, BM_CLICK, IntPtr.Zero, IntPtr.Zero)
+                                                                                   Debug.Print("MessageBox ESC -> last button clicked")
+                                                                                   Exit Do
+                                                                               End If
+                                                                           End If
+                                                                           Await Task.Delay(25)
+                                                                       Loop
+                                                                   End Sub)
 
 
         Dim result As DialogResult = MessageBox.Show(owner, message, caption, buttons, icon, defaultbutton)

@@ -199,16 +199,16 @@ Partial NotInheritable Class FrmMain
                                                         True)
                                      End Sub)
                         Else
-                            Task.Run(Sub()
-                                         Threading.Thread.Sleep(10)
-                                         If moveSW.ElapsedMilliseconds > 10 Then
-                                             AltPP?.CenterWindowPos(ScalaHandle,
+                            Task.Run(action:=Async Sub()
+                                                 Await Task.Delay(10)
+                                                 If moveSW.ElapsedMilliseconds > 10 Then
+                                                     AltPP?.CenterWindowPos(ScalaHandle,
                                                         Me.Left + pbZoom.Left + (pbZoom.Width / 2),
                                                         Me.Top + pbZoom.Top + (pbZoom.Height / 2),
                                                         SetWindowPosFlags.ASyncWindowPosition Or SetWindowPosFlags.DoNotActivate,
                                                         True)
-                                         End If
-                                     End Sub)
+                                                 End If
+                                             End Sub)
                         End If
                     End If
                 End If

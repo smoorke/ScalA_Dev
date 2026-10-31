@@ -18,11 +18,11 @@ Partial Public NotInheritable Class FrmMain
 
     Private Async Sub CloseBothToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles CloseBothToolStripMenuItem.Click
         AltPP?.CloseOrKill()
-        Await Task.Run(Sub()
-                           While Not AltPP?.HasExited()
-                               Threading.Thread.Sleep(50)
-                           End While
-                       End Sub)
+        Await Task.Run(action:=Async Sub()
+                                   While Not AltPP?.HasExited()
+                                       Await Task.Delay(50)
+                                   End While
+                               End Sub)
         btnQuit.PerformClick()
     End Sub
 
@@ -37,14 +37,14 @@ Partial Public NotInheritable Class FrmMain
         Dim cts As New Threading.CancellationTokenSource()
         cts.CancelAfter(100 * procs.Count)
         Dim ct = cts.Token
-        Await Task.Run(Sub()
-                           While Not ct.IsCancellationRequested AndAlso
-                                 procs.Any(Function(ap As AstoniaProcess) Not ap.HasExited)
-                               CloseErrorDialog()
-                               Threading.Thread.Sleep(34)
-                               dBug.Print("busy error dialog closer")
-                           End While
-                       End Sub, ct)
+        Await Task.Run(action:=Async Sub()
+                                   While Not ct.IsCancellationRequested AndAlso
+                                         procs.Any(Function(ap As AstoniaProcess) Not ap.HasExited)
+                                       CloseErrorDialog()
+                                       Await Task.Delay(34)
+                                       dBug.Print("busy error dialog closer")
+                                   End While
+                               End Sub, ct)
         btnQuit.PerformClick()
     End Sub
 
@@ -1711,22 +1711,22 @@ Partial Public NotInheritable Class FrmMain
         '    End If
         'End If
 
-        Task.Run(Sub()
-                     Threading.Thread.Sleep(25)
-                     If Not Me.Disposing Then
-                         Try
-                             Me.Invoke(Sub()
-                                           If cmsQuickLaunch.Visible Then
-                                               dBug.Print("Double QL?")
-                                               Exit Sub 'this fixes closing on immediatly reopening QL, TODO: check if this affects scaling issue
-                                           End If
-                                           scaleFixForm?.Close()
-                                           scaleFixForm = Nothing
-                                       End Sub)
-                         Catch
-                         End Try
-                     End If
-                 End Sub)
+        Task.Run(action:=Async Sub()
+                             Await Task.Delay(25)
+                             If Not Me.Disposing Then
+                                 Try
+                                     Me.Invoke(Sub()
+                                                   If cmsQuickLaunch.Visible Then
+                                                       dBug.Print("Double QL?")
+                                                       Exit Sub 'this fixes closing on immediatly reopening QL, TODO: check if this affects scaling issue
+                                                   End If
+                                                   scaleFixForm?.Close()
+                                                   scaleFixForm = Nothing
+                                               End Sub)
+                                 Catch
+                                 End Try
+                             End If
+                         End Sub)
 
         'Dim dummy = Task.Run(Sub()
         '                         Threading.Thread.Sleep(25)
@@ -1787,48 +1787,48 @@ Partial Public NotInheritable Class FrmMain
     Private Sub RenameMethod(Path As String, currentName As String, Optional isCreateFolder As Boolean = False)
         Dim title As String = If(isCreateFolder, "Create New folder", $"Rename {currentName}")
         Dim EditBox As Control = Nothing
-        Task.Run(Sub()
-                     Dim watch As Stopwatch = Stopwatch.StartNew()
+        Task.Run(action:=Async Sub()
+                             Dim watch As Stopwatch = Stopwatch.StartNew()
 
-                     Dim hndl As IntPtr
-                     While watch.ElapsedMilliseconds < 2000
-                         Threading.Thread.Sleep(20)
-                         hndl = FindWindow(ScalaClass, title)
-                         dBug.Print($"findwindow {hndl}")
-                         If hndl <> IntPtr.Zero Then Exit While
-                     End While
+                             Dim hndl As IntPtr
+                             While watch.ElapsedMilliseconds < 2000
+                                 Await Task.Delay(20)
+                                 hndl = FindWindow(ScalaClass, title)
+                                 dBug.Print($"findwindow {hndl}")
+                                 If hndl <> IntPtr.Zero Then Exit While
+                             End While
 
-                     If hndl = IntPtr.Zero Then Exit Sub
+                             If hndl = IntPtr.Zero Then Exit Sub
 
-                     If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                             If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
 
-                     SendMessage(hndl, WM_SETICON, ICON_BIG, My.Resources.moa3.Handle)
+                             SendMessage(hndl, WM_SETICON, ICON_BIG, My.Resources.moa3.Handle)
 
-                     Dim hEditBox As IntPtr
+                             Dim hEditBox As IntPtr
 
-                     EnumChildWindows(hndl, Function(h, l)
-                                                If GetWindowClass(h).Contains("EDIT") Then
-                                                    hEditBox = h
-                                                    Return False
-                                                End If
-                                                Return True
-                                            End Function, IntPtr.Zero)
+                             EnumChildWindows(hndl, Function(h, l)
+                                                        If GetWindowClass(h).Contains("EDIT") Then
+                                                            hEditBox = h
+                                                            Return False
+                                                        End If
+                                                        Return True
+                                                    End Function, IntPtr.Zero)
 
-                     Debug.Print($"{GetWindowClass(hEditBox)}")
+                             Debug.Print($"{GetWindowClass(hEditBox)}")
 
-                     If GetWindowClass(hEditBox).Contains("EDIT") Then
-                         EditBox = Control.FromHandle(hEditBox)
-                         AddHandler EditBox.KeyDown, AddressOf EditBox_KeyDown
-                         AddHandler EditBox.KeyPress, AddressOf EditBox_KeyPress
-                     End If
+                             If GetWindowClass(hEditBox).Contains("EDIT") Then
+                                 EditBox = Control.FromHandle(hEditBox)
+                                 AddHandler EditBox.KeyDown, AddressOf EditBox_KeyDown
+                                 AddHandler EditBox.KeyPress, AddressOf EditBox_KeyPress
+                             End If
 
-                     Threading.Thread.Sleep(50)
-                     Try
-                         AppActivate(scalaPID)
-                     Catch
-                     End Try
-                     watch.Stop()
-                 End Sub)
+                             Await Task.Delay(50)
+                             Try
+                                 AppActivate(scalaPID)
+                             Catch
+                             End Try
+                             watch.Stop()
+                         End Sub)
 
         Dim screenWA = Screen.FromPoint(MousePosition).WorkingArea
         Dim dialogLeft = Math.Min(Math.Max(screenWA.Left, MousePosition.X - 177), screenWA.Right - 370)
@@ -1920,24 +1920,24 @@ Partial Public NotInheritable Class FrmMain
             End If
             Dim eboxHandle = eBox.Handle
             If ttCloseTask Is Nothing Then
-                ttCloseTask = Task.Run(Sub()
-                                           Do
-                                               Threading.Thread.Sleep(33)
-                                               Debug.Print($"{GetAsyncKeyState(&H1)}")
-                                               If WindowFromPoint(MousePosition) <> eboxHandle Then
-                                                   If (GetAsyncKeyState(&H1) And &H8000) <> 0 Then Exit Do
-                                                   If (GetAsyncKeyState(&H2) And &H8000) <> 0 Then Exit Do
-                                                   If (GetAsyncKeyState(&H4) And &H8000) <> 0 Then Exit Do
-                                                   If (GetAsyncKeyState(&H5) And &H8000) <> 0 Then Exit Do
-                                                   If (GetAsyncKeyState(&H6) And &H8000) <> 0 Then Exit Do
-                                               End If
-                                           Loop While ttCloseSw.ElapsedMilliseconds <= 10000
-                                           Me.Invoke(Sub()
-                                                         If Not eBox?.IsDisposed Then tt.Hide(eBox)
-                                                     End Sub)
-                                           ttCloseTask = Nothing
-                                           ttCloseSw.Reset()
-                                       End Sub)
+                ttCloseTask = Task.Run(action:=Async Sub()
+                                                   Do
+                                                       Await Task.Delay(33)
+                                                       Debug.Print($"{GetAsyncKeyState(&H1)}")
+                                                       If WindowFromPoint(MousePosition) <> eboxHandle Then
+                                                           If (GetAsyncKeyState(&H1) And &H8000) <> 0 Then Exit Do
+                                                           If (GetAsyncKeyState(&H2) And &H8000) <> 0 Then Exit Do
+                                                           If (GetAsyncKeyState(&H4) And &H8000) <> 0 Then Exit Do
+                                                           If (GetAsyncKeyState(&H5) And &H8000) <> 0 Then Exit Do
+                                                           If (GetAsyncKeyState(&H6) And &H8000) <> 0 Then Exit Do
+                                                       End If
+                                                   Loop While ttCloseSw.ElapsedMilliseconds <= 10000
+                                                   Me.Invoke(Sub()
+                                                                 If Not eBox?.IsDisposed Then tt.Hide(eBox)
+                                                             End Sub)
+                                                   ttCloseTask = Nothing
+                                                   ttCloseSw.Reset()
+                                               End Sub)
             End If
         Else
             If htt <> IntPtr.Zero Then tt.Hide(eBox)
@@ -2378,35 +2378,35 @@ Partial Public NotInheritable Class FrmMain
             tgt = IO.Path.GetDirectoryName(tgt.TrimEnd("\"c)) & "\"
             'CloseOtherDropDowns(cmsQuickLaunch.Items)
             'cmsQuickLaunch.Close()
-            Task.Run(Sub()
-                         Dim watch As Stopwatch = Stopwatch.StartNew()
-                         Dim hndl As IntPtr = IntPtr.Zero
+            Task.Run(action:=Async Sub()
+                                 Dim watch As Stopwatch = Stopwatch.StartNew()
+                                 Dim hndl As IntPtr = IntPtr.Zero
 
-                         Dim found As Boolean = False
-                         Dim wndProc As EnumWindowsProc = Function(hwnd, lParam)
-                                                              If GetWindowClass(hwnd) = "OperationStatusWindow" Then
-                                                                  Dim pid As Integer
-                                                                  GetWindowThreadProcessId(hwnd, pid)
-                                                                  If pid = scalaPID Then
-                                                                      hndl = hwnd
-                                                                      found = True
-                                                                      Return False ' stop enumeration
-                                                                  End If
-                                                              End If
-                                                              Return True ' continue enumeration
-                                                          End Function
+                                 Dim found As Boolean = False
+                                 Dim wndProc As EnumWindowsProc = Function(hwnd, lParam)
+                                                                      If GetWindowClass(hwnd) = "OperationStatusWindow" Then
+                                                                          Dim pid As Integer
+                                                                          GetWindowThreadProcessId(hwnd, pid)
+                                                                          If pid = scalaPID Then
+                                                                              hndl = hwnd
+                                                                              found = True
+                                                                              Return False ' stop enumeration
+                                                                          End If
+                                                                      End If
+                                                                      Return True ' continue enumeration
+                                                                  End Function
 
-                         While watch.ElapsedMilliseconds < 5000 AndAlso Not found
-                             EnumWindows(wndProc, IntPtr.Zero)
-                             If found Then Exit While
-                             Threading.Thread.Sleep(50)
-                         End While
-                         dBug.Print($"enumwindow {hndl} ""{GetWindowText(hndl)}""")
-                         SetWindowPos(hndl, If(My.Settings.topmost, SWP_HWND.TOPMOST, SWP_HWND.TOP), 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
-                         SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
-                         If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
-                         watch.Stop()
-                     End Sub)
+                                 While watch.ElapsedMilliseconds < 5000 AndAlso Not found
+                                     EnumWindows(wndProc, IntPtr.Zero)
+                                     If found Then Exit While
+                                     Await Task.Delay(50)
+                                 End While
+                                 dBug.Print($"enumwindow {hndl} ""{GetWindowText(hndl)}""")
+                                 SetWindowPos(hndl, If(My.Settings.topmost, SWP_HWND.TOPMOST, SWP_HWND.TOP), 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                                 SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
+                                 If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                                 watch.Stop()
+                             End Sub)
         End If
 
         dBug.Print($"Clipaction {act} ""{tgt}""")
@@ -2523,71 +2523,71 @@ Partial Public NotInheritable Class FrmMain
             }
             CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
             cmsQuickLaunch.Close()
-            Task.Run(Sub()
-                         ShellExecuteEx(sei) 'open properties
-                         'set properties to topmost
-                         Dim watch As Stopwatch = Stopwatch.StartNew()
-                         'Dim WindowName As String = pth.ToLower.Substring(pth.LastIndexOf("\") + 1).Replace(".url", "").Replace(".lnk", "") ' & " Properties"
-                         Dim itemName As String = IO.Path.GetFileName(pth)
-                         If hideExt.Contains(IO.Path.GetExtension(itemName).ToLower) Then itemName = IO.Path.GetFileNameWithoutExtension(itemName)
+            Task.Run(action:=Async Sub()
+                                 ShellExecuteEx(sei) 'open properties
+                                 'set properties to topmost
+                                 Dim watch As Stopwatch = Stopwatch.StartNew()
+                                 'Dim WindowName As String = pth.ToLower.Substring(pth.LastIndexOf("\") + 1).Replace(".url", "").Replace(".lnk", "") ' & " Properties"
+                                 Dim itemName As String = IO.Path.GetFileName(pth)
+                                 If hideExt.Contains(IO.Path.GetExtension(itemName).ToLower) Then itemName = IO.Path.GetFileNameWithoutExtension(itemName)
 
-                         Dim wn1 As String = itemName & " "
-                         Dim wn2 As String = " " & itemName
+                                 Dim wn1 As String = itemName & " "
+                                 Dim wn2 As String = " " & itemName
 
-                         Debug.Print($"wn: {itemName} {pth}")
-                         'findwindow ignores case
-                         Dim hndl As IntPtr = IntPtr.Zero
-                         While watch.ElapsedMilliseconds < 10000 AndAlso hndl = IntPtr.Zero
-                             Threading.Thread.Sleep(50)
-                             '    'todo replace with enumwnd so we can be locale agnostic
-                             '    hndl = FindWindow("#32770", WindowName)
-                             '    dBug.Print($"findwindow {hndl}")
-                             '    If hndl <> IntPtr.Zero Then Exit While
+                                 Debug.Print($"wn: {itemName} {pth}")
+                                 'findwindow ignores case
+                                 Dim hndl As IntPtr = IntPtr.Zero
+                                 While watch.ElapsedMilliseconds < 10000 AndAlso hndl = IntPtr.Zero
+                                     Await Task.Delay(50)
+                                     '    'todo replace with enumwnd so we can be locale agnostic
+                                     '    hndl = FindWindow("#32770", WindowName)
+                                     '    dBug.Print($"findwindow {hndl}")
+                                     '    If hndl <> IntPtr.Zero Then Exit While
 
-                             EnumWindows(Function(hw As IntPtr, lparam As IntPtr)
+                                     EnumWindows(Function(hw As IntPtr, lparam As IntPtr)
 
-                                             If Not IsWindowVisible(hw) Then Return True
-                                             If Not IsWindowEnabled(hw) Then Return True
+                                                     If Not IsWindowVisible(hw) Then Return True
+                                                     If Not IsWindowEnabled(hw) Then Return True
 
-                                             If GetWindowLong(hw, GWL_HWNDPARENT) = ScalaHandle Then Return True
+                                                     If GetWindowLong(hw, GWL_HWNDPARENT) = ScalaHandle Then Return True
 
-                                             Dim pid As Integer
-                                             GetWindowThreadProcessId(hw, pid)
-                                             If pid <> scalaPID Then Return True
+                                                     Dim pid As Integer
+                                                     GetWindowThreadProcessId(hw, pid)
+                                                     If pid <> scalaPID Then Return True
 
-                                             If GetWindowClass(hw) <> "#32770" Then Return True
+                                                     If GetWindowClass(hw) <> "#32770" Then Return True
 
-                                             dBug.Print($"fwT: {GetWindowClass(hw)} ""{GetWindowText(hw)}""")
+                                                     dBug.Print($"fwT: {GetWindowClass(hw)} ""{GetWindowText(hw)}""")
 
-                                             Dim title = GetWindowText(hw)
-                                             If Not (title.StartsWith(wn1) OrElse title.EndsWith(wn2)) Then Return True
+                                                     Dim title = GetWindowText(hw)
+                                                     If Not (title.StartsWith(wn1) OrElse title.EndsWith(wn2)) Then Return True
 
-                                             Dim child = FindWindowEx(hw, IntPtr.Zero, "#32770", Nothing)
-                                             Dim foundNoWn As Boolean = True
-                                             EnumChildWindows(child, Function(c As IntPtr, l As IntPtr)
-                                                                         Debug.Print($"c ""{GetWindowText(c)}"" {GetWindowClass(c)}")
-                                                                         If GetWindowClass(c) = "Edit" Then
-                                                                             Dim tex = GetWindowText(c)
-                                                                             If tex = itemName Then
-                                                                                 foundNoWn = False
-                                                                                 Return False
-                                                                             End If
-                                                                         End If
-                                                                         Return True
-                                                                     End Function, IntPtr.Zero)
-                                             If Not foundNoWn Then hndl = hw
-                                             Return hndl = IntPtr.Zero
+                                                     Dim child = FindWindowEx(hw, IntPtr.Zero, "#32770", Nothing)
+                                                     Dim foundNoWn As Boolean = True
+                                                     EnumChildWindows(child, Function(c As IntPtr, l As IntPtr)
+                                                                                 Debug.Print($"c ""{GetWindowText(c)}"" {GetWindowClass(c)}")
+                                                                                 If GetWindowClass(c) = "Edit" Then
+                                                                                     Dim tex = GetWindowText(c)
+                                                                                     If tex = itemName Then
+                                                                                         foundNoWn = False
+                                                                                         Return False
+                                                                                     End If
+                                                                                 End If
+                                                                                 Return True
+                                                                             End Function, IntPtr.Zero)
+                                                     If Not foundNoWn Then hndl = hw
+                                                     Return hndl = IntPtr.Zero
 
-                                         End Function, IntPtr.Zero)
+                                                 End Function, IntPtr.Zero)
 
-                         End While
+                                 End While
 
-                         SetWindowPos(hndl, If(My.Settings.topmost, SWP_HWND.TOPMOST, SWP_HWND.TOP), 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
-                         SetWindowPos(ScalaHandle, hndl, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
-                         SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
-                         If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
-                         watch.Stop()
-                     End Sub)
+                                 SetWindowPos(hndl, If(My.Settings.topmost, SWP_HWND.TOPMOST, SWP_HWND.TOP), 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                                 SetWindowPos(ScalaHandle, hndl, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                                 SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
+                                 If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                                 watch.Stop()
+                             End Sub)
         End If
     End Sub
 
@@ -2702,16 +2702,16 @@ Partial Public NotInheritable Class FrmMain
         Finally
             Environment.SetEnvironmentVariable("__COMPAT_LAYER", Nothing)
             pp.Dispose()
-            Task.Run(Sub()
-                         Dim timout As Integer = 123
-                         Threading.Thread.Sleep(timout)
-                         If waitCursorTimer.ElapsedMilliseconds >= timout Then
-                             Me.BeginInvoke(Sub()
-                                                Cursor = Cursors.Arrow
-                                                setMenuCursor(cmsQuickLaunch, Cursors.Arrow)
-                                            End Sub)
-                         End If
-                     End Sub)
+            Task.Run(action:=Async Sub()
+                                 Dim timout As Integer = 123
+                                 Await Task.Delay(timout)
+                                 If waitCursorTimer.ElapsedMilliseconds >= timout Then
+                                     Me.BeginInvoke(Sub()
+                                                        Cursor = Cursors.Arrow
+                                                        setMenuCursor(cmsQuickLaunch, Cursors.Arrow)
+                                                    End Sub)
+                                 End If
+                             End Sub)
         End Try
 
         'Exit Sub
@@ -2719,77 +2719,77 @@ Partial Public NotInheritable Class FrmMain
         If swErrorHoist?.ElapsedMilliseconds < 9000 Then
             swErrorHoist = Stopwatch.StartNew
         Else
-            Task.Run(Sub()
-                         swErrorHoist = Stopwatch.StartNew()
-                         Dim targetCmdPath As String = Environment.ExpandEnvironmentVariables("%windir%\system32\cmd.exe").Trim().ToLowerInvariant()
+            Task.Run(action:=Async Sub()
+                                 swErrorHoist = Stopwatch.StartNew()
+                                 Dim targetCmdPath As String = Environment.ExpandEnvironmentVariables("%windir%\system32\cmd.exe").Trim().ToLowerInvariant()
 
-                         Do
-                             Threading.Thread.Sleep(200)
-                             Dim hwndList As New List(Of IntPtr)
-                             Dim HideList As New List(Of IntPtr)
-                             Dim centList As New List(Of IntPtr)
-                             EnumWindows(Function(hwnd As IntPtr, lParam As IntPtr)
+                                 Do
+                                     Await Task.Delay(200)
+                                     Dim hwndList As New List(Of IntPtr)
+                                     Dim HideList As New List(Of IntPtr)
+                                     Dim centList As New List(Of IntPtr)
+                                     EnumWindows(Function(hwnd As IntPtr, lParam As IntPtr)
 
-                                             If Not IsWindowVisible(hwnd) Then Return True
-                                             If GetWindowClass(hwnd) <> "#32770" Then Return True
+                                                     If Not IsWindowVisible(hwnd) Then Return True
+                                                     If GetWindowClass(hwnd) <> "#32770" Then Return True
 
-                                             Dim owner As IntPtr = GetWindowLong(hwnd, GWL_HWNDPARENT)
-                                             If owner = IntPtr.Zero OrElse owner = ScalaHandle OrElse IsWindowEnabled(owner) Then Return True
+                                                     Dim owner As IntPtr = GetWindowLong(hwnd, GWL_HWNDPARENT)
+                                                     If owner = IntPtr.Zero OrElse owner = ScalaHandle OrElse IsWindowEnabled(owner) Then Return True
 
-                                             Dim ownId As UInteger
-                                             GetWindowThreadProcessId(owner, ownId)
+                                                     Dim ownId As UInteger
+                                                     GetWindowThreadProcessId(owner, ownId)
 
-                                             If ProcessPath(ownId).ToLowerInvariant() = explorerPath AndAlso GetWindowClass(owner) = "CabinetWClass" Then
-                                                 If GetWindowClass(FindWindowEx(owner, IntPtr.Zero, Nothing, Nothing)) = "ShellTabWindowClass" Then
-                                                     Debug.Print($"Hidelist add: {GetWindowText(owner)}")
-                                                     HideList.Add(owner)
-                                                     hwndList.Add(hwnd)
-                                                     centList.Add(hwnd)
-                                                 End If
-                                                 Return True
-                                             End If
+                                                     If ProcessPath(ownId).ToLowerInvariant() = explorerPath AndAlso GetWindowClass(owner) = "CabinetWClass" Then
+                                                         If GetWindowClass(FindWindowEx(owner, IntPtr.Zero, Nothing, Nothing)) = "ShellTabWindowClass" Then
+                                                             Debug.Print($"Hidelist add: {GetWindowText(owner)}")
+                                                             HideList.Add(owner)
+                                                             hwndList.Add(hwnd)
+                                                             centList.Add(hwnd)
+                                                         End If
+                                                         Return True
+                                                     End If
 
-                                             Dim parentpid As Integer = ownId
-                                             Dim rootPid As Integer = ownId
-                                             While parentpid <> -1 AndAlso parentpid <> 0 AndAlso swErrorHoist.ElapsedMilliseconds <= 10000
-                                                 parentpid = GetParentPid(parentpid)
-                                                 If parentpid <> -1 Then rootPid = parentpid
-                                                 If rootPid = scalaPID Then Exit While
-                                             End While
+                                                     Dim parentpid As Integer = ownId
+                                                     Dim rootPid As Integer = ownId
+                                                     While parentpid <> -1 AndAlso parentpid <> 0 AndAlso swErrorHoist.ElapsedMilliseconds <= 10000
+                                                         parentpid = GetParentPid(parentpid)
+                                                         If parentpid <> -1 Then rootPid = parentpid
+                                                         If rootPid = scalaPID Then Exit While
+                                                     End While
 
-                                             If rootPid = scalaPID Then
-                                                 If ProcessPath(ownId).ToLowerInvariant() = targetCmdPath Then
-                                                     hwndList.Add(hwnd)
-                                                 End If
-                                             End If
+                                                     If rootPid = scalaPID Then
+                                                         If ProcessPath(ownId).ToLowerInvariant() = targetCmdPath Then
+                                                             hwndList.Add(hwnd)
+                                                         End If
+                                                     End If
 
-                                             Return True
-                                         End Function, IntPtr.Zero)
+                                                     Return True
+                                                 End Function, IntPtr.Zero)
 
-                             For Each hwn In hwndList
-                                 SetWindowLong(hwn, GWL_HWNDPARENT, ScalaHandle)
-                                 If My.Settings.topmost Then
-                                     SetWindowPos(hwn, SWP_HWND.TOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
-                                 End If
-                                 AllowSetForegroundWindow(ASFW_ANY)
-                                 SetForegroundWindow(ScalaHandle)
-                             Next
-                             For Each hwn In HideList
-                                 SetWindowLong(hwn, GWL_EXSTYLE, GetWindowLong(hwn, GWL_EXSTYLE) Or WindowStylesEx.WS_EX_TOOLWINDOW Or WindowStylesEx.WS_EX_LAYERED)
-                                 SetLayeredWindowAttributes(hwn, 0, 0, LWA_ALPHA)
-                             Next
-                             For Each hwn In centList
-                                 Dim rcW As New RECT
-                                 GetClientRect(hwn, rcW)
-                                 Dim rcSw As New RECT
-                                 GetWindowRect(ScalaHandle, rcSw)
-                                 Dim rcSc As New RECT
-                                 GetClientRect(ScalaHandle, rcSc)
-                                 SetWindowPos(hwn, SWP_HWND.TOP, rcSw.left + (rcSc.right - rcW.right) / 2, rcSw.top + (rcSc.bottom - rcW.bottom) / 2, 0, 0, SetWindowPosFlags.IgnoreResize)
-                             Next
+                                     For Each hwn In hwndList
+                                         SetWindowLong(hwn, GWL_HWNDPARENT, ScalaHandle)
+                                         If My.Settings.topmost Then
+                                             SetWindowPos(hwn, SWP_HWND.TOPMOST, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreResize)
+                                         End If
+                                         AllowSetForegroundWindow(ASFW_ANY)
+                                         SetForegroundWindow(ScalaHandle)
+                                     Next
+                                     For Each hwn In HideList
+                                         SetWindowLong(hwn, GWL_EXSTYLE, GetWindowLong(hwn, GWL_EXSTYLE) Or WindowStylesEx.WS_EX_TOOLWINDOW Or WindowStylesEx.WS_EX_LAYERED)
+                                         SetLayeredWindowAttributes(hwn, 0, 0, LWA_ALPHA)
+                                     Next
+                                     For Each hwn In centList
+                                         Dim rcW As New RECT
+                                         GetClientRect(hwn, rcW)
+                                         Dim rcSw As New RECT
+                                         GetWindowRect(ScalaHandle, rcSw)
+                                         Dim rcSc As New RECT
+                                         GetClientRect(ScalaHandle, rcSc)
+                                         SetWindowPos(hwn, SWP_HWND.TOP, rcSw.left + (rcSc.right - rcW.right) / 2, rcSw.top + (rcSc.bottom - rcW.bottom) / 2, 0, 0, SetWindowPosFlags.IgnoreResize)
+                                     Next
 
-                         Loop While swErrorHoist.ElapsedMilliseconds <= 10000
-                     End Sub)
+                                 Loop While swErrorHoist.ElapsedMilliseconds <= 10000
+                             End Sub)
         End If
     End Sub
     Dim swErrorHoist As Stopwatch
