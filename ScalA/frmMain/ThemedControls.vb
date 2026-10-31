@@ -45,7 +45,7 @@ Public NotInheritable Class ThemedComboBox
     Public Sub New()
         MyBase.New()
         SetStyle(ControlStyles.OptimizedDoubleBuffer Or ControlStyles.ResizeRedraw Or ControlStyles.UserPaint, True)
-        DrawMode = DrawMode.OwnerDrawVariable
+        DrawMode = DrawMode.OwnerDrawFixed
         'MyBase.FlatStyle = FlatStyle.Flat
         MyBase.DropDownStyle = ComboBoxStyle.DropDownList
     End Sub
@@ -124,6 +124,7 @@ Public NotInheritable Class ThemedComboBox
 
             Dim arrow = My.Resources.scrollbar_arrow_small_hot
             g.DrawImageUnscaled(arrow, rect.Right - arrow.Width - (Consts.Padding / 2), (rect.Height / 2) - (arrow.Height / 2))
+
             Dim text As String = If(SelectedItem IsNot Nothing, GetItemText(SelectedItem).TrimStart, "")
 
             Using b = New SolidBrush(textColor)
