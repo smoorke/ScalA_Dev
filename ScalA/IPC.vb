@@ -21,7 +21,7 @@ Module IPC
 
     Public Property AlreadyOpen As Boolean
         Get
-            Return _mmvaSI.ReadBoolean(0)
+            Return _mmvaSI.ReadBoolean(0) 'todo: replace with mutex
         End Get
         Set(value As Boolean)
             _mmvaSI.Write(0, value)
