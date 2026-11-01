@@ -236,6 +236,12 @@ Public NotInheritable Class FrmSettings
         'FrmMain.Detach(False)
         'Me.Owner = FrmMain
 
+        Dim rcC As RECT
+        GetClientRect(Me.Handle, rcC)
+        Debug.Print($"rcC {rcC.right} {rcC.bottom}")
+        Me.Width = Me.Width - rcC.right + DesignedClientSize.Width
+        Me.Height = Me.Height - rcC.bottom + DesignedClientSize.Height
+
         startup = False
 
         'AllowSetForegroundWindow(ASFW_ANY)
