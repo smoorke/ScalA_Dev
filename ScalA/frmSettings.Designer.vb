@@ -43,7 +43,6 @@ Partial NotInheritable Class FrmSettings
         Dim grpAlterOverviewMinMax As System.Windows.Forms.GroupBox
         Dim Label6 As System.Windows.Forms.Label
         Dim grpQLPath As System.Windows.Forms.GroupBox
-        Dim gbFilter As System.Windows.Forms.GroupBox
         Dim Label1 As System.Windows.Forms.Label
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmSettings))
         Me.btnGoToAdjustHotkey = New System.Windows.Forms.Button()
@@ -55,8 +54,6 @@ Partial NotInheritable Class FrmSettings
         Me.OpenInExplorerToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ResetIconCacheToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.txtQuickLaunchPath = New System.Windows.Forms.TextBox()
-        Me.TxtFilterAddExt = New System.Windows.Forms.TextBox()
-        Me.lblDefaultFilter = New System.Windows.Forms.Label()
         Me.btnOK = New System.Windows.Forms.Button()
         Me.btnCancel = New System.Windows.Forms.Button()
         Me.tmrAlign = New System.Windows.Forms.Timer(Me.components)
@@ -179,6 +176,11 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.pnlElevation = New System.Windows.Forms.Panel()
+        Me.TxtFilterAddExt = New System.Windows.Forms.TextBox()
+        Me.lblDefaultFilter = New System.Windows.Forms.Label()
+        Me.cmbQLScaling = New System.Windows.Forms.ComboBox()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.txtCustomQLScale = New System.Windows.Forms.TextBox()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
@@ -199,13 +201,11 @@ Partial NotInheritable Class FrmSettings
         grpAlterOverviewMinMax = New System.Windows.Forms.GroupBox()
         Label6 = New System.Windows.Forms.Label()
         grpQLPath = New System.Windows.Forms.GroupBox()
-        gbFilter = New System.Windows.Forms.GroupBox()
         Label1 = New System.Windows.Forms.Label()
         grpAlterOverviewMinMax.SuspendLayout()
         CType(Me.NumExtraMax, System.ComponentModel.ISupportInitialize).BeginInit()
         grpQLPath.SuspendLayout()
         Me.cmsQLFolder.SuspendLayout()
-        gbFilter.SuspendLayout()
         Me.grpReserveSpace.SuspendLayout()
         CType(Me.NumBorderBot, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumBorderRight, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -497,33 +497,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtQuickLaunchPath.Size = New System.Drawing.Size(274, 20)
         Me.txtQuickLaunchPath.TabIndex = 0
         Me.txtQuickLaunchPath.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
-        '
-        'gbFilter
-        '
-        gbFilter.Controls.Add(Me.TxtFilterAddExt)
-        gbFilter.Controls.Add(Me.lblDefaultFilter)
-        gbFilter.Location = New System.Drawing.Point(9, 85)
-        gbFilter.Name = "gbFilter"
-        gbFilter.Size = New System.Drawing.Size(315, 40)
-        gbFilter.TabIndex = 2
-        gbFilter.TabStop = False
-        gbFilter.Text = "Extension Filter"
-        '
-        'TxtFilterAddExt
-        '
-        Me.TxtFilterAddExt.Location = New System.Drawing.Point(72, 14)
-        Me.TxtFilterAddExt.Name = "TxtFilterAddExt"
-        Me.TxtFilterAddExt.Size = New System.Drawing.Size(234, 20)
-        Me.TxtFilterAddExt.TabIndex = 31
-        '
-        'lblDefaultFilter
-        '
-        Me.lblDefaultFilter.AutoSize = True
-        Me.lblDefaultFilter.Location = New System.Drawing.Point(5, 17)
-        Me.lblDefaultFilter.Name = "lblDefaultFilter"
-        Me.lblDefaultFilter.Size = New System.Drawing.Size(70, 13)
-        Me.lblDefaultFilter.TabIndex = 30
-        Me.lblDefaultFilter.Text = "exe | lnk | url |"
         '
         'Label1
         '
@@ -1734,11 +1707,15 @@ Partial NotInheritable Class FrmSettings
         '
         'TabQL
         '
+        Me.TabQL.Controls.Add(Me.txtCustomQLScale)
+        Me.TabQL.Controls.Add(Me.cmbQLScaling)
+        Me.TabQL.Controls.Add(Me.TxtFilterAddExt)
+        Me.TabQL.Controls.Add(Me.lblDefaultFilter)
         Me.TabQL.Controls.Add(Me.GroupBox1)
-        Me.TabQL.Controls.Add(gbFilter)
         Me.TabQL.Controls.Add(Me.ChkQLResolveLnk)
         Me.TabQL.Controls.Add(Me.ChkQLShowHidden)
         Me.TabQL.Controls.Add(grpQLPath)
+        Me.TabQL.Controls.Add(Me.Label2)
         Me.TabQL.Location = New System.Drawing.Point(4, 25)
         Me.TabQL.Name = "TabQL"
         Me.TabQL.Size = New System.Drawing.Size(333, 183)
@@ -1869,6 +1846,49 @@ Partial NotInheritable Class FrmSettings
         Me.pnlElevation.TabIndex = 17
         Me.pnlElevation.Visible = False
         '
+        'TxtFilterAddExt
+        '
+        Me.TxtFilterAddExt.Location = New System.Drawing.Point(159, 81)
+        Me.TxtFilterAddExt.Name = "TxtFilterAddExt"
+        Me.TxtFilterAddExt.Size = New System.Drawing.Size(156, 20)
+        Me.TxtFilterAddExt.TabIndex = 34
+        '
+        'lblDefaultFilter
+        '
+        Me.lblDefaultFilter.AutoSize = True
+        Me.lblDefaultFilter.Location = New System.Drawing.Point(15, 84)
+        Me.lblDefaultFilter.Name = "lblDefaultFilter"
+        Me.lblDefaultFilter.Size = New System.Drawing.Size(147, 13)
+        Me.lblDefaultFilter.TabIndex = 33
+        Me.lblDefaultFilter.Text = "Extension Filter: exe | lnk | url |"
+        '
+        'cmbQLScaling
+        '
+        Me.cmbQLScaling.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cmbQLScaling.FormattingEnabled = True
+        Me.cmbQLScaling.Items.AddRange(New Object() {"Monitor", "1x", "2x", "3x", "Custom:"})
+        Me.cmbQLScaling.Location = New System.Drawing.Point(159, 103)
+        Me.cmbQLScaling.Name = "cmbQLScaling"
+        Me.cmbQLScaling.Size = New System.Drawing.Size(80, 21)
+        Me.cmbQLScaling.TabIndex = 35
+        '
+        'Label2
+        '
+        Me.Label2.AutoSize = True
+        Me.Label2.Location = New System.Drawing.Point(69, 107)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(92, 13)
+        Me.Label2.TabIndex = 36
+        Me.Label2.Text = "QL Scaling Mode:"
+        '
+        'txtCustomQLScale
+        '
+        Me.txtCustomQLScale.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
+        Me.txtCustomQLScale.Location = New System.Drawing.Point(243, 103)
+        Me.txtCustomQLScale.Name = "txtCustomQLScale"
+        Me.txtCustomQLScale.Size = New System.Drawing.Size(48, 21)
+        Me.txtCustomQLScale.TabIndex = 37
+        '
         'FrmSettings
         '
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
@@ -1879,9 +1899,11 @@ Partial NotInheritable Class FrmSettings
         Me.Controls.Add(Me.btnCancel)
         Me.Controls.Add(Me.btnOK)
         Me.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
+        Me.HelpButton = True
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
+        Me.MinimizeBox = False
         Me.Name = "FrmSettings"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "ScalA Settings"
@@ -1891,8 +1913,6 @@ Partial NotInheritable Class FrmSettings
         grpQLPath.ResumeLayout(False)
         grpQLPath.PerformLayout()
         Me.cmsQLFolder.ResumeLayout(False)
-        gbFilter.ResumeLayout(False)
-        gbFilter.PerformLayout()
         Me.grpReserveSpace.ResumeLayout(False)
         Me.grpReserveSpace.PerformLayout()
         CType(Me.NumBorderBot, System.ComponentModel.ISupportInitialize).EndInit()
@@ -2058,13 +2078,16 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents ChkQLShowHidden As CheckBox
     Friend WithEvents btnOpenFolderDialog As Button
     Friend WithEvents txtQuickLaunchPath As TextBox
-    Friend WithEvents lblDefaultFilter As Label
     Friend WithEvents GroupBox1 As GroupBox
     Friend WithEvents btnRefreshICdisplay As Button
     Friend WithEvents lblICSize As Label
     Friend WithEvents lblICacheCount As Label
     Friend WithEvents btnResetCache As Button
-    Friend WithEvents TxtFilterAddExt As TextBox
     Friend WithEvents cmbPriority As ComboBox
     Friend WithEvents ChkAlwaysStartOnOverview As CheckBox
+    Friend WithEvents Label2 As Label
+    Friend WithEvents cmbQLScaling As ComboBox
+    Friend WithEvents TxtFilterAddExt As TextBox
+    Friend WithEvents lblDefaultFilter As Label
+    Friend WithEvents txtCustomQLScale As TextBox
 End Class

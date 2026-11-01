@@ -220,6 +220,11 @@ Public NotInheritable Class FrmSettings
 
         cmbPriority.SelectedIndex = mapPriorityToCmbIndex(My.Settings.Priority)
 
+        cmbQLScaling.SelectedIndex = My.Settings.QLScale
+        txtCustomQLScale.Text = If(My.Settings.QLScale > 0, $"{My.Settings.QLScale:0.00}", "")
+        If My.Settings.QLScale = 4 Then txtCustomQLScale.Text = $"{My.Settings.customQLScale:0.00#}"
+        txtCustomQLScale.Enabled = cmbQLScaling.SelectedIndex = 3
+
         Me.TopMost = True ' My.Settings.topmost
     End Sub
     Public Sub New()
@@ -259,7 +264,7 @@ Public NotInheritable Class FrmSettings
                     If Not startup AndAlso Not winpos.flags.HasFlag(SetWindowPosFlags.IgnoreResize) Then
                         Dim rcC As RECT
                         GetClientRect(Me.Handle, rcC)
-                        Debug.Print($"rcC {rcC.right} {rcC.bottom}")
+                        'Debug.Print($"rcC {rcC.right} {rcC.bottom}")
                         winpos.cx = Me.Width - rcC.right + DesignedClientSize.Width
                         winpos.cy = Me.Height - rcC.bottom + DesignedClientSize.Height
                         Marshal.StructureToPtr(winpos, m.LParam, True)

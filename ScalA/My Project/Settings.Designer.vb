@@ -1159,6 +1159,30 @@ Namespace My
                 Me("AlwaysStartOnOverview") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0")>  _
+        Public Property QLScale() As Integer
+            Get
+                Return CType(Me("QLScale"),Integer)
+            End Get
+            Set
+                Me("QLScale") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("1.25")>  _
+        Public Property customQLScale() As Decimal
+            Get
+                Return CType(Me("customQLScale"),Decimal)
+            End Get
+            Set
+                Me("customQLScale") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
