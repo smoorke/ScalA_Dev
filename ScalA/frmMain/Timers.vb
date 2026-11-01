@@ -897,6 +897,9 @@ Partial NotInheritable Class FrmMain
                 SendMessage(FrmBehind.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
                 SendMessage(frmOverlay.Handle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
                 Me.WindowState = If(wasMaximized, FormWindowState.Maximized, FormWindowState.Normal)
+                If Me.WindowState = FormWindowState.Normal Then
+                    ReZoom(My.Settings.resol)
+                End If
             End If
 
             'ShowWindow(ScalaHandle, SW_SHOW)
