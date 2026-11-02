@@ -82,6 +82,7 @@ Public Class frmOverlay
             If targetPPs IsNot Nothing AndAlso targetPPs.Id <> 0 Then
                 FrmMain.PopDropDown(FrmMain.cboAlt, False)
                 FrmMain.cboAlt.SelectedItem = targetPPs
+                SendMessage(ScalaHandle, WM_NCACTIVATE, True, ScalaHandle)
                 Exit While
             End If
             If count >= 100 Then
@@ -143,6 +144,7 @@ Public Class frmOverlay
             If targetPPs IsNot Nothing AndAlso targetPPs.Id <> 0 Then
                 FrmMain.PopDropDown(FrmMain.cboAlt, False)
                 FrmMain.cboAlt.SelectedItem = targetPPs
+                SendMessage(ScalaHandle, WM_NCACTIVATE, True, ScalaHandle)
                 Exit While
             End If
             If count >= 100 Then
@@ -155,6 +157,5 @@ Public Class frmOverlay
         FrmMain.Cursor = Cursors.Default
         Me.UseWaitCursor = False
     End Sub
-
 
 End Class

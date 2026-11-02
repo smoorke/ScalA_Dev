@@ -25,11 +25,11 @@ Partial Class frmOverlay
         Me.components = New System.ComponentModel.Container()
         Me.pbRestart = New System.Windows.Forms.PictureBox()
         Me.cmsRestart = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.RestartAndCloseToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.RestartWoClosingToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Me.HideThisToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ttOverlay = New System.Windows.Forms.ToolTip(Me.components)
-        Me.RestartAndCloseToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         CType(Me.pbRestart, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.cmsRestart.SuspendLayout()
         Me.SuspendLayout()
@@ -55,35 +55,35 @@ Partial Class frmOverlay
         Me.cmsRestart.Name = "cmsRestartHide"
         Me.cmsRestart.Size = New System.Drawing.Size(178, 76)
         '
-        'RestartWoClosingToolStripMenuItem
-        '
-        Me.RestartWoClosingToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.Sync
-        Me.RestartWoClosingToolStripMenuItem.Name = "RestartWoClosingToolStripMenuItem"
-        Me.RestartWoClosingToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
-        Me.RestartWoClosingToolStripMenuItem.Text = "Restart w/o Closing"
-        '
-        'ToolStripMenuItem1
-        '
-        Me.ToolStripMenuItem1.Name = "ToolStripMenuItem1"
-        Me.ToolStripMenuItem1.Size = New System.Drawing.Size(149, 6)
-        '
-        'HideThisToolStripMenuItem
-        '
-        Me.HideThisToolStripMenuItem.Name = "HideThisToolStripMenuItem"
-        Me.HideThisToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
-        Me.HideThisToolStripMenuItem.Text = "Hide This Button"
-        '
-        'ttOverlay
-        '
-        Me.ttOverlay.ShowAlways = True
-        '
         'RestartAndCloseToolStripMenuItem
         '
         Me.RestartAndCloseToolStripMenuItem.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold)
         Me.RestartAndCloseToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.Refresh
         Me.RestartAndCloseToolStripMenuItem.Name = "RestartAndCloseToolStripMenuItem"
-        Me.RestartAndCloseToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.RestartAndCloseToolStripMenuItem.Size = New System.Drawing.Size(177, 22)
         Me.RestartAndCloseToolStripMenuItem.Text = "Restart and Close"
+        '
+        'RestartWoClosingToolStripMenuItem
+        '
+        Me.RestartWoClosingToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.Sync
+        Me.RestartWoClosingToolStripMenuItem.Name = "RestartWoClosingToolStripMenuItem"
+        Me.RestartWoClosingToolStripMenuItem.Size = New System.Drawing.Size(177, 22)
+        Me.RestartWoClosingToolStripMenuItem.Text = "Restart w/o Closing"
+        '
+        'ToolStripMenuItem1
+        '
+        Me.ToolStripMenuItem1.Name = "ToolStripMenuItem1"
+        Me.ToolStripMenuItem1.Size = New System.Drawing.Size(174, 6)
+        '
+        'HideThisToolStripMenuItem
+        '
+        Me.HideThisToolStripMenuItem.Name = "HideThisToolStripMenuItem"
+        Me.HideThisToolStripMenuItem.Size = New System.Drawing.Size(177, 22)
+        Me.HideThisToolStripMenuItem.Text = "Hide This Button"
+        '
+        'ttOverlay
+        '
+        Me.ttOverlay.ShowAlways = True
         '
         'frmOverlay
         '
