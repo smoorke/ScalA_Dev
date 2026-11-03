@@ -1031,11 +1031,16 @@ Partial Public NotInheritable Class FrmMain
         dBug.Print($"cmbRes mwh {sender.SelectedItem} {sender.SelectedIndex} {e.Delta}")
     End Sub
     Private Sub cboAlt_MouseWheel(sender As ComboBox, e As MouseEventArgs) Handles cboAlt.MouseWheel
-        dBug.Print($"CboAlt_Mousewheel {cboAlt.SelectedIndex} {e.Delta}", 1)
-        If cboAlt.SelectedIndex = 1 AndAlso e.Delta > 0 Then
-            SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
-            SendMessage(ScalaHandle, WM_NCACTIVATE, True, ScalaHandle)
-        End If
+        PopDropDown(cboAlt)
+        Dim idx = cboAlt.SelectedIndex
+        Me.BeginInvoke(Async Sub()
+                           dBug.Print($"CboAlt_Mousewheel after {cboAlt.SelectedIndex}", 1)
+                           If cboAlt.SelectedIndex <> idx AndAlso GetAncestor(WindowFromPoint(MousePosition), GA_ROOT) = ScalaHandle Then
+                               SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
+                               Await Task.Delay(33)
+                               SendMessage(ScalaHandle, WM_NCACTIVATE, True, ScalaHandle)
+                           End If
+                       End Sub)
     End Sub
     Private Function FindClosestResolution(targetSize As Size, delta As Integer) As Integer
 
