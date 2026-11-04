@@ -6,7 +6,7 @@ Public Class ScaledScrollable
     Shared fontCache As New Concurrent.ConcurrentDictionary(Of Single, Font)
     Public Shared ReadOnly Property GetFont(scale As Single) As Font
         Get
-            Return fontCache.GetOrAdd(scale, Function(s) New Font(fontName, 12 * s, FontStyle.Regular, GraphicsUnit.Pixel))
+            Return fontCache.GetOrAdd(scale, Function(s) New Font(fontName, 11 * s + 1, FontStyle.Regular, GraphicsUnit.Pixel))
         End Get
     End Property
 
@@ -339,7 +339,7 @@ Public Class ScaledScrollable
     Private Shared Function OddInt(dbl As Single) As Integer
         Dim int As Integer = CInt(dbl)
         If int Mod 2 = 0 Then int -= 1
-        If int < 0 Then Return 0
+        If int <= 0 Then Return 1
         Return int
     End Function
 
@@ -349,7 +349,7 @@ Public Class ScaledScrollable
         Return TriangleDict.GetOrAdd(New Tuple(Of Boolean, Single)(up, scaling),
                                      Function()
                                          Dim width = OddInt(9 * scaling)
-                                         Dim extrapadding As Integer = Math.Floor(2 * (scaling - 1.0!))
+                                         Dim extrapadding As Integer = Math.Max(1, Math.Floor(2 * (scaling - 1.0!)))
                                          Dim bmp As New Bitmap(width, (width + 1) \ 2 + extrapadding * 2)
 
                                          Debug.Print($"Triangle {scaling} size {bmp.Size} pad {extrapadding}")
