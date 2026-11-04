@@ -489,7 +489,7 @@ Public NotInheritable Class FrmSettings
 
         My.Settings.QLScale = cmbQLScaling.SelectedIndex
         Dim parsedScale As Single
-        If Single.TryParse(txtCustomQLScale.Text, parsedScale) Then
+        If cmbQLScaling.SelectedIndex = 4 AndAlso Single.TryParse(txtCustomQLScale.Text, parsedScale) Then
             My.Settings.customQLScale = parsedScale
         End If
 
