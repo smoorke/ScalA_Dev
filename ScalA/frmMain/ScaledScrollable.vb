@@ -19,7 +19,64 @@ Public Class ScaledScrollable
             _scaling = value
         End Set
     End Property
+    Public Class ScrollButtonHook : Inherits NativeWindow
 
+        Private _down As Boolean = False
+        Private _ik As ToolStripDropDown = Nothing
+        Private _but As Label = Nothing
+        Private WithEvents repeatTimer As New Timer()
+        Private isFirstTick As Boolean = True
+
+        Sub New(ik As ToolStripDropDown, but As Label, up As Boolean)
+            _ik = ik
+            _but = but
+            _down = Not up
+            AddHandler repeatTimer.Tick, AddressOf OnRepeatTick
+        End Sub
+
+        Private Sub OnRepeatTick(sender As Object, e As EventArgs)
+            If isFirstTick Then
+                isFirstTick = False
+                repeatTimer.Interval = 50 ' Fast repeat interval after the initial hold delay
+            End If
+
+            If _but.Enabled AndAlso
+                   (GetAsyncKeyState(Keys.LButton) And &H8000S) <> 0 OrElse
+                   (GetAsyncKeyState(Keys.MButton) And &H8000S) <> 0 OrElse
+                   (GetAsyncKeyState(Keys.RButton) And &H8000S) <> 0 OrElse
+                   (GetAsyncKeyState(Keys.XButton1) And &H8000S) <> 0 OrElse
+                   (GetAsyncKeyState(Keys.XButton2) And &H8000S) <> 0 Then
+                ScrollDropDown(_ik, New MouseEventArgs(MouseButtons.None, 0, 0, 0, If(_down, -1, 1)))
+            Else
+                repeatTimer.Stop()
+            End If
+        End Sub
+
+        Protected Overrides Sub WndProc(ByRef m As Message)
+            Const WM_LBUTTONDOWN As Integer = &H201
+            Const WM_LBUTTONUP As Integer = &H202
+            Const WM_CAPTURECHANGED As Integer = &H217
+
+            Select Case m.Msg
+                Case WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN, WM_XBUTTONDOWN
+                    isFirstTick = True
+                    repeatTimer.Interval = 400 ' Initial delay (in ms) before auto-repeat kicks in
+                    repeatTimer.Start()
+
+                    ' Fire the action immediately on press down
+                    If _ik IsNot Nothing Then
+                        ScrollDropDown(_ik, New MouseEventArgs(MouseButtons.None, 0, 0, 0, If(_down, -1, 1)))
+                    End If
+                    Return ' Block default WinForms click action completely
+
+                Case WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP, WM_CAPTURECHANGED
+                    repeatTimer.Stop()
+            End Select
+
+            MyBase.WndProc(m)
+        End Sub
+    End Class
+    Private Shared activeHooks As New List(Of ScrollButtonHook)()
     Public Class ContextMenuStrip : Inherits Windows.Forms.ContextMenuStrip
 
         Private StickyLabels_Initialized As Boolean = False
@@ -34,64 +91,7 @@ Public Class ScaledScrollable
             Me.ImageScalingSize = New Size(16 * Scaling, 16 * Scaling)
         End Sub
 
-        Public Class ScrollButtonHook : Inherits NativeWindow
 
-            Private _down As Boolean = False
-            Private _ik As ContextMenuStrip = Nothing
-            Private _but As Label = Nothing
-            Private WithEvents repeatTimer As New Timer()
-            Private isFirstTick As Boolean = True
-
-            Sub New(ik As ContextMenuStrip, but As Label, up As Boolean)
-                _ik = ik
-                _but = but
-                _down = Not up
-                AddHandler repeatTimer.Tick, AddressOf OnRepeatTick
-            End Sub
-
-            Private Sub OnRepeatTick(sender As Object, e As EventArgs)
-                If isFirstTick Then
-                    isFirstTick = False
-                    repeatTimer.Interval = 50 ' Fast repeat interval after the initial hold delay
-                End If
-
-                If _but.Enabled AndAlso
-                   (GetAsyncKeyState(Keys.LButton) And &H8000S) <> 0 OrElse
-                   (GetAsyncKeyState(Keys.MButton) And &H8000S) <> 0 OrElse
-                   (GetAsyncKeyState(Keys.RButton) And &H8000S) <> 0 OrElse
-                   (GetAsyncKeyState(Keys.XButton1) And &H8000S) <> 0 OrElse
-                   (GetAsyncKeyState(Keys.XButton2) And &H8000S) <> 0 Then
-                    _ik.ContextMenuStrip_MouseWheel(_ik, New MouseEventArgs(MouseButtons.None, 0, 0, 0, If(_down, -1, 1)))
-                Else
-                    repeatTimer.Stop()
-                End If
-            End Sub
-
-            Protected Overrides Sub WndProc(ByRef m As Message)
-                Const WM_LBUTTONDOWN As Integer = &H201
-                Const WM_LBUTTONUP As Integer = &H202
-                Const WM_CAPTURECHANGED As Integer = &H217
-
-                Select Case m.Msg
-                    Case WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN, WM_XBUTTONDOWN
-                        isFirstTick = True
-                        repeatTimer.Interval = 400 ' Initial delay (in ms) before auto-repeat kicks in
-                        repeatTimer.Start()
-
-                        ' Fire the action immediately on press down
-                        If _ik IsNot Nothing Then
-                            _ik.ContextMenuStrip_MouseWheel(_ik, New MouseEventArgs(MouseButtons.None, 0, 0, 0, If(_down, -1, 1)))
-                        End If
-                        Return ' Block default WinForms click action completely
-
-                    Case WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP, WM_CAPTURECHANGED
-                        repeatTimer.Stop()
-                End Select
-
-                MyBase.WndProc(m)
-            End Sub
-        End Class
-        Private activeHooks As New List(Of ScrollButtonHook)()
         Protected Overrides Sub OnOpening(e As System.ComponentModel.CancelEventArgs)
             Dim dpi As UInteger = 96
             GetDpiForMonitor(MonitorFromPoint(Cursor.Position, 2), 0, dpi, dpi)
@@ -111,7 +111,6 @@ Public Class ScaledScrollable
             For Each itm As Label In lbls
                 itm.BackColor = If(My.Settings.DarkMode, Color.LightGray, SystemColors.Control)
                 itm.Image = GetTriangle(itm Is first, Scaling)
-                itm.Tag = itm Is first
 
                 Dim hook As New ScrollButtonHook(Me, itm, itm Is first)
                 hook.AssignHandle(itm.Handle)
@@ -129,94 +128,96 @@ Public Class ScaledScrollable
             End Set
         End Property
 
-        Private Sub ContextMenuStrip_MouseWheel(sender As ContextMenuStrip, e As MouseEventArgs) Handles Me.MouseWheel
-            'this custom implemenattion is needed to handle a bug in base class scroll behaviour
-
-            Dim firstItem As ToolStripItem = sender.GetNextItem(Nothing, ArrowDirection.Down)
-            Dim lastItem As ToolStripItem = sender.GetNextItem(Nothing, ArrowDirection.Up)
-
-            If firstItem Is Nothing OrElse lastItem Is Nothing Then Exit Sub
-
-            Dim labels = sender.Controls.OfType(Of Label).ToArray()
-
-            If labels.Length <> 2 AndAlso Not labels(0).Visible Then Exit Sub
-
-            Dim topButton As Label = labels(0)     ' Up button
-            Dim bottomButton As Label = labels(1)  ' Down button
-
-            If e.Delta > 0 Then
-                If Not topButton.Enabled Then
-                    FadeBackColor(topButton, Color.Pink, If(My.Settings.DarkMode, Color.LightGray, SystemColors.Control), 400)
-                    Exit Sub
-                End If
-            Else
-                If Not bottomButton.Enabled Then
-                    FadeBackColor(bottomButton, Color.Pink, If(My.Settings.DarkMode, Color.LightGray, SystemColors.Control), 400)
-                    Exit Sub
-                End If
-            End If
-
-            ' Call internal scroll
-            Dim mi As Reflection.MethodInfo = GetType(ToolStripDropDownMenu).GetMethod("ScrollInternal",
-                                                      Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.Instance, Nothing,
-                                                      New Type() {GetType(Integer)}, Nothing)
-
-            If mi IsNot Nothing Then
-                mi.Invoke(sender, {If(e.Delta < 0, 1, -1) * firstItem.Height})
-            End If
-
-            ' 2. Manual Scroll Button State Management
-
-            If e.Delta < 0 Then
-                ' Scrolling Down: Check if the last item has scrolled up into/past the bottom viewable area
-                If lastItem.Bounds.Bottom <= sender.ClientSize.Height - bottomButton.Height Then
-                    bottomButton.Enabled = False
-                Else
-                    topButton.Enabled = True
-                    bottomButton.Enabled = True
-                End If
-            Else
-                ' Scrolling Up: Check if the first item has scrolled down into/past the top viewable area
-                If firstItem.Bounds.Top >= topButton.Height Then
-                    topButton.Enabled = False
-                Else
-                    topButton.Enabled = True
-                    bottomButton.Enabled = True
-                End If
-            End If
-
-        End Sub
-
         Protected Overrides Sub Dispose(disposing As Boolean)
             For Each lbl As Label In Me.Controls.OfType(Of Label)
                 fadeSwDict.TryRemove(lbl.Handle, Nothing)
             Next
             MyBase.Dispose(disposing)
         End Sub
-
+        Public Sub ContextMenuStrip_MouseWheel(sender As ToolStripDropDown, e As MouseEventArgs) Handles Me.MouseWheel
+            ScaledScrollable.ScrollDropDown(sender, e)
+        End Sub
     End Class
 
     Private Shared Sub ScrollDropDown(sender As ToolStripDropDown, e As MouseEventArgs)
+        'this custom implementation is needed to handle a bug in base class scroll behaviour
 
-        Const WM_LBUTTONDOWN As Integer = &H201
-        Const WM_LBUTTONUP As Integer = &H202
+        Dim firstItem As ToolStripItem = sender.GetNextItem(Nothing, ArrowDirection.Down)
+        Dim lastItem As ToolStripItem = sender.GetNextItem(Nothing, ArrowDirection.Up)
 
-        Dim buttons As Label() = sender.Controls.OfType(Of Label).Where(Function(l) l.Visible).ToArray
-        If buttons.Count <> 2 Then Exit Sub
+        If firstItem Is Nothing OrElse lastItem Is Nothing Then Exit Sub
 
-        Dim targetButton As Label = Nothing
-        If e.Delta > 0 Then
-            targetButton = buttons(0)
+        Dim labels = sender.Controls.OfType(Of Label).ToArray()
+
+        If labels.Length <> 2 AndAlso Not labels(0).Visible AndAlso Not labels(1).Visible Then Exit Sub
+
+        Dim topButton As Label = labels(0)     ' Up button
+        Dim bottomButton As Label = labels(1)  ' Down button
+
+
+
+        If e.Delta < 0 Then
+            ' Scrolling Down: Check if the last item has scrolled up into/past the bottom viewable area
+            If lastItem.Bounds.Bottom <= sender.ClientSize.Height - bottomButton.Height Then
+                bottomButton.Enabled = False
+            Else
+                topButton.Enabled = True
+                bottomButton.Enabled = True
+            End If
         Else
-            targetButton = buttons(1)
+            ' Scrolling Up: Check if the first item has scrolled down into/past the top viewable area
+            If firstItem.Bounds.Top >= topButton.Height Then
+                topButton.Enabled = False
+            Else
+                topButton.Enabled = True
+                bottomButton.Enabled = True
+            End If
         End If
 
-        If Not targetButton.Enabled Then
-            FadeBackColor(targetButton, Color.Pink, If(My.Settings.DarkMode, Color.LightGray, SystemColors.Control), 400)
+        If e.Delta > 0 Then
+            If Not topButton.Enabled Then
+                FadeBackColor(topButton, Color.Pink, If(My.Settings.DarkMode, Color.LightGray, SystemColors.Control), 400)
+                Exit Sub
+            End If
+        Else
+            If Not bottomButton.Enabled Then
+                FadeBackColor(bottomButton, Color.Pink, If(My.Settings.DarkMode, Color.LightGray, SystemColors.Control), 400)
+                Exit Sub
+            End If
         End If
 
-        SendMessage(targetButton.Handle, WM_LBUTTONDOWN, IntPtr.Zero, IntPtr.Zero)
-        SendMessage(targetButton.Handle, WM_LBUTTONUP, IntPtr.Zero, IntPtr.Zero)
+        ' Call internal scroll
+        Dim mi As Reflection.MethodInfo = GetType(ToolStripDropDownMenu).GetMethod("ScrollInternal",
+                                                  Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.Instance, Nothing,
+                                                  New Type() {GetType(Integer)}, Nothing)
+
+        If mi IsNot Nothing Then
+            If e.Delta < 0 Then
+                If bottomButton.Visible Then mi.Invoke(sender, {firstItem.Height})
+            Else
+                If topButton.Visible Then mi.Invoke(sender, {-firstItem.Height})
+            End If
+        End If
+
+        'Const WM_LBUTTONDOWN As Integer = &H201
+        'Const WM_LBUTTONUP As Integer = &H202
+
+        'Dim buttons As Label() = sender.Controls.OfType(Of Label).Where(Function(l) l.Visible).ToArray
+        'If buttons.Count <> 2 Then Exit Sub
+
+        'Dim targetButton As Label = Nothing
+        'If e.Delta > 0 Then
+        '    targetButton = buttons(0)
+        'Else
+        '    targetButton = buttons(1)
+        'End If
+
+        'If Not targetButton.Enabled Then
+        '    FadeBackColor(targetButton, Color.Pink, If(My.Settings.DarkMode, Color.LightGray, SystemColors.Control), 400)
+        'End If
+
+        'SendMessage(targetButton.Handle, WM_LBUTTONDOWN, IntPtr.Zero, IntPtr.Zero)
+        'SendMessage(targetButton.Handle, WM_LBUTTONUP, IntPtr.Zero, IntPtr.Zero)
 
     End Sub
 
@@ -324,6 +325,10 @@ Public Class ScaledScrollable
                 For Each itm As Label In lbls
                     itm.BackColor = If(My.Settings.DarkMode, Color.LightGray, SystemColors.Control)
                     itm.Image = GetTriangle(itm Is first, Scaling)
+
+                    Dim hook As New ScrollButtonHook(Me, itm, itm Is first)
+                    hook.AssignHandle(itm.Handle)
+                    activeHooks.Add(hook)
                 Next
 
                 StickyLabels_initialized = True
