@@ -34,8 +34,64 @@ Public Class ScaledScrollable
             Me.ImageScalingSize = New Size(16 * Scaling, 16 * Scaling)
         End Sub
 
+        Public Class ScrollButtonHook : Inherits NativeWindow
 
+            Private _down As Boolean = False
+            Private _ik As ContextMenuStrip = Nothing
+            Private _but As Label = Nothing
+            Private WithEvents repeatTimer As New Timer()
+            Private isFirstTick As Boolean = True
 
+            Sub New(ik As ContextMenuStrip, but As Label, up As Boolean)
+                _ik = ik
+                _but = but
+                _down = Not up
+                AddHandler repeatTimer.Tick, AddressOf OnRepeatTick
+            End Sub
+
+            Private Sub OnRepeatTick(sender As Object, e As EventArgs)
+                If isFirstTick Then
+                    isFirstTick = False
+                    repeatTimer.Interval = 50 ' Fast repeat interval after the initial hold delay
+                End If
+
+                If _but.Enabled AndAlso
+                   (GetAsyncKeyState(Keys.LButton) And &H8000S) <> 0 OrElse
+                   (GetAsyncKeyState(Keys.MButton) And &H8000S) <> 0 OrElse
+                   (GetAsyncKeyState(Keys.RButton) And &H8000S) <> 0 OrElse
+                   (GetAsyncKeyState(Keys.XButton1) And &H8000S) <> 0 OrElse
+                   (GetAsyncKeyState(Keys.XButton2) And &H8000S) <> 0 Then
+                    _ik.ContextMenuStrip_MouseWheel(_ik, New MouseEventArgs(MouseButtons.None, 0, 0, 0, If(_down, -1, 1)))
+                Else
+                    repeatTimer.Stop()
+                End If
+            End Sub
+
+            Protected Overrides Sub WndProc(ByRef m As Message)
+                Const WM_LBUTTONDOWN As Integer = &H201
+                Const WM_LBUTTONUP As Integer = &H202
+                Const WM_CAPTURECHANGED As Integer = &H217
+
+                Select Case m.Msg
+                    Case WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN, WM_XBUTTONDOWN
+                        isFirstTick = True
+                        repeatTimer.Interval = 400 ' Initial delay (in ms) before auto-repeat kicks in
+                        repeatTimer.Start()
+
+                        ' Fire the action immediately on press down
+                        If _ik IsNot Nothing Then
+                            _ik.ContextMenuStrip_MouseWheel(_ik, New MouseEventArgs(MouseButtons.None, 0, 0, 0, If(_down, -1, 1)))
+                        End If
+                        Return ' Block default WinForms click action completely
+
+                    Case WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP, WM_CAPTURECHANGED
+                        repeatTimer.Stop()
+                End Select
+
+                MyBase.WndProc(m)
+            End Sub
+        End Class
+        Private activeHooks As New List(Of ScrollButtonHook)()
         Protected Overrides Sub OnOpening(e As System.ComponentModel.CancelEventArgs)
             Dim dpi As UInteger = 96
             GetDpiForMonitor(MonitorFromPoint(Cursor.Position, 2), 0, dpi, dpi)
@@ -44,20 +100,23 @@ Public Class ScaledScrollable
             Me.ImageScalingSize = New Size(CInt(16 * Scaling), CInt(16 * Scaling))
 
             MyBase.OnOpening(e)
+
+            For Each hook In activeHooks
+                hook.ReleaseHandle()
+            Next
+            activeHooks.Clear()
+
             Dim lbls = Me.Controls.OfType(Of Label).ToArray
             Dim first = lbls?.FirstOrDefault
             For Each itm As Label In lbls
                 itm.BackColor = If(My.Settings.DarkMode, Color.LightGray, SystemColors.Control)
                 itm.Image = GetTriangle(itm Is first, Scaling)
+                itm.Tag = itm Is first
+
+                Dim hook As New ScrollButtonHook(Me, itm, itm Is first)
+                hook.AssignHandle(itm.Handle)
+                activeHooks.Add(hook)
             Next
-
-            Me.CanOverflow = True
-            Me.PerformLayout()
-
-            Dim currentSize = Me.Size
-            Me.Size = New Size(currentSize.Width + 1, currentSize.Height)
-            Me.Size = currentSize
-
         End Sub
 
         Public Overrides Property Font As Font
@@ -71,6 +130,7 @@ Public Class ScaledScrollable
         End Property
 
         Private Sub ContextMenuStrip_MouseWheel(sender As ContextMenuStrip, e As MouseEventArgs) Handles Me.MouseWheel
+            'this custom implemenattion is needed to handle a bug in base class scroll behaviour
 
             Dim firstItem As ToolStripItem = sender.GetNextItem(Nothing, ArrowDirection.Down)
             Dim lastItem As ToolStripItem = sender.GetNextItem(Nothing, ArrowDirection.Up)
@@ -102,7 +162,7 @@ Public Class ScaledScrollable
                                                       New Type() {GetType(Integer)}, Nothing)
 
             If mi IsNot Nothing Then
-                mi.Invoke(sender, New Object() {If(e.Delta < 0, 1, -1) * firstItem.Height})
+                mi.Invoke(sender, {If(e.Delta < 0, 1, -1) * firstItem.Height})
             End If
 
             ' 2. Manual Scroll Button State Management
@@ -247,6 +307,7 @@ Public Class ScaledScrollable
                 Me.DropDown.Renderer = Me.Owner.Renderer
             End If
         End Sub
+
     End Class
 
     Public Class ToolStripDropDownMenu : Inherits Windows.Forms.ToolStripDropDownMenu

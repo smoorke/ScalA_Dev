@@ -1273,6 +1273,7 @@ Module NativeMethods
 
     Public Const WM_LBUTTONDOWN = &H201
     Public Const WM_LBUTTONUP = &H202
+    Public Const WM_LBUTTONDBLCLK As Integer = &H203
 
     Public Const WM_RBUTTONDOWN = &H204
     Public Const WM_RBUTTONUP = &H205
