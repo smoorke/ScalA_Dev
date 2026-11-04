@@ -363,7 +363,7 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub FrmMain_Load(sender As Form, e As EventArgs) Handles MyBase.Load
         CheckForIllegalCrossThreadCalls = True
-
+        Threading.Thread.CurrentThread.CurrentCulture = Globalization.CultureInfo.GetCultureInfo("en-US")
         'cleanup of old temp files
         Try
             If IO.Directory.Exists(IO.Path.Combine(FileIO.SpecialDirectories.Temp, "ScalA\")) Then
