@@ -1897,6 +1897,10 @@ Partial Public NotInheritable Class FrmMain
 
         If My.Computer.Keyboard.CtrlKeyDown AndAlso My.Computer.Keyboard.ShiftKeyDown Then ctrlshift_pressed = True
 
+        For Each ctrl As Control In cmsQuickLaunch.Controls
+            ctrl.Width = 0 'this fixes menu staying wide when rescaling
+        Next
+
         sender.Items.AddRange(ParseDir(IO.Path.GetFullPath(My.Settings.links)).ToArray)
 
         'sender.Items.Remove(scalingfixer)
