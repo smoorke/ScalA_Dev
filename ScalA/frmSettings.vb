@@ -223,7 +223,7 @@ Public NotInheritable Class FrmSettings
         cmbQLScaling.SelectedIndex = My.Settings.QLScale
         txtCustomQLScale.Text = If(My.Settings.QLScale > 0, $"{My.Settings.QLScale:0.00}", "")
         If My.Settings.QLScale = 4 Then txtCustomQLScale.Text = $"{My.Settings.customQLScale:0.00#}"
-        txtCustomQLScale.Enabled = cmbQLScaling.SelectedIndex = 3
+        txtCustomQLScale.Enabled = cmbQLScaling.SelectedIndex = 4
 
         Me.TopMost = True ' My.Settings.topmost
     End Sub
@@ -487,6 +487,12 @@ Public NotInheritable Class FrmSettings
             FrmMain.cmbResolution.SelectedIndex = 0
         End If
 
+        My.Settings.QLScale = cmbQLScaling.SelectedIndex
+        Dim parsedScale As Single
+        If Single.TryParse(txtCustomQLScale.Text, parsedScale) Then
+            My.Settings.customQLScale = parsedScale
+        End If
+
         If My.Settings.links <> txtQuickLaunchPath.Text Then
             If Not FileIO.FileSystem.DirectoryExists(txtQuickLaunchPath.Text) Then
                 CustomMessageBox.Show(Me, $"Directory {txtQuickLaunchPath.Text} does not exist!", "Error")
@@ -660,16 +666,16 @@ Public NotInheritable Class FrmSettings
             My.Settings.QLResolveLnk = ChkQLResolveLnk.Checked
             Task.Run(Sub()
                          Dim count As Integer = 0
-                         For Each it As String In FrmMain.iconCache.Keys.Where(Function(i) i.EndsWith(".lnk"))
+                         For Each it As String In FrmMain.iconCache.Keys.Concat(FrmMain.bigIconCache.Keys).Where(Function(i) i.EndsWith(".lnk"))
                              'Dim oLink As Object = CreateObject("WScript.Shell").CreateShortcut(it) 'this is very slow. hence it is run in a task
                              'Dim target As String = oLink.TargetPath
                              Dim target As String = New ShellLinkInfo(it).TargetPath 'this is faster. still opting to using task tho
                              If IO.Directory.Exists(target) Then
-                                 If FrmMain.iconCache.TryRemove(it, Nothing) Then
+                                 If FrmMain.iconCache.TryRemove(it, Nothing) OrElse FrmMain.bigIconCache.TryRemove(it, Nothing) Then
                                      count += 1
                                  End If
-                                 For Each t As String In FrmMain.iconCache.Keys.Where(Function(l) l.StartsWith(target))
-                                     If FrmMain.iconCache.TryRemove(t, Nothing) Then
+                                 For Each t As String In FrmMain.iconCache.Keys.Concat(FrmMain.bigIconCache.Keys).Where(Function(l) l.StartsWith(target))
+                                     If FrmMain.iconCache.TryRemove(t, Nothing) OrElse FrmMain.bigIconCache.TryRemove(it, Nothing) Then
                                          count += 1
                                      End If
                                  Next

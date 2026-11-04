@@ -1175,9 +1175,9 @@ Namespace My
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("1.25")>  _
-        Public Property customQLScale() As Decimal
+        Public Property customQLScale() As Single
             Get
-                Return CType(Me("customQLScale"),Decimal)
+                Return CType(Me("customQLScale"),Single)
             End Get
             Set
                 Me("customQLScale") = value

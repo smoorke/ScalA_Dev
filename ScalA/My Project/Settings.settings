@@ -298,7 +298,7 @@
     <Setting Name="QLScale" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="customQLScale" Type="System.Decimal" Scope="User">
+    <Setting Name="customQLScale" Type="System.Single" Scope="User">
       <Value Profile="(Default)">1.25</Value>
     </Setting>
   </Settings>
