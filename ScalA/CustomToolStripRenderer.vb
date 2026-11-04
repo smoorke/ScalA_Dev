@@ -15,6 +15,49 @@
             animTimer.Start()
         End If
     End Sub
+    Private Shared Function EvenInt(dbl As Single) As Integer
+        Dim int As Integer = CInt(dbl)
+        If int Mod 2 <> 0 Then int -= 1
+        Return int
+    End Function
+    Private Shared TriangleDict As New Concurrent.ConcurrentDictionary(Of Single, Bitmap)
+    Private Shared Function GetTriangle(scaling As Single) As Bitmap
+#If DEBUG Then
+        Dim col = Color.DarkGray
+#Else
+        dim col = color.Black
+#End If
+
+        Return TriangleDict.GetOrAdd(scaling,
+                    Function()
+
+                        Dim width = EvenInt(3 + scaling)
+                        Dim height = width * 2 - 1
+
+                        ' Height is proportional to the length
+                        Dim bmp As New Bitmap(width, height)
+
+                        Debug.Print($"Triangle {scaling} size {bmp.Size}")
+
+                        ' Loop horizontally from the left base to the right tip
+                        For x As Integer = 0 To width - 1
+                            For y As Integer = x To height - x - 1
+                                bmp.SetPixel(x, y, col)
+                            Next
+                        Next
+                        Return bmp
+                    End Function)
+    End Function
+    Protected Overrides Sub OnRenderArrow(e As ToolStripArrowRenderEventArgs)
+
+        Dim tri = GetTriangle(ScaledScrollable.Scaling)
+        e.Graphics.DrawImageUnscaled(tri, New Rectangle(e.ArrowRectangle.Right - tri.Width - 3, (e.ArrowRectangle.Height + 1.5) \ 2 - tri.Height \ 2, tri.Width, tri.Height))
+
+#If DEBUG Then
+        MyBase.OnRenderArrow(e)
+#End If
+
+    End Sub
 
     Private Sub AnimTimer_Tick(sender As Object, e As EventArgs)
         If _menustrip?.Visible Then InvalidateCheckedItems(_menustrip.Items)

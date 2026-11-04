@@ -6,7 +6,7 @@ Public Class ScaledScrollable
     Shared fontCache As New Concurrent.ConcurrentDictionary(Of Single, Font)
     Public Shared ReadOnly Property GetFont(scale As Single) As Font
         Get
-            Return fontCache.GetOrAdd(scale, Function(s) New Font(fontName, 11 * s, FontStyle.Regular, GraphicsUnit.Pixel))
+            Return fontCache.GetOrAdd(scale, Function(s) New Font(fontName, 12 * s, FontStyle.Regular, GraphicsUnit.Pixel))
         End Get
     End Property
 
