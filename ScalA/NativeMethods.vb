@@ -20,6 +20,14 @@ Module NativeMethods
     Public Const FILE_ATTRIBUTE_NORMAL As UInteger = &H80
     Public Const FILE_ATTRIBUTE_DIRECTORY As UInteger = &H10
 
+    Public Enum MONITOR_DPI_TYPE
+        MDT_EFFECTIVE_DPI = 0
+        MDT_ANGULAR_DPI = 1
+        MDT_RAW_DPI = 2
+        MDT_DEFAULT = MDT_EFFECTIVE_DPI
+    End Enum
+    <DllImport("shcore.dll")>
+    Public Function GetDpiForMonitor(hmonitor As IntPtr, dpiType As MONITOR_DPI_TYPE, ByRef dpiX As UInteger, ByRef dpiY As UInteger) As Integer : End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto, ExactSpelling:=True)>
     Public Function MonitorFromPoint(pt As Point, dwFlags As MONITORFLAGS) As IntPtr : End Function
 
