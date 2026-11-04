@@ -22,11 +22,8 @@
     End Function
     Private Shared TriangleDict As New Concurrent.ConcurrentDictionary(Of Single, Bitmap)
     Private Shared Function GetTriangle(scaling As Single) As Bitmap
-#If DEBUG Then
-        Dim col = Color.DarkGray
-#Else
-        dim col = color.Black
-#End If
+
+        Dim col = Color.Black
 
         Return TriangleDict.GetOrAdd(scaling,
                     Function()
@@ -49,14 +46,8 @@
                     End Function)
     End Function
     Protected Overrides Sub OnRenderArrow(e As ToolStripArrowRenderEventArgs)
-
         Dim tri = GetTriangle(ScaledScrollable.Scaling)
         e.Graphics.DrawImageUnscaled(tri, New Rectangle(e.ArrowRectangle.Right - tri.Width - 3, (e.ArrowRectangle.Height + 1.5) \ 2 - tri.Height \ 2, tri.Width, tri.Height))
-
-#If DEBUG Then
-        MyBase.OnRenderArrow(e)
-#End If
-
     End Sub
 
     Private Sub AnimTimer_Tick(sender As Object, e As EventArgs)
@@ -77,8 +68,9 @@
             Dim cycle As Single = totalPat
             Dim offset As Single = CSng((animSW.ElapsedMilliseconds \ 200) Mod cycle)
             dashedPen.DashOffset = offset * If(clipBoardInfo.Action.HasFlag(DragDropEffects.Copy), -1, 1)
-
-            e.Graphics.DrawRectangle(dashedPen, New Rectangle(3, 1, 19, 19))
+            Dim size As Integer = Math.Max(19, e.Item.Height - 3)
+            'Debug.Print($"rendItemCheck {size} {e.Item.Height}")
+            e.Graphics.DrawRectangle(dashedPen, New Rectangle(3, 1, size, size))
         End Using
     End Sub
 
@@ -90,7 +82,8 @@
         For Each item As ToolStripMenuItem In items.OfType(Of ToolStripMenuItem)
             ' Only invalidate checked + visible ones
             If item.Checked AndAlso item.Visible Then
-                item.Invalidate(New Rectangle(3, 1, 20, 20))
+                Dim sz = Math.Max(20, item.Size.Height - 2)
+                item.Invalidate(New Rectangle(New Point(3, 1), New Size(sz, sz)))
             End If
 
             ' Recurse visible submenus
