@@ -1436,4 +1436,9 @@ Public NotInheritable Class FrmSettings
         End If
     End Sub
 
+    Private Sub cmbQLScaling_SelectionChangeCommitted(sender As Object, e As EventArgs) Handles cmbQLScaling.SelectionChangeCommitted
+        txtCustomQLScale.Text = If(sender.SelectedIndex > 0, $"{sender.SelectedIndex:0.00}", "")
+        If sender.SelectedIndex = 4 Then txtCustomQLScale.Text = $"{My.Settings.customQLScale:0.00#}"
+        txtCustomQLScale.Enabled = cmbQLScaling.SelectedIndex = 4
+    End Sub
 End Class
