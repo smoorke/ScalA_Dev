@@ -158,25 +158,6 @@ Public Class ScaledScrollable
         Dim bottomButton As Label = labels(1)  ' Down button
 
 
-
-        If e.Delta < 0 Then
-            ' Scrolling Down: Check if the last item has scrolled up into/past the bottom viewable area
-            If lastItem.Bounds.Bottom <= sender.ClientSize.Height - bottomButton.Height Then
-                bottomButton.Enabled = False
-            Else
-                topButton.Enabled = True
-                bottomButton.Enabled = True
-            End If
-        Else
-            ' Scrolling Up: Check if the first item has scrolled down into/past the top viewable area
-            If firstItem.Bounds.Top >= topButton.Height Then
-                topButton.Enabled = False
-            Else
-                topButton.Enabled = True
-                bottomButton.Enabled = True
-            End If
-        End If
-
         If e.Delta > 0 Then
             If Not topButton.Enabled Then
                 FadeBackColor(topButton, Color.Pink, If(My.Settings.DarkMode, Color.LightGray, SystemColors.Control), 400)
@@ -199,7 +180,27 @@ Public Class ScaledScrollable
             End If
         End If
 
-        ' close dropdowns whose item are out of bounds
+        'update scrollbuttons
+
+        If e.Delta < 0 Then
+            ' Scrolling Down: Check if the last item has scrolled up into/past the bottom viewable area
+            If lastItem.Bounds.Bottom <= sender.ClientSize.Height - bottomButton.Height Then
+                bottomButton.Enabled = False
+            Else
+                topButton.Enabled = True
+                bottomButton.Enabled = True
+            End If
+        Else
+            ' Scrolling Up: Check if the first item has scrolled down into/past the top viewable area
+            If firstItem.Bounds.Top >= topButton.Height Then
+                topButton.Enabled = False
+            Else
+                topButton.Enabled = True
+                bottomButton.Enabled = True
+            End If
+        End If
+
+        ' close dropdowns whose item is out of bounds
 
         Dim CRwoBut = New Rectangle(sender.ClientRectangle.Left, sender.ClientRectangle.Top + topButton.Height, sender.ClientRectangle.Width, sender.ClientRectangle.Height - topButton.Height - bottomButton.Height)
         For Each itm As ToolStripMenuItem In sender.Items.OfType(Of ToolStripMenuItem).Where(Function(dd) dd.HasDropDown AndAlso dd.DropDown.Visible)
