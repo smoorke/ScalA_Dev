@@ -138,6 +138,9 @@ Public Class ScaledScrollable
             ScaledScrollable.ScrollDropDown(sender, e)
         End Sub
     End Class
+    Private Shared miScrollInternal As Reflection.MethodInfo = GetType(ToolStripDropDownMenu).GetMethod("ScrollInternal",
+                                                  Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.Instance, Nothing,
+                                                  New Type() {GetType(Integer)}, Nothing)
 
     Private Shared Sub ScrollDropDown(sender As ToolStripDropDown, e As MouseEventArgs)
         'this custom implementation is needed to handle a bug in base class scroll behaviour
@@ -187,37 +190,16 @@ Public Class ScaledScrollable
         End If
 
         ' Call internal scroll
-        Dim mi As Reflection.MethodInfo = GetType(ToolStripDropDownMenu).GetMethod("ScrollInternal",
-                                                  Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.Instance, Nothing,
-                                                  New Type() {GetType(Integer)}, Nothing)
 
-        If mi IsNot Nothing Then
+        If miScrollInternal IsNot Nothing Then
             If e.Delta < 0 Then
-                If bottomButton.Visible Then mi.Invoke(sender, {firstItem.Height})
+                If bottomButton.Visible Then miScrollInternal.Invoke(sender, {firstItem.Height})
             Else
-                If topButton.Visible Then mi.Invoke(sender, {-firstItem.Height})
+                If topButton.Visible Then miScrollInternal.Invoke(sender, {-firstItem.Height})
             End If
         End If
 
-        'Const WM_LBUTTONDOWN As Integer = &H201
-        'Const WM_LBUTTONUP As Integer = &H202
 
-        'Dim buttons As Label() = sender.Controls.OfType(Of Label).Where(Function(l) l.Visible).ToArray
-        'If buttons.Count <> 2 Then Exit Sub
-
-        'Dim targetButton As Label = Nothing
-        'If e.Delta > 0 Then
-        '    targetButton = buttons(0)
-        'Else
-        '    targetButton = buttons(1)
-        'End If
-
-        'If Not targetButton.Enabled Then
-        '    FadeBackColor(targetButton, Color.Pink, If(My.Settings.DarkMode, Color.LightGray, SystemColors.Control), 400)
-        'End If
-
-        'SendMessage(targetButton.Handle, WM_LBUTTONDOWN, IntPtr.Zero, IntPtr.Zero)
-        'SendMessage(targetButton.Handle, WM_LBUTTONUP, IntPtr.Zero, IntPtr.Zero)
 
     End Sub
 
