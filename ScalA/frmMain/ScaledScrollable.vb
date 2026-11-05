@@ -199,7 +199,14 @@ Public Class ScaledScrollable
             End If
         End If
 
+        ' close dropdowns whose item are out of bounds
 
+        Dim CRwoBut = New Rectangle(sender.ClientRectangle.Left, sender.ClientRectangle.Top + topButton.Height, sender.ClientRectangle.Width, sender.ClientRectangle.Height - topButton.Height - bottomButton.Height)
+        For Each itm As ToolStripMenuItem In sender.Items.OfType(Of ToolStripMenuItem).Where(Function(dd) dd.HasDropDown AndAlso dd.DropDown.Visible)
+            If Not CRwoBut.IntersectsWith(itm.Bounds) Then
+                itm.DropDown.Close()
+            End If
+        Next
 
     End Sub
 
