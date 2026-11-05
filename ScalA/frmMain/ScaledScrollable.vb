@@ -138,7 +138,7 @@ Public Class ScaledScrollable
             ScaledScrollable.ScrollDropDown(sender, e)
         End Sub
     End Class
-    Private Shared miScrollInternal As Reflection.MethodInfo = GetType(ToolStripDropDownMenu).GetMethod("ScrollInternal",
+    Private Shared ReadOnly miScrollInternal As Reflection.MethodInfo = GetType(ToolStripDropDownMenu).GetMethod("ScrollInternal",
                                                   Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.Instance, Nothing,
                                                   New Type() {GetType(Integer)}, Nothing)
 
