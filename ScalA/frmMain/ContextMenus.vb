@@ -2185,10 +2185,8 @@ Partial Public NotInheritable Class FrmMain
     Public RenameWndProcOld As IntPtr
     Public RenameWndProcDelegate As WndProcDelegate
 
-    Public Delegate Function WndProcDelegate(hWnd As IntPtr,
-                                         msg As Integer,
-                                         wParam As IntPtr,
-                                         lParam As IntPtr) As IntPtr
+    Public Delegate Function WndProcDelegate(hWnd As IntPtr, msg As Integer, wParam As IntPtr, lParam As IntPtr) As IntPtr
+
     Public Sub HookRenameDialogDpi(hWnd As IntPtr)
 
         RenameWndProcDelegate = AddressOf RenameDialogWndProc
