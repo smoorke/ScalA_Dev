@@ -2062,47 +2062,52 @@ Partial Public NotInheritable Class FrmMain
     Public renameOpen As Boolean
     Private Sub RenameMethod(Path As String, currentName As String, Optional isCreateFolder As Boolean = False)
         Dim title As String = If(isCreateFolder, "Create New folder", $"Rename {currentName}")
-        Dim EditBox As Control = Nothing
+        Dim EditBox As TextBox = Nothing
         Task.Run(action:=Async Sub()
                              Dim watch As Stopwatch = Stopwatch.StartNew()
-
                              Dim hndl As IntPtr
-                             While watch.ElapsedMilliseconds < 2000
-                                 Await Task.Delay(20)
-                                 hndl = FindWindow(ScalaClass, title)
-                                 dBug.Print($"findwindow {hndl}")
-                                 If hndl <> IntPtr.Zero Then Exit While
+                             While watch.ElapsedMilliseconds < 2000 AndAlso hndl = IntPtr.Zero
+                                 Await Task.Delay(25)
+                                 EnumThreadWindows(ScalaThreadId, Function(h, l)
+                                                                      If GetWindowClass(h) = ScalaClass AndAlso GetWindowText(h) = title Then
+                                                                          hndl = h
+                                                                          Return False
+                                                                      End If
+                                                                      Return True
+                                                                  End Function, IntPtr.Zero)
                              End While
 
                              If hndl = IntPtr.Zero Then Exit Sub
 
-                             If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
-
+                             SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                             TaskbarManager.SetApplicationIdForSpecificWindow(hndl, "ScalA")
                              SendMessage(hndl, WM_SETICON, ICON_BIG, My.Resources.moa3.Handle)
 
-                             Dim hEditBox As IntPtr
+                             Dim RenameForm As Form = Control.FromHandle(hndl)
 
-                             EnumChildWindows(hndl, Function(h, l)
-                                                        If GetWindowClass(h).Contains("EDIT") Then
-                                                            hEditBox = h
-                                                            Return False
-                                                        End If
-                                                        Return True
-                                                    End Function, IntPtr.Zero)
+                             'scaling fixes
+                             ScaleFixRenameDialog(RenameForm)
+                             HookRenameDialogDpi(hndl)
 
-                             Debug.Print($"{GetWindowClass(hEditBox)}")
+                             EditBox = RenameForm.Controls.OfType(Of TextBox).FirstOrDefault
+                             AddHandler EditBox.KeyDown, AddressOf EditBox_KeyDown
+                             AddHandler EditBox.KeyPress, AddressOf EditBox_KeyPress
+                             'AddHandler EditBox.MouseDown, AddressOf EditBox_MouseDown
 
-                             If GetWindowClass(hEditBox).Contains("EDIT") Then
-                                 EditBox = Control.FromHandle(hEditBox)
-                                 AddHandler EditBox.KeyDown, AddressOf EditBox_KeyDown
-                                 AddHandler EditBox.KeyPress, AddressOf EditBox_KeyPress
+                             ' Select only filename without extension (exclude folders, .lnk, .url)
+                             Dim isFolder As Boolean = Path.EndsWith("\")
+                             Dim ext As String = System.IO.Path.GetExtension(Path).ToLower()
+                             Dim isHiddenExt As Boolean = hideExt.Contains(ext)
+                             If Not isFolder AndAlso Not isHiddenExt AndAlso currentName.Contains(".") Then
+                                 Dim lastDot As Integer = currentName.LastIndexOf(".")
+                                 If lastDot > 0 Then
+                                     Me.Invoke(Sub() EditBox.Select(0, lastDot))
+                                     'EditBoxHelper.SetSelection(hEditBox, 0, lastDot)
+                                 End If
                              End If
 
-                             Await Task.Delay(50)
-                             Try
-                                 AppActivate(scalaPID)
-                             Catch
-                             End Try
+                             'End If
+
                              watch.Stop()
                          End Sub)
 
@@ -2145,7 +2150,119 @@ Partial Public NotInheritable Class FrmMain
             IO.Directory.Delete(Path)
         End If
     End Sub
+    Public Sub ScaleFixRenameDialog(frm As Form)
+        Me.Invoke(Sub()
+                      Dim lbl As Label = frm.Controls.OfType(Of Label).FirstOrDefault
+                      Dim ebx As TextBox = frm.Controls.OfType(Of TextBox).FirstOrDefault
+                      Dim btn As List(Of Button) = frm.Controls.OfType(Of Button).ToList
 
+                      Dim style = GetWindowLong(frm.Handle, GWL_STYLE)
+                      Dim exStyle = GetWindowLong(frm.Handle, GWL_EXSTYLE)
+
+                      Dim rc As RECT
+                      rc.left = 0
+                      rc.top = 0
+                      rc.right = 353 'todo use same method as actual inputbox to determine width/height
+                      rc.bottom = 50 + lbl.Size.Height
+
+                      Dim dpi = GetDpiForWindow(frm.Handle)
+                      Dim scale As Single = dpi / 96.0!
+
+                      AdjustWindowRectExForDpi(rc, style, False, exStyle, dpi)
+
+                      SetWindowPos(frm.Handle, IntPtr.Zero, 0, 0, rc.right - rc.left, rc.bottom - rc.top, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreZOrder)
+
+
+                      ebx.Location = New Point(ebx.Location.X, ebx.Location.Y + 12 - 12 * scale)
+                      ebx.Font = New Font(ebx.Font.FontFamily, 12 * scale, FontStyle.Regular, GraphicsUnit.Pixel)
+                      frm.Invalidate(True)
+                  End Sub)
+
+    End Sub
+    Public RenameWndProcOld As IntPtr
+    Public RenameWndProcDelegate As WndProcDelegate
+
+    Public Delegate Function WndProcDelegate(hWnd As IntPtr,
+                                         msg As Integer,
+                                         wParam As IntPtr,
+                                         lParam As IntPtr) As IntPtr
+    Public Sub HookRenameDialogDpi(hWnd As IntPtr)
+
+        RenameWndProcDelegate = AddressOf RenameDialogWndProc
+
+        RenameWndProcOld = SetWindowLongPtr(hWnd, GWL_WNDPROC, Marshal.GetFunctionPointerForDelegate(RenameWndProcDelegate))
+
+        Debug.Print($"Subclassed rename dialog {hWnd}")
+
+    End Sub
+
+    Public Function RenameDialogWndProc(hWnd As IntPtr, msg As Integer, wParam As IntPtr, lParam As IntPtr) As IntPtr
+
+        Select Case msg
+
+            Case WM_DPICHANGED
+
+                Dim newDpi As Integer = wParam.ToInt32() And &HFFFF
+                Dim scale As Single = newDpi / 96.0!
+
+                Dim frm As Form = Control.FromHandle(hWnd)
+                Dim ebx As TextBox = frm.Controls.OfType(Of TextBox).FirstOrDefault
+                Me.Invoke(Sub()
+                              Debug.Print($"ebx.location {ebx.Location}")
+                              ebx.Location = New Point(ebx.Location.X, 102 - 12 * scale)
+                              ebx.Font = New Font(ebx.Font.FontFamily, 12 * scale, FontStyle.Regular, GraphicsUnit.Pixel)
+                              frm.Invalidate(True)
+                          End Sub)
+            Case WM_GETDPISCALEDSIZE
+                Dim newDpi As Integer = wParam.ToInt32() And &HFFFF
+
+                Debug.Print($"WM_GETDPISCALEDSIZE {newDpi}")
+
+                Dim clientRect As RECT
+                GetClientRect(hWnd, clientRect)
+
+                Dim clientW = clientRect.right - clientRect.left
+                Dim clientH = clientRect.bottom - clientRect.top
+
+                Debug.Print($"Current client {clientW}x{clientH}")
+
+                Dim rc As New RECT
+                rc.left = 0
+                rc.top = 0
+                rc.right = clientW
+                rc.bottom = clientH
+
+                Dim style = GetWindowLong(hWnd, GWL_STYLE)
+                Dim exStyle = GetWindowLong(hWnd, GWL_EXSTYLE)
+
+                AdjustWindowRectExForDpi(rc, style, False, exStyle, newDpi)
+
+                Dim newWindowW = rc.right - rc.left
+                Dim newWindowH = rc.bottom - rc.top
+
+                Debug.Print($"Scaled window {newWindowW}x{newWindowH}")
+
+                Marshal.StructureToPtr(New Size(newWindowW, newWindowH), lParam, False)
+
+                Return 1
+
+            Case WM_NCDESTROY
+
+                Debug.Print("Rename dialog destroy")
+
+                If RenameWndProcOld <> IntPtr.Zero Then
+
+                    SetWindowLongPtr(hWnd, GWL_WNDPROC, RenameWndProcOld)
+
+                    RenameWndProcOld = IntPtr.Zero
+
+                End If
+
+        End Select
+
+        Return CallWindowProc(RenameWndProcOld, hWnd, msg, wParam, lParam)
+
+    End Function
     Dim tt As ToolTip = Nothing
 
     Private Sub EditBox_KeyDown(sender As Object, e As KeyEventArgs)

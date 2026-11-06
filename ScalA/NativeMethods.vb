@@ -1243,8 +1243,8 @@ Module NativeMethods
     Public Const ICON_SMALL As Integer = 0
     Public Const ICON_BIG As Integer = 1
 
+    Public Const WM_NCDESTROY As Integer = &H82
     Public Const WM_NCCALCSIZE As Integer = &H83
-
 
     Public Const WM_NCHITTEST As Integer = &H84
     Public Const WM_NCACTIVATE As Integer = &H86
@@ -1359,13 +1359,14 @@ Module NativeMethods
                                      dwAdditionalFlags As UInteger) As IntPtr
     End Function
     <DllImport("kernel32.dll", CharSet:=CharSet.Unicode, SetLastError:=True)>
-    Public Function FindFirstFileW(lpFileName As String, ByRef lpFindFileData As WIN32_FIND_DATAW) As IntPtr
-    End Function
+    Public Function FindFirstFileW(lpFileName As String, ByRef lpFindFileData As WIN32_FIND_DATAW) As IntPtr : End Function
 
     <DllImport("kernel32.dll", CharSet:=CharSet.Unicode, SetLastError:=True)>
-    Public Function FindNextFileW(hFindFile As IntPtr, ByRef lpFindFileData As WIN32_FIND_DATAW) As Boolean
-    End Function
-
+    Public Function FindNextFileW(hFindFile As IntPtr, ByRef lpFindFileData As WIN32_FIND_DATAW) As Boolean : End Function
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function AdjustWindowRectExForDpi(ByRef lpRect As RECT, dwStyle As Integer, bMenu As Boolean, dwExStyle As Integer, dpi As Integer) As Boolean : End Function
+    <DllImport("user32.dll")>
+    Public Function GetDpiForWindow(hwnd As IntPtr) As Integer : End Function
     <DllImport("kernel32.dll", SetLastError:=True)>
     Public Function FindClose(hFindFile As IntPtr) As Boolean
     End Function

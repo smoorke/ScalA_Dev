@@ -179,6 +179,7 @@
     <Compile Include="Settings.vb" />
     <Compile Include="ShellLinkInfo.vb" />
     <Compile Include="SystemUtitlity.vb" />
+    <Compile Include="TaskbarInterop.vb" />
     <Compile Include="UpdateDialog.Designer.vb">
       <DependentUpon>UpdateDialog.vb</DependentUpon>
     </Compile>
