@@ -6,7 +6,7 @@ Public Class ScaledScrollable
     Shared fontCache As New Concurrent.ConcurrentDictionary(Of Single, Font)
     Public Shared ReadOnly Property GetFont(scale As Single) As Font
         Get
-            Return fontCache.GetOrAdd(scale, Function(s) New Font(fontName, 11 * s + 1, FontStyle.Regular, GraphicsUnit.Pixel))
+            Return fontCache.GetOrAdd(scale, Function(s) New Font(fontName, Math.Max(1, 12 * s), FontStyle.Regular, GraphicsUnit.Pixel))
         End Get
     End Property
 
@@ -22,14 +22,14 @@ Public Class ScaledScrollable
     Public Class ScrollButtonHook : Inherits NativeWindow
 
         Private _down As Boolean = False
-        Private _ik As ToolStripDropDown = Nothing
         Private _but As Label = Nothing
-        Private WithEvents repeatTimer As New Timer()
+        Private _parent As Control
+        Private repeatTimer As New Timer()
         Private isFirstTick As Boolean = True
 
-        Sub New(ik As ToolStripDropDown, but As Label, up As Boolean)
-            _ik = ik
+        Sub New(but As Label, up As Boolean)
             _but = but
+            _parent = but.Parent
             _down = Not up
             AddHandler repeatTimer.Tick, AddressOf OnRepeatTick
         End Sub
@@ -46,15 +46,13 @@ Public Class ScaledScrollable
                    (GetAsyncKeyState(Keys.RButton) And &H8000S) <> 0 OrElse
                    (GetAsyncKeyState(Keys.XButton1) And &H8000S) <> 0 OrElse
                    (GetAsyncKeyState(Keys.XButton2) And &H8000S) <> 0 Then
-                ScrollDropDown(_ik, New MouseEventArgs(MouseButtons.None, 0, 0, 0, If(_down, -1, 1)))
+                ScrollDropDown(_parent, New MouseEventArgs(MouseButtons.None, 0, 0, 0, If(_down, -1, 1)))
             Else
                 repeatTimer.Stop()
             End If
         End Sub
 
         Protected Overrides Sub WndProc(ByRef m As Message)
-            Const WM_LBUTTONDOWN As Integer = &H201
-            Const WM_LBUTTONUP As Integer = &H202
             Const WM_CAPTURECHANGED As Integer = &H217
 
             Select Case m.Msg
@@ -64,9 +62,9 @@ Public Class ScaledScrollable
                     repeatTimer.Start()
 
                     ' Fire the action immediately on press down
-                    If _ik IsNot Nothing Then
-                        ScrollDropDown(_ik, New MouseEventArgs(MouseButtons.None, 0, 0, 0, If(_down, -1, 1)))
-                    End If
+
+                    ScrollDropDown(_parent, New MouseEventArgs(MouseButtons.None, 0, 0, 0, If(_down, -1, 1)))
+
                     Return ' Block default WinForms click action completely
 
                 Case WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP, WM_CAPTURECHANGED
@@ -112,7 +110,7 @@ Public Class ScaledScrollable
                 itm.BackColor = If(My.Settings.DarkMode, Color.LightGray, SystemColors.Control)
                 itm.Image = GetTriangle(itm Is first, Scaling)
 
-                Dim hook As New ScrollButtonHook(Me, itm, itm Is first)
+                Dim hook As New ScrollButtonHook(itm, itm Is first)
                 hook.AssignHandle(itm.Handle)
                 activeHooks.Add(hook)
             Next
@@ -129,15 +127,15 @@ Public Class ScaledScrollable
         End Property
 
         Protected Overrides Sub Dispose(disposing As Boolean)
-            For Each lbl As Label In Me.Controls.OfType(Of Label)
-                fadeSwDict.TryRemove(lbl.Handle, Nothing)
-            Next
+            fadeSwDict.Clear()
             MyBase.Dispose(disposing)
         End Sub
         Public Sub ContextMenuStrip_MouseWheel(sender As ToolStripDropDown, e As MouseEventArgs) Handles Me.MouseWheel
             ScaledScrollable.ScrollDropDown(sender, e)
         End Sub
     End Class
+
+
     Private Shared ReadOnly miScrollInternal As Reflection.MethodInfo = GetType(ToolStripDropDownMenu).GetMethod("ScrollInternal",
                                                   Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.Instance, Nothing,
                                                   New Type() {GetType(Integer)}, Nothing)
@@ -316,7 +314,7 @@ Public Class ScaledScrollable
                     itm.BackColor = If(My.Settings.DarkMode, Color.LightGray, SystemColors.Control)
                     itm.Image = GetTriangle(itm Is first, Scaling)
 
-                    Dim hook As New ScrollButtonHook(Me, itm, itm Is first)
+                    Dim hook As New ScrollButtonHook(itm, itm Is first)
                     hook.AssignHandle(itm.Handle)
                     activeHooks.Add(hook)
                 Next
