@@ -2079,11 +2079,14 @@ Partial Public NotInheritable Class FrmMain
 
                              If hndl = IntPtr.Zero Then Exit Sub
 
-                             SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                             If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
                              TaskbarManager.SetApplicationIdForSpecificWindow(hndl, "ScalA")
-                             SendMessage(hndl, WM_SETICON, ICON_BIG, My.Resources.moa3.Handle)
 
                              Dim RenameForm As Form = Control.FromHandle(hndl)
+
+                             Me.Invoke(Sub() RenameForm.Icon = My.Resources.moa3)
+
+                             'SendMessage(hndl, WM_SETICON, ICON_BIG, My.Resources.moa3.Handle) 'todo: replace with target icon
 
                              'scaling fixes
                              ScaleFixRenameDialog(RenameForm)
@@ -2316,7 +2319,7 @@ Partial Public NotInheritable Class FrmMain
                 ttCloseTask = Task.Run(action:=Async Sub()
                                                    Do
                                                        Await Task.Delay(33)
-                                                       Debug.Print($"{GetAsyncKeyState(&H1)}")
+                                                       'Debug.Print($"{GetAsyncKeyState(&H1)}")
                                                        If WindowFromPoint(MousePosition) <> eboxHandle Then
                                                            If (GetAsyncKeyState(&H1) And &H8000) <> 0 Then Exit Do
                                                            If (GetAsyncKeyState(&H2) And &H8000) <> 0 Then Exit Do
