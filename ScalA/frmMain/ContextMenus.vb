@@ -1572,11 +1572,9 @@ Partial Public NotInheritable Class FrmMain
 
     Public Sub SetImageWithoutLayout(it As ToolStripItem, img As Image)
 
-        Dim store = PropertiesProperty.GetValue(it)
+        PropertyStoreSetObject.Invoke(PropertiesProperty.GetValue(it), New Object() {PropImageKey, img})
 
-        PropertyStoreSetObject.Invoke(store, New Object() {PropImageKey, img})
-
-        it.Invalidate()
+        it.Invalidate(New Rectangle(New Point, New Size(it.Height, it.Height)))
 
     End Sub
     Public Sub CloseOtherDropDowns(items As ToolStripItemCollection, Optional keep As HashSet(Of ToolStripMenuItem) = Nothing)
