@@ -224,8 +224,48 @@ Module dBug
         End If
     End Sub
 
+    Public Sub InspectToolStripItemImage()
+
+        Dim f = GetType(ToolStripItem).GetField(
+        "PropImage",
+        Reflection.BindingFlags.Static Or
+        Reflection.BindingFlags.NonPublic)
+
+        Debug.Print("Field found: " & (f IsNot Nothing).ToString())
+
+        If f IsNot Nothing Then
+            Debug.Print("Type: " & f.FieldType.FullName)
+            Debug.Print("Value: " & f.GetValue(Nothing).ToString())
+        End If
 
 
+    End Sub
+    Public Sub InspectPropertyStore(it As ToolStripItem)
+
+        Dim f = GetType(ToolStripItem).GetProperty(
+        "Properties",
+        Reflection.BindingFlags.Instance Or
+        Reflection.BindingFlags.NonPublic)
+
+        Debug.Print("Property found: " & (f IsNot Nothing).ToString())
+
+        If f Is Nothing Then Return
+
+        Dim store = f.GetValue(it)
+
+        Debug.Print("Store type: " & store.GetType().FullName)
+
+        For Each mi In store.GetType().GetMethods(
+        Reflection.BindingFlags.Instance Or
+        Reflection.BindingFlags.Public Or
+        Reflection.BindingFlags.NonPublic)
+
+            If mi.Name = "SetObject" Then
+                Debug.Print(mi.ToString())
+            End If
+        Next
+
+    End Sub
     Friend Sub dumpItemInfo(sender As MenuItem, e As EventArgs)
         Debug.Print($"dumpItemInfo {sender.Parent.Tag}")
         Debug.Print($"{sender.Parent.Tag.tag.GetType}")

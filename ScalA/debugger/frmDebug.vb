@@ -295,7 +295,9 @@ Public Class frmDebug
 
         ' Debug.Print("DWM result: " & result.ToString())
 
-        My.Settings.hideMessage = False
+        'My.Settings.hideMessage = False
+
+        InspectPropertyStore(FrmMain.cmsQuickLaunch.Items(0))
 
         'FrmMain.AltPP?.DebugListAllArgs()
         'dBug.Print("linkwatchers")

@@ -1181,7 +1181,7 @@ Partial Public NotInheritable Class FrmMain
                                                  ico = If(ScaledScrollable.Scaling < 1.25!, folderIconWithOverlay, bigFolderIconWithOverlay)
                                              Else
                                                  If Not String.IsNullOrEmpty(qli.target) AndAlso
-                                                    Not CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, qli.target, 25) Then
+                                                    Not CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, qli.target, 50) Then
                                                      ico = ico.addOverlay(My.Resources.WarningOverlay, True)
                                                  End If
                                              End If
@@ -1231,7 +1231,7 @@ Partial Public NotInheritable Class FrmMain
                                      icn = EmptyIcon
                                  Else
                                      If Not String.IsNullOrEmpty(qli.target) AndAlso
-                                        Not CallAsTaskWithTimeout(AddressOf IO.File.Exists, qli.target, 25) Then
+                                        Not CallAsTaskWithTimeout(AddressOf IO.File.Exists, qli.target, 50) Then
                                          icn = icn.addOverlay(My.Resources.WarningOverlay, True)
                                      End If
                                  End If
@@ -1527,7 +1527,10 @@ Partial Public NotInheritable Class FrmMain
 
     Private Sub DeferredIconLoading(Dirs As IEnumerable(Of ToolStripItem), Files As IEnumerable(Of ToolStripItem), ct As Threading.CancellationToken)
         Task.Run(Sub()
-                     Dim items = Files.Concat(Dirs)
+                     Dim items = Files.Concat(Dirs).ToList
+                     'Dim Owner = items.FirstOrDefault(Function(i) i.Owner IsNot Nothing)?.Owner
+                     'Dim dd As ToolStripDropDownMenu = TryCast(If(Owner, cmsQuickLaunch), ToolStripDropDownMenu)
+
                      Try
                          Dim opts As New ParallelOptions With {.CancellationToken = ct, .MaxDegreeOfParallelism = Math.Max(1, usableCores - 2)}
                          Parallel.ForEach(items, opts,
@@ -1538,16 +1541,37 @@ Partial Public NotInheritable Class FrmMain
                                                 Not CallAsTaskWithTimeout(Function(p) IO.File.Exists(p) OrElse IO.Directory.Exists(p), qli.target, 500) Then
                                                   ico = ico.addOverlay(My.Resources.WarningOverlay, True)
                                               End If
-                                              Me.Invoke(Sub()
-                                                            it.Image = ico
-                                                        End Sub)
+                                              'results.Add(New KeyValuePair(Of ToolStripMenuItem, Image)(it, ico))
+                                              Me.BeginInvoke(Sub()
+                                                                 SetImageWithoutLayout(it, ico)
+                                                             End Sub)
                                           End Sub)
+
                      Catch ex As System.OperationCanceledException
                          dBug.Print("deferrediconloading operationCanceled")
                      Catch
                          dBug.Print("deferredIconLoading general exception")
                      End Try
                  End Sub, ct)
+    End Sub
+    Private PropImageField As Reflection.FieldInfo = GetType(ToolStripItem).GetField("PropImage", Reflection.BindingFlags.Static Or Reflection.BindingFlags.NonPublic)
+
+    Private PropertiesProperty As Reflection.PropertyInfo = GetType(ToolStripItem).GetProperty("Properties", Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic)
+
+    Private PropertyStoreSetObject As Reflection.MethodInfo =
+             GetType(ToolStripItem).Assembly.GetType("System.Windows.Forms.PropertyStore").GetMethod("SetObject", Reflection.BindingFlags.Instance Or Reflection.BindingFlags.Public Or Reflection.BindingFlags.NonPublic,
+                                                                                                         Nothing, New Type() {GetType(Integer), GetType(Object)}, Nothing)
+
+    Private PropImageKey As Integer = CInt(PropImageField.GetValue(Nothing))
+
+    Public Sub SetImageWithoutLayout(it As ToolStripItem, img As Image)
+
+        Dim store = PropertiesProperty.GetValue(it)
+
+        PropertyStoreSetObject.Invoke(store, New Object() {PropImageKey, img})
+
+        it.Invalidate()
+
     End Sub
     Public Sub CloseOtherDropDowns(items As ToolStripItemCollection, Optional keep As HashSet(Of ToolStripMenuItem) = Nothing)
         If keep Is Nothing Then keep = New HashSet(Of ToolStripMenuItem)
@@ -2089,8 +2113,11 @@ Partial Public NotInheritable Class FrmMain
                              'SendMessage(hndl, WM_SETICON, ICON_BIG, My.Resources.moa3.Handle) 'todo: replace with target icon
 
                              'scaling fixes
-                             ScaleFixRenameDialog(RenameForm)
-                             HookRenameDialogDpi(hndl)
+                             If Environment.OSVersion.Version.Major = 10 AndAlso Environment.OSVersion.Version.Build >= 22000 Then
+                                 'note version check here might need adjustment. win8.0, 8.1, vista, 10 need testing. 7 ok with bypass
+                                 ScaleFixRenameDialog(RenameForm)
+                                 HookRenameDialogDpi(hndl)
+                             End If
 
                              EditBox = RenameForm.Controls.OfType(Of TextBox).FirstOrDefault
                              AddHandler EditBox.KeyDown, AddressOf EditBox_KeyDown
@@ -2154,7 +2181,7 @@ Partial Public NotInheritable Class FrmMain
         End If
     End Sub
     Public Sub ScaleFixRenameDialog(frm As Form)
-        Me.Invoke(Sub()
+        Me.Invoke(Sub() 'todo: this crashes on windows7 (getdpiforwindow and adjustwindowrectexfordpi not supported?)
                       Dim lbl As Label = frm.Controls.OfType(Of Label).FirstOrDefault
                       Dim ebx As TextBox = frm.Controls.OfType(Of TextBox).FirstOrDefault
                       Dim btn As List(Of Button) = frm.Controls.OfType(Of Button).ToList
@@ -2168,10 +2195,10 @@ Partial Public NotInheritable Class FrmMain
                       rc.right = 353 'todo use same method as actual inputbox to determine width/height
                       rc.bottom = 50 + lbl.Size.Height
 
-                      Dim dpi = GetDpiForWindow(frm.Handle)
+                      Dim dpi = GetDpiForWindowSafe(frm.Handle)
                       Dim scale As Single = dpi / 96.0!
 
-                      AdjustWindowRectExForDpi(rc, style, False, exStyle, dpi)
+                      AdjustWindowRectExForDpiSafe(rc, style, False, exStyle, dpi)
 
                       SetWindowPos(frm.Handle, IntPtr.Zero, 0, 0, rc.right - rc.left, rc.bottom - rc.top, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreZOrder)
 
@@ -2319,11 +2346,11 @@ Partial Public NotInheritable Class FrmMain
                                                        Await Task.Delay(33)
                                                        'Debug.Print($"{GetAsyncKeyState(&H1)}")
                                                        If WindowFromPoint(MousePosition) <> eboxHandle Then
-                                                           If (GetAsyncKeyState(&H1) And &H8000) <> 0 Then Exit Do
-                                                           If (GetAsyncKeyState(&H2) And &H8000) <> 0 Then Exit Do
-                                                           If (GetAsyncKeyState(&H4) And &H8000) <> 0 Then Exit Do
-                                                           If (GetAsyncKeyState(&H5) And &H8000) <> 0 Then Exit Do
-                                                           If (GetAsyncKeyState(&H6) And &H8000) <> 0 Then Exit Do
+                                                           If (GetAsyncKeyState(Keys.LButton) And &H8000) <> 0 Then Exit Do
+                                                           If (GetAsyncKeyState(Keys.RButton) And &H8000) <> 0 Then Exit Do
+                                                           If (GetAsyncKeyState(Keys.MButton) And &H8000) <> 0 Then Exit Do
+                                                           If (GetAsyncKeyState(Keys.XButton1) And &H8000) <> 0 Then Exit Do
+                                                           If (GetAsyncKeyState(Keys.XButton2) And &H8000) <> 0 Then Exit Do
                                                        End If
                                                    Loop While ttCloseSw.ElapsedMilliseconds <= 10000
                                                    Me.Invoke(Sub()
