@@ -331,6 +331,14 @@ Public Class ScaledScrollable
 
         End Sub
 
+        Protected Overrides Sub OnMouseDown(mea As MouseEventArgs)
+            MyBase.OnMouseDown(mea)
+            Dim item As ToolStripItem = Me.GetItemAt(mea.Location)
+            If Not item.Enabled AndAlso item.Text = "(Empty)" Then
+                Debug.Print($"Empty Item Mousedown {item}")
+            End If
+        End Sub
+
         Public Sub ToolStripDropDownMenu_MouseWheel(sender As ToolStripDropDown, e As MouseEventArgs) Handles Me.MouseWheel
             ScaledScrollable.ScrollDropDown(sender, e)
         End Sub
