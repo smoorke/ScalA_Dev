@@ -1182,7 +1182,7 @@ Partial Public NotInheritable Class FrmMain
                                              Else
                                                  If Not String.IsNullOrEmpty(qli.target) AndAlso
                                                     Not CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, qli.target, 50) Then
-                                                     ico = ico.addOverlay(My.Resources.WarningOverlay, True)
+                                                     ico = ico.addOverlay(My.Resources.WarningOverlay, True) '.addOverlay(My.Resources.shortcutOverlay, True)
                                                  End If
                                              End If
 
@@ -1530,7 +1530,6 @@ Partial Public NotInheritable Class FrmMain
                      Dim items = Files.Concat(Dirs).ToList
                      'Dim Owner = items.FirstOrDefault(Function(i) i.Owner IsNot Nothing)?.Owner
                      'Dim dd As ToolStripDropDownMenu = TryCast(If(Owner, cmsQuickLaunch), ToolStripDropDownMenu)
-
                      Try
                          Dim opts As New ParallelOptions With {.CancellationToken = ct, .MaxDegreeOfParallelism = Math.Max(1, usableCores - 2)}
                          Parallel.ForEach(items, opts,
@@ -1540,11 +1539,16 @@ Partial Public NotInheritable Class FrmMain
                                               If qli.path.EndsWith(".lnk") AndAlso Not String.IsNullOrEmpty(qli.target) AndAlso
                                                 Not CallAsTaskWithTimeout(Function(p) IO.File.Exists(p) OrElse IO.Directory.Exists(p), qli.target, 500) Then
                                                   ico = ico.addOverlay(My.Resources.WarningOverlay, True)
+                                                  If My.Settings.QLResolveLnk AndAlso qli.pointsToDir Then ico = ico.addOverlay(My.Resources.shortcutOverlay, True)
                                               End If
                                               'results.Add(New KeyValuePair(Of ToolStripMenuItem, Image)(it, ico))
-                                              Me.BeginInvoke(Sub()
-                                                                 SetImageWithoutLayout(it, ico)
-                                                             End Sub)
+                                              If Not ct.IsCancellationRequested Then
+                                                  Me.BeginInvoke(Sub()
+                                                                     If Not IsDisposed AndAlso Not it.IsDisposed AndAlso Not ct.IsCancellationRequested Then
+                                                                         SetImageWithoutLayout(it, ico)
+                                                                     End If
+                                                                 End Sub)
+                                              End If
                                           End Sub)
 
                      Catch ex As System.OperationCanceledException
@@ -1554,7 +1558,9 @@ Partial Public NotInheritable Class FrmMain
                      End Try
                  End Sub, ct)
     End Sub
-    Private PropImageField As Reflection.FieldInfo = GetType(ToolStripItem).GetField("PropImage", Reflection.BindingFlags.Static Or Reflection.BindingFlags.NonPublic)
+
+
+    ' Private PropImageField As Reflection.FieldInfo = GetType(ToolStripItem).GetField("PropImage", Reflection.BindingFlags.Static Or Reflection.BindingFlags.NonPublic)
 
     Private PropertiesProperty As Reflection.PropertyInfo = GetType(ToolStripItem).GetProperty("Properties", Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic)
 
@@ -1562,7 +1568,7 @@ Partial Public NotInheritable Class FrmMain
              GetType(ToolStripItem).Assembly.GetType("System.Windows.Forms.PropertyStore").GetMethod("SetObject", Reflection.BindingFlags.Instance Or Reflection.BindingFlags.Public Or Reflection.BindingFlags.NonPublic,
                                                                                                          Nothing, New Type() {GetType(Integer), GetType(Object)}, Nothing)
 
-    Private PropImageKey As Integer = CInt(PropImageField.GetValue(Nothing))
+    Private PropImageKey As Integer = GetType(ToolStripItem).GetField("PropImage", Reflection.BindingFlags.Static Or Reflection.BindingFlags.NonPublic).GetValue(Nothing)
 
     Public Sub SetImageWithoutLayout(it As ToolStripItem, img As Image)
 
