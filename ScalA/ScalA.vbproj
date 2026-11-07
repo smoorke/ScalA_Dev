@@ -116,6 +116,7 @@
     </Compile>
     <Compile Include="frmMain\ScaledScrollable.vb" />
     <Compile Include="FsWatcher.vb" />
+    <Compile Include="GetDpiFroMonitorSafe.vb" />
     <Compile Include="KeyboardHook.vb" />
     <Compile Include="CustomTooltip.vb" />
     <Compile Include="MRU.vb" />

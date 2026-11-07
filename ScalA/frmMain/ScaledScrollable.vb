@@ -91,9 +91,11 @@ Public Class ScaledScrollable
 
 
         Protected Overrides Sub OnOpening(e As System.ComponentModel.CancelEventArgs)
-            Dim dpi As UInteger = 96
-            GetDpiForMonitor(MonitorFromPoint(Cursor.Position, 2), 0, dpi, dpi)
-            Scaling = CSng(dpi) / 96.0!
+            If My.Settings.QLScale = 0 Then
+                Dim dpi As UInteger = 96
+                GetDpiForMonitorSafe(MonitorFromPoint(Cursor.Position, 2), 0, dpi, dpi)
+                Scaling = CSng(dpi) / 96.0!
+            End If
             Me.Font = GetFont(Scaling)
             Me.ImageScalingSize = New Size(CInt(16 * Scaling), CInt(16 * Scaling))
 
@@ -279,6 +281,11 @@ Public Class ScaledScrollable
                 Exit Sub 'fix dropdown shifting back to top on overflow
             End If
             MyBase.OnMouseEnter(e)
+        End Sub
+
+        Protected Overrides Sub OnMousedown(e As MouseEventArgs)
+            MyBase.OnMouseDown(e)
+            Me.Select()
         End Sub
 
         Protected Overrides Function CreateDefaultDropDown() As ToolStripDropDown

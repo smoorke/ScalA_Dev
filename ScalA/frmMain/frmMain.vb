@@ -398,6 +398,11 @@ Partial Public NotInheritable Class FrmMain
             End
         End If
 
+        If Environment.OSVersion.Version.Major < 10 AndAlso Environment.OSVersion.Version.Build < 22000 Then
+            Me.FormBorderStyle = FormBorderStyle.None
+            ScalaHandle = Me.Handle
+        End If
+
 
         setScalAPriority(My.Settings.Priority)
 
@@ -2120,6 +2125,10 @@ Partial Public NotInheritable Class FrmMain
     End Sub
 
     Private Sub CboAlt_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboAlt.SelectedIndexChanged
+
+    End Sub
+
+    Private Sub cboAlt_MouseWheel(sender As Object, e As MouseEventArgs) Handles cboAlt.MouseWheel
 
     End Sub
 End Class

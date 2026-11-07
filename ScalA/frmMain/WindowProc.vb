@@ -175,7 +175,10 @@ Partial NotInheritable Class FrmMain
                 dBug.Print("WM_QUERYOPEN")
                 'Attach(AltPP)
             Case WM_ERASEBKGND
-
+                'Me.Refresh()
+            Case WM_NCPAINT '= &H85
+                'm.Result = New IntPtr(1)
+                'Return
             Case WM_MOVE
                 'dBug.print($"WM_MOVE {Me.WindowState}")
                 'FrmBehind.Location = New LParamMap(m.LParam)
@@ -386,6 +389,7 @@ Partial NotInheritable Class FrmMain
                 End If
                 Me.Invalidate() 'fix transparency on caption buttons when restore from min
             Case WM_GETDPISCALEDSIZE
+                Debug.Print($"WM_GETDIPSCALEDSIZE {Marshal.PtrToStructure(Of Size)(m.LParam)}")
                 m.Result = 1
                 Return
             Case WM_NCCALCSIZE
@@ -399,12 +403,12 @@ Partial NotInheritable Class FrmMain
                         params.rgrc(0).right -= 1
                         params.rgrc(0).bottom -= 0
                     Else
-
+                        dBug.Print("WM_NCCalc noroundedcorners", 1)
                     End If
 
                     Marshal.StructureToPtr(params, m.LParam, False)
 
-                    m.Result = 0
+                    m.Result = IntPtr.Zero
                     Return
                 End If
             Case WM_STYLECHANGING '&h7C
@@ -574,6 +578,13 @@ Partial NotInheritable Class FrmMain
                 UpdateWindow(Me.Handle)
             Case WM_NCACTIVATE
                 dBug.Print($"WM_NCACTIVATE W:{m.WParam} L:{m.LParam} BisAct {BorderIsActive} suppress {suppressNCActivate}")
+
+                If Not (Environment.OSVersion.Version.Major >= 10 AndAlso Environment.OSVersion.Version.Build >= 22000) Then
+                    m.Result = New IntPtr(1)
+                    setActive(True)
+                    Me.Refresh()
+                    Return
+                End If
 
                 If m.WParam = IntPtr.Zero Then
 

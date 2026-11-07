@@ -1247,6 +1247,7 @@ Module NativeMethods
     Public Const WM_NCCALCSIZE As Integer = &H83
 
     Public Const WM_NCHITTEST As Integer = &H84
+    Public Const WM_NCPAINT = &H85
     Public Const WM_NCACTIVATE As Integer = &H86
 
     Public Const WM_NCLBUTTONDOWN As Integer = &HA1

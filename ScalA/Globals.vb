@@ -18,7 +18,7 @@ Module Globals
     Private _RoundedCorners? As Boolean = Nothing
     Public Function RoundedCorners(hwnd As IntPtr) As Boolean
         If _RoundedCorners Is Nothing Then
-            If Environment.OSVersion.Version.Build >= 22000 Then
+            If Environment.OSVersion.Version.Major >= 10 AndAlso Environment.OSVersion.Version.Build >= 22000 Then
                 Dim pref As Integer = -1
                 Dim hr As Integer = DwmGetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, pref, 4)
                 If hr < 0 Then

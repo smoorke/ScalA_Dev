@@ -31,7 +31,7 @@ Partial NotInheritable Class FrmMain
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmMain))
         Me.pnlSys = New System.Windows.Forms.Panel()
         Me.btnStart = New ScalA.ThemedStartButton()
-        Me.cmsQuickLaunch = New ScaledScrollable.ContextMenuStrip(Me.components)
+        Me.cmsQuickLaunch = New ScalA.ScaledScrollable.ContextMenuStrip(Me.components)
         Me.DummyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.cmbResolution = New ScalA.ThemedComboBox()
         Me.cboAlt = New ScalA.ThemedComboBox()

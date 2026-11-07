@@ -127,7 +127,7 @@ Public NotInheritable Class TaskbarManager
         Dim version = Environment.OSVersion.Version
         '' Windows 10: Major 10, Build < 22000
         '' Windows 11: Major 10, Build >= 22000
-        Return version.Major = 10 AndAlso version.Build >= 22000
+        Return version.Major >= 10 AndAlso version.Build >= 22000
         'End If
         'Return False
     End Function
