@@ -1565,8 +1565,9 @@ Partial Public NotInheritable Class FrmMain
     Private PropertiesProperty As Reflection.PropertyInfo = GetType(ToolStripItem).GetProperty("Properties", Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic)
 
     Private PropertyStoreSetObject As Reflection.MethodInfo =
-             GetType(ToolStripItem).Assembly.GetType("System.Windows.Forms.PropertyStore").GetMethod("SetObject", Reflection.BindingFlags.Instance Or Reflection.BindingFlags.Public Or Reflection.BindingFlags.NonPublic,
-                                                                                                         Nothing, New Type() {GetType(Integer), GetType(Object)}, Nothing)
+             GetType(ToolStripItem).Assembly.GetType("System.Windows.Forms.PropertyStore") _
+                                            .GetMethod("SetObject", Reflection.BindingFlags.Instance Or Reflection.BindingFlags.Public Or Reflection.BindingFlags.NonPublic,
+                                                                         Nothing, New Type() {GetType(Integer), GetType(Object)}, Nothing)
 
     Private PropImageKey As Integer = GetType(ToolStripItem).GetField("PropImage", Reflection.BindingFlags.Static Or Reflection.BindingFlags.NonPublic).GetValue(Nothing)
 
