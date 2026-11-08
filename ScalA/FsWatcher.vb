@@ -58,7 +58,12 @@ Module FsWatcher
             For Each key In FrmMain.iconCache.Keys.Where(Function(k) k.EndsWith(".url"))
                 FrmMain.iconCache.TryRemove(key, Nothing)
             Next
+            For Each key In FrmMain.bigIconCache.Keys.Where(Function(k) k.EndsWith(".url"))
+                FrmMain.bigIconCache.TryRemove(key, Nothing)
+            Next
+
             If FrmMain.iconCache.Keys.Any(Function(k) k.ToLower.EndsWith(".url")) Then Throw New Exception
+            If FrmMain.bigIconCache.Keys.Any(Function(k) k.ToLower.EndsWith(".url")) Then Throw New Exception
 
         End Sub
 
@@ -316,17 +321,19 @@ Module FsWatcher
 
     End Sub
 
-    Private ReadOnly iconCache As ConcurrentDictionary(Of String, Bitmap) = FrmMain.iconCache
-
     Private Sub OnDeleteDir(sender As System.IO.FileSystemWatcher, e As System.IO.FileSystemEventArgs)
         dBug.Print($"Delete Dir: {sender.NotifyFilter}")
         dBug.Print($"      Type: {e.ChangeType}")
         dBug.Print($"      Path: {e.FullPath}")
 
         If e.ChangeType = IO.WatcherChangeTypes.Deleted Then
-            For Each key In iconCache.Keys.Where(Function(k As String) k.StartsWith(e.FullPath & "\"))
-                iconCache.TryRemove(key, Nothing)
+            For Each key In FrmMain.iconCache.Keys.Where(Function(k As String) k.StartsWith(e.FullPath & "\"))
+                FrmMain.iconCache.TryRemove(key, Nothing)
             Next
+            For Each key In FrmMain.bigIconCache.Keys.Where(Function(k As String) k.StartsWith(e.FullPath & "\"))
+                FrmMain.bigIconCache.TryRemove(key, Nothing)
+            Next
+
             For Each kvp In ResolvedLinkWatchers.ToList()
                 If String.Equals(kvp.Key, e.FullPath, StringComparison.OrdinalIgnoreCase) Then
                     removeLinkWatcher(kvp.Key)
@@ -340,9 +347,13 @@ Module FsWatcher
         dBug.Print($"        Old: {e.OldFullPath}")
         dBug.Print($"        New: {e.FullPath}")
 
-        For Each key In iconCache.Keys.Where(Function(k) k.StartsWith(e.OldFullPath & "\"))
+        For Each key In FrmMain.iconCache.Keys.Where(Function(k) k.StartsWith(e.OldFullPath & "\"))
             Dim item As Bitmap = Nothing
-            If iconCache.TryRemove(key, item) Then iconCache.TryAdd(key.Replace(e.OldFullPath & "\", e.FullPath & "\"), item)
+            If FrmMain.iconCache.TryRemove(key, item) Then FrmMain.iconCache.TryAdd(key.Replace(e.OldFullPath & "\", e.FullPath & "\"), item)
+        Next
+        For Each key In FrmMain.bigIconCache.Keys.Where(Function(k) k.StartsWith(e.OldFullPath & "\"))
+            Dim item As Bitmap = Nothing
+            If FrmMain.bigIconCache.TryRemove(key, item) Then FrmMain.bigIconCache.TryAdd(key.Replace(e.OldFullPath & "\", e.FullPath & "\"), item)
         Next
     End Sub
     Private Sub onDeleteFile(sender As System.IO.FileSystemWatcher, e As FileSystemEventArgs)
@@ -351,8 +362,12 @@ Module FsWatcher
         dBug.Print($"       Path: {e.FullPath}")
 
         If e.ChangeType = WatcherChangeTypes.Deleted Then
-            Dim res As Boolean = iconCache.TryRemove(e.FullPath, Nothing)
-            If res Then Debug.Print($"File {e.FullPath} evicted")
+            Dim res As Boolean
+            res = FrmMain.iconCache.TryRemove(e.FullPath, Nothing)
+            If res Then Debug.Print($"File {e.FullPath} icon evicted")
+            res = FrmMain.bigIconCache.TryRemove(e.FullPath, Nothing)
+            If res Then Debug.Print($"File {e.FullPath} bigicon evicted")
+
 
             'remove from resolvedlinkwatchers '
             If e.FullPath.ToLower.EndsWith(".lnk") Then
@@ -376,9 +391,11 @@ Module FsWatcher
         dBug.Print($"         Old: {e.OldFullPath}")
         dBug.Print($"         New: {e.FullPath}")
 
-        Dim item As Bitmap = Nothing
-        If iconCache.TryRemove(e.OldFullPath, item) Then iconCache.TryAdd(e.FullPath, item)
-
+        Dim item As Bitmap
+        item = Nothing
+        If FrmMain.iconCache.TryRemove(e.OldFullPath, item) Then FrmMain.iconCache.TryAdd(e.FullPath, item)
+        item = Nothing
+        If FrmMain.bigIconCache.TryRemove(e.OldFullPath, item) Then FrmMain.bigIconCache.TryAdd(e.FullPath, item)
     End Sub
 
     Private Sub OnChanged(sender As System.IO.FileSystemWatcher, e As System.IO.FileSystemEventArgs)
@@ -386,10 +403,12 @@ Module FsWatcher
             dBug.Print(sender.ToString)
             dBug.Print($"Changed: {e.FullPath}")
             If e.FullPath.ToLower.EndsWith("desktop.ini") Then
-                iconCache.TryRemove(e.FullPath.Substring(0, e.FullPath.LastIndexOf("\") + 1), Nothing)
+                FrmMain.iconCache.TryRemove(e.FullPath.Substring(0, e.FullPath.LastIndexOf("\") + 1), Nothing)
+                FrmMain.bigIconCache.TryRemove(e.FullPath.Substring(0, e.FullPath.LastIndexOf("\") + 1), Nothing)
             End If
             If hideExt.Contains(System.IO.Path.GetExtension(e.FullPath).ToLower) Then
-                iconCache.TryRemove(e.FullPath, Nothing)
+                FrmMain.iconCache.TryRemove(e.FullPath, Nothing)
+                FrmMain.bigIconCache.TryRemove(e.FullPath, Nothing)
             End If
         End If
     End Sub

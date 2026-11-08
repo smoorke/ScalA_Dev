@@ -1172,6 +1172,7 @@ Public NotInheritable Class FrmSettings
 
     Private Sub ResetIconCacheToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ResetIconCacheToolStripMenuItem.Click
         FrmMain.iconCache.Clear()
+        FrmMain.bigIconCache.Clear()
         FrmMain.DefURLicons.Clear()
         ResolvedLinkwatchers_Clear()
         btnRefreshICdisplay.PerformClick()
@@ -1237,8 +1238,8 @@ Public NotInheritable Class FrmSettings
 
         Await Task.Delay(100)
 
-        lblICacheCount.Text = $"Count: {FrmMain.iconCache.Count()}"
-        Dim size As Double = GetObjectSize(FrmMain.iconCache) / 1024.0
+        lblICacheCount.Text = $"Count: {FrmMain.iconCache.Count() + FrmMain.bigIconCache.Count()}"
+        Dim size As Double = (GetObjectSize(FrmMain.iconCache) + GetObjectSize(FrmMain.bigIconCache)) / 1024.0
         Dim suff As String = "KB"
         If size > 1024 Then
             size = size / 1024.0
