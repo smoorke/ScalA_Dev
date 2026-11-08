@@ -165,8 +165,13 @@ Partial NotInheritable Class FrmSettings
         Me.chkMinMaxOnSwitch = New System.Windows.Forms.CheckBox()
         Me.chkStartupMax = New System.Windows.Forms.CheckBox()
         Me.TabQL = New System.Windows.Forms.TabPage()
+        Me.txtCustomQLScale = New System.Windows.Forms.TextBox()
+        Me.cmbQLScaling = New System.Windows.Forms.ComboBox()
+        Me.TxtFilterAddExt = New System.Windows.Forms.TextBox()
+        Me.lblDefaultFilter = New System.Windows.Forms.Label()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
         Me.lblICacheCount = New System.Windows.Forms.Label()
+        Me.Label2 = New System.Windows.Forms.Label()
         Me.tabMisc = New System.Windows.Forms.TabPage()
         Me.ChkAlwaysStartOnOverview = New System.Windows.Forms.CheckBox()
         Me.cmbPriority = New System.Windows.Forms.ComboBox()
@@ -176,11 +181,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.pnlElevation = New System.Windows.Forms.Panel()
-        Me.TxtFilterAddExt = New System.Windows.Forms.TextBox()
-        Me.lblDefaultFilter = New System.Windows.Forms.Label()
-        Me.cmbQLScaling = New System.Windows.Forms.ComboBox()
-        Me.Label2 = New System.Windows.Forms.Label()
-        Me.txtCustomQLScale = New System.Windows.Forms.TextBox()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
@@ -465,7 +465,7 @@ Partial NotInheritable Class FrmSettings
         Me.btnOpenFolderDialog.FlatAppearance.BorderSize = 0
         Me.btnOpenFolderDialog.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnOpenFolderDialog.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-        Me.btnOpenFolderDialog.Location = New System.Drawing.Point(286, 15)
+        Me.btnOpenFolderDialog.Location = New System.Drawing.Point(286, 14)
         Me.btnOpenFolderDialog.Name = "btnOpenFolderDialog"
         Me.btnOpenFolderDialog.Size = New System.Drawing.Size(22, 20)
         Me.btnOpenFolderDialog.TabIndex = 1
@@ -1723,6 +1723,40 @@ Partial NotInheritable Class FrmSettings
         Me.TabQL.Text = "QL"
         Me.TabQL.UseVisualStyleBackColor = True
         '
+        'txtCustomQLScale
+        '
+        Me.txtCustomQLScale.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
+        Me.txtCustomQLScale.Location = New System.Drawing.Point(243, 103)
+        Me.txtCustomQLScale.Name = "txtCustomQLScale"
+        Me.txtCustomQLScale.Size = New System.Drawing.Size(48, 21)
+        Me.txtCustomQLScale.TabIndex = 37
+        '
+        'cmbQLScaling
+        '
+        Me.cmbQLScaling.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cmbQLScaling.FormattingEnabled = True
+        Me.cmbQLScaling.Items.AddRange(New Object() {"Monitor", "1x", "2x", "3x", "Custom:"})
+        Me.cmbQLScaling.Location = New System.Drawing.Point(159, 103)
+        Me.cmbQLScaling.Name = "cmbQLScaling"
+        Me.cmbQLScaling.Size = New System.Drawing.Size(80, 21)
+        Me.cmbQLScaling.TabIndex = 35
+        '
+        'TxtFilterAddExt
+        '
+        Me.TxtFilterAddExt.Location = New System.Drawing.Point(159, 81)
+        Me.TxtFilterAddExt.Name = "TxtFilterAddExt"
+        Me.TxtFilterAddExt.Size = New System.Drawing.Size(156, 20)
+        Me.TxtFilterAddExt.TabIndex = 34
+        '
+        'lblDefaultFilter
+        '
+        Me.lblDefaultFilter.AutoSize = True
+        Me.lblDefaultFilter.Location = New System.Drawing.Point(15, 84)
+        Me.lblDefaultFilter.Name = "lblDefaultFilter"
+        Me.lblDefaultFilter.Size = New System.Drawing.Size(147, 13)
+        Me.lblDefaultFilter.TabIndex = 33
+        Me.lblDefaultFilter.Text = "Extension Filter: exe | lnk | url |"
+        '
         'GroupBox1
         '
         Me.GroupBox1.Controls.Add(Me.btnRefreshICdisplay)
@@ -1744,6 +1778,15 @@ Partial NotInheritable Class FrmSettings
         Me.lblICacheCount.Size = New System.Drawing.Size(47, 13)
         Me.lblICacheCount.TabIndex = 1
         Me.lblICacheCount.Text = "Count: 1"
+        '
+        'Label2
+        '
+        Me.Label2.AutoSize = True
+        Me.Label2.Location = New System.Drawing.Point(69, 107)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(92, 13)
+        Me.Label2.TabIndex = 36
+        Me.Label2.Text = "QL Scaling Mode:"
         '
         'tabMisc
         '
@@ -1845,49 +1888,6 @@ Partial NotInheritable Class FrmSettings
         Me.pnlElevation.Size = New System.Drawing.Size(92, 28)
         Me.pnlElevation.TabIndex = 17
         Me.pnlElevation.Visible = False
-        '
-        'TxtFilterAddExt
-        '
-        Me.TxtFilterAddExt.Location = New System.Drawing.Point(159, 81)
-        Me.TxtFilterAddExt.Name = "TxtFilterAddExt"
-        Me.TxtFilterAddExt.Size = New System.Drawing.Size(156, 20)
-        Me.TxtFilterAddExt.TabIndex = 34
-        '
-        'lblDefaultFilter
-        '
-        Me.lblDefaultFilter.AutoSize = True
-        Me.lblDefaultFilter.Location = New System.Drawing.Point(15, 84)
-        Me.lblDefaultFilter.Name = "lblDefaultFilter"
-        Me.lblDefaultFilter.Size = New System.Drawing.Size(147, 13)
-        Me.lblDefaultFilter.TabIndex = 33
-        Me.lblDefaultFilter.Text = "Extension Filter: exe | lnk | url |"
-        '
-        'cmbQLScaling
-        '
-        Me.cmbQLScaling.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.cmbQLScaling.FormattingEnabled = True
-        Me.cmbQLScaling.Items.AddRange(New Object() {"Monitor", "1x", "2x", "3x", "Custom:"})
-        Me.cmbQLScaling.Location = New System.Drawing.Point(159, 103)
-        Me.cmbQLScaling.Name = "cmbQLScaling"
-        Me.cmbQLScaling.Size = New System.Drawing.Size(80, 21)
-        Me.cmbQLScaling.TabIndex = 35
-        '
-        'Label2
-        '
-        Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(69, 107)
-        Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(92, 13)
-        Me.Label2.TabIndex = 36
-        Me.Label2.Text = "QL Scaling Mode:"
-        '
-        'txtCustomQLScale
-        '
-        Me.txtCustomQLScale.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
-        Me.txtCustomQLScale.Location = New System.Drawing.Point(243, 103)
-        Me.txtCustomQLScale.Name = "txtCustomQLScale"
-        Me.txtCustomQLScale.Size = New System.Drawing.Size(48, 21)
-        Me.txtCustomQLScale.TabIndex = 37
         '
         'FrmSettings
         '
