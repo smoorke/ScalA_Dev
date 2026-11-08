@@ -2118,8 +2118,8 @@ Partial Public NotInheritable Class FrmMain
                              'SendMessage(hndl, WM_SETICON, ICON_BIG, My.Resources.moa3.Handle) 'todo: replace with target icon
 
                              'scaling fixes
-                             If Environment.OSVersion.Version.Major = 10 AndAlso Environment.OSVersion.Version.Build >= 22000 Then
-                                 'note version check here might need adjustment. win8.0, 8.1, vista, 10 need testing. 7 ok with bypass
+                             If Environment.OSVersion.Version.Major >= 10 Then
+                                 'note version check here might need adjustment. win8.0, 8.1, vista. 7 ok with bypass
                                  ScaleFixRenameDialog(RenameForm)
                                  HookRenameDialogDpi(hndl)
                              End If
