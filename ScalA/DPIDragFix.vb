@@ -9,7 +9,7 @@ Module DPIDragFix
     Private _menuWindowHookDelegate As WinEventDelegate = New WinEventDelegate(AddressOf MenuWindowDelegate)
 
     Public Sub StartDragFix()
-        If Environment.OSVersion.Version.Major >= 10 Then 'todo add correct build for GetAwarenessFromDpiAwarenessContext(GetWindowDpiAwarenessContext())
+        If Environment.OSVersion.Version >= New Version(10, 0, 14393) Then
             If SizeMoveWindowHook = IntPtr.Zero Then
                 SizeMoveWindowHook = SetWinEventHook(EVENT_SYSTEM_MOVESIZESTART, EVENT_SYSTEM_MOVESIZESTART, IntPtr.Zero, _sizemoveWindowHookDelegate, 0, 0, WINEVENT_OUTOFCONTEXT)
             End If
