@@ -68,7 +68,7 @@ Module DPIDragFix
                    }
     Dim gti As GUITHREADINFO = New GUITHREADINFO With {.cbSize = Marshal.SizeOf(Of GUITHREADINFO)}
 
-    Public DragFixMutex As New Threading.Mutex(False, "Global\Astonia_DPIDragFix")
+    Public DragFixMutex As New Threading.Mutex(False, "Local\Astonia_DPIDragFix")
     Public DragFixMutexOwned As Boolean
 
     Public Sub ReplaceMove(hwnd As IntPtr)
