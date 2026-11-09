@@ -181,6 +181,7 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass = New System.Windows.Forms.TextBox()
         Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.pnlElevation = New System.Windows.Forms.Panel()
+        Me.chkDPIDragFix = New System.Windows.Forms.CheckBox()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
@@ -934,6 +935,7 @@ Partial NotInheritable Class FrmSettings
         '
         'tabResolutions
         '
+        Me.tabResolutions.Controls.Add(Me.chkDPIDragFix)
         Me.tabResolutions.Controls.Add(Me.pb100PWarning)
         Me.tabResolutions.Controls.Add(Me.ChkSizeBorder)
         Me.tabResolutions.Controls.Add(Me.cboScalingMode)
@@ -1889,6 +1891,18 @@ Partial NotInheritable Class FrmSettings
         Me.pnlElevation.TabIndex = 17
         Me.pnlElevation.Visible = False
         '
+        'chkDPIDragFix
+        '
+        Me.chkDPIDragFix.AutoSize = True
+        Me.chkDPIDragFix.Location = New System.Drawing.Point(206, 103)
+        Me.chkDPIDragFix.Name = "chkDPIDragFix"
+        Me.chkDPIDragFix.Size = New System.Drawing.Size(86, 17)
+        Me.chkDPIDragFix.TabIndex = 18
+        Me.chkDPIDragFix.Text = "DPI Drag Fix"
+        Me.ttSettings.SetToolTip(Me.chkDPIDragFix, "Fix Dragging to a differently scaled monitor" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & " for clients with DPI override Appl" &
+        "ication set." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Hold Shift while initiating a drag to override.")
+        Me.chkDPIDragFix.UseVisualStyleBackColor = True
+        '
         'FrmSettings
         '
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
@@ -2090,4 +2104,5 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents TxtFilterAddExt As TextBox
     Friend WithEvents lblDefaultFilter As Label
     Friend WithEvents txtCustomQLScale As TextBox
+    Friend WithEvents chkDPIDragFix As CheckBox
 End Class

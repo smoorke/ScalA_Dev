@@ -225,6 +225,8 @@ Public NotInheritable Class FrmSettings
         If My.Settings.QLScale = 4 Then txtCustomQLScale.Text = $"{My.Settings.customQLScale:0.00#}"
         txtCustomQLScale.Enabled = cmbQLScaling.SelectedIndex = 4
 
+        chkDPIDragFix.Checked = My.Settings.DpiDragFix
+
         Me.TopMost = True ' My.Settings.topmost
     End Sub
     Public Sub New()
@@ -718,6 +720,13 @@ Public NotInheritable Class FrmSettings
         My.Settings.Priority = mapCmbIndexToPriority(cmbPriority.SelectedIndex)
         setScalAPriority(My.Settings.Priority)
 
+        My.Settings.DpiDragFix = chkDPIDragFix.Checked
+
+        If My.Settings.DpiDragFix Then
+            DPIDragFix.StartDragFix()
+        Else
+            DPIDragFix.StopDragFix()
+        End If
 
         My.Settings.Save()
 

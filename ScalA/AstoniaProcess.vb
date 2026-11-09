@@ -1736,7 +1736,7 @@ Module ProcessExtensions
 
     Private classCache As String = String.Empty
     Private classCacheSet As New HashSet(Of String)
-    Private ReadOnly pipe As Char() = {"|"c}
+    Private ReadOnly pipeCharArr As Char() = {"|"c}
     ''' <summary>
     ''' Checks if a processes classname is in pipe separated string
     ''' </summary>
@@ -1747,7 +1747,7 @@ Module ProcessExtensions
     Public Function HasClassNameIn(pp As Process, classes As String) As Boolean
         If classCache <> classes Then
             classCacheSet.Clear()
-            classCacheSet = New HashSet(Of String)(classes.Split(pipe, StringSplitOptions.RemoveEmptyEntries) _
+            classCacheSet = New HashSet(Of String)(classes.Split(pipeCharArr, StringSplitOptions.RemoveEmptyEntries) _
                                                           .Select(Function(wc) Strings.Trim(wc)))
             classCache = classes
         End If
@@ -1759,13 +1759,13 @@ Module ProcessExtensions
     Public Function IsAstonia(pp As Process) As Boolean
         If classCache <> My.Settings.className Then
             classCacheSet.Clear()
-            classCacheSet = New HashSet(Of String)(My.Settings.className.Split(pipe, StringSplitOptions.RemoveEmptyEntries) _
+            classCacheSet = New HashSet(Of String)(My.Settings.className.Split(pipeCharArr, StringSplitOptions.RemoveEmptyEntries) _
                                                           .Select(Function(wc) Strings.Trim(wc)))
             classCache = My.Settings.className
         End If
         If exeCache <> My.Settings.exe Then
             exeCacheSet.Clear()
-            exeCacheSet = New HashSet(Of String)(My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries) _
+            exeCacheSet = New HashSet(Of String)(My.Settings.exe.Split(pipeCharArr, StringSplitOptions.RemoveEmptyEntries) _
                                                           .Select(Function(x) Strings.Trim(x)))
             exeCache = My.Settings.exe
         End If
@@ -1775,13 +1775,13 @@ Module ProcessExtensions
     Public Function isAstonia(h As IntPtr) As Boolean
         If classCache <> My.Settings.className Then
             classCacheSet.Clear()
-            classCacheSet = New HashSet(Of String)(My.Settings.className.Split(pipe, StringSplitOptions.RemoveEmptyEntries) _
+            classCacheSet = New HashSet(Of String)(My.Settings.className.Split(pipeCharArr, StringSplitOptions.RemoveEmptyEntries) _
                                                           .Select(Function(wc) Strings.Trim(wc)))
             classCache = My.Settings.className
         End If
         If exeCache <> My.Settings.exe Then
             exeCacheSet.Clear()
-            exeCacheSet = New HashSet(Of String)(My.Settings.exe.Split(pipe, StringSplitOptions.RemoveEmptyEntries) _
+            exeCacheSet = New HashSet(Of String)(My.Settings.exe.Split(pipeCharArr, StringSplitOptions.RemoveEmptyEntries) _
                                                           .Select(Function(x) Strings.Trim(x)))
             exeCache = My.Settings.exe
         End If

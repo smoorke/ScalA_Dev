@@ -91,7 +91,41 @@ Module Globals
 
         Return ProcessID
     End Function
+    Public Function getExeName(pid As UInteger) As String
+        Dim hProcess As IntPtr = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, False, pid)
 
+        If hProcess = IntPtr.Zero Then
+            Return String.Empty
+        End If
+
+        Try
+            Dim Buffer As New Text.StringBuilder(260)
+            Dim Size As UInteger = CUInt(Buffer.Capacity)
+
+            If QueryFullProcessImageName(hProcess, 0, Buffer, Size) Then
+
+                Dim Path As String = Buffer.ToString()
+
+                Return IO.Path.GetFileNameWithoutExtension(Path)
+            End If
+
+        Finally
+            CloseHandle(hProcess)
+        End Try
+
+        Return String.Empty
+    End Function
+    Public Function getExeName(hwnd As IntPtr) As String
+
+        Dim ProcessId As UInteger = 0
+
+        If GetWindowThreadProcessId(hwnd, ProcessId) = 0 Then
+            Return String.Empty
+        End If
+
+        Return getExeName(ProcessId)
+
+    End Function
     Public Function getAnimationsEnabled() As Boolean
         Dim enabled As Boolean = False
         If Not SystemParametersInfo(SPI.GETCLIENTAREAANIMATION, 0, enabled, 0) Then

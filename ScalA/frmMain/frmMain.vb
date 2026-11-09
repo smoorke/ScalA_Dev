@@ -607,6 +607,10 @@ Partial Public NotInheritable Class FrmMain
             pbZoom.Left += 1
         End If
 
+        If My.Settings.DpiDragFix Then
+            DPIDragFix.StartDragFix()
+        End If
+
     End Sub
 
     Private Sub prioritySetter()

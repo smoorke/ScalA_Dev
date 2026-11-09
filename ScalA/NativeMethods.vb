@@ -743,6 +743,33 @@ Module NativeMethods
         WS_EX_WINDOWEDGE = &H100
     End Enum
 
+    Public Const EVENT_SYSTEM_FOREGROUND As UInteger = &H3
+    Public Const EVENT_SYSTEM_MENUSTART As UInteger = &H4
+    Public Const EVENT_SYSTEM_MOVESIZESTART As UInteger = &HA
+    Public Const WINEVENT_OUTOFCONTEXT As UInteger = &H0
+
+    Public Delegate Sub WinEventDelegate(hWinEventHook As IntPtr, eventType As UInteger, hwnd As IntPtr, idObject As Integer, idChild As Integer, idEventThread As UInteger, msEventTime As UInteger)
+
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function SetWinEventHook(
+        eventMin As UInteger,
+        eventMax As UInteger,
+        hmodWinEventProc As IntPtr,
+        lpfnWinEventProc As WinEventDelegate,
+        idProcess As UInteger,
+        idThread As UInteger,
+        flags As UInteger) As IntPtr
+    End Function
+    Public Const OBJID_WINDOW As Integer = 0
+    Public Const OBJID_SYSMENU As Integer = -1
+    Public Const CHILDID_SELF As Integer = 0
+    <DllImport("user32.dll")>
+    Public Function GetWindowDpiAwarenessContext(hWnd As IntPtr) As IntPtr : End Function
+    <DllImport("user32.dll")>
+    Public Function GetAwarenessFromDpiAwarenessContext(value As IntPtr) As Integer : End Function
+    <DllImport("user32.dll", SetLastError:=True)>
+    Public Function UnhookWinEvent(hWinEventHook As IntPtr) As Boolean : End Function
+
     <DllImport("user32.dll")>
     Public Function IsIconic(hWnd As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean : End Function
     <StructLayout(LayoutKind.Sequential)>

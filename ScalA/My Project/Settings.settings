@@ -301,5 +301,8 @@
     <Setting Name="customQLScale" Type="System.Single" Scope="User">
       <Value Profile="(Default)">1.25</Value>
     </Setting>
+    <Setting Name="DpiDragFix" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

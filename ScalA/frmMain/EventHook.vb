@@ -38,26 +38,4 @@ Module EventHook
         End If
     End Sub
 
-
-    Public Const EVENT_SYSTEM_FOREGROUND As UInteger = &H3
-    Public Const WINEVENT_OUTOFCONTEXT As UInteger = &H0
-
-    Public Delegate Sub WinEventDelegate(hWinEventHook As IntPtr, eventType As UInteger, hwnd As IntPtr, idObject As Integer, idChild As Integer, idEventThread As UInteger, msEventTime As UInteger)
-
-    <DllImport("user32.dll", SetLastError:=True)>
-    Public Function SetWinEventHook(
-        eventMin As UInteger,
-        eventMax As UInteger,
-        hmodWinEventProc As IntPtr,
-        lpfnWinEventProc As WinEventDelegate,
-        idProcess As UInteger,
-        idThread As UInteger,
-        flags As UInteger) As IntPtr
-    End Function
-
-    <DllImport("user32.dll", SetLastError:=True)>
-    Public Function UnhookWinEvent(
-        hWinEventHook As IntPtr) As Boolean
-    End Function
-
 End Module

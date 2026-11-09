@@ -46,6 +46,15 @@ Public Class KeyboardHook : Implements IDisposable
 
     Private alreadySendingEsc As Boolean = False
 
+    Private leftDown As Boolean
+    Private rightDown As Boolean
+    Private upDown As Boolean
+    Private downDown As Boolean
+    Private ctrlDown As Boolean
+
+    Private lastMoveTs As UInteger = 0
+    Private hasLastMoveTs As Boolean = False
+
     Private InputSize = Runtime.InteropServices.Marshal.SizeOf(GetType(INPUT))
 
     Private Function KeyProc(
@@ -64,7 +73,7 @@ Public Class KeyboardHook : Implements IDisposable
                         If My.Settings.DisableWinKey Then
                             Using proc As Process = Process.GetProcessById(GetActiveProcessID())
                                 If proc.IsAstonia OrElse (My.Settings.gameOnOverview AndAlso proc.IsScalA) Then
-                                    dBug.print($"Win Key Blocked {wParam:X4} {proc.ProcessName}")
+                                    dBug.Print($"Win Key Blocked {wParam:X4} {proc.ProcessName}")
                                     Return 1
                                 End If
                             End Using
@@ -120,6 +129,65 @@ Public Class KeyboardHook : Implements IDisposable
                     End Using
                 End If
         End Select
+
+#Region "DPIDragFix"
+        Dim msg As Integer = wParam.ToInt32()
+        Dim hs As KBDLLHOOKSTRUCT = Marshal.PtrToStructure(Of KBDLLHOOKSTRUCT)(lParam)
+
+        Dim isDown As Boolean = msg = WM_KEYDOWN OrElse msg = WM_SYSKEYDOWN
+
+        Dim isUp As Boolean = msg = WM_KEYUP OrElse msg = WM_SYSKEYUP
+
+        If Not isDown AndAlso Not isUp Then
+            Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
+        End If
+
+        ' Track modifier state.
+        Select Case hs.vkCode
+            Case Keys.ControlKey, Keys.LControlKey, Keys.RControlKey
+                ctrlDown = isDown
+        End Select
+
+        If dragFixActive Then
+
+            ' Update arrow key states first.
+            Select Case hs.vkCode
+                Case Keys.Left
+                    leftDown = isDown
+
+                Case Keys.Right
+                    rightDown = isDown
+
+                Case Keys.Up
+                    upDown = isDown
+
+                Case Keys.Down
+                    downDown = isDown
+
+                Case Else
+                    Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
+            End Select
+
+            If isDown Then
+                ' Process only one movement per timestamp.
+                If Not hasLastMoveTs OrElse lastMoveTs <> hs.time Then
+
+                    Dim stepSize As Integer = If(ctrlDown, 1, 11)
+
+                    Dim dx As Integer = If(rightDown, 1, 0) - If(leftDown, 1, 0)
+
+                    Dim dy As Integer = If(downDown, 1, 0) - If(upDown, 1, 0)
+
+                    Cursor.Position += New Point(dx * stepSize, dy * stepSize)
+
+                    lastMoveTs = hs.time
+                    hasLastMoveTs = True
+                End If
+            End If
+            Return 1
+        End If
+
+#End Region 'DPIDdragFix
 
         Return CallNextHookEx(HookHandle, nCode, wParam, lParam)
     End Function
