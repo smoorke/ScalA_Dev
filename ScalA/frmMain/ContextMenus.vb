@@ -1231,7 +1231,7 @@ Partial Public NotInheritable Class FrmMain
                                      icn = EmptyIcon
                                  Else
                                      If Not String.IsNullOrEmpty(qli.target) AndAlso
-                                        Not CallAsTaskWithTimeout(AddressOf IO.File.Exists, qli.target, 50) Then
+                                        Not CallAsTaskWithTimeout(Function(p) (IO.File.Exists(p) OrElse IO.Directory.Exists(p)), qli.target, 100) Then
                                          icn = icn.addOverlay(My.Resources.WarningOverlay, True)
                                      End If
                                  End If
