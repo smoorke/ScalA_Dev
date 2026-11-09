@@ -1181,7 +1181,7 @@ Partial Public NotInheritable Class FrmMain
                                                  ico = If(ScaledScrollable.Scaling < 1.25!, folderIconWithOverlay, bigFolderIconWithOverlay)
                                              Else
                                                  If Not String.IsNullOrEmpty(qli.target) AndAlso
-                                                    Not CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, qli.target, 50) Then
+                                                    Not CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, qli.target, 100) Then
                                                      ico = ico.addOverlay(My.Resources.WarningOverlay, True) '.addOverlay(My.Resources.shortcutOverlay, True)
                                                  End If
                                              End If
