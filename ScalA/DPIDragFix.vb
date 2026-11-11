@@ -16,8 +16,8 @@ Module DPIDragFix
             If MenuWindowHook = IntPtr.Zero Then
                 MenuWindowHook = SetWinEventHook(EVENT_SYSTEM_MENUSTART, EVENT_SYSTEM_MENUSTART, IntPtr.Zero, _menuWindowHookDelegate, 0, 0, WINEVENT_OUTOFCONTEXT)
             End If
+            dBug.Print("DPIDragFix Started")
         End If
-        dBug.Print("DPIDragFix Started")
     End Sub
 
     Public Sub StopDragFix()
@@ -36,10 +36,8 @@ Module DPIDragFix
         If idObject <> OBJID_WINDOW Then Exit Sub
         If idChild <> CHILDID_SELF Then Exit Sub
 
-        Dim exeNam As String = getExeName(hwnd)
-
         If Not isAstonia(hwnd) Then
-            Debug.Print($"not interested in drag")
+            Debug.Print($"not interested in drag ""{getExeName(hwnd)}""")
             Exit Sub
         End If
 
