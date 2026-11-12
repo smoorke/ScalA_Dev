@@ -123,7 +123,22 @@ Public NotInheritable Class ThemedComboBox
             End Using
 
             Dim arrow = My.Resources.scrollbar_arrow_small_hot
-            g.DrawImageUnscaled(arrow, rect.Right - arrow.Width - (Consts.Padding / 2), (rect.Height / 2) - (arrow.Height / 2))
+
+            Dim oldState = g.Save()
+
+
+            Dim sx As Single = 96.0F / g.DpiX
+            Dim sy As Single = 96.0F / g.DpiY
+
+            g.ScaleTransform(sx, sy)
+
+            Dim dest As New RectangleF((rect.Right - arrow.Width - (Consts.Padding / 2)) / sx,
+                                                   (rect.Height - arrow.Height) / (2.0F * sy),
+                                            arrow.Width / sx, arrow.Height / sy)
+
+            g.DrawImage(arrow, dest)
+
+            g.Restore(oldState)
 
             Dim text As String = If(SelectedItem IsNot Nothing, GetItemText(SelectedItem).TrimStart, "")
 
@@ -618,7 +633,7 @@ Public NotInheritable Class Colors
     End Property
 End Class
 Public NotInheritable Class Consts
-    Public Shared Padding As Integer = 10
+    Public Const Padding As Integer = 10
     Public Shared ScrollBarSize As Integer = 15
     Public Shared ArrowButtonSize As Integer = 15
     Public Shared MinimumThumbSize As Integer = 11
