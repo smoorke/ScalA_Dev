@@ -1608,9 +1608,9 @@ Partial Public NotInheritable Class FrmMain
         'Dim target = If(sender.Tag.length >= 4, sender.Tag(3), sender.Tag(0))
         Dim target = If(String.IsNullOrEmpty(qli.target), qli.path, qli.target)
 
-        'sender.DropDownItems.Clear()
+        'DisposeMenuRecurse(sender.DropDownItems)
+        sender.DropDownItems.Clear()
         'Dim olditems = New ToolStripItemCollection(sender.Owner, sender.DropDownItems.Cast(Of ToolStripItem).ToArray)
-        DisposeMenuRecurse(sender.DropDownItems)
 
         If CallAsTaskWithTimeout(AddressOf IO.Directory.Exists, target, 750) Then
             sender.DropDownItems.AddRange(ParseDir(target).ToArray)
@@ -1914,8 +1914,8 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         'tmrTick.Interval = 1000
-        'sender.Items.Clear()
-        DisposeMenuRecurse(sender.Items)
+        'DisposeMenuRecurse(sender.Items)
+        sender.Items.Clear()
 
         If Not FileIO.FileSystem.DirectoryExists(My.Settings.links) Then My.Settings.links = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) & "\ScalA"
 
