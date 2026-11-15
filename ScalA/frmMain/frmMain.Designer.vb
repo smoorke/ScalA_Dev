@@ -38,7 +38,7 @@ Partial NotInheritable Class FrmMain
         Me.pnlTitleBar = New System.Windows.Forms.Panel()
         Me.PnlWarning = New System.Windows.Forms.Panel()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
-        Me.chkDebug = New System.Windows.Forms.CheckBox()
+        Me.chkDebug = New ScalA.FixedScaleCheckbox()
         Me.pnlUpdate = New System.Windows.Forms.Panel()
         Me.pbUpdateAvailable = New System.Windows.Forms.PictureBox()
         Me.ChkEqLock = New System.Windows.Forms.CheckBox()
@@ -707,7 +707,7 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents sysTrayIcon As NotifyIcon
     Friend WithEvents pnlTitleBar As Panel
     Friend WithEvents lblTitle As Label
-    Friend WithEvents chkDebug As CheckBox
+    Friend WithEvents chkDebug As ScalA.FixedScaleCheckbox
     Friend WithEvents SortSubToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents TopFirstToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents TopLastToolStripMenuItem As ToolStripMenuItem

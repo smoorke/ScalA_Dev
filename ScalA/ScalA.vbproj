@@ -108,6 +108,9 @@
     </Compile>
     <Compile Include="DPIDragFix.vb" />
     <Compile Include="EditBoxHelper.vb" />
+    <Compile Include="FixedScaleCheckbox.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="frmMain\EventHook.vb" />
     <Compile Include="frmMain\frmOverlay.Designer.vb">
       <DependentUpon>frmOverlay.vb</DependentUpon>
