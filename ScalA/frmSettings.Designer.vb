@@ -46,8 +46,6 @@ Partial NotInheritable Class FrmSettings
         Dim Label1 As System.Windows.Forms.Label
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FrmSettings))
         Me.btnGoToAdjustHotkey = New System.Windows.Forms.Button()
-        Me.chkApplyAlterNormal = New System.Windows.Forms.CheckBox()
-        Me.ChkLessRowCol = New System.Windows.Forms.CheckBox()
         Me.NumExtraMax = New System.Windows.Forms.NumericUpDown()
         Me.btnOpenFolderDialog = New System.Windows.Forms.Button()
         Me.cmsQLFolder = New System.Windows.Forms.ContextMenuStrip(Me.components)
@@ -58,44 +56,27 @@ Partial NotInheritable Class FrmSettings
         Me.btnCancel = New System.Windows.Forms.Button()
         Me.tmrAlign = New System.Windows.Forms.Timer(Me.components)
         Me.ttSettings = New System.Windows.Forms.ToolTip(Me.components)
-        Me.ChkSingleInstance = New System.Windows.Forms.CheckBox()
         Me.grpReserveSpace = New System.Windows.Forms.GroupBox()
         Me.btnGrabCurrent = New System.Windows.Forms.Button()
         Me.NumBorderBot = New System.Windows.Forms.NumericUpDown()
         Me.NumBorderRight = New System.Windows.Forms.NumericUpDown()
         Me.NumBorderTop = New System.Windows.Forms.NumericUpDown()
         Me.NumBorderLeft = New System.Windows.Forms.NumericUpDown()
-        Me.chkOverViewIsGame = New System.Windows.Forms.CheckBox()
         Me.cboScalingMode = New System.Windows.Forms.ComboBox()
-        Me.chkCycleOnClose = New System.Windows.Forms.CheckBox()
-        Me.chkCheckForUpdate = New System.Windows.Forms.CheckBox()
         Me.cmsUpdate = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.CheckNowToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.OpenChangelogToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ChkMinMin = New System.Windows.Forms.CheckBox()
-        Me.chkCloseAll = New System.Windows.Forms.CheckBox()
-        Me.chkHoverActivate = New System.Windows.Forms.CheckBox()
-        Me.chkShowEnd = New System.Windows.Forms.CheckBox()
-        Me.chkAlterOverview = New System.Windows.Forms.CheckBox()
         Me.txtAlterOverviewStarKey = New System.Windows.Forms.TextBox()
         Me.txtAlterOverviewMinKey = New System.Windows.Forms.TextBox()
         Me.txtAlterOverviewPlusKey = New System.Windows.Forms.TextBox()
-        Me.chkOnlyEsc = New System.Windows.Forms.CheckBox()
-        Me.chkAutoCloseSomeone = New System.Windows.Forms.CheckBox()
-        Me.chkNoAltTab = New System.Windows.Forms.CheckBox()
         Me.pb100PWarning = New System.Windows.Forms.PictureBox()
-        Me.chkAutoCloseOnlyOnNoSome = New System.Windows.Forms.CheckBox()
-        Me.chkAllowShiftEsc = New System.Windows.Forms.CheckBox()
         Me.lblElevated = New System.Windows.Forms.Label()
         Me.pbUnElevate = New System.Windows.Forms.PictureBox()
-        Me.ChkQLShowHidden = New System.Windows.Forms.CheckBox()
         Me.btnRefreshICdisplay = New System.Windows.Forms.Button()
         Me.lblICSize = New System.Windows.Forms.Label()
-        Me.ChkQLResolveLnk = New System.Windows.Forms.CheckBox()
         Me.btnResetCache = New System.Windows.Forms.Button()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
-        Me.ChkSizeBorder = New System.Windows.Forms.CheckBox()
         Me.btnAddCurrentRes = New System.Windows.Forms.Button()
         Me.btnRestore = New System.Windows.Forms.Button()
         Me.cmsRestore = New System.Windows.Forms.ContextMenuStrip(Me.components)
@@ -109,61 +90,22 @@ Partial NotInheritable Class FrmSettings
         Me.DummyToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.txtResolutions = New System.Windows.Forms.TextBox()
         Me.tabHotkeys = New System.Windows.Forms.TabPage()
-        Me.chkBlockWin = New System.Windows.Forms.CheckBox()
         Me.grpAlterOverview = New System.Windows.Forms.GroupBox()
-        Me.chkAlterOverviewStarAlt = New System.Windows.Forms.CheckBox()
-        Me.chkAlterOverviewStarShift = New System.Windows.Forms.CheckBox()
-        Me.chkAlterOverviewStarWin = New System.Windows.Forms.CheckBox()
-        Me.chkAlterOverviewStarCtrl = New System.Windows.Forms.CheckBox()
-        Me.chkAlterOverviewMinAlt = New System.Windows.Forms.CheckBox()
-        Me.chkAlterOverviewPlusALt = New System.Windows.Forms.CheckBox()
-        Me.chkAlterOverviewMinShift = New System.Windows.Forms.CheckBox()
-        Me.chkAlterOverviewPlusShift = New System.Windows.Forms.CheckBox()
-        Me.chkAlterOverviewMinWin = New System.Windows.Forms.CheckBox()
-        Me.chkAlterOverviewPlusWin = New System.Windows.Forms.CheckBox()
-        Me.chkAlterOverviewMinCtrl = New System.Windows.Forms.CheckBox()
-        Me.chkAlterOverviewPlusCtrl = New System.Windows.Forms.CheckBox()
-        Me.chkToggleTopMost = New System.Windows.Forms.CheckBox()
         Me.grpToggleTopMost = New System.Windows.Forms.GroupBox()
         Me.txtTogTop = New System.Windows.Forms.TextBox()
-        Me.chkTogTopAlt = New System.Windows.Forms.CheckBox()
-        Me.chkTogTopShift = New System.Windows.Forms.CheckBox()
-        Me.chkTogTopWin = New System.Windows.Forms.CheckBox()
-        Me.chkTogTopCtrl = New System.Windows.Forms.CheckBox()
         Me.grpCloseAllShortcut = New System.Windows.Forms.GroupBox()
         Me.txtCloseAll = New System.Windows.Forms.TextBox()
-        Me.chkCAALt = New System.Windows.Forms.CheckBox()
-        Me.chkCAShift = New System.Windows.Forms.CheckBox()
-        Me.chkCAWin = New System.Windows.Forms.CheckBox()
-        Me.chkCACtrl = New System.Windows.Forms.CheckBox()
-        Me.chkSwitchToOverview = New System.Windows.Forms.CheckBox()
-        Me.chkCycleAlts = New System.Windows.Forms.CheckBox()
         Me.grpCycleShortcut = New System.Windows.Forms.GroupBox()
-        Me.chkCycleDownAlt = New System.Windows.Forms.CheckBox()
         Me.txtCycleKeyDown = New System.Windows.Forms.TextBox()
-        Me.chkCycleUpAlt = New System.Windows.Forms.CheckBox()
         Me.txtCycleKeyUp = New System.Windows.Forms.TextBox()
-        Me.chkCycleDownShift = New System.Windows.Forms.CheckBox()
-        Me.chkCycleUpShift = New System.Windows.Forms.CheckBox()
-        Me.chkCycleDownWin = New System.Windows.Forms.CheckBox()
-        Me.chkCycleUpWin = New System.Windows.Forms.CheckBox()
-        Me.chkCycleDownCtrl = New System.Windows.Forms.CheckBox()
-        Me.chkCycleUpCtrl = New System.Windows.Forms.CheckBox()
         Me.grpOverviewShortcut = New System.Windows.Forms.GroupBox()
         Me.txtStoKey = New System.Windows.Forms.TextBox()
-        Me.chkStoAlt = New System.Windows.Forms.CheckBox()
-        Me.chkStoShift = New System.Windows.Forms.CheckBox()
-        Me.chkStoWin = New System.Windows.Forms.CheckBox()
-        Me.chkStoCtrl = New System.Windows.Forms.CheckBox()
         Me.tabSortAndBL = New System.Windows.Forms.TabPage()
         Me.btnTest = New System.Windows.Forms.Button()
         Me.btnHelp = New System.Windows.Forms.Button()
         Me.txtBotSort = New System.Windows.Forms.TextBox()
         Me.txtTopSort = New System.Windows.Forms.TextBox()
-        Me.chkWhitelist = New System.Windows.Forms.CheckBox()
         Me.tabMaximized = New System.Windows.Forms.TabPage()
-        Me.chkMinMaxOnSwitch = New System.Windows.Forms.CheckBox()
-        Me.chkStartupMax = New System.Windows.Forms.CheckBox()
         Me.TabQL = New System.Windows.Forms.TabPage()
         Me.txtCustomQLScale = New System.Windows.Forms.TextBox()
         Me.cmbQLScaling = New System.Windows.Forms.ComboBox()
@@ -173,15 +115,73 @@ Partial NotInheritable Class FrmSettings
         Me.lblICacheCount = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.tabMisc = New System.Windows.Forms.TabPage()
-        Me.ChkAlwaysStartOnOverview = New System.Windows.Forms.CheckBox()
         Me.cmbPriority = New System.Windows.Forms.ComboBox()
         Me.cmbTheme = New System.Windows.Forms.ComboBox()
         Me.Label16 = New System.Windows.Forms.Label()
         Me.txtExe = New System.Windows.Forms.TextBox()
         Me.txtClass = New System.Windows.Forms.TextBox()
-        Me.chkTopMost = New System.Windows.Forms.CheckBox()
         Me.pnlElevation = New System.Windows.Forms.Panel()
-        Me.chkDPIDragFix = New System.Windows.Forms.CheckBox()
+        Me.chkDPIDragFix = New ScalA.FixedScaleCheckbox()
+        Me.ChkSizeBorder = New ScalA.FixedScaleCheckbox()
+        Me.chkAllowShiftEsc = New ScalA.FixedScaleCheckbox()
+        Me.chkOnlyEsc = New ScalA.FixedScaleCheckbox()
+        Me.chkNoAltTab = New ScalA.FixedScaleCheckbox()
+        Me.chkBlockWin = New ScalA.FixedScaleCheckbox()
+        Me.chkAlterOverview = New ScalA.FixedScaleCheckbox()
+        Me.chkAlterOverviewStarAlt = New ScalA.FixedScaleCheckbox()
+        Me.chkAlterOverviewStarShift = New ScalA.FixedScaleCheckbox()
+        Me.chkAlterOverviewStarWin = New ScalA.FixedScaleCheckbox()
+        Me.chkAlterOverviewStarCtrl = New ScalA.FixedScaleCheckbox()
+        Me.chkAlterOverviewMinAlt = New ScalA.FixedScaleCheckbox()
+        Me.chkAlterOverviewPlusALt = New ScalA.FixedScaleCheckbox()
+        Me.chkAlterOverviewMinShift = New ScalA.FixedScaleCheckbox()
+        Me.chkAlterOverviewPlusShift = New ScalA.FixedScaleCheckbox()
+        Me.chkAlterOverviewMinWin = New ScalA.FixedScaleCheckbox()
+        Me.chkAlterOverviewPlusWin = New ScalA.FixedScaleCheckbox()
+        Me.chkAlterOverviewMinCtrl = New ScalA.FixedScaleCheckbox()
+        Me.chkAlterOverviewPlusCtrl = New ScalA.FixedScaleCheckbox()
+        Me.chkTogTopAlt = New ScalA.FixedScaleCheckbox()
+        Me.chkTogTopShift = New ScalA.FixedScaleCheckbox()
+        Me.chkTogTopWin = New ScalA.FixedScaleCheckbox()
+        Me.chkTogTopCtrl = New ScalA.FixedScaleCheckbox()
+        Me.chkCAALt = New ScalA.FixedScaleCheckbox()
+        Me.chkCAShift = New ScalA.FixedScaleCheckbox()
+        Me.chkCAWin = New ScalA.FixedScaleCheckbox()
+        Me.chkCACtrl = New ScalA.FixedScaleCheckbox()
+        Me.chkCycleDownAlt = New ScalA.FixedScaleCheckbox()
+        Me.chkCycleUpAlt = New ScalA.FixedScaleCheckbox()
+        Me.chkCycleDownShift = New ScalA.FixedScaleCheckbox()
+        Me.chkCycleUpShift = New ScalA.FixedScaleCheckbox()
+        Me.chkCycleDownWin = New ScalA.FixedScaleCheckbox()
+        Me.chkCycleUpWin = New ScalA.FixedScaleCheckbox()
+        Me.chkCycleDownCtrl = New ScalA.FixedScaleCheckbox()
+        Me.chkCycleUpCtrl = New ScalA.FixedScaleCheckbox()
+        Me.chkStoAlt = New ScalA.FixedScaleCheckbox()
+        Me.chkStoShift = New ScalA.FixedScaleCheckbox()
+        Me.chkStoWin = New ScalA.FixedScaleCheckbox()
+        Me.chkStoCtrl = New ScalA.FixedScaleCheckbox()
+        Me.chkToggleTopMost = New ScalA.FixedScaleCheckbox()
+        Me.chkCloseAll = New ScalA.FixedScaleCheckbox()
+        Me.chkCycleOnClose = New ScalA.FixedScaleCheckbox()
+        Me.chkSwitchToOverview = New ScalA.FixedScaleCheckbox()
+        Me.chkCycleAlts = New ScalA.FixedScaleCheckbox()
+        Me.chkAutoCloseOnlyOnNoSome = New ScalA.FixedScaleCheckbox()
+        Me.chkAutoCloseSomeone = New ScalA.FixedScaleCheckbox()
+        Me.chkWhitelist = New ScalA.FixedScaleCheckbox()
+        Me.chkMinMaxOnSwitch = New ScalA.FixedScaleCheckbox()
+        Me.chkApplyAlterNormal = New ScalA.FixedScaleCheckbox()
+        Me.ChkLessRowCol = New ScalA.FixedScaleCheckbox()
+        Me.ChkMinMin = New ScalA.FixedScaleCheckbox()
+        Me.chkStartupMax = New ScalA.FixedScaleCheckbox()
+        Me.ChkQLResolveLnk = New ScalA.FixedScaleCheckbox()
+        Me.ChkQLShowHidden = New ScalA.FixedScaleCheckbox()
+        Me.ChkAlwaysStartOnOverview = New ScalA.FixedScaleCheckbox()
+        Me.chkShowEnd = New ScalA.FixedScaleCheckbox()
+        Me.ChkSingleInstance = New ScalA.FixedScaleCheckbox()
+        Me.chkCheckForUpdate = New ScalA.FixedScaleCheckbox()
+        Me.chkTopMost = New ScalA.FixedScaleCheckbox()
+        Me.chkHoverActivate = New ScalA.FixedScaleCheckbox()
+        Me.chkOverViewIsGame = New ScalA.FixedScaleCheckbox()
         ToolStripMenuItem1 = New System.Windows.Forms.ToolStripSeparator()
         Label3 = New System.Windows.Forms.Label()
         ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
@@ -407,30 +407,6 @@ Partial NotInheritable Class FrmSettings
         Me.ttSettings.SetToolTip(Me.btnGoToAdjustHotkey, "Go to Hotkey Settings")
         Me.btnGoToAdjustHotkey.UseVisualStyleBackColor = True
         '
-        'chkApplyAlterNormal
-        '
-        Me.chkApplyAlterNormal.AutoSize = True
-        Me.chkApplyAlterNormal.Location = New System.Drawing.Point(14, 0)
-        Me.chkApplyAlterNormal.Name = "chkApplyAlterNormal"
-        Me.chkApplyAlterNormal.Size = New System.Drawing.Size(122, 17)
-        Me.chkApplyAlterNormal.TabIndex = 32
-        Me.chkApplyAlterNormal.Text = "Also Apply in Normal"
-        Me.chkApplyAlterNormal.UseVisualStyleBackColor = True
-        '
-        'ChkLessRowCol
-        '
-        Me.ChkLessRowCol.AutoSize = True
-        Me.ChkLessRowCol.Checked = True
-        Me.ChkLessRowCol.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.ChkLessRowCol.Location = New System.Drawing.Point(6, 20)
-        Me.ChkLessRowCol.Name = "ChkLessRowCol"
-        Me.ChkLessRowCol.Size = New System.Drawing.Size(136, 17)
-        Me.ChkLessRowCol.TabIndex = 29
-        Me.ChkLessRowCol.Text = "One Less Row/Column"
-        Me.ttSettings.SetToolTip(Me.ChkLessRowCol, "When Width is bigger than Height have one less Row " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "If Height is bigger than Wid" &
-        "th have one less Column")
-        Me.ChkLessRowCol.UseVisualStyleBackColor = True
-        '
         'NumExtraMax
         '
         Me.NumExtraMax.Location = New System.Drawing.Point(110, 40)
@@ -537,19 +513,6 @@ Partial NotInheritable Class FrmSettings
         Me.ttSettings.InitialDelay = 500
         Me.ttSettings.ReshowDelay = 100
         '
-        'ChkSingleInstance
-        '
-        Me.ChkSingleInstance.AutoSize = True
-        Me.ChkSingleInstance.Location = New System.Drawing.Point(26, 85)
-        Me.ChkSingleInstance.Name = "ChkSingleInstance"
-        Me.ChkSingleInstance.Size = New System.Drawing.Size(99, 17)
-        Me.ChkSingleInstance.TabIndex = 6
-        Me.ChkSingleInstance.Text = "Single Instance"
-        Me.ttSettings.SetToolTip(Me.ChkSingleInstance, "Running ScalA for a 2nd time or more will bring an" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  already open ScalA from the" &
-        " same profile to the front." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "To make additional profiles copy, rename and/or mov" &
-        "e ScalA.exe" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
-        Me.ChkSingleInstance.UseVisualStyleBackColor = True
-        '
         'grpReserveSpace
         '
         Me.grpReserveSpace.Controls.Add(Me.btnGrabCurrent)
@@ -620,17 +583,6 @@ Partial NotInheritable Class FrmSettings
         Me.NumBorderLeft.TabIndex = 0
         Me.NumBorderLeft.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         '
-        'chkOverViewIsGame
-        '
-        Me.chkOverViewIsGame.AutoSize = True
-        Me.chkOverViewIsGame.Location = New System.Drawing.Point(178, 10)
-        Me.chkOverViewIsGame.Name = "chkOverViewIsGame"
-        Me.chkOverViewIsGame.Size = New System.Drawing.Size(107, 17)
-        Me.chkOverViewIsGame.TabIndex = 7
-        Me.chkOverViewIsGame.Text = "Active Overview "
-        Me.ttSettings.SetToolTip(Me.chkOverViewIsGame, "Have overview thumbnails function as game.")
-        Me.chkOverViewIsGame.UseVisualStyleBackColor = True
-        '
         'cboScalingMode
         '
         Me.cboScalingMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
@@ -641,30 +593,6 @@ Partial NotInheritable Class FrmSettings
         Me.cboScalingMode.Size = New System.Drawing.Size(106, 21)
         Me.cboScalingMode.TabIndex = 8
         Me.ttSettings.SetToolTip(Me.cboScalingMode, "Auto will use Pixel Mode when scaling factor is 2x or more.")
-        '
-        'chkCycleOnClose
-        '
-        Me.chkCycleOnClose.AutoSize = True
-        Me.chkCycleOnClose.Location = New System.Drawing.Point(165, 129)
-        Me.chkCycleOnClose.Name = "chkCycleOnClose"
-        Me.chkCycleOnClose.Size = New System.Drawing.Size(96, 17)
-        Me.chkCycleOnClose.TabIndex = 16
-        Me.chkCycleOnClose.TabStop = False
-        Me.chkCycleOnClose.Text = "Cycle on Close"
-        Me.ttSettings.SetToolTip(Me.chkCycleOnClose, "Closing an alt will cycle to the next one.")
-        Me.chkCycleOnClose.UseVisualStyleBackColor = True
-        '
-        'chkCheckForUpdate
-        '
-        Me.chkCheckForUpdate.AutoSize = True
-        Me.chkCheckForUpdate.ContextMenuStrip = Me.cmsUpdate
-        Me.chkCheckForUpdate.Location = New System.Drawing.Point(26, 111)
-        Me.chkCheckForUpdate.Name = "chkCheckForUpdate"
-        Me.chkCheckForUpdate.Size = New System.Drawing.Size(165, 17)
-        Me.chkCheckForUpdate.TabIndex = 23
-        Me.chkCheckForUpdate.Text = "Check For Update on Startup"
-        Me.ttSettings.SetToolTip(Me.chkCheckForUpdate, "Check for Updates when ScalA starts." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Right Click for more options.")
-        Me.chkCheckForUpdate.UseVisualStyleBackColor = True
         '
         'cmsUpdate
         '
@@ -685,64 +613,6 @@ Partial NotInheritable Class FrmSettings
         Me.OpenChangelogToolStripMenuItem.Name = "OpenChangelogToolStripMenuItem"
         Me.OpenChangelogToolStripMenuItem.Size = New System.Drawing.Size(164, 22)
         Me.OpenChangelogToolStripMenuItem.Text = "Open Changelog"
-        '
-        'ChkMinMin
-        '
-        Me.ChkMinMin.AutoSize = True
-        Me.ChkMinMin.Location = New System.Drawing.Point(191, 126)
-        Me.ChkMinMin.Name = "ChkMinMin"
-        Me.ChkMinMin.Size = New System.Drawing.Size(104, 17)
-        Me.ChkMinMin.TabIndex = 30
-        Me.ChkMinMin.Text = "Min. on Minimize"
-        Me.ttSettings.SetToolTip(Me.ChkMinMin, "Minimizing ScalA will also Minimize Astonia" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: This has no effect on legacy c" &
-        "lients")
-        Me.ChkMinMin.UseVisualStyleBackColor = True
-        '
-        'chkCloseAll
-        '
-        Me.chkCloseAll.AutoSize = True
-        Me.chkCloseAll.Location = New System.Drawing.Point(40, 202)
-        Me.chkCloseAll.Name = "chkCloseAll"
-        Me.chkCloseAll.Size = New System.Drawing.Size(152, 17)
-        Me.chkCloseAll.TabIndex = 19
-        Me.chkCloseAll.TabStop = False
-        Me.chkCloseAll.Text = "Close All Clients and ScalA"
-        Me.ttSettings.SetToolTip(Me.chkCloseAll, "Note: Whitelist setting from Sorting tab is in effect here")
-        Me.chkCloseAll.UseVisualStyleBackColor = True
-        '
-        'chkHoverActivate
-        '
-        Me.chkHoverActivate.AutoSize = True
-        Me.chkHoverActivate.Location = New System.Drawing.Point(178, 34)
-        Me.chkHoverActivate.Name = "chkHoverActivate"
-        Me.chkHoverActivate.Size = New System.Drawing.Size(112, 17)
-        Me.chkHoverActivate.TabIndex = 26
-        Me.chkHoverActivate.Text = "Activate on Hover"
-        Me.ttSettings.SetToolTip(Me.chkHoverActivate, "Hovering over a client in ScalA wil activate and bring it to front.")
-        Me.chkHoverActivate.UseVisualStyleBackColor = True
-        '
-        'chkShowEnd
-        '
-        Me.chkShowEnd.AutoSize = True
-        Me.chkShowEnd.Location = New System.Drawing.Point(26, 10)
-        Me.chkShowEnd.Name = "chkShowEnd"
-        Me.chkShowEnd.Size = New System.Drawing.Size(111, 17)
-        Me.chkShowEnd.TabIndex = 27
-        Me.chkShowEnd.Text = "Always Show End"
-        Me.ttSettings.SetToolTip(Me.chkShowEnd, "Always show Endurance on Overview Big HealthBars")
-        Me.chkShowEnd.UseVisualStyleBackColor = True
-        '
-        'chkAlterOverview
-        '
-        Me.chkAlterOverview.AutoSize = True
-        Me.chkAlterOverview.Location = New System.Drawing.Point(40, 299)
-        Me.chkAlterOverview.Name = "chkAlterOverview"
-        Me.chkAlterOverview.Size = New System.Drawing.Size(130, 17)
-        Me.chkAlterOverview.TabIndex = 23
-        Me.chkAlterOverview.TabStop = False
-        Me.chkAlterOverview.Text = "Alter Overview Layout"
-        Me.ttSettings.SetToolTip(Me.chkAlterOverview, "Note: Whitelist setting from Sorting tab is in effect here")
-        Me.chkAlterOverview.UseVisualStyleBackColor = True
         '
         'txtAlterOverviewStarKey
         '
@@ -771,42 +641,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtAlterOverviewPlusKey.TabStop = False
         Me.ttSettings.SetToolTip(Me.txtAlterOverviewPlusKey, "Increase Extra Columns/Rows")
         '
-        'chkOnlyEsc
-        '
-        Me.chkOnlyEsc.AutoSize = True
-        Me.chkOnlyEsc.Location = New System.Drawing.Point(40, 38)
-        Me.chkOnlyEsc.Name = "chkOnlyEsc"
-        Me.chkOnlyEsc.Size = New System.Drawing.Size(240, 17)
-        Me.chkOnlyEsc.TabIndex = 25
-        Me.chkOnlyEsc.TabStop = False
-        Me.chkOnlyEsc.Text = "Only Send Esc on pressing Alt-Esc or Ctrl-Esc"
-        Me.ttSettings.SetToolTip(Me.chkOnlyEsc, "Only Send Esc to Astonia when pressing Alt-Esc or Ctrl-Esc")
-        Me.chkOnlyEsc.UseVisualStyleBackColor = True
-        '
-        'chkAutoCloseSomeone
-        '
-        Me.chkAutoCloseSomeone.AutoSize = True
-        Me.chkAutoCloseSomeone.Location = New System.Drawing.Point(16, 169)
-        Me.chkAutoCloseSomeone.Name = "chkAutoCloseSomeone"
-        Me.chkAutoCloseSomeone.Size = New System.Drawing.Size(120, 17)
-        Me.chkAutoCloseSomeone.TabIndex = 7
-        Me.chkAutoCloseSomeone.Text = "AutoClose Idled Alts"
-        Me.ttSettings.SetToolTip(Me.chkAutoCloseSomeone, "Alts actually named Someone are exempt" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  and will require a manual close.")
-        Me.chkAutoCloseSomeone.UseVisualStyleBackColor = True
-        '
-        'chkNoAltTab
-        '
-        Me.chkNoAltTab.AutoSize = True
-        Me.chkNoAltTab.Location = New System.Drawing.Point(40, 20)
-        Me.chkNoAltTab.Name = "chkNoAltTab"
-        Me.chkNoAltTab.Size = New System.Drawing.Size(209, 17)
-        Me.chkNoAltTab.TabIndex = 26
-        Me.chkNoAltTab.TabStop = False
-        Me.chkNoAltTab.Text = "Disable Alt-Tab when Astonia Is Active"
-        Me.ttSettings.SetToolTip(Me.chkNoAltTab, "Note you can still use Ctrl-Alt-Tab to bring up the task switcher" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "and then Click" &
-        " or press Tab and Space to switch applications.")
-        Me.chkNoAltTab.UseVisualStyleBackColor = True
-        '
         'pb100PWarning
         '
         Me.pb100PWarning.BackgroundImage = Global.ScalA.My.Resources.Resources.Warning
@@ -817,28 +651,6 @@ Partial NotInheritable Class FrmSettings
         Me.pb100PWarning.TabIndex = 10
         Me.pb100PWarning.TabStop = False
         Me.ttSettings.SetToolTip(Me.pb100PWarning, "Windows Monitor Scaling not 100%" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Pixel Mode Disabled." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
-        '
-        'chkAutoCloseOnlyOnNoSome
-        '
-        Me.chkAutoCloseOnlyOnNoSome.AutoSize = True
-        Me.chkAutoCloseOnlyOnNoSome.Location = New System.Drawing.Point(135, 169)
-        Me.chkAutoCloseOnlyOnNoSome.Name = "chkAutoCloseOnlyOnNoSome"
-        Me.chkAutoCloseOnlyOnNoSome.Size = New System.Drawing.Size(163, 17)
-        Me.chkAutoCloseOnlyOnNoSome.TabIndex = 15
-        Me.chkAutoCloseOnlyOnNoSome.Text = "When not showing Someone"
-        Me.ttSettings.SetToolTip(Me.chkAutoCloseOnlyOnNoSome, resources.GetString("chkAutoCloseOnlyOnNoSome.ToolTip"))
-        Me.chkAutoCloseOnlyOnNoSome.UseVisualStyleBackColor = True
-        '
-        'chkAllowShiftEsc
-        '
-        Me.chkAllowShiftEsc.AutoSize = True
-        Me.chkAllowShiftEsc.Location = New System.Drawing.Point(55, 56)
-        Me.chkAllowShiftEsc.Name = "chkAllowShiftEsc"
-        Me.chkAllowShiftEsc.Size = New System.Drawing.Size(224, 17)
-        Me.chkAllowShiftEsc.TabIndex = 27
-        Me.chkAllowShiftEsc.Text = "Allow Ctrl-Shift-Esc to Open TaskManager"
-        Me.ttSettings.SetToolTip(Me.chkAllowShiftEsc, "This will send Esc to Astonia in addition to Opening TaskManager")
-        Me.chkAllowShiftEsc.UseVisualStyleBackColor = True
         '
         'lblElevated
         '
@@ -862,18 +674,6 @@ Partial NotInheritable Class FrmSettings
         Me.ttSettings.SetToolTip(Me.pbUnElevate, "ScalA is running as Administrtor." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Click here to drop Admin rights." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: ScalA " &
         "will ReElevate when it needs to." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
         '
-        'ChkQLShowHidden
-        '
-        Me.ChkQLShowHidden.AutoSize = True
-        Me.ChkQLShowHidden.Location = New System.Drawing.Point(32, 62)
-        Me.ChkQLShowHidden.Name = "ChkQLShowHidden"
-        Me.ChkQLShowHidden.Size = New System.Drawing.Size(126, 17)
-        Me.ChkQLShowHidden.TabIndex = 26
-        Me.ChkQLShowHidden.Text = "Always Show Hidden"
-        Me.ttSettings.SetToolTip(Me.ChkQLShowHidden, "Always Show Hidden and System Items." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Press Ctrl + Shift to override when this se" &
-        "tting is off.")
-        Me.ChkQLShowHidden.UseVisualStyleBackColor = True
-        '
         'btnRefreshICdisplay
         '
         Me.btnRefreshICdisplay.Location = New System.Drawing.Point(207, 12)
@@ -893,17 +693,6 @@ Partial NotInheritable Class FrmSettings
         Me.lblICSize.TabIndex = 19
         Me.lblICSize.Text = "Size: ? KB"
         Me.ttSettings.SetToolTip(Me.lblICSize, "There will always be a small overhead even with 0 items in the Cache")
-        '
-        'ChkQLResolveLnk
-        '
-        Me.ChkQLResolveLnk.AutoSize = True
-        Me.ChkQLResolveLnk.Location = New System.Drawing.Point(167, 62)
-        Me.ChkQLResolveLnk.Name = "ChkQLResolveLnk"
-        Me.ChkQLResolveLnk.Size = New System.Drawing.Size(119, 17)
-        Me.ChkQLResolveLnk.TabIndex = 27
-        Me.ChkQLResolveLnk.Text = "Resolve Lnk to Dirs"
-        Me.ttSettings.SetToolTip(Me.ChkQLResolveLnk, "Have .Lnk Shortcuts pointing to Directories be parsed as Folders" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
-        Me.ChkQLResolveLnk.UseVisualStyleBackColor = True
         '
         'btnResetCache
         '
@@ -951,16 +740,6 @@ Partial NotInheritable Class FrmSettings
         Me.tabResolutions.TabIndex = 0
         Me.tabResolutions.Text = "Resolution"
         Me.tabResolutions.UseVisualStyleBackColor = True
-        '
-        'ChkSizeBorder
-        '
-        Me.ChkSizeBorder.AutoSize = True
-        Me.ChkSizeBorder.Location = New System.Drawing.Point(206, 80)
-        Me.ChkSizeBorder.Name = "ChkSizeBorder"
-        Me.ChkSizeBorder.Size = New System.Drawing.Size(88, 17)
-        Me.ChkSizeBorder.TabIndex = 9
-        Me.ChkSizeBorder.Text = "Sizing Border"
-        Me.ChkSizeBorder.UseVisualStyleBackColor = True
         '
         'btnAddCurrentRes
         '
@@ -1062,37 +841,26 @@ Partial NotInheritable Class FrmSettings
         '
         Me.tabHotkeys.AutoScroll = True
         Me.tabHotkeys.Controls.Add(Me.chkAllowShiftEsc)
-        Me.tabHotkeys.Controls.Add(Me.chkNoAltTab)
         Me.tabHotkeys.Controls.Add(Me.chkOnlyEsc)
+        Me.tabHotkeys.Controls.Add(Me.chkNoAltTab)
         Me.tabHotkeys.Controls.Add(Me.chkBlockWin)
         Me.tabHotkeys.Controls.Add(Me.chkAlterOverview)
         Me.tabHotkeys.Controls.Add(Me.grpAlterOverview)
         Me.tabHotkeys.Controls.Add(Me.chkToggleTopMost)
-        Me.tabHotkeys.Controls.Add(Me.grpToggleTopMost)
         Me.tabHotkeys.Controls.Add(Me.chkCloseAll)
-        Me.tabHotkeys.Controls.Add(Me.grpCloseAllShortcut)
         Me.tabHotkeys.Controls.Add(Me.chkCycleOnClose)
         Me.tabHotkeys.Controls.Add(Me.chkSwitchToOverview)
         Me.tabHotkeys.Controls.Add(Me.chkCycleAlts)
-        Me.tabHotkeys.Controls.Add(Me.grpCycleShortcut)
         Me.tabHotkeys.Controls.Add(Me.grpOverviewShortcut)
+        Me.tabHotkeys.Controls.Add(Me.grpCycleShortcut)
+        Me.tabHotkeys.Controls.Add(Me.grpCloseAllShortcut)
+        Me.tabHotkeys.Controls.Add(Me.grpToggleTopMost)
         Me.tabHotkeys.Location = New System.Drawing.Point(4, 25)
         Me.tabHotkeys.Name = "tabHotkeys"
         Me.tabHotkeys.Size = New System.Drawing.Size(333, 183)
         Me.tabHotkeys.TabIndex = 2
         Me.tabHotkeys.Text = "Hotkey"
         Me.tabHotkeys.UseVisualStyleBackColor = True
-        '
-        'chkBlockWin
-        '
-        Me.chkBlockWin.AutoSize = True
-        Me.chkBlockWin.Location = New System.Drawing.Point(40, 2)
-        Me.chkBlockWin.Name = "chkBlockWin"
-        Me.chkBlockWin.Size = New System.Drawing.Size(239, 17)
-        Me.chkBlockWin.TabIndex = 24
-        Me.chkBlockWin.TabStop = False
-        Me.chkBlockWin.Text = "Disable Windows Key when Astonia is Active"
-        Me.chkBlockWin.UseVisualStyleBackColor = True
         '
         'grpAlterOverview
         '
@@ -1120,150 +888,6 @@ Partial NotInheritable Class FrmSettings
         Me.grpAlterOverview.TabIndex = 22
         Me.grpAlterOverview.TabStop = False
         '
-        'chkAlterOverviewStarAlt
-        '
-        Me.chkAlterOverviewStarAlt.AutoSize = True
-        Me.chkAlterOverviewStarAlt.Location = New System.Drawing.Point(90, 66)
-        Me.chkAlterOverviewStarAlt.Name = "chkAlterOverviewStarAlt"
-        Me.chkAlterOverviewStarAlt.Size = New System.Drawing.Size(38, 17)
-        Me.chkAlterOverviewStarAlt.TabIndex = 23
-        Me.chkAlterOverviewStarAlt.TabStop = False
-        Me.chkAlterOverviewStarAlt.Text = "Alt"
-        Me.chkAlterOverviewStarAlt.UseVisualStyleBackColor = True
-        '
-        'chkAlterOverviewStarShift
-        '
-        Me.chkAlterOverviewStarShift.AutoSize = True
-        Me.chkAlterOverviewStarShift.Location = New System.Drawing.Point(131, 66)
-        Me.chkAlterOverviewStarShift.Name = "chkAlterOverviewStarShift"
-        Me.chkAlterOverviewStarShift.Size = New System.Drawing.Size(47, 17)
-        Me.chkAlterOverviewStarShift.TabIndex = 24
-        Me.chkAlterOverviewStarShift.TabStop = False
-        Me.chkAlterOverviewStarShift.Text = "Shift"
-        Me.chkAlterOverviewStarShift.UseVisualStyleBackColor = True
-        '
-        'chkAlterOverviewStarWin
-        '
-        Me.chkAlterOverviewStarWin.AutoSize = True
-        Me.chkAlterOverviewStarWin.Location = New System.Drawing.Point(46, 66)
-        Me.chkAlterOverviewStarWin.Name = "chkAlterOverviewStarWin"
-        Me.chkAlterOverviewStarWin.Size = New System.Drawing.Size(45, 17)
-        Me.chkAlterOverviewStarWin.TabIndex = 25
-        Me.chkAlterOverviewStarWin.TabStop = False
-        Me.chkAlterOverviewStarWin.Text = "Win"
-        Me.chkAlterOverviewStarWin.UseVisualStyleBackColor = True
-        '
-        'chkAlterOverviewStarCtrl
-        '
-        Me.chkAlterOverviewStarCtrl.AutoSize = True
-        Me.chkAlterOverviewStarCtrl.Location = New System.Drawing.Point(6, 66)
-        Me.chkAlterOverviewStarCtrl.Name = "chkAlterOverviewStarCtrl"
-        Me.chkAlterOverviewStarCtrl.Size = New System.Drawing.Size(41, 17)
-        Me.chkAlterOverviewStarCtrl.TabIndex = 22
-        Me.chkAlterOverviewStarCtrl.TabStop = False
-        Me.chkAlterOverviewStarCtrl.Text = "Ctrl"
-        Me.chkAlterOverviewStarCtrl.UseVisualStyleBackColor = True
-        '
-        'chkAlterOverviewMinAlt
-        '
-        Me.chkAlterOverviewMinAlt.AutoSize = True
-        Me.chkAlterOverviewMinAlt.Location = New System.Drawing.Point(90, 42)
-        Me.chkAlterOverviewMinAlt.Name = "chkAlterOverviewMinAlt"
-        Me.chkAlterOverviewMinAlt.Size = New System.Drawing.Size(38, 17)
-        Me.chkAlterOverviewMinAlt.TabIndex = 13
-        Me.chkAlterOverviewMinAlt.TabStop = False
-        Me.chkAlterOverviewMinAlt.Text = "Alt"
-        Me.chkAlterOverviewMinAlt.UseVisualStyleBackColor = True
-        '
-        'chkAlterOverviewPlusALt
-        '
-        Me.chkAlterOverviewPlusALt.AutoSize = True
-        Me.chkAlterOverviewPlusALt.Location = New System.Drawing.Point(90, 19)
-        Me.chkAlterOverviewPlusALt.Name = "chkAlterOverviewPlusALt"
-        Me.chkAlterOverviewPlusALt.Size = New System.Drawing.Size(38, 17)
-        Me.chkAlterOverviewPlusALt.TabIndex = 9
-        Me.chkAlterOverviewPlusALt.TabStop = False
-        Me.chkAlterOverviewPlusALt.Text = "Alt"
-        Me.chkAlterOverviewPlusALt.UseVisualStyleBackColor = True
-        '
-        'chkAlterOverviewMinShift
-        '
-        Me.chkAlterOverviewMinShift.AutoSize = True
-        Me.chkAlterOverviewMinShift.Location = New System.Drawing.Point(131, 42)
-        Me.chkAlterOverviewMinShift.Name = "chkAlterOverviewMinShift"
-        Me.chkAlterOverviewMinShift.Size = New System.Drawing.Size(47, 17)
-        Me.chkAlterOverviewMinShift.TabIndex = 15
-        Me.chkAlterOverviewMinShift.TabStop = False
-        Me.chkAlterOverviewMinShift.Text = "Shift"
-        Me.chkAlterOverviewMinShift.UseVisualStyleBackColor = True
-        '
-        'chkAlterOverviewPlusShift
-        '
-        Me.chkAlterOverviewPlusShift.AutoSize = True
-        Me.chkAlterOverviewPlusShift.Location = New System.Drawing.Point(131, 19)
-        Me.chkAlterOverviewPlusShift.Name = "chkAlterOverviewPlusShift"
-        Me.chkAlterOverviewPlusShift.Size = New System.Drawing.Size(47, 17)
-        Me.chkAlterOverviewPlusShift.TabIndex = 14
-        Me.chkAlterOverviewPlusShift.TabStop = False
-        Me.chkAlterOverviewPlusShift.Text = "Shift"
-        Me.chkAlterOverviewPlusShift.UseVisualStyleBackColor = True
-        '
-        'chkAlterOverviewMinWin
-        '
-        Me.chkAlterOverviewMinWin.AutoSize = True
-        Me.chkAlterOverviewMinWin.Location = New System.Drawing.Point(46, 42)
-        Me.chkAlterOverviewMinWin.Name = "chkAlterOverviewMinWin"
-        Me.chkAlterOverviewMinWin.Size = New System.Drawing.Size(45, 17)
-        Me.chkAlterOverviewMinWin.TabIndex = 17
-        Me.chkAlterOverviewMinWin.TabStop = False
-        Me.chkAlterOverviewMinWin.Text = "Win"
-        Me.chkAlterOverviewMinWin.UseVisualStyleBackColor = True
-        '
-        'chkAlterOverviewPlusWin
-        '
-        Me.chkAlterOverviewPlusWin.AutoSize = True
-        Me.chkAlterOverviewPlusWin.Location = New System.Drawing.Point(46, 19)
-        Me.chkAlterOverviewPlusWin.Name = "chkAlterOverviewPlusWin"
-        Me.chkAlterOverviewPlusWin.Size = New System.Drawing.Size(45, 17)
-        Me.chkAlterOverviewPlusWin.TabIndex = 16
-        Me.chkAlterOverviewPlusWin.TabStop = False
-        Me.chkAlterOverviewPlusWin.Text = "Win"
-        Me.chkAlterOverviewPlusWin.UseVisualStyleBackColor = True
-        '
-        'chkAlterOverviewMinCtrl
-        '
-        Me.chkAlterOverviewMinCtrl.AutoSize = True
-        Me.chkAlterOverviewMinCtrl.Location = New System.Drawing.Point(6, 42)
-        Me.chkAlterOverviewMinCtrl.Name = "chkAlterOverviewMinCtrl"
-        Me.chkAlterOverviewMinCtrl.Size = New System.Drawing.Size(41, 17)
-        Me.chkAlterOverviewMinCtrl.TabIndex = 12
-        Me.chkAlterOverviewMinCtrl.TabStop = False
-        Me.chkAlterOverviewMinCtrl.Text = "Ctrl"
-        Me.chkAlterOverviewMinCtrl.UseVisualStyleBackColor = True
-        '
-        'chkAlterOverviewPlusCtrl
-        '
-        Me.chkAlterOverviewPlusCtrl.AutoSize = True
-        Me.chkAlterOverviewPlusCtrl.Location = New System.Drawing.Point(6, 19)
-        Me.chkAlterOverviewPlusCtrl.Name = "chkAlterOverviewPlusCtrl"
-        Me.chkAlterOverviewPlusCtrl.Size = New System.Drawing.Size(41, 17)
-        Me.chkAlterOverviewPlusCtrl.TabIndex = 8
-        Me.chkAlterOverviewPlusCtrl.TabStop = False
-        Me.chkAlterOverviewPlusCtrl.Text = "Ctrl"
-        Me.chkAlterOverviewPlusCtrl.UseVisualStyleBackColor = True
-        '
-        'chkToggleTopMost
-        '
-        Me.chkToggleTopMost.AutoSize = True
-        Me.chkToggleTopMost.Location = New System.Drawing.Point(40, 250)
-        Me.chkToggleTopMost.Name = "chkToggleTopMost"
-        Me.chkToggleTopMost.Size = New System.Drawing.Size(215, 18)
-        Me.chkToggleTopMost.TabIndex = 21
-        Me.chkToggleTopMost.TabStop = False
-        Me.chkToggleTopMost.Text = "Toggle Other Window TopMost Status"
-        Me.chkToggleTopMost.UseCompatibleTextRendering = True
-        Me.chkToggleTopMost.UseVisualStyleBackColor = True
-        '
         'grpToggleTopMost
         '
         Me.grpToggleTopMost.Controls.Add(Me.txtTogTop)
@@ -1284,50 +908,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtTogTop.Size = New System.Drawing.Size(82, 20)
         Me.txtTogTop.TabIndex = 21
         Me.txtTogTop.TabStop = False
-        '
-        'chkTogTopAlt
-        '
-        Me.chkTogTopAlt.AutoSize = True
-        Me.chkTogTopAlt.Location = New System.Drawing.Point(90, 19)
-        Me.chkTogTopAlt.Name = "chkTogTopAlt"
-        Me.chkTogTopAlt.Size = New System.Drawing.Size(38, 17)
-        Me.chkTogTopAlt.TabIndex = 23
-        Me.chkTogTopAlt.TabStop = False
-        Me.chkTogTopAlt.Text = "Alt"
-        Me.chkTogTopAlt.UseVisualStyleBackColor = True
-        '
-        'chkTogTopShift
-        '
-        Me.chkTogTopShift.AutoSize = True
-        Me.chkTogTopShift.Location = New System.Drawing.Point(131, 19)
-        Me.chkTogTopShift.Name = "chkTogTopShift"
-        Me.chkTogTopShift.Size = New System.Drawing.Size(47, 17)
-        Me.chkTogTopShift.TabIndex = 22
-        Me.chkTogTopShift.TabStop = False
-        Me.chkTogTopShift.Text = "Shift"
-        Me.chkTogTopShift.UseVisualStyleBackColor = True
-        '
-        'chkTogTopWin
-        '
-        Me.chkTogTopWin.AutoSize = True
-        Me.chkTogTopWin.Location = New System.Drawing.Point(46, 19)
-        Me.chkTogTopWin.Name = "chkTogTopWin"
-        Me.chkTogTopWin.Size = New System.Drawing.Size(45, 17)
-        Me.chkTogTopWin.TabIndex = 20
-        Me.chkTogTopWin.TabStop = False
-        Me.chkTogTopWin.Text = "Win"
-        Me.chkTogTopWin.UseVisualStyleBackColor = True
-        '
-        'chkTogTopCtrl
-        '
-        Me.chkTogTopCtrl.AutoSize = True
-        Me.chkTogTopCtrl.Location = New System.Drawing.Point(6, 19)
-        Me.chkTogTopCtrl.Name = "chkTogTopCtrl"
-        Me.chkTogTopCtrl.Size = New System.Drawing.Size(41, 17)
-        Me.chkTogTopCtrl.TabIndex = 19
-        Me.chkTogTopCtrl.TabStop = False
-        Me.chkTogTopCtrl.Text = "Ctrl"
-        Me.chkTogTopCtrl.UseVisualStyleBackColor = True
         '
         'grpCloseAllShortcut
         '
@@ -1350,72 +930,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtCloseAll.TabIndex = 21
         Me.txtCloseAll.TabStop = False
         '
-        'chkCAALt
-        '
-        Me.chkCAALt.AutoSize = True
-        Me.chkCAALt.Location = New System.Drawing.Point(90, 19)
-        Me.chkCAALt.Name = "chkCAALt"
-        Me.chkCAALt.Size = New System.Drawing.Size(38, 17)
-        Me.chkCAALt.TabIndex = 20
-        Me.chkCAALt.TabStop = False
-        Me.chkCAALt.Text = "Alt"
-        Me.chkCAALt.UseVisualStyleBackColor = True
-        '
-        'chkCAShift
-        '
-        Me.chkCAShift.AutoSize = True
-        Me.chkCAShift.Location = New System.Drawing.Point(131, 19)
-        Me.chkCAShift.Name = "chkCAShift"
-        Me.chkCAShift.Size = New System.Drawing.Size(47, 17)
-        Me.chkCAShift.TabIndex = 22
-        Me.chkCAShift.TabStop = False
-        Me.chkCAShift.Text = "Shift"
-        Me.chkCAShift.UseVisualStyleBackColor = True
-        '
-        'chkCAWin
-        '
-        Me.chkCAWin.AutoSize = True
-        Me.chkCAWin.Location = New System.Drawing.Point(46, 19)
-        Me.chkCAWin.Name = "chkCAWin"
-        Me.chkCAWin.Size = New System.Drawing.Size(45, 17)
-        Me.chkCAWin.TabIndex = 23
-        Me.chkCAWin.TabStop = False
-        Me.chkCAWin.Text = "Win"
-        Me.chkCAWin.UseVisualStyleBackColor = True
-        '
-        'chkCACtrl
-        '
-        Me.chkCACtrl.AutoSize = True
-        Me.chkCACtrl.Location = New System.Drawing.Point(6, 19)
-        Me.chkCACtrl.Name = "chkCACtrl"
-        Me.chkCACtrl.Size = New System.Drawing.Size(41, 17)
-        Me.chkCACtrl.TabIndex = 19
-        Me.chkCACtrl.TabStop = False
-        Me.chkCACtrl.Text = "Ctrl"
-        Me.chkCACtrl.UseVisualStyleBackColor = True
-        '
-        'chkSwitchToOverview
-        '
-        Me.chkSwitchToOverview.AutoSize = True
-        Me.chkSwitchToOverview.Location = New System.Drawing.Point(40, 80)
-        Me.chkSwitchToOverview.Name = "chkSwitchToOverview"
-        Me.chkSwitchToOverview.Size = New System.Drawing.Size(118, 17)
-        Me.chkSwitchToOverview.TabIndex = 2
-        Me.chkSwitchToOverview.TabStop = False
-        Me.chkSwitchToOverview.Text = "Switch to Overview"
-        Me.chkSwitchToOverview.UseVisualStyleBackColor = True
-        '
-        'chkCycleAlts
-        '
-        Me.chkCycleAlts.AutoSize = True
-        Me.chkCycleAlts.Location = New System.Drawing.Point(40, 129)
-        Me.chkCycleAlts.Name = "chkCycleAlts"
-        Me.chkCycleAlts.Size = New System.Drawing.Size(102, 17)
-        Me.chkCycleAlts.TabIndex = 10
-        Me.chkCycleAlts.TabStop = False
-        Me.chkCycleAlts.Text = "Cycle Up/Down"
-        Me.chkCycleAlts.UseVisualStyleBackColor = True
-        '
         'grpCycleShortcut
         '
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleDownAlt)
@@ -1434,17 +948,6 @@ Partial NotInheritable Class FrmSettings
         Me.grpCycleShortcut.TabIndex = 1
         Me.grpCycleShortcut.TabStop = False
         '
-        'chkCycleDownAlt
-        '
-        Me.chkCycleDownAlt.AutoSize = True
-        Me.chkCycleDownAlt.Location = New System.Drawing.Point(90, 42)
-        Me.chkCycleDownAlt.Name = "chkCycleDownAlt"
-        Me.chkCycleDownAlt.Size = New System.Drawing.Size(38, 17)
-        Me.chkCycleDownAlt.TabIndex = 13
-        Me.chkCycleDownAlt.TabStop = False
-        Me.chkCycleDownAlt.Text = "Alt"
-        Me.chkCycleDownAlt.UseVisualStyleBackColor = True
-        '
         'txtCycleKeyDown
         '
         Me.txtCycleKeyDown.Location = New System.Drawing.Point(181, 40)
@@ -1453,17 +956,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtCycleKeyDown.TabIndex = 11
         Me.txtCycleKeyDown.TabStop = False
         '
-        'chkCycleUpAlt
-        '
-        Me.chkCycleUpAlt.AutoSize = True
-        Me.chkCycleUpAlt.Location = New System.Drawing.Point(90, 19)
-        Me.chkCycleUpAlt.Name = "chkCycleUpAlt"
-        Me.chkCycleUpAlt.Size = New System.Drawing.Size(38, 17)
-        Me.chkCycleUpAlt.TabIndex = 9
-        Me.chkCycleUpAlt.TabStop = False
-        Me.chkCycleUpAlt.Text = "Alt"
-        Me.chkCycleUpAlt.UseVisualStyleBackColor = True
-        '
         'txtCycleKeyUp
         '
         Me.txtCycleKeyUp.Location = New System.Drawing.Point(181, 16)
@@ -1471,72 +963,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtCycleKeyUp.Size = New System.Drawing.Size(82, 20)
         Me.txtCycleKeyUp.TabIndex = 7
         Me.txtCycleKeyUp.TabStop = False
-        '
-        'chkCycleDownShift
-        '
-        Me.chkCycleDownShift.AutoSize = True
-        Me.chkCycleDownShift.Location = New System.Drawing.Point(131, 42)
-        Me.chkCycleDownShift.Name = "chkCycleDownShift"
-        Me.chkCycleDownShift.Size = New System.Drawing.Size(47, 17)
-        Me.chkCycleDownShift.TabIndex = 15
-        Me.chkCycleDownShift.TabStop = False
-        Me.chkCycleDownShift.Text = "Shift"
-        Me.chkCycleDownShift.UseVisualStyleBackColor = True
-        '
-        'chkCycleUpShift
-        '
-        Me.chkCycleUpShift.AutoSize = True
-        Me.chkCycleUpShift.Location = New System.Drawing.Point(131, 19)
-        Me.chkCycleUpShift.Name = "chkCycleUpShift"
-        Me.chkCycleUpShift.Size = New System.Drawing.Size(47, 17)
-        Me.chkCycleUpShift.TabIndex = 14
-        Me.chkCycleUpShift.TabStop = False
-        Me.chkCycleUpShift.Text = "Shift"
-        Me.chkCycleUpShift.UseVisualStyleBackColor = True
-        '
-        'chkCycleDownWin
-        '
-        Me.chkCycleDownWin.AutoSize = True
-        Me.chkCycleDownWin.Location = New System.Drawing.Point(46, 42)
-        Me.chkCycleDownWin.Name = "chkCycleDownWin"
-        Me.chkCycleDownWin.Size = New System.Drawing.Size(45, 17)
-        Me.chkCycleDownWin.TabIndex = 17
-        Me.chkCycleDownWin.TabStop = False
-        Me.chkCycleDownWin.Text = "Win"
-        Me.chkCycleDownWin.UseVisualStyleBackColor = True
-        '
-        'chkCycleUpWin
-        '
-        Me.chkCycleUpWin.AutoSize = True
-        Me.chkCycleUpWin.Location = New System.Drawing.Point(46, 19)
-        Me.chkCycleUpWin.Name = "chkCycleUpWin"
-        Me.chkCycleUpWin.Size = New System.Drawing.Size(45, 17)
-        Me.chkCycleUpWin.TabIndex = 16
-        Me.chkCycleUpWin.TabStop = False
-        Me.chkCycleUpWin.Text = "Win"
-        Me.chkCycleUpWin.UseVisualStyleBackColor = True
-        '
-        'chkCycleDownCtrl
-        '
-        Me.chkCycleDownCtrl.AutoSize = True
-        Me.chkCycleDownCtrl.Location = New System.Drawing.Point(6, 42)
-        Me.chkCycleDownCtrl.Name = "chkCycleDownCtrl"
-        Me.chkCycleDownCtrl.Size = New System.Drawing.Size(41, 17)
-        Me.chkCycleDownCtrl.TabIndex = 12
-        Me.chkCycleDownCtrl.TabStop = False
-        Me.chkCycleDownCtrl.Text = "Ctrl"
-        Me.chkCycleDownCtrl.UseVisualStyleBackColor = True
-        '
-        'chkCycleUpCtrl
-        '
-        Me.chkCycleUpCtrl.AutoSize = True
-        Me.chkCycleUpCtrl.Location = New System.Drawing.Point(6, 19)
-        Me.chkCycleUpCtrl.Name = "chkCycleUpCtrl"
-        Me.chkCycleUpCtrl.Size = New System.Drawing.Size(41, 17)
-        Me.chkCycleUpCtrl.TabIndex = 8
-        Me.chkCycleUpCtrl.TabStop = False
-        Me.chkCycleUpCtrl.Text = "Ctrl"
-        Me.chkCycleUpCtrl.UseVisualStyleBackColor = True
         '
         'grpOverviewShortcut
         '
@@ -1558,50 +984,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtStoKey.Size = New System.Drawing.Size(82, 20)
         Me.txtStoKey.TabIndex = 6
         Me.txtStoKey.TabStop = False
-        '
-        'chkStoAlt
-        '
-        Me.chkStoAlt.AutoSize = True
-        Me.chkStoAlt.Location = New System.Drawing.Point(90, 19)
-        Me.chkStoAlt.Name = "chkStoAlt"
-        Me.chkStoAlt.Size = New System.Drawing.Size(38, 17)
-        Me.chkStoAlt.TabIndex = 5
-        Me.chkStoAlt.TabStop = False
-        Me.chkStoAlt.Text = "Alt"
-        Me.chkStoAlt.UseVisualStyleBackColor = True
-        '
-        'chkStoShift
-        '
-        Me.chkStoShift.AutoSize = True
-        Me.chkStoShift.Location = New System.Drawing.Point(131, 19)
-        Me.chkStoShift.Name = "chkStoShift"
-        Me.chkStoShift.Size = New System.Drawing.Size(47, 17)
-        Me.chkStoShift.TabIndex = 7
-        Me.chkStoShift.TabStop = False
-        Me.chkStoShift.Text = "Shift"
-        Me.chkStoShift.UseVisualStyleBackColor = True
-        '
-        'chkStoWin
-        '
-        Me.chkStoWin.AutoSize = True
-        Me.chkStoWin.Location = New System.Drawing.Point(46, 19)
-        Me.chkStoWin.Name = "chkStoWin"
-        Me.chkStoWin.Size = New System.Drawing.Size(45, 17)
-        Me.chkStoWin.TabIndex = 8
-        Me.chkStoWin.TabStop = False
-        Me.chkStoWin.Text = "Win"
-        Me.chkStoWin.UseVisualStyleBackColor = True
-        '
-        'chkStoCtrl
-        '
-        Me.chkStoCtrl.AutoSize = True
-        Me.chkStoCtrl.Location = New System.Drawing.Point(6, 19)
-        Me.chkStoCtrl.Name = "chkStoCtrl"
-        Me.chkStoCtrl.Size = New System.Drawing.Size(41, 17)
-        Me.chkStoCtrl.TabIndex = 3
-        Me.chkStoCtrl.TabStop = False
-        Me.chkStoCtrl.Text = "Ctrl"
-        Me.chkStoCtrl.UseVisualStyleBackColor = True
         '
         'tabSortAndBL
         '
@@ -1663,49 +1045,19 @@ Partial NotInheritable Class FrmSettings
         Me.txtTopSort.TabIndex = 0
         Me.txtTopSort.Text = "Someone"
         '
-        'chkWhitelist
-        '
-        Me.chkWhitelist.AutoSize = True
-        Me.chkWhitelist.Location = New System.Drawing.Point(128, -1)
-        Me.chkWhitelist.Name = "chkWhitelist"
-        Me.chkWhitelist.Size = New System.Drawing.Size(66, 17)
-        Me.chkWhitelist.TabIndex = 6
-        Me.chkWhitelist.Text = "Whitelist"
-        Me.chkWhitelist.UseVisualStyleBackColor = True
-        '
         'tabMaximized
         '
         Me.tabMaximized.Controls.Add(Me.chkMinMaxOnSwitch)
         Me.tabMaximized.Controls.Add(grpAlterOverviewMinMax)
+        Me.tabMaximized.Controls.Add(Me.grpReserveSpace)
         Me.tabMaximized.Controls.Add(Me.ChkMinMin)
         Me.tabMaximized.Controls.Add(Me.chkStartupMax)
-        Me.tabMaximized.Controls.Add(Me.grpReserveSpace)
         Me.tabMaximized.Location = New System.Drawing.Point(4, 25)
         Me.tabMaximized.Name = "tabMaximized"
         Me.tabMaximized.Size = New System.Drawing.Size(333, 183)
         Me.tabMaximized.TabIndex = 4
         Me.tabMaximized.Text = "Min/Max"
         Me.tabMaximized.UseVisualStyleBackColor = True
-        '
-        'chkMinMaxOnSwitch
-        '
-        Me.chkMinMaxOnSwitch.AutoSize = True
-        Me.chkMinMaxOnSwitch.Location = New System.Drawing.Point(39, 158)
-        Me.chkMinMaxOnSwitch.Name = "chkMinMaxOnSwitch"
-        Me.chkMinMaxOnSwitch.Size = New System.Drawing.Size(257, 17)
-        Me.chkMinMaxOnSwitch.TabIndex = 32
-        Me.chkMinMaxOnSwitch.Text = "Maxim-/Normalize on switching to/from Overview"
-        Me.chkMinMaxOnSwitch.UseVisualStyleBackColor = True
-        '
-        'chkStartupMax
-        '
-        Me.chkStartupMax.AutoSize = True
-        Me.chkStartupMax.Location = New System.Drawing.Point(191, 104)
-        Me.chkStartupMax.Name = "chkStartupMax"
-        Me.chkStartupMax.Size = New System.Drawing.Size(100, 17)
-        Me.chkStartupMax.TabIndex = 29
-        Me.chkStartupMax.Text = "Start Maximized"
-        Me.chkStartupMax.UseVisualStyleBackColor = True
         '
         'TabQL
         '
@@ -1714,10 +1066,10 @@ Partial NotInheritable Class FrmSettings
         Me.TabQL.Controls.Add(Me.TxtFilterAddExt)
         Me.TabQL.Controls.Add(Me.lblDefaultFilter)
         Me.TabQL.Controls.Add(Me.GroupBox1)
-        Me.TabQL.Controls.Add(Me.ChkQLResolveLnk)
-        Me.TabQL.Controls.Add(Me.ChkQLShowHidden)
         Me.TabQL.Controls.Add(grpQLPath)
         Me.TabQL.Controls.Add(Me.Label2)
+        Me.TabQL.Controls.Add(Me.ChkQLResolveLnk)
+        Me.TabQL.Controls.Add(Me.ChkQLShowHidden)
         Me.TabQL.Location = New System.Drawing.Point(4, 25)
         Me.TabQL.Name = "TabQL"
         Me.TabQL.Size = New System.Drawing.Size(333, 183)
@@ -1796,16 +1148,16 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc.Controls.Add(Me.ChkAlwaysStartOnOverview)
         Me.tabMisc.Controls.Add(Me.cmbPriority)
         Me.tabMisc.Controls.Add(Label1)
-        Me.tabMisc.Controls.Add(Me.chkShowEnd)
         Me.tabMisc.Controls.Add(Me.cmbTheme)
         Me.tabMisc.Controls.Add(Me.Label16)
         Me.tabMisc.Controls.Add(Me.txtExe)
         Me.tabMisc.Controls.Add(Label3)
         Me.tabMisc.Controls.Add(Me.txtClass)
-        Me.tabMisc.Controls.Add(Me.chkOverViewIsGame)
+        Me.tabMisc.Controls.Add(Me.chkShowEnd)
         Me.tabMisc.Controls.Add(Me.ChkSingleInstance)
         Me.tabMisc.Controls.Add(Me.chkCheckForUpdate)
         Me.tabMisc.Controls.Add(Me.chkTopMost)
+        Me.tabMisc.Controls.Add(Me.chkOverViewIsGame)
         Me.tabMisc.Location = New System.Drawing.Point(4, 25)
         Me.tabMisc.Name = "tabMisc"
         Me.tabMisc.Padding = New System.Windows.Forms.Padding(3)
@@ -1813,16 +1165,6 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc.TabIndex = 1
         Me.tabMisc.Text = "Misc"
         Me.tabMisc.UseVisualStyleBackColor = True
-        '
-        'ChkAlwaysStartOnOverview
-        '
-        Me.ChkAlwaysStartOnOverview.AutoSize = True
-        Me.ChkAlwaysStartOnOverview.Location = New System.Drawing.Point(26, 34)
-        Me.ChkAlwaysStartOnOverview.Name = "ChkAlwaysStartOnOverview"
-        Me.ChkAlwaysStartOnOverview.Size = New System.Drawing.Size(149, 17)
-        Me.ChkAlwaysStartOnOverview.TabIndex = 30
-        Me.ChkAlwaysStartOnOverview.Text = "Always Start On Overview"
-        Me.ChkAlwaysStartOnOverview.UseVisualStyleBackColor = True
         '
         'cmbPriority
         '
@@ -1871,16 +1213,6 @@ Partial NotInheritable Class FrmSettings
         Me.txtClass.TabIndex = 9
         Me.txtClass.Text = "MAINWNDMOAC | 䅍义乗䵄䅏C"
         '
-        'chkTopMost
-        '
-        Me.chkTopMost.AutoSize = True
-        Me.chkTopMost.Location = New System.Drawing.Point(26, 60)
-        Me.chkTopMost.Name = "chkTopMost"
-        Me.chkTopMost.Size = New System.Drawing.Size(98, 17)
-        Me.chkTopMost.TabIndex = 3
-        Me.chkTopMost.Text = "Always On Top"
-        Me.chkTopMost.UseVisualStyleBackColor = True
-        '
         'pnlElevation
         '
         Me.pnlElevation.Controls.Add(Me.lblElevated)
@@ -1896,12 +1228,680 @@ Partial NotInheritable Class FrmSettings
         Me.chkDPIDragFix.AutoSize = True
         Me.chkDPIDragFix.Location = New System.Drawing.Point(206, 103)
         Me.chkDPIDragFix.Name = "chkDPIDragFix"
-        Me.chkDPIDragFix.Size = New System.Drawing.Size(86, 17)
+        Me.chkDPIDragFix.Size = New System.Drawing.Size(99, 17)
         Me.chkDPIDragFix.TabIndex = 18
         Me.chkDPIDragFix.Text = "DPI Drag Fix"
         Me.ttSettings.SetToolTip(Me.chkDPIDragFix, "Fix Dragging to a differently scaled monitor" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & " for clients with DPI override Appl" &
         "ication set." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Hold Shift while initiating a drag to override.")
         Me.chkDPIDragFix.UseVisualStyleBackColor = True
+        '
+        'ChkSizeBorder
+        '
+        Me.ChkSizeBorder.AutoSize = True
+        Me.ChkSizeBorder.Location = New System.Drawing.Point(206, 80)
+        Me.ChkSizeBorder.Name = "ChkSizeBorder"
+        Me.ChkSizeBorder.Size = New System.Drawing.Size(101, 17)
+        Me.ChkSizeBorder.TabIndex = 9
+        Me.ChkSizeBorder.Text = "Sizing Border"
+        Me.ChkSizeBorder.UseVisualStyleBackColor = True
+        '
+        'chkAllowShiftEsc
+        '
+        Me.chkAllowShiftEsc.AutoSize = True
+        Me.chkAllowShiftEsc.Location = New System.Drawing.Point(55, 56)
+        Me.chkAllowShiftEsc.Name = "chkAllowShiftEsc"
+        Me.chkAllowShiftEsc.Size = New System.Drawing.Size(237, 17)
+        Me.chkAllowShiftEsc.TabIndex = 27
+        Me.chkAllowShiftEsc.Text = "Allow Ctrl-Shift-Esc to Open TaskManager"
+        Me.ttSettings.SetToolTip(Me.chkAllowShiftEsc, "This will send Esc to Astonia in addition to Opening TaskManager")
+        Me.chkAllowShiftEsc.UseVisualStyleBackColor = True
+        '
+        'chkOnlyEsc
+        '
+        Me.chkOnlyEsc.AutoSize = True
+        Me.chkOnlyEsc.Location = New System.Drawing.Point(40, 38)
+        Me.chkOnlyEsc.Name = "chkOnlyEsc"
+        Me.chkOnlyEsc.Size = New System.Drawing.Size(253, 17)
+        Me.chkOnlyEsc.TabIndex = 25
+        Me.chkOnlyEsc.TabStop = False
+        Me.chkOnlyEsc.Text = "Only Send Esc on pressing Alt-Esc or Ctrl-Esc"
+        Me.ttSettings.SetToolTip(Me.chkOnlyEsc, "Only Send Esc to Astonia when pressing Alt-Esc or Ctrl-Esc")
+        Me.chkOnlyEsc.UseVisualStyleBackColor = True
+        '
+        'chkNoAltTab
+        '
+        Me.chkNoAltTab.AutoSize = True
+        Me.chkNoAltTab.Location = New System.Drawing.Point(40, 20)
+        Me.chkNoAltTab.Name = "chkNoAltTab"
+        Me.chkNoAltTab.Size = New System.Drawing.Size(222, 17)
+        Me.chkNoAltTab.TabIndex = 26
+        Me.chkNoAltTab.TabStop = False
+        Me.chkNoAltTab.Text = "Disable Alt-Tab when Astonia Is Active"
+        Me.ttSettings.SetToolTip(Me.chkNoAltTab, "Note you can still use Ctrl-Alt-Tab to bring up the task switcher" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "and then Click" &
+        " or press Tab and Space to switch applications.")
+        Me.chkNoAltTab.UseVisualStyleBackColor = True
+        '
+        'chkBlockWin
+        '
+        Me.chkBlockWin.AutoSize = True
+        Me.chkBlockWin.Location = New System.Drawing.Point(40, 2)
+        Me.chkBlockWin.Name = "chkBlockWin"
+        Me.chkBlockWin.Size = New System.Drawing.Size(252, 17)
+        Me.chkBlockWin.TabIndex = 24
+        Me.chkBlockWin.TabStop = False
+        Me.chkBlockWin.Text = "Disable Windows Key when Astonia is Active"
+        Me.chkBlockWin.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverview
+        '
+        Me.chkAlterOverview.AutoSize = True
+        Me.chkAlterOverview.Location = New System.Drawing.Point(40, 299)
+        Me.chkAlterOverview.Name = "chkAlterOverview"
+        Me.chkAlterOverview.Size = New System.Drawing.Size(143, 17)
+        Me.chkAlterOverview.TabIndex = 23
+        Me.chkAlterOverview.TabStop = False
+        Me.chkAlterOverview.Text = "Alter Overview Layout"
+        Me.ttSettings.SetToolTip(Me.chkAlterOverview, "Note: Whitelist setting from Sorting tab is in effect here")
+        Me.chkAlterOverview.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewStarAlt
+        '
+        Me.chkAlterOverviewStarAlt.AutoSize = True
+        Me.chkAlterOverviewStarAlt.Location = New System.Drawing.Point(90, 66)
+        Me.chkAlterOverviewStarAlt.Name = "chkAlterOverviewStarAlt"
+        Me.chkAlterOverviewStarAlt.Size = New System.Drawing.Size(38, 17)
+        Me.chkAlterOverviewStarAlt.TabIndex = 23
+        Me.chkAlterOverviewStarAlt.TabStop = False
+        Me.chkAlterOverviewStarAlt.Text = "Alt"
+        Me.chkAlterOverviewStarAlt.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewStarShift
+        '
+        Me.chkAlterOverviewStarShift.AutoSize = True
+        Me.chkAlterOverviewStarShift.Location = New System.Drawing.Point(131, 66)
+        Me.chkAlterOverviewStarShift.Name = "chkAlterOverviewStarShift"
+        Me.chkAlterOverviewStarShift.Size = New System.Drawing.Size(60, 17)
+        Me.chkAlterOverviewStarShift.TabIndex = 24
+        Me.chkAlterOverviewStarShift.TabStop = False
+        Me.chkAlterOverviewStarShift.Text = "Shift"
+        Me.chkAlterOverviewStarShift.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewStarWin
+        '
+        Me.chkAlterOverviewStarWin.AutoSize = True
+        Me.chkAlterOverviewStarWin.Location = New System.Drawing.Point(46, 66)
+        Me.chkAlterOverviewStarWin.Name = "chkAlterOverviewStarWin"
+        Me.chkAlterOverviewStarWin.Size = New System.Drawing.Size(45, 17)
+        Me.chkAlterOverviewStarWin.TabIndex = 25
+        Me.chkAlterOverviewStarWin.TabStop = False
+        Me.chkAlterOverviewStarWin.Text = "Win"
+        Me.chkAlterOverviewStarWin.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewStarCtrl
+        '
+        Me.chkAlterOverviewStarCtrl.AutoSize = True
+        Me.chkAlterOverviewStarCtrl.Location = New System.Drawing.Point(6, 66)
+        Me.chkAlterOverviewStarCtrl.Name = "chkAlterOverviewStarCtrl"
+        Me.chkAlterOverviewStarCtrl.Size = New System.Drawing.Size(41, 17)
+        Me.chkAlterOverviewStarCtrl.TabIndex = 22
+        Me.chkAlterOverviewStarCtrl.TabStop = False
+        Me.chkAlterOverviewStarCtrl.Text = "Ctrl"
+        Me.chkAlterOverviewStarCtrl.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewMinAlt
+        '
+        Me.chkAlterOverviewMinAlt.AutoSize = True
+        Me.chkAlterOverviewMinAlt.Location = New System.Drawing.Point(90, 42)
+        Me.chkAlterOverviewMinAlt.Name = "chkAlterOverviewMinAlt"
+        Me.chkAlterOverviewMinAlt.Size = New System.Drawing.Size(38, 17)
+        Me.chkAlterOverviewMinAlt.TabIndex = 13
+        Me.chkAlterOverviewMinAlt.TabStop = False
+        Me.chkAlterOverviewMinAlt.Text = "Alt"
+        Me.chkAlterOverviewMinAlt.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewPlusALt
+        '
+        Me.chkAlterOverviewPlusALt.AutoSize = True
+        Me.chkAlterOverviewPlusALt.Location = New System.Drawing.Point(90, 18)
+        Me.chkAlterOverviewPlusALt.Name = "chkAlterOverviewPlusALt"
+        Me.chkAlterOverviewPlusALt.Size = New System.Drawing.Size(38, 17)
+        Me.chkAlterOverviewPlusALt.TabIndex = 9
+        Me.chkAlterOverviewPlusALt.TabStop = False
+        Me.chkAlterOverviewPlusALt.Text = "Alt"
+        Me.chkAlterOverviewPlusALt.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewMinShift
+        '
+        Me.chkAlterOverviewMinShift.AutoSize = True
+        Me.chkAlterOverviewMinShift.Location = New System.Drawing.Point(131, 42)
+        Me.chkAlterOverviewMinShift.Name = "chkAlterOverviewMinShift"
+        Me.chkAlterOverviewMinShift.Size = New System.Drawing.Size(60, 17)
+        Me.chkAlterOverviewMinShift.TabIndex = 15
+        Me.chkAlterOverviewMinShift.TabStop = False
+        Me.chkAlterOverviewMinShift.Text = "Shift"
+        Me.chkAlterOverviewMinShift.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewPlusShift
+        '
+        Me.chkAlterOverviewPlusShift.AutoSize = True
+        Me.chkAlterOverviewPlusShift.Location = New System.Drawing.Point(131, 18)
+        Me.chkAlterOverviewPlusShift.Name = "chkAlterOverviewPlusShift"
+        Me.chkAlterOverviewPlusShift.Size = New System.Drawing.Size(60, 17)
+        Me.chkAlterOverviewPlusShift.TabIndex = 14
+        Me.chkAlterOverviewPlusShift.TabStop = False
+        Me.chkAlterOverviewPlusShift.Text = "Shift"
+        Me.chkAlterOverviewPlusShift.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewMinWin
+        '
+        Me.chkAlterOverviewMinWin.AutoSize = True
+        Me.chkAlterOverviewMinWin.Location = New System.Drawing.Point(46, 42)
+        Me.chkAlterOverviewMinWin.Name = "chkAlterOverviewMinWin"
+        Me.chkAlterOverviewMinWin.Size = New System.Drawing.Size(45, 17)
+        Me.chkAlterOverviewMinWin.TabIndex = 17
+        Me.chkAlterOverviewMinWin.TabStop = False
+        Me.chkAlterOverviewMinWin.Text = "Win"
+        Me.chkAlterOverviewMinWin.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewPlusWin
+        '
+        Me.chkAlterOverviewPlusWin.AutoSize = True
+        Me.chkAlterOverviewPlusWin.Location = New System.Drawing.Point(46, 18)
+        Me.chkAlterOverviewPlusWin.Name = "chkAlterOverviewPlusWin"
+        Me.chkAlterOverviewPlusWin.Size = New System.Drawing.Size(45, 17)
+        Me.chkAlterOverviewPlusWin.TabIndex = 16
+        Me.chkAlterOverviewPlusWin.TabStop = False
+        Me.chkAlterOverviewPlusWin.Text = "Win"
+        Me.chkAlterOverviewPlusWin.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewMinCtrl
+        '
+        Me.chkAlterOverviewMinCtrl.AutoSize = True
+        Me.chkAlterOverviewMinCtrl.Location = New System.Drawing.Point(6, 42)
+        Me.chkAlterOverviewMinCtrl.Name = "chkAlterOverviewMinCtrl"
+        Me.chkAlterOverviewMinCtrl.Size = New System.Drawing.Size(41, 17)
+        Me.chkAlterOverviewMinCtrl.TabIndex = 12
+        Me.chkAlterOverviewMinCtrl.TabStop = False
+        Me.chkAlterOverviewMinCtrl.Text = "Ctrl"
+        Me.chkAlterOverviewMinCtrl.UseVisualStyleBackColor = True
+        '
+        'chkAlterOverviewPlusCtrl
+        '
+        Me.chkAlterOverviewPlusCtrl.AutoSize = True
+        Me.chkAlterOverviewPlusCtrl.Location = New System.Drawing.Point(6, 18)
+        Me.chkAlterOverviewPlusCtrl.Name = "chkAlterOverviewPlusCtrl"
+        Me.chkAlterOverviewPlusCtrl.Size = New System.Drawing.Size(41, 17)
+        Me.chkAlterOverviewPlusCtrl.TabIndex = 8
+        Me.chkAlterOverviewPlusCtrl.TabStop = False
+        Me.chkAlterOverviewPlusCtrl.Text = "Ctrl"
+        Me.chkAlterOverviewPlusCtrl.UseVisualStyleBackColor = True
+        '
+        'chkTogTopAlt
+        '
+        Me.chkTogTopAlt.AutoSize = True
+        Me.chkTogTopAlt.Location = New System.Drawing.Point(90, 18)
+        Me.chkTogTopAlt.Name = "chkTogTopAlt"
+        Me.chkTogTopAlt.Size = New System.Drawing.Size(38, 17)
+        Me.chkTogTopAlt.TabIndex = 23
+        Me.chkTogTopAlt.TabStop = False
+        Me.chkTogTopAlt.Text = "Alt"
+        Me.chkTogTopAlt.UseVisualStyleBackColor = True
+        '
+        'chkTogTopShift
+        '
+        Me.chkTogTopShift.AutoSize = True
+        Me.chkTogTopShift.Location = New System.Drawing.Point(131, 18)
+        Me.chkTogTopShift.Name = "chkTogTopShift"
+        Me.chkTogTopShift.Size = New System.Drawing.Size(60, 17)
+        Me.chkTogTopShift.TabIndex = 22
+        Me.chkTogTopShift.TabStop = False
+        Me.chkTogTopShift.Text = "Shift"
+        Me.chkTogTopShift.UseVisualStyleBackColor = True
+        '
+        'chkTogTopWin
+        '
+        Me.chkTogTopWin.AutoSize = True
+        Me.chkTogTopWin.Location = New System.Drawing.Point(46, 18)
+        Me.chkTogTopWin.Name = "chkTogTopWin"
+        Me.chkTogTopWin.Size = New System.Drawing.Size(45, 17)
+        Me.chkTogTopWin.TabIndex = 20
+        Me.chkTogTopWin.TabStop = False
+        Me.chkTogTopWin.Text = "Win"
+        Me.chkTogTopWin.UseVisualStyleBackColor = True
+        '
+        'chkTogTopCtrl
+        '
+        Me.chkTogTopCtrl.AutoSize = True
+        Me.chkTogTopCtrl.Location = New System.Drawing.Point(6, 18)
+        Me.chkTogTopCtrl.Name = "chkTogTopCtrl"
+        Me.chkTogTopCtrl.Size = New System.Drawing.Size(41, 17)
+        Me.chkTogTopCtrl.TabIndex = 19
+        Me.chkTogTopCtrl.TabStop = False
+        Me.chkTogTopCtrl.Text = "Ctrl"
+        Me.chkTogTopCtrl.UseVisualStyleBackColor = True
+        '
+        'chkCAALt
+        '
+        Me.chkCAALt.AutoSize = True
+        Me.chkCAALt.Location = New System.Drawing.Point(90, 18)
+        Me.chkCAALt.Name = "chkCAALt"
+        Me.chkCAALt.Size = New System.Drawing.Size(38, 17)
+        Me.chkCAALt.TabIndex = 20
+        Me.chkCAALt.TabStop = False
+        Me.chkCAALt.Text = "Alt"
+        Me.chkCAALt.UseVisualStyleBackColor = True
+        '
+        'chkCAShift
+        '
+        Me.chkCAShift.AutoSize = True
+        Me.chkCAShift.Location = New System.Drawing.Point(131, 18)
+        Me.chkCAShift.Name = "chkCAShift"
+        Me.chkCAShift.Size = New System.Drawing.Size(60, 17)
+        Me.chkCAShift.TabIndex = 22
+        Me.chkCAShift.TabStop = False
+        Me.chkCAShift.Text = "Shift"
+        Me.chkCAShift.UseVisualStyleBackColor = True
+        '
+        'chkCAWin
+        '
+        Me.chkCAWin.AutoSize = True
+        Me.chkCAWin.Location = New System.Drawing.Point(46, 18)
+        Me.chkCAWin.Name = "chkCAWin"
+        Me.chkCAWin.Size = New System.Drawing.Size(45, 17)
+        Me.chkCAWin.TabIndex = 23
+        Me.chkCAWin.TabStop = False
+        Me.chkCAWin.Text = "Win"
+        Me.chkCAWin.UseVisualStyleBackColor = True
+        '
+        'chkCACtrl
+        '
+        Me.chkCACtrl.AutoSize = True
+        Me.chkCACtrl.Location = New System.Drawing.Point(6, 18)
+        Me.chkCACtrl.Name = "chkCACtrl"
+        Me.chkCACtrl.Size = New System.Drawing.Size(41, 17)
+        Me.chkCACtrl.TabIndex = 19
+        Me.chkCACtrl.TabStop = False
+        Me.chkCACtrl.Text = "Ctrl"
+        Me.chkCACtrl.UseVisualStyleBackColor = True
+        '
+        'chkCycleDownAlt
+        '
+        Me.chkCycleDownAlt.AutoSize = True
+        Me.chkCycleDownAlt.Location = New System.Drawing.Point(90, 42)
+        Me.chkCycleDownAlt.Name = "chkCycleDownAlt"
+        Me.chkCycleDownAlt.Size = New System.Drawing.Size(38, 17)
+        Me.chkCycleDownAlt.TabIndex = 13
+        Me.chkCycleDownAlt.TabStop = False
+        Me.chkCycleDownAlt.Text = "Alt"
+        Me.chkCycleDownAlt.UseVisualStyleBackColor = True
+        '
+        'chkCycleUpAlt
+        '
+        Me.chkCycleUpAlt.AutoSize = True
+        Me.chkCycleUpAlt.Location = New System.Drawing.Point(90, 18)
+        Me.chkCycleUpAlt.Name = "chkCycleUpAlt"
+        Me.chkCycleUpAlt.Size = New System.Drawing.Size(38, 17)
+        Me.chkCycleUpAlt.TabIndex = 9
+        Me.chkCycleUpAlt.TabStop = False
+        Me.chkCycleUpAlt.Text = "Alt"
+        Me.chkCycleUpAlt.UseVisualStyleBackColor = True
+        '
+        'chkCycleDownShift
+        '
+        Me.chkCycleDownShift.AutoSize = True
+        Me.chkCycleDownShift.Location = New System.Drawing.Point(131, 42)
+        Me.chkCycleDownShift.Name = "chkCycleDownShift"
+        Me.chkCycleDownShift.Size = New System.Drawing.Size(60, 17)
+        Me.chkCycleDownShift.TabIndex = 15
+        Me.chkCycleDownShift.TabStop = False
+        Me.chkCycleDownShift.Text = "Shift"
+        Me.chkCycleDownShift.UseVisualStyleBackColor = True
+        '
+        'chkCycleUpShift
+        '
+        Me.chkCycleUpShift.AutoSize = True
+        Me.chkCycleUpShift.Location = New System.Drawing.Point(131, 18)
+        Me.chkCycleUpShift.Name = "chkCycleUpShift"
+        Me.chkCycleUpShift.Size = New System.Drawing.Size(60, 17)
+        Me.chkCycleUpShift.TabIndex = 14
+        Me.chkCycleUpShift.TabStop = False
+        Me.chkCycleUpShift.Text = "Shift"
+        Me.chkCycleUpShift.UseVisualStyleBackColor = True
+        '
+        'chkCycleDownWin
+        '
+        Me.chkCycleDownWin.AutoSize = True
+        Me.chkCycleDownWin.Location = New System.Drawing.Point(46, 42)
+        Me.chkCycleDownWin.Name = "chkCycleDownWin"
+        Me.chkCycleDownWin.Size = New System.Drawing.Size(45, 17)
+        Me.chkCycleDownWin.TabIndex = 17
+        Me.chkCycleDownWin.TabStop = False
+        Me.chkCycleDownWin.Text = "Win"
+        Me.chkCycleDownWin.UseVisualStyleBackColor = True
+        '
+        'chkCycleUpWin
+        '
+        Me.chkCycleUpWin.AutoSize = True
+        Me.chkCycleUpWin.Location = New System.Drawing.Point(46, 18)
+        Me.chkCycleUpWin.Name = "chkCycleUpWin"
+        Me.chkCycleUpWin.Size = New System.Drawing.Size(45, 17)
+        Me.chkCycleUpWin.TabIndex = 16
+        Me.chkCycleUpWin.TabStop = False
+        Me.chkCycleUpWin.Text = "Win"
+        Me.chkCycleUpWin.UseVisualStyleBackColor = True
+        '
+        'chkCycleDownCtrl
+        '
+        Me.chkCycleDownCtrl.AutoSize = True
+        Me.chkCycleDownCtrl.Location = New System.Drawing.Point(6, 42)
+        Me.chkCycleDownCtrl.Name = "chkCycleDownCtrl"
+        Me.chkCycleDownCtrl.Size = New System.Drawing.Size(41, 17)
+        Me.chkCycleDownCtrl.TabIndex = 12
+        Me.chkCycleDownCtrl.TabStop = False
+        Me.chkCycleDownCtrl.Text = "Ctrl"
+        Me.chkCycleDownCtrl.UseVisualStyleBackColor = True
+        '
+        'chkCycleUpCtrl
+        '
+        Me.chkCycleUpCtrl.AutoSize = True
+        Me.chkCycleUpCtrl.Location = New System.Drawing.Point(6, 18)
+        Me.chkCycleUpCtrl.Name = "chkCycleUpCtrl"
+        Me.chkCycleUpCtrl.Size = New System.Drawing.Size(41, 17)
+        Me.chkCycleUpCtrl.TabIndex = 8
+        Me.chkCycleUpCtrl.TabStop = False
+        Me.chkCycleUpCtrl.Text = "Ctrl"
+        Me.chkCycleUpCtrl.UseVisualStyleBackColor = True
+        '
+        'chkStoAlt
+        '
+        Me.chkStoAlt.AutoSize = True
+        Me.chkStoAlt.Location = New System.Drawing.Point(90, 18)
+        Me.chkStoAlt.Name = "chkStoAlt"
+        Me.chkStoAlt.Size = New System.Drawing.Size(38, 17)
+        Me.chkStoAlt.TabIndex = 5
+        Me.chkStoAlt.TabStop = False
+        Me.chkStoAlt.Text = "Alt"
+        Me.chkStoAlt.UseVisualStyleBackColor = True
+        '
+        'chkStoShift
+        '
+        Me.chkStoShift.AutoSize = True
+        Me.chkStoShift.Location = New System.Drawing.Point(131, 18)
+        Me.chkStoShift.Name = "chkStoShift"
+        Me.chkStoShift.Size = New System.Drawing.Size(60, 17)
+        Me.chkStoShift.TabIndex = 7
+        Me.chkStoShift.TabStop = False
+        Me.chkStoShift.Text = "Shift"
+        Me.chkStoShift.UseVisualStyleBackColor = True
+        '
+        'chkStoWin
+        '
+        Me.chkStoWin.AutoSize = True
+        Me.chkStoWin.Location = New System.Drawing.Point(46, 18)
+        Me.chkStoWin.Name = "chkStoWin"
+        Me.chkStoWin.Size = New System.Drawing.Size(45, 17)
+        Me.chkStoWin.TabIndex = 8
+        Me.chkStoWin.TabStop = False
+        Me.chkStoWin.Text = "Win"
+        Me.chkStoWin.UseVisualStyleBackColor = True
+        '
+        'chkStoCtrl
+        '
+        Me.chkStoCtrl.AutoSize = True
+        Me.chkStoCtrl.Location = New System.Drawing.Point(6, 18)
+        Me.chkStoCtrl.Name = "chkStoCtrl"
+        Me.chkStoCtrl.Size = New System.Drawing.Size(41, 17)
+        Me.chkStoCtrl.TabIndex = 3
+        Me.chkStoCtrl.TabStop = False
+        Me.chkStoCtrl.Text = "Ctrl"
+        Me.chkStoCtrl.UseVisualStyleBackColor = True
+        '
+        'chkToggleTopMost
+        '
+        Me.chkToggleTopMost.AutoSize = True
+        Me.chkToggleTopMost.Location = New System.Drawing.Point(40, 250)
+        Me.chkToggleTopMost.Name = "chkToggleTopMost"
+        Me.chkToggleTopMost.Size = New System.Drawing.Size(221, 17)
+        Me.chkToggleTopMost.TabIndex = 21
+        Me.chkToggleTopMost.TabStop = False
+        Me.chkToggleTopMost.Text = "Toggle Other Window TopMost Status"
+        Me.chkToggleTopMost.UseCompatibleTextRendering = True
+        Me.chkToggleTopMost.UseVisualStyleBackColor = True
+        '
+        'chkCloseAll
+        '
+        Me.chkCloseAll.AutoSize = True
+        Me.chkCloseAll.Location = New System.Drawing.Point(40, 202)
+        Me.chkCloseAll.Name = "chkCloseAll"
+        Me.chkCloseAll.Size = New System.Drawing.Size(165, 17)
+        Me.chkCloseAll.TabIndex = 19
+        Me.chkCloseAll.TabStop = False
+        Me.chkCloseAll.Text = "Close All Clients and ScalA"
+        Me.ttSettings.SetToolTip(Me.chkCloseAll, "Note: Whitelist setting from Sorting tab is in effect here")
+        Me.chkCloseAll.UseVisualStyleBackColor = True
+        '
+        'chkCycleOnClose
+        '
+        Me.chkCycleOnClose.AutoSize = True
+        Me.chkCycleOnClose.Location = New System.Drawing.Point(165, 129)
+        Me.chkCycleOnClose.Name = "chkCycleOnClose"
+        Me.chkCycleOnClose.Size = New System.Drawing.Size(109, 17)
+        Me.chkCycleOnClose.TabIndex = 16
+        Me.chkCycleOnClose.TabStop = False
+        Me.chkCycleOnClose.Text = "Cycle on Close"
+        Me.ttSettings.SetToolTip(Me.chkCycleOnClose, "Closing an alt will cycle to the next one.")
+        Me.chkCycleOnClose.UseVisualStyleBackColor = True
+        '
+        'chkSwitchToOverview
+        '
+        Me.chkSwitchToOverview.AutoSize = True
+        Me.chkSwitchToOverview.Location = New System.Drawing.Point(40, 80)
+        Me.chkSwitchToOverview.Name = "chkSwitchToOverview"
+        Me.chkSwitchToOverview.Size = New System.Drawing.Size(131, 17)
+        Me.chkSwitchToOverview.TabIndex = 2
+        Me.chkSwitchToOverview.TabStop = False
+        Me.chkSwitchToOverview.Text = "Switch to Overview"
+        Me.chkSwitchToOverview.UseVisualStyleBackColor = True
+        '
+        'chkCycleAlts
+        '
+        Me.chkCycleAlts.AutoSize = True
+        Me.chkCycleAlts.Location = New System.Drawing.Point(40, 129)
+        Me.chkCycleAlts.Name = "chkCycleAlts"
+        Me.chkCycleAlts.Size = New System.Drawing.Size(115, 17)
+        Me.chkCycleAlts.TabIndex = 10
+        Me.chkCycleAlts.TabStop = False
+        Me.chkCycleAlts.Text = "Cycle Up/Down"
+        Me.chkCycleAlts.UseVisualStyleBackColor = True
+        '
+        'chkAutoCloseOnlyOnNoSome
+        '
+        Me.chkAutoCloseOnlyOnNoSome.AutoSize = True
+        Me.chkAutoCloseOnlyOnNoSome.Location = New System.Drawing.Point(135, 169)
+        Me.chkAutoCloseOnlyOnNoSome.Name = "chkAutoCloseOnlyOnNoSome"
+        Me.chkAutoCloseOnlyOnNoSome.Size = New System.Drawing.Size(176, 17)
+        Me.chkAutoCloseOnlyOnNoSome.TabIndex = 15
+        Me.chkAutoCloseOnlyOnNoSome.Text = "When not showing Someone"
+        Me.ttSettings.SetToolTip(Me.chkAutoCloseOnlyOnNoSome, resources.GetString("chkAutoCloseOnlyOnNoSome.ToolTip"))
+        Me.chkAutoCloseOnlyOnNoSome.UseVisualStyleBackColor = True
+        '
+        'chkAutoCloseSomeone
+        '
+        Me.chkAutoCloseSomeone.AutoSize = True
+        Me.chkAutoCloseSomeone.Location = New System.Drawing.Point(16, 169)
+        Me.chkAutoCloseSomeone.Name = "chkAutoCloseSomeone"
+        Me.chkAutoCloseSomeone.Size = New System.Drawing.Size(133, 17)
+        Me.chkAutoCloseSomeone.TabIndex = 7
+        Me.chkAutoCloseSomeone.Text = "AutoClose Idled Alts"
+        Me.ttSettings.SetToolTip(Me.chkAutoCloseSomeone, "Alts actually named Someone are exempt" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  and will require a manual close.")
+        Me.chkAutoCloseSomeone.UseVisualStyleBackColor = True
+        '
+        'chkWhitelist
+        '
+        Me.chkWhitelist.AutoSize = True
+        Me.chkWhitelist.Location = New System.Drawing.Point(128, -1)
+        Me.chkWhitelist.Name = "chkWhitelist"
+        Me.chkWhitelist.Size = New System.Drawing.Size(79, 17)
+        Me.chkWhitelist.TabIndex = 6
+        Me.chkWhitelist.Text = "Whitelist"
+        Me.chkWhitelist.UseVisualStyleBackColor = True
+        '
+        'chkMinMaxOnSwitch
+        '
+        Me.chkMinMaxOnSwitch.AutoSize = True
+        Me.chkMinMaxOnSwitch.Location = New System.Drawing.Point(39, 158)
+        Me.chkMinMaxOnSwitch.Name = "chkMinMaxOnSwitch"
+        Me.chkMinMaxOnSwitch.Size = New System.Drawing.Size(270, 17)
+        Me.chkMinMaxOnSwitch.TabIndex = 32
+        Me.chkMinMaxOnSwitch.Text = "Maxim-/Normalize on switching to/from Overview"
+        Me.chkMinMaxOnSwitch.UseVisualStyleBackColor = True
+        '
+        'chkApplyAlterNormal
+        '
+        Me.chkApplyAlterNormal.AutoSize = True
+        Me.chkApplyAlterNormal.Location = New System.Drawing.Point(14, 0)
+        Me.chkApplyAlterNormal.Name = "chkApplyAlterNormal"
+        Me.chkApplyAlterNormal.Size = New System.Drawing.Size(135, 17)
+        Me.chkApplyAlterNormal.TabIndex = 32
+        Me.chkApplyAlterNormal.Text = "Also Apply in Normal"
+        Me.chkApplyAlterNormal.UseVisualStyleBackColor = True
+        '
+        'ChkLessRowCol
+        '
+        Me.ChkLessRowCol.AutoSize = True
+        Me.ChkLessRowCol.Checked = True
+        Me.ChkLessRowCol.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.ChkLessRowCol.Location = New System.Drawing.Point(6, 20)
+        Me.ChkLessRowCol.Name = "ChkLessRowCol"
+        Me.ChkLessRowCol.Size = New System.Drawing.Size(149, 17)
+        Me.ChkLessRowCol.TabIndex = 29
+        Me.ChkLessRowCol.Text = "One Less Row/Column"
+        Me.ttSettings.SetToolTip(Me.ChkLessRowCol, "When Width is bigger than Height have one less Row " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "If Height is bigger than Wid" &
+        "th have one less Column")
+        Me.ChkLessRowCol.UseVisualStyleBackColor = True
+        '
+        'ChkMinMin
+        '
+        Me.ChkMinMin.AutoSize = True
+        Me.ChkMinMin.Location = New System.Drawing.Point(191, 126)
+        Me.ChkMinMin.Name = "ChkMinMin"
+        Me.ChkMinMin.Size = New System.Drawing.Size(117, 17)
+        Me.ChkMinMin.TabIndex = 30
+        Me.ChkMinMin.Text = "Min. on Minimize"
+        Me.ttSettings.SetToolTip(Me.ChkMinMin, "Minimizing ScalA will also Minimize Astonia" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: This has no effect on legacy c" &
+        "lients")
+        Me.ChkMinMin.UseVisualStyleBackColor = True
+        '
+        'chkStartupMax
+        '
+        Me.chkStartupMax.AutoSize = True
+        Me.chkStartupMax.Location = New System.Drawing.Point(191, 104)
+        Me.chkStartupMax.Name = "chkStartupMax"
+        Me.chkStartupMax.Size = New System.Drawing.Size(113, 17)
+        Me.chkStartupMax.TabIndex = 29
+        Me.chkStartupMax.Text = "Start Maximized"
+        Me.chkStartupMax.UseVisualStyleBackColor = True
+        '
+        'ChkQLResolveLnk
+        '
+        Me.ChkQLResolveLnk.AutoSize = True
+        Me.ChkQLResolveLnk.Location = New System.Drawing.Point(167, 62)
+        Me.ChkQLResolveLnk.Name = "ChkQLResolveLnk"
+        Me.ChkQLResolveLnk.Size = New System.Drawing.Size(132, 17)
+        Me.ChkQLResolveLnk.TabIndex = 27
+        Me.ChkQLResolveLnk.Text = "Resolve Lnk to Dirs"
+        Me.ttSettings.SetToolTip(Me.ChkQLResolveLnk, "Have .Lnk Shortcuts pointing to Directories be parsed as Folders" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
+        Me.ChkQLResolveLnk.UseVisualStyleBackColor = True
+        '
+        'ChkQLShowHidden
+        '
+        Me.ChkQLShowHidden.AutoSize = True
+        Me.ChkQLShowHidden.Location = New System.Drawing.Point(32, 62)
+        Me.ChkQLShowHidden.Name = "ChkQLShowHidden"
+        Me.ChkQLShowHidden.Size = New System.Drawing.Size(139, 17)
+        Me.ChkQLShowHidden.TabIndex = 26
+        Me.ChkQLShowHidden.Text = "Always Show Hidden"
+        Me.ttSettings.SetToolTip(Me.ChkQLShowHidden, "Always Show Hidden and System Items." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Press Ctrl + Shift to override when this se" &
+        "tting is off.")
+        Me.ChkQLShowHidden.UseVisualStyleBackColor = True
+        '
+        'ChkAlwaysStartOnOverview
+        '
+        Me.ChkAlwaysStartOnOverview.AutoSize = True
+        Me.ChkAlwaysStartOnOverview.Location = New System.Drawing.Point(26, 34)
+        Me.ChkAlwaysStartOnOverview.Name = "ChkAlwaysStartOnOverview"
+        Me.ChkAlwaysStartOnOverview.Size = New System.Drawing.Size(162, 17)
+        Me.ChkAlwaysStartOnOverview.TabIndex = 30
+        Me.ChkAlwaysStartOnOverview.Text = "Always Start On Overview"
+        Me.ChkAlwaysStartOnOverview.UseVisualStyleBackColor = True
+        '
+        'chkShowEnd
+        '
+        Me.chkShowEnd.AutoSize = True
+        Me.chkShowEnd.Location = New System.Drawing.Point(26, 10)
+        Me.chkShowEnd.Name = "chkShowEnd"
+        Me.chkShowEnd.Size = New System.Drawing.Size(124, 17)
+        Me.chkShowEnd.TabIndex = 27
+        Me.chkShowEnd.Text = "Always Show End"
+        Me.ttSettings.SetToolTip(Me.chkShowEnd, "Always show Endurance on Overview Big HealthBars")
+        Me.chkShowEnd.UseVisualStyleBackColor = True
+        '
+        'ChkSingleInstance
+        '
+        Me.ChkSingleInstance.AutoSize = True
+        Me.ChkSingleInstance.Location = New System.Drawing.Point(26, 85)
+        Me.ChkSingleInstance.Name = "ChkSingleInstance"
+        Me.ChkSingleInstance.Size = New System.Drawing.Size(112, 17)
+        Me.ChkSingleInstance.TabIndex = 6
+        Me.ChkSingleInstance.Text = "Single Instance"
+        Me.ttSettings.SetToolTip(Me.ChkSingleInstance, "Running ScalA for a 2nd time or more will bring an" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  already open ScalA from the" &
+        " same profile to the front." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "To make additional profiles copy, rename and/or mov" &
+        "e ScalA.exe" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
+        Me.ChkSingleInstance.UseVisualStyleBackColor = True
+        '
+        'chkCheckForUpdate
+        '
+        Me.chkCheckForUpdate.AutoSize = True
+        Me.chkCheckForUpdate.ContextMenuStrip = Me.cmsUpdate
+        Me.chkCheckForUpdate.Location = New System.Drawing.Point(26, 111)
+        Me.chkCheckForUpdate.Name = "chkCheckForUpdate"
+        Me.chkCheckForUpdate.Size = New System.Drawing.Size(178, 17)
+        Me.chkCheckForUpdate.TabIndex = 23
+        Me.chkCheckForUpdate.Text = "Check For Update on Startup"
+        Me.ttSettings.SetToolTip(Me.chkCheckForUpdate, "Check for Updates when ScalA starts." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Right Click for more options.")
+        Me.chkCheckForUpdate.UseVisualStyleBackColor = True
+        '
+        'chkTopMost
+        '
+        Me.chkTopMost.AutoSize = True
+        Me.chkTopMost.Location = New System.Drawing.Point(26, 60)
+        Me.chkTopMost.Name = "chkTopMost"
+        Me.chkTopMost.Size = New System.Drawing.Size(111, 17)
+        Me.chkTopMost.TabIndex = 3
+        Me.chkTopMost.Text = "Always On Top"
+        Me.chkTopMost.UseVisualStyleBackColor = True
+        '
+        'chkHoverActivate
+        '
+        Me.chkHoverActivate.AutoSize = True
+        Me.chkHoverActivate.Location = New System.Drawing.Point(178, 34)
+        Me.chkHoverActivate.Name = "chkHoverActivate"
+        Me.chkHoverActivate.Size = New System.Drawing.Size(125, 17)
+        Me.chkHoverActivate.TabIndex = 26
+        Me.chkHoverActivate.Text = "Activate on Hover"
+        Me.ttSettings.SetToolTip(Me.chkHoverActivate, "Hovering over a client in ScalA wil activate and bring it to front.")
+        Me.chkHoverActivate.UseVisualStyleBackColor = True
+        '
+        'chkOverViewIsGame
+        '
+        Me.chkOverViewIsGame.AutoSize = True
+        Me.chkOverViewIsGame.Location = New System.Drawing.Point(178, 10)
+        Me.chkOverViewIsGame.Name = "chkOverViewIsGame"
+        Me.chkOverViewIsGame.Size = New System.Drawing.Size(120, 17)
+        Me.chkOverViewIsGame.TabIndex = 7
+        Me.chkOverViewIsGame.Text = "Active Overview "
+        Me.ttSettings.SetToolTip(Me.chkOverViewIsGame, "Have overview thumbnails function as game.")
+        Me.chkOverViewIsGame.UseVisualStyleBackColor = True
         '
         'FrmSettings
         '
@@ -1981,21 +1981,9 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents txtCycleKeyUp As TextBox
     Friend WithEvents grpOverviewShortcut As GroupBox
     Friend WithEvents txtStoKey As TextBox
-    Friend WithEvents chkStoAlt As CheckBox
-    Friend WithEvents chkStoCtrl As CheckBox
-    Friend WithEvents chkSwitchToOverview As CheckBox
     Friend WithEvents tabMisc As TabPage
     Friend WithEvents txtExe As TextBox
-    Friend WithEvents chkTopMost As CheckBox
     Friend WithEvents txtClass As TextBox
-    Friend WithEvents chkCycleAlts As CheckBox
-    Friend WithEvents chkCycleUpAlt As CheckBox
-    Friend WithEvents chkCycleUpCtrl As CheckBox
-    Friend WithEvents chkStoShift As CheckBox
-    Friend WithEvents chkCycleDownShift As CheckBox
-    Friend WithEvents chkCycleUpShift As CheckBox
-    Friend WithEvents chkCycleDownAlt As CheckBox
-    Friend WithEvents chkCycleDownCtrl As CheckBox
     Friend WithEvents txtCycleKeyDown As TextBox
     Friend WithEvents btnRestore As Button
     Friend WithEvents btnGenerate As Button
@@ -2009,8 +1997,6 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents txtBotSort As TextBox
     Friend WithEvents txtTopSort As TextBox
     Friend WithEvents btnTest As Button
-    Friend WithEvents chkWhitelist As CheckBox
-    Friend WithEvents ChkSingleInstance As CheckBox
     Friend WithEvents tabMaximized As TabPage
     Friend WithEvents grpReserveSpace As GroupBox
     Friend WithEvents NumBorderBot As NumericUpDown
@@ -2018,78 +2004,33 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents NumBorderTop As NumericUpDown
     Friend WithEvents NumBorderLeft As NumericUpDown
     Friend WithEvents tbcSettings As TabControl
-    Friend WithEvents chkOverViewIsGame As CheckBox
     Friend WithEvents btnGrabCurrent As Button
     Friend WithEvents btnAddCurrentRes As Button
     Friend WithEvents cboScalingMode As ComboBox
-    Friend WithEvents chkCycleOnClose As CheckBox
-    Friend WithEvents chkCheckForUpdate As CheckBox
-    Friend WithEvents chkStartupMax As CheckBox
-    Friend WithEvents ChkSizeBorder As CheckBox
     Friend WithEvents cmsRestore As ContextMenuStrip
     Friend WithEvents LastSavedToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents DefaultToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents ChkMinMin As CheckBox
     Friend WithEvents grpCloseAllShortcut As GroupBox
-    Friend WithEvents chkCAShift As CheckBox
     Friend WithEvents txtCloseAll As TextBox
-    Friend WithEvents chkCAALt As CheckBox
-    Friend WithEvents chkCACtrl As CheckBox
-    Friend WithEvents chkCloseAll As CheckBox
     Friend WithEvents cmbTheme As ComboBox
     Friend WithEvents Label16 As Label
     Friend WithEvents cmsUpdate As ContextMenuStrip
     Friend WithEvents CheckNowToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents OpenChangelogToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents chkHoverActivate As CheckBox
-    Friend WithEvents chkShowEnd As CheckBox
-    Friend WithEvents chkToggleTopMost As CheckBox
     Friend WithEvents grpToggleTopMost As GroupBox
-    Friend WithEvents chkTogTopShift As CheckBox
     Friend WithEvents txtTogTop As TextBox
-    Friend WithEvents chkTogTopWin As CheckBox
-    Friend WithEvents chkTogTopCtrl As CheckBox
-    Friend WithEvents chkStoWin As CheckBox
-    Friend WithEvents chkTogTopAlt As CheckBox
-    Friend WithEvents chkCAWin As CheckBox
-    Friend WithEvents chkCycleDownWin As CheckBox
-    Friend WithEvents chkCycleUpWin As CheckBox
-    Friend WithEvents chkAlterOverview As CheckBox
     Friend WithEvents grpAlterOverview As GroupBox
-    Friend WithEvents chkAlterOverviewMinAlt As CheckBox
     Friend WithEvents txtAlterOverviewMinKey As TextBox
-    Friend WithEvents chkAlterOverviewPlusALt As CheckBox
     Friend WithEvents txtAlterOverviewPlusKey As TextBox
-    Friend WithEvents chkAlterOverviewMinShift As CheckBox
-    Friend WithEvents chkAlterOverviewPlusShift As CheckBox
-    Friend WithEvents chkAlterOverviewMinWin As CheckBox
-    Friend WithEvents chkAlterOverviewPlusWin As CheckBox
-    Friend WithEvents chkAlterOverviewMinCtrl As CheckBox
-    Friend WithEvents chkAlterOverviewPlusCtrl As CheckBox
-    Friend WithEvents chkAlterOverviewStarAlt As CheckBox
     Friend WithEvents txtAlterOverviewStarKey As TextBox
-    Friend WithEvents chkAlterOverviewStarShift As CheckBox
-    Friend WithEvents chkAlterOverviewStarWin As CheckBox
-    Friend WithEvents chkAlterOverviewStarCtrl As CheckBox
-    Friend WithEvents ChkLessRowCol As CheckBox
     Friend WithEvents NumExtraMax As NumericUpDown
-    Friend WithEvents chkApplyAlterNormal As CheckBox
-    Friend WithEvents chkMinMaxOnSwitch As CheckBox
     Friend WithEvents ResetIconCacheToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents btnGoToAdjustHotkey As Button
-    Friend WithEvents chkBlockWin As CheckBox
-    Friend WithEvents chkOnlyEsc As CheckBox
-    Friend WithEvents chkAutoCloseSomeone As CheckBox
-    Friend WithEvents chkNoAltTab As CheckBox
     Friend WithEvents pb100PWarning As PictureBox
-    Friend WithEvents chkAutoCloseOnlyOnNoSome As CheckBox
-    Friend WithEvents chkAllowShiftEsc As CheckBox
     Friend WithEvents pnlElevation As Panel
     Friend WithEvents pbUnElevate As PictureBox
     Friend WithEvents lblElevated As Label
     Friend WithEvents TabQL As TabPage
-    Friend WithEvents ChkQLResolveLnk As CheckBox
-    Friend WithEvents ChkQLShowHidden As CheckBox
     Friend WithEvents btnOpenFolderDialog As Button
     Friend WithEvents txtQuickLaunchPath As TextBox
     Friend WithEvents GroupBox1 As GroupBox
@@ -2098,11 +2039,70 @@ Partial NotInheritable Class FrmSettings
     Friend WithEvents lblICacheCount As Label
     Friend WithEvents btnResetCache As Button
     Friend WithEvents cmbPriority As ComboBox
-    Friend WithEvents ChkAlwaysStartOnOverview As CheckBox
     Friend WithEvents Label2 As Label
     Friend WithEvents cmbQLScaling As ComboBox
     Friend WithEvents TxtFilterAddExt As TextBox
     Friend WithEvents lblDefaultFilter As Label
     Friend WithEvents txtCustomQLScale As TextBox
-    Friend WithEvents chkDPIDragFix As CheckBox
+    Friend WithEvents chkStoAlt As FixedScaleCheckbox
+    Friend WithEvents chkStoCtrl As FixedScaleCheckbox
+    Friend WithEvents chkSwitchToOverview As FixedScaleCheckbox
+    Friend WithEvents chkTopMost As FixedScaleCheckbox
+    Friend WithEvents chkCycleAlts As FixedScaleCheckbox
+    Friend WithEvents chkCycleUpAlt As FixedScaleCheckbox
+    Friend WithEvents chkCycleUpCtrl As FixedScaleCheckbox
+    Friend WithEvents chkStoShift As FixedScaleCheckbox
+    Friend WithEvents chkCycleDownShift As FixedScaleCheckbox
+    Friend WithEvents chkCycleUpShift As FixedScaleCheckbox
+    Friend WithEvents chkCycleDownAlt As FixedScaleCheckbox
+    Friend WithEvents chkCycleDownCtrl As FixedScaleCheckbox
+    Friend WithEvents chkWhitelist As FixedScaleCheckbox
+    Friend WithEvents ChkSingleInstance As FixedScaleCheckbox
+    Friend WithEvents chkOverViewIsGame As FixedScaleCheckbox
+    Friend WithEvents chkCycleOnClose As FixedScaleCheckbox
+    Friend WithEvents chkCheckForUpdate As FixedScaleCheckbox
+    Friend WithEvents chkStartupMax As FixedScaleCheckbox
+    Friend WithEvents ChkSizeBorder As FixedScaleCheckbox
+    Friend WithEvents ChkMinMin As FixedScaleCheckbox
+    Friend WithEvents chkCAShift As FixedScaleCheckbox
+    Friend WithEvents chkCAALt As FixedScaleCheckbox
+    Friend WithEvents chkCACtrl As FixedScaleCheckbox
+    Friend WithEvents chkCloseAll As FixedScaleCheckbox
+    Friend WithEvents chkHoverActivate As FixedScaleCheckbox
+    Friend WithEvents chkShowEnd As FixedScaleCheckbox
+    Friend WithEvents chkToggleTopMost As FixedScaleCheckbox
+    Friend WithEvents chkTogTopShift As FixedScaleCheckbox
+    Friend WithEvents chkTogTopWin As FixedScaleCheckbox
+    Friend WithEvents chkTogTopCtrl As FixedScaleCheckbox
+    Friend WithEvents chkStoWin As FixedScaleCheckbox
+    Friend WithEvents chkTogTopAlt As FixedScaleCheckbox
+    Friend WithEvents chkCAWin As FixedScaleCheckbox
+    Friend WithEvents chkCycleDownWin As FixedScaleCheckbox
+    Friend WithEvents chkCycleUpWin As FixedScaleCheckbox
+    Friend WithEvents chkAlterOverview As FixedScaleCheckbox
+    Friend WithEvents chkAlterOverviewMinAlt As FixedScaleCheckbox
+    Friend WithEvents chkAlterOverviewPlusALt As FixedScaleCheckbox
+    Friend WithEvents chkAlterOverviewMinShift As FixedScaleCheckbox
+    Friend WithEvents chkAlterOverviewPlusShift As FixedScaleCheckbox
+    Friend WithEvents chkAlterOverviewMinWin As FixedScaleCheckbox
+    Friend WithEvents chkAlterOverviewPlusWin As FixedScaleCheckbox
+    Friend WithEvents chkAlterOverviewMinCtrl As FixedScaleCheckbox
+    Friend WithEvents chkAlterOverviewPlusCtrl As FixedScaleCheckbox
+    Friend WithEvents chkAlterOverviewStarAlt As FixedScaleCheckbox
+    Friend WithEvents chkAlterOverviewStarShift As FixedScaleCheckbox
+    Friend WithEvents chkAlterOverviewStarWin As FixedScaleCheckbox
+    Friend WithEvents chkAlterOverviewStarCtrl As FixedScaleCheckbox
+    Friend WithEvents ChkLessRowCol As FixedScaleCheckbox
+    Friend WithEvents chkApplyAlterNormal As FixedScaleCheckbox
+    Friend WithEvents chkMinMaxOnSwitch As FixedScaleCheckbox
+    Friend WithEvents chkBlockWin As FixedScaleCheckbox
+    Friend WithEvents chkOnlyEsc As FixedScaleCheckbox
+    Friend WithEvents chkAutoCloseSomeone As FixedScaleCheckbox
+    Friend WithEvents chkNoAltTab As FixedScaleCheckbox
+    Friend WithEvents chkAutoCloseOnlyOnNoSome As FixedScaleCheckbox
+    Friend WithEvents chkAllowShiftEsc As FixedScaleCheckbox
+    Friend WithEvents ChkQLResolveLnk As FixedScaleCheckbox
+    Friend WithEvents ChkQLShowHidden As FixedScaleCheckbox
+    Friend WithEvents ChkAlwaysStartOnOverview As FixedScaleCheckbox
+    Friend WithEvents chkDPIDragFix As FixedScaleCheckbox
 End Class
