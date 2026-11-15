@@ -19,26 +19,60 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
 
     <Browsable(False)>
     <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
-    Public Overloads Property BackColor As Color
-
-    <Browsable(False)>
-    <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Overloads Property FlatStyle As FlatStyle
 
     Private _buffer As Bitmap
-    Private _ForeColor As Color = Color.GreenYellow
+    Private _ForeColor As Color = Color.Black
     Private _MouseOver As Boolean = False
     Private _MouseDown As Boolean = False
 
     Public Sub New()
         MyBase.New()
-
-        SetStyle(ControlStyles.OptimizedDoubleBuffer Or
-             ControlStyles.ResizeRedraw Or
-             ControlStyles.UserPaint, True)
-
-        Me.ClientSize = New Size(Me.ClientSize.Width, 17)
+        MyBase.SetBoundsCore(MyBase.Left, MyBase.Top, MyBase.Width, 17, BoundsSpecified.Height)
+        SetStyle(ControlStyles.OptimizedDoubleBuffer Or ControlStyles.ResizeRedraw Or ControlStyles.UserPaint, True)
     End Sub
+
+    Protected Overrides Sub SetBoundsCore(x As Integer, y As Integer, width As Integer, height As Integer, specified As BoundsSpecified)
+
+        Dim w As Integer = width
+        If CheckAlign = ContentAlignment.MiddleLeft Then
+            w = TextRenderer.MeasureText(Text, Font, New Size(Integer.MaxValue, Integer.MaxValue), TextFormatFlags.NoPadding Or TextFormatFlags.SingleLine).Width + 19
+            If Text.Length > 4 Then w += 13
+        End If
+        MyBase.SetBoundsCore(x, y, w, 17, specified Or BoundsSpecified.Height Or BoundsSpecified.Width)
+    End Sub
+
+    Protected Overrides ReadOnly Property CreateParams() As CreateParams
+        Get
+            Dim params As CreateParams = MyBase.CreateParams
+
+            'params.ExStyle = params.ExStyle Or WindowStylesEx.WS_EX_TRANSPARENT
+
+            Return params
+        End Get
+    End Property
+
+    'Protected Overrides Sub ScaleControl(factor As SizeF, specified As BoundsSpecified)
+    '    ' Intentionally prevent automatic scaling.
+    'End Sub
+    'Public Overloads Property Bounds As Rectangle
+    '    Get
+    '        Return New Rectangle(MyBase.Location, New Size(MyBase.Size.Width, 20))
+    '    End Get
+    '    Set(value As Rectangle)
+    '        MyBase.Bounds = New Rectangle(value.Location, New Size(value.Width, 20))
+    '    End Set
+    'End Property
+
+    'Public Overloads Property ClientSize As Size
+    '    Get
+    '        Return New Size(MyBase.ClientSize.Width, 17)
+    '    End Get
+    '    Set(value As Size)
+    '        MyBase.ClientSize = New Size(value.Width, 17)
+    '    End Set
+    'End Property
+
 
     Public Sub ResetBuffer()
         If _buffer IsNot Nothing Then
@@ -47,15 +81,15 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
         End If
     End Sub
 
-    Private _font As Font
-    Public Overrides Property Font() As Font
-        Get
-            Return If(_font, MyBase.Font)
-        End Get
-        Set(ByVal value As Font)
-            _font = value
-        End Set
-    End Property
+    'Private _font As Font
+    'Public Overrides Property Font() As Font
+    '    Get
+    '        Return If(_font, MyBase.Font)
+    '    End Get
+    '    Set(ByVal value As Font)
+    '        _font = value
+    '    End Set
+    'End Property
 
     Protected Overrides Sub Dispose(disposing As Boolean)
         If disposing Then ResetBuffer()
@@ -142,7 +176,7 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
 
         Using g As Graphics = Graphics.FromImage(_buffer)
 
-            g.Clear(FrmMain.pnlTitleBar.BackColor)
+            g.Clear(Me.BackColor)
 
             Dim rect As New Rectangle(0, 0, ClientSize.Width, 17)
 
@@ -240,27 +274,30 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
 
 
             Dim glyphSize As Size = CheckBoxRenderer.GetGlyphSize(g, state)
+            If glyphSize.Width > 13 Then
+                Using glyph As New Bitmap(glyphSize.Width, glyphSize.Height)
 
-            Using glyph As New Bitmap(glyphSize.Width, glyphSize.Height)
+                    Using gg As Graphics = Graphics.FromImage(glyph)
+                        gg.Clear(Me.BackColor)
+                        CheckBoxRenderer.DrawCheckBox(gg, Point.Empty, state)
+                    End Using
 
-                Using gg As Graphics = Graphics.FromImage(glyph)
-                    gg.Clear(FrmMain.pnlTitleBar.BackColor)
-                    CheckBoxRenderer.DrawCheckBox(gg, Point.Empty, state)
+                    Dim oldState = g.Save()
+
+                    g.ScaleTransform(sx, sy)
+
+                    Dim dest As New Point(boxX / sx, 2)
+
+                    'dBug.Print($"glyphdest {dest} s:{sx}/{sy}", 1)
+
+                    g.DrawImageUnscaled(glyph, dest)
+
+                    g.Restore(oldState)
+
                 End Using
-
-                Dim oldState = g.Save()
-
-                g.ScaleTransform(sx, sy)
-
-                Dim dest As New Point(boxX / sx, 1)
-
-                'dBug.Print($"glyphdest {dest} s:{sx}/{sy}", 1)
-
-                g.DrawImageUnscaled(glyph, dest)
-
-                g.Restore(oldState)
-
-            End Using
+            Else
+                CheckBoxRenderer.DrawCheckBox(g, New Point(boxX, 2), state)
+            End If
 
             ' Text alignment
             Dim stringAlignment As StringAlignment = StringAlignment.Near
@@ -294,11 +331,11 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
 
             End Select
 
-            Dim textRect As Rectangle = rect
+            Dim textRect As Rectangle = New Rectangle(rect.X, rect.Y, rect.Width, rect.Height)
 
             If CheckAlign = ContentAlignment.MiddleLeft OrElse CheckAlign = ContentAlignment.TopLeft OrElse CheckAlign = ContentAlignment.BottomLeft Then
 
-                textRect.X = boxRect.Right + boxPadding
+                textRect.X = boxRect.Right
                 textRect.Width = rect.Right - textRect.X
 
             ElseIf CheckAlign = ContentAlignment.MiddleRight OrElse CheckAlign = ContentAlignment.TopRight OrElse CheckAlign = ContentAlignment.BottomRight Then
@@ -307,7 +344,7 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
 
             End If
 
-            Using b As New SolidBrush(_ForeColor)
+            Using b As New SolidBrush(If(Me.Enabled, Me.ForeColor, Color.Gray))
 
                 Using sf As New StringFormat With {.Alignment = stringAlignment, .LineAlignment = lineAlignment, .FormatFlags = StringFormatFlags.NoWrap, .Trimming = StringTrimming.None}
 
@@ -324,8 +361,8 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
             ' Focus rectangle
             If Focused AndAlso ShowFocusCues Then
 
-                Dim focusRect As Rectangle = rect
-                focusRect.Inflate(-1, -1)
+                Dim focusRect As Rectangle = New Rectangle(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, 17)
+
 
                 ControlPaint.DrawFocusRectangle(g, focusRect, _ForeColor, Color.Black)
 
@@ -340,7 +377,7 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
         If _buffer Is Nothing Then PaintCheckBox()
 
         If _buffer IsNot Nothing Then
-            e.Graphics.Clear(FrmMain.pnlTitleBar.BackColor)
+            'e.Graphics.Clear(Color.Transparent)
             e.Graphics.DrawImageUnscaled(_buffer, Point.Empty)
         End If
 
