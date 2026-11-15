@@ -275,18 +275,18 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
 
             Dim glyphSize As Size = CheckBoxRenderer.GetGlyphSize(g, state)
             If glyphSize.Width > 13 Then
-                Using glyph As New Bitmap(glyphSize.Width, glyphSize.Height)
+                Using glyph As New Bitmap(glyphSize.Width + 1, glyphSize.Height + 1)
 
                     Using gg As Graphics = Graphics.FromImage(glyph)
-                        gg.Clear(Me.BackColor)
-                        CheckBoxRenderer.DrawCheckBox(gg, Point.Empty, state)
+                        gg.Clear(Color.Transparent)
+                        CheckBoxRenderer.DrawCheckBox(gg, New Point(1, 1), state)
                     End Using
 
                     Dim oldState = g.Save()
 
                     g.ScaleTransform(sx, sy)
 
-                    Dim dest As New Point(boxX / sx, 2)
+                    Dim dest As New Point(boxX / sx, 1)
 
                     'dBug.Print($"glyphdest {dest} s:{sx}/{sy}", 1)
 
