@@ -278,14 +278,23 @@ Public NotInheritable Class FrmSettings
                         Marshal.StructureToPtr(winpos, m.LParam, True)
                     End If
                 End If
-                'Case WM_DPICHANGED
-                '    Dim rcC As RECT
-                '    GetClientRect(Me.Handle, rcC)
-                '    Dim cX As Integer = Me.Width - rcC.right + DesignedClientSize.Width
-                '    Dim cY As Integer = Me.Height - rcC.bottom + DesignedClientSize.Height
-                '    SetWindowPos(Me.Handle, IntPtr.Zero, 0, 0, cX, cY, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreZOrder)
-                '    m.Result = 0
-                '    Exit Sub
+            Case WM_DPICHANGED
+                Dim gti As GUITHREADINFO = New GUITHREADINFO With {.cbSize = Marshal.SizeOf(Of GUITHREADINFO)}
+                GetGUIThreadInfo(GetWindowThreadProcessId(Me.Handle, Nothing), gti)
+                If gti.flags <> 2 Then
+                    'gti flags needed to prevent inf loop, note WM_winpos takes over then
+                    'begininvoke required to get size after change
+                    ' this is for when user changes scaling, not when user drags to other monitor
+                    Me.BeginInvoke(Sub()
+                                       Dim rcC As RECT
+                                       GetClientRect(Me.Handle, rcC)
+                                       Dim cX As Integer = Me.Width - rcC.right + DesignedClientSize.Width
+                                       Dim cY As Integer = Me.Height - rcC.bottom + DesignedClientSize.Height
+                                       SetWindowPos(Me.Handle, IntPtr.Zero, 0, 0, cX, cY, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.IgnoreZOrder)
+                                   End Sub)
+                End If
+                m.Result = 0
+                Exit Sub
         End Select
         'If Me.Owner Is Nothing Then 'this to address ghost form when closing settings.
         '    Select Case m.Msg
