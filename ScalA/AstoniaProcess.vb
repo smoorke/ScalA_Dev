@@ -1372,12 +1372,18 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End Try
     End Function
 
-    Private reducedCorner As Boolean = False
-
     Public Sub reduceCorner(bReduce As Boolean)
-        If reducedCorner <> bReduce Then
-            DwmSetWindowAttribute(Me.MainWindowHandle, DWMWA_WINDOW_CORNER_PREFERENCE, If(bReduce, 3, 2), 4)
-            reducedCorner = bReduce
+        Dim hwnd As IntPtr = Me.MainWindowHandle
+        If hwnd = IntPtr.Zero Then Exit Sub
+
+        Dim targetPref As Integer = If(bReduce, 3, 0)
+        Dim currentPref As Integer = -1
+
+        ' If DwmGetWindowAttribute succeeds (Windows 11) and already matches targetPref, skip setting
+        If DwmGetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, currentPref, 4) = 0 Then
+            If currentPref <> targetPref Then
+                DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, targetPref, 4)
+            End If
         End If
     End Sub
 

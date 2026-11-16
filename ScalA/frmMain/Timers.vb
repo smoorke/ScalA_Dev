@@ -1017,6 +1017,7 @@ Partial NotInheritable Class FrmMain
             swAutoClose.Restart()
         End If
 
+        AltPP?.reduceCorner(My.Settings.ReducedCorners)
 
         'todo move setbehind to other timers?
 

@@ -51,7 +51,7 @@ Partial Public NotInheritable Class FrmMain
                       DwmThumbnailFlags.DWM_TNP_VISIBLE
         'DwmThumbnailFlags.DWM_TNP_SOURCECLIENTAREAONLY 
         twp.opacity = opacity
-        twp.fVisible = True
+        twp.fVisible = opacity > 0
         'twp.rcSource = New Rectangle(AltPP.ClientOffset.X, AltPP.ClientOffset.Y, rcC.Width + AltPP.ClientOffset.X, rcC.Height + AltPP.ClientOffset.Y)
 
         Dim mode = My.Settings.ScalingMode '0 auto, 1 blur, 2 pixel , pixel on non 100% DPI
@@ -119,7 +119,22 @@ Partial Public NotInheritable Class FrmMain
         dBug.print($"Thumb {thumb} {ret}")
     End Sub
 
+    Public Sub RecreateThumb()
+        If cboAlt.SelectedIndex = 0 Then Exit Sub
 
+        Dim oldThumb As IntPtr = thumb
+        Dim newThumb As IntPtr = IntPtr.Zero
+
+        If DwmRegisterThumbnail(Me.Handle, AltPP.MainWindowHandle, newThumb) = 0 Then
+            thumb = newThumb
+            UpdateThumb(255)
+            DwmFlush()
+        End If
+
+        If oldThumb <> IntPtr.Zero Then
+            DwmUnregisterThumbnail(oldThumb)
+        End If
+    End Sub
 
 
     Public Sub AnimateThumb(startRC As Rectangle, endRC As Rectangle, Optional time As Integer = 50)

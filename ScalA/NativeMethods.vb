@@ -839,6 +839,8 @@ Module NativeMethods
 
     <DllImport("dwmapi.dll", PreserveSig:=True)>
     Public Function DwmExtendFrameIntoClientArea(hWnd As IntPtr, ByRef pMarInset As MARGINS) As Integer : End Function
+    <DllImport("dwmapi.dll", PreserveSig:=True)>
+    Public Function Dwmflush() As Integer : End Function
 
     <DllImport("user32.dll")>
     Public Function SetParent(hWndChild As IntPtr, hWndNewParent As IntPtr) As IntPtr : End Function
