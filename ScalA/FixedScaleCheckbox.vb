@@ -29,7 +29,7 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
     Public Sub New()
         MyBase.New()
         MyBase.SetBoundsCore(MyBase.Left, MyBase.Top, MyBase.Width, 17, BoundsSpecified.Height)
-        SetStyle(ControlStyles.OptimizedDoubleBuffer Or ControlStyles.ResizeRedraw Or ControlStyles.UserPaint, True)
+        SetStyle(ControlStyles.OptimizedDoubleBuffer Or ControlStyles.ResizeRedraw Or ControlStyles.UserPaint Or ControlStyles.SupportsTransparentBackColor, True)
     End Sub
 
     Protected Overrides Sub SetBoundsCore(x As Integer, y As Integer, width As Integer, height As Integer, specified As BoundsSpecified)
@@ -52,44 +52,12 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
         End Get
     End Property
 
-    'Protected Overrides Sub ScaleControl(factor As SizeF, specified As BoundsSpecified)
-    '    ' Intentionally prevent automatic scaling.
-    'End Sub
-    'Public Overloads Property Bounds As Rectangle
-    '    Get
-    '        Return New Rectangle(MyBase.Location, New Size(MyBase.Size.Width, 20))
-    '    End Get
-    '    Set(value As Rectangle)
-    '        MyBase.Bounds = New Rectangle(value.Location, New Size(value.Width, 20))
-    '    End Set
-    'End Property
-
-    'Public Overloads Property ClientSize As Size
-    '    Get
-    '        Return New Size(MyBase.ClientSize.Width, 17)
-    '    End Get
-    '    Set(value As Size)
-    '        MyBase.ClientSize = New Size(value.Width, 17)
-    '    End Set
-    'End Property
-
-
     Public Sub ResetBuffer()
         If _buffer IsNot Nothing Then
             _buffer.Dispose()
             _buffer = Nothing
         End If
     End Sub
-
-    'Private _font As Font
-    'Public Overrides Property Font() As Font
-    '    Get
-    '        Return If(_font, MyBase.Font)
-    '    End Get
-    '    Set(ByVal value As Font)
-    '        _font = value
-    '    End Set
-    'End Property
 
     Protected Overrides Sub Dispose(disposing As Boolean)
         If disposing Then ResetBuffer()
@@ -164,221 +132,236 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
         MyBase.OnInvalidated(e)
         PaintCheckBox()
     End Sub
-
+    Private _bgBuffer As BufferedGraphics
+    Private _bufferwidth As Integer = 0
     Private Sub PaintCheckBox()
 
         If ClientSize.Width <= 0 OrElse ClientSize.Height <= 0 Then Exit Sub
 
-        If _buffer Is Nothing OrElse _buffer.Width <> ClientSize.Width Then
-            ResetBuffer()
-            _buffer = New Bitmap(ClientSize.Width, 17)
+        Dim rect As New Rectangle(0, 0, ClientSize.Width, 17)
+        Dim bgColor As Color = GetEffectiveBackColor()
+
+        ' Allocate a GDI-compatible BufferedGraphics instead of a raw GDI+ Bitmap
+        If _bgBuffer Is Nothing OrElse _bufferWidth <> ClientSize.Width Then
+            If _bgBuffer IsNot Nothing Then _bgBuffer.Dispose()
+            _bufferWidth = ClientSize.Width
+            Using refG As Graphics = Me.CreateGraphics()
+                _bgBuffer = BufferedGraphicsManager.Current.Allocate(refG, rect)
+            End Using
         End If
 
-        Using g As Graphics = Graphics.FromImage(_buffer)
+        Dim g As Graphics = _bgBuffer.Graphics
+        g.Clear(bgColor)
 
-            g.Clear(Me.BackColor)
+        'Debug.Print($"CheckRect {rect}")
 
-            Dim rect As New Rectangle(0, 0, ClientSize.Width, 17)
+        ' Checkbox dimensions
+        Dim boxSize As Integer = 14
+        Dim boxPadding As Integer = 4
 
-            'Debug.Print($"CheckRect {rect}")
+        Dim boxX As Integer
+        Dim boxY As Integer
 
-            ' Checkbox dimensions
-            Dim boxSize As Integer = 14
-            Dim boxPadding As Integer = 4
+        Dim sx As Single = 96.0F / g.DpiX
+        Dim sy As Single = 96.0F / g.DpiY
 
-            Dim boxX As Integer
-            Dim boxY As Integer
+        Select Case CheckAlign
+            Case ContentAlignment.TopRight, ContentAlignment.MiddleRight, ContentAlignment.BottomRight
 
-            Dim sx As Single = 96.0F / g.DpiX
-            Dim sy As Single = 96.0F / g.DpiY
+                boxX = rect.Right - boxSize / sx - boxPadding
 
-            Select Case CheckAlign
-                Case ContentAlignment.TopRight, ContentAlignment.MiddleRight, ContentAlignment.BottomRight
+            Case ContentAlignment.TopCenter, ContentAlignment.MiddleCenter, ContentAlignment.BottomCenter
 
-                    boxX = rect.Right - boxSize / sx - boxPadding
+                boxX = (rect.Width - boxSize) \ 2
 
-                Case ContentAlignment.TopCenter, ContentAlignment.MiddleCenter, ContentAlignment.BottomCenter
+            Case Else
 
-                    boxX = (rect.Width - boxSize) \ 2
+                boxX = boxPadding
+        End Select
 
+        Select Case CheckAlign
+            Case ContentAlignment.TopLeft, ContentAlignment.TopCenter, ContentAlignment.TopRight
+
+                boxY = boxPadding
+
+            Case ContentAlignment.BottomLeft, ContentAlignment.BottomCenter, ContentAlignment.BottomRight
+
+                boxY = rect.Bottom - boxSize - boxPadding
+
+            Case Else
+
+                boxY = (rect.Height - boxSize) \ 2
+        End Select
+
+        Dim boxRect As New Rectangle(boxX, boxY, boxSize, boxSize)
+
+        ' Determine visual state
+        Dim state As VisualStyles.CheckBoxState
+
+        If Not Enabled Then
+
+            Select Case CheckState
+                Case CheckState.Checked
+                    state = VisualStyles.CheckBoxState.CheckedDisabled
+                Case CheckState.Indeterminate
+                    state = VisualStyles.CheckBoxState.MixedDisabled
                 Case Else
-
-                    boxX = boxPadding
+                    state = VisualStyles.CheckBoxState.UncheckedDisabled
             End Select
 
-            Select Case CheckAlign
-                Case ContentAlignment.TopLeft, ContentAlignment.TopCenter, ContentAlignment.TopRight
+        ElseIf _MouseDown Then
 
-                    boxY = boxPadding
-
-                Case ContentAlignment.BottomLeft, ContentAlignment.BottomCenter, ContentAlignment.BottomRight
-
-                    boxY = rect.Bottom - boxSize - boxPadding
-
+            Select Case CheckState
+                Case CheckState.Checked
+                    state = VisualStyles.CheckBoxState.CheckedPressed
+                Case CheckState.Indeterminate
+                    state = VisualStyles.CheckBoxState.MixedPressed
                 Case Else
-
-                    boxY = (rect.Height - boxSize) \ 2
+                    state = VisualStyles.CheckBoxState.UncheckedPressed
             End Select
 
-            Dim boxRect As New Rectangle(boxX, boxY, boxSize, boxSize)
+        ElseIf _MouseOver Then
 
-            ' Determine visual state
-            Dim state As VisualStyles.CheckBoxState
+            Select Case CheckState
+                Case CheckState.Checked
+                    state = VisualStyles.CheckBoxState.CheckedHot
+                Case CheckState.Indeterminate
+                    state = VisualStyles.CheckBoxState.MixedHot
+                Case Else
+                    state = VisualStyles.CheckBoxState.UncheckedHot
+            End Select
 
-            If Not Enabled Then
+        Else
 
-                Select Case CheckState
-                    Case CheckState.Checked
-                        state = VisualStyles.CheckBoxState.CheckedDisabled
-                    Case CheckState.Indeterminate
-                        state = VisualStyles.CheckBoxState.MixedDisabled
-                    Case Else
-                        state = VisualStyles.CheckBoxState.UncheckedDisabled
-                End Select
+            Select Case CheckState
+                Case CheckState.Checked
+                    state = VisualStyles.CheckBoxState.CheckedNormal
+                Case CheckState.Indeterminate
+                    state = VisualStyles.CheckBoxState.MixedNormal
+                Case Else
+                    state = VisualStyles.CheckBoxState.UncheckedNormal
+            End Select
 
-            ElseIf _MouseDown Then
-
-                Select Case CheckState
-                    Case CheckState.Checked
-                        state = VisualStyles.CheckBoxState.CheckedPressed
-                    Case CheckState.Indeterminate
-                        state = VisualStyles.CheckBoxState.MixedPressed
-                    Case Else
-                        state = VisualStyles.CheckBoxState.UncheckedPressed
-                End Select
-
-            ElseIf _MouseOver Then
-
-                Select Case CheckState
-                    Case CheckState.Checked
-                        state = VisualStyles.CheckBoxState.CheckedHot
-                    Case CheckState.Indeterminate
-                        state = VisualStyles.CheckBoxState.MixedHot
-                    Case Else
-                        state = VisualStyles.CheckBoxState.UncheckedHot
-                End Select
-
-            Else
-
-                Select Case CheckState
-                    Case CheckState.Checked
-                        state = VisualStyles.CheckBoxState.CheckedNormal
-                    Case CheckState.Indeterminate
-                        state = VisualStyles.CheckBoxState.MixedNormal
-                    Case Else
-                        state = VisualStyles.CheckBoxState.UncheckedNormal
-                End Select
-
-            End If
+        End If
 
 
 
-            Dim glyphSize As Size = CheckBoxRenderer.GetGlyphSize(g, state)
-            If glyphSize.Width > 13 Then
-                Using glyph As New Bitmap(glyphSize.Width + 1, glyphSize.Height + 1)
+        Dim glyphSize As Size = CheckBoxRenderer.GetGlyphSize(g, state)
+        If glyphSize.Width > 13 Then
+            ' Allocate a GDI-compatible buffer for the unscaled glyph too
+            Dim glyphRect As New Rectangle(0, 0, glyphSize.Width + 2, glyphSize.Height + 2)
+            Using glyphBuf As BufferedGraphics = BufferedGraphicsManager.Current.Allocate(g, glyphRect)
+                Dim gg As Graphics = glyphBuf.Graphics
+                gg.Clear(bgColor)
+                CheckBoxRenderer.DrawCheckBox(gg, New Point(1, 1), state)
 
-                    Using gg As Graphics = Graphics.FromImage(glyph)
-                        gg.Clear(Color.Transparent)
-                        CheckBoxRenderer.DrawCheckBox(gg, New Point(1, 1), state)
+                ' Render unscaled glyph onto main buffer at scaled destination
+                Dim oldInterp = g.InterpolationMode
+                g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
+
+                Dim destRect As New Rectangle(boxX, 1, CInt(glyphRect.Width * sx), CInt(glyphRect.Height * sy))
+                ' Render glyphBuf to a temporary bitmap only AFTER uxtheme has finished GDI compositing
+                Using tmpBmp As New Bitmap(glyphRect.Width, glyphRect.Height, Imaging.PixelFormat.Format24bppRgb)
+                    Using gTmp As Graphics = Graphics.FromImage(tmpBmp)
+                        glyphBuf.Render(gTmp)
                     End Using
-
-                    Dim oldState = g.Save()
-
-                    g.ScaleTransform(sx, sy)
-
-                    Dim dest As New Point(boxX / sx, 1)
-
-                    'dBug.Print($"glyphdest {dest} s:{sx}/{sy}", 1)
-
-                    g.DrawImageUnscaled(glyph, dest)
-
-                    g.Restore(oldState)
-
+                    Using ia As New Imaging.ImageAttributes()
+                        ia.SetWrapMode(Drawing2D.WrapMode.TileFlipXY)
+                        g.DrawImage(tmpBmp, destRect, 0, 0, tmpBmp.Width, tmpBmp.Height, GraphicsUnit.Pixel, ia)
+                    End Using
                 End Using
-            Else
-                CheckBoxRenderer.DrawCheckBox(g, New Point(boxX, 2), state)
-            End If
 
-            ' Text alignment
-            Dim stringAlignment As StringAlignment = StringAlignment.Near
-            Dim lineAlignment As StringAlignment = StringAlignment.Center
+                g.InterpolationMode = oldInterp
+            End Using
+        Else
+            CheckBoxRenderer.DrawCheckBox(g, New Point(boxX, 2), state)
+        End If
 
-            Select Case TextAlign
+        ' Text alignment
+        Dim stringAlignment As StringAlignment = StringAlignment.Near
+        Dim lineAlignment As StringAlignment = StringAlignment.Center
 
-                Case ContentAlignment.TopLeft, ContentAlignment.MiddleLeft, ContentAlignment.BottomLeft
+        Select Case TextAlign
 
-                    stringAlignment = StringAlignment.Near
+            Case ContentAlignment.TopLeft, ContentAlignment.MiddleLeft, ContentAlignment.BottomLeft
 
-                Case ContentAlignment.TopCenter, ContentAlignment.MiddleCenter, ContentAlignment.BottomCenter
+                stringAlignment = StringAlignment.Near
 
-                    stringAlignment = StringAlignment.Center
+            Case ContentAlignment.TopCenter, ContentAlignment.MiddleCenter, ContentAlignment.BottomCenter
 
-                Case ContentAlignment.TopRight, ContentAlignment.MiddleRight, ContentAlignment.BottomRight
+                stringAlignment = StringAlignment.Center
 
-                    stringAlignment = StringAlignment.Far
+            Case ContentAlignment.TopRight, ContentAlignment.MiddleRight, ContentAlignment.BottomRight
 
-            End Select
+                stringAlignment = StringAlignment.Far
 
-            Select Case TextAlign
+        End Select
 
-                Case ContentAlignment.TopLeft, ContentAlignment.TopCenter, ContentAlignment.TopRight
+        Select Case TextAlign
 
-                    lineAlignment = StringAlignment.Near
+            Case ContentAlignment.TopLeft, ContentAlignment.TopCenter, ContentAlignment.TopRight
 
-                Case ContentAlignment.BottomLeft, ContentAlignment.BottomCenter, ContentAlignment.BottomRight
+                lineAlignment = StringAlignment.Near
 
-                    lineAlignment = StringAlignment.Far
+            Case ContentAlignment.BottomLeft, ContentAlignment.BottomCenter, ContentAlignment.BottomRight
 
-            End Select
+                lineAlignment = StringAlignment.Far
 
-            Dim textRect As Rectangle = New Rectangle(rect.X, rect.Y, rect.Width, rect.Height)
+        End Select
 
-            If CheckAlign = ContentAlignment.MiddleLeft OrElse CheckAlign = ContentAlignment.TopLeft OrElse CheckAlign = ContentAlignment.BottomLeft Then
+        Dim textRect As Rectangle = New Rectangle(rect.X, rect.Y, rect.Width, rect.Height)
 
-                textRect.X = boxRect.Right
-                textRect.Width = rect.Right - textRect.X
+        If CheckAlign = ContentAlignment.MiddleLeft OrElse CheckAlign = ContentAlignment.TopLeft OrElse CheckAlign = ContentAlignment.BottomLeft Then
 
-            ElseIf CheckAlign = ContentAlignment.MiddleRight OrElse CheckAlign = ContentAlignment.TopRight OrElse CheckAlign = ContentAlignment.BottomRight Then
+            textRect.X = boxRect.Right
+            textRect.Width = rect.Right - textRect.X
 
-                textRect.Width = boxRect.Left - boxPadding
+        ElseIf CheckAlign = ContentAlignment.MiddleRight OrElse CheckAlign = ContentAlignment.TopRight OrElse CheckAlign = ContentAlignment.BottomRight Then
 
-            End If
+            textRect.Width = boxRect.Left - boxPadding
 
-            Using b As New SolidBrush(If(Me.Enabled, Me.ForeColor, Color.Gray))
+        End If
 
-                Using sf As New StringFormat With {.Alignment = stringAlignment, .LineAlignment = lineAlignment, .FormatFlags = StringFormatFlags.NoWrap, .Trimming = StringTrimming.None}
+        Using b As New SolidBrush(If(Me.Enabled, Me.ForeColor, Color.Gray))
 
-                    If RightToLeft = RightToLeft.Yes Then
-                        sf.FormatFlags = sf.FormatFlags Or StringFormatFlags.DirectionRightToLeft
-                    End If
+            Using sf As New StringFormat With {.Alignment = stringAlignment, .LineAlignment = lineAlignment, .FormatFlags = StringFormatFlags.NoWrap, .Trimming = StringTrimming.None}
 
-                    g.DrawString(Text, Font, b, textRect, sf)
+                If RightToLeft = RightToLeft.Yes Then
+                    sf.FormatFlags = sf.FormatFlags Or StringFormatFlags.DirectionRightToLeft
+                End If
 
-                End Using
+                g.DrawString(Text, Font, b, textRect, sf)
 
             End Using
 
-            ' Focus rectangle
-            If Focused AndAlso ShowFocusCues Then
-
-                Dim focusRect As Rectangle = New Rectangle(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, 17)
-
-
-                ControlPaint.DrawFocusRectangle(g, focusRect, _ForeColor, Color.Black)
-
-            End If
-
         End Using
 
-    End Sub
+        ' Focus rectangle
+        If Focused AndAlso ShowFocusCues Then
 
+            Dim focusRect As Rectangle = New Rectangle(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, 17)
+
+
+            ControlPaint.DrawFocusRectangle(g, focusRect, _ForeColor, Color.Black)
+
+        End If
+
+    End Sub
+    Private Function GetEffectiveBackColor() As Color
+        Dim ctrl As Control = Me
+        While ctrl IsNot Nothing
+            If ctrl.BackColor.A = 255 AndAlso ctrl.BackColor <> Color.Transparent Then
+                Return ctrl.BackColor
+            End If
+            ctrl = ctrl.Parent
+        End While
+        Return SystemColors.Control
+    End Function
     Protected Overrides Sub OnPaint(e As PaintEventArgs)
 
-        If _buffer Is Nothing Then PaintCheckBox()
-
-        If _buffer IsNot Nothing Then
-            'e.Graphics.Clear(Color.Transparent)
-            e.Graphics.DrawImageUnscaled(_buffer, Point.Empty)
+        If _bgBuffer Is Nothing Then PaintCheckBox()
+        If _bgBuffer IsNot Nothing Then
+            _bgBuffer.Render(e.Graphics)
         End If
 
     End Sub

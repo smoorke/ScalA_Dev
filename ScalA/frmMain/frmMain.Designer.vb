@@ -41,7 +41,7 @@ Partial NotInheritable Class FrmMain
         Me.chkDebug = New ScalA.FixedScaleCheckbox()
         Me.pnlUpdate = New System.Windows.Forms.Panel()
         Me.pbUpdateAvailable = New System.Windows.Forms.PictureBox()
-        Me.ChkEqLock = New System.Windows.Forms.CheckBox()
+        Me.ChkEqLock = New ScalA.FixedScaleCheckbox()
         Me.lblTitle = New System.Windows.Forms.Label()
         Me.pnlButtons = New System.Windows.Forms.Panel()
         Me.btnMin = New System.Windows.Forms.Button()
