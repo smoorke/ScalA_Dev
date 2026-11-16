@@ -28,12 +28,17 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
 
     Public Sub New()
         MyBase.New()
-        MyBase.SetBoundsCore(MyBase.Left, MyBase.Top, MyBase.Width, 17, BoundsSpecified.Height)
+        'MyBase.SetBoundsCore(MyBase.Left, MyBase.Top, MyBase.Width, 17, BoundsSpecified.Height)
         SetStyle(ControlStyles.OptimizedDoubleBuffer Or ControlStyles.ResizeRedraw Or ControlStyles.UserPaint Or ControlStyles.AllPaintingInWmPaint Or ControlStyles.SupportsTransparentBackColor, True)
     End Sub
 
     Protected Overrides Sub SetBoundsCore(x As Integer, y As Integer, width As Integer, height As Integer, specified As BoundsSpecified)
-        MyBase.SetBoundsCore(x, y, width, 17, specified Or BoundsSpecified.Height Or BoundsSpecified.Width)
+        Dim w As Integer = width
+        If CheckAlign = ContentAlignment.MiddleLeft Then
+            'w = TextRenderer.MeasureText(Text, Font, New Size(Integer.MaxValue, Integer.MaxValue), TextFormatFlags.NoPrefix Or TextFormatFlags.SingleLine).Width + 19
+            'If Text.Length > 4 Then w += 13
+        End If
+        MyBase.SetBoundsCore(x, y, w, If(Me.Dock = DockStyle.None, 17 * (Me.Text.Count(Function(c) vbCrLf.Contains(c)) \ 2 + 1), height), specified Or BoundsSpecified.Height Or BoundsSpecified.Width)
     End Sub
 
     Protected Overrides ReadOnly Property CreateParams() As CreateParams
@@ -130,11 +135,11 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
         Dim bgColor As Color = GetEffectiveBackColor()
         g.Clear(bgColor)
 
-        Dim rect As New Rectangle(0, 0, ClientSize.Width, 17)
+        Dim rect As New Rectangle(0, 0, ClientSize.Width, ClientSize.Height)
 
         ' Checkbox dimensions
-        Dim boxSize As Integer = 14
-        Dim boxPadding As Integer = 2
+        Dim boxSize As Integer = 13
+        Dim boxPadding As Integer = 1
 
         Dim sx As Single = 96.0F / g.DpiX
         Dim sy As Single = 96.0F / g.DpiY
@@ -144,7 +149,7 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
 
         Select Case CheckAlign
             Case ContentAlignment.TopRight, ContentAlignment.MiddleRight, ContentAlignment.BottomRight
-                boxX = CInt(rect.Right - (boxSize / sx) - boxPadding)
+                boxX = rect.Right - boxSize - boxPadding
             Case ContentAlignment.TopCenter, ContentAlignment.MiddleCenter, ContentAlignment.BottomCenter
                 boxX = (rect.Width - boxSize) \ 2
             Case Else
@@ -193,35 +198,12 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
 
         ' Draw checkbox glyph
         Dim glyphSize As Size = CheckBoxRenderer.GetGlyphSize(g, state)
-        If glyphSize.Width > 13 Then
-            ' High-DPI downscaling via GDI-compatible buffer to prevent dark edge fringes
+        If glyphSize.Width <> boxSize OrElse glyphSize.Height <> boxSize Then
             'Dim bgColor As Color = GetEffectiveBackColor()
-            Dim glyphRect As New Rectangle(0, 0, glyphSize.Width + 2, glyphSize.Height + 2)
-
-            Using glyphBuf As BufferedGraphics = BufferedGraphicsManager.Current.Allocate(g, glyphRect)
-                glyphBuf.Graphics.Clear(bgColor)
-                CheckBoxRenderer.DrawCheckBox(glyphBuf.Graphics, New Point(1, 1), state)
-
-                Using tmpBmp As New Bitmap(glyphRect.Width, glyphRect.Height, Imaging.PixelFormat.Format24bppRgb)
-                    Using gTmp As Graphics = Graphics.FromImage(tmpBmp)
-                        glyphBuf.Render(gTmp)
-                    End Using
-
-                    Dim oldInterp = g.InterpolationMode
-                    g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
-
-                    Dim destRect As New Rectangle(boxX, 1, CInt(glyphRect.Width * sx), CInt(glyphRect.Height * sy))
-                    Using ia As New Imaging.ImageAttributes()
-                        ia.SetWrapMode(Drawing2D.WrapMode.Clamp)
-                        g.DrawImage(tmpBmp, destRect, 0, 0, tmpBmp.Width, tmpBmp.Height, GraphicsUnit.Pixel, ia)
-                    End Using
-
-                    g.InterpolationMode = oldInterp
-                End Using
-            End Using
+            Dim scaledGlyph As Bitmap = GetScaledGlyph(g, state, glyphSize, boxSize, bgColor)
+            g.DrawImageUnscaled(scaledGlyph, boxRect.Location)
         Else
-            ' At 100% DPI (96 DPI), draw directly onto e.Graphics (already double-buffered by WinForms)
-            CheckBoxRenderer.DrawCheckBox(g, New Point(boxX, 2), state)
+            CheckBoxRenderer.DrawCheckBox(g, boxRect.Location, state)
         End If
 
         ' Text alignment
@@ -254,7 +236,7 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
         End If
 
         ' Map ContentAlignment to TextFormatFlags
-        Dim flags As TextFormatFlags = TextFormatFlags.NoPrefix Or TextFormatFlags.SingleLine
+        Dim flags As TextFormatFlags = TextFormatFlags.NoPrefix 'Or TextFormatFlags.SingleLine 'Or TextFormatFlags.NoPadding
 
         Select Case TextAlign
             Case ContentAlignment.TopLeft, ContentAlignment.MiddleLeft, ContentAlignment.BottomLeft
@@ -299,5 +281,63 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
         End While
         Return SystemColors.Control
     End Function
+
+    Private Shared ReadOnly _glyphCache As New Dictionary(Of String, Bitmap)()
+    Private Shared _themeHooked As Boolean = False
+
+    Private Shared Sub EnsureThemeHook()
+        If Not _themeHooked Then
+            _themeHooked = True
+            AddHandler Microsoft.Win32.SystemEvents.UserPreferenceChanged, AddressOf OnUserPreferenceChanged
+        End If
+    End Sub
+
+    Private Shared Sub OnUserPreferenceChanged(sender As Object, e As Microsoft.Win32.UserPreferenceChangedEventArgs)
+        ' Clear cached glyphs if Windows theme, colors, or DPI change
+        For Each bmp As Bitmap In _glyphCache.Values
+            bmp.Dispose()
+        Next
+        _glyphCache.Clear()
+    End Sub
+
+    Private Function GetScaledGlyph(g As Graphics, state As VisualStyles.CheckBoxState, glyphSize As Size, targetSize As Integer, bgColor As Color) As Bitmap
+        EnsureThemeHook()
+
+        Dim key As String = $"{CInt(state)}_{bgColor.ToArgb()}_{glyphSize.Width}x{glyphSize.Height}_{targetSize}"
+        Dim cached As Bitmap = Nothing
+
+        If _glyphCache.TryGetValue(key, cached) Then
+            Return cached
+        End If
+
+        ' Render native high-DPI glyph onto a GDI-compatible buffer
+        Dim glyphRect As New Rectangle(0, 0, glyphSize.Width, glyphSize.Height)
+        Dim finalBmp As New Bitmap(targetSize, targetSize, Imaging.PixelFormat.Format24bppRgb)
+
+        Using glyphBuf As BufferedGraphics = BufferedGraphicsManager.Current.Allocate(g, glyphRect)
+            glyphBuf.Graphics.Clear(bgColor)
+            CheckBoxRenderer.DrawCheckBox(glyphBuf.Graphics, Point.Empty, state)
+
+            Using rawBmp As New Bitmap(glyphRect.Width, glyphRect.Height, Imaging.PixelFormat.Format24bppRgb)
+                Using gRaw As Graphics = Graphics.FromImage(rawBmp)
+                    glyphBuf.Render(gRaw)
+                End Using
+
+                ' Pre-scale once into the exact 13x13 target bitmap
+                Using gFinal As Graphics = Graphics.FromImage(finalBmp)
+                    gFinal.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
+                    Using ia As New Imaging.ImageAttributes()
+                        ia.SetWrapMode(Drawing2D.WrapMode.TileFlipXY)
+                        gFinal.DrawImage(rawBmp, New Rectangle(0, 0, targetSize, targetSize), 0, 0, rawBmp.Width, rawBmp.Height, GraphicsUnit.Pixel, ia)
+                    End Using
+                End Using
+            End Using
+        End Using
+
+        _glyphCache(key) = finalBmp
+        Return finalBmp
+    End Function
+
+
 
 End Class
