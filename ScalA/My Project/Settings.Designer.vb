@@ -1195,6 +1195,18 @@ Namespace My
                 Me("DpiDragFix") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property ReducedCorners() As Boolean
+            Get
+                Return CType(Me("ReducedCorners"),Boolean)
+            End Get
+            Set
+                Me("ReducedCorners") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

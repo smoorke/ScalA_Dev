@@ -230,6 +230,7 @@ Public NotInheritable Class FrmSettings
         txtCustomQLScale.Enabled = cmbQLScaling.SelectedIndex = 4
 
         chkDPIDragFix.Checked = My.Settings.DpiDragFix
+        chkReduceCorners.Checked = My.Settings.ReducedCorners
 
         Me.TopMost = True ' My.Settings.topmost
     End Sub
@@ -740,6 +741,8 @@ Public NotInheritable Class FrmSettings
         Else
             DPIDragFix.StopDragFix()
         End If
+
+        My.Settings.ReducedCorners = chkReduceCorners.Checked
 
         My.Settings.Save()
 

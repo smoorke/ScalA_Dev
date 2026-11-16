@@ -279,6 +279,10 @@ Partial NotInheritable Class FrmMain
 
         Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList, True).OrderBy(Function(ap) ap.UserName, apSorter).ToList
 
+        For Each alt In alts
+            alt.reduceCorner(My.Settings.ReducedCorners)
+        Next
+
         Dim visibleButtons As List(Of AButton) = UpdateButtonLayout(alts.Count)
 
         Dim botCount = alts.Where(Function(ap) botSortList.Contains(ap.UserName)).Count()

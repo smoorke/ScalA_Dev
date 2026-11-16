@@ -1372,6 +1372,17 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End Try
     End Function
 
+    Private reducedCorner As Boolean = False
+
+    Public Sub reduceCorner(bReduce As Boolean)
+        If reducedCorner <> bReduce Then
+            DwmSetWindowAttribute(Me.MainWindowHandle, DWMWA_WINDOW_CORNER_PREFERENCE, If(bReduce, 3, 2), 4)
+            reducedCorner = bReduce
+        End If
+    End Sub
+
+
+
     Friend Async Function ReOpenAsWindowed() As Task
 
         If alreadylaunched Then
