@@ -221,8 +221,12 @@ Public NotInheritable Class FrmSettings
         cmbPriority.SelectedIndex = mapPriorityToCmbIndex(My.Settings.Priority)
 
         cmbQLScaling.SelectedIndex = My.Settings.QLScale
-        txtCustomQLScale.Text = If(My.Settings.QLScale > 0, $"{My.Settings.QLScale:0.00}", "")
-        If My.Settings.QLScale = 4 Then txtCustomQLScale.Text = $"{My.Settings.customQLScale:0.00#}"
+        If My.Settings.QLScale = 4 Then
+            txtCustomQLScale.Text = $"{My.Settings.customQLScale:0.00#}"
+        Else
+            txtCustomQLScale.Text = If(My.Settings.QLScale > 0, $"{My.Settings.QLScale:0.00}", "")
+        End If
+        _customQlScale = My.Settings.customQLScale
         txtCustomQLScale.Enabled = cmbQLScaling.SelectedIndex = 4
 
         chkDPIDragFix.Checked = My.Settings.DpiDragFix
@@ -1456,8 +1460,123 @@ Public NotInheritable Class FrmSettings
     End Sub
 
     Private Sub cmbQLScaling_SelectionChangeCommitted(sender As Object, e As EventArgs) Handles cmbQLScaling.SelectionChangeCommitted
-        txtCustomQLScale.Text = If(sender.SelectedIndex > 0, $"{sender.SelectedIndex:0.00}", "")
-        If sender.SelectedIndex = 4 Then txtCustomQLScale.Text = $"{My.Settings.customQLScale:0.00#}"
+        If sender.SelectedIndex = 4 Then
+            txtCustomQLScale.Text = $"{_customQlScale:0.00#}"
+        Else
+            txtCustomQLScale.Text = If(sender.SelectedIndex > 0, $"{sender.SelectedIndex:0.00}", "")
+        End If
         txtCustomQLScale.Enabled = cmbQLScaling.SelectedIndex = 4
     End Sub
+
+    Public Sub txtCustomQLScale_KeyPress(sender As TextBox, e As KeyPressEventArgs) Handles txtCustomQLScale.KeyPress
+
+        If Char.IsControl(e.KeyChar) Then Return
+
+        Dim newText As String = sender.Text.Remove(sender.SelectionStart, sender.SelectionLength).Insert(sender.SelectionStart, e.KeyChar)
+
+        newText = newText.Replace(","c, "."c)
+
+        If Not IsValidScale(newText) Then
+            e.Handled = True
+        End If
+
+    End Sub
+
+    Private Sub txtCustomQLScale_KeyDown(sender As Object, e As KeyEventArgs) Handles txtCustomQLScale.KeyDown
+
+        Debug.Print($"keydown {e.KeyCode}")
+
+        Select Case e.KeyValue
+            Case Keys.D0 To Keys.D9, Keys.Decimal, Keys.OemPeriod, Keys.Oemcomma, Keys.NumPad0 To Keys.NumPad9, Keys.ControlKey, Keys.Back, Keys.Delete
+            Case Keys.Left, Keys.Right, Keys.Up, Keys.Down
+            Case Keys.A, Keys.Z, Keys.X, Keys.C, Keys.V
+                If e.Control <> True Then
+                    e.Handled = True
+                    e.SuppressKeyPress = True
+                End If
+            Case Keys.Insert
+                If e.Shift <> True Then
+                    e.Handled = True
+                    e.SuppressKeyPress = True
+                End If
+            Case Else
+                e.Handled = True
+                e.SuppressKeyPress = True
+        End Select
+
+    End Sub
+
+    Private Sub txtCustomQLScale_TextChanged(sender As TextBox, e As EventArgs) Handles txtCustomQLScale.TextChanged
+        Dim idx = sender.SelectionStart
+        sender.Text = sender.Text.Replace(","c, "."c)
+        If sender.Text.Length > 0 Then
+            If Val(sender.Text) < 1 Then
+                sender.Text = "1."
+                idx = 2
+            End If
+            If Val(sender.Text) > 10 Then
+                sender.Text = "10.00"
+                idx = 5
+            End If
+        End If
+        sender.SelectionStart = idx
+
+        If cmbQLScaling.SelectedIndex = 4 Then
+            Single.TryParse(sender.Text, _customQlScale)
+        End If
+    End Sub
+
+    Private _customQlScale As Single
+
 End Class
+Class QlScaleTextBox : Inherits TextBox
+    Public Sub New()
+        MyBase.New()
+    End Sub
+
+    Protected Overrides Sub WndProc(ByRef m As Message)
+        Const WM_PASTE As Integer = &H302
+
+        If m.Msg = WM_PASTE Then
+
+            Try
+                Dim pastedText As String = Clipboard.GetText()
+
+                If pastedText.Length = 0 Then Return
+
+                Dim newText As String = Me.Text.Remove(Me.SelectionStart, Me.SelectionLength).Insert(Me.SelectionStart, pastedText).Replace(","c, "."c)
+
+                If IsValidScale(newText) Then
+                    MyBase.WndProc(m)
+                End If
+
+            Catch ex As Exception
+                Debug.Print(ex.Message)
+            End Try
+
+            Return
+        End If
+
+
+        MyBase.WndProc(m)
+    End Sub
+End Class
+Module validation
+    Public Function IsValidScale(value As String) As Boolean
+
+        value = value.Replace(","c, "."c)
+
+        If value.Count(Function(c) c = "."c) > 1 Then Return False
+
+        If value.Contains("."c) Then
+            Dim decimalPart = value.Split("."c)(1)
+
+            If decimalPart.Length > 4 Then Return False
+
+            If Not decimalPart.All(Function(c) Char.IsDigit(c)) Then Return False
+        End If
+
+        Return value.All(Function(c) Char.IsDigit(c) OrElse c = "."c)
+
+    End Function
+End Module

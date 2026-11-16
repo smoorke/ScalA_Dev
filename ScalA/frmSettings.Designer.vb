@@ -166,7 +166,7 @@ Partial NotInheritable Class FrmSettings
         Me.chkMinMaxOnSwitch = New ScalA.FixedScaleCheckbox()
         Me.chkStartupMax = New ScalA.FixedScaleCheckbox()
         Me.TabQL = New System.Windows.Forms.TabPage()
-        Me.txtCustomQLScale = New System.Windows.Forms.TextBox()
+        Me.txtCustomQLScale = New ScalA.QlScaleTextBox()
         Me.cmbQLScaling = New System.Windows.Forms.ComboBox()
         Me.TxtFilterAddExt = New System.Windows.Forms.TextBox()
         Me.lblDefaultFilter = New System.Windows.Forms.Label()
@@ -1126,7 +1126,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpAlterOverview.Controls.Add(Me.chkAlterOverviewPlusCtrl)
         Me.grpAlterOverview.Controls.Add(Label18)
         Me.grpAlterOverview.Controls.Add(Label17)
-        Me.grpAlterOverview.Location = New System.Drawing.Point(27, 300)
+        Me.grpAlterOverview.Location = New System.Drawing.Point(26, 300)
         Me.grpAlterOverview.Name = "grpAlterOverview"
         Me.grpAlterOverview.Size = New System.Drawing.Size(269, 90)
         Me.grpAlterOverview.TabIndex = 22
@@ -1305,7 +1305,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpOverviewShortcut.Controls.Add(Me.chkStoShift)
         Me.grpOverviewShortcut.Controls.Add(Me.chkStoWin)
         Me.grpOverviewShortcut.Controls.Add(Me.chkStoCtrl)
-        Me.grpOverviewShortcut.Location = New System.Drawing.Point(27, 82)
+        Me.grpOverviewShortcut.Location = New System.Drawing.Point(26, 82)
         Me.grpOverviewShortcut.Name = "grpOverviewShortcut"
         Me.grpOverviewShortcut.Size = New System.Drawing.Size(269, 43)
         Me.grpOverviewShortcut.TabIndex = 0
@@ -1375,7 +1375,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleUpWin)
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleDownCtrl)
         Me.grpCycleShortcut.Controls.Add(Me.chkCycleUpCtrl)
-        Me.grpCycleShortcut.Location = New System.Drawing.Point(27, 131)
+        Me.grpCycleShortcut.Location = New System.Drawing.Point(26, 131)
         Me.grpCycleShortcut.Name = "grpCycleShortcut"
         Me.grpCycleShortcut.Size = New System.Drawing.Size(269, 67)
         Me.grpCycleShortcut.TabIndex = 1
@@ -1492,7 +1492,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpCloseAllShortcut.Controls.Add(Me.chkCAShift)
         Me.grpCloseAllShortcut.Controls.Add(Me.chkCAWin)
         Me.grpCloseAllShortcut.Controls.Add(Me.chkCACtrl)
-        Me.grpCloseAllShortcut.Location = New System.Drawing.Point(27, 203)
+        Me.grpCloseAllShortcut.Location = New System.Drawing.Point(26, 203)
         Me.grpCloseAllShortcut.Name = "grpCloseAllShortcut"
         Me.grpCloseAllShortcut.Size = New System.Drawing.Size(269, 43)
         Me.grpCloseAllShortcut.TabIndex = 17
@@ -1557,7 +1557,7 @@ Partial NotInheritable Class FrmSettings
         Me.grpToggleTopMost.Controls.Add(Me.chkTogTopShift)
         Me.grpToggleTopMost.Controls.Add(Me.chkTogTopWin)
         Me.grpToggleTopMost.Controls.Add(Me.chkTogTopCtrl)
-        Me.grpToggleTopMost.Location = New System.Drawing.Point(27, 252)
+        Me.grpToggleTopMost.Location = New System.Drawing.Point(26, 252)
         Me.grpToggleTopMost.Name = "grpToggleTopMost"
         Me.grpToggleTopMost.Size = New System.Drawing.Size(269, 43)
         Me.grpToggleTopMost.TabIndex = 20
