@@ -29,7 +29,7 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
     Public Sub New()
         MyBase.New()
         MyBase.SetBoundsCore(MyBase.Left, MyBase.Top, MyBase.Width, 17, BoundsSpecified.Height)
-        SetStyle(ControlStyles.OptimizedDoubleBuffer Or ControlStyles.ResizeRedraw Or ControlStyles.UserPaint Or ControlStyles.SupportsTransparentBackColor, True)
+        SetStyle(ControlStyles.OptimizedDoubleBuffer Or ControlStyles.ResizeRedraw Or ControlStyles.UserPaint Or ControlStyles.AllPaintingInWmPaint Or ControlStyles.SupportsTransparentBackColor, True)
     End Sub
 
     Protected Overrides Sub SetBoundsCore(x As Integer, y As Integer, width As Integer, height As Integer, specified As BoundsSpecified)
@@ -128,68 +128,41 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
         Invalidate()
     End Sub
 
-    Protected Overrides Sub OnInvalidated(e As InvalidateEventArgs)
-        MyBase.OnInvalidated(e)
-        PaintCheckBox()
-    End Sub
-    Private _bgBuffer As BufferedGraphics
-    Private _bufferwidth As Integer = 0
-    Private Sub PaintCheckBox()
-
+    Protected Overrides Sub OnPaint(e As PaintEventArgs)
         If ClientSize.Width <= 0 OrElse ClientSize.Height <= 0 Then Exit Sub
 
-        Dim rect As New Rectangle(0, 0, ClientSize.Width, 17)
+        Dim g As Graphics = e.Graphics
+
         Dim bgColor As Color = GetEffectiveBackColor()
-
-        ' Allocate a GDI-compatible BufferedGraphics instead of a raw GDI+ Bitmap
-        If _bgBuffer Is Nothing OrElse _bufferWidth <> ClientSize.Width Then
-            If _bgBuffer IsNot Nothing Then _bgBuffer.Dispose()
-            _bufferWidth = ClientSize.Width
-            Using refG As Graphics = Me.CreateGraphics()
-                _bgBuffer = BufferedGraphicsManager.Current.Allocate(refG, rect)
-            End Using
-        End If
-
-        Dim g As Graphics = _bgBuffer.Graphics
         g.Clear(bgColor)
 
-        'Debug.Print($"CheckRect {rect}")
+        Dim rect As New Rectangle(0, 0, ClientSize.Width, 17)
 
         ' Checkbox dimensions
         Dim boxSize As Integer = 14
         Dim boxPadding As Integer = 4
 
-        Dim boxX As Integer
-        Dim boxY As Integer
-
         Dim sx As Single = 96.0F / g.DpiX
         Dim sy As Single = 96.0F / g.DpiY
 
+        Dim boxX As Integer
+        Dim boxY As Integer
+
         Select Case CheckAlign
             Case ContentAlignment.TopRight, ContentAlignment.MiddleRight, ContentAlignment.BottomRight
-
-                boxX = rect.Right - boxSize / sx - boxPadding
-
+                boxX = CInt(rect.Right - (boxSize / sx) - boxPadding)
             Case ContentAlignment.TopCenter, ContentAlignment.MiddleCenter, ContentAlignment.BottomCenter
-
                 boxX = (rect.Width - boxSize) \ 2
-
             Case Else
-
                 boxX = boxPadding
         End Select
 
         Select Case CheckAlign
             Case ContentAlignment.TopLeft, ContentAlignment.TopCenter, ContentAlignment.TopRight
-
                 boxY = boxPadding
-
             Case ContentAlignment.BottomLeft, ContentAlignment.BottomCenter, ContentAlignment.BottomRight
-
                 boxY = rect.Bottom - boxSize - boxPadding
-
             Case Else
-
                 boxY = (rect.Height - boxSize) \ 2
         End Select
 
@@ -199,81 +172,61 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
         Dim state As VisualStyles.CheckBoxState
 
         If Not Enabled Then
-
             Select Case CheckState
-                Case CheckState.Checked
-                    state = VisualStyles.CheckBoxState.CheckedDisabled
-                Case CheckState.Indeterminate
-                    state = VisualStyles.CheckBoxState.MixedDisabled
-                Case Else
-                    state = VisualStyles.CheckBoxState.UncheckedDisabled
+                Case CheckState.Checked : state = VisualStyles.CheckBoxState.CheckedDisabled
+                Case CheckState.Indeterminate : state = VisualStyles.CheckBoxState.MixedDisabled
+                Case Else : state = VisualStyles.CheckBoxState.UncheckedDisabled
             End Select
-
         ElseIf _MouseDown Then
-
             Select Case CheckState
-                Case CheckState.Checked
-                    state = VisualStyles.CheckBoxState.CheckedPressed
-                Case CheckState.Indeterminate
-                    state = VisualStyles.CheckBoxState.MixedPressed
-                Case Else
-                    state = VisualStyles.CheckBoxState.UncheckedPressed
+                Case CheckState.Checked : state = VisualStyles.CheckBoxState.CheckedPressed
+                Case CheckState.Indeterminate : state = VisualStyles.CheckBoxState.MixedPressed
+                Case Else : state = VisualStyles.CheckBoxState.UncheckedPressed
             End Select
-
         ElseIf _MouseOver Then
-
             Select Case CheckState
-                Case CheckState.Checked
-                    state = VisualStyles.CheckBoxState.CheckedHot
-                Case CheckState.Indeterminate
-                    state = VisualStyles.CheckBoxState.MixedHot
-                Case Else
-                    state = VisualStyles.CheckBoxState.UncheckedHot
+                Case CheckState.Checked : state = VisualStyles.CheckBoxState.CheckedHot
+                Case CheckState.Indeterminate : state = VisualStyles.CheckBoxState.MixedHot
+                Case Else : state = VisualStyles.CheckBoxState.UncheckedHot
             End Select
-
         Else
-
             Select Case CheckState
-                Case CheckState.Checked
-                    state = VisualStyles.CheckBoxState.CheckedNormal
-                Case CheckState.Indeterminate
-                    state = VisualStyles.CheckBoxState.MixedNormal
-                Case Else
-                    state = VisualStyles.CheckBoxState.UncheckedNormal
+                Case CheckState.Checked : state = VisualStyles.CheckBoxState.CheckedNormal
+                Case CheckState.Indeterminate : state = VisualStyles.CheckBoxState.MixedNormal
+                Case Else : state = VisualStyles.CheckBoxState.UncheckedNormal
             End Select
-
         End If
 
-
-
+        ' Draw checkbox glyph
         Dim glyphSize As Size = CheckBoxRenderer.GetGlyphSize(g, state)
         If glyphSize.Width > 13 Then
-            ' Allocate a GDI-compatible buffer for the unscaled glyph too
+            ' High-DPI downscaling via GDI-compatible buffer to prevent dark edge fringes
+            'Dim bgColor As Color = GetEffectiveBackColor()
             Dim glyphRect As New Rectangle(0, 0, glyphSize.Width + 2, glyphSize.Height + 2)
+
             Using glyphBuf As BufferedGraphics = BufferedGraphicsManager.Current.Allocate(g, glyphRect)
-                Dim gg As Graphics = glyphBuf.Graphics
-                gg.Clear(bgColor)
-                CheckBoxRenderer.DrawCheckBox(gg, New Point(1, 1), state)
+                glyphBuf.Graphics.Clear(bgColor)
+                CheckBoxRenderer.DrawCheckBox(glyphBuf.Graphics, New Point(1, 1), state)
 
-                ' Render unscaled glyph onto main buffer at scaled destination
-                Dim oldInterp = g.InterpolationMode
-                g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
-
-                Dim destRect As New Rectangle(boxX, 1, CInt(glyphRect.Width * sx), CInt(glyphRect.Height * sy))
-                ' Render glyphBuf to a temporary bitmap only AFTER uxtheme has finished GDI compositing
                 Using tmpBmp As New Bitmap(glyphRect.Width, glyphRect.Height, Imaging.PixelFormat.Format24bppRgb)
                     Using gTmp As Graphics = Graphics.FromImage(tmpBmp)
                         glyphBuf.Render(gTmp)
                     End Using
+
+                    Dim oldInterp = g.InterpolationMode
+                    g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
+
+                    Dim destRect As New Rectangle(boxX, 1, CInt(glyphRect.Width * sx), CInt(glyphRect.Height * sy))
                     Using ia As New Imaging.ImageAttributes()
-                        ia.SetWrapMode(Drawing2D.WrapMode.TileFlipXY)
+                        ia.SetWrapMode(Drawing2D.WrapMode.Clamp)
                         g.DrawImage(tmpBmp, destRect, 0, 0, tmpBmp.Width, tmpBmp.Height, GraphicsUnit.Pixel, ia)
                     End Using
-                End Using
 
-                g.InterpolationMode = oldInterp
+                    g.InterpolationMode = oldInterp
+                End Using
             End Using
         Else
+            ' At 100% DPI (96 DPI), draw directly onto e.Graphics (already double-buffered by WinForms)
             CheckBoxRenderer.DrawCheckBox(g, New Point(boxX, 2), state)
         End If
 
@@ -282,71 +235,52 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
         Dim lineAlignment As StringAlignment = StringAlignment.Center
 
         Select Case TextAlign
-
             Case ContentAlignment.TopLeft, ContentAlignment.MiddleLeft, ContentAlignment.BottomLeft
-
                 stringAlignment = StringAlignment.Near
-
             Case ContentAlignment.TopCenter, ContentAlignment.MiddleCenter, ContentAlignment.BottomCenter
-
                 stringAlignment = StringAlignment.Center
-
             Case ContentAlignment.TopRight, ContentAlignment.MiddleRight, ContentAlignment.BottomRight
-
                 stringAlignment = StringAlignment.Far
-
         End Select
 
         Select Case TextAlign
-
             Case ContentAlignment.TopLeft, ContentAlignment.TopCenter, ContentAlignment.TopRight
-
                 lineAlignment = StringAlignment.Near
-
             Case ContentAlignment.BottomLeft, ContentAlignment.BottomCenter, ContentAlignment.BottomRight
-
                 lineAlignment = StringAlignment.Far
-
         End Select
 
-        Dim textRect As Rectangle = New Rectangle(rect.X, rect.Y, rect.Width, rect.Height)
+        Dim textRect As New Rectangle(rect.X, rect.Y, rect.Width, rect.Height)
 
         If CheckAlign = ContentAlignment.MiddleLeft OrElse CheckAlign = ContentAlignment.TopLeft OrElse CheckAlign = ContentAlignment.BottomLeft Then
-
             textRect.X = boxRect.Right
             textRect.Width = rect.Right - textRect.X
-
         ElseIf CheckAlign = ContentAlignment.MiddleRight OrElse CheckAlign = ContentAlignment.TopRight OrElse CheckAlign = ContentAlignment.BottomRight Then
-
             textRect.Width = boxRect.Left - boxPadding
-
         End If
 
         Using b As New SolidBrush(If(Me.Enabled, Me.ForeColor, Color.Gray))
-
-            Using sf As New StringFormat With {.Alignment = stringAlignment, .LineAlignment = lineAlignment, .FormatFlags = StringFormatFlags.NoWrap, .Trimming = StringTrimming.None}
-
+            Using sf As New StringFormat With {
+            .Alignment = stringAlignment,
+            .LineAlignment = lineAlignment,
+            .FormatFlags = StringFormatFlags.NoWrap,
+            .Trimming = StringTrimming.None
+        }
                 If RightToLeft = RightToLeft.Yes Then
                     sf.FormatFlags = sf.FormatFlags Or StringFormatFlags.DirectionRightToLeft
                 End If
 
                 g.DrawString(Text, Font, b, textRect, sf)
-
             End Using
-
         End Using
 
         ' Focus rectangle
         If Focused AndAlso ShowFocusCues Then
-
-            Dim focusRect As Rectangle = New Rectangle(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, 17)
-
-
-            ControlPaint.DrawFocusRectangle(g, focusRect, _ForeColor, Color.Black)
-
+            Dim focusRect As New Rectangle(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, 17)
+            ControlPaint.DrawFocusRectangle(g, focusRect, Me.ForeColor, Color.Black)
         End If
-
     End Sub
+
     Private Function GetEffectiveBackColor() As Color
         Dim ctrl As Control = Me
         While ctrl IsNot Nothing
@@ -357,15 +291,5 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
         End While
         Return SystemColors.Control
     End Function
-    Protected Overrides Sub OnPaint(e As PaintEventArgs)
-
-        If _bgBuffer Is Nothing Then PaintCheckBox()
-        If _bgBuffer IsNot Nothing Then
-            _bgBuffer.Render(e.Graphics)
-        End If
-
-    End Sub
-
-
 
 End Class
