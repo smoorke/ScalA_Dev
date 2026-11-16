@@ -1372,20 +1372,20 @@ Public NotInheritable Class AstoniaProcess : Implements IDisposable
         End Try
     End Function
 
-    Public Sub reduceCorner(bReduce As Boolean)
-        Dim hwnd As IntPtr = Me.MainWindowHandle
-        If hwnd = IntPtr.Zero Then Exit Sub
+    'Public Sub reduceCorner(bReduce As Boolean) 'todo: make crossprocess safe. true wins
+    '    Dim hwnd As IntPtr = Me.MainWindowHandle
+    '    If hwnd = IntPtr.Zero Then Exit Sub
 
-        Dim targetPref As Integer = If(bReduce, 3, 0)
-        Dim currentPref As Integer = -1
+    '    Dim targetPref As Integer = If(bReduce, 3, 0)
+    '    Dim currentPref As Integer = -1
 
-        ' If DwmGetWindowAttribute succeeds (Windows 11) and already matches targetPref, skip setting
-        If DwmGetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, currentPref, 4) = 0 Then
-            If currentPref <> targetPref Then
-                DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, targetPref, 4)
-            End If
-        End If
-    End Sub
+    '    ' If DwmGetWindowAttribute succeeds (Windows 11) and already matches targetPref, skip setting
+    '    If DwmGetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, currentPref, 4) = 0 Then
+    '        If currentPref <> targetPref Then
+    '            DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, targetPref, 4)
+    '        End If
+    '    End If
+    'End Sub
 
 
 
@@ -1665,6 +1665,20 @@ End Class
 
 Module ProcessExtensions
 
+    Public Function HasExitedSafe(ByVal pID As Integer)
+        Dim exitCode As Integer = 0
+        Dim processHandle As IntPtr = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, False, pID)
+        Try
+            If processHandle <> IntPtr.Zero AndAlso GetExitCodeProcess(processHandle, exitCode) Then Return exitCode <> 259
+        Catch
+            dBug.Print($"Exception on HasExitedSafe {pID}", 1)
+        Finally
+            CloseHandle(processHandle)
+        End Try
+        Return True
+    End Function
+
+
     <System.Runtime.CompilerServices.Extension()>
     Public Function HasExitedSafe(ByVal this As Process) As Boolean
         Dim exitCode As Integer = 0
@@ -1672,7 +1686,7 @@ Module ProcessExtensions
         Try
             If processHandle <> IntPtr.Zero AndAlso GetExitCodeProcess(processHandle, exitCode) Then Return exitCode <> 259
         Catch
-            CustomMessageBox.Show(FrmMain, "Exception on HasExitedSafe")
+            dBug.Print($"Exception on HasExitedSafe {this}")
         Finally
             CloseHandle(processHandle)
         End Try

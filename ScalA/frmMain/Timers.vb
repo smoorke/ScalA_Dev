@@ -279,9 +279,7 @@ Partial NotInheritable Class FrmMain
 
         Dim alts As List(Of AstoniaProcess) = AstoniaProcess.Enumerate(blackList, True).OrderBy(Function(ap) ap.UserName, apSorter).ToList
 
-        For Each alt In alts
-            alt.reduceCorner(My.Settings.ReducedCorners)
-        Next
+        WindowCornerManager.ReduceCorners(alts, My.Settings.ReducedCorners)
 
         Dim visibleButtons As List(Of AButton) = UpdateButtonLayout(alts.Count)
 
@@ -1017,7 +1015,7 @@ Partial NotInheritable Class FrmMain
             swAutoClose.Restart()
         End If
 
-        AltPP?.reduceCorner(My.Settings.ReducedCorners)
+        WindowCornerManager.ReduceCorners({AltPP}, My.Settings.ReducedCorners)
 
         'todo move setbehind to other timers?
 

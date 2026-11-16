@@ -232,6 +232,10 @@ Public NotInheritable Class FrmSettings
         chkDPIDragFix.Checked = My.Settings.DpiDragFix
         chkReduceCorners.Checked = My.Settings.ReducedCorners
 
+        If Environment.OSVersion.Version < New Version(10, 0, 22000) Then
+            chkReduceCorners.Enabled = False
+        End If
+
         Me.TopMost = True ' My.Settings.topmost
     End Sub
     Public Sub New()

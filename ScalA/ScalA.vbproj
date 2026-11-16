@@ -191,6 +191,7 @@
     <Compile Include="UpdateDialog.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="WindowCornerManager.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="debugger\frmDebug.resx">
