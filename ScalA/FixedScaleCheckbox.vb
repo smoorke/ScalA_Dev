@@ -33,13 +33,7 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
     End Sub
 
     Protected Overrides Sub SetBoundsCore(x As Integer, y As Integer, width As Integer, height As Integer, specified As BoundsSpecified)
-
-        Dim w As Integer = width
-        If CheckAlign = ContentAlignment.MiddleLeft Then
-            w = TextRenderer.MeasureText(Text, Font, New Size(Integer.MaxValue, Integer.MaxValue), TextFormatFlags.NoPadding Or TextFormatFlags.SingleLine).Width + 19
-            If Text.Length > 4 Then w += 13
-        End If
-        MyBase.SetBoundsCore(x, y, w, 17, specified Or BoundsSpecified.Height Or BoundsSpecified.Width)
+        MyBase.SetBoundsCore(x, y, width, 17, specified Or BoundsSpecified.Height Or BoundsSpecified.Width)
     End Sub
 
     Protected Overrides ReadOnly Property CreateParams() As CreateParams
@@ -140,7 +134,7 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
 
         ' Checkbox dimensions
         Dim boxSize As Integer = 14
-        Dim boxPadding As Integer = 4
+        Dim boxPadding As Integer = 2
 
         Dim sx As Single = 96.0F / g.DpiX
         Dim sy As Single = 96.0F / g.DpiY
@@ -259,20 +253,34 @@ Public NotInheritable Class FixedScaleCheckbox : Inherits CheckBox
             textRect.Width = boxRect.Left - boxPadding
         End If
 
-        Using b As New SolidBrush(If(Me.Enabled, Me.ForeColor, Color.Gray))
-            Using sf As New StringFormat With {
-            .Alignment = stringAlignment,
-            .LineAlignment = lineAlignment,
-            .FormatFlags = StringFormatFlags.NoWrap,
-            .Trimming = StringTrimming.None
-        }
-                If RightToLeft = RightToLeft.Yes Then
-                    sf.FormatFlags = sf.FormatFlags Or StringFormatFlags.DirectionRightToLeft
-                End If
+        ' Map ContentAlignment to TextFormatFlags
+        Dim flags As TextFormatFlags = TextFormatFlags.NoPrefix Or TextFormatFlags.SingleLine
 
-                g.DrawString(Text, Font, b, textRect, sf)
-            End Using
-        End Using
+        Select Case TextAlign
+            Case ContentAlignment.TopLeft, ContentAlignment.MiddleLeft, ContentAlignment.BottomLeft
+                flags = flags Or TextFormatFlags.Left
+            Case ContentAlignment.TopCenter, ContentAlignment.MiddleCenter, ContentAlignment.BottomCenter
+                flags = flags Or TextFormatFlags.HorizontalCenter
+            Case ContentAlignment.TopRight, ContentAlignment.MiddleRight, ContentAlignment.BottomRight
+                flags = flags Or TextFormatFlags.Right
+        End Select
+
+        Select Case TextAlign
+            Case ContentAlignment.TopLeft, ContentAlignment.TopCenter, ContentAlignment.TopRight
+                flags = flags Or TextFormatFlags.Top
+            Case ContentAlignment.MiddleLeft, ContentAlignment.MiddleCenter, ContentAlignment.MiddleRight
+                flags = flags Or TextFormatFlags.VerticalCenter
+            Case ContentAlignment.BottomLeft, ContentAlignment.BottomCenter, ContentAlignment.BottomRight
+                flags = flags Or TextFormatFlags.Bottom
+        End Select
+
+        If RightToLeft = RightToLeft.Yes Then
+            flags = flags Or TextFormatFlags.RightToLeft
+        End If
+
+        ' Draw Unicode text with native Windows font linking & shaping
+        Dim textColor As Color = If(Me.Enabled, Me.ForeColor, SystemColors.GrayText)
+        TextRenderer.DrawText(g, Text, Font, textRect, textColor, flags)
 
         ' Focus rectangle
         If Focused AndAlso ShowFocusCues Then
