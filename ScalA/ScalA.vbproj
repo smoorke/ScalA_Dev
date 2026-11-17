@@ -108,6 +108,7 @@
     </Compile>
     <Compile Include="DPIDragFix.vb" />
     <Compile Include="EditBoxHelper.vb" />
+    <Compile Include="ExplorerUndoRedoHelper.vb" />
     <Compile Include="FixedScaleCheckbox.vb">
       <SubType>Component</SubType>
     </Compile>
@@ -182,6 +183,7 @@
     <Compile Include="NativeMethods.vb" />
     <Compile Include="ScreenManager.vb" />
     <Compile Include="Settings.vb" />
+    <Compile Include="ShellFileOperation.vb" />
     <Compile Include="ShellLinkInfo.vb" />
     <Compile Include="SystemUtitlity.vb" />
     <Compile Include="TaskbarInterop.vb" />

@@ -1666,10 +1666,9 @@ Partial Public NotInheritable Class FrmMain
         dBug.Print($"NewFolder:{newpath}")
 
         Dim rootFolder As String = newpath
-
         dBug.Print($"rootFolder: {rootFolder}")
 
-        Dim newfolderPath = IO.Path.Combine(rootFolder, "New Folder")
+        Dim newfolderPath As String = IO.Path.Combine(rootFolder, "New Folder")
 
         Dim i As Integer = 2
         While IO.Directory.Exists(newfolderPath)
@@ -1677,21 +1676,14 @@ Partial Public NotInheritable Class FrmMain
             i += 1
         End While
 
-        dBug.Print($"newfolderpath: {newfolderPath}")
-
-        Try
-            IO.Directory.CreateDirectory(newfolderPath)
-        Catch ex As Exception
-
-        End Try
+        Dim folderName As String = IO.Path.GetFileName(newfolderPath)
+        dBug.Print($"default folderName: {folderName}")
 
         CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
         cmsQuickLaunch.Close()
 
-        If IO.Directory.Exists(newfolderPath) Then
-            RenameMethod(newfolderPath, newfolderPath.Substring(newfolderPath.TrimEnd("\").LastIndexOf("\") + 1).TrimEnd("\"), isCreateFolder:=True)
-        End If
-
+        ' Pass rootFolder (the parent directory) when isCreateFolder is True
+        RenameMethod(rootFolder, folderName, isCreateFolder:=True)
     End Sub
 
     Private Sub Ql_NewFolder(sender As ToolStripMenuItem, e As MouseEventArgs)
@@ -2115,33 +2107,28 @@ Partial Public NotInheritable Class FrmMain
 
                              Me.Invoke(Sub() RenameForm.Icon = My.Resources.moa3)
 
-                             'SendMessage(hndl, WM_SETICON, ICON_BIG, My.Resources.moa3.Handle) 'todo: replace with target icon
-
                              'scaling fixes
                              If Environment.OSVersion.Version.Major >= 10 Then
-                                 'note version check here might need adjustment. win8.0, 8.1, vista. 7 ok with bypass
                                  ScaleFixRenameDialog(RenameForm)
                                  HookRenameDialogDpi(hndl)
                              End If
 
                              EditBox = RenameForm.Controls.OfType(Of TextBox).FirstOrDefault
-                             AddHandler EditBox.KeyDown, AddressOf EditBox_KeyDown
-                             AddHandler EditBox.KeyPress, AddressOf EditBox_KeyPress
-                             'AddHandler EditBox.MouseDown, AddressOf EditBox_MouseDown
+                             If EditBox IsNot Nothing Then
+                                 AddHandler EditBox.KeyDown, AddressOf EditBox_KeyDown
+                                 AddHandler EditBox.KeyPress, AddressOf EditBox_KeyPress
 
-                             ' Select only filename without extension (exclude folders, .lnk, .url)
-                             Dim isFolder As Boolean = Path.EndsWith("\")
-                             Dim ext As String = System.IO.Path.GetExtension(Path).ToLower()
-                             Dim isHiddenExt As Boolean = hideExt.Contains(ext)
-                             If Not isFolder AndAlso Not isHiddenExt AndAlso currentName.Contains(".") Then
-                                 Dim lastDot As Integer = currentName.LastIndexOf(".")
-                                 If lastDot > 0 Then
-                                     Me.Invoke(Sub() EditBox.Select(0, lastDot))
-                                     'EditBoxHelper.SetSelection(hEditBox, 0, lastDot)
+                                 ' Select only filename without extension (exclude folders, .lnk, .url)
+                                 Dim isFolder As Boolean = isCreateFolder OrElse Path.EndsWith("\")
+                                 Dim ext As String = System.IO.Path.GetExtension(Path).ToLower()
+                                 Dim isHiddenExt As Boolean = hideExt.Contains(ext)
+                                 If Not isFolder AndAlso Not isHiddenExt AndAlso currentName.Contains(".") Then
+                                     Dim lastDot As Integer = currentName.LastIndexOf(".")
+                                     If lastDot > 0 Then
+                                         Me.Invoke(Sub() EditBox.Select(0, lastDot))
+                                     End If
                                  End If
                              End If
-
-                             'End If
 
                              watch.Stop()
                          End Sub)
@@ -2156,33 +2143,46 @@ Partial Public NotInheritable Class FrmMain
 
         Dim toName As String = InputBox("Enter New Name", title, currentName, dialogLeft, dialogTop).TrimStart().TrimEnd(" .")
 
-        RemoveHandler EditBox.KeyPress, AddressOf EditBox_KeyPress
-        RemoveHandler EditBox.KeyDown, AddressOf EditBox_KeyDown
+        If EditBox IsNot Nothing Then
+            RemoveHandler EditBox.KeyPress, AddressOf EditBox_KeyPress
+            RemoveHandler EditBox.KeyDown, AddressOf EditBox_KeyDown
+        End If
 
         renameOpen = False
 
+        ' User cancelled or entered an empty name -> exit cleanly without touching disk or Undo stack
+        If toName = "" Then Exit Sub
+
         If ReservedNames.Contains(IO.Path.GetFileNameWithoutExtension(toName).ToUpper) Then
-            CustomMessageBox.Show(Me, $"Error renaming ""{currentName}"" to ""{toName}""{vbCrLf}The specified device name is invalid.", If(isCreateFolder, "Create New folder", "Rename"), MessageBoxButtons.OK, MessageBoxIcon.Error)
+            CustomMessageBox.Show(Me, $"Error {If(isCreateFolder, "creating", "renaming")} ""{toName}""{vbCrLf}The specified device name is invalid.", title, MessageBoxButtons.OK, MessageBoxIcon.Error)
             Exit Sub
         End If
 
-        dBug.Print($"Rename to {toName}")
-        If toName <> "" AndAlso currentName <> toName Then
-            dBug.Print($"oldpath: {Path}")
-            If hideExt.Contains(System.IO.Path.GetExtension(Path).ToLower) Then toName &= System.IO.Path.GetExtension(Path)
-            'If Path.EndsWith("\") Then Path = System.IO.Path.GetDirectoryName(Path)
-            If Path.EndsWith("\") Then Path = Path.TrimEnd("\")
-            dBug.Print($"newpath: {System.IO.Path.GetDirectoryName(Path) & "\" & toName}")
-            If Not MoveFileW(Path, System.IO.Path.GetDirectoryName(Path) & "\" & toName) Then
+        If isCreateFolder Then
+            ' Create the folder once with the final chosen name (produces a single "Undo New Folder" entry)
+            dBug.Print($"Creating folder ""{toName}"" in ""{Path}""")
+            If Not ShellFileOperations.CreateFolderWithUndo(Path, toName) Then
                 Dim sb As New System.Text.StringBuilder(1024)
                 FormatMessage(Format_Message.FORMAT_MESSAGE_FROM_SYSTEM Or Format_Message.FORMAT_MESSAGE_IGNORE_INSERTS, 0,
-                              Err.LastDllError, 0, sb, sb.Capacity, Nothing)
-                CustomMessageBox.Show(Me, $"Error renaming ""{currentName}"" to ""{toName}""{vbCrLf}{sb}", If(isCreateFolder, "Create New folder", "Rename"), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                          Err.LastDllError, 0, sb, sb.Capacity, Nothing)
+                CustomMessageBox.Show(Me, $"Error creating ""{toName}""{vbCrLf}{sb}", title, MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Else
+                dBug.Print($"created folder ""{toName}""")
+            End If
+        ElseIf currentName <> toName Then
+            ' Existing item rename path
+            dBug.Print($"oldpath: {Path}")
+            If hideExt.Contains(System.IO.Path.GetExtension(Path).ToLower) Then toName &= System.IO.Path.GetExtension(Path)
+            If Path.EndsWith("\") Then Path = Path.TrimEnd("\")
+            dBug.Print($"newpath: {System.IO.Path.GetDirectoryName(Path) & "\" & toName}")
+            If Not ShellFileOperations.RenameWithUndo(Path, toName) Then
+                Dim sb As New System.Text.StringBuilder(1024)
+                FormatMessage(Format_Message.FORMAT_MESSAGE_FROM_SYSTEM Or Format_Message.FORMAT_MESSAGE_IGNORE_INSERTS, 0,
+                          Err.LastDllError, 0, sb, sb.Capacity, Nothing)
+                CustomMessageBox.Show(Me, $"Error renaming ""{currentName}"" to ""{toName}""{vbCrLf}{sb}", title, MessageBoxButtons.OK, MessageBoxIcon.Error)
             Else
                 dBug.Print($"renamed to ""{toName}""")
             End If
-        ElseIf toName = "" AndAlso isCreateFolder AndAlso IO.Directory.Exists(Path) Then
-            IO.Directory.Delete(Path)
         End If
     End Sub
     Public Sub ScaleFixRenameDialog(frm As Form)
@@ -2484,6 +2484,9 @@ Partial Public NotInheritable Class FrmMain
             Dim pasteItem = New MenuItem("Paste", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "Paste"}}
             Dim pasteLinkItem = New MenuItem("Paste Shortcut", AddressOf ClipAction) With {.Tag = New MenuTag With {.path = path, .action = "PasteLink"}}
 
+            Dim undoItem = New MenuItem("Undo", AddressOf UndoRedoClick) With {.Tag = New MenuTag With {.action = "Undo"}}
+            Dim redoItem = New MenuItem("Redo", AddressOf UndoRedoClick) With {.Tag = New MenuTag With {.action = "Redo"}}
+
             Dim executableSubItems = executableItems(sender.DropDownItems.OfType(Of ToolStripMenuItem))
             Dim openallTag As New MenuTag
             openallTag.tooltip = String.Join(vbCrLf, executableSubItems.Take(10).Select(Of String)(Function(it) CType(it.Tag, QLInfo).name))
@@ -2498,7 +2501,7 @@ Partial Public NotInheritable Class FrmMain
                                         executableSubItems.Count > 0,
                             .Tag = openallTag},
                 New MenuItem("-"),
-            cutItem, copyItem, pasteItem, pasteLinkItem,
+            cutItem, copyItem, pasteItem, pasteLinkItem, undoitem, redoitem
                 New MenuItem("-"),
                 New MenuItem("Delete", AddressOf QlCtxDelete),
                 New MenuItem("Rename", AddressOf QlCtxRename),
@@ -2514,7 +2517,7 @@ Partial Public NotInheritable Class FrmMain
                                         executableSubItems.Count > 0,
                             .Tag = openallTag},
                 New MenuItem("-"),
-                cutItem, copyItem, pasteItem, pasteLinkItem,
+                cutItem, copyItem, pasteItem, pasteLinkItem, undoItem, redoItem,
                 New MenuItem("-"),
                 New MenuItem("Delete", AddressOf QlCtxDelete),
                 New MenuItem("Rename", AddressOf QlCtxRename),
@@ -2529,6 +2532,9 @@ Partial Public NotInheritable Class FrmMain
             Dim MenuItems As IEnumerable(Of MenuItem) = QlCtxMenu.MenuItems.Cast(Of MenuItem).ToList
 
             RunAsAdminItem.Visible = My.Computer.Keyboard.ShiftKeyDown AndAlso Not sender.HasDropDownItems AndAlso Not My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator)
+
+            ExplorerUndoRedoHelper.InspectExplorerMenu(undoItem.Visible, redoItem.Visible, undoItem.Text, redoItem.Text)
+
             Try
                 Dim lowPath As String = qli.path.ToLowerInvariant
                 Dim ext As String = IO.Path.GetExtension(lowPath)
@@ -2795,6 +2801,13 @@ Partial Public NotInheritable Class FrmMain
             'cmsQuickLaunch.Close(ToolStripDropDownCloseReason.ItemClicked)
         End If
     End Sub
+
+    Private Sub UndoRedoClick(sender As Object, e As EventArgs)
+        CloseOtherDropDowns(cmsQuickLaunch.Items, Nothing)
+        cmsQuickLaunch.Close()
+        ExplorerUndoRedoHelper.InspectExplorerMenu(execute:=CType(CType(sender, MenuItem).Tag, MenuTag).action)
+    End Sub
+
     Dim tpmParam As New TPMPARAMS With {.cbSize = Marshal.SizeOf(Of TPMPARAMS)}
     Private Sub ClipAction(sender As Object, e As EventArgs)
         Dim tgt As String = sender.tag.path
