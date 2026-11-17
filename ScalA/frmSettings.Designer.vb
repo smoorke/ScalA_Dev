@@ -75,6 +75,7 @@ Partial NotInheritable Class FrmSettings
         Me.btnRefreshICdisplay = New System.Windows.Forms.Button()
         Me.lblICSize = New System.Windows.Forms.Label()
         Me.btnResetCache = New System.Windows.Forms.Button()
+        Me.chkReduceCorners = New ScalA.FixedScaleCheckbox()
         Me.chkDPIDragFix = New ScalA.FixedScaleCheckbox()
         Me.chkAllowShiftEsc = New ScalA.FixedScaleCheckbox()
         Me.chkOnlyEsc = New ScalA.FixedScaleCheckbox()
@@ -95,7 +96,6 @@ Partial NotInheritable Class FrmSettings
         Me.CheckNowToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.OpenChangelogToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.chkOverViewIsGame = New ScalA.FixedScaleCheckbox()
-        Me.chkReduceCorners = New ScalA.FixedScaleCheckbox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
         Me.ChkSizeBorder = New ScalA.FixedScaleCheckbox()
@@ -478,7 +478,6 @@ Partial NotInheritable Class FrmSettings
         '
         'cmsQLFolder
         '
-        Me.cmsQLFolder.ImageScalingSize = New System.Drawing.Size(32, 32)
         Me.cmsQLFolder.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OpenInExplorerToolStripMenuItem, ToolStripMenuItem1, Me.ResetIconCacheToolStripMenuItem})
         Me.cmsQLFolder.Name = "cmsQLFolder"
         Me.cmsQLFolder.Size = New System.Drawing.Size(183, 54)
@@ -720,6 +719,18 @@ Partial NotInheritable Class FrmSettings
         Me.ttSettings.SetToolTip(Me.btnResetCache, "Evict All Cached Icons")
         Me.btnResetCache.UseVisualStyleBackColor = True
         '
+        'chkReduceCorners
+        '
+        Me.chkReduceCorners.AutoSize = True
+        Me.chkReduceCorners.Location = New System.Drawing.Point(206, 121)
+        Me.chkReduceCorners.Name = "chkReduceCorners"
+        Me.chkReduceCorners.Size = New System.Drawing.Size(96, 34)
+        Me.chkReduceCorners.TabIndex = 19
+        Me.chkReduceCorners.Text = "Reduce Client " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Corner Radius"
+        Me.ttSettings.SetToolTip(Me.chkReduceCorners, "'Fix' the double corner border on Windows 11." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "This bug is worse the higher your " &
+        "monitor is scaled." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "No effect on Windows 10 or below.")
+        Me.chkReduceCorners.UseVisualStyleBackColor = True
+        '
         'chkDPIDragFix
         '
         Me.chkDPIDragFix.AutoSize = True
@@ -910,10 +921,9 @@ Partial NotInheritable Class FrmSettings
         '
         'cmsUpdate
         '
-        Me.cmsUpdate.ImageScalingSize = New System.Drawing.Size(32, 32)
         Me.cmsUpdate.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CheckNowToolStripMenuItem, Me.OpenChangelogToolStripMenuItem})
         Me.cmsUpdate.Name = "cmsUpdate"
-        Me.cmsUpdate.Size = New System.Drawing.Size(181, 80)
+        Me.cmsUpdate.Size = New System.Drawing.Size(165, 48)
         '
         'CheckNowToolStripMenuItem
         '
@@ -939,19 +949,6 @@ Partial NotInheritable Class FrmSettings
         Me.chkOverViewIsGame.Text = "Active Overview "
         Me.ttSettings.SetToolTip(Me.chkOverViewIsGame, "Have overview thumbnails function as game.")
         Me.chkOverViewIsGame.UseVisualStyleBackColor = True
-        '
-        'chkReduceCorners
-        '
-        Me.chkReduceCorners.AutoSize = True
-        Me.chkReduceCorners.Location = New System.Drawing.Point(206, 121)
-        Me.chkReduceCorners.Name = "chkReduceCorners"
-        Me.chkReduceCorners.Size = New System.Drawing.Size(96, 34)
-        Me.chkReduceCorners.TabIndex = 19
-        Me.chkReduceCorners.Text = "Reduce Client " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Corner Radius"
-        Me.ttSettings.SetToolTip(Me.chkReduceCorners, "'Fix' the double corner border on Windows 11." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "This bug is worse the higher your " &
-        "monitor is scaled." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "No effect on Windows 10 or below." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: This remediation is" &
-        "n't perfect.")
-        Me.chkReduceCorners.UseVisualStyleBackColor = True
         '
         'tbcSettings
         '
@@ -1053,10 +1050,9 @@ Partial NotInheritable Class FrmSettings
         '
         'cmsGenerate
         '
-        Me.cmsGenerate.ImageScalingSize = New System.Drawing.Size(32, 32)
         Me.cmsGenerate.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.X60043ToolStripMenuItem, Me.X720169ToolStripMenuItem, ToolStripSeparator1, Me.FromToolStripMenuItem})
         Me.cmsGenerate.Name = "cmsGenerate"
-        Me.cmsGenerate.Size = New System.Drawing.Size(170, 124)
+        Me.cmsGenerate.Size = New System.Drawing.Size(154, 76)
         Me.cmsGenerate.Tag = "800x600 (4:3)"
         '
         'X60043ToolStripMenuItem
@@ -1654,8 +1650,8 @@ Partial NotInheritable Class FrmSettings
         Me.tabSortAndBL.Controls.Add(Me.btnHelp)
         Me.tabSortAndBL.Controls.Add(Me.txtBotSort)
         Me.tabSortAndBL.Controls.Add(Me.txtTopSort)
-        Me.tabSortAndBL.Controls.Add(Me.chkWhitelist)
         Me.tabSortAndBL.Controls.Add(GroupBox2)
+        Me.tabSortAndBL.Controls.Add(Me.chkWhitelist)
         Me.tabSortAndBL.Location = New System.Drawing.Point(4, 25)
         Me.tabSortAndBL.Margin = New System.Windows.Forms.Padding(0)
         Me.tabSortAndBL.Name = "tabSortAndBL"
