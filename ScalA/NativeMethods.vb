@@ -841,7 +841,8 @@ Module NativeMethods
     Public Function DwmExtendFrameIntoClientArea(hWnd As IntPtr, ByRef pMarInset As MARGINS) As Integer : End Function
     <DllImport("dwmapi.dll", PreserveSig:=True)>
     Public Function Dwmflush() As Integer : End Function
-
+    <DllImport("dwmapi.dll", PreserveSig:=True)>
+    Public Function DwmIsCompositionEnabled(<MarshalAs(UnmanagedType.Bool)> ByRef pfEnabled As Boolean) As Integer : End Function
     <DllImport("user32.dll")>
     Public Function SetParent(hWndChild As IntPtr, hWndNewParent As IntPtr) As IntPtr : End Function
     'Public Declare Function DwmGetWindowAttribute Lib "dwmapi" (ByVal hwnd As IntPtr, ByVal dwAttribute As Integer, ByRef pvAttribute As RECT, ByVal cbAttribute As Integer) As Integer

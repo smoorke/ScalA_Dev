@@ -398,6 +398,13 @@ Partial Public NotInheritable Class FrmMain
             Application.Exit()
         End If
 
+        Dim compEnabled As Boolean = False
+        DwmIsCompositionEnabled(compEnabled)
+        If Not compEnabled Then
+            MessageBox.Show("ScalA requires DWM Composition to be on (Aero Theme)", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            Application.Exit()
+        End If
+
         If Environment.OSVersion.Version.Major < 10 AndAlso Environment.OSVersion.Version.Build < 22000 Then
             Me.FormBorderStyle = FormBorderStyle.None
             ScalaHandle = Me.Handle

@@ -1,8 +1,6 @@
 ﻿Imports System.IO.MemoryMappedFiles
 Imports System.Threading
 Imports System.Runtime.InteropServices
-Imports System.Collections.Generic
-Imports System.Diagnostics
 
 Public Class WindowCornerManager
     Private Const MMF_NAME As String = "AstoniaProcess_CornerPID_MMF"
