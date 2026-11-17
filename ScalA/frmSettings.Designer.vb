@@ -735,7 +735,7 @@ Partial NotInheritable Class FrmSettings
         'chkAllowShiftEsc
         '
         Me.chkAllowShiftEsc.AutoSize = True
-        Me.chkAllowShiftEsc.Location = New System.Drawing.Point(55, 56)
+        Me.chkAllowShiftEsc.Location = New System.Drawing.Point(51, 56)
         Me.chkAllowShiftEsc.Name = "chkAllowShiftEsc"
         Me.chkAllowShiftEsc.Size = New System.Drawing.Size(224, 17)
         Me.chkAllowShiftEsc.TabIndex = 27
@@ -746,7 +746,7 @@ Partial NotInheritable Class FrmSettings
         'chkOnlyEsc
         '
         Me.chkOnlyEsc.AutoSize = True
-        Me.chkOnlyEsc.Location = New System.Drawing.Point(40, 38)
+        Me.chkOnlyEsc.Location = New System.Drawing.Point(36, 38)
         Me.chkOnlyEsc.Name = "chkOnlyEsc"
         Me.chkOnlyEsc.Size = New System.Drawing.Size(240, 17)
         Me.chkOnlyEsc.TabIndex = 25
@@ -758,7 +758,7 @@ Partial NotInheritable Class FrmSettings
         'chkNoAltTab
         '
         Me.chkNoAltTab.AutoSize = True
-        Me.chkNoAltTab.Location = New System.Drawing.Point(40, 20)
+        Me.chkNoAltTab.Location = New System.Drawing.Point(36, 20)
         Me.chkNoAltTab.Name = "chkNoAltTab"
         Me.chkNoAltTab.Size = New System.Drawing.Size(209, 17)
         Me.chkNoAltTab.TabIndex = 26
@@ -1127,7 +1127,7 @@ Partial NotInheritable Class FrmSettings
         'chkBlockWin
         '
         Me.chkBlockWin.AutoSize = True
-        Me.chkBlockWin.Location = New System.Drawing.Point(40, 2)
+        Me.chkBlockWin.Location = New System.Drawing.Point(36, 2)
         Me.chkBlockWin.Name = "chkBlockWin"
         Me.chkBlockWin.Size = New System.Drawing.Size(239, 17)
         Me.chkBlockWin.TabIndex = 24
