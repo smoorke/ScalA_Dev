@@ -95,9 +95,9 @@ Partial NotInheritable Class FrmSettings
         Me.CheckNowToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.OpenChangelogToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.chkOverViewIsGame = New ScalA.FixedScaleCheckbox()
+        Me.chkReduceCorners = New ScalA.FixedScaleCheckbox()
         Me.tbcSettings = New System.Windows.Forms.TabControl()
         Me.tabResolutions = New System.Windows.Forms.TabPage()
-        Me.chkReduceCorners = New ScalA.FixedScaleCheckbox()
         Me.ChkSizeBorder = New ScalA.FixedScaleCheckbox()
         Me.btnAddCurrentRes = New System.Windows.Forms.Button()
         Me.btnRestore = New System.Windows.Forms.Button()
@@ -940,6 +940,19 @@ Partial NotInheritable Class FrmSettings
         Me.ttSettings.SetToolTip(Me.chkOverViewIsGame, "Have overview thumbnails function as game.")
         Me.chkOverViewIsGame.UseVisualStyleBackColor = True
         '
+        'chkReduceCorners
+        '
+        Me.chkReduceCorners.AutoSize = True
+        Me.chkReduceCorners.Location = New System.Drawing.Point(206, 121)
+        Me.chkReduceCorners.Name = "chkReduceCorners"
+        Me.chkReduceCorners.Size = New System.Drawing.Size(96, 34)
+        Me.chkReduceCorners.TabIndex = 19
+        Me.chkReduceCorners.Text = "Reduce Client " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Corner Radius"
+        Me.ttSettings.SetToolTip(Me.chkReduceCorners, "'Fix' the double corner border on Windows 11." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "This bug is worse the higher your " &
+        "monitor is scaled." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "No effect on Windows 10 or below." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: This remediation is" &
+        "n't perfect.")
+        Me.chkReduceCorners.UseVisualStyleBackColor = True
+        '
         'tbcSettings
         '
         Me.tbcSettings.Appearance = System.Windows.Forms.TabAppearance.FlatButtons
@@ -977,19 +990,6 @@ Partial NotInheritable Class FrmSettings
         Me.tabResolutions.TabIndex = 0
         Me.tabResolutions.Text = "Resolution"
         Me.tabResolutions.UseVisualStyleBackColor = True
-        '
-        'chkReduceCorners
-        '
-        Me.chkReduceCorners.AutoSize = True
-        Me.chkReduceCorners.Location = New System.Drawing.Point(206, 121)
-        Me.chkReduceCorners.Name = "chkReduceCorners"
-        Me.chkReduceCorners.Size = New System.Drawing.Size(96, 34)
-        Me.chkReduceCorners.TabIndex = 19
-        Me.chkReduceCorners.Text = "Reduce Client " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Corner Radius"
-        Me.ttSettings.SetToolTip(Me.chkReduceCorners, "'Fix' the double corner border on Windows 11." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "This bug is worse the higher your " &
-        "monitor is scaled." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "No effect on Windows 10 or below." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Note: This remediation is" &
-        "n't perfect.")
-        Me.chkReduceCorners.UseVisualStyleBackColor = True
         '
         'ChkSizeBorder
         '
@@ -1654,8 +1654,8 @@ Partial NotInheritable Class FrmSettings
         Me.tabSortAndBL.Controls.Add(Me.btnHelp)
         Me.tabSortAndBL.Controls.Add(Me.txtBotSort)
         Me.tabSortAndBL.Controls.Add(Me.txtTopSort)
-        Me.tabSortAndBL.Controls.Add(GroupBox2)
         Me.tabSortAndBL.Controls.Add(Me.chkWhitelist)
+        Me.tabSortAndBL.Controls.Add(GroupBox2)
         Me.tabSortAndBL.Location = New System.Drawing.Point(4, 25)
         Me.tabSortAndBL.Margin = New System.Windows.Forms.Padding(0)
         Me.tabSortAndBL.Name = "tabSortAndBL"
