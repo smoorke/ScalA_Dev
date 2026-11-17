@@ -2836,9 +2836,11 @@ Partial Public NotInheritable Class FrmMain
         End If
 
         dBug.Print($"Clipaction {act} ""{tgt}""")
-        InvokeExplorerVerb(tgt, act, ScalaHandle)
+
         If act.StartsWith("Paste") Then
+            InvokeExplorerVerb(tgt, act, ScalaHandle)
         Else
+            ExplorerDispatch(tgt, "", "", act)
 
             'SetFileDropListWithEffect(tgt.TrimEnd("\"c), act = "Cut") 'this is brokne. leads to silent crash
 

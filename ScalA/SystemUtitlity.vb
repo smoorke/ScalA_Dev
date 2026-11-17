@@ -11,7 +11,7 @@ Public Module SystemUtitlity
     ''' <param name="process"></param>
     ''' <param name="args"></param>
     ''' <param name="currentDirectory"></param>
-    Public Sub ExecuteProcessUnElevated(process As String, args As String, Optional currentDirectory As String = "")
+    Public Sub ExecuteProcessUnElevated(process As String, args As String, Optional currentDirectory As String = "", Optional verb As String = "")
 
         Dim shellWindows As IShellWindows = New CShellWindows()
 
@@ -29,10 +29,14 @@ Public Module SystemUtitlity
         ' Get the shell dispatch
         Dim dispatch As Guid = GetType(IDispatch).GUID
         Dim folderView As IShellFolderViewDual = shellBrowser.QueryActiveShellView().GetItemObject(SVGIO_BACKGROUND, dispatch)
-        Dim shellDispatch As IShellDispatch2 = folderView.application
+        Dim shellDispatch As IShellDispatch2 = folderView.Application
 
         ' Use the dispatch (which Is unelevated) to launch the process for us
-        shellDispatch.ShellExecute(process, args, currentDirectory, String.Empty, SW_SHOWNORMAL)
+        shellDispatch.ShellExecute(process, args, currentDirectory, verb, SW_SHOWNORMAL)
+    End Sub
+
+    Public Sub ExplorerDispatch(file As String, args As String, Optional currentDirectory As String = "", Optional verb As String = "")
+        ExecuteProcessUnElevated(file, args, currentDirectory, verb)
     End Sub
 
     ''' <summary>
