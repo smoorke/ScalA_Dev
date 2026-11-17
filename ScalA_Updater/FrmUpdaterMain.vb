@@ -9,7 +9,7 @@
             If args.Length = 1 Then Throw New ArgumentException("Incorrect Arguments Supplied")
             System.IO.File.Copy(FileIO.SpecialDirectories.Temp & "\ScalA\ScalA.exe", args(1), True)
             ExecuteProcessUnElevated(args(args.Length - 1), "", If(args.Length = 4, args(args.Length - 2), IO.Directory.GetCurrentDirectory()))
-            End
+            Application.Exit()
         Catch ex As Exception
             txtErrorMsg.Text = ex.Message
         End Try
@@ -21,7 +21,7 @@
         Catch ex As Exception
             Debug.Print(ex.Message)
         Finally
-            End
+            Application.Exit()
         End Try
     End Sub
 

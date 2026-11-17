@@ -395,7 +395,7 @@ Partial Public NotInheritable Class FrmMain
 
         If Environment.OSVersion.Version.Major < 6 AndAlso Environment.OSVersion.Version.Minor < 1 Then
             MessageBox.Show("ScalA requires Windows 7 Or later", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-            End
+            Application.Exit()
         End If
 
         If Environment.OSVersion.Version.Major < 10 AndAlso Environment.OSVersion.Version.Build < 22000 Then
@@ -411,7 +411,7 @@ Partial Public NotInheritable Class FrmMain
         If My.Settings.SingleInstance AndAlso IPC.AlreadyOpen Then
             IPC.RequestActivation = True
             AllowSetForegroundWindow(ASFW_ANY)
-            End
+            Application.Exit()
         End If
         IPC.AlreadyOpen = True
 
@@ -793,7 +793,7 @@ Partial Public NotInheritable Class FrmMain
 
             Process.Start(si)
             sysTrayIcon.Visible = False
-            End
+            Application.Exit()
         Catch
         End Try
         If cboAlt.SelectedIndex = 0 Then
