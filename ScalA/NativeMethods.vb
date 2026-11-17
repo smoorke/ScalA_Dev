@@ -1416,6 +1416,9 @@ Module NativeMethods
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
     Public Function SendMessage(ByVal hWnd As IntPtr, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As StringBuilder) As IntPtr : End Function
 
+    <DllImport("user32.dll", EntryPoint:="SendMessage", CharSet:=CharSet.Auto, SetLastError:=True)>
+    Public Function SendMessageString(ByVal hWnd As IntPtr, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As String) As IntPtr : End Function
+
     <DllImport("user32.dll", SetLastError:=True)>
     Public Function AddClipboardFormatListener(hwnd As IntPtr) As Boolean : End Function
 

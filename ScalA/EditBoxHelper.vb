@@ -41,7 +41,7 @@ Namespace EditBoxHelper
         'End Sub
 
         Public Sub ReplaceSelection(hEdit As IntPtr, replacementText As String)
-            SendMessage(hEdit, EM_REPLACESEL, CType(1, IntPtr), replacementText)
+            SendMessageString(hEdit, EM_REPLACESEL, CType(1, IntPtr), replacementText)
         End Sub
 
         '--- Main: delete previous word safely and keep undo buffer
