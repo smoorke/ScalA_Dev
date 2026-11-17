@@ -2856,7 +2856,7 @@ Partial Public NotInheritable Class FrmMain
         '    InvokeExplorerVerb(tgt, act, ScalaHandle)
         'Else
 
-        ExplorerVerbDispatch(tgt, act)
+        SystemUtility.ExplorerVerbDispatch(tgt, act)
 
         'ShellClipboardHelper.CopyOrCutItem(tgt, act, ScalaHandle)
 

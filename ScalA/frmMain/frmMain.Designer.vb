@@ -239,7 +239,7 @@ Partial NotInheritable Class FrmMain
         Me.chkDebug.CheckAlign = System.Drawing.ContentAlignment.MiddleRight
         Me.chkDebug.Location = New System.Drawing.Point(512, 7)
         Me.chkDebug.Name = "chkDebug"
-        Me.chkDebug.Size = New System.Drawing.Size(15, 14)
+        Me.chkDebug.Size = New System.Drawing.Size(15, 17)
         Me.chkDebug.TabIndex = 11
         Me.chkDebug.TabStop = False
         Me.chkDebug.UseVisualStyleBackColor = True
@@ -715,7 +715,6 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents BotLastToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents NoneSortToolStripMenuItem As ToolStripMenuItem
     Public WithEvents cmsAlt As ContextMenuStrip
-    Friend WithEvents ChkEqLock As CheckBox
     Friend WithEvents PnlEqLock As Panel
     Friend WithEvents ttMain As ToolTip
     Public WithEvents cmbResolution As ThemedComboBox
@@ -744,4 +743,5 @@ Partial NotInheritable Class FrmMain
     Friend WithEvents ToolStripMenuItem2 As ToolStripSeparator
     Friend WithEvents PnlWarning As Panel
     Friend WithEvents PictureBox1 As PictureBox
+    Friend WithEvents ChkEqLock As FixedScaleCheckbox
 End Class

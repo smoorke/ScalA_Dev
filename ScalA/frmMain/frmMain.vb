@@ -1887,7 +1887,7 @@ Partial Public NotInheritable Class FrmMain
 
         AstoniaProcess.RestorePos()
 
-        ExecuteProcessUnElevated(Environment.GetCommandLineArgs()(0), "Someone", IO.Directory.GetCurrentDirectory())
+        SystemUtility.ExecuteProcessUnElevated(Environment.GetCommandLineArgs()(0), "Someone", IO.Directory.GetCurrentDirectory())
         sysTrayIcon.Visible = False
         sysTrayIcon.Dispose()
         End 'program
