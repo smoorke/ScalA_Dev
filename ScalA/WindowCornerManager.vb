@@ -77,7 +77,7 @@ Public Class WindowCornerManager
 
                                  accessor.Flush()
 
-                                 Debug.Print($"Active healthy wrapper instances requesting rounded corners: {activePids.Count}")
+                                 'Debug.Print($"Active healthy wrapper instances requesting rounded corners: {activePids.Count}")
 
                                  ' 4. Determine target preference ("True wins" if any valid instance wants it)
                                  Dim effectiveReduce As Boolean = (activePids.Count > 0)
