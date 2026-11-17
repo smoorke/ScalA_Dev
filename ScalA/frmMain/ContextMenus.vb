@@ -2814,6 +2814,8 @@ Partial Public NotInheritable Class FrmMain
         Dim act As String = sender.tag.action
 
         If {"Paste", "PasteLink"}.Contains(act) Then
+            CloseOtherDropDowns(cmsQuickLaunch.Items)
+            cmsQuickLaunch.Close()
             tgt = IO.Path.GetDirectoryName(tgt) & "\"
             'CloseOtherDropDowns(cmsQuickLaunch.Items)
             'cmsQuickLaunch.Close()
