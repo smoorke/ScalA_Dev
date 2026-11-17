@@ -6,11 +6,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{1803FD5E-FA7C-4CF3-A9D3-5BBC3DB5A940}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <StartupObject>ScalA.My.MyApplication</StartupObject>
+    <StartupObject>Sub Main</StartupObject>
     <RootNamespace>ScalA</RootNamespace>
     <AssemblyName>ScalA</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <MyType>WindowsForms</MyType>
+    <MyType>WindowsFormsWithCustomSubMain</MyType>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -185,6 +185,7 @@
     <Compile Include="Settings.vb" />
     <Compile Include="ShellFileOperation.vb" />
     <Compile Include="ShellLinkInfo.vb" />
+    <Compile Include="StartupSequence.vb" />
     <Compile Include="SystemUtitlity.vb" />
     <Compile Include="TaskbarInterop.vb" />
     <Compile Include="UpdateDialog.Designer.vb">

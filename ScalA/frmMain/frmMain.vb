@@ -393,34 +393,35 @@ Partial Public NotInheritable Class FrmMain
             'fail silently
         End Try
 
-        If Environment.OSVersion.Version.Major < 6 AndAlso Environment.OSVersion.Version.Minor < 1 Then
-            MessageBox.Show("ScalA requires Windows 7 Or later", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-            Application.Exit()
-        End If
+        'If Environment.OSVersion.Version.Major < 6 AndAlso Environment.OSVersion.Version.Minor < 1 Then
+        '    MessageBox.Show("ScalA requires Windows 7 Or later", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+        '    Application.Exit()
+        'End If
 
-        Dim compEnabled As Boolean = False
-        DwmIsCompositionEnabled(compEnabled)
-        If Not compEnabled Then
-            MessageBox.Show("ScalA requires DWM Composition to be on (Aero Theme)", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-            Application.Exit()
-        End If
+        'Dim compEnabled As Boolean = False
+        'DwmIsCompositionEnabled(compEnabled)
+        'If Not compEnabled Then
+        '    MessageBox.Show("ScalA requires DWM Composition to be on (Aero Theme)", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+        '    Application.Exit()
+        'End If
 
         If Environment.OSVersion.Version.Major < 10 AndAlso Environment.OSVersion.Version.Build < 22000 Then
             Me.FormBorderStyle = FormBorderStyle.None
             ScalaHandle = Me.Handle
         End If
 
+        IPC.RegisterPrimaryWindow(ScalaHandle, scalaPID)
 
         setScalAPriority(My.Settings.Priority)
 
         dBug.InitDebug()
 
-        If My.Settings.SingleInstance AndAlso IPC.AlreadyOpen Then
-            IPC.RequestActivation = True
-            AllowSetForegroundWindow(ASFW_ANY)
-            Application.Exit()
-        End If
-        IPC.AlreadyOpen = True
+        'If My.Settings.SingleInstance AndAlso IPC.AlreadyOpen Then
+        '    IPC.RequestActivation = True
+        '    AllowSetForegroundWindow(ASFW_ANY)
+        '    Application.Exit()
+        'End If
+        'IPC.AlreadyOpen = True
 
         Try
             Dim ndpKey As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full")

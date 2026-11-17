@@ -1,4 +1,5 @@
 ﻿Imports System.Runtime.InteropServices
+Imports System.Security.Principal
 Module Globals
 
     Public startup As Boolean = True
@@ -14,6 +15,8 @@ Module Globals
     Public StructureToPtrSupported As Boolean = False
 
     Public AnimsEnabled As Boolean = getAnimationsEnabled()
+
+    Public RunningAsAdmin As Boolean = New WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator)
 
     Private _RoundedCorners? As Boolean = Nothing
     Public Function RoundedCorners(hwnd As IntPtr) As Boolean

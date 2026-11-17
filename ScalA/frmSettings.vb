@@ -201,7 +201,7 @@ Public NotInheritable Class FrmSettings
 
         txtResolutions.SelectionStart = txtResolutions.TextLength
 
-        If My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then
+        If RunningAsAdmin Then 'My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then
             Dim imge = LoadImage(IntPtr.Zero, "#106", 1, 16, 16, 0)
             If imge <> IntPtr.Zero Then
                 Using Ico = Icon.FromHandle(imge)

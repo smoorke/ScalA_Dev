@@ -2,18 +2,6 @@
 Imports System.Runtime.InteropServices
 Imports System.Threading
 Module IPC
-    'Private ReadOnly _mmfBoolean As MemoryMappedFile = MemoryMappedFile.CreateOrOpen("ScalA_IPC_Boolean", 1)
-    'Private ReadOnly _mmvaBoolean As MemoryMappedViewAccessor = _mmfBoolean.CreateViewAccessor()
-    'Public Property QlCtxIsOpen As Boolean
-    '    Get
-    '        'dBug.print(_mmvaBoolean.ReadBoolean(0))
-    '        Return _mmvaBoolean.ReadBoolean(0)
-    '    End Get
-    '    Set(ByVal value As Boolean)
-    '        _mmvaBoolean.Write(0, value)
-    '        dBug.print($"set QlCtxOpen to {value}")
-    '    End Set
-    'End Property
 
     Private ReadOnly _MeStr As String = Application.ExecutablePath.Replace(":", "").Replace("\", "").Replace(".", "")
     Private ReadOnly _mmfSI As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPCSI_{_MeStr}", 1 + 1)
@@ -36,6 +24,24 @@ Module IPC
         End Set
     End Property
 
+    ' Dedicated MMF for sharing the primary instance's HWND and PID
+    Private ReadOnly _mmfPrimary As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_PrimaryInstanceInfo{_MeStr}", Marshal.SizeOf(Of IntPtr) + Marshal.SizeOf(Of Integer))
+    Private ReadOnly _mmvaPrimary As MemoryMappedViewAccessor = _mmfPrimary.CreateViewAccessor()
+
+    ' Called by the First Instance once FrmMain is loaded and has a valid Handle
+    Public Sub RegisterPrimaryWindow(hwnd As IntPtr, pid As Integer)
+        _mmvaPrimary.Write(0, hwnd)
+        _mmvaPrimary.Write(IntPtr.Size, pid)
+    End Sub
+
+    ' Called by the Second Instance to read the First Instance's HWND
+    Public Function GetPrimaryWindowInfo() As Tuple(Of IntPtr, Integer)
+        Dim hwnd As IntPtr
+        Dim pid As Integer
+        _mmvaPrimary.Read(0, hwnd)
+        _mmvaPrimary.Read(IntPtr.Size, pid)
+        Return Tuple.Create(hwnd, pid)
+    End Function
 
     Dim _mmfIPCov As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPC_{scalaPID}", Marshal.SizeOf(Of Integer) * 4)
     Dim _mmvaIPCov As MemoryMappedViewAccessor = _mmfIPCov.CreateViewAccessor()

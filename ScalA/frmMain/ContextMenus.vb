@@ -2531,7 +2531,7 @@ Partial Public NotInheritable Class FrmMain
 
             Dim MenuItems As IEnumerable(Of MenuItem) = QlCtxMenu.MenuItems.Cast(Of MenuItem).ToList
 
-            RunAsAdminItem.Visible = My.Computer.Keyboard.ShiftKeyDown AndAlso Not sender.HasDropDownItems AndAlso Not My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator)
+            RunAsAdminItem.Visible = My.Computer.Keyboard.ShiftKeyDown AndAlso Not sender.HasDropDownItems AndAlso Not RunningAsAdmin 'Not My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator)
 
             ExplorerUndoRedoHelper.InspectExplorerMenu(undoItem.Visible, redoItem.Visible, undoItem.Text, redoItem.Text)
 
