@@ -35,9 +35,193 @@ Public Module SystemUtitlity
         shellDispatch.ShellExecute(process, args, currentDirectory, verb, SW_SHOWNORMAL)
     End Sub
 
-    Public Sub ExplorerDispatch(file As String, args As String, Optional currentDirectory As String = "", Optional verb As String = "")
-        ExecuteProcessUnElevated(file, args, currentDirectory, verb)
+    ''' <summary>
+    ''' Invokes a Shell context-menu verb ("copy", "cut", "paste", etc.) inside explorer.exe's process
+    ''' so clipboard data persists even after this application exits or restarts.
+    ''' </summary>
+    Public Sub ExplorerVerbDispatch(fullPath As String, verb As String)
+        If String.IsNullOrWhiteSpace(fullPath) OrElse String.IsNullOrWhiteSpace(verb) Then Exit Sub
+
+        Dim cleanPath As String = fullPath.TrimEnd("\"c)
+        If cleanPath.Length = 2 AndAlso cleanPath(1) = ":"c Then
+            cleanPath &= "\"
+        End If
+
+        Dim shellWindows As IShellWindows = New CShellWindows()
+
+        ' 1. Get the unelevated Desktop window from explorer.exe
+        Dim Loc() As Object = {CSIDL_Desktop}
+        Dim unused As New Object()
+        Dim hwnd As Integer
+        Dim serviceProvider As IServiceProvider = CType(shellWindows.FindWindowSW(Loc, unused, SWC_DESKTOP, hwnd, SWFO_NEEDDISPATCH), IServiceProvider)
+
+        ' 2. Get the top-level IShellBrowser
+        Dim serviceGuid As Guid = SID_STopLevelBrowser
+        Dim interfaceGuid As Guid = GetType(IShellBrowser).GUID
+        Dim shellBrowser As IShellBrowser = CType(serviceProvider.QueryService(serviceGuid, interfaceGuid), IShellBrowser)
+
+        ' 3. Get IShellDispatch2 hosted inside explorer.exe
+        Dim dispatch As Guid = GetType(IDispatch).GUID
+        Dim folderView As IShellFolderViewDual = CType(shellBrowser.QueryActiveShellView().GetItemObject(SVGIO_BACKGROUND, dispatch), IShellFolderViewDual)
+        Dim shellDispatch As IShellDispatch2 = CType(folderView.Application, IShellDispatch2)
+
+        ' 4. Bind to parent Folder and target FolderItem inside explorer.exe, then invoke the verb
+        Dim parentPath As String = IO.Path.GetDirectoryName(cleanPath)
+        Dim itemName As String = IO.Path.GetFileName(cleanPath)
+
+        ' Handle drive root edge case (e.g., "C:\")
+        If String.IsNullOrEmpty(parentPath) Then
+            Dim rootFolder As Folder = shellDispatch.NameSpace(cleanPath)
+            If rootFolder IsNot Nothing Then
+                Dim rootItem As FolderItem = TryCast(rootFolder, Folder2)?.Self
+                If rootItem IsNot Nothing Then rootItem.InvokeVerb(verb)
+            End If
+            Exit Sub
+        End If
+
+        Dim parentFolder As Folder = shellDispatch.NameSpace(parentPath)
+        If parentFolder IsNot Nothing Then
+            Dim targetItem As FolderItem = parentFolder.ParseName(itemName)
+            If targetItem IsNot Nothing Then
+                targetItem.InvokeVerb(verb)
+            End If
+        End If
     End Sub
+
+
+
+    <ComImport, Guid("BBCBDE60-C3FF-11CE-8350-444553540000"), InterfaceType(ComInterfaceType.InterfaceIsDual)>
+    Public Interface Folder
+        <DispId(0)>
+        ReadOnly Property Title As String
+
+        <DispId(&H60020001)>
+        ReadOnly Property Application As <MarshalAs(UnmanagedType.IDispatch)> Object
+
+        <DispId(&H60020002)>
+        ReadOnly Property Parent As <MarshalAs(UnmanagedType.IDispatch)> Object
+
+        <DispId(&H60020003)>
+        ReadOnly Property ParentFolder As Folder
+
+        <DispId(&H60020004)>
+        Function Items() As <MarshalAs(UnmanagedType.Interface)> Object ' FolderItems
+
+        <DispId(&H60020005)>
+        Function ParseName(<MarshalAs(UnmanagedType.BStr)> bName As String) As FolderItem
+
+        <DispId(&H60020006)>
+        Sub NewFolder(<MarshalAs(UnmanagedType.BStr)> bName As String, <[Optional], MarshalAs(UnmanagedType.Struct)> vOptions As Object)
+
+        <DispId(&H60020007)>
+        Sub MoveHere(<MarshalAs(UnmanagedType.Struct)> vItem As Object, <[Optional], MarshalAs(UnmanagedType.Struct)> vOptions As Object)
+
+        <DispId(&H60020008)>
+        Sub CopyHere(<MarshalAs(UnmanagedType.Struct)> vItem As Object, <[Optional], MarshalAs(UnmanagedType.Struct)> vOptions As Object)
+
+        <DispId(&H60020009)>
+        Function GetDetailsOf(<MarshalAs(UnmanagedType.Struct)> vItem As Object, iColumn As Integer) As <MarshalAs(UnmanagedType.BStr)> String
+    End Interface
+
+    <ComImport, Guid("F0D2D8EF-3890-11D2-BF8B-00C04FB93661"), InterfaceType(ComInterfaceType.InterfaceIsDual)>
+    Public Interface Folder2
+        ' --- Inherited from Folder (must appear in exact vtable order) ---
+        <DispId(0)>
+        ReadOnly Property Title As String
+
+        <DispId(&H60020001)>
+        ReadOnly Property Application As <MarshalAs(UnmanagedType.IDispatch)> Object
+
+        <DispId(&H60020002)>
+        ReadOnly Property Parent As <MarshalAs(UnmanagedType.IDispatch)> Object
+
+        <DispId(&H60020003)>
+        ReadOnly Property ParentFolder As Folder
+
+        <DispId(&H60020004)>
+        Function Items() As <MarshalAs(UnmanagedType.Interface)> Object
+
+        <DispId(&H60020005)>
+        Function ParseName(<MarshalAs(UnmanagedType.BStr)> bName As String) As FolderItem
+
+        <DispId(&H60020006)>
+        Sub NewFolder(<MarshalAs(UnmanagedType.BStr)> bName As String, <[Optional], MarshalAs(UnmanagedType.Struct)> vOptions As Object)
+
+        <DispId(&H60020007)>
+        Sub MoveHere(<MarshalAs(UnmanagedType.Struct)> vItem As Object, <[Optional], MarshalAs(UnmanagedType.Struct)> vOptions As Object)
+
+        <DispId(&H60020008)>
+        Sub CopyHere(<MarshalAs(UnmanagedType.Struct)> vItem As Object, <[Optional], MarshalAs(UnmanagedType.Struct)> vOptions As Object)
+
+        <DispId(&H60020009)>
+        Function GetDetailsOf(<MarshalAs(UnmanagedType.Struct)> vItem As Object, iColumn As Integer) As <MarshalAs(UnmanagedType.BStr)> String
+
+        ' --- Folder2 specific members ---
+        <DispId(&H60030000)>
+        ReadOnly Property Self As FolderItem
+
+        <DispId(&H60030001)>
+        ReadOnly Property OfflineStatus As Integer
+
+        <DispId(&H60030002)>
+        Sub Synchronize()
+
+        <DispId(1)>
+        ReadOnly Property HaveToShowWebViewBarricade As Boolean
+
+        <DispId(&H60030004)>
+        Sub DismissedWebViewBarricade()
+    End Interface
+
+    <ComImport, Guid("FAC32C80-CBE4-11CE-8350-444553540000"), InterfaceType(ComInterfaceType.InterfaceIsDual)>
+    Public Interface FolderItem
+        <DispId(&H60020000)>
+        ReadOnly Property Application As <MarshalAs(UnmanagedType.IDispatch)> Object
+
+        <DispId(&H60020001)>
+        ReadOnly Property Parent As <MarshalAs(UnmanagedType.IDispatch)> Object
+
+        <DispId(0)>
+        Property Name As <MarshalAs(UnmanagedType.BStr)> String
+
+        <DispId(&H60020003)>
+        ReadOnly Property Path As <MarshalAs(UnmanagedType.BStr)> String
+
+        <DispId(&H60020004)>
+        ReadOnly Property GetLink As <MarshalAs(UnmanagedType.IDispatch)> Object
+
+        <DispId(&H60020005)>
+        ReadOnly Property GetFolder As <MarshalAs(UnmanagedType.IDispatch)> Object
+
+        <DispId(&H60020006)>
+        ReadOnly Property IsLink As Boolean
+
+        <DispId(&H60020007)>
+        ReadOnly Property IsFolder As Boolean
+
+        <DispId(&H60020008)>
+        ReadOnly Property IsFileSystem As Boolean
+
+        <DispId(&H60020009)>
+        ReadOnly Property IsBrowsable As Boolean
+
+        <DispId(&H6002000A)>
+        Property ModifyDate As Date
+
+        <DispId(&H6002000C)>
+        ReadOnly Property Size As Integer
+
+        <DispId(&H6002000D)>
+        ReadOnly Property Type As <MarshalAs(UnmanagedType.BStr)> String
+
+        <DispId(&H6002000E)>
+        Function Verbs() As <MarshalAs(UnmanagedType.Interface)> Object ' FolderItemVerbs
+
+        <DispId(&H6002000F)>
+        Sub InvokeVerb(<[Optional], MarshalAs(UnmanagedType.Struct)> vVerb As Object)
+    End Interface
+
+
 
     ''' <summary>
     ''' Interop definitions
@@ -108,10 +292,14 @@ Public Module SystemUtitlity
 
     <ComImport(), Guid("A4C6892C-3BA9-11D2-9DEA-00C04FB16162"), InterfaceType(ComInterfaceType.InterfaceIsIDispatch)>
     Private Interface IShellDispatch2
+        <DispId(&H60020002)>
+        Function [NameSpace](<MarshalAs(UnmanagedType.Struct)> vDir As Object) As Folder
+
+        <DispId(&H60030000)>
         Sub ShellExecute(<MarshalAs(UnmanagedType.BStr)> File As String,
-                         <MarshalAs(UnmanagedType.Struct)> vArgs As Object,
-                         <MarshalAs(UnmanagedType.Struct)> vDir As Object,
-                         <MarshalAs(UnmanagedType.Struct)> vOperation As Object,
-                         <MarshalAs(UnmanagedType.Struct)> vShow As Object)
+                     <MarshalAs(UnmanagedType.Struct)> vArgs As Object,
+                     <MarshalAs(UnmanagedType.Struct)> vDir As Object,
+                     <MarshalAs(UnmanagedType.Struct)> vOperation As Object,
+                     <MarshalAs(UnmanagedType.Struct)> vShow As Object)
     End Interface
 End Module

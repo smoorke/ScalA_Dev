@@ -2810,11 +2810,11 @@ Partial Public NotInheritable Class FrmMain
 
     Dim tpmParam As New TPMPARAMS With {.cbSize = Marshal.SizeOf(Of TPMPARAMS)}
     Private Sub ClipAction(sender As Object, e As EventArgs)
-        Dim tgt As String = sender.tag.path
+        Dim tgt As String = sender.tag.path.TrimEnd("\"c)
         Dim act As String = sender.tag.action
 
         If {"Paste", "PasteLink"}.Contains(act) Then
-            tgt = IO.Path.GetDirectoryName(tgt.TrimEnd("\"c)) & "\"
+            tgt = IO.Path.GetDirectoryName(tgt) & "\"
             'CloseOtherDropDowns(cmsQuickLaunch.Items)
             'cmsQuickLaunch.Close()
             Task.Run(action:=Async Sub()
@@ -2853,9 +2853,10 @@ Partial Public NotInheritable Class FrmMain
         If act.StartsWith("Paste") Then
             InvokeExplorerVerb(tgt, act, ScalaHandle)
         Else
-            ExplorerDispatch(tgt, "", "", act)
 
-            'SetFileDropListWithEffect(tgt.TrimEnd("\"c), act = "Cut") 'this is brokne. leads to silent crash
+            ExplorerVerbDispatch(tgt, act)
+
+            'ShellClipboardHelper.CopyOrCutItem(tgt, act, ScalaHandle)
 
             pasteTSItem.Tag = New MenuTag With {.path = IO.Path.Combine(tgt, "Empty"), .action = "Paste"}
             pasteLinkTSItem.Tag = New MenuTag With {.path = IO.Path.Combine(tgt, "Empty"), .action = "PasteLink"}
