@@ -2824,9 +2824,7 @@ Partial Public NotInheritable Class FrmMain
                                  Dim found As Boolean = False
                                  Dim wndProc As EnumWindowsProc = Function(hwnd, lParam)
                                                                       If GetWindowClass(hwnd) = "OperationStatusWindow" Then
-                                                                          Dim pid As Integer
-                                                                          GetWindowThreadProcessId(hwnd, pid)
-                                                                          If pid = scalaPID Then
+                                                                          If String.Equals(getExeName(hwnd), "Explorer", StringComparison.OrdinalIgnoreCase) Then
                                                                               hndl = hwnd
                                                                               found = True
                                                                               Return False ' stop enumeration
@@ -2840,64 +2838,66 @@ Partial Public NotInheritable Class FrmMain
                                      If found Then Exit While
                                      Await Task.Delay(50)
                                  End While
+                                 If hndl = IntPtr.Zero Then Exit Sub
                                  dBug.Print($"enumwindow {hndl} ""{GetWindowText(hndl)}""")
                                  SetWindowPos(hndl, If(My.Settings.topmost, SWP_HWND.TOPMOST, SWP_HWND.TOP), 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
-                                 SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
-                                 If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
+                                 'SetWindowLong(hndl, GWL_HWNDPARENT, ScalaHandle)
+                                 'AttachThreadInput(ScalaThreadId, GetWindowThreadProcessId(hndl, Nothing), False)
+                                 'If My.Settings.topmost Then SetWindowPos(hndl, SWP_HWND.TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.IgnoreMove)
                                  watch.Stop()
                              End Sub)
         End If
 
         dBug.Print($"Clipaction {act} ""{tgt}""")
 
-        If act.StartsWith("Paste") Then
-            InvokeExplorerVerb(tgt, act, ScalaHandle)
+        'If act.StartsWith("Paste") Then
+        '    InvokeExplorerVerb(tgt, act, ScalaHandle)
+        'Else
+
+        ExplorerVerbDispatch(tgt, act)
+
+        'ShellClipboardHelper.CopyOrCutItem(tgt, act, ScalaHandle)
+
+        pasteTSItem.Tag = New MenuTag With {.path = IO.Path.Combine(tgt, "Empty"), .action = "Paste"}
+        pasteLinkTSItem.Tag = New MenuTag With {.path = IO.Path.Combine(tgt, "Empty"), .action = "PasteLink"}
+
+        If Not (IO.File.Exists(tgt) OrElse IO.Directory.Exists(tgt)) Then
+            Debug.Print("file/dir missing")
+            PasteSep.Visible = False
+            pasteTSItem.Visible = False
+            pasteLinkTSItem.Visible = False
         Else
+            Dim nm As String = IO.Path.GetFileName(tgt.TrimEnd("\"c))
+            If String.IsNullOrEmpty(nm) Then nm = tgt
+            If hideExt.Contains(IO.Path.GetExtension(nm)) Then
+                nm = IO.Path.GetFileNameWithoutExtension(nm)
+            End If
+            pasteTSItem.Text = $"{If(act = "Cut", "Move", "Paste")} ""{nm.CapWithEllipsis(16)}"""
+            If nm.Length > 16 Then
+                pasteTSItem.ToolTipText = nm
+            Else
+                pasteTSItem.ToolTipText = String.Empty
+            End If
 
-            ExplorerVerbDispatch(tgt, act)
-
-            'ShellClipboardHelper.CopyOrCutItem(tgt, act, ScalaHandle)
-
-            pasteTSItem.Tag = New MenuTag With {.path = IO.Path.Combine(tgt, "Empty"), .action = "Paste"}
-            pasteLinkTSItem.Tag = New MenuTag With {.path = IO.Path.Combine(tgt, "Empty"), .action = "PasteLink"}
-
-            If Not (IO.File.Exists(tgt) OrElse IO.Directory.Exists(tgt)) Then
-                Debug.Print("file/dir missing")
-                PasteSep.Visible = False
-                pasteTSItem.Visible = False
+            If tgt.ToLower.EndsWith(".lnk") Then
                 pasteLinkTSItem.Visible = False
             Else
-                Dim nm As String = IO.Path.GetFileName(tgt.TrimEnd("\"c))
-                If String.IsNullOrEmpty(nm) Then nm = tgt
-                If hideExt.Contains(IO.Path.GetExtension(nm)) Then
-                    nm = IO.Path.GetFileNameWithoutExtension(nm)
-                End If
-                pasteTSItem.Text = $"{If(act = "Cut", "Move", "Paste")} ""{nm.CapWithEllipsis(16)}"""
-                If nm.Length > 16 Then
-                    pasteTSItem.ToolTipText = nm
-                Else
-                    pasteTSItem.ToolTipText = String.Empty
-                End If
-
-                If tgt.ToLower.EndsWith(".lnk") Then
-                    pasteLinkTSItem.Visible = False
-                Else
-                    pasteLinkTSItem.Text = "Paste Shortcut"
-                End If
-
-                Task.Run(Sub()
-                             Dim img = GetIconFromFile(tgt, False, True)
-                             Me.Invoke(Sub()
-                                           pasteTSItem.Image = img
-                                           If tgt.ToLower.EndsWith(".lnk") Then
-                                               pasteTSItem.Image = img.addOverlay(My.Resources.shortcutOverlay)
-                                           Else
-                                               pasteLinkTSItem.Image = img.addOverlay(My.Resources.shortcutOverlay)
-                                           End If
-                                       End Sub)
-                         End Sub)
+                pasteLinkTSItem.Text = "Paste Shortcut"
             End If
+
+            Task.Run(Sub()
+                         Dim img = GetIconFromFile(tgt, False, True)
+                         Me.Invoke(Sub()
+                                       pasteTSItem.Image = img
+                                       If tgt.ToLower.EndsWith(".lnk") Then
+                                           pasteTSItem.Image = img.addOverlay(My.Resources.shortcutOverlay)
+                                       Else
+                                           pasteLinkTSItem.Image = img.addOverlay(My.Resources.shortcutOverlay)
+                                       End If
+                                   End Sub)
+                     End Sub)
         End If
+        'End If
     End Sub
 
     Private Sub UpdateMenuChecks(menu As ToolStripItemCollection, itemSet As HashSet(Of String))
