@@ -964,7 +964,7 @@ Partial NotInheritable Class FrmSettings
         Me.tbcSettings.Multiline = True
         Me.tbcSettings.Name = "tbcSettings"
         Me.tbcSettings.SelectedIndex = 0
-        Me.tbcSettings.Size = New System.Drawing.Size(341, 212)
+        Me.tbcSettings.Size = New System.Drawing.Size(341, 214)
         Me.tbcSettings.TabIndex = 14
         Me.tbcSettings.TabStop = False
         '
@@ -983,7 +983,7 @@ Partial NotInheritable Class FrmSettings
         Me.tabResolutions.Location = New System.Drawing.Point(4, 25)
         Me.tabResolutions.Name = "tabResolutions"
         Me.tabResolutions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabResolutions.Size = New System.Drawing.Size(333, 183)
+        Me.tabResolutions.Size = New System.Drawing.Size(333, 185)
         Me.tabResolutions.TabIndex = 0
         Me.tabResolutions.Text = "Resolution"
         Me.tabResolutions.UseVisualStyleBackColor = True
@@ -1115,7 +1115,7 @@ Partial NotInheritable Class FrmSettings
         Me.tabHotkeys.Controls.Add(Me.grpAlterOverview)
         Me.tabHotkeys.Location = New System.Drawing.Point(4, 25)
         Me.tabHotkeys.Name = "tabHotkeys"
-        Me.tabHotkeys.Size = New System.Drawing.Size(333, 183)
+        Me.tabHotkeys.Size = New System.Drawing.Size(333, 185)
         Me.tabHotkeys.TabIndex = 2
         Me.tabHotkeys.Text = "Hotkey"
         Me.tabHotkeys.UseVisualStyleBackColor = True
@@ -1656,7 +1656,7 @@ Partial NotInheritable Class FrmSettings
         Me.tabSortAndBL.Margin = New System.Windows.Forms.Padding(0)
         Me.tabSortAndBL.Name = "tabSortAndBL"
         Me.tabSortAndBL.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabSortAndBL.Size = New System.Drawing.Size(333, 183)
+        Me.tabSortAndBL.Size = New System.Drawing.Size(333, 185)
         Me.tabSortAndBL.TabIndex = 3
         Me.tabSortAndBL.Text = "Sort"
         Me.tabSortAndBL.UseVisualStyleBackColor = True
@@ -1720,7 +1720,7 @@ Partial NotInheritable Class FrmSettings
         Me.tabMaximized.Controls.Add(Me.chkStartupMax)
         Me.tabMaximized.Location = New System.Drawing.Point(4, 25)
         Me.tabMaximized.Name = "tabMaximized"
-        Me.tabMaximized.Size = New System.Drawing.Size(333, 183)
+        Me.tabMaximized.Size = New System.Drawing.Size(333, 185)
         Me.tabMaximized.TabIndex = 4
         Me.tabMaximized.Text = "Min/Max"
         Me.tabMaximized.UseVisualStyleBackColor = True
@@ -1758,7 +1758,7 @@ Partial NotInheritable Class FrmSettings
         Me.TabQL.Controls.Add(Me.ChkQLShowHidden)
         Me.TabQL.Location = New System.Drawing.Point(4, 25)
         Me.TabQL.Name = "TabQL"
-        Me.TabQL.Size = New System.Drawing.Size(333, 183)
+        Me.TabQL.Size = New System.Drawing.Size(333, 185)
         Me.TabQL.TabIndex = 5
         Me.TabQL.Text = "QL"
         Me.TabQL.UseVisualStyleBackColor = True
@@ -1847,7 +1847,7 @@ Partial NotInheritable Class FrmSettings
         Me.tabMisc.Location = New System.Drawing.Point(4, 25)
         Me.tabMisc.Name = "tabMisc"
         Me.tabMisc.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabMisc.Size = New System.Drawing.Size(333, 183)
+        Me.tabMisc.Size = New System.Drawing.Size(333, 185)
         Me.tabMisc.TabIndex = 1
         Me.tabMisc.Text = "Misc"
         Me.tabMisc.UseVisualStyleBackColor = True
@@ -1940,7 +1940,6 @@ Partial NotInheritable Class FrmSettings
         Me.Controls.Add(Me.btnOK)
         Me.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, CType(0, Byte))
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
-        Me.HelpButton = True
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
         Me.MinimizeBox = False
