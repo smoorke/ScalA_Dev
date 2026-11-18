@@ -30,10 +30,7 @@ Module StartupSequence
             StartupMutex = New Mutex(True, StartupMutexName, createdNew)
             If Not Environment.GetCommandLineArgs().Contains("--restart") Then
                 If Not createdNew Then
-                    Debug.Print("Second instance detected. Signaling first instance.")
-                    'AllowSetForegroundWindow(ASFW_ANY)
-                    'IPC.RequestActivation = True
-                    'todo setforegroundwindow(firstinstance hwnd)
+                    Debug.Print("Second instance detected.")
 
                     Dim primaryInfo = IPC.GetPrimaryWindowInfo()
                     Dim primaryHwnd As IntPtr = primaryInfo.Item1
