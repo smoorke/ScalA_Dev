@@ -502,6 +502,17 @@ Public NotInheritable Class FrmSettings
     Private Sub BtnOK_Click(sender As Object, e As EventArgs) Handles btnOK.Click
 
         'save settings
+
+        If ChkSingleInstance.Checked Then
+            If IPC.GetOtherInstancesWithSamePath().Count > 1 Then
+                CustomMessageBox.Show(Me, "Cannot enable Single Instance mode while multiple instances of ScalA are already running. Please close other instances first.",
+                               "Single Instance Conflict",
+                               MessageBoxButtons.OK,
+                               MessageBoxIcon.Warning)
+                Return
+            End If
+        End If
+
         If My.Settings.resolutions <> txtResolutions.Text Then
             If Not ParseResolutions() Then Exit Sub
             FrmMain.cmbResolution.SelectedIndex = 0
@@ -747,6 +758,8 @@ Public NotInheritable Class FrmSettings
         End If
 
         My.Settings.ReducedCorners = chkReduceCorners.Checked
+
+        If My.Settings.SingleInstance Then IPC.RegisterPrimaryWindow(ScalaHandle, scalaPID)
 
         My.Settings.Save()
 
@@ -1531,6 +1544,27 @@ Public NotInheritable Class FrmSettings
         If cmbQLScaling.SelectedIndex = 4 Then
             Single.TryParse(sender.Text, _customQlScale)
         End If
+    End Sub
+
+    Private Sub ChkSingleInstance_CheckedChanged(sender As Object, e As EventArgs) Handles ChkSingleInstance.CheckedChanged
+        If ChkSingleInstance.Checked Then
+            ' Check if other instances of the same profile are currently running
+            Dim otherInstancesCount As Integer = IPC.GetOtherInstancesWithSamePath().Count()
+
+            If otherInstancesCount > 0 Then
+                MessageBox.Show("Cannot enable Single Instance mode while multiple instances of ScalA are already running. Please close other instances first.",
+                                "Single Instance Conflict",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning)
+
+                ' Revert the checkbox/setting state
+                ChkSingleInstance.Checked = False
+                Return
+            End If
+        End If
+
+        ' Safe to apply the setting
+        My.Settings.SingleInstance = ChkSingleInstance.Checked
     End Sub
 
     Private _customQlScale As Single

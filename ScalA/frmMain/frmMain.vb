@@ -410,7 +410,7 @@ Partial Public NotInheritable Class FrmMain
             ScalaHandle = Me.Handle
         End If
 
-        IPC.RegisterPrimaryWindow(ScalaHandle, scalaPID)
+        If My.Settings.SingleInstance Then IPC.RegisterPrimaryWindow(ScalaHandle, scalaPID)
 
         setScalAPriority(My.Settings.Priority)
 

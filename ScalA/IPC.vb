@@ -337,7 +337,37 @@ Module IPC
     Public Function getOtherInstances() As IEnumerable(Of ScalAInfo)
         Return getInstances.Where(Function(si) si.pid <> scalaProc.Id)
     End Function
+    Public Function GetOtherInstancesWithSamePath() As IEnumerable(Of ScalAInfo)
+        Dim currentPath As String = Application.ExecutablePath
 
+        Return getOtherInstances().Where(Function(si)
+                                             Try
+                                                 Using p As Process = Process.GetProcessById(si.pid)
+                                                     Dim procPath As String = String.Empty
+
+                                                     Try
+                                                         procPath = p.MainModule?.FileName
+                                                     Catch
+                                                         ' Fallback if MainModule throws a Win32Exception due to security/elevation levels
+                                                         Dim processHandle As IntPtr = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, False, p.Id)
+                                                         If processHandle <> IntPtr.Zero Then
+                                                             Dim buffer As New System.Text.StringBuilder(1024)
+                                                             If QueryFullProcessImageName(processHandle, 0, buffer, buffer.Capacity) Then
+                                                                 procPath = buffer.ToString()
+                                                             End If
+                                                             CloseHandle(processHandle)
+                                                         End If
+                                                     End Try
+
+                                                     ' Compare paths case-insensitively (Windows paths are case-insensitive)
+                                                     Return Not String.IsNullOrEmpty(procPath) AndAlso
+                                                            String.Equals(procPath, currentPath, StringComparison.OrdinalIgnoreCase)
+                                                 End Using
+                                             Catch
+                                                 Return False
+                                             End Try
+                                         End Function)
+    End Function
     Public Function EnumOtherScalAs() As IEnumerable(Of Process)
         Return getOtherInstances.Select(Function(si)
                                             Try
