@@ -392,6 +392,29 @@ Partial NotInheritable Class FrmMain
                 Debug.Print($"WM_GETDIPSCALEDSIZE {Marshal.PtrToStructure(Of Size)(m.LParam)}")
                 m.Result = 1
                 Return
+            Case WM_DPICHANGED
+                Dim gti As GUITHREADINFO = New GUITHREADINFO With {.cbSize = Marshal.SizeOf(Of GUITHREADINFO)}
+                GetGUIThreadInfo(GetWindowThreadProcessId(Me.Handle, Nothing), gti)
+                If gti.flags <> 2 Then
+                    'gti flags needed to prevent inf loop, note WM_winpos takes over then
+                    'begininvoke required to get size after change
+                    ' this is for when user changes scaling, not when user drags to other monitor
+                    Me.BeginInvoke(Async Sub()
+                                       Await Task.Delay(50)
+                                       If Me.WindowState = FormWindowState.Maximized Then
+                                           'Me.WindowState = FormWindowState.Normal
+                                           'Application.DoEvents()
+
+                                           'todo fix my.settings.resol getting set wrong
+
+                                           'unminimize as mitigation
+                                           btnMax.PerformClick()
+                                       End If
+                                       ReZoom(My.Settings.resol)
+                                   End Sub)
+                End If
+                m.Result = 0
+                Exit Sub
             Case WM_NCCALCSIZE
                 If m.WParam <> IntPtr.Zero Then
 
