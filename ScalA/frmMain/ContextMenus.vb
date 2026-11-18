@@ -490,6 +490,7 @@ Partial Public NotInheritable Class FrmMain
 
         For Each item In sender.DropDownItems.OfType(Of ToolStripMenuItem)
             item.CheckState = CheckState.Unchecked
+            item.Image = EmptyIcon
         Next
 
         Dim AltName As String = DirectCast(sender.Tag, AstoniaProcess).UserName
@@ -500,33 +501,41 @@ Partial Public NotInheritable Class FrmMain
         If topContains Then
             TopFirstToolStripMenuItem.CheckState = CheckState.Indeterminate
             TopLastToolStripMenuItem.CheckState = CheckState.Indeterminate
+            TopFirstToolStripMenuItem.Image = Nothing
+            TopLastToolStripMenuItem.Image = Nothing
         End If
 
         If botContains Then
             BotFirstToolStripMenuItem.CheckState = CheckState.Indeterminate
             BotLastToolStripMenuItem.CheckState = CheckState.Indeterminate
+            BotFirstToolStripMenuItem.Image = Nothing
+            BotLastToolStripMenuItem.Image = Nothing
         End If
 
         If topSortList.FirstOrDefault() = AltName Then
             TopFirstToolStripMenuItem.CheckState = CheckState.Checked
             TopLastToolStripMenuItem.CheckState = CheckState.Unchecked
+            TopFirstToolStripMenuItem.Image = Nothing
         End If
         If topSortList.LastOrDefault() = AltName Then
             TopLastToolStripMenuItem.CheckState = CheckState.Checked
             TopFirstToolStripMenuItem.CheckState = CheckState.Unchecked
+            TopLastToolStripMenuItem.Image = Nothing
         End If
 
         NoneSortToolStripMenuItem.Checked = Not (topContains OrElse botContains)
+        If NoneSortToolStripMenuItem.Checked Then NoneSortToolStripMenuItem.Image = Nothing
 
         If botSortList.FirstOrDefault() = AltName Then
             BotFirstToolStripMenuItem.CheckState = CheckState.Checked
             BotLastToolStripMenuItem.CheckState = CheckState.Unchecked
+            BotFirstToolStripMenuItem.Image = Nothing
         End If
         If botSortList.LastOrDefault() = AltName Then
             BotLastToolStripMenuItem.CheckState = CheckState.Checked
             BotFirstToolStripMenuItem.CheckState = CheckState.Unchecked
+            BotLastToolStripMenuItem.Image = Nothing
         End If
-
     End Sub
 
     Private Sub NoneSortToolStripMenuItem_Click(sender As ToolStripMenuItem, e As EventArgs) Handles NoneSortToolStripMenuItem.Click,
