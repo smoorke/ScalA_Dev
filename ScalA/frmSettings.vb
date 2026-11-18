@@ -1533,7 +1533,8 @@ Public NotInheritable Class FrmSettings
 
     Private Sub txtCustomQLScale_TextChanged(sender As TextBox, e As EventArgs) Handles txtCustomQLScale.TextChanged
         Dim idx = sender.SelectionStart
-        sender.Text = sender.Text.Replace(","c, "."c)
+        idx -= sender.Text.Count(Function(c) c = ""c) 'note: invis char (ctrl-enter)
+        sender.Text = sender.Text.Replace(","c, "."c).Replace(""c, "")
         If sender.Text.Length > 0 Then
             If Val(sender.Text) < 1 Then
                 sender.Text = "1."
