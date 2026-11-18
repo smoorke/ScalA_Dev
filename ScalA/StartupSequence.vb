@@ -27,7 +27,7 @@ Module StartupSequence
 #End If
         End If
 
-            Dim createdNew As Boolean
+        Dim createdNew As Boolean
         If My.Settings.SingleInstance Then
             StartupMutex = New Mutex(True, StartupMutexName, createdNew)
             If Not Environment.GetCommandLineArgs().Contains("--restart") Then
@@ -45,10 +45,19 @@ Module StartupSequence
                         If IsIconic(primaryHwnd) Then SendMessage(primaryHwnd, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
 
                         ' Force it to the foreground
-                        SetForegroundWindow(primaryHwnd)
-                    End If
+                        Dim si As ScalAInfo = IPC.GetOtherInstancesWithSamePath().FirstOrDefault
+                        If si.isOnOverview Then
+                            SetForegroundWindow(primaryHwnd)
+                        Else
+                            Try
+                                AppActivate(si.AltPPid)
+                            Catch ex As Exception
+                                SetForegroundWindow(primaryHwnd)
+                            End Try
+                        End If
 
-                    Return
+                        Return
+                    End If
                 End If
             End If
         End If
