@@ -4,13 +4,10 @@
     End Sub
 
     Protected Overrides Sub OnRenderItemCheck(e As ToolStripItemImageRenderEventArgs)
-
-        'render normal check for to get correct border
+        'render normal check to get correct border
         MyBase.OnRenderItemCheck(e)
-
         'calculate scale
         Dim scale As Single = e.Item.GetCurrentParent().ImageScalingSize.Width / 16.0!
-
         If scale = 1.0! Then Exit Sub
 
         Dim g As Graphics = e.Graphics
@@ -18,22 +15,17 @@
 
         Try
             Dim rect As Rectangle = e.ImageRectangle
-
             'Set the clip region FIRST while still in normal, unscaled coordinates
             g.SetClip(rect)
-
             'Translate to the check area and scale
             g.TranslateTransform(rect.X, rect.Y - scale)
             g.ScaleTransform(scale, scale)
             g.TranslateTransform(-rect.X, -rect.Y + scale)
-
             'Render using base method. borders will be clipped. but already drawn by first render
             MyBase.OnRenderItemCheck(e)
-
         Finally
             g.Restore(state)
         End Try
-
     End Sub
     Private Shared Function EvenInt(dbl As Single) As Integer
         Dim int As Integer = CInt(dbl)
