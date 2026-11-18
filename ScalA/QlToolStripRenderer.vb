@@ -17,7 +17,7 @@
     End Sub
     Private Shared Function EvenInt(dbl As Single) As Integer
         Dim int As Integer = CInt(dbl)
-        If int Mod 2 <> 0 Then int -= 1
+        If int Mod 2 <> 0 Then int += 1
         Return int
     End Function
     Private Shared TriangleDict As New Concurrent.ConcurrentDictionary(Of Single, Bitmap)
