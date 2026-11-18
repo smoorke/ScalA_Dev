@@ -253,7 +253,7 @@ Partial NotInheritable Class FrmSettings
         'ToolStripSeparator1
         '
         ToolStripSeparator1.Name = "ToolStripSeparator1"
-        ToolStripSeparator1.Size = New System.Drawing.Size(166, 6)
+        ToolStripSeparator1.Size = New System.Drawing.Size(150, 6)
         '
         'Label4
         '
@@ -929,14 +929,14 @@ Partial NotInheritable Class FrmSettings
         '
         Me.CheckNowToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.Sync
         Me.CheckNowToolStripMenuItem.Name = "CheckNowToolStripMenuItem"
-        Me.CheckNowToolStripMenuItem.Size = New System.Drawing.Size(180, 38)
+        Me.CheckNowToolStripMenuItem.Size = New System.Drawing.Size(164, 22)
         Me.CheckNowToolStripMenuItem.Text = "Check Now"
         '
         'OpenChangelogToolStripMenuItem
         '
         Me.OpenChangelogToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.List
         Me.OpenChangelogToolStripMenuItem.Name = "OpenChangelogToolStripMenuItem"
-        Me.OpenChangelogToolStripMenuItem.Size = New System.Drawing.Size(180, 38)
+        Me.OpenChangelogToolStripMenuItem.Size = New System.Drawing.Size(164, 22)
         Me.OpenChangelogToolStripMenuItem.Text = "Open Changelog"
         '
         'chkOverViewIsGame
@@ -1058,14 +1058,14 @@ Partial NotInheritable Class FrmSettings
         'X60043ToolStripMenuItem
         '
         Me.X60043ToolStripMenuItem.Name = "X60043ToolStripMenuItem"
-        Me.X60043ToolStripMenuItem.Size = New System.Drawing.Size(169, 38)
+        Me.X60043ToolStripMenuItem.Size = New System.Drawing.Size(153, 22)
         Me.X60043ToolStripMenuItem.Tag = "800x600 (4:3)"
         Me.X60043ToolStripMenuItem.Text = "800x600 (4:3)"
         '
         'X720169ToolStripMenuItem
         '
         Me.X720169ToolStripMenuItem.Name = "X720169ToolStripMenuItem"
-        Me.X720169ToolStripMenuItem.Size = New System.Drawing.Size(169, 38)
+        Me.X720169ToolStripMenuItem.Size = New System.Drawing.Size(153, 22)
         Me.X720169ToolStripMenuItem.Tag = "1280x720 (16:9)"
         Me.X720169ToolStripMenuItem.Text = "1280x720 (16:9)"
         '
@@ -1074,7 +1074,7 @@ Partial NotInheritable Class FrmSettings
         Me.FromToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.DummyToolStripMenuItem})
         Me.FromToolStripMenuItem.Image = Global.ScalA.My.Resources.Resources.moa31
         Me.FromToolStripMenuItem.Name = "FromToolStripMenuItem"
-        Me.FromToolStripMenuItem.Size = New System.Drawing.Size(169, 38)
+        Me.FromToolStripMenuItem.Size = New System.Drawing.Size(153, 22)
         Me.FromToolStripMenuItem.Text = "From"
         '
         'DummyToolStripMenuItem
@@ -1650,8 +1650,8 @@ Partial NotInheritable Class FrmSettings
         Me.tabSortAndBL.Controls.Add(Me.btnHelp)
         Me.tabSortAndBL.Controls.Add(Me.txtBotSort)
         Me.tabSortAndBL.Controls.Add(Me.txtTopSort)
-        Me.tabSortAndBL.Controls.Add(GroupBox2)
         Me.tabSortAndBL.Controls.Add(Me.chkWhitelist)
+        Me.tabSortAndBL.Controls.Add(GroupBox2)
         Me.tabSortAndBL.Location = New System.Drawing.Point(4, 25)
         Me.tabSortAndBL.Margin = New System.Windows.Forms.Padding(0)
         Me.tabSortAndBL.Name = "tabSortAndBL"
