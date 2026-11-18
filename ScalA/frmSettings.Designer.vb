@@ -902,9 +902,7 @@ Partial NotInheritable Class FrmSettings
         Me.ChkSingleInstance.Size = New System.Drawing.Size(99, 17)
         Me.ChkSingleInstance.TabIndex = 6
         Me.ChkSingleInstance.Text = "Single Instance"
-        Me.ttSettings.SetToolTip(Me.ChkSingleInstance, "Running ScalA for a 2nd time or more will bring an" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "  already open ScalA from the" &
-        " same profile to the front." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "To make additional profiles copy, rename and/or mov" &
-        "e ScalA.exe" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
+        Me.ttSettings.SetToolTip(Me.ChkSingleInstance, resources.GetString("ChkSingleInstance.ToolTip"))
         Me.ChkSingleInstance.UseVisualStyleBackColor = True
         '
         'chkCheckForUpdate

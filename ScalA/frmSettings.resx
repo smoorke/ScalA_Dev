@@ -200,6 +200,12 @@ Does not count saved settings for ScalAs that aren't currenlty open.
 To create additional profiles copy, rename and/or move ScalA.exe
 </value>
   </data>
+  <data name="ChkSingleInstance.ToolTip" xml:space="preserve">
+    <value>Running ScalA for a 2nd time or more will bring an
+  already open ScalA from the same profile to the front.
+To make additional profiles copy, rename and/or move ScalA.exe
+It is recommended to leave this setting on.</value>
+  </data>
   <metadata name="cmsUpdate.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>580, 17</value>
   </metadata>
