@@ -85,6 +85,14 @@ Partial Public NotInheritable Class FrmMain
             CloseAllExceptToolStripMenuItem.Text = $"Close All but {AltPP.UserName}"
             Task.Run(Sub() Me.BeginInvoke(Sub() CloseAllExceptToolStripMenuItem.Visible = AstoniaProcess.ListProcesses(blackList, True).Any(Function(ap As AstoniaProcess) ap.Id <> AltPP.Id)))
         End If
+
+        Dim dpi As Single = 96.0!
+        DpiSafe.GetDpiForMonitorSafe(MonitorFromPoint(MousePosition, 2), 0, dpi, dpi)
+        Dim sf As Single = dpi / 96.0!
+
+        sender.ImageScalingSize = New Size(16 * sf, 16 * sf)
+        sender.Font = New Font(sender.Font.FontFamily, 12 * sf, FontStyle.Regular, GraphicsUnit.Pixel)
+
         Task.Run(Sub()
                      Dim aps = AstoniaProcess.Enumerate(False).ToList
                      If aps.Count = 0 OrElse (aps.Count = 1 AndAlso DirectCast(Me.Invoke(Function() cboAlt.SelectedIndex > 0), Boolean)) Then
@@ -165,6 +173,27 @@ Partial Public NotInheritable Class FrmMain
         'Detach(False)
         UntrapMouse(MouseButtons.Right)
         AppActivate(scalaPID) 'fix right click drag bug
+
+        'Dim dpi As Single = 96.0!
+        'DpiSafe.GetDpiForMonitorSafe(MonitorFromPoint(MousePosition, 2), 0, dpi, dpi)
+        'Dim sf As Single = dpi / 96.0!
+
+        'sender.ImageScalingSize = New Size(16 * sf, 16 * sf)
+        'For Each item As ToolStripMenuItem In sender.Items.OfType(Of ToolStripMenuItem)
+        '    item.font = New Font(item.Font.FontFamily, 9 * sf)
+        'Next
+
+        Dim dpi As Single = 96.0!
+        DpiSafe.GetDpiForMonitorSafe(MonitorFromPoint(MousePosition, 2), 0, dpi, dpi)
+        Dim sf As Single = dpi / 96.0!
+
+        sender.ImageScalingSize = New Size(16 * sf, 16 * sf)
+        sender.Font = New Font(sender.Font.FontFamily, 12 * sf, FontStyle.Regular, GraphicsUnit.Pixel)
+        SelectToolStripMenuItem.Font = New Font(sender.Font, FontStyle.Bold)
+
+        NoneSortToolStripMenuItem.Image = EmptyIcon
+        NoOtherScalAsToolStripMenuItem.Image = EmptyIcon
+        NoOtherOverviewsToolStripMenuItem.Image = EmptyIcon
 
         Dim pp As AstoniaProcess = DirectCast(sender.SourceControl, AButton).AP
         sender.Tag = pp
