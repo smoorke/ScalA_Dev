@@ -98,6 +98,7 @@
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="AstoniaProcess.vb" />
     <Compile Include="ClipBoardHelper.vb" />
+    <Compile Include="DpiAwareToolStripRenderer.vb" />
     <Compile Include="QlToolStripRenderer.vb" />
     <Compile Include="debugger\dBug.vb" />
     <Compile Include="debugger\frmDebug.Designer.vb">

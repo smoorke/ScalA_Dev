@@ -558,7 +558,7 @@ Partial Public NotInheritable Class FrmMain
         cmsQuickLaunch.Renderer = New QlToolStripRenderer()
         CType(cmsQuickLaunch.Renderer, QlToolStripRenderer).InitAnimationTimer(cmsQuickLaunch)
 
-        cmsAlt.Renderer = New ToolStripProfessionalRenderer(New CustomColorTable)
+        cmsAlt.Renderer = New DpiAwareToolStripRenderer(New CustomColorTable)
         cmsQuit.Renderer = cmsAlt.Renderer
         frmOverlay.cmsRestart.Renderer = cmsAlt.Renderer
 

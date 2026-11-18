@@ -83,6 +83,7 @@ Public Class WindowCornerManager
 
                                  ' 5. Apply to all clients
                                  For Each client As AstoniaProcess In clients
+                                     If client Is Nothing Then Continue For
                                      Dim hwnd As IntPtr = client.MainWindowHandle
                                      If hwnd <> IntPtr.Zero Then
                                          Dim currentPref As Integer = -1
