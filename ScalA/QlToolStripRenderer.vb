@@ -1,4 +1,4 @@
-﻿Public NotInheritable Class CustomToolStripRenderer : Inherits ToolStripProfessionalRenderer
+﻿Public NotInheritable Class QlToolStripRenderer : Inherits ToolStripProfessionalRenderer
 
     Public Sub New()
         MyBase.New(New CustomColorTable())

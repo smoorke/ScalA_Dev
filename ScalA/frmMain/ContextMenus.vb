@@ -92,6 +92,7 @@ Partial Public NotInheritable Class FrmMain
 
         sender.ImageScalingSize = New Size(16 * sf, 16 * sf)
         sender.Font = New Font(sender.Font.FontFamily, 12 * sf, FontStyle.Regular, GraphicsUnit.Pixel)
+        CloseScalAToolStripMenuItem.Font = New Font(sender.Font, FontStyle.Bold)
 
         Task.Run(Sub()
                      Dim aps = AstoniaProcess.Enumerate(False).ToList

@@ -555,8 +555,8 @@ Partial Public NotInheritable Class FrmMain
 
         If cmbResolution.SelectedIndex = 0 Then DoEqLock(My.Settings.resol)
 
-        cmsQuickLaunch.Renderer = New CustomToolStripRenderer()
-        CType(cmsQuickLaunch.Renderer, CustomToolStripRenderer).InitAnimationTimer(cmsQuickLaunch)
+        cmsQuickLaunch.Renderer = New QlToolStripRenderer()
+        CType(cmsQuickLaunch.Renderer, QlToolStripRenderer).InitAnimationTimer(cmsQuickLaunch)
 
         cmsAlt.Renderer = New ToolStripProfessionalRenderer(New CustomColorTable)
         cmsQuit.Renderer = cmsAlt.Renderer
