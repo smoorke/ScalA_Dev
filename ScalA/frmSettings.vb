@@ -504,13 +504,18 @@ Public NotInheritable Class FrmSettings
         'save settings
 
         If ChkSingleInstance.Checked Then
-            If IPC.GetOtherInstancesWithSamePath().Count > 1 Then
+            Dim otherInstancesCount As Integer = IPC.GetOtherInstancesWithSamePath().ToArray.Count()
+            If otherInstancesCount > 0 Then
+                tbcSettings.SelectedTab = tabMisc
                 CustomMessageBox.Show(Me, "Cannot enable Single Instance mode while multiple instances of ScalA are already running. Please close other instances first.",
                                "Single Instance Conflict",
                                MessageBoxButtons.OK,
                                MessageBoxIcon.Warning)
                 Return
             End If
+
+            StartupMutex = New Threading.Mutex(True, StartupMutexName, Nothing)
+
         End If
 
         If My.Settings.resolutions <> txtResolutions.Text Then
@@ -1549,7 +1554,7 @@ Public NotInheritable Class FrmSettings
     Private Sub ChkSingleInstance_CheckedChanged(sender As Object, e As EventArgs) Handles ChkSingleInstance.CheckedChanged
         If ChkSingleInstance.Checked Then
             ' Check if other instances of the same profile are currently running
-            Dim otherInstancesCount As Integer = IPC.GetOtherInstancesWithSamePath().Count()
+            Dim otherInstancesCount As Integer = IPC.GetOtherInstancesWithSamePath().ToArray.Count()
 
             If otherInstancesCount > 0 Then
                 MessageBox.Show("Cannot enable Single Instance mode while multiple instances of ScalA are already running. Please close other instances first.",
@@ -1562,9 +1567,6 @@ Public NotInheritable Class FrmSettings
                 Return
             End If
         End If
-
-        ' Safe to apply the setting
-        My.Settings.SingleInstance = ChkSingleInstance.Checked
     End Sub
 
     Private _customQlScale As Single

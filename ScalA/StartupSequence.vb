@@ -2,8 +2,8 @@
 
 Module StartupSequence
 
-    Private AppMutex As Mutex
-    Private ReadOnly StartupMutexName As String = $"ScalA_Startup_Mutex_{Reflection.Assembly.GetExecutingAssembly().Location.Replace("\", "").Replace(":", "")}"
+    Public StartupMutex As Mutex
+    Public ReadOnly StartupMutexName As String = $"ScalA_Startup_Mutex_{Reflection.Assembly.GetExecutingAssembly().Location.Replace("\", "").Replace(":", "")}"
 
     Sub Main()
         'todo move some things from frmMain.load here
@@ -17,13 +17,19 @@ Module StartupSequence
         Dim compEnabled As Boolean = False
         DwmIsCompositionEnabled(compEnabled)
         If Not compEnabled Then
+#If DEBUG Then
+            If DialogResult.OK = MessageBox.Show("ScalA requires DWM Composition to be on (Aero Theme)", "Error", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation) Then
+                Return
+            End If
+#Else
             MessageBox.Show("ScalA requires DWM Composition to be on (Aero Theme)", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             Return
+#End If
         End If
 
-        Dim createdNew As Boolean
+            Dim createdNew As Boolean
         If My.Settings.SingleInstance Then
-            AppMutex = New Mutex(True, StartupMutexName, createdNew)
+            StartupMutex = New Mutex(True, StartupMutexName, createdNew)
             If Not Environment.GetCommandLineArgs().Contains("--restart") Then
                 If Not createdNew Then
                     Debug.Print("Second instance detected. Signaling first instance.")
@@ -52,6 +58,6 @@ Module StartupSequence
         Application.SetCompatibleTextRenderingDefault(False)
         Application.Run(FrmMain)
         My.Settings.Save()
-        AppMutex?.ReleaseMutex()
+        StartupMutex?.ReleaseMutex()
     End Sub
 End Module
