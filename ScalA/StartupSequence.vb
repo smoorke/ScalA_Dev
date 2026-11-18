@@ -44,12 +44,14 @@ Module StartupSequence
                         ' If minimized, restore it first
                         If IsIconic(primaryHwnd) Then SendMessage(primaryHwnd, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
 
-                        ' Force it to the foreground
+                        ' Force it or selected client to the foreground
                         Dim si As ScalAInfo = IPC.GetOtherInstancesWithSamePath().FirstOrDefault
                         If si.isOnOverview Then
                             SetForegroundWindow(primaryHwnd)
                         Else
                             Try
+                                Dim pp As Process = Process.GetProcessById(si.AltPPid)
+                                If IsIconic(pp.MainWindowHandle) Then SendMessage(pp.MainWindowHandle, WM_SYSCOMMAND, SC_RESTORE, IntPtr.Zero)
                                 AppActivate(si.AltPPid)
                             Catch ex As Exception
                                 SetForegroundWindow(primaryHwnd)
