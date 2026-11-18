@@ -3,11 +3,9 @@
 Module StartupSequence
 
     Public StartupMutex As Mutex
-    Public ReadOnly StartupMutexName As String = $"ScalA_Startup_Mutex_{Reflection.Assembly.GetExecutingAssembly().Location.Replace("\", "").Replace(":", "")}"
+    Public ReadOnly StartupMutexName As String = $"ScalA_Startup_Mutex_{IPC.MeStr}"
 
     Sub Main()
-        'todo move some things from frmMain.load here
-
 
         If Environment.OSVersion.Version.Major < 6 AndAlso Environment.OSVersion.Version.Minor < 1 Then
             MessageBox.Show("ScalA requires Windows 7 Or later", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)

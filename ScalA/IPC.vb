@@ -3,13 +3,13 @@ Imports System.Runtime.InteropServices
 Imports System.Threading
 Module IPC
 
-    Private ReadOnly _MeStr As String = Application.ExecutablePath.Replace(":", "").Replace("\", "").Replace(".", "")
-    Private ReadOnly _mmfSI As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPCSI_{_MeStr}", 1 + 1)
+    Public ReadOnly MeStr As String = Application.ExecutablePath.Replace(":", "").Replace("\", "").Replace(".", "")
+    Private ReadOnly _mmfSI As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_IPCSI_{MeStr}", 1 + 1)
     Private ReadOnly _mmvaSI As MemoryMappedViewAccessor = _mmfSI.CreateViewAccessor()
 
     Public Property AlreadyOpen As Boolean
         Get
-            Return _mmvaSI.ReadBoolean(0) 'todo: replace with mutex
+            Return _mmvaSI.ReadBoolean(0)
         End Get
         Set(value As Boolean)
             _mmvaSI.Write(0, value)
@@ -25,7 +25,7 @@ Module IPC
     End Property
 
     ' Dedicated MMF for sharing the primary instance's HWND and PID
-    Private ReadOnly _mmfPrimary As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_PrimaryInstanceInfo{_MeStr}", Marshal.SizeOf(Of IntPtr) + Marshal.SizeOf(Of Integer))
+    Private ReadOnly _mmfPrimary As MemoryMappedFile = MemoryMappedFile.CreateOrOpen($"ScalA_PrimaryInstanceInfo{MeStr}", Marshal.SizeOf(Of IntPtr) + Marshal.SizeOf(Of Integer))
     Private ReadOnly _mmvaPrimary As MemoryMappedViewAccessor = _mmfPrimary.CreateViewAccessor()
 
     ' Called by the First Instance once FrmMain is loaded and has a valid Handle
