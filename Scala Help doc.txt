@@ -1,0 +1,282 @@
+WELCOME TO SCALA
+
+ScalA (Scala Astonia) is a window manager and launcher utility for managing multiple Astonia game clients.
+
+KEY FEATURES:
+  - Manage multiple game clients from one window with live thumbnails
+  - Quick Launch menu for fast character login 
+  - Custom resolution management with scaling options
+  - Global hotkeys for switching between characters
+  - Equipment Lock (EQ Lock) to prevent accidental unequips
+  - Sorting and filtering characters with whitelist/blacklist
+
+This help document is seperated into three  sections: Quick-Start and Settings and Frequently Asked Questions
+
+QUICK START GUIDE
+
+UI OVERVIEW:
+Scala's user interface is divided into three main parts.
+  Title Bar: The central portion of the header at the top of Scala, displays the Scala Version, any warning icons, EQ Lock checkbox, access to this Help document and Window controls
+  Control Bar: Located at the left of the Title Bar, the Control Bar includes the Start/Overview button, Alt dropdown, Resolution dropdown
+  Main Area: The area that interacts with the open game client as well as the client thumbnail at the top of this area.
+
+
+BASIC WORKFLOW:
+  1. Launch your game client(s) normally or via Quick Launch
+  2. ScalA auto-detects running clients and shows them in the Alt dropdown
+  3. Select a client from the dropdown to make it active
+  4. Use the Resolution dropdown to resize the game window
+  5. Click Start to enter Overview mode and see all clients as thumbnails
+  6. Click any thumbnail to switch to that client
+
+OVERVIEW MODE:
+This mode allows you to display multiple clients at once on Scala, allowing you to view them all at once on one screen without having to resize individual windows. 
+  - Click Start button OR press Switch to Overview hotkey (default: Ctrl+Tab)
+  - Left-click a thumbnail to switch to that client, 
+  - Right-click a thumbnail for options (sort, move, close, TopMost)
+
+QUICK LAUNCH (Launching Characters):
+  1. Right-click the Start button to open Quick Launch menu
+  2. Click any shortcut to launch that character
+  3. Subfolders appear as submenus for organization
+
+EQUIPMENT LOCK:
+  - Check the lock checkbox in title bar to enable
+  - Blocks left-clicks on worn equipment to prevent accidental unequips
+  - Hold Alt or Shift while clicking to temporarily bypass the EQ lock
+
+ACCESSING SETTINGS:
+  - Right-click the title bar and select 'Settings', OR
+  - Shift + R and click the Scala icon in the System Tray at the bottom right of your screen.
+  - Press the gear icon if visible
+
+CLIENT MANAGEMENT
+
+ALT DROPDOWN:
+To the right of the Home Button on the Control Bar in the top right of the screen,the Alt Dropdown is useful for switching between multiple characters quickly, but only wanting to display one at a time on your screen.
+  - Shows all detected game clients by character name
+  - Ordered by sort priority
+  - Select a client to make it active
+  - Right-click for Quick Launch menu
+
+SORTING CLIENTS:
+  -Right-click a thumbnail and select Sort:
+  - Top First: Move to beginning of list 
+  - Top Last: Move to end of 'top' group
+  - None: Default/middle position
+  - Bot First: Move to start of 'bottom' group
+  - Bot Last: Move to end of list or Bottom 
+  Sort order affects the order of appearance of characters on both Overview thumbnails and Alt dropdown.
+  Save/load sort profiles in Settings > Sort & BL tab.
+	The order of appearance in the Sort tab 
+
+SIDEBAR MODE:
+  This allows two Scalas to be used together, one in overview and set to side-bar mode for displaying all characters open and choosing which will be displayed on the second "full-screen" Scala by selecting it on the side-bar Scala.
+  To set Side-bar mode in overview mode, right-click the client thumbnail at the top of any open character and select 'Sidebar Mode'
+
+ACTIVE OVERVIEW (Beta):
+  Allows mouse clicks to pass through thumbnails to the actual game window:
+  - Right-click a thumbnail and select 'Active Overview'
+  - Useful for quick interactions between multiple characters without leaving Overview,
+  - EQ Lock is respected in Active Overview mode
+
+RIGHT-CLICK MENUS:
+
+Further functionality is gained by right clicking certain areas of Scala.
+
+Right-Clicking Title Bar, located at the top middle of Scala's header.
+  - Title bar: Opens Settings and Help & FAQ
+Right-Clicking Start button, the quadrant in top left of Scala's header
+	Quick Launch menu (shortcuts)
+Right-Clicking X in top right of Scala's header shows:
+  - Close button: Close options (ScalA, clients, or both)
+	CLOSE BUTTON menu (right-click X button):
+ Shows the following only with characters open in Scala
+  - Close ScalA: Close only ScalA, leave clients running
+  - Close Astonia: Close only the selected client
+  - Close All Someone: Close idle/unnamed clients
+  - Close Both: Close selected client and ScalA
+  - Close All on Overview: Close all visible clients
+  - Close All but [Name]: Close all except selected
+  - Close All & ScalA: Close everything
+Right-Clicking the header of any individual client in Overview Mode
+Client thumbnails: Per-client options (sort, move, close)
+ 
+ CLIENT THUMBNAIL MENU (right-click thumbnail):
+  - Select: Make this client active
+  - ReLaunch: Close and restart this client
+  - Sort: Change position (Top First/Last, None, Bot First/Last)
+  - Move To: Move to another ScalA instance (Sidebar Mode)
+  - TopMost: Keep this client window always on top
+  - Active Overview (Beta): Allow clicks to pass through to game
+  - Sidebar Mode: Enable multi-ScalA coordination
+  - Close: Close this client
+  - Close All: Close all clients
+
+
+SETTINGS REFERENCE
+
+Access Settings: Right-click the title bar > Settings
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RESOLUTIONS TAB
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Custom Resolutions: Add/remove resolutions for the dropdown
+  Generate Resolutions: Auto-create list based on screen size/aspect ratio
+  Scaling Mode: How the game window is resized
+  Reserve Space: Pixels to reserve on screen edges
+  Size Borders: Include window borders in size calculations
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HOTKEYS TAB
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HOTKEY DESCRIPTIONS:
+  SWITCH TO OVERVIEW (STO):
+    - If not in Overview: Enter Overview mode
+    - If in Overview: Return to the selected client
+    - Most commonly used hotkey for multi-client management
+  CYCLE ALTS FORWARD/BACKWARD:
+    - Quickly switch between clients without entering Overview
+    - Order follows your sort settings
+  CLOSE ALL:
+    - Closes ALL detected game clients immediately
+    - Use with caution!
+  TOGGLE TOPMOST:
+    - Toggles the ScalA window's always-on-top state
+
+DEFAULT HOTKEY BINDINGS:
+  Switch to Overview (STO):    Ctrl + Tab
+  Cycle Alts Forward:          Ctrl + Space
+  Cycle Alts Backward:         Ctrl + Shift + Space
+  Close All:                   Ctrl + Shift + F11
+  Toggle TopMost:              Alt + Ctrl + T
+
+Configure all hotkeys for controlling Scala within this tab.
+ 	1. Open Settings > Hotkeys tab
+  	2. Click on the hotkey field you want to change
+  	3. Press your desired key combination
+  	4. Check/uncheck modifier boxes as needed
+  	5. Use the Enable checkbox to enable/disable each hotkey
+  Each hotkey can use any modifier combination of:
+  - Alt
+  - Ctrl
+  - Shift
+  - Win (Windows key)
+These help prevent accidental interruptions during gameplay:
+  Block Windows Key: Prevent Start menu from opening
+  Block Alt-Tab: Prevent window switching
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SORT & BLACKLIST/WHITELIST TAB
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Sort Profiles: Save/load client sort configurations
+  Whitelist/Blacklist:
+    - Enter character names (one per line)
+    - Whitelist: Only show matching clients
+    - Blacklist: Hide matching clients
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MIN/MAX TAB
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  
+  TopMost: Keep ScalA window always on top
+  Max on Normal Overview: Auto-maximize when entering Overview
+  Min on Min: Minimize ScalA when client is minimized
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+QL TAB (Quick Launch)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  QUICK LAUNCH & FILE OPERATIONS
+
+Quick Launch provides fast access to game shortcuts directly from ScalA.
+
+ACCESSING QUICK LAUNCH:
+  - Right-click the Start button, the quadrant at the top left corner of Scala, OR
+  - Right-click the Alt dropdown to the right of Start button, OR
+  - Right-click any open space in Overview mode
+
+LAUNCHING CHARACTERS:
+  - Shortcuts (.lnk files) appear as menu items
+  - Subfolders appear as submenus
+  - Left-click any shortcut to launch that character
+
+REMOVING SHORTCUTS:
+  - Right-click the shortcut in Quick Launch menu and select Delete, OR
+  - Delete the .lnk file directly from the Quick Launch folder located in the hidden AppData Windows folder.
+
+EDITING SHORTCUTS:
+  - Right-click in Quick Launch menu and select Rename
+  - To edit arguments, right-click the .lnk file in Windows Explorer
+    and modify the Target field
+
+ORGANIZING WITH FOLDERS:
+  - Create subfolders in your Quick Launch folder for organization, either from Quick Launch Menu or the Folder in AppData.
+  - Examples: 'Mages', 'Warriors', 'Spawners', 'Alts'
+
+QUICK LAUNCH SETTINGS (Settings > QL tab):
+  - QuickLaunch Root Folder: Set the directory containing your shortcuts
+  - Always Show Hidden: Include hidden items in menu
+  -   Resolve Lnk to Dirs: Display actual target paths
+  - Extension Filter: Control which file types appear
+  - Icon Cache
+  
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MISC TAB
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Always Show End
+Rounded Corners
+Always On Top
+Single Instance
+Check For Update on Startup
+Active Overview
+Always Start on Overview
+Activate on Hover
+moac.exe
+SDL_app
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OTHER SETTINGS TOOLS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Batch Shortcut Manager: Accessed from QL tab
+    - Modify multiple shortcuts at once
+    - Change password across all shortcuts
+    - Update resolution settings in bulk
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Frequently Asked Questions
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Scala is frozen and I cannot interact with or close it manually.
+	Use task manager to close Scala, relaunching it afterwards often fixes any issues.
+
+
+CREDITS & ABOUT
+
+ScalA - Scala Astonia Window Manager
+
+DEVELOPERS:
+  - bool (Lead Developer)
+  - Community Contributors
+
+SPECIAL THANKS:
+  - The Astonia community for feedback and testing
+  - All users who report bugs and suggest features
+
+TECHNOLOGIES:
+  - Built with Visual Basic .NET
+  - Windows Forms UI
+  - Win32 API for window management
+
+SOURCE CODE:
+  - GitHub: github.com/smoorke/ScalA_Dev
+
+LICENSE:
+  - Open source project
+
+
+
+
+
+
+
+
