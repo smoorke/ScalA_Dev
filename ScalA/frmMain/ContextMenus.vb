@@ -2891,54 +2891,54 @@ Partial Public NotInheritable Class FrmMain
 
         dBug.Print($"Clipaction {act} ""{tgt}""")
 
-        'If act.StartsWith("Paste") Then
-        '    InvokeExplorerVerb(tgt, act, ScalaHandle)
-        'Else
-
-        SystemUtility.ExplorerVerbDispatch(tgt, act)
-
-        'ShellClipboardHelper.CopyOrCutItem(tgt, act, ScalaHandle)
-
-        pasteTSItem.Tag = New MenuTag With {.path = IO.Path.Combine(tgt, "Empty"), .action = "Paste"}
-        pasteLinkTSItem.Tag = New MenuTag With {.path = IO.Path.Combine(tgt, "Empty"), .action = "PasteLink"}
-
-        If Not (IO.File.Exists(tgt) OrElse IO.Directory.Exists(tgt)) Then
-            Debug.Print("file/dir missing")
-            PasteSep.Visible = False
-            pasteTSItem.Visible = False
-            pasteLinkTSItem.Visible = False
+        If act = "PasteLink" Then
+            InvokeExplorerVerb(tgt, act, ScalaHandle)
         Else
-            Dim nm As String = IO.Path.GetFileName(tgt.TrimEnd("\"c))
-            If String.IsNullOrEmpty(nm) Then nm = tgt
-            If hideExt.Contains(IO.Path.GetExtension(nm)) Then
-                nm = IO.Path.GetFileNameWithoutExtension(nm)
-            End If
-            pasteTSItem.Text = $"{If(act = "Cut", "Move", "Paste")} ""{nm.CapWithEllipsis(16)}"""
-            If nm.Length > 16 Then
-                pasteTSItem.ToolTipText = nm
-            Else
-                pasteTSItem.ToolTipText = String.Empty
-            End If
 
-            If tgt.ToLower.EndsWith(".lnk") Then
+            SystemUtility.ExplorerVerbDispatch(tgt, act)
+
+            'ShellClipboardHelper.CopyOrCutItem(tgt, act, ScalaHandle)
+
+            pasteTSItem.Tag = New MenuTag With {.path = IO.Path.Combine(tgt, "Empty"), .action = "Paste"}
+            pasteLinkTSItem.Tag = New MenuTag With {.path = IO.Path.Combine(tgt, "Empty"), .action = "PasteLink"}
+
+            If Not (IO.File.Exists(tgt) OrElse IO.Directory.Exists(tgt)) Then
+                Debug.Print("file/dir missing")
+                PasteSep.Visible = False
+                pasteTSItem.Visible = False
                 pasteLinkTSItem.Visible = False
             Else
-                pasteLinkTSItem.Text = "Paste Shortcut"
-            End If
+                Dim nm As String = IO.Path.GetFileName(tgt.TrimEnd("\"c))
+                If String.IsNullOrEmpty(nm) Then nm = tgt
+                If hideExt.Contains(IO.Path.GetExtension(nm)) Then
+                    nm = IO.Path.GetFileNameWithoutExtension(nm)
+                End If
+                pasteTSItem.Text = $"{If(act = "Cut", "Move", "Paste")} ""{nm.CapWithEllipsis(16)}"""
+                If nm.Length > 16 Then
+                    pasteTSItem.ToolTipText = nm
+                Else
+                    pasteTSItem.ToolTipText = String.Empty
+                End If
 
-            Task.Run(Sub()
-                         Dim img = GetIconFromFile(tgt, False, True)
-                         Me.Invoke(Sub()
-                                       pasteTSItem.Image = img
-                                       If tgt.ToLower.EndsWith(".lnk") Then
-                                           pasteTSItem.Image = img.addOverlay(My.Resources.shortcutOverlay)
-                                       Else
-                                           pasteLinkTSItem.Image = img.addOverlay(My.Resources.shortcutOverlay)
-                                       End If
-                                   End Sub)
-                     End Sub)
+                If tgt.ToLower.EndsWith(".lnk") Then
+                    pasteLinkTSItem.Visible = False
+                Else
+                    pasteLinkTSItem.Text = "Paste Shortcut"
+                End If
+
+                Task.Run(Sub()
+                             Dim img = GetIconFromFile(tgt, False, True)
+                             Me.Invoke(Sub()
+                                           pasteTSItem.Image = img
+                                           If tgt.ToLower.EndsWith(".lnk") Then
+                                               pasteTSItem.Image = img.addOverlay(My.Resources.shortcutOverlay)
+                                           Else
+                                               pasteLinkTSItem.Image = img.addOverlay(My.Resources.shortcutOverlay)
+                                           End If
+                                       End Sub)
+                         End Sub)
+            End If
         End If
-        'End If
     End Sub
 
     Private Sub UpdateMenuChecks(menu As ToolStripItemCollection, itemSet As HashSet(Of String))
