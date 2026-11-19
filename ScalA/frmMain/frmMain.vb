@@ -354,7 +354,7 @@ Partial Public NotInheritable Class FrmMain
         With My.Application.Info.Version
             Dim build = .Build + If(.Revision, 1, 0)
             Dim rev As String = If(.Revision, $"b{ .Revision}", "")
-            lblTitle.Text = $"- ScalA v{ .Major}.{ .Minor}.{build}{rev}{titleSuff} {My.Settings.resol} {Me.Size}"
+            lblTitle.Text = $"- ScalA v{ .Major}.{ .Minor}.{build}{rev}{titleSuff}" ' {My.Settings.resol} {Me.Size}"
         End With
         Return True
     End Function
