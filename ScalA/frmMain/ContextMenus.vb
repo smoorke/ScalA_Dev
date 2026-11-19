@@ -665,12 +665,13 @@ Partial Public NotInheritable Class FrmMain
             SHGetFileInfoW(PathName, FILE_ATTRIBUTE_DIRECTORY, fi, System.Runtime.InteropServices.Marshal.SizeOf(fi), flags)
             If fi.hIcon = IntPtr.Zero Then
                 dBug.Print("hIcon empty: " & Runtime.InteropServices.Marshal.GetLastWin32Error)
-                Throw New Exception
+                Return Nothing
+            Else
+                ico = Icon.FromHandle(fi.hIcon)
+                bm = ico.ToBitmap
+                DestroyIcon(ico.Handle)
+                Return bm
             End If
-            ico = Icon.FromHandle(fi.hIcon)
-            bm = ico.ToBitmap
-            DestroyIcon(ico.Handle)
-            Return bm
 
         Else 'not a folder
             If PathName.ToLower.EndsWith(".url") Then
@@ -2896,6 +2897,8 @@ Partial Public NotInheritable Class FrmMain
         Else
 
             SystemUtility.ExplorerVerbDispatch(tgt, act)
+        End If
+        If {"Copy", "Cut"}.Contains(act) Then
 
             'ShellClipboardHelper.CopyOrCutItem(tgt, act, ScalaHandle)
 
@@ -2938,6 +2941,7 @@ Partial Public NotInheritable Class FrmMain
                                        End Sub)
                          End Sub)
             End If
+        End If
         End If
     End Sub
 
