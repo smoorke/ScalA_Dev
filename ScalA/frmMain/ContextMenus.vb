@@ -2540,7 +2540,7 @@ Partial Public NotInheritable Class FrmMain
                                         executableSubItems.Count > 0,
                             .Tag = openallTag},
                 New MenuItem("-"),
-            cutItem, copyItem, pasteItem, pasteLinkItem, undoitem, redoitem
+            cutItem, copyItem, pasteItem, pasteLinkItem, undoItem, redoItem,
                 New MenuItem("-"),
                 New MenuItem("Delete", AddressOf QlCtxDelete),
                 New MenuItem("Rename", AddressOf QlCtxRename),

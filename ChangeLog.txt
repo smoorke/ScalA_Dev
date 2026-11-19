@@ -1,3 +1,30 @@
+**ScalA 1.9.0**
+-# Note: While I intend to maintain compatibility with Windows7,
+-# some features may not function as desired on Windows versions lower than 10.
+
+- Made ScalA DPI Aware.
+-# You can now have sharp 2x or more Scaling on a Scaled Monitor when Clients have DPI override App set.
+- Added a Fix for dragging DPI overridden Clients to a differently scaled monitor. (Win11 bug?)
+- ScalA now uses native border/rounded corners on Windows11.
+- Implemented QuickLaunch Scaling (monitor or custom scale)
+- Made QL Right-Click ContextMenu not overlap subfolders.
+- QL menus that overflow now load faster and are mousewheel scrollable.
+- Made QL overflow buttons follow theme.
+- Copy and Cut operations now survive ScalA shutdown.
+- Fixed pasting into a similarly named folder.
+- Creating a New Folder in QL no longer creates a temporary folder before showing its Dialog.
+- Added Undo and Redo Items to QL ContextMenu.
+-# note there is a specific sequence of undo/redo that gives an error even when done completely in windows file explorer.
+- Renaming or Deleting a QL Item and Creating a New Folder now properly populate Explorers undo buffer.
+- Fixed running a second ScalA with Single Instance on could accidentally create a second Instance.
+-# Also made Activation/BringToFront of the already running instance almost instant.
+- Fixed ScalA settings corruption issue.
+
+**Known Issues/Bugs**
+- Changing Monitor Scale and/or Taskbar Position may hang ScalA for a brief while (30 secs or more)
+-# This is an old bug I can't seem to track down.
+- Changing Monitor Scaling while DPI overidden legacy Clients are running can have undesired results.
+
 **ScalA 1.8.1**
 - QL now correctly handles items with `&` in their name.
 - Fixed an issue where adding shortcuts to a client woud fail.
