@@ -821,7 +821,6 @@ Partial Public NotInheritable Class FrmMain
             btnStart.BackColor = Color.FromArgb(60, 63, 65)
             pnlTitleBar.BackColor = Color.FromArgb(60, 63, 65)
             lblTitle.ForeColor = Colors.LightText
-            ChkEqLock.ForeColor = Color.Gray
 #If DEBUG Then
             chkDebug.ForeColor = Colors.LightText
 #End If
@@ -833,11 +832,11 @@ Partial Public NotInheritable Class FrmMain
             btnStart.BackColor = Color.FromKnownColor(KnownColor.Control)
             pnlTitleBar.BackColor = Color.FromKnownColor(KnownColor.Control)
             lblTitle.ForeColor = Color.Black
-            ChkEqLock.ForeColor = Color.Black
 #If DEBUG Then
             chkDebug.ForeColor = Color.Black
 #End If
         End If
+        ChkEqLock_CheckStateChanged(ChkEqLock, Nothing)
 
         Dim bBc As Color = If(darkmode, Color.DarkGray, Color.FromArgb(&HFFE1E1E1))
         Task.Run(Sub() Parallel.ForEach(pnlOverview.Controls.OfType(Of AButton), Sub(but) but.BackColor = bBc))
@@ -2100,47 +2099,23 @@ Partial Public NotInheritable Class FrmMain
 
     End Sub
 
-    Private Sub BtnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
-
-    End Sub
-
-    Private Sub btnstart_MouseDown(sender As Object, e As MouseEventArgs) Handles btnStart.MouseDown
-
-    End Sub
-
-    Private Sub Various_MouseUp(sender As Object, e As MouseEventArgs) Handles pnlSys.MouseUp, pnlButtons.MouseUp, MyBase.MouseUp, ChkEqLock.MouseUp, cboAlt.MouseUp, btnStart.MouseUp, btnQuit.MouseUp
-
-    End Sub
-
-    Private Sub CmbResolution_DropDown(sender As Object, e As EventArgs) Handles cmbResolution.DropDown
-
-    End Sub
-
-    Private Sub CmbResolution_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cmbResolution.SelectedIndexChanged
-
-    End Sub
-
-    Private Sub ComboBoxes_DropDownClosed(sender As Object, e As EventArgs) Handles cmbResolution.DropDownClosed, cboAlt.DropDownClosed
-
-    End Sub
-
-    Private Sub CmbResolution_MouseUp(sender As Object, e As MouseEventArgs) Handles cmbResolution.MouseUp
-
-    End Sub
-
-    Private Sub cmbResolution_MouseWheel(sender As Object, e As MouseEventArgs) Handles cmbResolution.MouseWheel
-
-    End Sub
-
-    Private Sub CboAlt_DropDown(sender As Object, e As EventArgs) Handles cboAlt.DropDown
-
-    End Sub
-
-    Private Sub CboAlt_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboAlt.SelectedIndexChanged
-
-    End Sub
-
-    Private Sub cboAlt_MouseWheel(sender As Object, e As MouseEventArgs) Handles cboAlt.MouseWheel
-
+    Private Sub ChkEqLock_CheckStateChanged(sender As CheckBox, e As EventArgs) Handles ChkEqLock.CheckStateChanged
+        If My.Settings.DarkMode Then
+            If sender.CheckState = CheckState.Checked Then
+                sender.ForeColor = Color.Red
+            ElseIf sender.CheckState = CheckState.Indeterminate Then
+                sender.ForeColor = Color.YellowGreen
+            Else
+                sender.ForeColor = Color.LimeGreen
+            End If
+        Else
+            If sender.CheckState = CheckState.Checked Then
+                sender.ForeColor = Color.Red
+            ElseIf sender.CheckState = CheckState.Indeterminate Then
+                sender.ForeColor = Color.LimeGreen
+            Else
+                sender.ForeColor = Color.Green
+            End If
+        End If
     End Sub
 End Class
