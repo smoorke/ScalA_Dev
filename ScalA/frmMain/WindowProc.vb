@@ -490,6 +490,7 @@ Partial NotInheritable Class FrmMain
                 End If
                 'clear QL iconcache
                 iconCache.Clear()
+                bigIconCache.Clear()
 
             Case WM_CLIPBOARDUPDATE
                 dBug.Print("WM_CLIPBOARDUPDATE")
