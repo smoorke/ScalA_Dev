@@ -2895,7 +2895,6 @@ Partial Public NotInheritable Class FrmMain
         If act = "PasteLink" Then
             InvokeExplorerVerb(tgt, act, ScalaHandle)
         Else
-
             SystemUtility.ExplorerVerbDispatch(tgt, act)
         End If
         If {"Copy", "Cut"}.Contains(act) Then
@@ -2941,7 +2940,6 @@ Partial Public NotInheritable Class FrmMain
                                        End Sub)
                          End Sub)
             End If
-        End If
         End If
     End Sub
 
