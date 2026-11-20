@@ -149,7 +149,8 @@ Partial NotInheritable Class FrmMain
             wasVisible = True
         End If
 
-        If pbZoom.Contains(MousePosition) Then
+        Dim mousepos = MousePosition
+        If pbZoom.Contains(mousepos) AndAlso Not OtherScalaAboveHasMouseInWindowRect(mousepos) Then
 
             If pci.flags = 0 Then ' cursor is hidden
                 wasVisible = False
@@ -239,6 +240,53 @@ Partial NotInheritable Class FrmMain
 
 
     End Sub
+
+    Private _EnumOthersAboveCallback As EnumWindowsProc = AddressOf EnumOtherAbove
+    Dim others As New HashSet(Of Integer)()
+    Dim OtherHasMouse As Boolean = False
+    Private _cursorPos As Point = New Point(Integer.MinValue, Integer.MinValue)
+
+    Private Function OtherScalaAboveHasMouseInWindowRect(mousepos As Point) As Boolean
+
+        If _cursorPos <> mousepos Then
+            _cursorPos = mousepos
+
+            OtherHasMouse = False
+
+            others.Clear()
+            For Each s In getOtherInstances()
+                others.Add(s.pid)
+            Next
+
+            If others.Count = 0 Then
+                OtherHasMouse = False
+            Else
+                EnumWindows(_EnumOthersAboveCallback, IntPtr.Zero)
+            End If
+        End If
+
+        Return OtherHasMouse
+
+    End Function
+    Private Function EnumOtherAbove(h As IntPtr, l As IntPtr) As Boolean
+        ' stop at own window
+        If h = ScalaHandle Then Return False
+        ' Skip hidden or minimized windows
+        If Not IsWindowVisible(h) OrElse IsIconic(h) Then Return True
+
+        Dim pid As Integer = 0
+        GetWindowThreadProcessId(h, pid)
+        If others.Contains(pid) Then
+            Dim rcW As RECT
+            If GetWindowRect(h, rcW) AndAlso PtInRect(rcW, _cursorPos) Then
+                OtherHasMouse = True
+                Return False ' Found a matching Scala window under the cursor; stop enumerating
+            End If
+        End If
+        Return True
+    End Function
+
+
     Dim prevWMMMpt As New Point
 
     Public Shared ReadOnly startThumbsDict As New Concurrent.ConcurrentDictionary(Of Integer, IntPtr)
@@ -420,11 +468,11 @@ Partial NotInheritable Class FrmMain
                     Else 'buttons w/o alts
 
                         but.BeginInvoke(Sub() but.Text = "")
-                            but.AP = Nothing
-                            but.ContextMenuStrip = cmsQuickLaunch
-                            but.BackgroundImage = Nothing
-                            but.Image = Nothing
-                            but.pidCache = 0
+                        but.AP = Nothing
+                        but.ContextMenuStrip = cmsQuickLaunch
+                        but.BackgroundImage = Nothing
+                        but.Image = Nothing
+                        but.pidCache = 0
 
                     End If
                 Catch
@@ -435,158 +483,159 @@ Partial NotInheritable Class FrmMain
         Dim thumbContainedMouse As Boolean = False
 
         Try
+
             If My.Settings.gameOnOverview AndAlso Not caption_Mousedown Then
-                Dim but As AButton = visibleButtons.Find(Function(ab) ab.pidCache > 0 AndAlso ab.ThumbContains(MousePosition))
-                If but IsNot Nothing Then
-                    thumbContainedMouse = True
-                    Dim ap = but.AP
-                    Dim rcwB As Rectangle = ap.WindowRect
-                    Dim rccB As Rectangle = ap.ClientRect
-                    Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
-                    GetCursorInfo(pci)
-                    If pci.flags <> 0 Then ' cursor is visible
-                        If Not wasVisible AndAlso ap.IsActive() Then
-                            dBug.Print("scrollthumb released")
-                            If storedY <> pci.ptScreenpos.y OrElse storedX <> pci.ptScreenpos.x Then
-                                dBug.Print("scrollthumb moved")
-                                Dim Xfactor As Double = but.ThumbRectangle.Width / ap.ClientRect.Width
-                                Dim Yfactor As Double = but.ThumbRectangle.Height / ap.ClientRect.Height
-                                Dim movedX As Integer = storedX + ((pci.ptScreenpos.x - storedX) * Xfactor)
-                                Dim movedY As Integer = storedY + ((pci.ptScreenpos.y - storedY) * Yfactor)
-                                Cursor.Position = New Point(movedX, movedY)
+                    Dim but As AButton = visibleButtons.Find(Function(ab) ab.pidCache > 0 AndAlso ab.ThumbContains(MousePosition))
+                    If but IsNot Nothing Then
+                        thumbContainedMouse = True
+                        Dim ap = but.AP
+                        Dim rcwB As Rectangle = ap.WindowRect
+                        Dim rccB As Rectangle = ap.ClientRect
+                        Dim pci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
+                        GetCursorInfo(pci)
+                        If pci.flags <> 0 Then ' cursor is visible
+                            If Not wasVisible AndAlso ap.IsActive() Then
+                                dBug.Print("scrollthumb released")
+                                If storedY <> pci.ptScreenpos.y OrElse storedX <> pci.ptScreenpos.x Then
+                                    dBug.Print("scrollthumb moved")
+                                    Dim Xfactor As Double = but.ThumbRectangle.Width / ap.ClientRect.Width
+                                    Dim Yfactor As Double = but.ThumbRectangle.Height / ap.ClientRect.Height
+                                    Dim movedX As Integer = storedX + ((pci.ptScreenpos.x - storedX) * Xfactor)
+                                    Dim movedY As Integer = storedY + ((pci.ptScreenpos.y - storedY) * Yfactor)
+                                    Cursor.Position = New Point(movedX, movedY)
 
-                                Dim bzB As Rectangle = but.RectangleToScreen(but.ThumbRectangle)
-                                Dim ipt As New Point(movedX.Map(bzB.Left, bzB.Right, 0, rccB.Width),
-                                                     movedY.Map(bzB.Top, bzB.Bottom, 0, rccB.Height))
-                                SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, WM_MOUSEMOVE_CreateWParam(), New LParamMap(ipt)) 'update client internal mousepos
-                                dBug.Print($"ipt {ipt}")
+                                    Dim bzB As Rectangle = but.RectangleToScreen(but.ThumbRectangle)
+                                    Dim ipt As New Point(movedX.Map(bzB.Left, bzB.Right, 0, rccB.Width),
+                                                         movedY.Map(bzB.Top, bzB.Bottom, 0, rccB.Height))
+                                    SendMessage(AltPP.MainWindowHandle, WM_MOUSEMOVE, WM_MOUSEMOVE_CreateWParam(), New LParamMap(ipt)) 'update client internal mousepos
+                                    dBug.Print($"ipt {ipt}")
+                                End If
                             End If
-                        End If
-                        storedX = pci.ptScreenpos.x
-                        storedY = pci.ptScreenpos.y
-                        wasVisible = True
-                    End If
-
-                    If Not AOBusy Then
-                        AltPP = ap
-                        If ap.IsMinimized Then
-                            dBug.Print($"before {rcwB} {rccB}")
-                            ap.Restore()
-                            rcwB = ap.WindowRect
-                            rccB = ap.ClientRect
-                            dBug.Print($"after {rcwB} {rccB}")
+                            storedX = pci.ptScreenpos.x
+                            storedY = pci.ptScreenpos.y
+                            wasVisible = True
                         End If
 
-                        If pci.flags = 0 Then ' cursor is hidden do not move astonia. fixes scrollbar thumb.
-                            wasVisible = False ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
-                        Else
+                        If Not AOBusy Then
+                            AltPP = ap
+                            If ap.IsMinimized Then
+                                dBug.Print($"before {rcwB} {rccB}")
+                                ap.Restore()
+                                rcwB = ap.WindowRect
+                                rccB = ap.ClientRect
+                                dBug.Print($"after {rcwB} {rccB}")
+                            End If
 
-                            If cmsQuickLaunch.Visible OrElse cmsAlt.Visible Then
-                                'Detach(False)
+                            If pci.flags = 0 Then ' cursor is hidden do not move astonia. fixes scrollbar thumb.
+                                wasVisible = False ' note there is a client bug where using thumb will intermittently cause it to jump down wildly
                             Else
-                                'Attach(ap)
-                                If My.Settings.HoverActivate Then
-                                    Dim id = GetActiveProcessID()
-                                    'Debug.Print($"Hover {id}")
-                                    If id = 0 OrElse id = scalaPID OrElse isAstoniaOrScalA(id) Then
-                                        If Not (SysMenu.Visible OrElse cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse
-                                                FrmSettings.Visible OrElse UpdateDialog.Contains(MousePosition) OrElse
-                                                renameOpen OrElse CustomMessageBox.visible) Then
+
+                                If cmsQuickLaunch.Visible OrElse cmsAlt.Visible Then
+                                    'Detach(False)
+                                Else
+                                    'Attach(ap)
+                                    If My.Settings.HoverActivate Then
+                                        Dim id = GetActiveProcessID()
+                                        'Debug.Print($"Hover {id}")
+                                        If id = 0 OrElse id = scalaPID OrElse isAstoniaOrScalA(id) Then
+                                            If Not (SysMenu.Visible OrElse cboAlt.DroppedDown OrElse cmbResolution.DroppedDown OrElse
+                                                    FrmSettings.Visible OrElse UpdateDialog.Contains(MousePosition) OrElse
+                                                    renameOpen OrElse CustomMessageBox.visible) Then
 #If DEBUG Then
-                                            If Not chkDebug.ContextMenuStrip.Visible Then
+                                                If Not chkDebug.ContextMenuStrip.Visible Then
 #End If
-                                                If Not ap.IsActive AndAlso WindowFromPoint(MousePosition) = ap.MainWindowHandle Then
-                                                    dBug.Print($"Activating {ap.Name}")
-                                                    'If Not ap.Activate() Then NOP
-                                                    SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
-                                                    'ap.ReEnableModifiers() 'todo: check com client if this is needed
+                                                    If Not ap.IsActive AndAlso WindowFromPoint(MousePosition) = ap.MainWindowHandle Then
+                                                        dBug.Print($"Activating {ap.Name}")
+                                                        'If Not ap.Activate() Then NOP
+                                                        SendMouseInput(MouseEventF.XDown Or MouseEventF.XUp, 2)
+                                                        'ap.ReEnableModifiers() 'todo: check com client if this is needed
+                                                    End If
+#If DEBUG Then
                                                 End If
-#If DEBUG Then
-                                            End If
 #End If
+                                            End If
                                         End If
                                     End If
                                 End If
+
+                                ap.SavePos(rcwB.Location, False)
+
+                                eqLockShown = True
+                                Dim excludGearLock As Integer = If(AltPP?.isSDL, 18, 0)
+                                Dim lockHeight = 45
+                                If rccB.Height >= 2000 Then
+                                    lockHeight += 120
+                                ElseIf rccB.Height >= 1500 Then
+                                    lockHeight += 80
+                                ElseIf rccB.Height >= 1000 Then
+                                    lockHeight += 40
+                                End If
+                                PnlEqLock.Location = but.ThumbRECT.Location + New Point((rccB.Width \ 2 - 262.Map(0, 400, 0, rccB.Width / 2)).Map(0, rccB.Width, 0, but.ThumbRECT.Width - but.ThumbRECT.Left), 0)
+                                PnlEqLock.Size = New Size((524 - excludGearLock).Map(0, 800, 0, but.ThumbRECT.Width - but.ThumbRECT.Left),
+                                      lockHeight.Map(0, rccB.Height, 0, but.ThumbRECT.Height - but.ThumbRECT.Top))
+
+                                Dim Wrect As RECT
+                                Dim Crect As RECT
+                                GetWindowRect(ap?.MainWindowHandle, Wrect)
+                                GetClientRect(ap?.MainWindowHandle, Crect)
+                                Dim bSize = (Wrect.right - Wrect.left - Crect.right) \ 2
+                                Dim AstClientOffsetB = New Size(bSize, Wrect.bottom - Wrect.top - Crect.bottom - bSize)
+
+                                Dim ptZB = Me.PointToScreen(but.ThumbRECT.Location)
+                                Dim newXB = MousePosition.X.Map(ptZB.X, ptZB.X + but.ThumbRectangle.Width, ptZB.X, ptZB.X + but.ThumbRECT.Width - but.ThumbRECT.X - rccB.Width) - AstClientOffsetB.Width '- My.Settings.offset.X
+                                Dim newYB = MousePosition.Y.Map(ptZB.Y, ptZB.Y + but.ThumbRectangle.Height, ptZB.Y, ptZB.Y + but.ThumbRECT.Height - but.ThumbRECT.Top - rccB.Height) - AstClientOffsetB.Height '- My.Settings.offset.Y
+
+                                AOBusy = True
+                                EnqueueLatestJob(Sub()
+                                                     Try
+                                                         Dim ci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
+                                                         GetCursorInfo(ci)
+                                                         If ci.flags = 0 Then Exit Sub
+                                                         AOBusy = True
+                                                         Dim flags = SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate
+                                                         If Not but.AP.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
+                                                         'If but.Tag?.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
+                                                         Dim pt As Point = MousePosition - New Point(newXB + ap.ClientOffset.X, newYB + ap.ClientOffset.Y)
+                                                         Dim wparam = WM_MOUSEMOVE_CreateWParam()
+                                                         Dim lparam = New LParamMap(pt)
+                                                         If prevWMMMpt <> MousePosition Then
+                                                             SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
+                                                         End If
+                                                         AllowSetForegroundWindow(ASFW_ANY)
+                                                         Attach(but.AP) ', detachThread:=False)
+                                                         SetWindowPos(but.AP.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
+                                                         'ap.ThreadInput(False)
+                                                         If prevWMMMpt <> MousePosition Then
+                                                             SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
+                                                         End If
+                                                         prevWMMMpt = MousePosition
+                                                     Catch ex As Exception
+                                                         dBug.Print(ex.Message)
+                                                     Finally
+                                                         AOBusy = False
+                                                     End Try
+                                                 End Sub)
                             End If
-
-                            ap.SavePos(rcwB.Location, False)
-
-                            eqLockShown = True
-                            Dim excludGearLock As Integer = If(AltPP?.isSDL, 18, 0)
-                            Dim lockHeight = 45
-                            If rccB.Height >= 2000 Then
-                                lockHeight += 120
-                            ElseIf rccB.Height >= 1500 Then
-                                lockHeight += 80
-                            ElseIf rccB.Height >= 1000 Then
-                                lockHeight += 40
-                            End If
-                            PnlEqLock.Location = but.ThumbRECT.Location + New Point((rccB.Width \ 2 - 262.Map(0, 400, 0, rccB.Width / 2)).Map(0, rccB.Width, 0, but.ThumbRECT.Width - but.ThumbRECT.Left), 0)
-                            PnlEqLock.Size = New Size((524 - excludGearLock).Map(0, 800, 0, but.ThumbRECT.Width - but.ThumbRECT.Left),
-                                  lockHeight.Map(0, rccB.Height, 0, but.ThumbRECT.Height - but.ThumbRECT.Top))
-
-                            Dim Wrect As RECT
-                            Dim Crect As RECT
-                            GetWindowRect(ap?.MainWindowHandle, Wrect)
-                            GetClientRect(ap?.MainWindowHandle, Crect)
-                            Dim bSize = (Wrect.right - Wrect.left - Crect.right) \ 2
-                            Dim AstClientOffsetB = New Size(bSize, Wrect.bottom - Wrect.top - Crect.bottom - bSize)
-
-                            Dim ptZB = Me.PointToScreen(but.ThumbRECT.Location)
-                            Dim newXB = MousePosition.X.Map(ptZB.X, ptZB.X + but.ThumbRectangle.Width, ptZB.X, ptZB.X + but.ThumbRECT.Width - but.ThumbRECT.X - rccB.Width) - AstClientOffsetB.Width '- My.Settings.offset.X
-                            Dim newYB = MousePosition.Y.Map(ptZB.Y, ptZB.Y + but.ThumbRectangle.Height, ptZB.Y, ptZB.Y + but.ThumbRECT.Height - but.ThumbRECT.Top - rccB.Height) - AstClientOffsetB.Height '- My.Settings.offset.Y
-
-                            AOBusy = True
-                            EnqueueLatestJob(Sub()
-                                                 Try
-                                                     Dim ci As New CURSORINFO With {.cbSize = Runtime.InteropServices.Marshal.SizeOf(GetType(CURSORINFO))}
-                                                     GetCursorInfo(ci)
-                                                     If ci.flags = 0 Then Exit Sub
-                                                     AOBusy = True
-                                                     Dim flags = SetWindowPosFlags.IgnoreResize Or SetWindowPosFlags.DoNotActivate
-                                                     If Not but.AP.IsActive() Then flags.SetFlag(SetWindowPosFlags.DoNotChangeOwnerZOrder)
-                                                     'If but.Tag?.IsBelow(ScalaHandle) Then flags = flags Or SetWindowPosFlags.IgnoreZOrder
-                                                     Dim pt As Point = MousePosition - New Point(newXB + ap.ClientOffset.X, newYB + ap.ClientOffset.Y)
-                                                     Dim wparam = WM_MOUSEMOVE_CreateWParam()
-                                                     Dim lparam = New LParamMap(pt)
-                                                     If prevWMMMpt <> MousePosition Then
-                                                         SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
-                                                     End If
-                                                     AllowSetForegroundWindow(ASFW_ANY)
-                                                     Attach(but.AP) ', detachThread:=False)
-                                                     SetWindowPos(but.AP.MainWindowHandle, ScalaHandle, newXB, newYB, -1, -1, flags)
-                                                     'ap.ThreadInput(False)
-                                                     If prevWMMMpt <> MousePosition Then
-                                                         SendMessage(but.AP.MainWindowHandle, WM_MOUSEMOVE, wparam, lparam) 'update client internal mousepos
-                                                     End If
-                                                     prevWMMMpt = MousePosition
-                                                 Catch ex As Exception
-                                                     dBug.Print(ex.Message)
-                                                 Finally
-                                                     AOBusy = False
-                                                 End Try
-                                             End Sub)
                         End If
                     End If
+
+                    'Dim altCount = alts.Count
+                    'Dim lowestAlthWnd As IntPtr = ScalaHandle
+                    'Dim i As Integer = 0
+                    'EnumWindows(Function(h As IntPtr, l As IntPtr)
+                    '                If Not IsWindowVisible(h) Then Return True
+                    '                If isAstonia(h) Then
+                    '                    i += 1
+                    '                    lowestAlthWnd = h
+                    '                    If i >= altCount Then Return False
+                    '                End If
+                    '                Return True
+                    '            End Function, IntPtr.Zero)
+
+
+                    'SetWindowPos(FrmBehind.Handle, lowestAlthWnd, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreResize)
+
                 End If
-
-                'Dim altCount = alts.Count
-                'Dim lowestAlthWnd As IntPtr = ScalaHandle
-                'Dim i As Integer = 0
-                'EnumWindows(Function(h As IntPtr, l As IntPtr)
-                '                If Not IsWindowVisible(h) Then Return True
-                '                If isAstonia(h) Then
-                '                    i += 1
-                '                    lowestAlthWnd = h
-                '                    If i >= altCount Then Return False
-                '                End If
-                '                Return True
-                '            End Function, IntPtr.Zero)
-
-
-                'SetWindowPos(FrmBehind.Handle, lowestAlthWnd, -1, -1, -1, -1, SetWindowPosFlags.IgnoreMove Or SetWindowPosFlags.DoNotActivate Or SetWindowPosFlags.IgnoreResize)
-
-            End If
 
             If My.Settings.gameOnOverview Then
                 eqLockShown = False
@@ -762,7 +811,7 @@ Partial NotInheritable Class FrmMain
         'End If
 
 #If DEBUG Then
-        UpdateTitle()
+        ' UpdateTitle()
 #End If
 
 
