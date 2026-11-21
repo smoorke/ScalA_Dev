@@ -253,7 +253,7 @@ Public NotInheritable Class FrmSettings
         Me.Width = Me.Width - rcC.right + DesignedClientSize.Width
         Me.Height = Me.Height - rcC.bottom + DesignedClientSize.Height
 
-        startup = False
+        Me.startup = False
 
         'AllowSetForegroundWindow(ASFW_ANY)
         'SetForegroundWindow(GetDesktopWindow)
@@ -278,7 +278,7 @@ Public NotInheritable Class FrmSettings
             Case WM_WINDOWPOSCHANGING
                 Dim winpos As WINDOWPOS = Marshal.PtrToStructure(m.LParam, GetType(WINDOWPOS))
                 If StructureToPtrSupported Then
-                    If Not startup AndAlso Not winpos.flags.HasFlag(SetWindowPosFlags.IgnoreResize) Then
+                    If Not Me.startup AndAlso Not winpos.flags.HasFlag(SetWindowPosFlags.IgnoreResize) Then
                         Dim rcC As RECT
                         GetClientRect(Me.Handle, rcC)
                         'Debug.Print($"rcC {rcC.right} {rcC.bottom}")
