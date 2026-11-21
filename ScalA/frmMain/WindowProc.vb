@@ -429,7 +429,7 @@ Partial NotInheritable Class FrmMain
                         dBug.Print("WM_NCCalc noroundedcorners", 1)
                     End If
 
-                    Marshal.StructureToPtr(params, m.LParam, False)
+                    If StructureToPtrSupported Then Marshal.StructureToPtr(params, m.LParam, False)
 
                     m.Result = IntPtr.Zero
                     Return
