@@ -1558,7 +1558,7 @@ Public NotInheritable Class FrmSettings
             Dim otherInstancesCount As Integer = IPC.GetOtherInstancesWithSamePath().ToArray.Count()
 
             If otherInstancesCount > 0 Then
-                MessageBox.Show("Cannot enable Single Instance mode while multiple instances of ScalA are already running. Please close other instances first.",
+                CustomMessageBox.Show(Me, "Cannot enable Single Instance mode while multiple instances of ScalA are already running. Please close other instances first.",
                                 "Single Instance Conflict",
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Warning)
