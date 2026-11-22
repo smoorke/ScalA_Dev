@@ -1,3 +1,15 @@
+**ScalA 1.9.1**
+- Overlapping multiple ScalAs with same Alt selected no longer makes cursor jitter.
+-# Note I couldn't get Active Overview to play nice with this. (It's always been a bit of a Frankenstein)
+- Fixed Pasting a Link to a non .lnk item fails.
+- Fixed Exception on pasting to the root of C:\ drive.
+- Fixed UpdateDialog on scaled monitor.
+- Fixed an exception on Windows8.
+
+
+
+
+
 **ScalA 1.9.0**
 -# Note: While I intend to maintain compatibility with Windows7,
 -# some features may not function as desired on Windows versions lower than 10.
